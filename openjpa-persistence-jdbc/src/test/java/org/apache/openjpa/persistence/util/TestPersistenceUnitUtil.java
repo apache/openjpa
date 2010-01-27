@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.util;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
@@ -43,7 +44,8 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         setUp(CLEAR_TABLES, EagerEntity.class, LazyEmbed.class,
             LazyEntity.class, EagerEmbed.class, RelEntity.class,
             EagerEmbedRel.class, MapEntity.class,
-            MapKeyEmbed.class, MapValEntity.class);
+            MapKeyEmbed.class, MapValEntity.class,
+            OneToEntity.class, ToManyLazy.class, ToManyEager.class);
     }
 
     /*
@@ -251,7 +253,7 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
         em.close();
     }
 
-    public void testPCMapEager() {        
+    public void testPCMapEager() {
         PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
         EntityManager em = emf.createEntityManager();
         
@@ -293,6 +295,133 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
 
         assertEquals(true, puu.isLoaded(mve));
         
+        em.close();
+    }
+
+    /*
+     * Verify load state is not loaded for null relationships or relationships
+     * set to null.
+     */
+    public void testSetNullLazyRelationship() {
+
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            OneToEntity ote = new OneToEntity();
+            assertFalse(puu.isLoaded(ote, "toManyLazy"));
+            em.getTransaction().begin();
+            em.persist(ote);
+            em.getTransaction().commit();
+            em.clear();
+            ote = em.find(OneToEntity.class, ote.getId());
+            // Field is lazy and not immediately loaded by the application
+            assertFalse(puu.isLoaded(ote, "toManyLazy"));
+            // Force load the lazy field
+            ote.getToManyLazy();
+            assertTrue(puu.isLoaded(ote, "toManyLazy"));
+            
+            OneToEntity ote2 = new OneToEntity();
+            em.getTransaction().begin();
+            em.persist(ote2);
+            em.getTransaction().commit();
+            // Field gets set to loaded upon commit
+            assertTrue(puu.isLoaded(ote2, "toManyLazy"));
+            em.clear();
+            ote2 = em.find(OneToEntity.class, ote2.getId());
+            
+            // Field is lazy and not immediately loaded by the application
+            assertFalse(puu.isLoaded(ote2, "toManyLazy"));
+            
+            // Load by application
+            List<ToManyLazy> tmes = new ArrayList<ToManyLazy>();
+            for (int i = 0; i < 5; i++) {
+                tmes.add(new ToManyLazy("ToMany" + i));
+            }
+            em.getTransaction().begin();
+            ote2.setToManyLazy(tmes);
+            // App loaded before commit
+            assertTrue(puu.isLoaded(ote2, "toManyLazy"));
+            em.getTransaction().commit();
+            // Still loaded after commit
+            assertTrue(puu.isLoaded(ote2, "toManyLazy"));
+            
+            // Set to null - no longer loaded per spec.
+            em.getTransaction().begin();
+            ote2.setToManyLazy(null);
+            // Considered unloaded before commit
+            assertFalse(puu.isLoaded(ote2, "toManyLazy"));
+            em.getTransaction().commit();
+            //Loaded after commit
+            assertTrue(puu.isLoaded(ote2, "toManyLazy"));
+        }
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+        }
+        em.close();
+    }
+
+    public void testSetNullEagerRelationship() {
+
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            OneToEntity ote = new OneToEntity();
+            assertFalse(puu.isLoaded(ote, "toManyEager"));
+            em.getTransaction().begin();
+            em.persist(ote);
+            em.getTransaction().commit();
+            em.clear();
+            ote = em.find(OneToEntity.class, ote.getId());
+            // Field is eater and is immediately loaded by the application
+            assertTrue(puu.isLoaded(ote, "toManyEager"));
+            
+            OneToEntity ote2 = new OneToEntity();
+            em.getTransaction().begin();
+            em.persist(ote2);
+            // Field is null by default and not considered loaded.
+            assertFalse(puu.isLoaded(ote2, "toManyEager"));
+            em.getTransaction().commit();
+            // Field gets set to loaded upon commit
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
+            em.clear();
+            ote2 = em.find(OneToEntity.class, ote2.getId());
+            
+            // Field is eager and is immediately loaded by the application
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
+            
+            // Load by application
+            List<ToManyEager> tmes = new ArrayList<ToManyEager>();
+            for (int i = 0; i < 5; i++) {
+                tmes.add(new ToManyEager("ToMany" + i));
+            }
+            em.getTransaction().begin();
+            ote2.setToManyEager(tmes);
+            // App loaded before commit
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
+            em.getTransaction().commit();
+            // Still loaded after commit
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
+            
+            // Set to null - no longer loaded per spec.
+            em.getTransaction().begin();
+            ote2.setToManyEager(null);
+            // Entity is considered unloaded before commit
+            assertFalse(puu.isLoaded(ote2));
+            // Attribute is considered unloaded before commit
+            assertFalse(puu.isLoaded(ote2, "toManyEager"));
+            em.getTransaction().commit();
+            //Loaded after commit
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
+        }
+        finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+        }
         em.close();
     }
 
