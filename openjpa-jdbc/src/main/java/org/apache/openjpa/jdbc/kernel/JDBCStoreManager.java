@@ -1025,8 +1025,13 @@ public class JDBCStoreManager
                     	fetch.traverseJDBC(fms[i]), eres);
                     if (processed != eres)
                         res.putEager(fms[i], processed);
-                } else
-                    fms[i].load(sm, this, fetch.traverseJDBC(fms[i]), res);
+                } else {
+                    boolean lazyEmbeddable = fms[i].getValueMapping().isEmbedded() &&
+                        fms[i].getEmbeddedMetaData() != null && 
+                        fetch.requiresFetch(fms[i]) == FetchConfiguration.FETCH_NONE;
+                    if (!lazyEmbeddable)    
+                        fms[i].load(sm, this, fetch.traverseJDBC(fms[i]), res);
+                }
             } finally {
                 res.endDataRequest();
             }

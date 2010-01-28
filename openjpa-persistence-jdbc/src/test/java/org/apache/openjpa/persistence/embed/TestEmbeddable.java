@@ -36,6 +36,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -44,7 +45,9 @@ import org.apache.openjpa.jdbc.meta.MappingTool.Flags;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestEmbeddable extends SQLListenerTestCase {
@@ -100,7 +103,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
             Book.class, Listing.class, Seller.class,
-            EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class,
+            EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class, EntityA_Embed.class,
             EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -921,6 +924,35 @@ public class TestEmbeddable extends SQLListenerTestCase {
         EntityB1 b = em.find(EntityB1.class, ID);
         assertNull(b);
         em.close();
+    }
+    
+    public void testLazyFetchEmbed() {
+        EntityManager em = emf.createEntityManager();
+        EntityA_Embed a = new EntityA_Embed();
+        a.setId(ID);
+        a.setName("name");
+        a.setAge(1);
+        Embed emb = new Embed();
+        emb.setIntVal1(1);
+        emb.setIntVal1(2);
+        emb.setIntVal1(3);
+        a.setEmbed(emb);
+        em.persist(a);
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+        em.clear();
+        
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+        // do not fetch emb
+        kem.getFetchPlan().resetFetchGroups().removeFetchGroup("default")
+            .addField(EntityA_Embed.class, "name")
+            .addField(EntityA_Embed.class, "age");
+        a = em.find(EntityA_Embed.class, ID);
+        assertNotNull(a);
+        Embed embed = a.getEmbed();
+        assertNull(embed);
+        assertFalse(puu.isLoaded(a, "embed"));
     }
 
     /*
