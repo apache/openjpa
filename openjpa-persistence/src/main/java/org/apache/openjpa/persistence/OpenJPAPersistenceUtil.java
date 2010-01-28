@@ -162,7 +162,7 @@ public class OpenJPAPersistenceUtil {
             if (fmds != null && fmds.length > 0) {
                 pcs = addToLoadSet(pcs, sm);
                 for (FieldMetaData fmd : fmds) {
-                    if (((StateManagerImpl)sm).requiresFetch(fmd)) {
+                    if (requiresFetch(sm, fmd)) {
                         if (!isLoadedField(sm, fmd, pcs)) {
                             isLoaded = false;
                             break;
@@ -177,6 +177,12 @@ public class OpenJPAPersistenceUtil {
             return LoadState.UNKNOWN;
         }
         return isLoaded ? LoadState.LOADED : LoadState.NOT_LOADED;        
+    }
+    
+    private static boolean requiresFetch(OpenJPAStateManager sm, FieldMetaData fmd) {
+        if (sm instanceof StateManagerImpl)
+            return ((StateManagerImpl)sm).requiresFetch(fmd);
+        return fmd.isInDefaultFetchGroup();
     }
 
     /*
