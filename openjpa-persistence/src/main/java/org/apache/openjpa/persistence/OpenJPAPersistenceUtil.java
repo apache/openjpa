@@ -29,6 +29,7 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -161,7 +162,7 @@ public class OpenJPAPersistenceUtil {
             if (fmds != null && fmds.length > 0) {
                 pcs = addToLoadSet(pcs, sm);
                 for (FieldMetaData fmd : fmds) {
-                    if (fmd.isInDefaultFetchGroup()) {
+                    if (((StateManagerImpl)sm).requiresFetch(fmd)) {
                         if (!isLoadedField(sm, fmd, pcs)) {
                             isLoaded = false;
                             break;

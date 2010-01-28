@@ -33,6 +33,7 @@ import javax.persistence.spi.LoadState;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.ProviderUtil;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
@@ -423,6 +424,24 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             }
         }
         em.close();
+    }
+
+    public void testBasicTypeNotLoaded() {
+        PersistenceUnitUtil puu = emf.getPersistenceUnitUtil();
+        EntityManager em = emf.createEntityManager();
+        EagerEntity ee = createEagerEntity();
+        int id = ee.getId();
+        
+        em.getTransaction().begin();
+        em.persist(ee);
+        em.getTransaction().commit();
+        em.clear();
+        // name is not eagerly loaded, only eagerEmbed is eagerly loaded
+        OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+        kem.getFetchPlan().resetFetchGroups().removeFetchGroup("default")
+            .addField(EagerEntity.class, "eagerEmbed");
+        ee = em.find(EagerEntity.class, id);
+        assertEquals(true, puu.isLoaded(ee));
     }
 
     private EagerEntity createEagerEntity() {

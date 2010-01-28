@@ -3376,4 +3376,8 @@ public class StateManagerImpl
     public List<FieldMetaData> getMappedByIdFields() {
         return _mappedByIdFields;
     }
+    
+    public boolean requiresFetch(FieldMetaData fmd) {
+        return (_broker.getFetchConfiguration().requiresFetch(fmd) != FetchConfiguration.FETCH_NONE);
+    }
 }
