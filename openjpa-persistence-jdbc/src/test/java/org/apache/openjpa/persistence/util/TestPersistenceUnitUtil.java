@@ -347,11 +347,11 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             // Still loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyLazy"));
             
-            // Set to null - no longer loaded per spec.
+            // Set to null - still loaded per spec.
             em.getTransaction().begin();
             ote2.setToManyLazy(null);
-            // Considered unloaded before commit
-            assertFalse(puu.isLoaded(ote2, "toManyLazy"));
+            // Considered loaded before commit
+            assertTrue(puu.isLoaded(ote2, "toManyLazy"));
             em.getTransaction().commit();
             //Loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyLazy"));
@@ -377,14 +377,14 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             em.getTransaction().commit();
             em.clear();
             ote = em.find(OneToEntity.class, ote.getId());
-            // Field is eater and is immediately loaded by the application
+            // Field is eager and is immediately loaded by the application
             assertTrue(puu.isLoaded(ote, "toManyEager"));
             
             OneToEntity ote2 = new OneToEntity();
             em.getTransaction().begin();
             em.persist(ote2);
-            // Field is null by default and not considered loaded.
-            assertFalse(puu.isLoaded(ote2, "toManyEager"));
+            // Field is null by default, but after persist, it is treated as loaded.
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
             em.getTransaction().commit();
             // Field gets set to loaded upon commit
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
@@ -407,13 +407,13 @@ public class TestPersistenceUnitUtil extends SingleEMFTestCase{
             // Still loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyEager"));
             
-            // Set to null - no longer loaded per spec.
+            // Set to null - still loaded per spec.
             em.getTransaction().begin();
             ote2.setToManyEager(null);
-            // Entity is considered unloaded before commit
-            assertFalse(puu.isLoaded(ote2));
-            // Attribute is considered unloaded before commit
-            assertFalse(puu.isLoaded(ote2, "toManyEager"));
+            // Entity is considered loaded before commit
+            assertTrue(puu.isLoaded(ote2));
+            // Attribute is considered loaded before commit
+            assertTrue(puu.isLoaded(ote2, "toManyEager"));
             em.getTransaction().commit();
             //Loaded after commit
             assertTrue(puu.isLoaded(ote2, "toManyEager"));

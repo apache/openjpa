@@ -151,11 +151,6 @@ public class OpenJPAPersistenceUtil {
                 if(!loadSet.get(fmd.getIndex())) {
                     return LoadState.NOT_LOADED;
                 }
-                // If a collected valued attribute and it has been modified, 
-                // make sure it isn't null
-                if (isCollectionSetToNull(sm, fmd)) {
-                    return LoadState.NOT_LOADED;
-                }
             }
             FieldMetaData[] fmds = sm.getMetaData().getFields();
             // Check load state of all persistent eager fetch attributes
@@ -183,28 +178,6 @@ public class OpenJPAPersistenceUtil {
         if (sm instanceof StateManagerImpl)
             return ((StateManagerImpl)sm).requiresFetch(fmd);
         return fmd.isInDefaultFetchGroup();
-    }
-
-    /*
-     * Returns true if the field is a collection type and it was explicitly
-     * set to null.
-     */
-    private static boolean isCollectionSetToNull(OpenJPAStateManager sm, FieldMetaData fmd) {
-        BitSet dirtySet = sm.getDirty();
-        if (dirtySet.get(fmd.getIndex()) && isCollectionType(fmd.getDeclaredTypeCode())) { 
-            Object field = sm.fetchField(fmd.getIndex(), false);
-            if (field == null) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    
-    private static boolean isCollectionType(int type) {
-        return (type == JavaTypes.COLLECTION ||
-                type == JavaTypes.MAP ||
-                type == JavaTypes.ARRAY);
     }
 
     private static HashSet<OpenJPAStateManager> addToLoadSet(
@@ -236,14 +209,14 @@ public class OpenJPAPersistenceUtil {
         // If a collection type, determine if it is loaded
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.COLLECTION:   
-                return !isCollectionSetToNull(sm, fmd) && 
-                    isLoadedCollection(sm, fmd.getElement(),(Collection<?>)field, pcs);
+                return isLoadedCollection(sm, fmd.getElement(), 
+                    (Collection<?>)field, pcs);
             case JavaTypes.MAP:
-                return !isCollectionSetToNull(sm, fmd) &&
-                    isLoadedMap(sm, fmd, (Map<?,?>)field, pcs);
+                return isLoadedMap(sm, fmd, 
+                    (Map<?,?>)field, pcs);
             case JavaTypes.ARRAY:
-                return !isCollectionSetToNull(sm, fmd) &&
-                    isLoadedArray(sm, fmd.getElement(), (Object[])field, pcs);
+                return isLoadedArray(sm, fmd.getElement(), 
+                    (Object[])field, pcs);
         }
         // If other PC type, determine if it is loaded
         if (ofsm != null && fmd.isDeclaredTypePC()) {
