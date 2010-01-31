@@ -18,10 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
@@ -37,7 +35,7 @@ import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
- * Support for the H2 database ({@link http://www.h2database.com}).
+ * Dictionary for H2 ({@link http://www.h2database.com}).
  *
  * @since 0.9.7
  */
@@ -54,29 +52,18 @@ public class H2Dictionary extends DBDictionary {
         autoAssignTypeName = "INTEGER";
         nextSequenceQuery = "CALL NEXT VALUE FOR {0}";
 
-        // CROSS JOIN is currently not supported
-        crossJoinClause = "JOIN";
-        requiresConditionForCrossJoin = true;
         stringLengthFunction = "LENGTH({0})";
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "TRIM({0})";
 
-        useSchemaName = true;
-        supportsSelectForUpdate = true;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
         rangePosition = RANGE_POST_LOCK;
         supportsDeferredConstraints = false;
 
-        blobTypeName = "BLOB";
-        doubleTypeName = "DOUBLE";
-
         supportsNullTableForGetPrimaryKeys = true;
         supportsNullTableForGetIndexInfo = true;
-
-        requiresCastForMathFunctions = false;
-        requiresCastForComparisons = false;
 
         reservedWordSet.addAll(Arrays.asList(new String[] {
             "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS",
@@ -102,7 +89,9 @@ public class H2Dictionary extends DBDictionary {
 
     @Override
     public int getPreferredType(int type) {
-        return super.getPreferredType(type);
+        if(type == Types.BIT)
+            return Types.BOOLEAN;
+        return type;
     }
 
     @Override
@@ -219,8 +208,11 @@ public class H2Dictionary extends DBDictionary {
         boolean subselect) {
         if (end != Long.MAX_VALUE)
             buf.append(" LIMIT ").appendValue(end - start);
-        if (start != 0)
+        if (start != 0) {
+            if(end == Long.MAX_VALUE)
+                buf.append(" LIMIT 0");
             buf.append(" OFFSET ").appendValue(start);
+        }
     }
 
     @Override
