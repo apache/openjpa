@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.Properties;
+
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 import org.apache.openjpa.kernel.QueryLanguages;
@@ -54,15 +57,42 @@ public class TestUnwrap extends SingleEMFTestCase {
     public void testValidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
         
-        Class[] validCasts = new Class[] {
+        Class<?>[] validCasts = new Class[] {
             org.apache.openjpa.persistence.OpenJPAEntityManager.class,
             org.apache.openjpa.persistence.OpenJPAEntityManagerSPI.class,
             org.apache.openjpa.kernel.DelegatingBroker.class,
             org.apache.openjpa.kernel.Broker.class
         };
-        for (Class c : validCasts) {
+        for (Class<?> c : validCasts) {
             Object unwrapped = em.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
     }
+    
+    /**
+     * Tests a EntityManager can be unwrapped as an instance of a series of 
+     * class or interface. 
+     */
+    public void testInvalidEntityManagerUnwrap() {
+        EntityManager em = emf.createEntityManager();
+        
+        Class<?>[] validCasts = new Class[] {
+            Object.class,
+            Properties.class,
+            null,
+        };
+        for (Class<?> c : validCasts) {
+            try {
+                em.unwrap(c);
+                fail("Expected to fail to unwarp with " + c);
+            } catch (PersistenceException e) {
+                EntityTransaction txn = em.getTransaction();
+                assertFalse(txn.isActive());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                fail("Unexpected exception while unwrapping " + c);
+            }
+        }
+    }
+
 }

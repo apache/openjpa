@@ -473,6 +473,10 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     public <T> T unwrap(Class<T> cls) {
         Object[] delegates = new Object[]{_query.getInnermostDelegate(), 
             _query.getDelegate(), _query, this};
+        if (cls == null || cls == Object.class) {
+            throw new PersistenceException(_loc.get("unwrap-em-invalid", cls)
+                    .toString(), null, this, false);
+        }
         for (Object o : delegates) {
             if (cls.isInstance(o))
                 return (T)o;

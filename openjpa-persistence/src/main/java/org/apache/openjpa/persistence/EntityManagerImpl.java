@@ -1605,6 +1605,10 @@ public class EntityManagerImpl
     public <T> T unwrap(Class<T> cls) {
         Object[] delegates = new Object[]{_broker.getInnermostDelegate(),
             _broker.getDelegate(), _broker, this};
+        if (cls == null || cls == Object.class) {
+            throw new PersistenceException(_loc.get("unwrap-em-invalid", cls)
+                    .toString(), null, this, false);
+        }
         for (Object o : delegates) {
             if (cls.isInstance(o))
                 return (T)o;
