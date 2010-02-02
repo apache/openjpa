@@ -74,6 +74,10 @@ abstract class UnaryOp
     public void setImplicitType(Class type) {
         _cast = type;
     }
+    
+    public boolean getNoParen() {
+        return _noParen;
+    }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         return initializeValue(sel, ctx, flags);

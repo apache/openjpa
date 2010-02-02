@@ -3111,9 +3111,10 @@ public class SelectImpl
                         alias = alias + _dict.getStringVal;
                         
                     String as = null;
-                    if (inner)
-                        as = ((String) alias).replace('.', '_');
-                    else if (_selectAs != null)
+                    if (inner) {
+                        if (alias instanceof String)
+                            as = ((String) alias).replace('.', '_');
+                    } else if (_selectAs != null)
                         as = (String) _selectAs.get(id);
                     else if (id instanceof Value)
                         as = ((Value) id).getAlias();

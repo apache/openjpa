@@ -41,4 +41,22 @@ class Distinct
     protected String getOperator() {
         return "DISTINCT";
     }
+
+    @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql, int index) {
+        Val val = getValue();
+        if (val instanceof PCPath) {
+            boolean noParen = getNoParen();
+            sql.append(getOperator());
+            sql.append(noParen ? " " : "(");
+            ((PCPath)val).appendTo(sel, ctx, state, sql); 
+            sql.addCastForParam(getOperator(), val);
+            if (!noParen)
+                sql.append(")");
+            
+        } else
+            super.appendTo(sel, ctx, state, sql, index);
+    }
+    
 }

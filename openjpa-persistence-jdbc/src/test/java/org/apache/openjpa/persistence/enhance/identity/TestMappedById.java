@@ -206,6 +206,55 @@ public class TestMappedById extends SingleEMFTestCase {
         assertNotNull(newDep);
     }
     
+    public void testCountDistinctMultiCols() {
+        EntityManager em = emf.createEntityManager(); 
+
+        Employee2 emp1 = new Employee2();
+        EmployeeId2 empId1 = new EmployeeId2();
+        empId1.setFirstName("James");
+        empId1.setLastName("Bond");
+        emp1.setEmpId(empId1);
+        
+        Employee2 emp2 = new Employee2();
+        EmployeeId2 empId2 = new EmployeeId2();
+        empId2.setFirstName("James");
+        empId2.setLastName("Obama");
+        emp2.setEmpId(empId2);
+        
+        Dependent2 dep1 = new Dependent2();
+        DependentId2 depId1 = new DependentId2();
+        depId1.setEmpPK(empId1);
+        depId1.setName("Alan");
+        dep1.setId(depId1);
+        
+        Dependent2 dep2 = new Dependent2();
+        DependentId2 depId2 = new DependentId2();
+        depId2.setEmpPK(empId2);
+        depId2.setName("Darren");
+        dep2.setId(depId2);
+        
+        em.persist(emp1);
+        em.persist(emp2);
+        em.persist(dep1);
+        em.persist(dep2);
+        
+        em.getTransaction().begin();
+        em.flush();        
+        em.getTransaction().commit();
+        
+        String[] jpqls = {
+            "SELECT COUNT (DISTINCT d2.emp) FROM Dependent2 d2",
+            "select count (DISTINCT d2) from Dependent2 d2",
+        };
+        
+        for (int i = 0; i < jpqls.length; i++) {
+            Query q = em.createQuery(jpqls[i]) ;
+            Long o = (Long)q.getSingleResult();
+            int count = (int)o.longValue();
+            assertEquals(2, count);
+        }
+    }
+
     public void createObj1() {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
