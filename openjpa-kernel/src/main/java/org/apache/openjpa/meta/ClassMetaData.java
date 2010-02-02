@@ -37,7 +37,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.datacache.AbstractDataCache;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
@@ -46,6 +45,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
@@ -66,6 +66,8 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
 import serp.util.Strings;
+
+import org.apache.openjpa.lib.conf.Configurations;
 
 /**
  * Contains metadata about a persistent type.
@@ -189,6 +191,8 @@ public class ClassMetaData
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
+
+    private Boolean _isCacheable = null; 
 
     /**
      * Constructor. Supply described type and repository.
@@ -1342,7 +1346,7 @@ public class ClassMetaData
             else {
                 _cacheName = DataCache.NAME_DEFAULT;
             }
-            if(!isCacheable(_cacheName)) { 
+            if(!isCacheable()) { 
                _cacheName = null; 
             }
         }
@@ -2363,16 +2367,93 @@ public class ClassMetaData
      * 
      * @return true if the DataCache will accept this type, otherwise false.
      */
-    private boolean isCacheable(String candidateCacheName) {
-        boolean rval = true;
-        DataCache cache =
-            getRepository().getConfiguration().getDataCacheManagerInstance()
-                .getDataCache(candidateCacheName);
-        if (cache != null && (cache instanceof AbstractDataCache)) {
-            AbstractDataCache adc = (AbstractDataCache) cache;
-            if (!adc.isCacheableType(getDescribedType().getName()))
-                rval = false;
+    private boolean isCacheable() {
+        if (_isCacheable != null) {
+            return _isCacheable.booleanValue();
         }
-        return rval;
+        setIsCacheable(true, false);
+        return _isCacheable.booleanValue();
+    }
+    
+    /**
+     * <p>
+     * Set whether or not the class represented by this ClassMetaData object should be included in the datacache. The
+     * arguments provided are *hints* as to whether the class should be included in the datacache, and can be overridden
+     * by the configuration set in openjpa.Datacache.
+     * </p>
+     * 
+     * <p>
+     * Rules for this determination are:
+     * </p>
+     * <ol>
+     * <li>If the class shows up in the list of excluded types, it does not get cached, period.</li>
+     * <li>If the class does not show up in the excluded types, but the included types field is set (ie, has at least
+     * one class), then:
+     * <ol>
+     * <li>If the class is listed in the include list, then it gets cached</li>
+     * <li>If the class is set as cacheable by the @Datacache annotation, it gets cached</li>
+     * <li>If neither a or b are true, then the class does not get cached</li>
+     * </ol>
+     * </li>
+     * <li>If neither the include or exclude lists are defined, then go along with the value passed into the argument,
+     * which is either the default value (true) or whatever was set with the @Datacache annotation</li>
+     * </ol>
+     * 
+     * @param isCacheable
+     *            Hint whether this class should be included in the datacache. Default behavior is yes, though the
+     *            @Datacache annotation can specify if it should not be cached.
+     * @param annotationOverride
+     *            Whether this hint originated from the @Datacache annotation or whether this is the default "yes" hint.
+     *            The origination of the hint influences the decision making process in rule #2b.
+     * 
+     */
+    public void setIsCacheable(boolean isCacheable, boolean annotationOverride) {
+       Options dataCacheOptions = getDataCacheOptions();
+       Set excludedTypes = extractDataCacheClassListing(dataCacheOptions.getProperty("ExcludedTypes", null));
+       Set types = extractDataCacheClassListing(dataCacheOptions.getProperty("Types", null));
+       
+       String className = getDescribedType().getName();
+       if (excludedTypes != null && excludedTypes.contains(className)) {
+           // Rule #1
+           _isCacheable = Boolean.FALSE;
+       } else if (types != null) {
+           // Rule #2
+           if ((annotationOverride && isCacheable) || (types.contains(className))) {
+               _isCacheable = Boolean.TRUE;
+           } else {
+               _isCacheable = Boolean.FALSE;
+           }
+       } else {
+           // Rule #3
+           _isCacheable = isCacheable ? Boolean.TRUE : Boolean.FALSE;
+       }
+    }
+    
+    /**
+     * Extract all of the DataCache plugin options from the configuration
+     * 
+     */
+    private Options getDataCacheOptions() {
+       String dataCacheConfig = getRepository().getConfiguration().getDataCache();
+        Options dataCacheOptions = Configurations.parseProperties(Configurations.getProperties(dataCacheConfig));
+        return dataCacheOptions;
+    }
+    
+    /**
+     * Tool to extract classes defined in the datacache include and exclude list into
+     * individual entries in a Set.
+     * 
+     */
+    private final Set extractDataCacheClassListing(String classList) {
+       if (classList == null || classList.length() == 0) {
+           return null;
+       }
+       
+       HashSet returnSet = new HashSet();
+       String[] entries = classList.split(";");
+       for (int index = 0; index < entries.length; index++) {
+           returnSet.add(entries[index]);
+       }
+       return returnSet;
     }
 }
