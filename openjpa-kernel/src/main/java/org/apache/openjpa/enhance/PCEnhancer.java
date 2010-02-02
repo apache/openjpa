@@ -3714,7 +3714,8 @@ public class PCEnhancer {
             v.setTransient(true);
             loadManagedInstance(code, true);
             code.constant().setValue(1);
-            addSetManagedValueCode(code, v);   
+            // pcVersionInit = true;
+            putfield(code, null, v.getName(), v.getDeclaredType());   
         }
         code.vreturn();
 

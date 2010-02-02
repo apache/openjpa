@@ -75,6 +75,14 @@ public class TestDetachNoStateField extends SingleEMFTestCase {
 
     }
 
+    /**
+     * This testcase was added for OPENJPA-1482.
+     */
+    public void testSetVersionPropertyAccess() {
+        NoDetachedStateEntityPropertyAccess entity = new NoDetachedStateEntityPropertyAccess();
+        entity.setVersion(1);
+    }
+    
     void loadDB() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
