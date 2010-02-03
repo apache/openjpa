@@ -1990,7 +1990,7 @@ public class SelectImpl
         if (pj != null && pj.path() != null)
             key = new Key(pj.path().toString(), key);
 
-        if (_ctx != null)
+        if (_ctx != null && (_parent != null || _subsels != null))
             i = findAliasForQuery(table, pj, key, create);
 
         if (i != null)
