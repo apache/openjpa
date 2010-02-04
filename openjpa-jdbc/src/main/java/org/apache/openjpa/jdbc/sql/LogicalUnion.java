@@ -443,6 +443,14 @@ public class LogicalUnion
             throw new UnsupportedException(_loc.get("union-element"));
         }
 
+        public void setHasSubselect(boolean hasSub) {
+            sel.setHasSubselect(hasSub);
+        }
+        
+        public boolean getHasSubselect() {
+            return sel.getHasSubselect();    
+        }
+        
         public Select getFromSelect() {
             return null;
         }

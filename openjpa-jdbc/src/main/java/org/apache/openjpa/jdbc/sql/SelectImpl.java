@@ -158,6 +158,7 @@ public class SelectImpl
     private List _subsels = null;
     private SelectImpl _parent = null;
     private String _subPath = null;
+    private boolean _hasSub = false;
 
     // from select if this select selects from a tmp table created by another
     private SelectImpl _from = null;
@@ -557,6 +558,14 @@ public class SelectImpl
             else
                 _joinSyntax = _parent._joinSyntax;
         }
+    }
+    
+    public void setHasSubselect(boolean hasSub) {
+        _hasSub = hasSub;
+    }
+    
+    public boolean getHasSubselect() {
+        return _hasSub;    
     }
     
     public Map getAliases() {
@@ -1990,8 +1999,9 @@ public class SelectImpl
         if (pj != null && pj.path() != null)
             key = new Key(pj.path().toString(), key);
 
-        if (_ctx != null && (_parent != null || _subsels != null))
+        if (_ctx != null && (_parent != null || _subsels != null || _hasSub)) {
             i = findAliasForQuery(table, pj, key, create);
+        }
 
         if (i != null)
             return i.intValue();

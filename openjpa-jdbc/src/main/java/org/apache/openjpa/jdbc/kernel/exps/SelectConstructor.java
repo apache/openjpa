@@ -166,7 +166,9 @@ public class SelectConstructor
                 subsel.setParent(sel, subquery.getCandidateAlias());
             }
         }
-     
+        if (HasContainsExpressionVisitor.hasContains(exps.filter)) {
+            sel.setHasSubselect(true);
+        }
         initialize(sel, ctx, exps, state);
 
         if (!sel.getAutoDistinct()) {
