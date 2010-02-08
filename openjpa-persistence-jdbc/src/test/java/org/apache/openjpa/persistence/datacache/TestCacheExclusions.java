@@ -30,7 +30,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
-public class TestCacheExclusions extends PersistenceTestCase {
+public abstract class TestCacheExclusions extends PersistenceTestCase {
 
     private OpenJPAEntityManagerFactorySPI emf = null;
 
@@ -174,7 +174,8 @@ public class TestCacheExclusions extends PersistenceTestCase {
         Class<?>[] includedTypes, Class<?>[] excludedTypes) {
         StringBuilder includes = new StringBuilder();
         if (includedTypes != null && includedTypes.length > 0) {
-            includes.append("Types=");
+            includes.append(getTypesIndicator());
+            includes.append("=");
             for (Class<?> c : includedTypes) {
                 includes.append(c.getName());
                 includes.append(_tSep);
@@ -183,7 +184,8 @@ public class TestCacheExclusions extends PersistenceTestCase {
         }
         StringBuilder excludes = new StringBuilder();
         if (excludedTypes != null && excludedTypes.length > 0) {
-            excludes.append("ExcludedTypes=");
+            excludes.append(getExcludedTypesIndicator());
+            excludes.append("=");
             for (Class<?> c : excludedTypes) {
                 excludes.append(c.getName());
                 excludes.append(_tSep);
@@ -230,4 +232,7 @@ public class TestCacheExclusions extends PersistenceTestCase {
                 items[i].getId()));
         }
     }
+    
+    abstract String getTypesIndicator();
+    abstract String getExcludedTypesIndicator(); 
 }
