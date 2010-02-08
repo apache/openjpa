@@ -26,6 +26,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -398,7 +399,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
     
     /**
-     * Create necessary schemas if running on PostgreSQL as it does
+     * Create necessary schemas if running on PostgreSQL or H2 as they do
      * not create them automatically.
      * Oracle and MySQL also don't create schemas automatically but
      * we give up as they treat schemas in special ways.
@@ -409,7 +410,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         DBDictionary dict = ((JDBCConfiguration) em.getConfiguration())
             .getDBDictionaryInstance();
 
-        if (!(dict instanceof PostgresDictionary)) {
+        if (!(dict instanceof PostgresDictionary || dict instanceof H2Dictionary)) {
             closeEMF(emf);
             return;
         }

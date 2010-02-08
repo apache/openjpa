@@ -523,7 +523,7 @@ openjpa.ConnectionURL: jdbc:h2:DB_NAME
             <itemizedlist>
                 <listitem>
                     <para>
-H2 does not support cross joins
+None
                     </para>
                 </listitem>
             </itemizedlist>
