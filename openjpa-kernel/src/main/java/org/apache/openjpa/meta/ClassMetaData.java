@@ -2463,8 +2463,9 @@ public class ClassMetaData
      */
     public void setIsCacheable(boolean isCacheable, boolean annotationOverride) {
     	Options dataCacheOptions = getDataCacheOptions();
-    	Set excludedTypes = extractDataCacheClassListing(dataCacheOptions.getProperty("ExcludedTypes", null));
-    	Set types = extractDataCacheClassListing(dataCacheOptions.getProperty("Types", null));
+        Set excludedTypes =
+            extractDataCacheClassListing(dataCacheOptions.getProperty("ExcludedTypes", "excludedTypes", null));
+        Set types = extractDataCacheClassListing(dataCacheOptions.getProperty("Types", "types", null));
     	
     	String className = getDescribedType().getName();
     	if (excludedTypes != null && excludedTypes.contains(className)) {
