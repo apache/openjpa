@@ -59,8 +59,7 @@ public class TestSimpleXmlEntity
             fail("should not be able to execute query using short class name " +
                 "for entity that has an entity name specified");
         } catch (ArgumentException ae) {
-            assertTrue(
-                ae.getMessage().indexOf("Perhaps you meant SimpleXml,") != -1);
+            assertMarkerInErrorMessage(ae, "The name \"SimpleXmlEntity\" is not a recognized entity");
         }
     }
 
@@ -74,8 +73,16 @@ public class TestSimpleXmlEntity
             fail("should not be able to execute query using short class name " +
                 "for entity that has an entity name specified");
         } catch (ArgumentException ae) {
-            assertTrue(
-                ae.getMessage().indexOf("Perhaps you meant SimpleXml,") != -1);
+            assertMarkerInErrorMessage(ae, "The name \"SimpleXmlEntity\" is not a recognized entity");
         }
+    }
+    
+    /**
+     * Asserts that the given marker string appears in the error message.
+     * Not a kosher way to verify -- but ...
+     */
+    void assertMarkerInErrorMessage(Exception ex, String marker) {
+        String message = ex.getMessage();
+        assertTrue("Can not find [" + marker + "] in the message [" + message + "]", message.indexOf(marker) != -1);
     }
 }
