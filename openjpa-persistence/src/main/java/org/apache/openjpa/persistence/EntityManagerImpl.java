@@ -1690,7 +1690,7 @@ public class EntityManagerImpl
             if (!setKernelProperty(this.getFetchPlan(), prop, value)) {
                 Log log = getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
                 if (log.isWarnEnabled()) {
-                    log.warn(_loc.get("bad-em-prop", prop, value == null ? "" : value.getClass()+":" + value));
+                    log.warn(_loc.get("ignored-em-prop", prop, value == null ? "" : value.getClass()+":" + value));
                  }
             }
         }
