@@ -135,13 +135,27 @@
         <class>org.apache.openjpa.integration.validation.ConstraintDates</class>
         <class>org.apache.openjpa.integration.validation.ConstraintPattern</class>
         <class>org.apache.openjpa.integration.validation.Person</class>
-        <class>org.apache.openjpa.integration.validation.Address</class>        
+        <class>org.apache.openjpa.integration.validation.Address</class> 
+        <class>org.apache.openjpa.integration.validation.Book</class>       
         <validation-mode>AUTO</validation-mode>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" 
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="validation-pu">
+        <class>org.apache.openjpa.integration.validation.Book</class> 
+        <class>org.apache.openjpa.integration.validation.Publisher</class>      
+        <validation-mode>AUTO</validation-mode>
+    </persistence-unit>
+    
+    <persistence-unit name="non-validation-pu">
+        <class>org.apache.openjpa.integration.validation.Book</class> 
+        <class>org.apache.openjpa.integration.validation.Publisher</class>         
+        <validation-mode>NONE</validation-mode>
+    </persistence-unit>
+    
     
     <persistence-unit name="XMLConstraintPU">
         <description>Make sure the mapping file and class listings match the same PU
