@@ -187,7 +187,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.close();
     }
     
-    public void testEmbeddedIdContainedInIdClass() {
+    public void testEmbeddedIdNestedInIdClass() {
         EntityManager em = emf.createEntityManager();
         EmployeeId5 eId1 = new EmployeeId5("Java", "Duke");
         Employee5 employee1 = new Employee5(eId1);
@@ -204,6 +204,12 @@ public class TestMappedById extends SingleEMFTestCase {
         DependentId5 depId1 = new DependentId5("1", eId1);
         Dependent5 newDep = em.find(Dependent5.class, depId1);
         assertNotNull(newDep);
+        em.getTransaction().begin();
+        em.remove(newDep);
+        em.getTransaction().commit();
+        newDep = em.find(Dependent5.class, depId1);
+        assertNull(newDep);        
+        em.close();
     }
     
     public void testCountDistinctMultiCols() {

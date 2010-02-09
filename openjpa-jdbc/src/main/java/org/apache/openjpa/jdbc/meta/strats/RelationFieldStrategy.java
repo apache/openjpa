@@ -1012,7 +1012,9 @@ public class RelationFieldStrategy
                 getPrimaryKeyIndex()];
         } else if (relmapping.getObjectIdType() == ObjectId.class && 
             relmapping.getPrimaryKeyFieldMappings()[0].getValueMapping().isEmbedded()) {
-            return j.getJoinValue(savedFieldVal, col, store);
+            if (fieldVal == null)
+                return j.getJoinValue(savedFieldVal, col, store);
+            return j.getJoinValue(fieldVal, col, store);
         }
         return j.getJoinValue(fieldVal, col, store);
     }
