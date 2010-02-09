@@ -238,6 +238,12 @@ public class Filters {
             return !strict;
         if (c1 == String.class && isTemporalType(c2))
             return true;
+        if ((c1 == java.util.Date.class ||c1 == java.sql.Time.class) && c2 == java.sql.Timestamp.class)
+            return false;
+        if ((c1 == java.util.Date.class ||c1 == java.sql.Timestamp.class) && c2 == java.sql.Time.class)
+            return false;
+        if (isTemporalType(c1) && isTemporalType(c2))
+            return true;
         return false;
     }
 
@@ -972,7 +978,8 @@ public class Filters {
         return c != null 
             && (Date.class.isAssignableFrom(c) 
              || Time.class.isAssignableFrom(c) 
-             || Timestamp.class.isAssignableFrom(c));
+             || Timestamp.class.isAssignableFrom(c)
+             || Calendar.class.isAssignableFrom(c));
     }
     
     public static Object getDefaultForNull(Class<?> nType) {
