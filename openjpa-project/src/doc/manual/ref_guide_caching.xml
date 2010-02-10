@@ -260,7 +260,7 @@ See the <ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
 for more information on the <classname>DataCache</classname> annotation.
             </para>
             <para>
-            <indexterm>mvn clean deploy -Pjavadoc-profile,docbook-profile,sign-release
+            <indexterm>
                 <primary>
                     caching
                 </primary>
