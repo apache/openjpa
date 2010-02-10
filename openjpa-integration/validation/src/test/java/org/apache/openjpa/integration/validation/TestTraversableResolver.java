@@ -19,6 +19,8 @@
 package org.apache.openjpa.integration.validation;
 
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,13 +29,15 @@ import javax.validation.Path;
 import javax.validation.TraversableResolver;
 
 import junit.framework.TestCase;
-
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.validation.TraversableResolverImpl;
-
-import org.hibernate.validator.engine.PathImpl;
+// The following 2 are dynamically loaded by loadPathImpl() from setUp()
+// import org.hibernate.validator.engine.PathImpl;
+// import com.agimatec.validation.jsr303.util.PathImpl;
 
 /**
  * Test the TraversableResolver methods
@@ -50,9 +54,10 @@ import org.hibernate.validator.engine.PathImpl;
  */
 public class TestTraversableResolver extends TestCase {
     private static OpenJPAEntityManagerFactorySPI emf = null;
-    private OpenJPAEntityManager em;
+    private Log log = null;
+    private OpenJPAEntityManager em = null;
     private Book book;
-    
+
     /**
      * Create a book with a title that is too long, and the embedded
      * publisher has a name that is also too long. However, use a
@@ -62,9 +67,7 @@ public class TestTraversableResolver extends TestCase {
      */
     @Override
     public void setUp() {
-        createEMF("non-validation-pu", "SchemaAction='drop,add')");
         createBook(1, "long title", 234);
-        emf.close();
     }
     
     private void createEMF(String pu, String schemaAction) {
@@ -76,6 +79,19 @@ public class TestTraversableResolver extends TestCase {
             "org/apache/openjpa/integration/validation/persistence.xml",
             map);
         assertNotNull(emf);
+        log = emf.getConfiguration().getLog("Tests");
+    }
+
+    private void closeEMF() {
+        log = null;
+        if (em != null) {
+            em.close();
+            em = null;
+        }
+        if (emf != null) {
+            emf.close();
+            emf = null;
+        }
     }
     
     /**
@@ -102,8 +118,6 @@ public class TestTraversableResolver extends TestCase {
             exceptionCaught = true;
         }
         assertTrue(exceptionCaught);
-        em.close();
-        emf.close();
     }
     
     /**
@@ -126,8 +140,7 @@ public class TestTraversableResolver extends TestCase {
             exceptionCaught = true;
         }
         assertFalse(exceptionCaught);
-        em.close();
-        emf.close();
+        closeEMF();
     }
     
     /**
@@ -154,8 +167,7 @@ public class TestTraversableResolver extends TestCase {
             exceptionCaught = true;
         }
         assertTrue(exceptionCaught);
-        em.close();
-        emf.close();
+        closeEMF();
     }
     
     /**
@@ -168,14 +180,14 @@ public class TestTraversableResolver extends TestCase {
         em.getTransaction().begin();
         book = em.find(org.apache.openjpa.integration.validation.Book.class, 1);
         assertNotNull(book);
-        PathImpl path = PathImpl.createPathFromString("org.apache.openjpa.integration.validation.Book.pages");
-        Path.Node node = path.getLeafNode();
+        // PathImpl path = PathImpl.createPathFromString("org.apache.openjpa.integration.validation.Book.pages");
+        // Path.Node node = path.getLeafNode();
+        Path.Node node = getLeafNodeFromString("org.apache.openjpa.integration.validation.Book.pages");
         TraversableResolver tr = new TraversableResolverImpl();
         assertTrue(tr.isReachable(book, node, Book.class, null, ElementType.METHOD));
         assertTrue(tr.isCascadable(book, node, Book.class, null, ElementType.METHOD));
         em.getTransaction().commit();
-        em.close();
-        emf.close();
+        closeEMF();
     }
     
     /**
@@ -188,16 +200,17 @@ public class TestTraversableResolver extends TestCase {
         em.getTransaction().begin();
         book = em.find(org.apache.openjpa.integration.validation.Book.class, 1);
         assertNotNull(book);
-        PathImpl path = PathImpl.createPathFromString("org.apache.openjpa.integration.validation.Book.title");
-        Path.Node node = path.getLeafNode();
+        // PathImpl path = PathImpl.createPathFromString("org.apache.openjpa.integration.validation.Book.title");
+        // Path.Node node = path.getLeafNode();
+        Path.Node node = getLeafNodeFromString("org.apache.openjpa.integration.validation.Book.title");
         TraversableResolver tr = new TraversableResolverImpl();
         assertFalse(tr.isReachable(book, node, Book.class, null, ElementType.FIELD));
         em.getTransaction().commit();
-        em.close();
-        emf.close();
+        closeEMF();
     }
     
     private void createBook(int id, String title, int pages) {
+        createEMF("non-validation-pu", "SchemaAction='drop,add')");
         em = emf.createEntityManager();
         book = new Book(id);
         book.setTitle(title);
@@ -209,6 +222,42 @@ public class TestTraversableResolver extends TestCase {
         em.getTransaction().begin();
         em.persist(book);
         em.getTransaction().commit();
-        em.close();
+        closeEMF();
     }
+
+    private Path.Node getLeafNodeFromString(String s) {
+        Class<?> PathImpl = null;
+        Path.Node node = null;
+
+        // dynamically load PathImpl depending on the Bean Validation provider
+        try {
+            PathImpl = Class.forName("org.hibernate.validator.engine.PathImpl",
+                true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+        } catch (ClassNotFoundException e) {
+            log.trace("getLeafNodeFromPath: Did not find org.hibernate.validator.engine.PathImpl");
+        }
+        if (PathImpl == null) {
+            try {
+                PathImpl = Class.forName("com.agimatec.validation.jsr303.util.PathImpl",
+                    true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+            } catch (ClassNotFoundException e) {
+                log.trace("getLeafNodeFromPath: Did not find com.agimatec.validation.jsr303.util.PathImpl");
+            }
+        }
+        assertNotNull(PathImpl);
+        try {
+            Method createPathFromString = PathImpl.getMethod("createPathFromString", String.class);
+            assertNotNull(createPathFromString);
+            Method getLeafNode = PathImpl.getMethod("getLeafNode");
+            assertNotNull(getLeafNode);
+            Object path = createPathFromString.invoke(null, s);
+            node = (Path.Node) getLeafNode.invoke(path, null);
+        } catch (NoSuchMethodException e) {
+        } catch (IllegalAccessException ae) {
+        } catch (java.lang.reflect.InvocationTargetException te) {
+        }
+        return node;
+    }
+
 }
+
