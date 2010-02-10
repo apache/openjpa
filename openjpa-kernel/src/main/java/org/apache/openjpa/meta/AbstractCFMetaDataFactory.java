@@ -39,6 +39,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.meta.ClasspathMetaDataIterator;
 import org.apache.openjpa.lib.meta.FileMetaDataIterator;
@@ -76,6 +78,9 @@ public abstract class AbstractCFMetaDataFactory
     protected Collection<String> cpath = null;
 
     private Set<String> _typeNames = null;
+    public static final String PERSISTENCE_UNIT_ROOT_URL = "PersistenceUnitRootUrl";
+    public static final String MAPPING_FILE_NAMES = "MappingFileNames";
+    public static final String JAR_FILE_URLS = "JarFiles";
 
     /**
      * Set of {@link File}s of metadata files or directories supplied by user.
@@ -752,8 +757,52 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-resource", rsrc));
                     mitr = new ResourceMetaDataIterator(rsrc, loader);
+                    OpenJPAConfiguration conf = repos.getConfiguration();
+                    Map peMap = null;
+                    if (conf instanceof OpenJPAConfigurationImpl)
+                        peMap = ((OpenJPAConfigurationImpl)conf).getPersistenceEnvironment();
+                    URL puUrl = peMap == null ? null : (URL) peMap.get(PERSISTENCE_UNIT_ROOT_URL);
+                    List<String> mappingFileNames = 
+                        peMap == null ? null : (List<String>) peMap.get(MAPPING_FILE_NAMES);
+                    List<URL> jars = peMap == null ? null : (List<URL>)peMap.get(JAR_FILE_URLS);
+                    String puUrlString = puUrl == null ? null : puUrl.toString();
+                    if (log.isTraceEnabled())
+                        log.trace(_loc.get("pu-root-url", puUrlString));
+
+                    List<URL> urls = new ArrayList<URL>(3);
                     while (mitr.hasNext()) {
                         url = (URL) mitr.next();
+                        String urlString = url.toString();
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("resource-url", urlString));
+                        if (peMap != null) {
+                            if (puUrlString != null && urlString.indexOf(puUrlString) != -1) 
+                                urls.add(url);
+                            if (mappingFileNames != null && mappingFileNames.size() != 0) {
+                                for (String mappingFileName : mappingFileNames) {
+                                    if (log.isTraceEnabled())
+                                        log.trace(_loc.get("mapping-file-name", mappingFileName));
+                                    if (urlString.indexOf(mappingFileName) != -1)
+                                        urls.add(url);
+                                }
+                            }
+
+                            if (jars != null && jars.size() != 0) {
+                                for (URL jarUrl : jars) {
+                                    if (log.isTraceEnabled())
+                                        log.trace(_loc.get("jar-file-url", jarUrl));
+                                    if (urlString.indexOf(jarUrl.toString()) != -1)
+                                        urls.add(url);
+                                }
+                            }
+                        } else {
+                            urls.add(url);
+                        }
+                    }
+                    mitr.close();
+
+                    for (Object obj : urls) {
+                        url = (URL) obj;
                         clss = cparser.parseTypeNames(new URLMetaDataIterator
                             (url));
                         List<String> newNames = Arrays.asList(clss);
@@ -763,7 +812,6 @@ public abstract class AbstractCFMetaDataFactory
                         names.addAll(newNames);
                         mapPersistentTypeNames(url, clss);
                     }
-                    mitr.close();
                 }
             }
         }

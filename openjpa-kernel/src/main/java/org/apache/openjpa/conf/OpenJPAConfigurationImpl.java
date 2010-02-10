@@ -179,7 +179,7 @@ public class OpenJPAConfigurationImpl
     private Collection<String> supportedOptions = new HashSet<String>(33);
     private final StoreFacadeTypeRegistry _storeFacadeRegistry = new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
-        
+    private Map<String, Object> _peMap; //contains persistence environment-specific info    
 
     /**
      * Default constructor. Attempts to load global properties.
@@ -1726,6 +1726,14 @@ public class OpenJPAConfigurationImpl
 
     public void setCacheDistributionPolicyInstance(CacheDistributionPolicy policy) {
         cacheDistributionPolicyPlugin.set(policy);
+    }
+
+    public void setPersistenceEnvironment(Map<String, Object> peMap) {
+        this._peMap = peMap;
+    }
+
+    public Map<String, Object> getPersistenceEnvironment() {
+        return _peMap;
     }
 }
 

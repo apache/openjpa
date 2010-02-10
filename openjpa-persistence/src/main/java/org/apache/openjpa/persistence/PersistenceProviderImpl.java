@@ -22,6 +22,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.AccessController;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
@@ -46,6 +47,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
@@ -186,6 +188,9 @@ public class PersistenceProviderImpl
                     log.warn(_loc.get("transformer-registration-error", pui));
                 }
             }
+            OpenJPAConfiguration conf = factory.getConfiguration();
+            setPersistenceEnvironmentInfo(conf, pui);
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
@@ -203,6 +208,20 @@ public class PersistenceProviderImpl
         }
     }
 
+    public void setPersistenceEnvironmentInfo(OpenJPAConfiguration conf, PersistenceUnitInfo pui) {
+        // OPENJPA-1460 Fix scope visibility of orm.xml when it is packaged in both ear file and war file
+        if (conf instanceof OpenJPAConfigurationImpl) {
+            Map<String, Object> peMap =((OpenJPAConfigurationImpl)conf).getPersistenceEnvironment();
+            if (peMap == null) {
+                peMap = new HashMap<String, Object>();
+                ((OpenJPAConfigurationImpl)conf).setPersistenceEnvironment(peMap);
+            }
+            peMap.put(AbstractCFMetaDataFactory.PERSISTENCE_UNIT_ROOT_URL, pui.getPersistenceUnitRootUrl());
+            peMap.put(AbstractCFMetaDataFactory.MAPPING_FILE_NAMES, pui.getMappingFileNames());
+            peMap.put(AbstractCFMetaDataFactory.JAR_FILE_URLS, pui.getJarFileUrls());
+        }
+    }
+    
     /*
      * Returns a ProviderUtil for use with entities managed by this
      * persistence provider.
