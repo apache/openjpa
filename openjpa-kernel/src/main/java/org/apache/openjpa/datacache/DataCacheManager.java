@@ -20,12 +20,16 @@ package org.apache.openjpa.datacache;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
 /**
- * Manages the system's data and query caches. You can
- * retrieve the data cache manager from the {@link OpenJPAConfiguration}.
+ * Manages the system's data and query caches. You can retrieve the data cache manager from the 
+ * {@link OpenJPAConfiguration#getDataCacheManagerInstance()}.
  * <br>
+ * Manages zero or more individual {@link DataCache caches} or partitions. Each individual partition
+ * is identified by a string-based identifier.
+ *  
  * Decides eligibility to cache for managed types.
  * 
  *
@@ -95,22 +99,6 @@ public interface DataCacheManager {
      */
     public CacheDistributionPolicy getDistributionPolicy();
     
-    /**
-     * Set the types that are explicitly excluded from being cached.
-     * 
-     * @param typeNames semicolon separated fully qualified class names.
-     * @since 2.0.0
-     */
-    public void setExcludedTypes(String typeNames);
-    
-    /**
-     * Set the types that are explicitly included to be cached.
-     * 
-     * @param typeNames semicolon separated fully qualified class names.
-     * @since 2.0.0
-     */
-    public void setIncludedTypes(String typeNames);
-
     /**
      * Close all caches.
      */

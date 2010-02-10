@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.DataCacheManager;
@@ -93,6 +94,7 @@ public class OpenJPAConfigurationImpl
     public BrokerValue brokerPlugin;
     public ObjectValue dataCachePlugin;
     public ObjectValue dataCacheManagerPlugin;
+    public ObjectValue cacheDistributionPolicyPlugin;
     public IntValue dataCacheTimeout;
     public ObjectValue queryCachePlugin;
     public BooleanValue dynamicDataStructs;
@@ -229,6 +231,15 @@ public class OpenJPAConfigurationImpl
         dataCacheManagerPlugin.setString(aliases[0]);
         dataCacheManagerPlugin.setInstantiatingGetter("getDataCacheManager");
 
+        cacheDistributionPolicyPlugin = addPlugin("CacheDistributionPolicy", true);
+        aliases = new String[] {
+                "default",    "org.apache.openjpa.datacache.DefaultCacheDistributionPolicy",
+                "type-based", "org.apache.openjpa.datacache.TypeBasedCacheDistributionPolicy"};
+        cacheDistributionPolicyPlugin.setAliases(aliases);
+        cacheDistributionPolicyPlugin.setDefault(aliases[0]);
+        cacheDistributionPolicyPlugin.setString(aliases[0]);
+        cacheDistributionPolicyPlugin.setInstantiatingGetter("getCacheDistributionPolicy");
+        
         dataCachePlugin = addPlugin("DataCache", false);
         aliases = new String[] { 
             "false", null, 
@@ -1693,6 +1704,28 @@ public class OpenJPAConfigurationImpl
 
     public String getDataCacheMode() {
         return dataCacheMode.getString();
+    }
+    
+
+    public String getCacheDistributionPolicy() {
+        return cacheDistributionPolicyPlugin.getString();
+    }
+
+    public CacheDistributionPolicy getCacheDistributionPolicyInstance() {
+        CacheDistributionPolicy policy = (CacheDistributionPolicy) cacheDistributionPolicyPlugin.get();
+        if (policy == null) {
+            policy =  (CacheDistributionPolicy) 
+                cacheDistributionPolicyPlugin.instantiate(CacheDistributionPolicy.class, this);
+        }
+        return policy;
+    }
+
+    public void setCacheDistributionPolicy(String policyPlugin) {
+        cacheDistributionPolicyPlugin.setString(policyPlugin);
+    }
+
+    public void setCacheDistributionPolicyInstance(CacheDistributionPolicy policy) {
+        cacheDistributionPolicyPlugin.set(policy);
     }
 }
 

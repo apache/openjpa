@@ -150,10 +150,14 @@ openjpa.RemoteCommitProvider</literal></link> property to <literal>sjvm
 &lt;property name="openjpa.RemoteCommitProvider" value="sjvm"/&gt;
 </programlisting>
             </example>
+
+<section id="ref_guide_cache_distribution">
+   <title>"Distributing instanes across cache partitions"</title>
             <para>
+            
 OpenJPA also supports a partitioned cache configuration where the cached
 instances can be distributed across partitions by a application-defined
-policy. Each partition is a data cache by itself, identified by its name and can
+policy. Each partition behaves as a data cache by itself, identified by its name and can
 configured individually. The distribution policy 
 determines the specific partition that stores the state of a managed instance.
 The default distribution policy distributes the instances by their type
@@ -169,7 +173,7 @@ as follows:
                     Partitioned Data Cache
                 </title>
 <programlisting>
-&lt;property name="openjpa.DataCacheManager" value="DistributionPolicy=org.acme.foo.DistributionPolicy"/&gt;
+&lt;property name="openjpa.CacheDistributionPolicy" value="org.acme.foo.DistributionPolicy"/&gt;
 &lt;property name="openjpa.DataCache" value="partitioned(PartitionType=concurrent,partitions=
                 '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/&gt;
 </programlisting>
