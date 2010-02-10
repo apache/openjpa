@@ -194,17 +194,20 @@ public class TestCacheExclusions extends PersistenceTestCase {
         }
         StringBuilder dataCacheSettings = new StringBuilder();
         dataCacheSettings.append("default");
+        
+        StringBuilder policySettings = new StringBuilder();
         if (includes.length() > 0 || excludes.length() > 0) {
-            dataCacheSettings.append("(");
-            dataCacheSettings.append(includes);
+            policySettings.append("type-based(");
+            policySettings.append(includes);
             if (includes.length() > 0 && excludes.length() > 0) {
-                dataCacheSettings.append(",");
+                policySettings.append(",");
             }
-            dataCacheSettings.append(excludes);
-            dataCacheSettings.append(")");
+            policySettings.append(excludes);
+            policySettings.append(")");
         }
         Map<String, String> props = new HashMap<String, String>();
         props.put("openjpa.DataCacheManager", dataCacheSettings.toString());
+        props.put("openjpa.CacheDistributionPolicy", policySettings.toString());
         props.put("openjpa.DataCache", "true");
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         props.put("openjpa.MetaDataFactory", "jpa(Types="

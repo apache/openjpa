@@ -23,6 +23,7 @@ import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.PartitionedDataCache;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.UserException;
@@ -32,8 +33,8 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         super.setUp("openjpa.DataCache", "partitioned(PartitionType=concurrent,partitions="+
                 "'(name=a,cacheSize=100),(name=b,cacheSize=200)')",
                     "openjpa.RemoteCommitProvider", "sjvm",
-        "openjpa.DataCacheManager", 
-        "DistributionPolicy=org.apache.openjpa.persistence.datacache.TestPartitionedDataCache$TestPolicy");
+        "openjpa.CacheDistributionPolicy",
+        "org.apache.openjpa.persistence.datacache.TestPartitionedDataCache$TestPolicy");
     }
     
     public void testPropertyParsing() {
@@ -76,7 +77,10 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         
     }
     
-    public void testPolicy() {
+    public void testPolicyConfiguration() {
+        Object v = emf.getConfiguration().toProperties(true).get("openjpa.CacheDistributionPolicy");
+        String policyPlugin = emf.getConfiguration().getCacheDistributionPolicy();
+        CacheDistributionPolicy policyInstance = emf.getConfiguration().getCacheDistributionPolicyInstance();
         CacheDistributionPolicy policy = emf.getConfiguration().getDataCacheManagerInstance().getDistributionPolicy();
         assertNotNull(policy);
         assertTrue(policy.getClass() + " not TestPolicy", policy instanceof TestPolicy);
@@ -104,6 +108,15 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
 
         public String selectCache(OpenJPAStateManager sm, Object context) {
             return "a";
+        }
+
+        public void endConfiguration() {
+        }
+
+        public void setConfiguration(Configuration conf) {
+        }
+
+        public void startConfiguration() {
         }
         
     }
