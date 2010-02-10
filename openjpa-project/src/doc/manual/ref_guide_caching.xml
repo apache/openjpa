@@ -178,6 +178,7 @@ as follows:
                 '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/&gt;
 </programlisting>
             </example>
+</section>
             <para>
 The distribution policy is configured by a full-qualified class name that implements 
 <literal>org.apache.openjpa.datacahe.CacheDistributionPolicy</literal>. The partitions
@@ -264,7 +265,10 @@ public class Employee {
                 <primary>caching</primary>
                 <secondary>exclusions</secondary>
             </indexterm>
-            Entities may be explicitly excluded from the cache by providing a list of fully qualified class names in the ExcludedTypes argument. The entities provided via ExcludedTypes will not be cached regardless of the @DataCache annotation. 
+            Entities may be explicitly excluded from the cache by providing a 
+            list of fully qualified class names in the ExcludedTypes argument. 
+            The entities provided via ExcludedTypes will not be cached 
+            regardless of the @DataCache annotation. 
             </para>
             <example id="ex_exclude_types_from_cache">
                 <title>
@@ -273,7 +277,7 @@ public class Employee {
                 <para>
                     Exclude entities foo.bar.Person and foo.bar.Employee from the cache. 
                     <programlisting>
-                    &lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
+&lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
                     </programlisting>
                 </para>
             </example>
@@ -283,7 +287,11 @@ public class Employee {
                 <primary>caching</primary>
                 <secondary>inclusions</secondary>
             </indexterm>
-            Entities may be explicitly included from the cache by providing a list of fully qualified class names in the Types argument. The entities provided via ExcludedTypes will not cached regardless of the @DataCache annotation. Any entities which are not included in this list will not be cached. 
+            Entities may be explicitly included from the cache by providing a
+            list of fully qualified class names in the Types argument.
+            The entities provided via ExcludedTypes will not cached regardless
+            of the @DataCache annotation. Any entities which are not included 
+            in this list will not be cached. 
             </para>
             <example id="ex_include_types_in_cache">
                 <title>
@@ -292,7 +300,7 @@ public class Employee {
                 <para>
                     Include only entity foo.bar.FullTimeEmployee from the cache. 
                     <programlisting>
-                    &lt;property name="openjpa.DataCache" value="true(Types=foo.bar.FullTimeEmployee)"/&gt;
+&lt;property name="openjpa.DataCache" value="true(Types=foo.bar.FullTimeEmployee)"/&gt;
                     </programlisting>
                 </para>
             </example>
