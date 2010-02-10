@@ -21,6 +21,7 @@ package org.apache.openjpa.conf;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheMode;
@@ -1799,5 +1800,42 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public String getDataCacheMode();
+    
+    /**
+     * Gets the policy object that determines distribution of cached instances
+     * across named partitions of L2 data cache.
+     * 
+     * @return an implementation of {@link CacheDistributionPolicy}.
+     * @since 2.0.0
+     */
+    public CacheDistributionPolicy getCacheDistributionPolicyInstance();
+    
+    /**
+     * Sets the policy object that determines distribution of cached instances
+     * across named partitions of L2 data cache.
+     * 
+     * @param policy a non-null implementation of {@link CacheDistributionPolicy}.
+     * @since 2.0.0
+     */
+    public void setCacheDistributionPolicyInstance(CacheDistributionPolicy policy);
+    
+    /**
+     * Gets the plug-in string that described the policy to distribute cached instances
+     * across named partitions of L2 data cache.
+     * 
+     * @return a plug-in string for {@link CacheDistributionPolicy}.
+     * @since 2.0.0
+     */
+    public String getCacheDistributionPolicy();
+    
+    /**
+     * Sets the plug-in string that describes the policy to distribute cached instances
+     * across named partitions of L2 data cache.
+     * 
+     * @param a plug-in string for {@link CacheDistributionPolicy}.
+     * @since 2.0.0
+     */
+    public void setCacheDistributionPolicy(String policyPlugin);
+
 }
 
