@@ -35,8 +35,8 @@ import serp.util.Strings;
  * <br>
  * The policy checks for the given instance by its type whether the class name appears in
  * exclusion or inclusion lists. If the class name appears in exclusion list then the
- * instance is not cached. Otherwise If the class name appears in inclusion list but not in
- * exclusion list, then the instance is cached.
+ * instance is not cached. Otherwise, if an inclusion list exists and the class name appears in inclusion list 
+ * or @DataCache annotation is specified on the class meta data, then the instance is cached.
  *  
  * @author Pinaki Poddar
  *
@@ -85,36 +85,20 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
         return  Collections.unmodifiableSet(set);
     }
 
-    /**
-     * Is the given type cacheable by excludeTypes/includeTypes plug-in properties.
-     *  
-     * @param meta the given type
-     * @return TRUE or FALSE if the type has appeared in the plug-in property.
-     * null otherwise.
-     */
-    private Boolean isCacheableByPlugin(ClassMetaData meta) {
-        String className = meta.getDescribedType().getName();
-        if (_excludedTypes != null && _excludedTypes.contains(className)) {  
-            return Boolean.FALSE;
-        } 
-        if (_includedTypes != null && _includedTypes.contains(className)) {
-            return Boolean.TRUE;
-        }
-        return null;
-    }
-    
-
-    
-    
     @Override
     public String selectCache(OpenJPAStateManager sm, Object context) {
-        Boolean result = isCacheableByPlugin(sm.getMetaData());
-        if (result == null) { // this policy does not know, ask the super class
-            return super.selectCache(sm, context);
-        } else if (Boolean.FALSE.equals(result)) { // must be excluded
+        ClassMetaData meta = sm.getMetaData();
+        String className = meta.getDescribedType().getName();
+        if (_excludedTypes != null && _excludedTypes.contains(className)) {  
             return null;
         } 
-        String name = sm.getMetaData().getDataCacheName();
-        return name == null ? DataCache.NAME_DEFAULT : name;
+        if (_includedTypes != null && !_includedTypes.isEmpty()) {
+            if (_includedTypes.contains(className))
+                return meta.getDataCacheName();
+            return (meta.getDataCacheEnabled()) ? meta.getDataCacheName() : null;
+                
+        } else {
+            return super.selectCache(sm, context);
+        }
     }
 }
