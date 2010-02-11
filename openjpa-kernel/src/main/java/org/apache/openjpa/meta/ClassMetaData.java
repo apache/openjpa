@@ -152,8 +152,7 @@ public class ClassMetaData
     private int _resMode = MODE_NONE;
 
     private Class<?> _type = Object.class;
-    private final Map<String,FieldMetaData> _fieldMap = 
-    	new TreeMap<String,FieldMetaData>();
+    private final Map<String,FieldMetaData> _fieldMap = new TreeMap<String,FieldMetaData>();
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
     private Collection<String> _staticFields = null;
@@ -183,6 +182,9 @@ public class ClassMetaData
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
     private String _cacheName = DEFAULT_STRING; // null implies @DataCache(enabled=false)
+    private boolean _dataCacheEnabled = false;     // true implies the class has been annotated by the user or name of
+                                                // the cache is explicitly set by the user to a null string
+
     private Boolean _cacheEnabled = null;       // denotes status of JPA 2 @Cacheable annotation
     private int _cacheTimeout = Integer.MIN_VALUE;
     private Boolean _detachable = null;
@@ -1429,7 +1431,7 @@ public class ClassMetaData
         }
         return _cacheName;
     }
-
+    
     /**
      * Set the cache name for this class. 
      * 
@@ -1437,6 +1439,16 @@ public class ClassMetaData
      */
     public void setDataCacheName(String name) {
         _cacheName = name;
+        if (name != null)
+            _dataCacheEnabled = true;
+    }
+    
+    /**
+     * Affirms true if this receiver is annotated with @DataCache and is not disabled. 
+     * A separate state variable is necessary besides the name of the cache defaulted to a special string.
+     */
+    public boolean getDataCacheEnabled() {
+        return _dataCacheEnabled;
     }
 
     /**
@@ -2430,6 +2442,7 @@ public class ClassMetaData
         if (_cacheTimeout == Integer.MIN_VALUE)
             _cacheTimeout = meta.getDataCacheTimeout();
         _cacheEnabled = meta.getCacheEnabled();
+        _dataCacheEnabled = meta.getDataCacheEnabled();
         if (_detachable == null)
             _detachable = meta._detachable;
         if (DEFAULT_STRING.equals(_detachState))
