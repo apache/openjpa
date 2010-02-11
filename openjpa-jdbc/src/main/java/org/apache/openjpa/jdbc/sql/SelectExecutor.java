@@ -132,6 +132,7 @@ public interface SelectExecutor {
 
     /**
      * Execute this select in the context of the given store manager.
+     * @deprecated
      */
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         List params) 
@@ -139,6 +140,7 @@ public interface SelectExecutor {
 
     /**
      * Execute this select in the context of the given store manager.
+     * @deprecated
      */
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel, List params)
@@ -148,6 +150,13 @@ public interface SelectExecutor {
      * Execute this select in the context of the given store manager.
      */
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        int lockLevel)
+        int lockLevel) 
         throws SQLException;
+
+    /**
+     * Execute this select in the context of the given store manager.
+     * Affirm if this receiver requires more than one selects to fetch its
+     * data. 
+     */
+    public boolean hasMultipleSelects();
 }
