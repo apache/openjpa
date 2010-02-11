@@ -192,6 +192,15 @@ public class LogicalUnion
                 return false;
         return true;
     }
+    
+    public boolean hasMultipleSelects() {
+        for (UnionSelect sel : sels) {
+            if (sel.hasMultipleSelects()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public int getCount(JDBCStore store)
         throws SQLException {
@@ -202,32 +211,21 @@ public class LogicalUnion
     }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
-            throws SQLException {
-        return execute(store, fetch, null);
-    }    
+        throws SQLException {
+        if (fetch == null) {
+            fetch = store.getFetchConfiguration();
+        }
+        return execute(store, fetch, fetch.getReadLockLevel());
+    }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
-        throws SQLException {
-        return execute(store, fetch, lockLevel, null);
-    }
-    
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
-        List params)
-        throws SQLException {
-        if (fetch == null)
-            fetch = store.getFetchConfiguration();
-        return execute(store, fetch, fetch.getReadLockLevel(), params);
-    }
-
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        int lockLevel, List params)
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
 
         if (sels.length == 1) {
-            Result res = sels[0].execute(store, fetch, lockLevel, params);
+            Result res = sels[0].execute(store, fetch, lockLevel);
             ((AbstractResult) res).setBaseMapping(mappings[0]);
             return res;
         }
@@ -236,7 +234,7 @@ public class LogicalUnion
             AbstractResult res;
             for (int i = 0; i < sels.length; i++) {
                 res = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel, params);
+                    lockLevel);
                 res.setBaseMapping(mappings[i]);
                 res.setIndexOf(i);
 
@@ -268,7 +266,7 @@ public class LogicalUnion
             List l;
             for (int i = 0; i < res.length; i++) {
                 res[i] = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel, params);
+                    lockLevel);
                 res[i].setBaseMapping(mappings[i]);
                 res[i].setIndexOf(i);
 
@@ -402,22 +400,14 @@ public class LogicalUnion
         public boolean supportsLocking() {
             return sel.supportsLocking();
         }
+        
+        public boolean hasMultipleSelects() {
+            return sel.hasMultipleSelects();
+        }
 
         public int getCount(JDBCStore store)
             throws SQLException {
             return sel.getCount(store);
-        }
-
-        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
-            List params)
-            throws SQLException {
-            return sel.execute(store, fetch, params);
-        }
-
-        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-            int lockLevel, List params)
-            throws SQLException {
-            return sel.execute(store, fetch, lockLevel, params);
         }
 
         public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
