@@ -885,9 +885,11 @@ public class ConfigurationImpl
         ConfigurationImpl conf = (ConfigurationImpl) other;
         if (_vals.size() != conf.getValues().length)
         	return false;
-        for(Value v : _vals) { 
-        	Value thatV = conf.getValue(v.getProperty());
-        	if (!v.equals(thatV)) {
+        for(Value v : _vals) {
+            String propName = v.getProperty();
+        	Value thisV = this.getValue(propName);
+            Value thatV = conf.getValue(propName);
+        	if (!thisV.equals(thatV)) {
         		return false;
         	}
         }
