@@ -440,6 +440,11 @@ public class SelectImpl
         }
     }
 
+    protected PreparedStatement prepareStatement(Connection conn, 
+        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
+        int rsConcur, boolean isLRS, List params) throws SQLException {
+        return prepareStatement(conn, sql, fetch, rsType, rsConcur, isLRS);
+    }
 
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
@@ -3093,6 +3098,15 @@ public class SelectImpl
             _selectAs = null;
             _idents = null;
         }
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, List params) throws SQLException {
+        return execute(store, fetch); 
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel, List params)
+        throws SQLException {
+        return execute(store, fetch, lockLevel);
     }
 }
 

@@ -57,7 +57,7 @@ public class LogicalUnion
     protected final BitSet desc = new BitSet();
     private boolean _distinct = true;
    
-
+ 
     /**
      * Constructor.
      *
@@ -887,6 +887,15 @@ public class LogicalUnion
             boolean force) {
             sel.setExpectedResultCount(expectedResultCount, force);
         }
+
+        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, List params) throws SQLException {
+            return execute(store, fetch);
+        }
+
+        public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel, List params)
+            throws SQLException {
+            return execute(store, fetch, lockLevel);
+        }
     }
 
     /**
@@ -966,5 +975,14 @@ public class LogicalUnion
             }
             return a1.length - a2.length;
         }
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, List params) throws SQLException {
+        return execute(store, fetch);
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel, List params)
+        throws SQLException {
+        return execute(store, fetch, lockLevel);
     }
 }
