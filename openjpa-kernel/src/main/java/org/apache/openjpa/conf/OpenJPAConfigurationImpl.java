@@ -1624,6 +1624,9 @@ public class OpenJPAConfigurationImpl
     }
     
     public PreparedQueryCache getQuerySQLCacheInstance() {
+        if (preparedQueryCachePlugin == null)
+            return null;
+        
         if (preparedQueryCachePlugin.get() == null) {
             preparedQueryCachePlugin.instantiate(PreparedQueryCache.class,
                     this);
