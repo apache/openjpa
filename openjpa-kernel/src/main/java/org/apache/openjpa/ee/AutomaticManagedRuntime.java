@@ -38,6 +38,7 @@ import org.apache.openjpa.util.InvalidStateException;
  *  Built in support is provided for the following Application Servers:
  * <ul>
  * <li>Bluestone</li>
+ * <li>GlassFish</li>
  * <li>HP Application Server</li>
  * <li>JBoss</li>
  * <li>JRun</li>
@@ -60,8 +61,8 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
         "java:/DefaultDomain/TransactionManager", // jrun too
         "java:comp/pm/TransactionManager", // orion & oracle
         "java:comp/TransactionManager", // generic
-        "java:pm/TransactionManager", // borland
         "java:appserver/TransactionManager", // GlassFish
+        "java:pm/TransactionManager", // borland
     };
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp
