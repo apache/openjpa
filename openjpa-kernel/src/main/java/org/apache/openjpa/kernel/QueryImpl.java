@@ -1163,6 +1163,7 @@ public class QueryImpl
                 case JavaTypes.LOCALE:
                 case JavaTypes.OBJECT:
                 case JavaTypes.OID:
+                case JavaTypes.ENUM:
                     sm.settingObjectField(into, i, sm.fetchObjectField(i), val,
                         set);
                     break;
