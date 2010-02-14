@@ -461,9 +461,9 @@ database only as necessary.
                         </para>
                     </entry>
                     <entry colname="desc">
-If you have enabled scrollable result sets and on-demand loading but do you not
+If you have enabled scrollable result sets and on-demand loading but you do not
 require it, consider disabling it again.  Some JDBC drivers and databases 
-(SQLServer for example) are much slower when used with scrolling result sets.
+(SQL Server for example) are much slower when used with scrolling result sets.
                     </entry>
                 </row>
                 <row>

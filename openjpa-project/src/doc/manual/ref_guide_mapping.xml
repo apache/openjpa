@@ -549,7 +549,7 @@ generation.
                         <para>
 <literal>-annotations/-ann &lt;true/t | false/f&gt;</literal>: Set to
 <literal>true</literal> to
-generate JPA annotations in generated java classes.
+generate JPA annotations in generated Java classes.
                         </para>
                     </listitem>
                     <listitem>
@@ -652,7 +652,7 @@ the default Java classes to generate for each SQL type that is seen in the
 schema. The format is <literal> SQLTYPE1=JavaClass1,SQLTYPE2=JavaClass2
 </literal>. The SQL type name first looks for a customization based on <literal>
 SQLTYPE(SIZE,PRECISION)</literal>, then <literal>SQLTYPE(SIZE)</literal>, then
-<literal>SQLTYPE(SIZE,PRECISION)</literal>. So if a column whose type name is
+<literal>SQLTYPE</literal>. So if a column whose type name is
 <literal>CHAR</literal> is found, it will first look for the <literal>
 CHAR(50,0)</literal> type name specification, then it will look for <literal>
 CHAR(50)</literal>, and finally it will just look for <literal>CHAR</literal>.

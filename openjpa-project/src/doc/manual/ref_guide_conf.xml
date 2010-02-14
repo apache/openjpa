@@ -2075,7 +2075,6 @@ or flush before running it against the datastore.
             </para>
         </section>
         
-InitializeEagerly
         <section id="openjpa.InitializeEagerly">
             <title>
                 openjpa.InitializeEagerly

@@ -737,8 +737,12 @@ All input parameters must be single-valued, except in IN expressions
                 Query Hints
             </title>
             <para>
-JPQL provides support for hints which are name/value pairs used to control locking and optimization keywords in sql. 
-The following example shows how to use the JPA hint api to set the <classname>ReadLockMode</classname>  and <classname>ResultCount</classname>  in the OpenJPA fetch plan.  This will result in the sql keywords OPTIMIZE FOR 2 ROWS  and FOR UPDATE to be emitted into the sql provided that a pessimistic LockManager is being used.
+JPQL provides support for hints which are name/value pairs used to control locking and optimization keywords in SQL. 
+The following example shows how to use the JPA hint API to set the <classname>ReadLockMode</classname>
+and <classname>ResultCount</classname> in the OpenJPA fetch plan. This will result in
+a database-specific SQL keyword (usually FOR UPDATE) to be emitted into the SQL provided that a
+pessimistic LockManager is being used. Additionally, if a DB2 database is being used,
+the OPTIMIZE FOR 2 ROWS clause will also be emitted.
             </para>
             <example id="jpa_query_hint1">
                 <title>
@@ -761,10 +765,13 @@ Invalid hints or hints which can not be processed by a particular database are i
                     Locking Hints
                 </title>
                 <para>
-To avoid deadlock and optimistic update exceptions among multiple updaters, use a pessimistic LockManager, specified in the persistence unit definition, and use a hint name of &quot;openjpa.FetchPlan.ReadLockMode&quot; on queries for entities that must be locked for serialization.   The value of <classname>ReadLockMode</classname> can be either &quot;READ&quot; or &quot;WRITE&quot;.  This results in FOR UPDATE or USE AND KEEP UPDATE LOCKS in sql.
+To avoid deadlock and optimistic update exceptions among multiple updaters, use a pessimistic LockManager, specified in the persistence unit definition,
+and use a hint name of &quot;openjpa.FetchPlan.ReadLockMode&quot; on queries for entities that must be locked for serialization.
+The value of <classname>ReadLockMode</classname> can be either &quot;READ&quot; or &quot;WRITE&quot;.
+This results in a database-specific locking keyword (usually FOR UPDATE) to be emitted into the SQL.
                 </para>
                 <para>
-Using a <classname>ReadLockMode</classname> hint with JPA optimistic locking ( i.e. specifying LockManager = &quot;version&quot;) will result in the entity version field either being reread at end of transaction in the case of a value of &quot;READ&quot; or the version field updated at end of transaction in the case of  &quot;WRITE&quot;.   You must define a version field in the entity mapping when using a version LockManager and using ReadLockMode.   
+Using a <classname>ReadLockMode</classname> hint with JPA optimistic locking (i.e. specifying LockManager = &quot;version&quot;) will result in the entity version field either being reread at end of transaction in the case of a value of &quot;READ&quot; or the version field updated at end of transaction in the case of  &quot;WRITE&quot;.   You must define a version field in the entity mapping when using a version LockManager and using ReadLockMode.   
                 </para>
                 <table>
                     <title>
@@ -793,9 +800,9 @@ Using a <classname>ReadLockMode</classname> hint with JPA optimistic locking ( i
                                  READ
                              </entry>
                              <entry colname="pessimistic">
-                                 sql with UPDATE
+                                 SQL with FOR UPDATE
                              </entry>
-                             <entry colname="version">sql without update;
+                             <entry colname="version">SQL without FOR UPDATE;
                              <para>
 reread version field at the end of transaction and check for no change.
                              </para>
@@ -806,10 +813,10 @@ reread version field at the end of transaction and check for no change.
                                  WRITE
                              </entry>
                              <entry colname="pessimistic">
-                                 sql with UPDATE
+                                 SQL with FOR UPDATE
                              </entry>
                              <entry colname="version">
-                                 sql without update; 
+                                 SQL without FOR UPDATE; 
                              <para>
 force update version field at the end of transaction
                              </para>
@@ -820,10 +827,10 @@ force update version field at the end of transaction
                                  not specified
                              </entry>
                              <entry colname="pessimistic">
-                                 sql without update
+                                 SQL without FOR UPDATE
                              </entry>
                              <entry colname="version">
-                                 sql without update
+                                 SQL without FOR UPDATE
                              </entry>
                          </row>
                     </tbody>
@@ -857,7 +864,7 @@ default behavior.
                     Result Set Size Hint
                 </title>
                 <para>
-To specify a result set size hint to those databases that support it, specify a hint name of &quot;openjpa.hint.OptimizeResultCount&quot; with an integer value greater than zero.  This causes the sql keyword OPTIMIZE FOR to be generated.
+To specify a result set size hint to those databases that support it, specify a hint name of &quot;openjpa.hint.OptimizeResultCount&quot; with an integer value greater than zero.  This causes the SQL keyword OPTIMIZE FOR to be generated.
                 </para>
             </section>
             <section id="jpa_hints_isolation">
@@ -865,7 +872,7 @@ To specify a result set size hint to those databases that support it, specify a 
                     Isolation Level Hint
                 </title>
                 <para>
-To specify an isolation level, specify a hint name of &quot;openjpa.FetchPlan.Isolation&quot;.  The value will be used to specify isolation level using the sql WITH &lt;isolation&gt; clause for those databases that support it.  This hint only works in conjunction with the ReadLockMode hint.
+To specify an isolation level, specify a hint name of &quot;openjpa.FetchPlan.Isolation&quot;.  The value will be used to specify isolation level using the SQL WITH &lt;isolation&gt; clause for those databases that support it.  This hint only works in conjunction with the ReadLockMode hint.
                 </para>
             </section>
             <section id="jpa_hints_fetchplan">
@@ -884,7 +891,7 @@ Any property of  an OpenJPA FetchPlan can be changed using a hint by using a nam
                 <para>
 The hint names &quot;openjpa.hint.MySQLSelectHint&quot; and
 &quot;openjpa.hint.OracleSelectHint&quot; can be used to specify a string value
-of a query hint that will be inserted into sql for MySQL and Oracle databases.
+of a query hint that will be inserted into SQL for MySQL and Oracle databases.
 See <xref linkend="dbsupport_mysql_query_hints"/> and
 <xref linkend="dbsupport_oracle_query_hints"/> for examples.  
                 </para>
@@ -903,9 +910,12 @@ Hints can also be included as part of a NamedQuery definition.
 <programlisting>
 ...
 @NamedQuery(name="magsOverPrice",
-query="SELECT x FROM Magazine x WHERE x.price > ?1",
-hints={ @QueryHint  (name="openjpa.hint.OptimizeResultCount", value="2"),
-        @QueryHint (name="openjpa.FetchPlan.ReadLockMode",value="WRITE")} )
+    query="SELECT x FROM Magazine x WHERE x.price > ?1",
+    hints={
+        @QueryHint(name="openjpa.hint.OptimizeResultCount", value="2"),
+        @QueryHint(name="openjpa.FetchPlan.ReadLockMode", value="WRITE")
+    }
+)
 ...
 </programlisting>
                 </example>

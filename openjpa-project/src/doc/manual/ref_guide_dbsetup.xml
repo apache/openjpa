@@ -664,10 +664,10 @@ class.
                 <para>
                 <indexterm>
                     <primary>
-                        SQLServer
+                        SQL Server
                     </primary>
                 </indexterm>
-<literal>sqlserver</literal>: Dictionary for Microsoft's SQLServer database.
+<literal>sqlserver</literal>: Dictionary for Microsoft's SQL Server database.
 This is an alias for the
 <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SQLServerDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.SQLServerDictionary</classname></ulink>
@@ -3962,12 +3962,12 @@ property accepts the following values:
 <literal>always</literal>: Each <classname>EntityManager</classname> obtains a
 single connection and uses it until the <classname>EntityManager</classname>
 closes. Great care should be taken when using this property if the application 
-cannot close the EntityManager (ie container-managed EntityManagers in a JEE 
+cannot close the EntityManager (i.e. container-managed EntityManagers in a JEE 
 Application Server). In this case the connection will remain open for an 
 undefined time and the application may not be able to recover from a terminated
-connection(ie if a TCP/IP timeout severs the connection to the database). 
+connection (for example, if a TCP/IP timeout severs the connection to the database). 
 For this reason the <literal>always</literal> option should not be used with 
-container managed EntityManagers.
+container-managed EntityManagers.
                 </para>
             </listitem>
             <listitem>

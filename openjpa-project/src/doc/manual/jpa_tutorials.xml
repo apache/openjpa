@@ -382,7 +382,7 @@ Compile the <filename>.java</filename> files.
 javac *.java
 </programlisting>
                     <para>
-You can use any java compiler instead of <command>javac</command>.
+You can use any Java compiler instead of <command>javac</command>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1158,8 +1158,8 @@ The first query is snake-centric - the query runs against the <classname>Snake
 </classname> class, looking for all snakes named Killer and providing a detailed
 listing of them. The second is rabbit-centric - it examines the rabbits in the
 database for instances whose <literal>eater</literal> is named Killer. This
-second query demonstrates the that simple java 'dot' syntax is used when
-traversing an to-one field in a query.
+second query demonstrates that the simple Java 'dot' syntax is used when
+traversing a to-one field in a query.
                 </para>
                 <para>
 It is also possible to traverse collection fields. Imagine that there was a
