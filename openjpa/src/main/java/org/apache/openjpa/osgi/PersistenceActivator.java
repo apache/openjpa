@@ -31,11 +31,12 @@ import org.osgi.framework.BundleContext;
  * @version $Rev$ $Date$
  */
 public class PersistenceActivator implements BundleActivator {
-
-    public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
+    // following is so Aries can find and extend us for OSGi RFC 143
     public static final String PERSISTENCE_PROVIDER_ARIES = "javax.persistence.provider";
+    // following would be set by Aries to expose their OSGi enabled provider
+    public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
     public static final String OSGI_PERSISTENCE_PROVIDER = PersistenceProviderImpl.class.getName();
-    private static BundleContext ctx = null;
+    private static BundleContext ctx;
 
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -44,7 +45,6 @@ public class PersistenceActivator implements BundleActivator {
         ctx = arg0;
         PersistenceProvider provider = new PersistenceProviderImpl();
         Hashtable<String, String> props = new Hashtable<String, String>();
-        props.put(PERSISTENCE_PROVIDER, OSGI_PERSISTENCE_PROVIDER);
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
     }
@@ -53,8 +53,7 @@ public class PersistenceActivator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext arg0) throws Exception {
-        // TODO Auto-generated method stub
-
+        // no-op
     }
 
 }
