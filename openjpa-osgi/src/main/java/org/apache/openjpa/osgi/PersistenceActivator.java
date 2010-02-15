@@ -33,6 +33,7 @@ import org.osgi.framework.BundleContext;
 public class PersistenceActivator implements BundleActivator {
 
     public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
+    public static final String PERSISTENCE_PROVIDER_ARIES = "javax.persistence.provider";
     public static final String OSGI_PERSISTENCE_PROVIDER = PersistenceProviderImpl.class.getName();
     private static BundleContext ctx = null;
 
@@ -44,6 +45,7 @@ public class PersistenceActivator implements BundleActivator {
         PersistenceProvider provider = new PersistenceProviderImpl();
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(PERSISTENCE_PROVIDER, OSGI_PERSISTENCE_PROVIDER);
+        props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
     }
 
