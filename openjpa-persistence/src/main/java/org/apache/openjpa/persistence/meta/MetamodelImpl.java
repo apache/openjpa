@@ -27,6 +27,7 @@ import static
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
+import java.security.AccessController;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,6 +52,7 @@ import org.apache.openjpa.kernel.QueryContext;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.Resolver;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -302,7 +304,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             mcls.getName(), cls.getName(), anno.value()).getMessage());
         }
         
-        Field[] mfields = mcls.getDeclaredFields();
+        Field[] mfields = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredFieldsAction(mcls));
     	for (Field mf : mfields) {
             try {
                 ParameterizedType mfType = getParameterziedType(mf);
