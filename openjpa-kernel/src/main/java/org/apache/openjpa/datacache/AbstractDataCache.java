@@ -19,12 +19,10 @@
 package org.apache.openjpa.datacache;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +37,6 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
-
-import serp.util.Strings;
 
 /**
  * Abstract {@link DataCache} implementation that provides various
@@ -81,6 +77,14 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setName(String name) {
         _name = name;
+    }
+    public void setEnableStatistics(boolean enable){
+        if(enable == true){
+            stats.enable();
+        }
+    }
+    public void getEnableStatistics(){
+        stats.isEnabled();
     }
 
     public String getEvictionSchedule() {
@@ -131,7 +135,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public boolean contains(Object key) {
         DataCachePCData o = getInternal(key);
-        stats.newGet(o == null ? null : o.getType(), o != null);
+        if (stats.isEnabled()) {
+            stats.newGet(o == null ? null : o.getType(), o != null);
+        }
         if (o != null && o.isTimedOut()) {
             o = null;
             removeInternal(key);
@@ -167,7 +173,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
             else
                 log.trace(s_loc.get("cache-hit", key));
         }
-        stats.newGet((o == null) ? null : o.getType(), o != null);
+        if (stats.isEnabled()) {
+            stats.newGet((o == null) ? null : o.getType(), o != null);
+        }
         return o;
     }
 
@@ -183,7 +191,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
 
     public DataCachePCData put(DataCachePCData data) {
-        stats.newPut(data.getType());
+        if (stats.isEnabled()) {
+            stats.newPut(data.getType());
+        }
         DataCachePCData o = putInternal(data.getId(), data);
         if (log.isTraceEnabled())
             log.trace(s_loc.get("cache-put", data.getId()));
@@ -192,7 +202,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void update(DataCachePCData data) {
         if (recacheUpdates()) {
-            stats.newPut(data.getType());
+            if (stats.isEnabled()) {
+                stats.newPut(data.getType());
+            }
             putInternal(data.getId(), data);
         }
     }
@@ -381,7 +393,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      */
     protected void putAllInternal(Collection<DataCachePCData> pcs) {
         for (DataCachePCData pc : pcs) {
-            stats.newPut(pc.getType());
+            if (stats.isEnabled()) {
+                stats.newPut(pc.getType());
+            }
             putInternal(pc.getId(), pc);
         }
     }

@@ -119,6 +119,11 @@ public interface CacheStatistics extends Serializable {
 	public void reset();
 	
 	/**
+	 * Returns whether or not statistics will be collected.
+	 */
+	public boolean isEnabled();
+	
+	/**
 	 * A default implementation.
 	 *
 	 */
@@ -129,7 +134,8 @@ public interface CacheStatistics extends Serializable {
         private Map<Class, long[]> astats = new HashMap<Class, long[]>();
 		private Date start = new Date();
 		private Date since = new Date();
-
+		private boolean enabled = false;
+		
 		private static final int READ  = 0;
 		private static final int HIT   = 1;
 		private static final int WRITE = 2;
@@ -201,6 +207,15 @@ public interface CacheStatistics extends Serializable {
 			since = new Date();
 		}
 
+		public boolean isEnabled() {
+		    return enabled;
+		}
+		void enable(){
+		    enabled = true;
+		}
+	      void disable() {
+            enabled = false;
+        }
 		void newGet(Class cls, boolean hit) {
 			cls = (cls == null) ? Object.class : cls;
 			addSample(cls, READ);

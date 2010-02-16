@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import java.util.Arrays;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.datacache.CacheStatistics;
@@ -40,9 +42,8 @@ public class TestStatistics extends SingleEMFTestCase {
     private StoreCache cache;
     CacheStatistics stats;
     public void setUp() {
-        
         super.setUp(CLEAR_TABLES, CachedPerson.class,
-                "openjpa.DataCache", "true",
+                "openjpa.DataCache", "true(EnableStatistics=true)",
                 "openjpa.QueryCache", "true",
                 "openjpa.RemoteCommitProvider", "sjvm");
         cache = emf.getStoreCache();
@@ -51,36 +52,57 @@ public class TestStatistics extends SingleEMFTestCase {
         assertNotNull(stats);
         em = emf.createEntityManager();
         
-        if (person == null) {
-            person = createData();
-        }
+        person = createData();
         stats.reset();
         em.clear();
     }
     
-    public CachedPerson createData() {
-        em.getTransaction().begin();
-        CachedPerson p = new CachedPerson();
-        p.setId((int)System.currentTimeMillis());
-        em.persist(p);
-        em.getTransaction().commit();
-        return p;
+    /**
+     * Test that the CacheStatistics is disabled by default.
+     */
+    public void testDefaultSettings() {
+        Object[] props = {"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm"};
+        OpenJPAEntityManagerFactory emf1 = createNamedEMF("second-persistence-unit", props);
+        
+        assertFalse(emf1.getStoreCache().getStatistics().isEnabled());
     }
     
     /**
      * Finding an entity from a clean should hit the L2 cache.
      */
     public void testFind() {
+        assertTrue(cache.getStatistics().isEnabled());
         Object pid = person.getId();
-        int N = 0;
-        for (int i = 0; i < N; i++) {
-            assertCached(person, pid, !L1Cached, L2Cached);
-            long[] before = snapshot();
-            CachedPerson p = em.find(CachedPerson.class, pid);
-            long[] after = snapshot();
-            assertDelta(before, after, 1, 1, 0); //READ:1 HIT:1, WRITE:0
-            assertCached(p, pid, L1Cached, L2Cached);
-        }
+        assertCached(person, pid, !L1Cached, L2Cached);
+        
+        long[] before = snapshot();
+        CachedPerson p = em.find(CachedPerson.class, pid);
+        long[] after = snapshot();
+
+        assertDelta(before, after, 1, 1, 0); // READ:1 HIT:1, WRITE:0
+        assertCached(p, pid, L1Cached, L2Cached);
+
+    }
+    
+    public void testMultipleUnits() {
+        String[] props = {"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm"};
+        OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", props);
+        OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", props);
+        assertNotSame(emf1, emf2);
+        assertNotSame(emf1.getStoreCache(), emf2.getStoreCache());
+        assertNotSame(emf1.getStoreCache().getStatistics(), emf2.getStoreCache().getStatistics());
+        assertNotSame(((StoreCacheImpl)emf1.getStoreCache()).getDelegate(), 
+                ((StoreCacheImpl)emf2.getStoreCache()).getDelegate());
+        
+    }
+    
+    CachedPerson createData() {
+        em.getTransaction().begin();
+        CachedPerson p = new CachedPerson();
+        p.setId((int)System.currentTimeMillis());
+        em.persist(p);
+        em.getTransaction().commit();
+        return p;
     }
     
     /**
@@ -120,17 +142,5 @@ public class TestStatistics extends SingleEMFTestCase {
     void print(String msg, CacheStatistics stats) {
         System.err.println(msg + stats + " H:" + stats.getHitCount() + " R:" + stats.getReadCount() + " W:" + 
                 stats.getWriteCount());
-    }
-    
-    public void testMultipleUnits() {
-        String[] props = {"openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm"};
-        OpenJPAEntityManagerFactory emf1 = createNamedEMF("test", props);
-        OpenJPAEntityManagerFactory emf2 = createNamedEMF("empty-pu", props);
-        assertNotSame(emf1, emf2);
-        assertNotSame(emf1.getStoreCache(), emf2.getStoreCache());
-        assertNotSame(emf1.getStoreCache().getStatistics(), emf2.getStoreCache().getStatistics());
-        assertNotSame(((StoreCacheImpl)emf1.getStoreCache()).getDelegate(), 
-                ((StoreCacheImpl)emf2.getStoreCache()).getDelegate());
-        
     }
 }

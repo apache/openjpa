@@ -550,7 +550,17 @@ oem.evict(changedMag);  // will evict from data cache also
 data cache is available via 
 <ulink url="../javadoc/org/apache/openjpa/datacache/CacheStatistics.html">
 <classname>org.apache.openjpa.datacache.CacheStatistics</classname></ulink> 
-interface. You can access this statistics via StoreCache 
+interface. The collection of cache statistics is disabled by default and needs to be enabled on a per cache basis. By default
+all counts returned from the CacheStatistics interface will return 0.
+        <example id="ref_guide_cache_enablestats">
+                <title>
+                    Configuring CacheStatistics
+                </title>
+                <programlisting>
+&lt;property name="openjpa.DataCache" value="true(EnableStatistics=true)"/&gt;
+</programlisting>
+        </example>
+Once cache statistics are enabled you can access them via StoreCache 
 <programlisting>
 import org.apache.openjpa.datacache.CacheStatistics;
 ...
@@ -587,6 +597,9 @@ public interface org.apache.openjpa.datacache.CacheStatistics extends java.io.Se
     
     // Resets the statistics. 
     public void reset();
+    
+    // Returns whether or not statistics will be collected.
+    public boolean isEnabled();
 }
 </programlisting>
 Collecting per-class statistics depends on determining the runtime type of a
