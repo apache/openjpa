@@ -1837,8 +1837,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return _metamodel.get(entity);
         String m2 = _factory.getMetaModelClassName(entity.getName());
         try {
-            Class<?> m2cls = AccessController.doPrivileged(
-                    J2DoPrivHelper.getForNameAction(m2, true, entity.getClassLoader()));
+            ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(entity));
+            Class<?> m2cls = AccessController.doPrivileged(J2DoPrivHelper.getForNameAction(m2, true, loader));
             _metamodel.put(entity, m2cls);
             return m2cls;
         } catch (Throwable t) {
