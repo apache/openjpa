@@ -117,7 +117,7 @@ public class MetaDataRepository
 	private Map _ifaces = Collections.synchronizedMap(new HashMap());
 	private Map _queries = new HashMap();
 	private Map _seqs = new HashMap();
-	private Map _aliases = Collections.synchronizedMap(new HashMap());
+    private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<String, List<Class<?>>>());
 	private Map _pawares = Collections.synchronizedMap(new HashMap());
 	private Map _nonMapped = Collections.synchronizedMap(new HashMap());
     
@@ -1568,9 +1568,11 @@ public class MetaDataRepository
         if (_locking) {
         synchronized (_registered) {
                 _registered.add(cls);
+                registerAlias(cls);
             }
         } else {
             _registered.add(cls);
+            registerAlias(cls);
         }
     }
 
@@ -1586,6 +1588,33 @@ public class MetaDataRepository
                 if (_log.isWarnEnabled())
                     _log.warn(me);
             }
+        }
+    }
+    
+    /**
+     * Register the given class to the list of known aliases.
+     * The alias is registered only if the class has been enhanced.
+     * 
+     */
+    void registerAlias(Class<?> cls) {
+        registerAlias(PCRegistry.getTypeAlias(cls), cls);
+    }
+    
+    public void registerAlias(String alias, Class<?> cls) {
+        if (alias == null)
+            return;
+        try {
+            if (alias != null) {
+                List<Class<?>> classes = _aliases.get(alias);
+                if (classes == null)
+                    classes = new ArrayList<Class<?>>(3);
+                if (!classes.contains(cls)) {
+                    classes.add(cls);
+                    _aliases.put(alias, classes);
+                }
+            }
+        } catch (IllegalStateException ise) {
+            // the class has not been registered to PCRegistry
         }
     }
 
@@ -1701,33 +1730,16 @@ public class MetaDataRepository
         // set alias for class
         String alias = PCRegistry.getTypeAlias(cls);
         if (alias != null) {
-            if(_locking){
-                setAliasForClassLocking(alias, cls);
-            }else{
-                setAliasForClassInternal(alias, cls);
+            if (_locking) {
+                synchronized (_aliases) {
+                    registerAlias(alias, cls);
+                }
+            } else {
+                registerAlias(alias, cls);
             }
         }
     }
-    /**
-     * Private worker method for use by processRegisterClasses.
-     */
-    private void setAliasForClassLocking(String alias, Class cls){
-        synchronized(_aliases){
-            setAliasForClassInternal(alias, cls);
-        }
-    }
-    /**
-     * Private worker method for use by processRegisterClasses.
-     */
-    private void setAliasForClassInternal(String alias, Class cls){
-        List classList = (List) _aliases.get(alias);
-        if (classList == null) {
-            classList = new ArrayList(3);
-            _aliases.put(alias, classList);
-        }
-        if (!classList.contains(cls))
-            classList.add(cls);
-    }
+
     /**
      * Private worker method for use by processRegisterClasses.
      */
