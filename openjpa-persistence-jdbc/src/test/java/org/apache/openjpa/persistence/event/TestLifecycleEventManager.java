@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence.event;
 
 
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
-import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.LoadListener;
@@ -30,7 +32,10 @@ import org.apache.openjpa.event.StoreListener;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
 
 /**
  * <p>Test the {@link LifecycleEventManager}.</p>
@@ -38,18 +43,14 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * @author Abe White
  */
 public class TestLifecycleEventManager
-    extends AbstractTestCase {
+    extends AbstractTestCase implements UncaughtExceptionHandler{
 
     public TestLifecycleEventManager(String s) {
         super(s, "eventcactusapp");
     }
 
-    public void testAllClassListener() {
-        MetaDataRepository repos =
-            ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
-                OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))
-                .
-                    getConfiguration().getMetaDataRepositoryInstance();
+    public void atestAllClassListener() {
+        MetaDataRepository repos = getMDR();
         ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, null, true);
         LifecycleEventManager mgr = new LifecycleEventManager();
         RuntimeTest2 pc = new RuntimeTest2();
@@ -118,12 +119,8 @@ public class TestLifecycleEventManager
         assertEquals(2, listener.store);
     }
 
-    public void testBaseClassListener() {
-        MetaDataRepository repos =
-            ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(
-                OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))
-                .
-                    getConfiguration().getMetaDataRepositoryInstance();
+    public void atestBaseClassListener() {
+        MetaDataRepository repos = getMDR();
         ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, null, true);
 
         LifecycleEventManager mgr = new LifecycleEventManager();
@@ -193,6 +190,62 @@ public class TestLifecycleEventManager
         mgr.fireEvent(pc, meta, LifecycleEvent.AFTER_STORE);
         assertEquals(3, listener.load);
         assertEquals(1, listener.store);
+    }
+    
+    public void testMultiThreaded() throws Exception{
+
+        for(int z = 0; z < 1000; z++){
+            
+            final LifecycleEventManager mgr = new LifecycleEventManager();
+            final List<Listener> listeners = new ArrayList<Listener>();
+            final ClassMetaData meta = getMDR().getMetaData(RuntimeTest2.class, null, true);
+            final RuntimeTest2 pc = new RuntimeTest2();
+            
+            for(int i = 0 ; i<10000;i++){
+                Listener l = new Listener();
+                mgr.addListener(l, null);
+                listeners.add(l);
+            }
+            
+            Thread removerThread = new Thread(){
+                public void run() {
+                    for(Listener l : listeners){
+                        mgr.removeListener(l);
+                    }
+                }
+            };
+            Thread hasLoadListenersThread = new Thread(){
+                @Override
+                public void run() {
+                    for(Listener l : listeners){
+                        if(mgr.hasLoadListeners(pc, meta) == false){
+                            System.out.println("false!");       
+                        }
+                     
+                    }
+                }
+            };
+            removerThread.setUncaughtExceptionHandler(this);
+            hasLoadListenersThread.setUncaughtExceptionHandler(this);
+            
+            hasLoadListenersThread.start();
+            removerThread.start();
+            
+            removerThread.join();
+            hasLoadListenersThread.join();
+            
+            Throwable t = exceptions.get(hasLoadListenersThread);
+            assertNull(t);
+        }
+    }
+    Map<Thread, Throwable> exceptions = new HashMap<Thread, Throwable>();
+    public void uncaughtException(Thread thread, Throwable throwable) {
+        exceptions.put(thread, throwable);
+        
+    }
+
+    private MetaDataRepository getMDR() {
+        return ((OpenJPAEntityManagerFactorySPI)getEmf()).getConfiguration().getMetaDataRepositoryInstance();
     }
 
     private static class Listener
