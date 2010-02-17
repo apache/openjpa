@@ -233,7 +233,7 @@ public class LifecycleEventManager
      * Return true if any listeners are registered for the given source and
      * event type.
      */
-    private synchronized boolean hasListeners(Object source,
+    private boolean hasListeners(Object source,
         ClassMetaData meta, int type) {
         if (meta.getLifecycleMetaData().getIgnoreSystemListeners())
             return false;
