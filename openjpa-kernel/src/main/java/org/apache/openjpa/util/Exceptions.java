@@ -265,4 +265,11 @@ public class Exceptions {
         else
             return pc.pcFetchObjectId();
 	}
+    
+    public static String toClassName(Class<?> cls) {
+        if (cls == null) return "";
+        if (cls.isArray())
+            return toClassName(cls.getComponentType())+"[]";
+        return cls.getName();
+    }
 }

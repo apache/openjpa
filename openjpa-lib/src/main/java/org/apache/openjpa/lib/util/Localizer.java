@@ -48,11 +48,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class Localizer {
 
     // static cache of package+loc name to localizer mappings
-    private static final Map _localizers = new ConcurrentHashMap();
+    private static final Map<String,Localizer> _localizers = new ConcurrentHashMap<String,Localizer>();
 
     // list of resource providers to delegate to when locating resources
-    private static final Collection _providers = new CopyOnWriteArraySet
-        (Arrays.asList(new Object[]{
+    private static final Collection<ResourceBundleProvider> _providers = 
+        new CopyOnWriteArraySet<ResourceBundleProvider>
+        (Arrays.asList(new ResourceBundleProvider[]{
             new SimpleResourceBundleProvider(),
             new StreamResourceBundleProvider(),
             new ZipResourceBundleProvider(), }));
@@ -63,7 +64,7 @@ public class Localizer {
      *
      * @see #forPackage(Class,Locale)
      */
-    public static Localizer forPackage(Class cls) {
+    public static Localizer forPackage(Class<?> cls) {
         return forPackage(cls, null);
     }
 
@@ -77,7 +78,7 @@ public class Localizer {
      * @param locale the locale to which strings should be localized; if
      * null, the system default will be assumed
      */
-    public static Localizer forPackage(Class cls, Locale locale) {
+    public static Localizer forPackage(Class<?> cls, Locale locale) {
         if (locale == null)
             locale = Locale.getDefault();
 
@@ -138,10 +139,9 @@ public class Localizer {
         // no locking; it's ok to create multiple bundles
         if (_bundle == null) {
             // find resource bundle
-            for (Iterator itr = _providers.iterator();
+            for (Iterator<ResourceBundleProvider> itr = _providers.iterator();
                 itr.hasNext() && _bundle == null; ) {
-                _bundle = ((ResourceBundleProvider) itr.next())
-                    .findResource(_file, _locale, _loader);
+                _bundle = itr.next().findResource(_file, _locale, _loader);
             }
         }
         return _bundle;

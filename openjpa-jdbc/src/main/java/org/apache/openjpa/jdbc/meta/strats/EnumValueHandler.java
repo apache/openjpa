@@ -26,7 +26,9 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -34,11 +36,13 @@ import org.apache.openjpa.util.MetaDataException;
  *
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class EnumValueHandler
     extends AbstractValueHandler {
 
-    private Enum[] _vals = null;
+    private Enum<?>[] _vals = null;
     private boolean _ordinal = false;
+    private static final Localizer _loc = Localizer.forPackage(EnumValueHandler.class);
 
     /**
      * Whether to store the enum value as its ordinal.
@@ -72,7 +76,9 @@ public class EnumValueHandler
             Method m = vm.getType().getMethod("values", (Class[]) null);
             _vals = (Enum[]) m.invoke(null, (Object[]) null);
         } catch (Exception e) {
-            throw new MetaDataException().setCause(e);
+            
+            throw new MetaDataException(_loc.get("not-enum-field", 
+                    vm.getFieldMapping().getFullName(true), Exceptions.toClassName(vm.getType()))).setCause(e);
         }
 
         Column col = new Column();
@@ -96,8 +102,7 @@ public class EnumValueHandler
         return true;
     }
 
-    public Object toDataStoreValue(ValueMapping vm, Object val,
-        JDBCStore store) {
+    public Object toDataStoreValue(ValueMapping vm, Object val, JDBCStore store) {
         if (val == null)
             return null;
         if (_ordinal)
