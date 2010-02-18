@@ -4324,7 +4324,7 @@ Or
 &lt;property name="openjpa.jdbc.DBDictionary" value="batchLimit=0"/&gt;
 </programlisting>
         </example>
-        <par>
+        <para>
 By default, org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager 
 is the default statement batching implementation. OPENJPA also 
 provides another update manager 
@@ -4338,7 +4338,7 @@ class as a property in the persistence.xml file. For example, a custom
 statement batching implementation mycomp.MyUpdateManager extends 
 ConstraitUpdateManager. You specify this implementation in the persistence.xml
 file as the following example:
-        </par>
+        </para>
          <example id="ref_guide_dbsetup_stmtbatch_exmple3">
             <title>
                 Plug-in custom statement batching implementation
