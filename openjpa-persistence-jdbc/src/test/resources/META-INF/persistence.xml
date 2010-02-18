@@ -72,7 +72,6 @@
             -->
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
-            <property name="openjpa.Log" value="SQL=TRACE" />
         </properties>
     </persistence-unit>
 
