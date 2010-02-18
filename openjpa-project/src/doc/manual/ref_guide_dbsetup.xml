@@ -2397,6 +2397,20 @@ supports delimited identifiers. It defaults to <literal>true</literal>.
 keys. Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.SupportsForeignKeysComposite">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            foreign keys
+                        </primary>
+                        <secondary>
+                            SupportsForeignKeysComposite
+                        </secondary>
+                    </indexterm>
+<literal>SupportsForeignKeysComposite</literal>: When true, the database supports
+composite foreign keys. Defaults to <literal>true</literal>.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.SupportsGetGeneratedKeys">
                     <para>
                     <indexterm>
@@ -2786,6 +2800,24 @@ select that is limited to the first N results.
                     </indexterm>
 <literal>SupportsSelectStartIndex</literal>: When true, the database can create a
 select that skips the first N results.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.SupportsSimpleCaseExpression">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            SupportsSimpleCaseExpression
+                        </secondary>
+                    </indexterm>
+<literal>SupportsSimpleCaseExpression</literal>: When true, the database supports
+the simple form of <literal>CASE</literal> expression:
+<literal>CASE &lt;a&gt; WHEN &lt;b&gt; THEN &lt;c&gt; WHEN &lt;d&gt; THEN &lt;e&gt; ELSE &lt;f&gt; END</literal>.
+When false, the general form of <literal>CASE</literal> expression will be used:
+<literal>CASE WHEN &lt;a&gt; = &lt;b&gt; THEN &lt;c&gt; WHEN &lt;a&gt; = &lt;d&gt; THEN &lt;e&gt; ELSE &lt;f&gt; END</literal>.
+Defaults to <literal>true</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SupportsSubselect">
@@ -3190,6 +3222,21 @@ than <methodname>PreparedStatement.setBinaryStream</methodname>.
 <literal>UseSetStringForClobs</literal>: When true, <methodname>
 PreparedStatement.setString</methodname> will be used to set clob data, rather
 than <methodname>PreparedStatement.setCharacterStream</methodname>.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseWildCardForCount">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                            UseWildCardForCount
+                        </secondary>
+                    </indexterm>
+<literal>UseWildCardForCount</literal>: When true, the JPQL <literal>COUNT</literal>
+aggregate function will be translated into SQL <literal>COUNT(*)</literal> expression
+if the SQL query does not involve joins. Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.ValidationSQL">
