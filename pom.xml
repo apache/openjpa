@@ -50,7 +50,7 @@
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
-        <derby.version>10.2.2.0</derby.version>
+        <derby.version>10.5.3.0_1</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
     </properties>
 
@@ -191,7 +191,6 @@
                 </dependency>
             </dependencies>
             <properties>
-                <derby.version>10.5.3.0_1</derby.version>
                 <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
                 <connection.url>jdbc:derby:memory:openjpa-derby-inmem-database;create=true</connection.url>
                 <connection.username />
