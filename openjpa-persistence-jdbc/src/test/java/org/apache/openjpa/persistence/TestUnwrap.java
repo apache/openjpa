@@ -76,21 +76,18 @@ public class TestUnwrap extends SingleEMFTestCase {
     public void testInvalidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
         
-        Class<?>[] validCasts = new Class[] {
+        Class<?>[] invalidCasts = new Class[] {
             Object.class,
             Properties.class,
             null,
         };
-        for (Class<?> c : validCasts) {
+        for (Class<?> c : invalidCasts) {
             try {
                 em.unwrap(c);
                 fail("Expected to fail to unwarp with " + c);
-            } catch (PersistenceException e) {
+            } catch (Exception e) {
                 EntityTransaction txn = em.getTransaction();
                 assertFalse(txn.isActive());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                fail("Unexpected exception while unwrapping " + c);
             }
         }
     }
