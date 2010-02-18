@@ -2869,8 +2869,8 @@ public class Employee {
         </indexterm>
         <para>
         Key columns serve the same role for map keys as the element
-        columns described in
-        <xref linkend="ref_guide_mapping_jpa_coll_cols"/> serve for
+        join columns described in
+        <xref linkend="ref_guide_mapping_jpa_coll_joincols"/> serve for
         collection elements.  OpenJPA's
         <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyColumn</classname>

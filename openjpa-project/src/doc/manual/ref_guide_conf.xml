@@ -1876,7 +1876,7 @@ runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
 <xref linkend="ref_guide_conf_plugins"/>) describing the
 <ulink url="../javadoc/org/apache/openjpa/lib/EncryptionProvider.html"><classname>
 org.apache.openjpa.lib.EncryptionProvider</classname></ulink>s to use for connection password
-encryption. See <xref linkend="ref_guide_encryption1"/> for details.
+encryption. See <xref linkend="ref_guide_encryption"/> for details.
             </para>
         </section>
 
