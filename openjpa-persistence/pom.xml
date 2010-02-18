@@ -50,71 +50,21 @@
         </dependency>        
     </dependencies>
     
-    <profiles>
-        <profile>
-            <!-- =========================================================== -->
-            <!-- Compiling with JDK5 excludes classes that explicitly import -->
-            <!-- and use JDK6 classes/packages for annotation processing     -->
-            <!-- =========================================================== -->
-            <activation>
-                <jdk>1.5</jdk>
-            </activation>
-            <id>jdk5-compiler</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/AnnotationProcessor6.java</exclude>
-                                <exclude>**/SourceAnnotationHandler.java</exclude>
-                                <exclude>**/CompileTimeLogger.java</exclude>
-                            </excludes>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-tests</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!-- =========================================================== -->
-            <!-- Compiling with JDK6+ compiler packages a META-INF/services  -->
-            <!-- file for our annotation processor                           -->
-            <!-- =========================================================== -->
-            <activation>
-                <jdk>[1.6,)</jdk>
-            </activation>
-            <id>jdk6-compiler</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-tests</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
