@@ -29,7 +29,6 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
@@ -39,8 +38,6 @@ import org.apache.openjpa.kernel.FinderQuery;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Implementation of FinderCache for JDBC.
@@ -55,20 +52,15 @@ public class FinderCacheImpl
     private static final String PATTERN_SEPARATOR = "\\;";
     private static final String EXLUDED_BY_USER = "Excluded by user";
      
-    private final Map<ClassMapping, 
-        FinderQuery<ClassMapping, SelectExecutor, Result>> _delegate;
+    private final Map<ClassMapping, FinderQuery<ClassMapping, SelectExecutor, Result>> _delegate;
     // Key: class name Value: Reason why excluded
     private final Map<String, String> _uncachables;
     private List<String> _exclusionPatterns;
     private QueryStatistics<ClassMapping> _stats;
     private ReentrantLock _lock = new ReentrantLock();
-    private Log _log;
-    private Localizer _loc = Localizer.forPackage(FinderCacheImpl.class);
-
     
     public FinderCacheImpl() {
-        _delegate = new HashMap<ClassMapping, 
-            FinderQuery<ClassMapping, SelectExecutor, Result>>();
+        _delegate = new HashMap<ClassMapping, FinderQuery<ClassMapping, SelectExecutor, Result>>();
         _uncachables = new HashMap<String, String>();
         _stats = new QueryStatistics.Default<ClassMapping>();
     }
@@ -82,9 +74,10 @@ public class FinderCacheImpl
         lock();
         try {
             Map<String, String> view = new TreeMap<String, String>();
-            for (ClassMapping mapping : _delegate.keySet())
+            for (ClassMapping mapping : _delegate.keySet()) {
                 view.put(mapping.getDescribedType().getName(), 
                     _delegate.get(mapping).getQueryString());
+            }
             return view;
         } finally {
             unlock();
@@ -110,16 +103,18 @@ public class FinderCacheImpl
      */
     public FinderQuery<ClassMapping,SelectExecutor,Result> 
         get(ClassMapping mapping, FetchConfiguration fetch) {
-        if (fetch.getReadLockLevel() != 0)
+        if (fetch.getReadLockLevel() != 0) {
             return null;
+        }
         boolean ignore = isHinted(fetch, QueryHints.HINT_IGNORE_FINDER);
         boolean invalidate = isHinted(fetch, QueryHints.HINT_INVALIDATE_FINDER);
-        if (invalidate)
+        if (invalidate) {
             invalidate(mapping);
-        if (ignore)
+        }
+        if (ignore) {
             return null;
-        FinderQuery<ClassMapping, SelectExecutor, Result> result = 
-            _delegate.get(mapping);
+        }
+        FinderQuery<ClassMapping, SelectExecutor, Result> result = _delegate.get(mapping);
         _stats.recordExecution(mapping);
         return result;
     }
@@ -145,8 +140,9 @@ public class FinderCacheImpl
        (ClassMapping mapping, SelectExecutor select, FetchConfiguration fetch) {
         lock();
         try {
-            if (fetch.getReadLockLevel() != 0)
+            if (fetch.getReadLockLevel() != 0) {
                 return null;
+            }
             boolean recache = isHinted(fetch, QueryHints.HINT_RECACHE_FINDER);
             if (isExcluded(mapping)) {
                 return recache ? put(mapping, select) : null;
@@ -167,18 +163,11 @@ public class FinderCacheImpl
      * some Select are not cached), then the mapping is marked invalid.
      *  
     */
-    private FinderQuery<ClassMapping, SelectExecutor, Result> put
-       (ClassMapping mapping, SelectExecutor select) {
-        FinderQuery<ClassMapping, SelectExecutor, Result> finder = 
-            FinderQueryImpl.newFinder(mapping, select);
+    private FinderQuery<ClassMapping, SelectExecutor, Result> put(ClassMapping mapping, SelectExecutor select) {
+        FinderQuery<ClassMapping, SelectExecutor, Result> finder = FinderQueryImpl.newFinder(mapping, select);
         if (finder != null) {
             _delegate.put(mapping, finder);
-            if (_log != null && _log.isTraceEnabled())
-                _log.trace(_loc.get("finder-cached", mapping, 
-                    finder.getQueryString())); 
         } else {
-            if (_log != null && _log.isWarnEnabled())
-                _log.warn(_loc.get("finder-not-cachable", mapping));
             invalidate(mapping);
         }
         return finder;
@@ -188,8 +177,7 @@ public class FinderCacheImpl
      * Affirms if the given mapping is excluded from being cached.
      */
     public boolean isExcluded(ClassMapping mapping) {
-        return mapping != null && 
-            isExcluded(mapping.getDescribedType().getName());
+        return mapping != null && isExcluded(mapping.getDescribedType().getName());
     }
 
     /**
@@ -214,10 +202,6 @@ public class FinderCacheImpl
             _exclusionPatterns.add(pattern);
             Collection<ClassMapping> invalidMappings = getMatchedKeys(pattern, 
                     _delegate.keySet());
-            if (!invalidMappings.isEmpty() 
-                && _log != null && _log.isInfoEnabled())
-                _log.info(_loc.get("finder-add-pattern", pattern, 
-                    invalidMappings.size(), invalidMappings));
             for (ClassMapping invalidMapping : invalidMappings)
                 markUncachable(invalidMapping, pattern);
         } finally {
@@ -237,9 +221,6 @@ public class FinderCacheImpl
             _exclusionPatterns.remove(pattern);
             Collection<String> reborns = getMatchedKeys(pattern, 
                 _uncachables.keySet());
-            if (!reborns.isEmpty() && _log != null && _log.isInfoEnabled())
-                _log.info(_loc.get("finder-remove-pattern", pattern, 
-                    reborns.size(), reborns));
             for (String rebornKey : reborns)
                 _uncachables.remove(rebornKey);
         } finally {
@@ -262,8 +243,7 @@ public class FinderCacheImpl
     /**
      * Gets the elements of the given set that match the given pattern. 
      */
-    private Collection<ClassMapping> getMatchedKeys(String pattern, 
-            Set<ClassMapping> set) {
+    private Collection<ClassMapping> getMatchedKeys(String pattern, Set<ClassMapping> set) {
         List<ClassMapping> result = new ArrayList<ClassMapping>();
         for (ClassMapping entry : set) {
             if (matches(pattern, entry)) {
@@ -276,8 +256,7 @@ public class FinderCacheImpl
     /**
      * Gets the elements of the given list which match the given pattern. 
      */
-    private Collection<String> getMatchedKeys(String pattern, 
-            Collection<String> coll) {
+    private Collection<String> getMatchedKeys(String pattern, Collection<String> coll) {
         List<String> result = new ArrayList<String>();
         for (String key : coll) {
             if (matches(pattern, key)) {
@@ -299,58 +278,39 @@ public class FinderCacheImpl
     public boolean invalidate(ClassMapping mapping) {
         lock();
         try {
-            if (_log.isTraceEnabled())
-                _log.trace(_loc.get("finder-invalidate", mapping));
             return _delegate.remove(mapping) != null;
         } finally {
             unlock();
         }
     }
 
-    public FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(
-        ClassMapping mapping) {
+    public FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(ClassMapping mapping) {
         return markUncachable(mapping.getDescribedType().getName());
     }
 
-    public FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(
-        String id) {
+    public FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(String id) {
         return markUncachable(id, EXLUDED_BY_USER);
     }
     
-    private FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(
-        String cls, String reason) {
+    private FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(String cls, String reason) {
         lock();
         try {
             boolean excludedByUser = _uncachables.get(cls) == EXLUDED_BY_USER;
             if (!excludedByUser)
                 _uncachables.put(cls, reason);
-            if (_log != null && _log.isInfoEnabled()) {
-                if (excludedByUser) 
-                    _log.info(_loc.get("finder-uncache-strong", cls));
-                else 
-                    _log.info(_loc.get("finder-uncache-weak", cls, 
-                        reason));
-            }
             return _delegate.remove(searchMappingByName(cls));
         } finally {
             unlock();
         }
     }
     
-    private FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(
-        ClassMapping mapping, String reason) {
+    private FinderQuery<ClassMapping, SelectExecutor, Result> markUncachable(ClassMapping mapping, String reason) {
         lock();
         try {
             String cls = mapping.getDescribedType().getName();
             boolean excludedByUser = _uncachables.get(cls) == EXLUDED_BY_USER;
             if (!excludedByUser)
                 _uncachables.put(cls, reason);
-            if (_log != null && _log.isInfoEnabled()) {
-                if (excludedByUser) 
-                    _log.info(_loc.get("finder-uncache-strong", cls));
-                else 
-                    _log.info(_loc.get("finder-uncache-weak", cls, reason));
-            }
             return _delegate.remove(mapping);
         } finally {
             unlock();
@@ -411,10 +371,8 @@ public class FinderCacheImpl
     }
     
     public void setConfiguration(Configuration conf) {
-        _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     }
 
     public void endConfiguration() {
     }
-
 }
