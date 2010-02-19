@@ -1120,9 +1120,7 @@ http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc101040.
                 </listitem>
                 <listitem>
                     <para>
-For VARCHAR fields, <literal>null</literal> and a blank string are equivalent.
-This means that an object that stores a null string field will have it get read
-back as a blank string.
+Empty string/char values are stored as NULL.
                     </para>
                 </listitem>
                 <listitem>

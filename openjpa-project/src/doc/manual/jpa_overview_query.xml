@@ -758,7 +758,9 @@ List r = q.getResultList();
 </programlisting>
             </example>
             <para>
-Invalid hints or hints which can not be processed by a particular database are ignored.  Otherwise, invalid hints will result in an ArgumentException being thrown. 
+Hints which can not be processed by a particular database or are unknown to OpenJPA are ignored.
+Hints known to OpenJPA but supplied with an incompatible value will result in an
+<classname>IllegalArgumentException</classname> being thrown.
             </para>
             <section id="jpa_hints_locking">
                 <title>
