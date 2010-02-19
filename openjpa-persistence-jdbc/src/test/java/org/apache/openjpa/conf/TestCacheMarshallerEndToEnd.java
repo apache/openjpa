@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -31,7 +29,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.NamedQueryEntity;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.lib.log.Log;
 
 public class TestCacheMarshallerEndToEnd
@@ -118,7 +115,7 @@ public class TestCacheMarshallerEndToEnd
         }
 
         public boolean isWarnEnabled() {
-            throw new UnsupportedOperationException();
+            return true;
         }
 
         public boolean isErrorEnabled() {
@@ -146,11 +143,11 @@ public class TestCacheMarshallerEndToEnd
         }
 
         public void warn(Object o) {
-            throw new UnsupportedOperationException();
+            lines.add(o.toString());
         }
 
         public void warn(Object o, Throwable t) {
-            throw new UnsupportedOperationException();
+            lines.add(o.toString());
         }
 
         public void error(Object o) {
