@@ -75,7 +75,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <buildNodeFiles>false</buildNodeFiles>
-                            <jdkVersion>1.5</jdkVersion>
+                            <jdkVersion>1.6</jdkVersion>
                         </configuration>
                         <goals>
                             <goal>jjtree-javacc</goal>
