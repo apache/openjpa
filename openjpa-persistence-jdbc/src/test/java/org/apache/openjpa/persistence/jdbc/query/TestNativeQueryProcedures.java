@@ -29,8 +29,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.query.domain.Applicant;
 import org.apache.openjpa.persistence.jdbc.query.domain.Game;
 import org.apache.openjpa.persistence.jdbc.query.procedure.DerbyProcedureList;
-import 
-    org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList;
+import org.apache.openjpa.persistence.jdbc.query.procedure.AbstractProcedureList;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -167,6 +167,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
+    @AllowFailure(value=true, message="Waiting for resolution for JIRA DERBY-4558")
     public void testNoReturnMultiParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
@@ -244,6 +245,7 @@ public class TestNativeQueryProcedures extends SingleEMFTestCase {
         }
     }
 
+    
     public void testOneReturnNoParamProcedure() {
         if (procedureList != null) {
             EntityManager em = emf.createEntityManager();
