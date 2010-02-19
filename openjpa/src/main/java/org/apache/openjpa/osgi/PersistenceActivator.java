@@ -23,6 +23,7 @@ import javax.persistence.spi.PersistenceProvider;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 
 /**
@@ -36,24 +37,26 @@ public class PersistenceActivator implements BundleActivator {
     // following would be set by Aries to expose their OSGi enabled provider
     public static final String PERSISTENCE_PROVIDER = PersistenceProvider.class.getName();
     public static final String OSGI_PERSISTENCE_PROVIDER = PersistenceProviderImpl.class.getName();
-    private static BundleContext ctx;
+    private ServiceRegistration svcReg = null;
 
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
-    public void start(BundleContext arg0) throws Exception {
-        ctx = arg0;
+    public void start(BundleContext ctx) throws Exception {
         PersistenceProvider provider = new PersistenceProviderImpl();
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
-        ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
+        svcReg = ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
     }
 
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
-    public void stop(BundleContext arg0) throws Exception {
-        // no-op
+    public void stop(BundleContext ctx) throws Exception {
+        if (svcReg != null) {
+            svcReg.unregister();
+            svcReg = null;
+        }
     }
 
 }
