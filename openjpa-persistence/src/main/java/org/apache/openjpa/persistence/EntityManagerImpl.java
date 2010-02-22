@@ -1108,6 +1108,23 @@ public class EntityManagerImpl
         throw new ArgumentException(flushMode.toString(), null, null, false);
     }
 
+    /*
+     * Used by Java EE Containers that wish to pool OpenJPA EntityManagers.  The specification
+     * doesn't allow the closing of connections with the clear() method.  By introducing this
+     * new method, we can do additional processing (and maybe more efficient processing) to 
+     * properly prepare an EM for pooling.
+     */
+    public void prepareForPooling() {
+        assertNotCloseInvoked();
+        clear();
+        _broker.lock();  // since this direct close path is not protected...
+        try {
+            _broker.getStoreManager().close();
+        } finally {
+            _broker.unlock();
+        }
+    }
+    
     public void clear() {
         assertNotCloseInvoked();
         _broker.detachAll(this, false);
