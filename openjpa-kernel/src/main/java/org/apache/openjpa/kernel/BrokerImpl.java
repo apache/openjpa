@@ -38,8 +38,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.transaction.Status;
@@ -175,28 +173,28 @@ public class BrokerImpl
 
     // user state
     private Synchronization _sync = null;
-    private Map _userObjects = null;
+    private Map<Object, Object> _userObjects = null;
 
     // managed object caches
     private ManagedCache _cache = null;
     private TransactionalCache _transCache = null;
-    private Set _transAdditions = null;
-    private Set _derefCache = null;
-    private Set _derefAdditions = null;
+    private Set<StateManagerImpl> _transAdditions = null;
+    private Set<StateManagerImpl> _derefCache = null;
+    private Set<StateManagerImpl> _derefAdditions = null;
 
     // these are used for method-internal state only
-    private transient Map _loading = null;
-    private transient Set _operating = null;
+    private transient Map<Object, StateManagerImpl> _loading = null;
+    private transient Set<Object> _operating = null;
 
-    private Set _persistedClss = null;
-    private Set _updatedClss = null;
-    private Set _deletedClss = null;
-    private Set _pending = null;
+    private Set<Class<?>> _persistedClss = null;
+    private Set<Class<?>> _updatedClss = null;
+    private Set<Class<?>> _deletedClss = null;
+    private Set<StateManagerImpl> _pending = null;
     private int findAllDepth = 0;
 
     // track instances that become transactional after the first savepoint
     // (the first uses the transactional cache)
-    private Set _savepointCache = null;
+    private Set<StateManagerImpl> _savepointCache = null;
     private LinkedMap _savepoints = null;
     private transient SavepointManager _spm = null;
 
@@ -249,7 +247,7 @@ public class BrokerImpl
 
     private transient boolean _initializeWasInvoked = false;
     private transient boolean _fromWriteBehindCallback = false;
-    private LinkedList _fcs;
+    private LinkedList<FetchConfiguration> _fcs;
     
     // Set of supported property keys. The keys in this set correspond to bean-style setter methods
     // that can be set by reflection. The keys are not qualified by any prefix.
@@ -372,7 +370,7 @@ public class BrokerImpl
     /**
      * Gets the unmodifiable set of instances being operated.
      */
-    protected Set getOperatingSet() {
+    protected Set<Object> getOperatingSet() {
     	return Collections.unmodifiableSet(_operating);
     }
 
@@ -390,7 +388,7 @@ public class BrokerImpl
      * Maps oids to state managers. By default, this creates a
      * {@link ReferenceMap} with soft values.
      */
-    protected Map newManagedObjectCache() {
+    protected Map<?,?> newManagedObjectCache() {
         return new ReferenceHashMap(ReferenceMap.HARD, ReferenceMap.SOFT);
     }
 
@@ -432,7 +430,7 @@ public class BrokerImpl
 
     public FetchConfiguration pushFetchConfiguration() {
         if (_fcs == null)
-            _fcs = new LinkedList();
+            _fcs = new LinkedList<FetchConfiguration>();
         _fcs.add(_fc);
         _fc = (FetchConfiguration) _fc.clone();
         return _fc;
@@ -442,7 +440,7 @@ public class BrokerImpl
         if (_fcs == null || _fcs.isEmpty())
             throw new UserException(
                     _loc.get("fetch-configuration-stack-empty"));
-        _fc = (FetchConfiguration) _fcs.removeLast();
+        _fc = _fcs.removeLast();
     }
 
     public int getConnectionRetainMode() {
@@ -514,7 +512,7 @@ public class BrokerImpl
 
         // make sure the runtime supports it
         if (val && !_conf.supportedOptions().contains
-            (_conf.OPTION_NONTRANS_READ))
+            (OpenJPAConfiguration.OPTION_NONTRANS_READ))
             throw new UnsupportedException(_loc.get
                 ("nontrans-read-not-supported"));
 
@@ -544,7 +542,7 @@ public class BrokerImpl
                 "Optimistic"));
 
         // make sure the runtime supports it
-        if (val && !_conf.supportedOptions().contains(_conf.OPTION_OPTIMISTIC))
+        if (val && !_conf.supportedOptions().contains(OpenJPAConfiguration.OPTION_OPTIMISTIC))
             throw new UnsupportedException(_loc.get
                 ("optimistic-not-supported"));
 
@@ -671,7 +669,7 @@ public class BrokerImpl
                 return (_userObjects == null) ? null : _userObjects.remove(key);
 
             if (_userObjects == null)
-                _userObjects = new HashMap();
+                _userObjects = new HashMap<Object, Object>();
             return _userObjects.put(key, val);
         } finally {
             endOperation();
@@ -685,7 +683,7 @@ public class BrokerImpl
      * Optimistic flag. 
      */
     public Map<String, Object> getProperties() {
-        Map props = _conf.toProperties(true);
+        Map<String, Object> props = _conf.toProperties(true);
         for (String s : _supportedPropertyNames) {
             props.put("openjpa." + s, Reflection.getValue(this, s, true));
         }
@@ -1034,7 +1032,7 @@ public class BrokerImpl
         // array, so that we make sure not to create multiple sms for equivalent
         // oids if the user has duplicates in the given array
         if (_loading == null)
-            _loading = new HashMap((int) (oids.size() * 1.33 + 1));
+            _loading = new HashMap<Object, StateManagerImpl>((int) (oids.size() * 1.33 + 1));
 
         if (call == null)
             call = this;
@@ -1046,13 +1044,13 @@ public class BrokerImpl
             assertNontransactionalRead();
 
             // collection of state managers to pass to store manager
-            List load = null;
+            List<OpenJPAStateManager> load = null;
             StateManagerImpl sm;
             boolean initialized;
             boolean transState = useTransactionalState(fetch);
             Object obj, oid;
             int idx = 0;
-            for (Iterator itr = oids.iterator(); itr.hasNext(); idx++) {
+            for (Iterator<?> itr = oids.iterator(); itr.hasNext(); idx++) {
                 // if we've already seen this oid, skip repeats
                 obj = itr.next();
                 oid = call.processArgument(obj);
@@ -1073,7 +1071,7 @@ public class BrokerImpl
                     if (initialized && !sm.isTransactional() && transState)
                         sm.transactional();
                     if (load == null)
-                        load = new ArrayList(oids.size() - idx);
+                        load = new ArrayList<OpenJPAStateManager>(oids.size() - idx);
                     load.add(sm);
                 } else if (!initialized)
                     sm.initialize(sm.getMetaData().getDescribedType(),
@@ -1085,14 +1083,14 @@ public class BrokerImpl
             if (load != null) {
                 PCState state = (transState) ? PCState.PCLEAN
                     : PCState.PNONTRANS;
-                Collection failed = _store.loadAll(load, state,
+                Collection<Object> failed = _store.loadAll(load, state,
                     StoreManager.FORCE_LOAD_NONE, fetch, edata);
 
                 // set failed instances to null
                 if (failed != null && !failed.isEmpty()) {
                     if ((flags & OID_NOVALIDATE) != 0)
                         throw newObjectNotFoundException(failed);
-                    for (Iterator itr = failed.iterator(); itr.hasNext();)
+                    for (Iterator<Object> itr = failed.iterator(); itr.hasNext();)
                         _loading.put(itr.next(), null);
                 }
             }
@@ -1103,9 +1101,9 @@ public class BrokerImpl
             boolean active = (_flags & FLAG_ACTIVE) != 0;
             int level = fetch.getReadLockLevel();
             idx = 0;
-            for (Iterator itr = oids.iterator(); itr.hasNext(); idx++) {
+            for (Iterator<?> itr = oids.iterator(); itr.hasNext(); idx++) {
                 oid = itr.next();
-                sm = (StateManagerImpl) _loading.get(oid);
+                sm = _loading.get(oid);
                 if (sm != null && requiresLoad(sm, true, fetch, edata, flags)) {
                     try {
                         sm.load(fetch, StateManagerImpl.LOAD_FGS,
@@ -1185,7 +1183,7 @@ public class BrokerImpl
         }
     }
 
-    public Class getObjectIdType(Class cls) {
+    public Class<?> getObjectIdType(Class<?> cls) {
         if (cls == null)
             return null;
 
@@ -1209,7 +1207,7 @@ public class BrokerImpl
         }
     }
 
-    public Object newObjectId(Class cls, Object val) {
+    public Object newObjectId(Class<?> cls, Object val) {
         if (val == null)
             return null;
 
@@ -1269,13 +1267,13 @@ public class BrokerImpl
         // see if we're in the process of loading this oid in a loadAll call
         StateManagerImpl sm;
         if (_loading != null) {
-            sm = (StateManagerImpl) _loading.get(oid);
+            sm = _loading.get(oid);
             if (sm != null && sm.getPersistenceCapable() == null)
                 return sm;
         }
 
         // find metadata for the oid
-        Class pcType = _store.getManagedType(oid);
+        Class<?> pcType = _store.getManagedType(oid);
         MetaDataRepository repos = _conf.getMetaDataRepositoryInstance();
         ClassMetaData meta;
         if (pcType != null)
@@ -1355,7 +1353,7 @@ public class BrokerImpl
 
         if (_pending != null) {
             StateManagerImpl sm;
-            for (Iterator it = _pending.iterator(); it.hasNext();) {
+            for (Iterator<StateManagerImpl> it = _pending.iterator(); it.hasNext();) {
                 sm = (StateManagerImpl) it.next();
                 sm.transactional();
                 if (sm.isDirty())
@@ -1734,7 +1732,7 @@ public class BrokerImpl
                 // more info per state
                 SavepointFieldManager fm;
                 StateManagerImpl sm;
-                for (Iterator itr = saved.iterator(); itr.hasNext();) {
+                for (Iterator<?> itr = saved.iterator(); itr.hasNext();) {
                     fm = (SavepointFieldManager) itr.next();
                     sm = fm.getStateManager();
                     sm.rollbackToSavepoint(fm);
@@ -1744,7 +1742,7 @@ public class BrokerImpl
                     else
                         newTransCache.addClean(sm);
                 }
-                for (Iterator itr = oldTransCache.iterator(); itr.hasNext();) {
+                for (Iterator<?> itr = oldTransCache.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
                     sm.rollback();
                     removeFromTransaction(sm);
@@ -1772,7 +1770,7 @@ public class BrokerImpl
                 return;
 
             // make sure the runtime supports it
-            if (!_conf.supportedOptions().contains(_conf.OPTION_INC_FLUSH))
+            if (!_conf.supportedOptions().contains(OpenJPAConfiguration.OPTION_INC_FLUSH))
                 throw new UnsupportedException(_loc.get
                     ("incremental-flush-not-supported"));
             if (_savepoints != null && !_savepoints.isEmpty()
@@ -1820,7 +1818,7 @@ public class BrokerImpl
             }
 
             // make sure the runtime supports inc flush
-            if (!_conf.supportedOptions().contains(_conf.OPTION_INC_FLUSH))
+            if (!_conf.supportedOptions().contains(OpenJPAConfiguration.OPTION_INC_FLUSH))
                 throw new UnsupportedException(_loc.get
                     ("incremental-flush-not-supported"));
 
@@ -2059,8 +2057,8 @@ public class BrokerImpl
             // dependents
             _flags |= FLAG_DEREFDELETING;
             if (flush && _derefCache != null && !_derefCache.isEmpty()) {
-                for (Iterator itr = _derefCache.iterator(); itr.hasNext();)
-                    deleteDeref((StateManagerImpl) itr.next());
+                for (Iterator<StateManagerImpl> itr = _derefCache.iterator(); itr.hasNext();)
+                    deleteDeref(itr.next());
                 flushAdditions(transactional, reason);
             }
 
@@ -2108,7 +2106,7 @@ public class BrokerImpl
         }
 
         // flush to store manager
-        List exceps = null;
+        List<Exception> exceps = null;
         try {
             if (flush && reason != FLUSH_LOGICAL) {
                 _flags |= FLAG_STORE_FLUSHING;
@@ -2242,13 +2240,12 @@ public class BrokerImpl
      * Throw the proper exception based on the given set of flush errors, or
      * do nothing if no errors occurred.
      */
-    private OpenJPAException newFlushException(Collection exceps) {
+    private OpenJPAException newFlushException(Collection<Exception> exceps) {
         if (exceps == null || exceps.isEmpty())
             return null;
 
-        Throwable[] t = (Throwable[]) exceps.toArray
-            (new Throwable[exceps.size()]);
-        List failed = new ArrayList(t.length);
+        Throwable[] t = exceps.toArray(new Throwable[exceps.size()]);
+        List<Object> failed = new ArrayList<Object>(t.length);
 
         // create fatal exception with nested exceptions for all the failed
         // objects; if all OL exceptions, throw a top-level OL exception
@@ -2281,7 +2278,7 @@ public class BrokerImpl
         // if a data store transaction was in progress, do the
         // appropriate transaction change
         boolean rollback = status != Status.STATUS_COMMITTED;
-        List exceps = null;
+        List<Exception> exceps = null;
 
         try {
             exceps = add(exceps, endStoreManagerTransaction(rollback));
@@ -2331,9 +2328,8 @@ public class BrokerImpl
         // rely on rollback and commit calls below cause some instances might
         // not be transactional
         if (_derefCache != null && !_derefCache.isEmpty()) {
-            for (Iterator itr = _derefCache.iterator(); itr.hasNext();)
-                ((StateManagerImpl) itr.next()).setDereferencedDependent
-                    (false, false);
+            for (Iterator<StateManagerImpl> itr = _derefCache.iterator(); itr.hasNext();)
+                itr.next().setDereferencedDependent(false, false);
             _derefCache = null;
         }
 
@@ -2414,11 +2410,11 @@ public class BrokerImpl
             return;
 
         beginOperation(true);
-        List exceps = null;
+        List<Exception> exceps = null;
         try {
             assertWriteOperation();
 
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     persist(itr.next(), explicit, call);
                 } catch (UserException ue) {
@@ -2435,11 +2431,11 @@ public class BrokerImpl
      * If the given element is not null, add it to the given list,
      * creating the list if necessary.
      */
-    private List add(List l, Object o) {
+    private List<Exception> add(List<Exception> l, Exception o) {
         if (o == null)
             return l;
         if (l == null)
-            l = new LinkedList();
+            l = new LinkedList<Exception>();
         l.add(o);
         return l;
     }
@@ -2447,15 +2443,14 @@ public class BrokerImpl
     /**
      * Throw an exception wrapping the given nested exceptions.
      */
-    private void throwNestedExceptions(List exceps, boolean datastore) {
+    private void throwNestedExceptions(List<Exception> exceps, boolean datastore) {
         if (exceps == null || exceps.isEmpty())
             return;
         if (datastore && exceps.size() == 1)
             throw (RuntimeException) exceps.get(0);
 
         boolean fatal = false;
-        Throwable[] t = (Throwable[]) exceps.toArray
-            (new Throwable[exceps.size()]);
+        Throwable[] t = exceps.toArray(new Throwable[exceps.size()]);
         for (int i = 0; i < t.length; i++) {
             if (t[i] instanceof OpenJPAException
                 && ((OpenJPAException) t[i]).isFatal())
@@ -2623,9 +2618,9 @@ public class BrokerImpl
         try {
             assertWriteOperation();
 
-            List exceps = null;
+            List<Exception> exceps = null;
             Object obj;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     obj = itr.next();
                     if (obj != null)
@@ -2707,8 +2702,8 @@ public class BrokerImpl
     public void releaseAll(Collection objs, OpCallbacks call) {
         beginOperation(false);
         try {
-            List exceps = null;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            List<Exception> exceps = null;
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     release(itr.next(), call);
                 } catch (UserException ue) {
@@ -2777,7 +2772,7 @@ public class BrokerImpl
 
             PersistenceCapable copy;
             PCState state;
-            Class type = meta.getDescribedType();
+            Class<?> type = meta.getDescribedType();
             if (obj != null) {
                 // give copy and the original instance the same state manager
                 // so that we can copy fields from one to the other
@@ -2837,7 +2832,7 @@ public class BrokerImpl
         try {
             assertOpen();
             Object oid = copy.fetchObjectId();
-            Class type = copy.getManagedInstance().getClass();
+            Class<?> type = copy.getManagedInstance().getClass();
             if (oid == null)
                 throw new InternalException();
             // cached instance?
@@ -2867,7 +2862,7 @@ public class BrokerImpl
         try {
             assertNontransactionalRead();
 
-            for (Iterator itr = objs.iterator(); itr.hasNext();) 
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) 
                 gatherCascadeRefresh(itr.next(), call);
             if (_operating.isEmpty())
             	return;
@@ -2928,13 +2923,13 @@ public class BrokerImpl
     protected void refreshInternal(Collection objs, OpCallbacks call) {
     	if (objs == null || objs.isEmpty())
     		return;
-        List exceps = null;
+        List<Exception> exceps = null;
         try {
             // collect instances that need a refresh
-            Collection load = null;
+            Collection<OpenJPAStateManager> load = null;
             StateManagerImpl sm;
             Object obj;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
                 if (obj == null)
                     continue;
@@ -2950,7 +2945,7 @@ public class BrokerImpl
                             throw newDetachedException(obj, "refresh");
                         else if (sm.beforeRefresh(true)) {
                         	if (load == null)
-                        		load = new ArrayList(objs.size());
+                        		load = new ArrayList<OpenJPAStateManager>(objs.size());
                             load.add(sm);
                         }
                         int level = _fc.getReadLockLevel();
@@ -2967,14 +2962,14 @@ public class BrokerImpl
 
             // refresh all
             if (load != null) {
-                Collection failed = _store.loadAll(load, null,
+                Collection<Object> failed = _store.loadAll(load, null,
                     StoreManager.FORCE_LOAD_REFRESH, _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
 
                 // perform post-refresh transitions and make sure all fetch
                 // group fields are loaded
-                for (Iterator itr = load.iterator(); itr.hasNext();) {
+                for (Iterator<OpenJPAStateManager> itr = load.iterator(); itr.hasNext();) {
                     sm = (StateManagerImpl) itr.next();
                     if (failed != null && failed.contains(sm.getId()))
                         continue;
@@ -2990,7 +2985,7 @@ public class BrokerImpl
             }
 
             // now invoke postRefresh on all the instances
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     sm = getStateManagerImpl(itr.next(), true);
                     if (sm != null && !sm.isDetached())
@@ -3051,7 +3046,7 @@ public class BrokerImpl
             return;
         }
 
-        List exceps = null;
+        List<Exception> exceps = null;
         beginOperation(true);
         try {
             assertOpen();
@@ -3059,10 +3054,10 @@ public class BrokerImpl
 
             // collect all hollow instances for load
             Object obj;
-            Collection load = null;
+            Collection<OpenJPAStateManager> load = null;
             StateManagerImpl sm;
-            Collection sms = new ArrayList(objs.size());
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            Collection<StateManagerImpl> sms = new ArrayList<StateManagerImpl>(objs.size());
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
                 if (obj == null)
                     continue;
@@ -3080,7 +3075,7 @@ public class BrokerImpl
                             sms.add(sm);
                             if (sm.getPCState() == PCState.HOLLOW) {
                                 if (load == null)
-                                    load = new ArrayList();
+                                    load = new ArrayList<OpenJPAStateManager>();
                                 load.add(sm);
                             }
                         }
@@ -3093,18 +3088,18 @@ public class BrokerImpl
             }
 
             // load all hollow instances
-            Collection failed = null;
+            Collection<Object> failed = null;
             if (load != null) {
-                int mode = (dfgOnly) ? _store.FORCE_LOAD_DFG
-                    : _store.FORCE_LOAD_ALL;
+                int mode = (dfgOnly) ? StoreManager.FORCE_LOAD_DFG
+                    : StoreManager.FORCE_LOAD_ALL;
                 failed = _store.loadAll(load, null, mode, _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps, newObjectNotFoundException(failed));
             }
 
             // retrieve all non-failed instances
-            for (Iterator itr = sms.iterator(); itr.hasNext();) {
-                sm = (StateManagerImpl) itr.next();
+            for (Iterator<StateManagerImpl> itr = sms.iterator(); itr.hasNext();) {
+                sm = itr.next();
                 if (failed != null && failed.contains(sm.getId()))
                     continue;
 
@@ -3166,10 +3161,10 @@ public class BrokerImpl
         beginOperation(false);
         try {
             // evict all PClean and PNonTrans objects
-            Collection c = getManagedStates();
+            Collection<StateManagerImpl> c = getManagedStates();
             StateManagerImpl sm;
-            for (Iterator itr = c.iterator(); itr.hasNext();) {
-                sm = (StateManagerImpl) itr.next();
+            for (Iterator<StateManagerImpl> itr = c.iterator(); itr.hasNext();) {
+                sm = itr.next();
                 if (sm.isPersistent() && !sm.isDirty())
                     evict(sm.getManagedInstance(), call);
             }
@@ -3180,10 +3175,10 @@ public class BrokerImpl
     }
 
     public void evictAll(Collection objs, OpCallbacks call) {
-        List exceps = null;
+        List<Exception> exceps = null;
         beginOperation(false);
         try {
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     evict(itr.next(), call);
                 } catch (UserException ue) {
@@ -3203,11 +3198,11 @@ public class BrokerImpl
         beginOperation(false);
         try {
             // evict all PClean and PNonTrans objects in extent
-            Collection c = getManagedStates();
+            Collection<StateManagerImpl> c = getManagedStates();
             StateManagerImpl sm;
-            Class cls;
-            for (Iterator itr = c.iterator(); itr.hasNext();) {
-                sm = (StateManagerImpl) itr.next();
+            Class<?> cls;
+            for (Iterator<StateManagerImpl> itr = c.iterator(); itr.hasNext();) {
+                sm = itr.next();
                 if (sm.isPersistent() && !sm.isDirty()) {
                     cls = sm.getMetaData().getDescribedType();
                     if (cls == extent.getElementType()
@@ -3310,10 +3305,10 @@ public class BrokerImpl
     }
 
     private void detachAllInternal(OpCallbacks call) {
-        Collection states = getManagedStates();
+        Collection<StateManagerImpl> states = getManagedStates();
         StateManagerImpl sm;
-        for (Iterator itr = states.iterator(); itr.hasNext();) {
-            sm = (StateManagerImpl) itr.next();
+        for (Iterator<StateManagerImpl> itr = states.iterator(); itr.hasNext();) {
+            sm = itr.next();
             if (!sm.isPersistent())
                 itr.remove();
             else if (!sm.getMetaData().isDetachable()) {
@@ -3393,8 +3388,8 @@ public class BrokerImpl
     public void nontransactionalAll(Collection objs, OpCallbacks call) {
         beginOperation(true);
         try {
-            List exceps = null;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            List<Exception> exceps = null;
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 try {
                     nontransactional(itr.next(), call);
                 } catch (UserException ue) {
@@ -3444,13 +3439,13 @@ public class BrokerImpl
         try {
             // collect all hollow instances for load, and make unmananged
             // instances transient-transactional
-            Collection load = null;
+            Collection<OpenJPAStateManager> load = null;
             Object obj;
             StateManagerImpl sm;
             ClassMetaData meta;
-            Collection sms = new LinkedHashSet(objs.size());
-            List exceps = null;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            Collection<StateManagerImpl> sms = new LinkedHashSet<StateManagerImpl>(objs.size());
+            List<Exception> exceps = null;
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
                 if (obj == null)
                     continue;
@@ -3475,7 +3470,7 @@ public class BrokerImpl
                         sms.add(sm);
                         if (sm.getPCState() == PCState.HOLLOW) {
                             if (load == null)
-                                load = new ArrayList();
+                                load = new ArrayList<OpenJPAStateManager>();
                             load.add(sm);
                         }
 
@@ -3491,9 +3486,9 @@ public class BrokerImpl
             }
 
             // load all hollow instances
-            Collection failed = null;
+            Collection<Object> failed = null;
             if (load != null) {
-                failed = _store.loadAll(load, null, _store.FORCE_LOAD_NONE,
+                failed = _store.loadAll(load, null, StoreManager.FORCE_LOAD_NONE,
                     _fc, null);
                 if (failed != null && !failed.isEmpty())
                     exceps = add(exceps,
@@ -3556,10 +3551,10 @@ public class BrokerImpl
      * Transition the given state managers to transactional.
      */
     private void transactionalStatesAll(Collection sms, Collection failed,
-        List exceps) {
+        List<Exception> exceps) {
         // make instances transactional and make sure they are loaded
         StateManagerImpl sm;
-        for (Iterator itr = sms.iterator(); itr.hasNext();) {
+        for (Iterator<?> itr = sms.iterator(); itr.hasNext();) {
             sm = (StateManagerImpl) itr.next();
             if (failed != null && failed.contains(sm.getId()))
                 continue;
@@ -3791,10 +3786,10 @@ public class BrokerImpl
         try {
             assertActiveTransaction();
 
-            Collection sms = new LinkedHashSet(objs.size());
+            Collection<StateManagerImpl> sms = new LinkedHashSet<StateManagerImpl>(objs.size());
             Object obj;
             StateManagerImpl sm;
-            for (Iterator itr = objs.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
                 obj = itr.next();
                 if (obj == null)
                     continue;
@@ -3808,8 +3803,8 @@ public class BrokerImpl
             }
 
             _lm.lockAll(sms, level, timeout, null);
-            for (Iterator itr = sms.iterator(); itr.hasNext();)
-                ((StateManagerImpl) itr.next()).readLocked(level, level);
+            for (Iterator<StateManagerImpl> itr = sms.iterator(); itr.hasNext();)
+                itr.next().readLocked(level, level);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
@@ -3846,7 +3841,7 @@ public class BrokerImpl
     public Object getConnection() {
         assertOpen();
         if (!_conf.supportedOptions().contains
-            (_conf.OPTION_DATASTORE_CONNECTION))
+            (OpenJPAConfiguration.OPTION_DATASTORE_CONNECTION))
             throw new UnsupportedException(_loc.get("conn-not-supported"));
 
         return _store.getClientConnection();
@@ -3969,7 +3964,7 @@ public class BrokerImpl
     protected Collection getPendingTransactionalStates() {
         if (_pending == null)
             return Collections.EMPTY_SET;
-        return new LinkedHashSet(_pending);
+        return new LinkedHashSet<StateManagerImpl>(_pending);
     }
 
     /**
@@ -4057,7 +4052,7 @@ public class BrokerImpl
 
         if (_savepoints != null && !_savepoints.isEmpty()) {
             if (_savepointCache == null)
-                _savepointCache = new HashSet();
+                _savepointCache = new HashSet<StateManagerImpl>();
             _savepointCache.add(sm);
         }
 
@@ -4072,15 +4067,15 @@ public class BrokerImpl
                 // also record that the class is dirty
                 if (sm.isNew()) {
                     if (_persistedClss == null)
-                        _persistedClss = new HashSet();
+                        _persistedClss = new HashSet<Class<?>>();
                     _persistedClss.add(sm.getMetaData().getDescribedType());
                 } else if (sm.isDeleted()) {
                     if (_deletedClss == null)
-                        _deletedClss = new HashSet();
+                        _deletedClss = new HashSet<Class<?>>();
                     _deletedClss.add(sm.getMetaData().getDescribedType());
                 } else {
                     if (_updatedClss == null)
-                        _updatedClss = new HashSet();
+                        _updatedClss = new HashSet<Class<?>>();
                     _updatedClss.add(sm.getMetaData().getDescribedType());
                 }
 
@@ -4089,7 +4084,7 @@ public class BrokerImpl
                 // enter the transaction during pre store
                 if ((_flags & FLAG_PRESTORING) != 0) {
                     if (_transAdditions == null)
-                        _transAdditions = new HashSet();
+                        _transAdditions = new HashSet<StateManagerImpl>();
                     _transAdditions.add(sm);
                 }
             } finally {
@@ -4107,7 +4102,7 @@ public class BrokerImpl
         lock();
         try {
             if (_pending == null)
-                _pending = new HashSet();
+                _pending = new HashSet<StateManagerImpl>();
             _pending.add(sm);
         } finally {
             unlock();
@@ -4141,11 +4136,11 @@ public class BrokerImpl
             // via instance callbacks, add them to the special additions set
             if ((_flags & FLAG_DEREFDELETING) != 0) {
                 if (_derefAdditions == null)
-                    _derefAdditions = new HashSet();
+                    _derefAdditions = new HashSet<StateManagerImpl>();
                 _derefAdditions.add(sm);
             } else {
                 if (_derefCache == null)
-                    _derefCache = new HashSet();
+                    _derefCache = new HashSet<StateManagerImpl>();
                 _derefCache.add(sm);
             }
         }
@@ -4181,7 +4176,7 @@ public class BrokerImpl
         beginOperation(false);
         try {
             if (_updatedClss == null)
-                _updatedClss = new HashSet();
+                _updatedClss = new HashSet<Class<?>>();
             _updatedClss.add(cls);
         } finally {
             endOperation();
@@ -4272,7 +4267,7 @@ public class BrokerImpl
         _savepointCache = null;
 
         if (_queries != null) {
-            for (Iterator itr = _queries.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = _queries.iterator(); itr.hasNext();) {
                 try {
                     ((Query) itr.next()).closeResources();
                 } catch (RuntimeException re) {
@@ -4283,7 +4278,7 @@ public class BrokerImpl
 
         if (_extents != null) {
             Extent e;
-            for (Iterator itr = _extents.iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = _extents.iterator(); itr.hasNext();) {
                 e = (Extent) itr.next();
                 try {
                     e.closeAll();
@@ -4492,7 +4487,7 @@ public class BrokerImpl
 
         // check for different instances of the PersistenceCapable interface
         // and throw a better error that mentions the class loaders
-        Class[] intfs = obj.getClass().getInterfaces();
+        Class<?>[] intfs = obj.getClass().getInterfaces();
         for (int i = 0; intfs != null && i < intfs.length; i++) {
             if (intfs[i].getName().equals(PersistenceCapable.class.getName())) {
                 throw new UserException(_loc.get("pc-loader-different",
@@ -4565,7 +4560,7 @@ public class BrokerImpl
         (Collection failed) {
         Throwable[] t = new Throwable[failed.size()];
         int idx = 0;
-        for (Iterator itr = failed.iterator(); itr.hasNext(); idx++)
+        for (Iterator<?> itr = failed.iterator(); itr.hasNext(); idx++)
             t[idx] = new ObjectNotFoundException(itr.next());
         return new ObjectNotFoundException(failed, t);
     }
@@ -4647,8 +4642,8 @@ public class BrokerImpl
         implements Set, Serializable {
 
         private final boolean _orderDirty;
-        private Set _dirty = null;
-        private Set _clean = null;
+        private Set<StateManagerImpl> _dirty = null;
+        private Set<StateManagerImpl> _clean = null;
 
         public TransactionalCache(boolean orderDirty) {
             _orderDirty = orderDirty;
@@ -4666,10 +4661,10 @@ public class BrokerImpl
             // big by some
             Set copy = new LinkedHashSet(size());
             if (_dirty != null)
-                for (Iterator itr = _dirty.iterator(); itr.hasNext();)
+                for (Iterator<StateManagerImpl> itr = _dirty.iterator(); itr.hasNext();)
                     copy.add(itr.next());
             if (_clean != null)
-                for (Iterator itr = _clean.iterator(); itr.hasNext();)
+                for (Iterator<StateManagerImpl> itr = _clean.iterator(); itr.hasNext();)
                     copy.add(itr.next());
             return copy;
         }
@@ -4680,7 +4675,7 @@ public class BrokerImpl
         public Collection copyDirty() {
             if (_dirty == null || _dirty.isEmpty())
                 return Collections.EMPTY_SET;
-            return new LinkedHashSet(_dirty);
+            return new LinkedHashSet<StateManagerImpl>(_dirty);
         }
 
         /**
@@ -4713,7 +4708,7 @@ public class BrokerImpl
                 if (_orderDirty)
                     _dirty = MapBackedSet.decorate(new LinkedMap());
                 else
-                    _dirty = new HashSet();
+                    _dirty = new HashSet<StateManagerImpl>();
             }
             if (_dirty.add(sm))
                 removeCleanInternal(sm);
@@ -4746,7 +4741,7 @@ public class BrokerImpl
         }
 
         public boolean containsAll(Collection coll) {
-            for (Iterator itr = coll.iterator(); itr.hasNext();)
+            for (Iterator<?> itr = coll.iterator(); itr.hasNext();)
                 if (!contains(itr.next()))
                     return false;
             return true;
