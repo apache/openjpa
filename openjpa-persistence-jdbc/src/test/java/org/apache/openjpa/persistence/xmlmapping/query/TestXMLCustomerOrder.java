@@ -28,7 +28,6 @@ import junit.textui.TestRunner;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -45,6 +44,10 @@ import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddres
  * Test query with predicates on persistent field mapped to XML column.
  * Samples of platform specific sqls are under resources in
  * TestXMLCustomerOrder.[dbname] files.
+ * 
+ * DB2 requires some special options on the database creation to allow for
+ * native XML support:
+ * create database test using codeset utf-8 territory us
  * 
  * @author Catalina Wei
  * @author Milosz Tylenda
