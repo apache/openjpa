@@ -1530,6 +1530,9 @@ public class JDBCStoreManager
             }
         }
 
+        /*
+         * Non-thread-safe method.  Ensure protection in the call path...
+         */
         public void free() {
             // ensure that we do not close the underlying connection
             // multiple times; this could happen if someone (e.g., an
