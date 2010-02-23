@@ -150,49 +150,6 @@ openjpa.RemoteCommitProvider</literal></link> property to <literal>sjvm
 &lt;property name="openjpa.RemoteCommitProvider" value="sjvm"/&gt;
 </programlisting>
             </example>
-
-<section id="ref_guide_cache_distribution">
-   <title>"Distributing instanes across cache partitions"</title>
-            <para>
-            
-OpenJPA also supports a partitioned cache configuration where the cached
-instances can be distributed across partitions by a application-defined
-policy. Each partition behaves as a data cache by itself, identified by its name and can
-configured individually. The distribution policy 
-determines the specific partition that stores the state of a managed instance.
-The default distribution policy distributes the instances by their type
-as specified by the <literal>name</literal> attribute in <literal>@DataCache</literal> 
-annotation. Cache distribution policy is a simple interface that can be implemented
-by an application to distribute among the partitions per instance basis.               
-To enable a partitioned cache set the <literal>openjpa.DataCache</literal>
-property to <literal>partitioned</literal>, and configure individual partitions
-as follows:
-            </para>
-            <example id="ref_guide_cache_conf_partition">
-                <title>
-                    Partitioned Data Cache
-                </title>
-<programlisting>
-&lt;property name="openjpa.CacheDistributionPolicy" value="org.acme.foo.DistributionPolicy"/&gt;
-&lt;property name="openjpa.DataCache" value="partitioned(PartitionType=concurrent,partitions=
-                '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/&gt;
-</programlisting>
-            </example>
-</section>
-            <para>
-The distribution policy is configured by a full-qualified class name that implements 
-<literal>org.apache.openjpa.datacahe.CacheDistributionPolicy</literal>. The partitions
-are specified as value of <literal>partitions</literal> attribute as a series of
-individually configurable plug-in strings. As the example shows, i) each partition plug-in configuration
-must be enclosed in parentheses, ii) must be separated by comma and iii) the complete
-set be enclosed in single quote. Each individual partition is a Data Cache by itself and
-class that implements the partition can be configured via <literal>PartitionType</literal>
-attribute. The above example configuration will configure a partitioned cache with
-two partitions named <literal>a</literal> and <literal>b</literal> of cache size 100 and 200
-respectively. The partitions are of <literal>concurrent</literal> type which is a mnemonic or alias
-for <literal>org.apache.openjpa.datacache.ConcurrentDataCache</literal>. The <literal>PartitionType</literal>
-is defaulted to <literal>concurrent</literal> though explicitly mentioned in this example.         
-            </para>
             <para>
 To configure the data cache to remain up-to-date in a distributed environment,
 set the <link linkend="openjpa.RemoteCommitProvider"><literal>
@@ -360,6 +317,48 @@ past 3 PM on Sunday.
 <programlisting>
 true(EvictionSchedule='15,45 15 * * 1')
 </programlisting>
+<section id="ref_guide_cache_distribution">
+   <title>Distributing instances across cache partitions</title>
+            <para>
+            
+OpenJPA also supports a partitioned cache configuration where the cached
+instances can be distributed across partitions by an application-defined
+policy. Each partition behaves as a data cache by itself, identified by its name and can
+be configured individually. The distribution policy 
+determines the specific partition that stores the state of a managed instance.
+The default distribution policy distributes the instances by their type
+as specified by the <literal>name</literal> attribute in <literal>@DataCache</literal> 
+annotation. Cache distribution policy is a simple interface that can be implemented
+by an application to distribute among the partitions on a per instance basis.               
+To enable a partitioned cache set the <literal>openjpa.DataCache</literal>
+property to <literal>partitioned</literal>, and configure individual partitions
+as follows:
+            </para>
+            <example id="ref_guide_cache_conf_partition">
+                <title>
+                    Partitioned Data Cache
+                </title>
+<programlisting>
+&lt;property name="openjpa.CacheDistributionPolicy" value="org.acme.foo.DistributionPolicy"/&gt;
+&lt;property name="openjpa.DataCache" value="partitioned(PartitionType=concurrent,partitions=
+                '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/&gt;
+</programlisting>
+            </example>
+</section>
+            <para>
+The distribution policy is configured by a full-qualified class name that implements 
+<literal>org.apache.openjpa.datacahe.CacheDistributionPolicy</literal>. The partitions
+are specified as value of the <literal>partitions</literal> attribute as a series of
+individually configurable plug-in strings. As the example shows, i) each partition plug-in configuration
+must be enclosed in parentheses, ii) must be separated by comma and iii) the complete
+set be enclosed in single quote. Each individual partition is a Data Cache by itself and
+the class that implements the partition can be configured via <literal>PartitionType</literal>
+attribute. The above example configuration will configure a partitioned cache with
+two partitions named <literal>a</literal> and <literal>b</literal> of cache size 100 and 200, 
+respectively. The partitions are of <literal>concurrent</literal> type which is a mnemonic or alias
+for <literal>org.apache.openjpa.datacache.ConcurrentDataCache</literal>. The <literal>PartitionType</literal>
+is defaulted to <literal>concurrent</literal> though explicitly mentioned in this example.         
+            </para>
         </section>
         <section id="ref_guide_cache_use">
             <title>
