@@ -21,40 +21,54 @@
     Maven release plugin requires the project tag to be on a single line. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
       <version>6</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>2.0.4</maven>
-    </prerequisites>
+
     <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>OpenJPA</description>
-
-    <properties>
-        <openjpa.version>${pom.version}</openjpa.version>
-        <openjpa.loglevel>INFO</openjpa.loglevel>
-        <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
-        <test.jvm.maxheapsize>512m</test.jvm.maxheapsize>
-        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
-        <!-- the sufire.jvm.args can be overridden my specific profiles -->
-        <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
-        <derby.version>10.2.2.0</derby.version>
-        <hsqldb.version>1.8.0.10</hsqldb.version>
-    </properties>
-
+    <description>Apache OpenJPA implementation of JSR-220 JPA 1.0</description>
     <!--
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
     <version>1.3.0-SNAPSHOT</version>
+
+    <properties>
+        <openjpa.version>${pom.version}</openjpa.version>
+        <openjpa.loglevel>INFO</openjpa.loglevel>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <!-- the test settings can be overridden my specific profiles -->
+        <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
+        <test.jvm.maxheapsize>512m</test.jvm.maxheapsize>
+        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
+        <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
+        <dbcp.maxActive>10</dbcp.maxActive>
+        <dbcp.maxIdle>5</dbcp.maxIdle>
+        <dbcp.minIdle>2</dbcp.minIdle>
+        <dbcp.maxWait>10000</dbcp.maxWait>
+        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
+        <derby.locks.waitTimeout>6</derby.locks.waitTimeout>
+        <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
+        <!-- Testcase @AllowFailure options:  ignore = silently skip test,
+             log = execute test and log results but don't fail the test,
+             anything else allows the test to execute normally
+        -->
+        <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
+        <!-- common JDBC driver versions -->
+        <derby.version>10.2.2.0</derby.version>
+        <hsqldb.version>1.8.0.10</hsqldb.version>
+        <mysql.version>5.1.12</mysql.version>
+    </properties>
+
     <url>http://openjpa.apache.org</url>
     <issueManagement>
         <system>jira</system>
@@ -95,6 +109,7 @@
         <name>Apache Software Foundation</name>
         <url>http://www.apache.org</url>
     </organization>
+
     <modules>
         <module>openjpa-lib</module>
         <module>openjpa-kernel</module>
@@ -109,6 +124,7 @@
         <module>openjpa-integration</module>
         <module>openjpa-all</module>
     </modules>
+
     <profiles>
         <profile>
             <id>release</id>

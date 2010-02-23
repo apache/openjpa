@@ -21,30 +21,22 @@
     Maven release plugin requires the project tag to be on a single line. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.openjpa</groupId>
-    <artifactId>openjpa-persistence-jdbc</artifactId>
-    <packaging>jar</packaging>
-    <name>OpenJPA Persistence JDBC</name>
-    <description>OpenJPA Persistence JDBC</description>
-    <url>http://openjpa.apache.org</url>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
-    <properties>
-        <dbcp.maxActive>10</dbcp.maxActive>
-        <dbcp.maxIdle>5</dbcp.maxIdle>
-        <dbcp.minIdle>2</dbcp.minIdle>
-        <dbcp.maxWait>10000</dbcp.maxWait>
-        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-        <derby.locks.waitTimeout>6</derby.locks.waitTimeout>        
-        <derby.locks.deadlockTimeout>5</derby.locks.deadlockTimeout>
-        <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
-    </properties>
-    <profiles>
 
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-persistence-jdbc</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenJPA Persistence JDBC</name>
+    <description>OpenJPA Persistence JDBC</description>
+
+    <profiles>
         <!-- Profile for testing with test-dynamic-enhancer -->
         <profile>
             <id>test-dynamic-enhancer</id>
@@ -205,11 +197,13 @@
                 </dependency>
             </dependencies>
             <properties>
-                <mysql.version>5.1.6</mysql.version>
                 <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
                 <connection.password>${openjpa.mysql.password}</connection.password>
+                <!-- DBCP overrides for MySQL testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
             </properties>
         </profile>
 
