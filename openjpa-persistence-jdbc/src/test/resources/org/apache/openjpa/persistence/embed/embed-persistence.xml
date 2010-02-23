@@ -23,6 +23,7 @@
     <persistence-unit name="AssocOverPU">
         <mapping-file>org/apache/openjpa/persistence/embed/embed-assoc-over-orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEmbed</class>
+        <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEmbedB</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityA</class>
         <class>org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEntityB</class>
             <properties>

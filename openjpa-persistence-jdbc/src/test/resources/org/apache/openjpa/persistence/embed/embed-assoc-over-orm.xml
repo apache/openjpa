@@ -37,6 +37,21 @@
                 </association-override>
                 <collection-table name="XML_EMBALIST"/>
             </element-collection>
+            <element-collection name="embaMap">
+                <association-override name="key.eb">
+                    <join-column name="key_emba_entb" />
+                </association-override>
+                <association-override name="key.meb">
+                    <join-column name="key_emba_mentb" />
+                </association-override>
+                <association-override name="value.eb">
+                    <join-column name="value_emba_entb" />
+                </association-override>
+                <association-override name="value.meb">
+                    <join-column name="value_emba_mentb" />
+                </association-override>
+                <collection-table name="XML_EMBAMAP_3"/>
+            </element-collection>
         </attributes>
     </entity>
     
@@ -69,4 +84,21 @@
             </one-to-one>
         </attributes>
     </embeddable>    
+    
+    <embeddable class="org.apache.openjpa.persistence.embed.attrOverrides.XMLAssocOverEmbedB">
+        <attributes>
+            <basic name="name"/>
+            <many-to-one name="meb">
+                <cascade>
+                    <cascade-all />
+                </cascade>
+            </many-to-one>
+            <one-to-one name="eb">
+                <cascade>
+                    <cascade-all />
+                </cascade>
+            </one-to-one>
+        </attributes>
+    </embeddable>    
+    
 </entity-mappings>

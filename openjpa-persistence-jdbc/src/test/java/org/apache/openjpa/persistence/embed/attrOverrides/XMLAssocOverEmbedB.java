@@ -18,39 +18,35 @@
  */
 package org.apache.openjpa.persistence.embed.attrOverrides;
 
-import java.util.List;
-import java.util.Map;
-
-public class XMLAssocOverEntityA {
-
-    private int id;
+public class XMLAssocOverEmbedB {
     
-    private List<XMLAssocOverEmbed> embaList;
+    private String name;
     
-    private Map<XMLAssocOverEmbedB, XMLAssocOverEmbed> embaMap;
+    private XMLAssocOverEntityB eb;
+
+    private XMLAssocOverEntityB meb;
     
-
-    public void setEmbA(List<XMLAssocOverEmbed> embA) {
-        this.embaList = embA;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<XMLAssocOverEmbed> getEmbA() {
-        return embaList;
+    public String getName() {
+        return name;
     }
 
-    public void setEmbAMap(Map<XMLAssocOverEmbedB, XMLAssocOverEmbed> embAMap) {
-        this.embaMap = embAMap;
+    public void setEb(XMLAssocOverEntityB eb) {
+        this.eb = eb;
     }
 
-    public Map<XMLAssocOverEmbedB, XMLAssocOverEmbed> getEmbAMap() {
-        return embaMap;
+    public XMLAssocOverEntityB getEb() {
+        return eb;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setMeb(XMLAssocOverEntityB meb) {
+        this.meb = meb;
     }
 
-    public int getId() {
-        return id;
-    }    
+    public XMLAssocOverEntityB getMeb() {
+        return meb;
+    }
 }
