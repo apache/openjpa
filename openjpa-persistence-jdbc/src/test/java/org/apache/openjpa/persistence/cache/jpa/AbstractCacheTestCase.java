@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.cache.jpa;
 
 import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 
@@ -60,13 +62,21 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
         em.close();
     }
 
-    public OpenJPAEntityManagerFactorySPI createEntityManagerFactory(String puName) {
+    public OpenJPAEntityManagerFactorySPI createEntityManagerFactory(String puName,
+        Map<String, Object> additionalProperties) {
+        Map<String, Object> propertiesMap = getPropertiesMap("openjpa.DataCache", "true",
+            "openjpa.QueryCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm", persistentTypes, 
+            "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
+        if (additionalProperties != null) {
+            Set<String> keys = additionalProperties.keySet();
+            for (String key : keys) {
+                propertiesMap.put(key, additionalProperties.get(key));
+            }
+        }
         OpenJPAEntityManagerFactorySPI emf =
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(puName,
-                "META-INF/caching-persistence.xml", getPropertiesMap("openjpa.DataCache", "true",
-                    "openjpa.QueryCache", "true",
-                    "openjpa.RemoteCommitProvider", "sjvm", persistentTypes, 
-                    "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() } ));
+                "META-INF/caching-persistence.xml", propertiesMap );
         return emf;
     }
 

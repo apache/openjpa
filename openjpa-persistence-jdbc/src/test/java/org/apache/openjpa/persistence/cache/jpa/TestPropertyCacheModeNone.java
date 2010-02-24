@@ -19,14 +19,16 @@
 package org.apache.openjpa.persistence.cache.jpa;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
-public class TestCacheModeNone extends AbstractCacheModeTestCase {
+public class TestPropertyCacheModeNone extends AbstractCacheModeTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
@@ -39,7 +41,9 @@ public class TestCacheModeNone extends AbstractCacheModeTestCase {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-none",null);
+            Map<String, Object> propertyMap = new HashMap<String, Object>();
+            propertyMap.put("javax.persistence.sharedCache.mode", "NONE");
+            emf = createEntityManagerFactory("cache-mode-empty", propertyMap);
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);

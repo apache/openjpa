@@ -38,7 +38,7 @@ public class TestCacheModeUnspecified extends AbstractCacheModeTestCase {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-unspecified");
+            emf = createEntityManagerFactory("cache-mode-unspecified", null);
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);

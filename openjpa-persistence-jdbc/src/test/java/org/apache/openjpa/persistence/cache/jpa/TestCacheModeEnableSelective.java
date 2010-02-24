@@ -47,7 +47,7 @@ public class TestCacheModeEnableSelective extends AbstractCacheModeTestCase {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-enable");
+            emf = createEntityManagerFactory("cache-mode-enable", null);
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);

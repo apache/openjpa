@@ -39,7 +39,7 @@ public class TestCacheModeAll extends AbstractCacheModeTestCase {
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-all");
+            emf = createEntityManagerFactory("cache-mode-all",null);
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);

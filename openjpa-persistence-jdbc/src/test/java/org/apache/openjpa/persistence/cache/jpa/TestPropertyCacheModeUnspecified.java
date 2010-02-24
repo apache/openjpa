@@ -19,27 +19,30 @@
 package org.apache.openjpa.persistence.cache.jpa;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
-public class TestCacheModeNone extends AbstractCacheModeTestCase {
-
+public class TestPropertyCacheModeUnspecified extends AbstractCacheModeTestCase {
     private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
     
-    private static Class<?>[] expectedInCache = {}; 
-    private static Class<?>[] expectedNotInCache = persistentTypes;
+    private static Class<?>[] expectedInCache = persistentTypes;
+    private static Class<?>[] expectedNotInCache = {};
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-none",null);
+            Map<String, Object> propertyMap = new HashMap<String, Object>();
+            propertyMap.put("javax.persistence.sharedCache.mode", "UNSPECIFIED");
+            emf = createEntityManagerFactory("cache-mode-empty", propertyMap);
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);
@@ -53,28 +56,23 @@ public class TestCacheModeNone extends AbstractCacheModeTestCase {
         }
         return listener;
     }
-
-    public List<String> getSql() {
+    
+    public List<String> getSql() { 
         return sql;
     }
     
-    @Override
-    public boolean getCacheEnabled() {
-        return false;
-    }
-
     public void testCacheables() {
-        assertCacheables(cache, false);
+        assertCacheables(cache, true);
     }
 
     public void testUncacheables() {
-        assertUncacheables(cache, false);
+        assertUncacheables(cache, true);
     }
 
     public void testUnspecified() {
-        assertUnspecified(cache, false);
+        assertUnspecified(cache, true);
     }
-    
+
     @Override
     protected Class<?>[] getExpectedInCache() {
         return expectedInCache;
@@ -84,5 +82,4 @@ public class TestCacheModeNone extends AbstractCacheModeTestCase {
     protected Class<?>[] getExpectedNotInCache() {
         return expectedNotInCache;
     }
-
 }
