@@ -82,7 +82,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
             assertSQLFragnments(_sql, "CREATE TABLE XML_EMBALIST .*" +
                 " .*emba_entb.*emba_mentb");
         
-            assertSQLFragnments(_sql, "CREATE TABLE XML_EMBAMAP_1 .*" +
+            assertSQLFragnments(_sql, "CREATE TABLE XML_EMBAMAP_3 .*" +
                 " .*key_emba_entb.*key_emba_mentb" + 
                 " .*value_emba_entb.*value_emba_mentb");
         } 
