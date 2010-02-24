@@ -96,7 +96,8 @@ abstract class CompareEqualExpression
         boolean val2Null = _val2 instanceof Const
             && ((Const) _val2).isSQLValueNull(sel, ctx, bstate.state2);
         appendTo(sel, ctx, bstate, buf, val1Null, val2Null);
-        sel.append(buf, state.joins);
+        if (sel != null)
+            sel.append(buf, state.joins);
     }
 
     public void selectColumns(Select sel, ExpContext ctx, ExpState state, 
