@@ -189,6 +189,7 @@ Improvement
 
 ** Test
     * [OPENJPA-1408] - Create test case binary and source jars in module
+    * [OPENJPA-1529] - Create new tests for bean caching mode
 
 
 Included Changes in OpenJPA 2.0.0 Beta
