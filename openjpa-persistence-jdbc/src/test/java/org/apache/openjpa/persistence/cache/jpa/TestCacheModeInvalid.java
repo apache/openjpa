@@ -32,6 +32,7 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
     public void setUp() {}
     
     public void testInvalidElement() {
+        boolean exceptionCaught = false;
         try {
             Map<String, Object> propertiesMap = getPropertiesMap("openjpa.DataCache", "true",
                 "openjpa.QueryCache", "true",
@@ -40,10 +41,12 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
             emf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("cache-mode-invalid",
                 "META-INF/caching-persistence-invalid.xml", propertiesMap );
         } catch (Throwable e) {
+            exceptionCaught = true;
             assertException(e, org.apache.openjpa.util.GeneralException.class);
             String msg = e.getMessage();
             assertTrue(msg.contains("org.xml.sax.SAXException"));
         }
+        assertTrue(exceptionCaught);
     }
 
     @Override
