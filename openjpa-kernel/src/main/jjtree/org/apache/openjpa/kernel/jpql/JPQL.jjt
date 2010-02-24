@@ -522,8 +522,8 @@ void select_expressions() #SELECTEXPRESSIONS : { }
 
 void select_expression() #SELECTEXPRESSION : { }
 {
-	(LOOKAHEAD(aggregate_select_expression()) aggregate_select_expression()
-		| LOOKAHEAD(scalar_expression()) scalar_expression()
+	(LOOKAHEAD(scalar_expression()) scalar_expression()
+		| LOOKAHEAD(aggregate_select_expression()) aggregate_select_expression()
 		| LOOKAHEAD(path()) path()
 		| LOOKAHEAD(qualified_path()) qualified_path()
 		| LOOKAHEAD(qualified_identification_variable()) qualified_identification_variable()

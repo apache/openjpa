@@ -70,6 +70,30 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    public void testMathAndAggregate() {
+        EntityManager em = currentEntityManager();
+        String query[] = {
+            "SELECT SUM(c.age) + SUM(c.userid) FROM CompUser c",
+            "SELECT SUM(c.age) * SUM(c.userid) FROM CompUser c",
+            "SELECT SUM(c.age) - MIN(c.userid) + MAX(c.userid) FROM CompUser c",
+        };
+        for (int i = 0; i < query.length; i++) {
+            List<Long> rs = em.createQuery(query[i]).getResultList();
+            assertTrue(rs.get(0) > 0);
+        }
+        String query2[] = {
+                "SELECT SUM(c.age) + SUM(c.userid), MIN(c.age) + MAX(c.age) FROM CompUser c",
+                "SELECT SUM(c.age) * SUM(c.userid), AVG(c.age) FROM CompUser c",
+                "SELECT SUM(c.age) - MIN(c.userid) + MAX(c.userid), AVG(c.age)/10 FROM CompUser c",
+        };
+        for (int i = 0; i < query2.length; i++) {
+            List<Object[]> rs = (List<Object[]>)em.createQuery(query2[i]).getResultList();
+            assertNotNull(rs.get(0)[1]);
+        }
+        endEm(em);
+    }
+
+    @SuppressWarnings("unchecked")
     public void testCoalesceExpressions() {
         EntityManager em = currentEntityManager();
         startTx(em);
