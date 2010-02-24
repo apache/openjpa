@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>2.0.0-beta2</version>
     </parent>
 
     <properties>
@@ -266,7 +266,7 @@
                                         <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
                                         <!-- Replace a 'base href' token to 'base target' in the index.html -->
                                         <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-										<replace file="${docbook.target}/index.html" token="base href" value="base target"/>
+										<replace file="${docbook.target}/index.html" token="base href" value="base target" />
                                         <!-- Copy main.html from original location to docbook target  -->
                                         <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
                                         <!-- copy over images and styles -->
@@ -392,10 +392,10 @@
                                 <configuration>
                                     <tasks>
                                         <ant antfile="upload.xml" target="upload" inheritRefs="true">
-                                            <property name="nightly.user.name" value="${nightly.user.name}"/>
-                                            <property name="nightly.password" value="${nightly.password}"/>
-                                            <property name="nightly.version" value="${nightly.version}"/>
-                                            <property name="pom.version" value="${pom.version}"/>
+                                            <property name="nightly.user.name" value="${nightly.user.name}" />
+                                            <property name="nightly.password" value="${nightly.password}" />
+                                            <property name="nightly.version" value="${nightly.version}" />
+                                            <property name="pom.version" value="${pom.version}" />
                                         </ant>
                                     </tasks>
                                 </configuration>
