@@ -24,9 +24,10 @@ known to work on Linux and Mac OSX. They are also reported to work from Windows.
 The most up to date version of these instructions may be found on the OpenJPA 
 website at http://openjpa.apache.org/building-openjpa.html
 
-   1. Ensure that Java SE 1.5 or 1.6 is installed and on your path by running:
+   1. Ensure that Java SE 6 is installed and on your path by running:
           java -version
-      OpenJPA requires Java 1.5 or later, but some features are only available
+      OpenJPA requires Java 1.6 or later to build, but still supports using
+      Java SE 5 for runtime even though some features are only available
       with Java SE 6.
    2. Install the build tool Apache Maven 2.0.9 or later, from:
           http://maven.apache.org/
@@ -64,9 +65,9 @@ An example session as as follows:
 $ cd /tmp/
 
 $ java -version
-java version "1.5.0_20"
-Java(TM) 2 Runtime Environment, Standard Edition (build 1.5.0_20-b02-315)
-Java HotSpot(TM) Client VM (build 1.5.0_20-144, mixed mode, sharing)
+java version "1.6.0_17"
+Java(TM) SE Runtime Environment (build 1.6.0_17-b04-248-10M3025)
+Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01-101, mixed mode)
 
 $ mvn -v
 Maven version: 2.0.10
@@ -91,7 +92,7 @@ java
  ...
 
 A  trunk/openjpa-persistence/pom.xml
-Checked out revision 822485.
+Checked out revision 915725.
 
 $ cd trunk/
 
@@ -127,32 +128,31 @@ $ mvn clean install -DfailIfNoTests=false -Dtest=
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] ------------------------------------------------------------------------
-[INFO] OpenJPA Parent POM .................................... SUCCESS [4.767s]
-[INFO] OpenJPA Utilities Library ............................. SUCCESS [13.592s]
-[INFO] OpenJPA Kernel ........................................ SUCCESS [14.810s]
-[INFO] OpenJPA JDBC .......................................... SUCCESS [6.430s]
-[INFO] OpenJPA Persistence ................................... SUCCESS [5.194s]
-[INFO] OpenJPA Persistence JDBC .............................. SUCCESS [56.944s]
-[INFO] OpenJPA Persistence Locking Tests ..................... SUCCESS [2.662s]
-[INFO] OpenJPA XML Store ..................................... SUCCESS [1.423s]
-[INFO] OpenJPA Slice ......................................... SUCCESS [2.742s]
-[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [10.928s]
-[INFO] OpenJPA Aggregate Jar with Dependencies ............... SUCCESS [4.026s]
-[INFO] OpenJPA Project Docs and Assemblies ................... SUCCESS [32.172s]
-[INFO] OpenJPA Examples ...................................... SUCCESS [1.085s]
-[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.195s]
-[INFO] OpenJPA Integration Tests - Examples .................. SUCCESS [0.128s]
-[INFO] OpenJPA Integration Tests - JPA TCK ................... SUCCESS [0.136s]
-[INFO] OpenJPA Integration Tests - Bean Validation ........... SUCCESS [2.956s]
+[INFO] OpenJPA Parent POM .................................... SUCCESS [8.999s]
+[INFO] OpenJPA Utilities Library ............................. SUCCESS [22.600s]
+[INFO] OpenJPA Kernel ........................................ SUCCESS [26.888s]
+[INFO] OpenJPA JDBC .......................................... SUCCESS [13.231s]
+[INFO] OpenJPA Persistence ................................... SUCCESS [8.635s]
+[INFO] OpenJPA Persistence JDBC .............................. SUCCESS [1:33.5s]
+[INFO] OpenJPA Persistence Locking Tests ..................... SUCCESS [3.857s]
+[INFO] OpenJPA XML Store ..................................... SUCCESS [1.294s]
+[INFO] OpenJPA Slice ......................................... SUCCESS [3.779s]
+[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [21.544s]
+[INFO] OpenJPA Aggregate Jar with Dependencies ............... SUCCESS [8.322s]
+[INFO] OpenJPA Project Docs and Assemblies ................... SUCCESS [1:12.6s]
+[INFO] OpenJPA Examples ...................................... SUCCESS [1.049s]
+[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.341s]
+[INFO] OpenJPA Integration Tests - Examples .................. SUCCESS [0.278s]
+[INFO] OpenJPA Integration Tests - JPA TCK ................... SUCCESS [0.229s]
+[INFO] OpenJPA Integration Tests - Bean Validation ........... SUCCESS [4.028s]
 [INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 2 minutes 42 seconds
-[INFO] Finished at: Wed Oct 07 12:38:44 EDT 2009
-[INFO] Final Memory: 96M/291M
+[INFO] Total time: 4 minutes 56 seconds
+[INFO] Finished at: Wed Feb 24 09:01:40 EST 2010
+[INFO] Final Memory: 110M/376M
 [INFO] ------------------------------------------------------------------------
-
 
 $ ls openjpa-project/target/site/downloads/
 
