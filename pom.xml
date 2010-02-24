@@ -249,6 +249,8 @@
                         <artifactId>maven-release-plugin</artifactId>
                         <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
+                            <!-- work-around for MJAR-68 -->
+                            <preparationGoals>clean install</preparationGoals>
                             <goals>deploy site site-deploy</goals>
                             <arguments>-Prelease,docbook-profile</arguments>
                             <autoVersionSubmodules>true</autoVersionSubmodules>
