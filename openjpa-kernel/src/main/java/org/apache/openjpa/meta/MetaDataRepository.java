@@ -631,14 +631,18 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 err &= resolveMapping(resolved.get(i));
 
         // throw errors encountered
+        // OPENJPA-1535 Always throw a MetaDataException because callers
+        // of loadRegisteredClassMetaData expect only MetaDataException
+        // to be thrown.
         if (err && !_errs.isEmpty()) {
             RuntimeException re;
-            if (_errs.size() == 1)
+            if ((_errs.size() == 1) && (_errs.get(0) instanceof MetaDataException)) {
                 re = _errs.get(0);
-            else
-                re =
-                    new MetaDataException(_loc.get("resolve-errs")).setNestedThrowables((Throwable[]) _errs
-                        .toArray(new Exception[_errs.size()]));
+            } else {
+                re = new MetaDataException(_loc.get("resolve-errs"))
+                    .setNestedThrowables((Throwable[]) _errs
+                    .toArray(new Exception[_errs.size()]));
+            }
             _errs.clear();
             throw re;
         }
