@@ -18,22 +18,16 @@
  */
 package org.apache.openjpa.datacache;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ObjectValue;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
-
-import serp.util.Strings;
 
 /**
  * Default data cache manager provides handle to utilities {@linkplain PCDataGenerator}, {@linkplain DataCacheScheduler}
@@ -53,7 +47,8 @@ public class DataCacheManagerImpl
     private DataCachePCDataGenerator _pcGenerator = null;
     private DataCacheScheduler _scheduler = null;
     private CacheDistributionPolicy _policy = new DefaultCacheDistributionPolicy();
-
+    private Map<ClassMetaData,Boolean> _cacheable = new HashMap<ClassMetaData, Boolean>();
+    
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
         _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
@@ -137,10 +132,16 @@ public class DataCacheManagerImpl
      * Affirms if the given type is eligible for cache.
      */
     public boolean isCachable(ClassMetaData meta) {
+        Boolean res = _cacheable.get(meta);
+        if(res != null){
+            return res;
+        }
+
         Boolean isCachable = isCacheableByMode(meta);
         if (isCachable == null) {
            isCachable = isCacheableByType(meta);
         }
+        _cacheable.put(meta, isCachable);
         return isCachable;
     }
     
