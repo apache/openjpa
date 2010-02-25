@@ -238,6 +238,7 @@ Bug
     * [OPENJPA-1341] - PostRemove not invoked after database record was deleted
     * [OPENJPA-1344] - Query [get|set]LockMode & Em getLockMode not throwing correct exceptions
     * [OPENJPA-1349] - Compatibility options are not set appropriately for spec level when emf is created by JEE container
+    * [OPENJPA-1350] - Race condition in the MetaDataRepository
     * [OPENJPA-1351] - java.lang.ClassCastException: javax.naming.Reference incompatible with javax.sql.DataSource
     * [OPENJPA-1352] - Merge fails if an entity has an element collection which is contructed using Arrays.asList
     * [OPENJPA-1354] - Configuring DBCP connection pool with connection properties breaks when user/pasword is specifed and javax.* configuration is set to DBCP Driver
