@@ -133,6 +133,7 @@ public class MetaDataRepository
 
     // we buffer up any classes that register themselves to prevent
     // reentrancy errors if classes register during a current parse (common)
+    private boolean _registeredEmpty = true;
     private final Collection _registered = new HashSet();
 
     // set of metadatas we're in the process of resolving
@@ -1361,6 +1362,7 @@ public class MetaDataRepository
         // buffer registered classes until an oid metadata request is made,
         // at which point we'll parse everything in the buffer
         synchronized (_registered) {
+            _registeredEmpty = false;
             _registered.add(cls);
         }
     }
@@ -1381,19 +1383,48 @@ public class MetaDataRepository
     }
 
     /**
-     * Updates our datastructures with the latest registered classes.
+     * Updates our datastructures with the latest registered classes.  This method will only block
+     * when there are class registrations waiting to be processed.
+     * 
+     * @return the list of classes that was processed due to this method call.
      */
     Class[] processRegisteredClasses(ClassLoader envLoader) {
+        Class[] res = EMPTY_CLASSES;
+        if (_registeredEmpty == false) {
+            // The reason that we're locking on this and _registered is that this
+            // class has locking semantics such that we always need to lock 'this', then [x].
+            // This method can result in processRegisteredClass(..) being called and if we didn't
+            // lock on 'this' we could cause a deadlock.  ie: One thread coming in on getSequeneceMetaData(..)
+            // and another on getMetaData(String, Classloader, boolean).
+            synchronized (this) {
+                // Check again, it is possible another thread already processed.
+                if (_registeredEmpty == false) {
+                    res = processRegisteredClassesInternal(envLoader);
+                    if (_registered.size() == 0) {
+                        // It is possible that we failed to register a class and it was sadded back into
+                        // our _registered class list to try again later.  @see
+                        // OpenJPAConfiguration#getRetryClassRegistration
+                        _registeredEmpty = true;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Private worker method that processes the registered classes list.  No locking is performed in this
+     * method as the caller needs to hold a lock on _registered.
+     */
+    Class[] processRegisteredClassesInternal(ClassLoader envLoader) {
+        // Probably overkill
         if (_registered.isEmpty())
             return EMPTY_CLASSES;
 
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
-        Class[] reg;
-        synchronized (_registered) {
-            reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
-            _registered.clear();
-        }
+        Class[] reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
+        _registered.clear();
 
         Collection pcNames = getPersistentTypeNames(false, envLoader);
         Collection failed = null;
@@ -1419,9 +1450,7 @@ public class MetaDataRepository
             }
         }
         if (failed != null) {
-            synchronized (_registered) {
-                _registered.addAll(failed);
-            }
+            _registered.addAll(failed);
         }
         return reg;
     }
