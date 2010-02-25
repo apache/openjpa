@@ -809,7 +809,6 @@
                         <exclude>org/apache/openjpa/persistence/conf/TestOpenJPAConfiguration.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestCacheMultiThreadedLoad.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestConcurrentDataCache.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/datacache/TestDataCacheScheduler.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestDistributedKodoDataCache.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestFlushDataCache.java</exclude>
                         <exclude>org/apache/openjpa/persistence/datacache/TestJPQL2Queries.java</exclude>

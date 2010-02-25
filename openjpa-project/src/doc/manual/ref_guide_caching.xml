@@ -277,7 +277,7 @@ for more information on the <classname>DataCache</classname> annotation.
             </indexterm>
 A cache can specify that it should be cleared at certain times rather than using
 data timeouts. The <literal>EvictionSchedule</literal> property of OpenJPA's
-cache implementation accepts a <literal>cron</literal> style eviction schedule.
+cache implementation can be input in two different formats. The first is a <literal>cron</literal> style eviction schedule.
 The format of this property is a whitespace-separated list of five tokens, where
 the <literal>*</literal> symbol (asterisk), indicates match all. The tokens are,
 in order:
@@ -317,6 +317,20 @@ past 3 PM on Sunday.
 <programlisting>
 true(EvictionSchedule='15,45 15 * * 1')
 </programlisting>
+            <para>
+The second format for this property is an interval style eviction schedule. The 
+format of this property is a <literal>+</literal> followed by the number of minutes 
+between each time that the cache should be evicted.
+            </para>
+            <para>            
+For example, the following openjpa.DataCache setting schedules the default cache 
+to evict values from the cache every 120 minutes.            
+            </para>
+            <para>            
+<programlisting>
+true(EvictionSchedule='+120')
+</programlisting>
+            </para>
 <section id="ref_guide_cache_distribution">
    <title>Distributing instances across cache partitions</title>
             <para>

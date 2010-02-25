@@ -21,19 +21,23 @@ package org.apache.openjpa.datacache;
 import java.security.AccessController;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
+
 import serp.util.Strings;
 
 /**
@@ -54,7 +58,7 @@ public class DataCacheScheduler
 
     private Map _caches = new ConcurrentHashMap();
     private boolean _stop = false;
-    private int _interval = 2;
+    private int _interval = 1;
     private Log _log;
     private Thread _thread;
 
@@ -63,14 +67,14 @@ public class DataCacheScheduler
     }
 
     /**
-     * The interval time in minutes between cache checks. Defaults to 2.
+     * The interval time in minutes between cache checks. Defaults to 1.
      */
     public int getInterval() {
         return _interval;
     }
 
     /**
-     * The interval time in minutes between cache checks. Defaults to 2.
+     * The interval time in minutes between cache checks. Defaults to 1.
      */
     public void setInterval(int interval) {
         _interval = interval;
@@ -181,19 +185,46 @@ public class DataCacheScheduler
         final int[] min;
 
         public Schedule(String date) {
-            StringTokenizer token = new StringTokenizer(date, " \t");
-            if (token.countTokens() != 5)
-                throw new UserException(_loc.get("bad-count", date)).
-                    setFatal(true);
-            try {
-                min = parse(token.nextToken(), 0, 60);
-                hour = parse(token.nextToken(), 0, 24);
-                dayOfMonth = parse(token.nextToken(), 1, 31);
-                month = parse(token.nextToken(), 1, 13);
-                dayOfWeek = parse(token.nextToken(), 1, 8);
-            } catch (Throwable t) {
-                throw new UserException(_loc.get("bad-schedule", date), t).
-                    setFatal(true);
+            int[] tmin = null;
+            if (date.startsWith("+")) {
+                Calendar cal = Calendar.getInstance();
+                int interval = Integer.parseInt(date.substring(1));
+                int currMin = cal.get(Calendar.MINUTE);
+                
+                tmin = new int[60/interval];
+                for(int i = 0; i<tmin.length;i++){
+                    int temp;
+                    if(i==0){
+                        temp=currMin+interval;
+                    }else{
+                        temp=tmin[i-1]+interval;
+                    }
+                    if(temp >= 60 ){
+                        temp -= 60;
+                    }
+                    tmin[i]=temp;
+                }
+                Arrays.sort(tmin);
+
+                min = tmin;
+                hour = WILDCARD;
+                dayOfMonth = WILDCARD;
+                month = WILDCARD;
+                dayOfWeek = WILDCARD;
+            }else{
+            
+                StringTokenizer token = new StringTokenizer(date, " \t");
+                if (token.countTokens() != 5)
+                    throw new UserException(_loc.get("bad-count", date)).setFatal(true);
+                try {
+                    min = parse(token.nextToken(), 0, 60);
+                    hour = parse(token.nextToken(), 0, 24);
+                    dayOfMonth = parse(token.nextToken(), 1, 31);
+                    month = parse(token.nextToken(), 1, 13);
+                    dayOfWeek = parse(token.nextToken(), 1, 8);
+                } catch (Throwable t) {
+                    throw new UserException(_loc.get("bad-schedule", date), t).setFatal(true);
+                }
             }
         }
 
