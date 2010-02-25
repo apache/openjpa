@@ -141,10 +141,10 @@ public abstract class InValueDiscriminatorStrategy
         Column col = disc.getColumns()[0];
         SQLBuffer sql = new SQLBuffer(sel.getConfiguration().
             getDBDictionaryInstance());
+        String alias = sel.getColumnAlias(col, joins);
         boolean outer = joins != null && joins.isOuter();
         if (outer)
             sql.append("(");
-        String alias = sel.getColumnAlias(col, joins);
         sql.append(alias);
 
         // if not selecting subclasses, limit to just the given class
