@@ -73,7 +73,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.6-SNAPSHOT</version>
+                    <version>0.9.6</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -91,7 +91,7 @@
                 <dependency>
                     <groupId>com.agimatec</groupId>
                     <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.6-SNAPSHOT</version>
+                    <version>0.9.6</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
