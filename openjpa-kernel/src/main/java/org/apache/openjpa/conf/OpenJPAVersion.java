@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * This class contains version information for OpenJPA. It uses
@@ -34,6 +35,8 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * @author Marc Prud'hommeaux, Patrick Linskey
  */
 public class OpenJPAVersion {
+
+    private static final Localizer _loc = Localizer.forPackage(OpenJPAVersion.class);
 
     public static final String VERSION_NUMBER;
     public static final String VERSION_ID;
@@ -128,9 +131,9 @@ public class OpenJPAVersion {
         buf.append(VENDOR_NAME).append(" ");
         buf.append(VERSION_NUMBER);
         buf.append("\n");
-        buf.append("version id: ").append(VERSION_ID);
+        buf.append(_loc.get("version-id")).append(": ").append(VERSION_ID);
         buf.append("\n");
-        buf.append("Apache svn revision: ").append(REVISION_NUMBER);
+        buf.append(_loc.get("openjpa-revision")).append(": ").append(REVISION_NUMBER);
         buf.append("\n");
     }
 
