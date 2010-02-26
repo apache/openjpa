@@ -25,7 +25,7 @@ public class XMLOrderedManyToManyEntity implements IOrderedEntity, java.io.Seria
 
     private int id;
 
-    private List<INameEntity> xom2mEntities;
+    private List<INameEntity> entities;
 
     
     public int getId() {
@@ -37,36 +37,36 @@ public class XMLOrderedManyToManyEntity implements IOrderedEntity, java.io.Seria
     }
 
     public List<INameEntity> getEntities() {
-        return xom2mEntities;
+        return entities;
     }
 
     public void setEntities(List<INameEntity> entities) {
-        this.xom2mEntities = entities;
+        this.entities = entities;
     }
 
-    public void addEntities(INameEntity entity) {
-        if( xom2mEntities == null) {
-            xom2mEntities = new ArrayList<INameEntity>();
+    public void addEntity(INameEntity entity) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        xom2mEntities.add(entity);
+        entities.add(entity);
     }
     
-    public INameEntity removeEntities(int location) {
+    public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
-        if( xom2mEntities != null) {
-            rtnVal = xom2mEntities.remove(location);
+        if( entities != null) {
+            rtnVal = entities.remove(location);
         }
         return rtnVal;
     }
     
-    public void insertEntities(int location, INameEntity entity) {
-        if( xom2mEntities == null) {
-            xom2mEntities = new ArrayList<INameEntity>();
+    public void insertEntity(int location, INameEntity entity) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        xom2mEntities.add(location, entity);
+        entities.add(location, entity);
     }
 
     public String toString() {
-        return "XMLOrderedManyToManyEntity[" + id + "]=" + xom2mEntities;
+        return "XMLOrderedManyToManyEntity[" + id + "]=" + entities;
     }
 }

@@ -23,11 +23,12 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0">
 
-    <persistence-unit name="JPQLIndex" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="JPQLIndex">
         <description>PU for JPQL Index testing</description>
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <mapping-file>org/apache/openjpa/persistence/jpql/expressions/orm.xml</mapping-file>
 
+        <class>org.apache.openjpa.persistence.proxy.TreeNode</class>
         <class>org.apache.openjpa.persistence.jpql.entities.OrderedElementEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.XMLOrderedElementEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.OrderedManyToManyEntity</class>
@@ -38,8 +39,8 @@
         <class>org.apache.openjpa.persistence.jpql.entities.XMLUnorderedNameEntity</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
-            <!-- property name="openjpa.Log" value="SQL=TRACE"/ -->
-            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <!-- <property name="openjpa.Log" value="SQL=TRACE"/> -->
+            <!-- <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/> -->
         </properties>
     </persistence-unit>
 

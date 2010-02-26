@@ -20,21 +20,22 @@ package org.apache.openjpa.persistence.jpql.entities;
 
 import java.util.List;
 
-public interface IOrderedEntity {
+
+public interface IOrderedElements {
 
     public int getId();
 
     public void setId(int id);
 
-    public List<INameEntity> getEntities();
+    public List<String> getListElements();
 
-    public void setEntities(List<INameEntity> entities);
+    public void setListElements(List<String> elements);
 
-    public void addEntity(INameEntity newElement);
-
-    public INameEntity removeEntity(int location);
+    public void addListElements(String element);
     
-    public void insertEntity(int location, INameEntity entity);
+    public String removeListElements(int location);
+    
+    public void insertListElements(int location, String name);
 
     public String toString();
 }

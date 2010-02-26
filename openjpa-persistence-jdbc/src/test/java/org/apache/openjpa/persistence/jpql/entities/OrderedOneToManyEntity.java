@@ -34,7 +34,7 @@ public class OrderedOneToManyEntity implements IOrderedEntity, java.io.Serializa
 
     @OneToMany
     @OrderColumn
-    private List<INameEntity> oo2mEntities;
+    private List<INameEntity> entities;
 
     
     public int getId() {
@@ -46,36 +46,36 @@ public class OrderedOneToManyEntity implements IOrderedEntity, java.io.Serializa
     }
 
     public List<INameEntity> getEntities() {
-        return oo2mEntities;
+        return entities;
     }
 
     public void setEntities(List<INameEntity> names) {
-        this.oo2mEntities = names;
+        this.entities = names;
     }
 
-    public void addEntities(INameEntity name) {
-        if( oo2mEntities == null) {
-            oo2mEntities = new ArrayList<INameEntity>();
+    public void addEntity(INameEntity name) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        oo2mEntities.add(name);
+        entities.add(name);
     }
-    
-    public INameEntity removeEntities(int location) {
+        
+    public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
-        if( oo2mEntities != null) {
-            rtnVal = oo2mEntities.remove(location);
+        if( entities != null) {
+            rtnVal = entities.remove(location);
         }
         return rtnVal;
     }
     
-    public void insertEntities(int location, INameEntity name) {
-        if( oo2mEntities == null) {
-            oo2mEntities = new ArrayList<INameEntity>();
+    public void insertEntity(int location, INameEntity name) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        oo2mEntities.add(location, name);
+        entities.add(location, name);
     }
 
     public String toString() {
-        return "OrderedOneToManyEntity[" + id + "]=" + oo2mEntities;
+        return "OrderedOneToManyEntity[" + id + "]=" + entities;
     }
 }

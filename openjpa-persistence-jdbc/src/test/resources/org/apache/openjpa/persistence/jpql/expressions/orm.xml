@@ -23,7 +23,7 @@
     <entity class="org.apache.openjpa.persistence.jpql.entities.XMLOrderedManyToManyEntity">
         <attributes>
             <id name="id" />
-            <many-to-many name="xom2mEntities">
+            <many-to-many name="entities">
                 <order-column/>
             </many-to-many>
         </attributes>
@@ -32,7 +32,7 @@
     <entity class="org.apache.openjpa.persistence.jpql.entities.XMLOrderedOneToManyEntity">
         <attributes>
             <id name="id" />
-            <one-to-many name="xoo2mEntities">
+            <one-to-many name="entities">
                 <order-column/>
             </one-to-many>
         </attributes>
@@ -41,7 +41,7 @@
     <entity class="org.apache.openjpa.persistence.jpql.entities.XMLOrderedElementEntity">
         <attributes>
             <id name="id" />
-            <element-collection name="listElements">
+            <element-collection name="elements">
                 <order-column />
             </element-collection>
         </attributes>

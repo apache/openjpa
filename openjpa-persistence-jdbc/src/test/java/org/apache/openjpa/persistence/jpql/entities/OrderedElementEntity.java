@@ -27,14 +27,14 @@ import javax.persistence.Id;
 import javax.persistence.OrderColumn;
 
 @Entity
-public class OrderedElementEntity implements java.io.Serializable {
+public class OrderedElementEntity implements IOrderedElements, java.io.Serializable {
 
     @Id
     private int id;
 
     @ElementCollection
     @OrderColumn
-    private List<String> listElements;  
+    private List<String> elements;  
     
     public int getId() {
         return id;
@@ -45,36 +45,36 @@ public class OrderedElementEntity implements java.io.Serializable {
     }
 
     public List<String> getListElements() {
-        return listElements;
+        return elements;
     }
 
     public void setListElements(List<String> elements) {
-        this.listElements = elements;
+        this.elements = elements;
     }
 
     public void addListElements(String element) {
-        if( listElements == null) {
-            listElements = new ArrayList<String>();
+        if( elements == null) {
+            elements = new ArrayList<String>();
         }
-        listElements.add(element);
+        elements.add(element);
     }
     
     public String removeListElements(int location) {
         String rtnVal = null;
-        if( listElements != null) {
-            rtnVal = listElements.remove(location);
+        if( elements != null) {
+            rtnVal = elements.remove(location);
         }
         return rtnVal;
     }
     
     public void insertListElements(int location, String name) {
-        if( listElements == null) {
-            listElements = new ArrayList<String>();
+        if( elements == null) {
+            elements = new ArrayList<String>();
         }
-        listElements.add(location, name);
+        elements.add(location, name);
     }
 
     public String toString() {
-        return "OrderedElementEntity[" + id + "]=" + listElements;
+        return "OrderedElementEntity[" + id + "]=" + elements;
     }
 }

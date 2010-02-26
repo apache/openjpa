@@ -21,11 +21,11 @@ package org.apache.openjpa.persistence.jpql.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XMLOrderedElementEntity implements java.io.Serializable {
+public class XMLOrderedElementEntity implements IOrderedElements, java.io.Serializable {
 
     private int id;
 
-    private List<String> listElements;  
+    private List<String> elements;  
     
     public int getId() {
         return id;
@@ -36,36 +36,36 @@ public class XMLOrderedElementEntity implements java.io.Serializable {
     }
 
     public List<String> getListElements() {
-        return listElements;
+        return elements;
     }
 
     public void setListElements(List<String> elements) {
-        this.listElements = elements;
+        this.elements = elements;
     }
 
     public void addListElements(String element) {
-        if( listElements == null) {
-            listElements = new ArrayList<String>();
+        if( elements == null) {
+            elements = new ArrayList<String>();
         }
-        listElements.add(element);
+        elements.add(element);
     }
     
     public String removeListElements(int location) {
         String rtnVal = null;
-        if( listElements != null) {
-            rtnVal = listElements.remove(location);
+        if( elements != null) {
+            rtnVal = elements.remove(location);
         }
         return rtnVal;
     }
     
     public void insertListElements(int location, String name) {
-        if( listElements == null) {
-            listElements = new ArrayList<String>();
+        if( elements == null) {
+            elements = new ArrayList<String>();
         }
-        listElements.add(location, name);
+        elements.add(location, name);
     }
 
     public String toString() {
-        return "XMLOrderedElementEntity[" + id + "]=" + listElements;
+        return "XMLOrderedElementEntity[" + id + "]=" + elements;
     }
 }

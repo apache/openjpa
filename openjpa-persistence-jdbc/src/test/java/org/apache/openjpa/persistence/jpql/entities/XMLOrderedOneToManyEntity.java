@@ -25,7 +25,7 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
 
     private int id;
 
-    private List<INameEntity> xoo2mEntities;
+    private List<INameEntity> entities;
 
     
     public int getId() {
@@ -37,36 +37,36 @@ public class XMLOrderedOneToManyEntity implements IOrderedEntity, java.io.Serial
     }
 
     public List<INameEntity> getEntities() {
-        return xoo2mEntities;
+        return entities;
     }
 
     public void setEntities(List<INameEntity> entities) {
-        this.xoo2mEntities = entities;
+        this.entities = entities;
     }
 
-    public void addEntities(INameEntity entity) {
-        if( xoo2mEntities == null) {
-            xoo2mEntities = new ArrayList<INameEntity>();
+    public void addEntity(INameEntity entity) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        xoo2mEntities.add(entity);
+        entities.add(entity);
     }
     
-    public INameEntity removeEntities(int location) {
+    public INameEntity removeEntity(int location) {
         INameEntity rtnVal = null;
-        if( xoo2mEntities != null) {
-            rtnVal = xoo2mEntities.remove(location);
+        if( entities != null) {
+            rtnVal = entities.remove(location);
         }
         return rtnVal;
     }
     
-    public void insertEntities(int location, INameEntity entity) {
-        if( xoo2mEntities == null) {
-            xoo2mEntities = new ArrayList<INameEntity>();
+    public void insertEntity(int location, INameEntity entity) {
+        if( entities == null) {
+            entities = new ArrayList<INameEntity>();
         }
-        xoo2mEntities.add(location, entity);
+        entities.add(location, entity);
     }
 
     public String toString() {
-        return "XMLOrderedOneToManyEntity[" + id + "]=" + xoo2mEntities;
+        return "XMLOrderedOneToManyEntity[" + id + "]=" + entities;
     }
 }

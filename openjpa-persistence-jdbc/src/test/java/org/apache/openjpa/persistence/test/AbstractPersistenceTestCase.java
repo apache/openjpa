@@ -23,6 +23,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
@@ -613,6 +615,51 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         synchronized (testsDisabled) {
             return testsDisabled.booleanValue();
         }
+    }
+
+    protected Class<?> resolveEntityClass(JPAEntityClassEnum enumerationRef)
+        throws ClassNotFoundException
+    {
+        if (enumerationRef == null)
+        {
+            throw new IllegalArgumentException("Null value passed into the constructNewEntityObject method.");
+        }
+        String className = enumerationRef.getEntityClassName();
+        if (className == null)
+        {
+            throw new IllegalArgumentException("Enumeration toString() method implementation returned a null value.");
+        }
+
+        return Class.forName(className);
+    }
+
+    protected Object constructNewEntityObject(JPAEntityClassEnum enumerationRef)
+        throws ClassNotFoundException, SecurityException, NoSuchMethodException,
+        IllegalArgumentException, InstantiationException,
+        IllegalAccessException, InvocationTargetException
+    {
+        Class<?> classType = resolveEntityClass(enumerationRef);
+        Class<?> constructorArgSig[] = new Class[] {};
+        Object constructorArgs[] = new Object[] {};
+
+        Constructor<?> classConstructor = classType.getConstructor(constructorArgSig);
+        Object newEntity = classConstructor.newInstance(constructorArgs);
+
+        return newEntity;
+    }
+
+    protected Object constructNewEntityObject(Class<?> entityClass)
+        throws SecurityException, NoSuchMethodException,
+        IllegalArgumentException, InstantiationException,
+        IllegalAccessException, InvocationTargetException
+    {
+        Class<?> constructorArgSig[] = new Class[] {};
+        Object constructorArgs[] = new Object[] {};
+
+        Constructor<?> classConstructor = entityClass.getConstructor(constructorArgSig);
+        Object newEntity = classConstructor.newInstance(constructorArgs);
+
+        return newEntity;
     }
 
 }
