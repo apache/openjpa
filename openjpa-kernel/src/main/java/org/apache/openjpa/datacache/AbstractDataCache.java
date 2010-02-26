@@ -19,10 +19,12 @@
 package org.apache.openjpa.datacache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,10 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.OpenJPAException;
+
+import serp.util.Strings;
 
 /**
  * Abstract {@link DataCache} implementation that provides various
@@ -70,6 +76,8 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     private String _name = null;
     private boolean _closed = false;
     private String _schedule = null;
+    protected Set<String> _includedTypes = new HashSet<String>();
+    protected Set<String> _excludedTypes = new HashSet<String>();
 
     public String getName() {
         return _name;
@@ -94,12 +102,28 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public void setEvictionSchedule(String s) {
         _schedule = s;
     }
-
+    
     public void initialize(DataCacheManager manager) {
         if (_schedule != null && !"".equals(_schedule)) {
             DataCacheScheduler scheduler = manager.getDataCacheScheduler();
             if (scheduler != null)
                 scheduler.scheduleEviction(this, _schedule);
+        }
+        // Cast here rather than add to the interface because this is a hack to support an older way of configuring
+        if(manager instanceof DataCacheManagerImpl){
+            List<String> invalidConfigured = new ArrayList<String>();
+            // assert that things are configured properly
+            if(_includedTypes!=null){
+                for(String s : _includedTypes){
+                    if(_excludedTypes.contains(s)){
+                        invalidConfigured.add(s);
+                    }
+                }
+                if (invalidConfigured.size() > 0) {
+                    throw new GeneralException(s_loc.get("invalid-types-excluded-types", invalidConfigured.toString()));
+                }
+            }
+            ((DataCacheManagerImpl)manager).setTypes(_includedTypes, _excludedTypes);
         }
     }
 
@@ -500,4 +524,29 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 		}
 	}
     
+    public Set<String> getTypes() {
+        return _includedTypes;
+    }
+
+    public Set<String> getExcludedTypes() {
+        return _excludedTypes;
+    }
+
+    public void setTypes(Set<String> types) {
+        _includedTypes = types;
+    }
+
+    public void setTypes(String types) {
+        _includedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+    }
+
+    public void setExcludedTypes(Set<String> types) {
+        _excludedTypes = types;
+    }
+
+    public void setExcludedTypes(String types) {
+        _excludedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+    }
 }

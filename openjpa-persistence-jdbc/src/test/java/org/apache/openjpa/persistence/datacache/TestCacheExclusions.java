@@ -164,18 +164,23 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
     }
 
     public void testIncludePurchaseItemExcludePurchase() {
+        try{
         getEntityManagerFactoryCacheSettings(new Class[] { Purchase.class,
             Item.class }, new Class[] { Purchase.class });
         populate();
+            fail("Shouldn't be able to create an EMF with an entity in both Types and ExcludedTypes");
         StoreCache cache = emf.getStoreCache();
         assertCacheContents(cache, false, false, true);
+        }catch(Exception e){
+            //expected
+        }
     }
 
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactoryCacheSettings(
         Class<?>[] includedTypes, Class<?>[] excludedTypes) {
         StringBuilder includes = new StringBuilder();
         if (includedTypes != null && includedTypes.length > 0) {
-            includes.append("IncludedTypes=");
+            includes.append("Types=");
             for (Class<?> c : includedTypes) {
                 includes.append(c.getName());
                 includes.append(_tSep);
@@ -193,7 +198,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
         }
         StringBuilder dataCacheSettings = new StringBuilder();
         boolean hasIncludeOrExclude = includes.length() > 0 || excludes.length() > 0;
-        dataCacheSettings.append(hasIncludeOrExclude ? "type-based(" : "default");
+        dataCacheSettings.append("true" + (hasIncludeOrExclude ? "(" : ""));
         if (hasIncludeOrExclude) {
             dataCacheSettings.append(includes);
             if (includes.length() > 0 && excludes.length() > 0) 
@@ -202,8 +207,7 @@ public class TestCacheExclusions extends AbstractCachedEMFTestCase {
             dataCacheSettings.append(")");
         }
         Map<String, String> props = new HashMap<String, String>();
-        props.put("openjpa.CacheDistributionPolicy", dataCacheSettings.toString());
-        props.put("openjpa.DataCache", "true");
+        props.put("openjpa.DataCache", dataCacheSettings.toString());
         props.put("openjpa.RemoteCommitProvider", "sjvm");
         props.put("openjpa.MetaDataFactory", "jpa(Types="
             + Item.class.getName() + _tSep + Purchase.class.getName() + _tSep

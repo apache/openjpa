@@ -20,6 +20,7 @@ package org.apache.openjpa.datacache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
@@ -48,6 +49,11 @@ public class DataCacheManagerImpl
     private DataCacheScheduler _scheduler = null;
     private CacheDistributionPolicy _policy = new DefaultCacheDistributionPolicy();
     private Map<ClassMetaData,Boolean> _cacheable = new HashMap<ClassMetaData, Boolean>();
+    
+    // Properties that are configured via openjpa.DataCache but need to be used here. This is here to support the 1.2
+    // way of doing things with openjpa.DataCache(Types=x;y;z,ExcludedTypes=a)
+    private Set<String> _includedTypes;
+    private Set<String> _excludedTypes;
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
@@ -145,6 +151,10 @@ public class DataCacheManagerImpl
         return isCachable;
     }
     
+    public void setTypes(Set<String> includedTypes, Set<String> excludedTypes){
+        _includedTypes = includedTypes;
+        _excludedTypes = excludedTypes;
+    }
     /**
      * Affirms the given class is eligible to be cached according to the cache mode
      * and the cache enable flag on the given metadata.
@@ -165,11 +175,24 @@ public class DataCacheManagerImpl
     }
     
     /**
-     * Is the given type cacheable by @DataCache annotation.
+     * Is the given type cacheable by @DataCache annotation or openjpa.DataCache(Types/ExcludedTypes)
      *  
      * @see ClassMetaData#getDataCacheName()
      */
-    private Boolean isCacheableByType(ClassMetaData meta) {
+    private Boolean isCacheableByType(ClassMetaData meta) { 
+        if (_includedTypes != null && _includedTypes.size() > 0) {
+            return _includedTypes.contains(meta.getDescribedType().getName());
+        }
+        if (_excludedTypes != null && _excludedTypes.size() > 0) {
+            if (_excludedTypes.contains(meta.getDescribedType().getName())) {
+                return false;
+            } else {
+                // Case where Types is not set, and ExcludedTypes only has a sub set of all
+                // Entities.
+                return true;
+            }
+        }
+        // Check for @DataCache annotations
         return meta.getDataCacheName() != null;
     }
 }
