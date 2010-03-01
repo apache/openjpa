@@ -231,7 +231,6 @@ public class TestIndex extends SingleEMFTestCase {
             }
             
             // add the entities
-            log.trace("Adding " + newElements.size() + " of " + elementClassName + " to " + entityClassName);
             em = emf.createEntityManager();
             em.getTransaction().begin();
             for (INameEntity newElement : newElements)
@@ -244,7 +243,6 @@ public class TestIndex extends SingleEMFTestCase {
             em.clear();
 
             // verify the entity was stored
-            log.trace("Verifing the entity was stored");
             IOrderedEntity findEntity = em.find(entityClass, entityId);
             assertNotNull("Found entity just created", findEntity);
             assertEquals("Verify entity id = " + entityId, entityId.intValue(), findEntity.getId());
@@ -275,15 +273,19 @@ public class TestIndex extends SingleEMFTestCase {
             String entityClassName = entityType.getEntityName();
             String elementClassName = elementClass.getName().substring(
                 elementClass.getName().lastIndexOf('.') + 1);
-            Integer entityId = 1;
             
-            // create the entity
-            IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
-            newEntity.setId(entityId);
-            // persist the entity
+            // create the EM and transaction
             em = emf.createEntityManager();
             em.getTransaction().begin();
-            em.persist(newEntity);
+
+            // create and persist the entities
+            List<IOrderedEntity> newEntities = new ArrayList<IOrderedEntity>();
+            for (int i=0; i<3; i++) {
+                IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
+                newEntity.setId(i);
+                em.persist(newEntity);
+                newEntities.add(newEntity);
+            }
             
             // create and persist the elements
             Constructor<IColumnEntity> elementConstrctor = elementClass.getConstructor(String.class);
@@ -291,27 +293,28 @@ public class TestIndex extends SingleEMFTestCase {
             IColumnEntity newElement;
             for (int i=0; i<Element_Names.length; i++) {
                 newElement = elementConstrctor.newInstance(Element_Names[i]);
-                // add parent relationship
-                newElement.addEntity(newEntity);
+                // add parent relationships
+                newElement.setEntities(newEntities);
                 em.persist(newElement);
                 newElements.add(newElement);
             }
             
-            // update entity with elements
-            log.trace("Adding " + newElements.size() + " of " + elementClassName + " to " + entityClassName);
-            newEntity.setEntities(newElements);
-            em.persist(newEntity);
+            // update entities with elements
+            for (IOrderedEntity newEntity : newEntities) {
+                newEntity.setEntities(newElements);
+                em.persist(newEntity);
+            }
             em.getTransaction().commit();
             em.clear();
 
-            // verify the entity was stored
-            log.trace("Verifing the entity was stored");
-            IOrderedEntity findEntity = em.find(entityClass, entityId);
-            assertNotNull("Found entity just created", findEntity);
-            assertEquals("Verify entity id = " + entityId, entityId.intValue(), findEntity.getId());
-            assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
-                findEntity.getClass().getName());
-
+            // verify the entities were stored
+            for (int i=0; i<Element_Names.length; i++) {
+                IOrderedEntity findEntity = em.find(entityClass, i);
+                assertNotNull("Found entity just created", findEntity);
+                assertEquals("Verify entity id = " + i, i, findEntity.getId());
+                assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
+                    findEntity.getClass().getName());
+            }
         } catch (Throwable t) {
             log.error(t);
             throw new RuntimeException(t);
@@ -377,10 +380,10 @@ public class TestIndex extends SingleEMFTestCase {
         if (IOrderedEntity.class.isAssignableFrom(entityType.getEntityClass())) {
             if (INameEntity.class.isAssignableFrom(elementClass)) {
                 log.trace("** Verify INameEntity modifications on IOrderedEntity.");
-                verifyOrderedEntities(entityType, (Class<INameEntity>)elementClass);
+                verifyO2MEntities(entityType, (Class<INameEntity>)elementClass);
             } else if (IColumnEntity.class.isAssignableFrom(elementClass)) {
                 log.trace("** Verify IColumnEntity modifications on IOrderedEntity.");
-                verifyOrderedEntities(entityType, (Class<INameEntity>)elementClass);
+                verifyM2MEntities(entityType, (Class<IColumnEntity>)elementClass);
             } else {
                 fail("verifyEntities(IOrderedEntity) - Unexpected elementClass=" + elementClass.getSimpleName());
             }
@@ -396,8 +399,10 @@ public class TestIndex extends SingleEMFTestCase {
         }
     }
     
-    private <E> void verifyOrderedEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
+    private <E> void verifyO2MEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
     {
+        EntityManager em = null;
+        
         try {
             Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
@@ -409,7 +414,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Arrays.toString(Element_Names));
             }
             
-            EntityManager em = emf.createEntityManager();
+            em = emf.createEntityManager();
             em.clear();
             int idx = 0;
             for (String expectedEntityName : Element_Names) {
@@ -421,9 +426,8 @@ public class TestIndex extends SingleEMFTestCase {
                     Object oo = res.get(0);
                     assertEquals("  Verify element type is " + elementClass.getName(), elementClass.getName(),
                         oo.getClass().getName());
-                    String name;
                     try {
-                        name = (String) elementClass.getMethod("getName").invoke(oo);
+                        String name = (String) elementClass.getMethod("getName").invoke(oo);
                         assertEquals("  Verify element value is '"
                             + expectedEntityName + "'", expectedEntityName, name);
                     } catch (Exception e) {
@@ -436,11 +440,90 @@ public class TestIndex extends SingleEMFTestCase {
         } catch (Exception e) {
             log.error(e);
             throw new RuntimeException(e);
+        } finally {
+            if (em != null) {
+                em.close();
+                em = null;
+            }
+        }
+    }
+    
+    private <E> void verifyM2MEntities(JPQLIndexEntityClasses entityType, Class<IColumnEntity> elementClass)
+    {
+        EntityManager em = null;
+        
+        try {
+            Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
+            String entityClassName = entityType.getEntityName();
+            entityClassName = entityClassName.substring(entityClassName.lastIndexOf('.') + 1);
+            String elementClassName = entityType.getEntityName();
+            elementClassName = elementClassName.substring(elementClassName.lastIndexOf('.') + 1);
+
+            if (log.isTraceEnabled()) {
+                log.trace("Query " + entityClassName + " and verify 'entities' collection has "
+                    + Element_Names.length + " elements in this order: "
+                    + Arrays.toString(Element_Names));
+            }
+            
+            em = emf.createEntityManager();
+            em.clear();
+            int idx = 0, idx2 = 0;
+            for (String expectedEntityName : Element_Names) {
+                Query q = em.createQuery("select w from " + entityClassName
+                    + " o join o.entities w where index(w) = " + idx);
+                List<E> res = (List<E>)q.getResultList();
+                assertEquals("  Verify query returns 1 element for index " + idx, 1, res.size());
+                if (res.size() == 1) {
+                    Object oo = res.get(0);
+                    assertEquals("  Verify element type is " + elementClass.getName(), elementClass.getName(),
+                        oo.getClass().getName());
+                    try {
+                        String name = (String) elementClass.getMethod("getName").invoke(oo);
+                        assertEquals("  Verify element value is '"
+                            + expectedEntityName + "'", expectedEntityName, name);
+                        
+                        if (log.isTraceEnabled()) {
+                            log.trace("Query " + elementClassName + " and verify 'entities' collection content");
+                        }
+                        Query q2 = em.createQuery("select w from " + elementClassName
+                            + " o join o.entities w where index(w) = " + idx2);
+                        List<E> res2 = (List<E>)q.getResultList();
+                        assertEquals("  Verify query returns 1 entity for index " + idx2, 1, res2.size());
+                        if (res2.size() == 1) {
+                            Object oo2 = res2.get(0);
+                            assertEquals("  Verify entity type is " + entityClass.getName(), entityClass.getName(),
+                                oo2.getClass().getName());
+                            try {
+                                String name2 = (String) entityClass.getMethod("getName").invoke(oo2);
+                                assertEquals("  Verify entity value is '"
+                                    + expectedEntityName + "'", expectedEntityName, name);
+                            } catch (Exception e) {
+                                log.error("  Caught unexpected exception:" + e.getMessage());
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("  Caught unexpected exception:" + e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                }
+                ++idx;
+            }
+        } catch (Exception e) {
+            log.error(e);
+            throw new RuntimeException(e);
+        } finally {
+            if (em != null) {
+                em.close();
+                em = null;
+            }
         }
     }
     
     private <E> void verifyOrderedElements(JPQLIndexEntityClasses entityType)
     {
+        EntityManager em = null;
+        
         try {
             Class<IOrderedEntity> entityClass = (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
             String entityClassName = entityType.getEntityName();
@@ -452,7 +535,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Arrays.toString(Element_Names));
             }
             
-            EntityManager em = emf.createEntityManager();
+            em = emf.createEntityManager();
             em.clear();
             int idx = 0;
             for (String expectedEntityName : Element_Names) {
@@ -479,6 +562,11 @@ public class TestIndex extends SingleEMFTestCase {
         } catch (Exception e) {
             log.error(e);
             throw new RuntimeException(e);
+        } finally {
+            if (em != null) {
+                em.close();
+                em = null;
+            }
         }
     }
     
