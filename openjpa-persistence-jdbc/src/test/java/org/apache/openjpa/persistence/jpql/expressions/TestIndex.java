@@ -27,17 +27,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.jpql.entities.IColumnEntity;
 import org.apache.openjpa.persistence.jpql.entities.INameEntity;
 import org.apache.openjpa.persistence.jpql.entities.IOrderedElements;
 import org.apache.openjpa.persistence.jpql.entities.IOrderedEntity;
 import org.apache.openjpa.persistence.jpql.entities.OrderedElementEntity;
 import org.apache.openjpa.persistence.jpql.entities.OrderedManyToManyEntity;
+import org.apache.openjpa.persistence.jpql.entities.OrderedNameEntity;
 import org.apache.openjpa.persistence.jpql.entities.OrderedOneToManyEntity;
 import org.apache.openjpa.persistence.jpql.entities.UnorderedNameEntity;
 import org.apache.openjpa.persistence.jpql.entities.XMLOrderedElementEntity;
 import org.apache.openjpa.persistence.jpql.entities.XMLOrderedManyToManyEntity;
+import org.apache.openjpa.persistence.jpql.entities.XMLOrderedNameEntity;
 import org.apache.openjpa.persistence.jpql.entities.XMLOrderedOneToManyEntity;
 import org.apache.openjpa.persistence.jpql.entities.XMLUnorderedNameEntity;
 import org.apache.openjpa.persistence.proxy.TreeNode;
@@ -61,7 +62,8 @@ public class TestIndex extends SingleEMFTestCase {
         XMLOrderedOneToManyEntity(XMLOrderedOneToManyEntity.class),
         XMLOrderedManyToManyEntity(XMLOrderedManyToManyEntity.class),
         UnorderedNameEntity(UnorderedNameEntity.class),
-        XMLUnorderedNameEntity(XMLUnorderedNameEntity.class);
+        XMLUnorderedNameEntity(XMLUnorderedNameEntity.class),
+        OrderedNameEntity(OrderedNameEntity.class);
 
         private Class<?> clazz;
         private String fullEntityName;
@@ -92,6 +94,7 @@ public class TestIndex extends SingleEMFTestCase {
 
     @Override
     protected String getPersistenceUnitName() {
+        // this sets up the testcase code so our EMF is created and cleaned up for us
         return "JPQLIndex";
     }
 
@@ -99,13 +102,16 @@ public class TestIndex extends SingleEMFTestCase {
     public void setUp() {
         super.setUp(CLEAR_TABLES, TreeNode.class, 
             OrderedElementEntity.class, UnorderedNameEntity.class,
-            OrderedOneToManyEntity.class, OrderedManyToManyEntity.class);
+            OrderedOneToManyEntity.class, OrderedManyToManyEntity.class,
+            OrderedNameEntity.class);
             // XMLOrderedOneToManyEntity.class, XMLOrderedManyToManyEntity.class,
-            // XMLOrderedElementEntity.class, XMLUnorderedNameEntity.class);
+            // XMLOrderedElementEntity.class, XMLUnorderedNameEntity.class,
+            // XMLOrderedNameEntity.class);
 
         log =  emf.getConfiguration().getLog("test");
     }
-        
+
+    // original testcase by Catalina
     public void testO2MTreeQueryIndex() {
         int[] fanOuts = {2,3,4};
         createTreeNodeEntities(fanOuts);
@@ -120,6 +126,7 @@ public class TestIndex extends SingleEMFTestCase {
         em.close();                
     }
 
+    // Testcases added by Donald with code reused from annonxml tests by Albert
     public void testO2MQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
         verifyEntities(JPQLIndexEntityClasses.OrderedOneToManyEntity, UnorderedNameEntity.class);
@@ -130,15 +137,15 @@ public class TestIndex extends SingleEMFTestCase {
         verifyEntities(JPQLIndexEntityClasses.XMLOrderedOneToManyEntity, XMLUnorderedNameEntity.class);
     }
 
-    /* TODO
     public void testM2MQueryIndex() {
+        createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
+        verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, OrderedNameEntity.class);
     }
-    */
 
-    /* TODO
     public void testM2MXMLQueryIndex() {
+        createEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
+        verifyEntities(JPQLIndexEntityClasses.OrderedManyToManyEntity, XMLOrderedNameEntity.class);
     }
-    */
 
     public void testElementQueryIndex() {
         createEntities(JPQLIndexEntityClasses.OrderedElementEntity, String.class);
@@ -181,7 +188,10 @@ public class TestIndex extends SingleEMFTestCase {
         if (IOrderedEntity.class.isAssignableFrom(entityType.getEntityClass())) {
             if (INameEntity.class.isAssignableFrom(elementClass)) {
                 log.trace("** Test INameEntity modifications on IOrderedEntity.");
-                createOrderedEntities(entityType, (Class<INameEntity>)elementClass);
+                createO2MEntities(entityType, (Class<INameEntity>)elementClass);
+            } else if (IColumnEntity.class.isAssignableFrom(elementClass)) {
+                log.trace("** Test IColumnEntity modifications on IOrderedEntity.");
+                createM2MEntities(entityType, (Class<IColumnEntity>)elementClass);
             } else {
                 fail("createEntities(IOrderedEntity) - Unexpected elementClass=" + elementClass.getSimpleName());
             }
@@ -197,7 +207,7 @@ public class TestIndex extends SingleEMFTestCase {
         }
     }
         
-    private void createOrderedEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
+    private void createO2MEntities(JPQLIndexEntityClasses entityType, Class<INameEntity> elementClass)
     {
         EntityManager em = null;
         
@@ -209,9 +219,11 @@ public class TestIndex extends SingleEMFTestCase {
                 elementClass.getName().lastIndexOf('.') + 1);
             Integer entityId = 1;
             
+            // create the entity
             IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
             newEntity.setId(entityId);
-            // create the entity elements to add
+            
+            // create the elements to add
             Constructor<INameEntity> elementConstrctor = elementClass.getConstructor(String.class);
             List<INameEntity> newElements = new ArrayList<INameEntity>();
             for (int i=0; i<Element_Names.length; i++) {
@@ -224,16 +236,6 @@ public class TestIndex extends SingleEMFTestCase {
             em.getTransaction().begin();
             for (INameEntity newElement : newElements)
             {
-                /* For Many to Many cases
-                    jpaRW.getEm().persist(newElementB);
-                    if (elementClass == OrderedNameEntity.class || elementClass == XMLOrderedNameEntity.class) {
-                        if( listFieldName.charAt(1) == 'o') {
-                            setColumnMethod.invoke(new2Boy, newEntity);
-                        } else {
-                            addColumnsMethod.invoke(new2Boy, newEntity);
-                        }
-                    }
-                */
                 em.persist(newElement);
                 newEntity.addEntity((INameEntity)newElement);
             }
@@ -241,7 +243,68 @@ public class TestIndex extends SingleEMFTestCase {
             em.getTransaction().commit();
             em.clear();
 
-            // verify the entities were stored
+            // verify the entity was stored
+            log.trace("Verifing the entity was stored");
+            IOrderedEntity findEntity = em.find(entityClass, entityId);
+            assertNotNull("Found entity just created", findEntity);
+            assertEquals("Verify entity id = " + entityId, entityId.intValue(), findEntity.getId());
+            assertEquals("Verify entity name = " + entityClass.getName(), entityClass.getName(),
+                findEntity.getClass().getName());
+
+        } catch (Throwable t) {
+            log.error(t);
+            throw new RuntimeException(t);
+        } finally {
+            if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+                em = null;
+            }
+        }
+    }
+    
+    private void createM2MEntities(JPQLIndexEntityClasses entityType, Class<IColumnEntity> elementClass)
+    {
+        EntityManager em = null;
+        
+        try {
+            Class<IOrderedEntity> entityClass =
+                (Class<IOrderedEntity>)Class.forName(entityType.getEntityClassName());
+            String entityClassName = entityType.getEntityName();
+            String elementClassName = elementClass.getName().substring(
+                elementClass.getName().lastIndexOf('.') + 1);
+            Integer entityId = 1;
+            
+            // create the entity
+            IOrderedEntity newEntity = (IOrderedEntity)constructNewEntityObject(entityType);
+            newEntity.setId(entityId);
+            // persist the entity
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.persist(newEntity);
+            
+            // create and persist the elements
+            Constructor<IColumnEntity> elementConstrctor = elementClass.getConstructor(String.class);
+            List<INameEntity> newElements = new ArrayList<INameEntity>();
+            IColumnEntity newElement;
+            for (int i=0; i<Element_Names.length; i++) {
+                newElement = elementConstrctor.newInstance(Element_Names[i]);
+                // add parent relationship
+                newElement.addEntity(newEntity);
+                em.persist(newElement);
+                newElements.add(newElement);
+            }
+            
+            // update entity with elements
+            log.trace("Adding " + newElements.size() + " of " + elementClassName + " to " + entityClassName);
+            newEntity.setEntities(newElements);
+            em.persist(newEntity);
+            em.getTransaction().commit();
+            em.clear();
+
+            // verify the entity was stored
             log.trace("Verifing the entity was stored");
             IOrderedEntity findEntity = em.find(entityClass, entityId);
             assertNotNull("Found entity just created", findEntity);
@@ -314,6 +377,9 @@ public class TestIndex extends SingleEMFTestCase {
         if (IOrderedEntity.class.isAssignableFrom(entityType.getEntityClass())) {
             if (INameEntity.class.isAssignableFrom(elementClass)) {
                 log.trace("** Verify INameEntity modifications on IOrderedEntity.");
+                verifyOrderedEntities(entityType, (Class<INameEntity>)elementClass);
+            } else if (IColumnEntity.class.isAssignableFrom(elementClass)) {
+                log.trace("** Verify IColumnEntity modifications on IOrderedEntity.");
                 verifyOrderedEntities(entityType, (Class<INameEntity>)elementClass);
             } else {
                 fail("verifyEntities(IOrderedEntity) - Unexpected elementClass=" + elementClass.getSimpleName());

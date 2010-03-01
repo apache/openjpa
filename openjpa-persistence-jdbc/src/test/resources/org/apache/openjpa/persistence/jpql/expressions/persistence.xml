@@ -37,6 +37,8 @@
         <class>org.apache.openjpa.persistence.jpql.entities.XMLOrderedOneToManyEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.UnorderedNameEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.XMLUnorderedNameEntity</class>
+        <class>org.apache.openjpa.persistence.jpql.entities.OrderedNameEntity</class>
+        <class>org.apache.openjpa.persistence.jpql.entities.XMLOrderedNameEntity</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema" />
             <!-- <property name="openjpa.Log" value="SQL=TRACE"/> -->

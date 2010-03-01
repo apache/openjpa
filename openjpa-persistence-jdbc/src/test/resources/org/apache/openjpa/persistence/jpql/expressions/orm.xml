@@ -54,4 +54,14 @@
         </attributes>
     </entity>
 
+    <entity class="org.apache.openjpa.persistence.jpql.entities.XMLOrderedNameEntity">
+        <attributes>
+            <id name="id" />
+            <basic name="name" />
+            <many-to-many name="columns">
+                <order-column/>
+            </many-to-many>
+        </attributes>
+    </entity>
+
 </entity-mappings>
