@@ -165,9 +165,6 @@ public class OpenJPAConfigurationImpl
     public StringValue validationGroupPrePersist;
     public StringValue validationGroupPreUpdate;
     public StringValue validationGroupPreRemove;
-    public ObjectValue writeBehindCachePlugin;
-    public ObjectValue writeBehindCacheManagerPlugin;
-    public ObjectValue writeBehindCallbackPlugin;
     public StringValue dataCacheMode; 
     public BooleanValue dynamicEnhancementAgent;
     
