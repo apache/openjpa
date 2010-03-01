@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -167,11 +168,13 @@ public class InformixDictionary
             { 
                 driverVendor = VENDOR_IBM;
                 useJCC = true;
-                try {
-                    if (meta.storesLowerCaseIdentifiers()) 
-                        schemaCase = SCHEMA_CASE_LOWER;
-                } catch (SQLException e) {}
-            } else if ("Informix".equalsIgnoreCase(driverName))
+                setIdentifierCase(meta);
+            } 
+            else if (driverName.equals("IBM Informix JDBC Driver for IBM Informix Dynamic Server")) {
+                setIdentifierCase(meta);
+                driverVendor = VENDOR_IBM;
+            }
+            else if ("Informix".equalsIgnoreCase(driverName))
                 driverVendor = VENDOR_DATADIRECT;
             else
                 driverVendor = VENDOR_OTHER;
@@ -186,10 +189,39 @@ public class InformixDictionary
                     conn.getTransactionIsolation()}));
         }
     }
+    
+    private void setIdentifierCase(DatabaseMetaData meta) {
+        try {
+            // lower case identifiers is the default for the JCC and newer
+            // Informix JDBC drivers
+            if (meta.storesLowerCaseIdentifiers()) { 
+                schemaCase = SCHEMA_CASE_LOWER;
+            }
+            else if (meta.storesMixedCaseIdentifiers()) {
+                schemaCase = SCHEMA_CASE_PRESERVE;
+            }
+            // otherwise, use the default (upper)
+        }
+        catch (SQLException e) {
+            getLog().warn("cannot-determine-identifier-base-case");
+            if (getLog().isTraceEnabled()) {
+                getLog().trace(e.toString(), e);
+            }
+        }
+    }
 
     @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
+        throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog), 
+            DBIdentifier.newSchema(schemaName),DBIdentifier.newTable(tableName),
+            DBIdentifier.newColumn(columnName), conn);
+    }
+
+    @Override
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+        DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);
