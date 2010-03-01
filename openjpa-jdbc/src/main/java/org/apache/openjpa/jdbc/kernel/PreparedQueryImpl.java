@@ -219,7 +219,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (provider instanceof SelectResultObjectProvider) {
             return new Object[]{((SelectResultObjectProvider)provider).getSelect(), null};
         } 
-        return new Object[]{null, _loc.get("exclude-not-select-rop", provider)};
+        return new Object[]{null, _loc.get("exclude-not-select-rop", provider.getClass().getName())};
     }
     
     private SelectImpl extractImplementation(SelectExecutor selector) {
