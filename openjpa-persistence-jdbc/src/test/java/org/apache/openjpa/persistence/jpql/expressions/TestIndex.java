@@ -51,7 +51,6 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestIndex extends SingleEMFTestCase {
     
-    private OpenJPAEntityManagerFactorySPI emf2 = null;
     private Log log = null;
     
     private enum JPQLIndexEntityClasses implements JPAEntityClassEnum {
@@ -92,6 +91,11 @@ public class TestIndex extends SingleEMFTestCase {
         "C_Element", "D_Element", "E_Element", "F_Element", };
 
     @Override
+    protected String getPersistenceUnitName() {
+        return "JPQLIndex";
+    }
+
+    @Override
     public void setUp() {
         super.setUp(CLEAR_TABLES, TreeNode.class, 
             OrderedElementEntity.class, UnorderedNameEntity.class,
@@ -99,13 +103,7 @@ public class TestIndex extends SingleEMFTestCase {
             // XMLOrderedOneToManyEntity.class, XMLOrderedManyToManyEntity.class,
             // XMLOrderedElementEntity.class, XMLUnorderedNameEntity.class);
 
-        // create our EMF
-        emf2 = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
-                "JPQLIndex",
-                "org/apache/openjpa/persistence/jpql/expressions/persistence.xml");
-        assertNotNull(emf2);
-
-        log =  emf2.getConfiguration().getLog("test");
+        log =  emf.getConfiguration().getLog("test");
     }
         
     public void testO2MTreeQueryIndex() {
@@ -160,7 +158,7 @@ public class TestIndex extends SingleEMFTestCase {
         root.createTree(original);
         assertArrayEquals(original, root.getFanOuts());
         
-        EntityManager em = emf2.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(root);
         em.getTransaction().commit();
@@ -222,7 +220,7 @@ public class TestIndex extends SingleEMFTestCase {
             
             // add the entities
             log.trace("Adding " + newElements.size() + " of " + elementClassName + " to " + entityClassName);
-            em = emf2.createEntityManager();
+            em = emf.createEntityManager();
             em.getTransaction().begin();
             for (INameEntity newElement : newElements)
             {
@@ -283,7 +281,7 @@ public class TestIndex extends SingleEMFTestCase {
             }
             newEntity.setListElements(namesList);
             // add the entity
-            em = emf2.createEntityManager();
+            em = emf.createEntityManager();
             em.getTransaction().begin();
             em.persist(newEntity);
             em.getTransaction().commit();
@@ -345,7 +343,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Arrays.toString(Element_Names));
             }
             
-            EntityManager em = emf2.createEntityManager();
+            EntityManager em = emf.createEntityManager();
             em.clear();
             int idx = 0;
             for (String expectedEntityName : Element_Names) {
@@ -388,7 +386,7 @@ public class TestIndex extends SingleEMFTestCase {
                     + Arrays.toString(Element_Names));
             }
             
-            EntityManager em = emf2.createEntityManager();
+            EntityManager em = emf.createEntityManager();
             em.clear();
             int idx = 0;
             for (String expectedEntityName : Element_Names) {

@@ -322,6 +322,7 @@
     <persistence-unit name="JPQLIndex">
         <mapping-file>org/apache/openjpa/persistence/jpql/expressions/orm.xml</mapping-file>
 
+        <class>org.apache.openjpa.persistence.proxy.TreeNode</class>
         <class>org.apache.openjpa.persistence.jpql.entities.OrderedElementEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.XMLOrderedElementEntity</class>
         <class>org.apache.openjpa.persistence.jpql.entities.OrderedManyToManyEntity</class>
