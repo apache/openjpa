@@ -273,6 +273,13 @@ public class PersistenceMetaDataFactory
                 log.trace(
                     _loc.get("map-persistent-types-skipping-non-url", rsrc));
             return;
+        } else if (rsrc.toString().endsWith("/")) {
+            // OPENJPA-1546 If the rsrc URL is a directory it should not be
+            // added to the list of the unparsed XML files
+            if (log.isTraceEnabled())
+                log.trace(
+                    _loc.get("map-persistent-types-skipping-dir", rsrc));
+            return;
         }
 
         if (log.isTraceEnabled())
@@ -282,6 +289,7 @@ public class PersistenceMetaDataFactory
         if (_xml == null)
             _xml = new HashMap<URL, Set>();
         _xml.put((URL) rsrc, new HashSet(Arrays.asList(names)));
+
         if (_unparsed == null)
             _unparsed = new HashSet<URL>();
         _unparsed.add((URL) rsrc);
