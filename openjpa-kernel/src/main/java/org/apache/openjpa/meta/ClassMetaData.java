@@ -23,11 +23,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,6 +67,7 @@ import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.OpenJPAId;
+import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
@@ -207,6 +211,7 @@ public class ClassMetaData
     private FieldMetaData[] _definedFields = null;
     private FieldMetaData[] _listingFields = null;
     private FieldMetaData[] _allListingFields = null;
+    private FieldMetaData[] _allProxyFields = null;
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
@@ -977,6 +982,39 @@ public class ClassMetaData
     }
 
     /**
+     * Return all fields that are types that need to be wrappered by a proxy.
+     * The types that need to be proxied are:
+     * <p>
+     *  <li>org.apache.openjpa.meta.JavaTypes.CALENDAR
+     *  <li>org.apache.openjpa.meta.JavaTypes.COLLECTION
+     *  <li>org.apache.openjpa.meta.JavaTypes.DATE
+     *  <li>org.apache.openjpa.meta.JavaTypes.MAP
+     *  <li>org.apache.openjpa.meta.JavaTypes.OBJECT
+     */
+    public FieldMetaData[] getProxyFields() {
+        if (_allProxyFields == null) {
+            // Make sure _allFields has been initialized
+            if (_allFields == null) {
+                getFields();
+            }
+            List<FieldMetaData> res = new ArrayList<FieldMetaData>();
+            for (FieldMetaData fmd : _allFields) {
+                switch (fmd.getDeclaredTypeCode()) {
+                    case JavaTypes.CALENDAR:
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.DATE:
+                    case JavaTypes.MAP:
+                    case JavaTypes.OBJECT:
+                        res.add(fmd);
+                        break;
+                }
+            }
+            _allProxyFields = res.toArray(new FieldMetaData[res.size()]);
+        }
+        return _allProxyFields;
+    }
+    
+    /**
      * Return all field metadata, including superclass fields.
      */
     public FieldMetaData[] getFields() {
@@ -1603,6 +1641,7 @@ public class ClassMetaData
         _allFields = null;
         _allDFGFields = null;
         _allPKFields = null;
+        _allProxyFields = null;
         _definedFields = null;
         _listingFields = null;
         _allListingFields = null;

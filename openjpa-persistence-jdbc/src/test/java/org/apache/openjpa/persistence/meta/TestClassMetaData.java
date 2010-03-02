@@ -88,6 +88,17 @@ public class TestClassMetaData
         assertTrue(_metaTest1.getRequiresExtent());
     }
 
+    public void testGetProxyFields(){
+        FieldMetaData[] proxies = _metaTest3.getProxyFields();
+        assertEquals(2, proxies.length);
+        
+        proxies = _metaTest1.getProxyFields();
+        assertEquals(2, proxies.length);
+        
+        proxies = _metaTest5.getProxyFields();
+        assertEquals(0, proxies.length);
+
+    }
     /**
      * Test non-persistent fields.
      */

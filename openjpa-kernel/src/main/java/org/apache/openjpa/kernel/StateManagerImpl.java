@@ -2890,13 +2890,15 @@ public class StateManagerImpl
 
         lock();
         try {
-            for (int i = 0, len = _loaded.length(); i < len; i++) {
-                if (_loaded.get(i)) {
-                    provideField(_pc, _single, i);
-                    if (_single.proxy(reset, replaceNull))
-                        replaceField(_pc, _single, i);
-                    else
+            for (FieldMetaData fmd : _meta.getProxyFields()) {
+                int index = fmd.getIndex();
+                if (_loaded.get(index)) {
+                    provideField(_pc, _single, index);
+                    if (_single.proxy(reset, replaceNull)) {
+                        replaceField(_pc, _single, index);
+                    } else {
                         _single.clear();
+                    }
                 }
             }
         } finally {
