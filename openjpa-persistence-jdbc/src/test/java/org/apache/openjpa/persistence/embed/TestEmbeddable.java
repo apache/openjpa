@@ -284,6 +284,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         createEntityA_Coll_String(em, ID);
+        
+        EntityB1 b = new EntityB1();
+        b.setId(ID);
+        b.setName("b" + ID);
+        em.persist(b);
+        
         tran.begin();
         em.flush();
         tran.commit();
@@ -1329,6 +1335,33 @@ public class TestEmbeddable extends SQLListenerTestCase {
             }
             em.clear();
         }
+        
+        String[] queryWithParameters = {
+                "select b.name from " + 
+                    "EntityB1 b " + 
+                    "WHERE b.id in " + 
+                    "(select a.id FROM EntityA_Coll_String a where ?1 MEMBER OF a.nickNames)",
+                "select b.name from " + 
+                    "EntityB1 b " + 
+                    "WHERE b.id not in " + 
+                    "(select a.id FROM EntityA_Coll_String a where ?1 MEMBER OF a.nickNames)"
+        };
+            
+        for (int i = 0; i < queryWithParameters.length; i++) {
+            Query q1 = em.createQuery(queryWithParameters[i]);
+            q1.setParameter(1, "nickName_10");
+            rs = q1.getResultList();
+            switch (i) {
+            case 0:
+                String obj = (String)rs.get(0);
+                assertEquals("b1", obj);
+                break;
+            case 1:
+                assertTrue(rs.size() == 0);
+                break;
+            }
+        }        
+        
         EntityTransaction tran = em.getTransaction();
         tran.begin();
         Query q = em.createQuery("select a from EntityA_Coll_String a");
