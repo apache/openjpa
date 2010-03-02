@@ -152,6 +152,7 @@ public class ClassMetaData
     private int _resMode = MODE_NONE;
 
     private Class<?> _type = Object.class;
+    private int _hashCode = Object.class.getName().hashCode();
     private final Map<String,FieldMetaData> _fieldMap = new TreeMap<String,FieldMetaData>();
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
@@ -265,6 +266,7 @@ public class ClassMetaData
             (type.getSuperclass().getName()))
             throw new MetaDataException(_loc.get("enum", type));
         _type = type;
+        _hashCode = _type.getName().hashCode();
         if (PersistenceCapable.class.isAssignableFrom(type))
             setIntercepting(true);
     }
@@ -1116,14 +1118,15 @@ public class ClassMetaData
      * Return the version field for this class, if any.
      */
     public FieldMetaData getVersionField() {
+        if (_allFields == null) {
+            getFields();
+        }
         if (_versionIdx == Integer.MIN_VALUE) {
-            FieldMetaData[] fields = getFields();
             int idx = -1;
-            for (int i = 0; i < fields.length; i++) {
-                if (fields[i].isVersion()) {
+            for (int i = 0; i < _allFields.length; i++) {
+                if (_allFields[i].isVersion()) {
                     if (idx != -1)
-                        throw new MetaDataException(_loc.get
-                            ("mult-vers-fields", this, fields[idx], fields[i]));
+                        throw new MetaDataException(_loc.get("mult-vers-fields", this, _allFields[idx], _allFields[i]));
                     idx = i;
                 }
             }
@@ -1131,7 +1134,8 @@ public class ClassMetaData
         }
         if (_versionIdx == -1)
             return null;
-        return getFields()[_versionIdx];
+
+        return _allFields[_versionIdx];
     }
 
     /**
@@ -1141,10 +1145,12 @@ public class ClassMetaData
      * @return the field's metadata, or null if not found
      */
     public FieldMetaData getField(int index) {
-        FieldMetaData[] fields = getFields();
-        if (index < 0 || index >= fields.length)
+        if(_allFields == null){
+            getFields();
+        }
+        if (index < 0 || index >= _allFields.length)
             return null;
-        return fields[index];
+        return _allFields[index];
     }
 
     /**
@@ -1646,7 +1652,7 @@ public class ClassMetaData
     }
 
     public int hashCode() {
-        return _type.getName().hashCode();
+        return _hashCode;
     }
 
     public boolean equals(Object other) {
