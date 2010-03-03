@@ -1,5 +1,5 @@
-                          Apache OpenJPA 2.0.0-beta2
-                          --------------------------
+                         Apache OpenJPA 2.0.0-SNAPSHOT
+                         -----------------------------
 
 Content
 -------
@@ -172,6 +172,7 @@ Bug
     * [OPENJPA-1367] - H2 Database Engine does support cross join
     * [OPENJPA-1485] - isLoaded util method does not behave per spec for collection attributes and basic type
     * [OPENJPA-1504] - Validation junits should not rely on Hibernate Impl
+    * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
     * [OPENJPA-1507] - NPE with a non-JDBC store manager
     * [OPENJPA-1509] - Enum field types cannot be modified in an in-memory JPQL bulk update statement
     * [OPENJPA-1533] - JPA2 select math mix with aggregate reports syntax error
