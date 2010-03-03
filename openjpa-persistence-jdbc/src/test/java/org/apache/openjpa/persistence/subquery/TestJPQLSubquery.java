@@ -1171,6 +1171,20 @@ public class TestJPQLSubquery extends SingleEMFTestCase {
         executeAndCompareSQL(jpql, expectedSQL);
     }    
 
+    public void testNotInSubqueryWithMemberOf() {
+        String jpql = "SELECT c.balanceOwed FROM Customer c WHERE c.name not in " 
+            + "(select cu.name FROM CompUser cu where ?1 MEMBER OF cu.nicknames)";
+        String expectedSQL = "SELECT t0.balanceOwed FROM CR_CUST t0 WHERE (NOT (t0.name IN " + 
+            "(SELECT t1.name FROM CR_COMPUSER t1 INNER JOIN CR_COMPUSER_nicknames t2 " + 
+            "ON t1.userid = t2.COMPUSER_USERID WHERE (t2.element = ?))))";
+
+        EntityManager em = emf.createEntityManager();
+        Query jQ = em.createQuery(jpql);
+        jQ.setParameter(1, "nickName1");    
+        
+        executeQueryAndCompareSQL(jQ, jpql, expectedSQL);
+    }
+
     void executeQueryAndCompareSQL(Query q, String jpql, String expectedSQL) {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
