@@ -3305,6 +3305,10 @@ public class BrokerImpl
     }
 
     private void detachAllInternal(OpCallbacks call) {
+        if(_conf.getDetachStateInstance().getLiteAutoDetach() == true){
+            detachAllInternalLite();
+            return;
+        }
         Collection<StateManagerImpl> states = getManagedStates();
         StateManagerImpl sm;
         for (Iterator<StateManagerImpl> itr = states.iterator(); itr.hasNext();) {
@@ -3334,6 +3338,35 @@ public class BrokerImpl
         }
     }
 
+    private void detachAllInternalLite() {
+        Collection<StateManagerImpl> states = getManagedStates();
+        // TODO : should I call clear on old cache first? perhaps a memory leak?
+        // Clear out all persistence context caches.
+        _cache = new ManagedCache(this);
+        if (_transCache != null) {
+            _transCache.clear();
+        }
+        if (_transAdditions != null) {
+            _transAdditions.clear();
+        }
+
+        // Detach all.
+        TransferFieldManager fm = new TransferFieldManager();
+        for (StateManagerImpl s : states) {
+            ClassMetaData cmd = s.getMetaData();
+            if (s.isPersistent() && cmd.isDetachable()) {
+                //Clean up an fields that are LargeResultSets.
+                for (FieldMetaData fmd : cmd.getLrsFields()) {
+                    int index = fmd.getIndex();
+                    fm.storeObjectField(index, null);
+                    s.replaceField(s.getPersistenceCapable(), fm, index);
+                    fm.clear();
+                }
+                s.unproxyFields();
+                s.getPersistenceCapable().pcReplaceStateManager(null);
+            }
+        }
+    }
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         if (obj == null)
             return null;

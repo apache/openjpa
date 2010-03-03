@@ -33,6 +33,8 @@ public abstract class DetachOptions
     private boolean _transient = true;
     private boolean _manager = true;
     private boolean _access = true;
+    
+    private boolean _liteAutoDetach = false;
 
     /**
      * The {@link DetachState} constant.
@@ -123,6 +125,22 @@ public abstract class DetachOptions
      */
     public void setAccessUnloaded(boolean val) {
         _access = val;
+    }
+    
+    /**
+     * Whether to use lite detachment when auto detaching. This setting only applies when
+     * DetachState is set to loaded.
+     */
+    public void setLiteAutoDetach(boolean b) {
+        _liteAutoDetach = b;
+    }
+
+    /**
+     * Whether to use lite detachment when auto detaching. This setting only applies when
+     * DetachState is set to loaded.
+     */
+    public boolean getLiteAutoDetach() {
+        return (getDetachState() & DETACH_LOADED) == 1 && _liteAutoDetach;
     }
 
     /**

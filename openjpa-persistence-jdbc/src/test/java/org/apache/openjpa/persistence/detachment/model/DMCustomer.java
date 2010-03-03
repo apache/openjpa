@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Version;
 
 @Entity 
 public class DMCustomer {
@@ -35,6 +36,8 @@ public class DMCustomer {
     private String firstName;    
     private String lastName;    
 
+    @Version int version;
+    
     @OneToMany(mappedBy="customer", 
             fetch=FetchType.EAGER,
             cascade=CascadeType.ALL)

@@ -20,12 +20,15 @@ package org.apache.openjpa.persistence.detachment.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 @Entity
 public class DMItem {
     private static long idCounter = System.currentTimeMillis();	
     @Id private long id = idCounter++;
 
+    @Version int version;
+    
     private String name;
     private double price;
 

@@ -51,8 +51,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  *
  */
 public class TestDetach extends SingleEMFTestCase {
-    private OpenJPAEntityManager em;
-    private DMCustomer root;
+    OpenJPAEntityManager em;
+    DMCustomer root;
     
     public void setUp() {
         super.setUp(DMCustomer.class, DMCustomerInventory.class, DMItem.class,

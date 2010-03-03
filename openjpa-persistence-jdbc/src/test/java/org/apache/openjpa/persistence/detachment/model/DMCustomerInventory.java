@@ -23,6 +23,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Version;
 
 @Entity
 public class DMCustomerInventory  {
@@ -37,6 +38,8 @@ public class DMCustomerInventory  {
     @ManyToOne(cascade=MERGE)
     @JoinColumn(name="CI_CUSTOMERID")
     private DMCustomer customer;
+    
+    @Version int version;
 
     public DMCustomerInventory() {
     }

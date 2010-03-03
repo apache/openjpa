@@ -212,6 +212,7 @@ public class ClassMetaData
     private FieldMetaData[] _listingFields = null;
     private FieldMetaData[] _allListingFields = null;
     private FieldMetaData[] _allProxyFields = null;
+    private FieldMetaData[] _allLrsFields = null;
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
@@ -1015,6 +1016,26 @@ public class ClassMetaData
     }
     
     /**
+     * Return all large result set fields. Will never return null.
+     */
+    public FieldMetaData[] getLrsFields() {
+        if (_allLrsFields == null) {
+            // Make sure _allFields has been initialized
+            if (_allFields == null) {
+                getFields();
+            }
+            List<FieldMetaData> res = new ArrayList<FieldMetaData>();
+            for (FieldMetaData fmd : _allFields) {
+                if(fmd.isLRS()==true){
+                    res.add(fmd);
+                }
+            }
+            _allLrsFields = res.toArray(new FieldMetaData[res.size()]);
+        }
+        return _allLrsFields;
+    }
+    
+    /**
      * Return all field metadata, including superclass fields.
      */
     public FieldMetaData[] getFields() {
@@ -1262,6 +1283,7 @@ public class ClassMetaData
         FieldMetaData fmd = _repos.newFieldMetaData(name, type, this);
         clearFieldCache();
         _fieldMap.put(name, fmd);
+
         return fmd;
     }
 
@@ -1642,6 +1664,7 @@ public class ClassMetaData
         _allDFGFields = null;
         _allPKFields = null;
         _allProxyFields = null;
+        _allLrsFields = null;
         _definedFields = null;
         _listingFields = null;
         _allListingFields = null;
