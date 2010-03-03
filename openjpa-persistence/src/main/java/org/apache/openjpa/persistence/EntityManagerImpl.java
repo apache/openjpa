@@ -1634,8 +1634,10 @@ public class EntityManagerImpl
         }
         // Set this transaction to rollback only (as per spec) here because the raised exception 
         // does not go through normal exception translation pathways
-        RuntimeException ex = new IllegalArgumentException(_loc.get("unwrap-em-invalid", cls).toString());
-        setRollbackOnly(ex);
+        RuntimeException ex = new PersistenceException(_loc.get("unwrap-em-invalid", cls).toString(), null, 
+                this, false);
+        if (isActive())
+            setRollbackOnly(ex);
         throw ex;
     }
 
