@@ -347,6 +347,7 @@ Sub-task
     * [OPENJPA-1130] - Use maven-jar-plugin to create a o-p-j-tests.jar to share base TestCase classes across modules
     * [OPENJPA-1131] - Upgrade to maven-jar-plugin-2.2
     * [OPENJPA-1149] - Add embeddables sample to the examples module
+    * [OPENJPA-1155] - BrokerImpl.detachAllInternal() does not detach newly loaded entities
     * [OPENJPA-1157] - Integration tests for Bean Validation providers - Part 2
     * [OPENJPA-1164] - Make sleepTime in SimpleWBCallback configurable
     * [OPENJPA-1167] - Use Geronimo EA4 JPA spec jar
