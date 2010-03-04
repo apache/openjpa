@@ -222,6 +222,7 @@ Bug
     * [OPENJPA-1025] - AbstractResultList.subList throws UnsupportedOperationException
     * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
     * [OPENJPA-1141] - NPE at org.apache.openjpa.jdbc.meta.MappingInfo.mergeJoinColumn(MappingInfo.java:1400)
+    * [OPENJPA-1142] - OptimisticLockException thrown on Query.getResultList() when Pessimistic Lock is applied
     * [OPENJPA-1173] - Update PostgreSQL support for 8.4.x
     * [OPENJPA-1185] - Subquery overhaul
     * [OPENJPA-1197] - NativeQueries fail with MySQL
