@@ -194,6 +194,7 @@ public class ClassMetaData
     private FieldMetaData[] _definedFields = null;
     private FieldMetaData[] _listingFields = null;
     private FieldMetaData[] _allListingFields = null;
+    private FieldMetaData[] _allProxyFields = null;
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
@@ -912,6 +913,39 @@ public class ClassMetaData
     }
 
     /**
+     * Return all fields that are types that need to be wrappered by a proxy.
+     * The types that need to be proxied are:
+     * <p>
+     *  <li>org.apache.openjpa.meta.JavaTypes.CALENDAR
+     *  <li>org.apache.openjpa.meta.JavaTypes.COLLECTION
+     *  <li>org.apache.openjpa.meta.JavaTypes.DATE
+     *  <li>org.apache.openjpa.meta.JavaTypes.MAP
+     *  <li>org.apache.openjpa.meta.JavaTypes.OBJECT
+     */
+    public FieldMetaData[] getProxyFields() {
+        if (_allProxyFields == null) {
+            // Make sure _allFields has been initialized
+            if (_allFields == null) {
+                getFields();
+            }
+            List<FieldMetaData> res = new ArrayList<FieldMetaData>();
+            for (FieldMetaData fmd : _allFields) {
+                switch (fmd.getDeclaredTypeCode()) {
+                    case JavaTypes.CALENDAR:
+                    case JavaTypes.COLLECTION:
+                    case JavaTypes.DATE:
+                    case JavaTypes.MAP:
+                    case JavaTypes.OBJECT:
+                        res.add(fmd);
+                        break;
+                }
+            }
+            _allProxyFields = res.toArray(new FieldMetaData[res.size()]);
+        }
+        return _allProxyFields;
+    }
+
+    /**
      * Return all field metadatas, including superclass fields.
      */
     public FieldMetaData[] getFields() {
@@ -1523,6 +1557,7 @@ public class ClassMetaData
         _allFields = null;
         _allDFGFields = null;
         _allPKFields = null;
+        _allProxyFields = null;
         _definedFields = null;
         _listingFields = null;
         _allListingFields = null;
