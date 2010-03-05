@@ -47,6 +47,7 @@ import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.collections.set.MapBackedSet;
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
@@ -60,6 +61,7 @@ import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionEventManager;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -144,6 +146,9 @@ public class BrokerImpl
     private static final int FLAG_TRANS_ENDING = 2 << 11;
 
     private static final Object[] EMPTY_OBJECTS = new Object[0];
+    
+    private String _connectionFactoryName = "";
+    private String _connectionFactory2Name = "";
 
     private static final Localizer _loc =
         Localizer.forPackage(BrokerImpl.class);
@@ -4969,5 +4974,61 @@ public class BrokerImpl
     
     public boolean isFromWriteBehindCallback() {
         return _fromWriteBehindCallback;
+    }
+
+    /**
+     * Return the 'JTA' connectionFactoryName
+     */
+    public String getConnectionFactoryName() {
+        return _connectionFactoryName;
+    }
+
+    /**
+     * Set the 'JTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
+     */
+    public void setConnectionFactoryName(String connectionFactoryName) {
+        this._connectionFactoryName = StringUtils.trimToNull(connectionFactoryName);
+    }
+
+    /**
+     * Return the 'NonJTA' ConnectionFactoryName.
+     */
+    public String getConnectionFactory2Name() {
+        return _connectionFactory2Name;
+    }
+
+    /**
+     * Set the 'NonJTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
+     */
+    public void setConnectionFactory2Name(String connectionFactory2Name) {
+        this._connectionFactory2Name = StringUtils.trimToNull(connectionFactory2Name);
+    }
+    
+    /**
+     * Return the 'JTA' ConnectionFactory, looking it up from JNDI if needed.
+     * 
+     * @return the JTA connection factory or null if connectionFactoryName is blank.
+     */
+    public Object getConnectionFactory() {
+        if(StringUtils.isNotBlank(_connectionFactoryName)) { 
+            return Configurations.lookup(_connectionFactoryName, "openjpa.ConnectionFactory", _log );
+        }
+        else {
+            return null;
+        }
+    }
+    
+    /**
+     * Return the 'NonJTA' ConnectionFactory, looking it up from JNDI if needed.
+     * 
+     * @return the NonJTA connection factory or null if connectionFactoryName is blank.
+     */
+    public Object getConnectionFactory2() { 
+        if(StringUtils.isNotBlank(_connectionFactory2Name)) { 
+            return  Configurations.lookup(_connectionFactory2Name, "openjpa.ConnectionFactory2", _log);
+        }
+        else {
+            return null;
+        }
     }
 }

@@ -35,6 +35,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -43,6 +44,7 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
+import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -146,13 +148,46 @@ public class JDBCStoreManager
         if (lm instanceof JDBCLockManager)
             _lm = (JDBCLockManager) lm;
 
-        if (!ctx.isManaged() && _conf.isConnectionFactoryModeManaged())
-            _ds = _conf.getDataSource2(ctx);
-        else
-            _ds = _conf.getDataSource(ctx);
+        _ds = getDataSource(ctx);
 
         if (_conf.getUpdateManagerInstance().orderDirty())
             ctx.setOrderDirtyObjects(true);
+    }
+        
+    private final boolean useConnectionFactory2(StoreContext ctx) { 
+        return (!ctx.isManaged() && _conf.isConnectionFactoryModeManaged());  
+    }
+        
+    private final DataSource getDataSource(StoreContext ctx) {
+        DataSource ds;
+
+        if (useConnectionFactory2(ctx)) {
+            ds = (DataSource) ctx.getConnectionFactory2();
+            if (ds != null) {
+                ds = DataSourceFactory.decorateDataSource(ds, _conf, false);
+            }
+            else {
+                ds = _conf.getDataSource2(ctx);
+            }
+        } else {
+            ds = (DataSource) ctx.getConnectionFactory();
+            if (ds != null) {
+                ds = DataSourceFactory.decorateDataSource(ds, _conf, false);   
+            }
+            else {
+                ds = _conf.getDataSource(ctx);
+            }
+        }
+        return ds;
+    }
+    
+    private boolean useContextToGetDataSource(StoreContext ctx) { 
+        // configuration check to enable goes here. 
+        if (StringUtils.isBlank(ctx.getConnectionFactoryName()) 
+                && StringUtils.isBlank(ctx.getConnectionFactory2Name())) {
+            return false;
+        }
+        return true;
     }
 
     public JDBCConfiguration getConfiguration() {

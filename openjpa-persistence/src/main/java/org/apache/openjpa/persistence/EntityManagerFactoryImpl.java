@@ -197,7 +197,20 @@ public class EntityManagerFactoryImpl
             }
         }
 
-        Broker broker = _factory.newBroker(user, pass, managed, retainMode, false);
+        // javax.persistence.jtaDataSource and openjpa.ConnectionFactory name are equivalent.
+        // prefer javax.persistence for now. 
+        String cfName = (String) Configurations.removeProperty("jtaDataSource", props);  
+        if(cfName == null) {
+            cfName = (String) Configurations.removeProperty("ConnectionFactoryName", props);
+        }
+        
+        String cf2Name = (String) Configurations.removeProperty("nonJtaDataSource", props); 
+        
+        if(cf2Name == null) { 
+            cf2Name = (String) Configurations.removeProperty("ConnectionFactory2Name", props);
+        }
+        
+        Broker broker = _factory.newBroker(user, pass, managed, retainMode, false, cfName, cf2Name);
             
         // add autodetach for close and rollback conditions to the configuration
         broker.setAutoDetach(AutoDetach.DETACH_CLOSE, true);

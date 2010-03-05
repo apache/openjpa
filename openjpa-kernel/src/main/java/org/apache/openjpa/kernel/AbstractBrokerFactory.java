@@ -183,6 +183,11 @@ public abstract class AbstractBrokerFactory
     }
     
     public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting) {
+        return newBroker(user, pass, managed, connRetainMode, findExisting, "", "");
+    }
+
+    public Broker newBroker(String user, String pass, boolean managed, int connRetainMode, boolean findExisting,
+        String cf1Name, String cf2Name) {
         try {
             assertOpen();
             makeReadOnly();
@@ -192,6 +197,8 @@ public abstract class AbstractBrokerFactory
                 broker = findBroker(user, pass, managed);
             if (broker == null) {
                 broker = newBrokerImpl(user, pass);
+                broker.setConnectionFactoryName(cf1Name);
+                broker.setConnectionFactory2Name(cf2Name);
                 initializeBroker(managed, connRetainMode, broker, false);
             }
             return broker;

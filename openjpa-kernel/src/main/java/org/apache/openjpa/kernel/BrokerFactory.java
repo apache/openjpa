@@ -74,6 +74,29 @@ public interface BrokerFactory
      */
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting);
+    
+    /**
+     * Return a new broker using the supplied
+     * <ul>
+     * <li>credentials</li>
+     * <li>transaction management mode</li>
+     * <li>connectionRetainMode</li>
+     * <li>connectionFactories</li>
+     * </ul>
+     * 
+     * @param user  Username to use when obtaining a connection. Will be ignored if a connection factory is 
+     *     obtained from JNDI.
+     * @param pass  Password to use when obtaining a connection. Will be ignored if a connection factory is 
+     *     obtained from JNDI.
+     * @param managed Whether managed transactions will be used by this Broker
+     * @param connRetainMode {@link ConnectionRetainMode}
+     * @param findExisting Whether the internal pool of brokers should be used. 
+     * @param cfName  JTA ConnectionFactory to use
+     * @param cf2Name  Non-JTA ConnectionFactory to use. 
+     * @return A Broker which matches the provided criteria.
+     */
+    public Broker newBroker(String user, String pass, boolean managed,
+        int connRetainMode, boolean findExisting, String cfName, String cf2Name);
 
     /**
      * Register a listener for lifecycle-related events on the specified

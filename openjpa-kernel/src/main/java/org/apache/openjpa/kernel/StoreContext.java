@@ -456,4 +456,38 @@ public interface StoreContext {
 	 * Releases the internal lock.
 	 */
 	public void unlock ();
+
+    /**
+     * Return the 'JTA' connectionFactoryName
+     */
+    public String getConnectionFactoryName();
+
+    /**
+     * Set the 'JTA' ConnectionFactoryName.
+     */
+    public void setConnectionFactoryName(String connectionFactoryName);
+
+    /**
+     * Return the 'NonJTA' ConnectionFactoryName.
+     */
+    public String getConnectionFactory2Name();
+
+    /**
+     * Set the 'NonJTA' ConnectionFactoryName. 
+     */
+    public void setConnectionFactory2Name(String connectionFactory2Name);
+
+    /**
+     * Return the 'JTA' ConnectionFactory, looking it up from JNDI if needed.
+     * 
+     * @return the JTA connection factory or null if connectionFactoryName is blank.
+     */
+    public Object getConnectionFactory();
+
+    /**
+     * Return the 'NonJTA' ConnectionFactory, looking it up from JNDI if needed.
+     * 
+     * @return the NonJTA connection factory or null if connectionFactoryName is blank.
+     */
+    public Object getConnectionFactory2();
 }

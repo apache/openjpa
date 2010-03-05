@@ -1418,4 +1418,28 @@ public class DelegatingBroker
     public void setCachePreparedQuery(boolean flag) {
         _broker.setCachePreparedQuery(flag);
     }
+    
+    public String getConnectionFactoryName() {
+        return _broker.getConnectionFactoryName();
+    }
+
+    public void setConnectionFactoryName(String connectionFactoryName) {
+        _broker.setConnectionFactoryName(connectionFactoryName);
+    }
+
+    public String getConnectionFactory2Name() {
+        return _broker.getConnectionFactory2Name();
+    }
+
+    public void setConnectionFactory2Name(String connectionFactory2Name) {
+        _broker.setConnectionFactory2Name(connectionFactory2Name);
+    }
+    
+    public Object getConnectionFactory() {
+        return _broker.getConnectionFactory();
+    }
+
+    public Object getConnectionFactory2() {
+        return _broker.getConnectionFactory2();
+    }
 }

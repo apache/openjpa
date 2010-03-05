@@ -148,9 +148,13 @@ public class DelegatingBrokerFactory
 
     public Broker newBroker(String user, String pass, boolean managed,
         int connRetainMode, boolean findExisting) {
+        return newBroker(user, pass, managed, connRetainMode, findExisting, "", "");
+    }
+    public Broker newBroker(String user, String pass, boolean managed,
+        int connRetainMode, boolean findExisting, String cfName, String cf2Name) {
         try {
             return _factory.newBroker(user, pass, managed, connRetainMode,
-                findExisting);
+                findExisting, cfName, cf2Name);
         } catch (RuntimeException re) {
             throw translate(re);
         }
