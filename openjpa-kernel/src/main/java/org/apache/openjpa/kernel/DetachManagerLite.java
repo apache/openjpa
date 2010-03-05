@@ -68,7 +68,8 @@ public class DetachManagerLite {
      * @param sm
      *            The StateManagerImpl that the PersistenceCapable belongs to.
      */
-    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc, StateManagerImpl sm, TransferFieldManager fm) {
+    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc,
+            StateManagerImpl sm, TransferFieldManager fm) {
         int fieldIndex = fmd.getIndex();
         if (fmd.isLRS() == true) {
             // need to null out LRS fields.
