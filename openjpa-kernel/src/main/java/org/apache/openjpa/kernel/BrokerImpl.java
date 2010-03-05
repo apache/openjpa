@@ -3348,10 +3348,12 @@ public class BrokerImpl
     }
 
     private void detachAllInternalLite() {
-        Collection<StateManagerImpl> states = getManagedStates();
-        // TODO : should I call clear on old cache first? perhaps a memory leak?
-        // Clear out all persistence context caches.
+        ManagedCache old = _cache;
         _cache = new ManagedCache(this);
+        // TODO : should I call clear on old cache first? perhaps a memory leak?
+        Collection<StateManagerImpl> states = old.copy();
+        
+        // Clear out all persistence context caches.        
         if (_transCache != null) {
             _transCache.clear();
         }

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.util.BitSet;
 import java.util.Collection;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -30,10 +31,7 @@ import org.apache.openjpa.util.Proxy;
  *
  */
 public class DetachManagerLite {
-    final TransferFieldManager _fm;
-
     public DetachManagerLite() {
-        _fm = new TransferFieldManager();
     }
 
     /**
@@ -43,13 +41,17 @@ public class DetachManagerLite {
      *            The StateManagers to be detached.
      */
     public void detachAll(Collection<StateManagerImpl> states) {
+        TransferFieldManager fm = new TransferFieldManager();
         for (StateManagerImpl sm : states) {
             ClassMetaData cmd = sm.getMetaData();
             if (sm.isPersistent() && cmd.isDetachable()) {
                 PersistenceCapable pc = sm.getPersistenceCapable();
                 // Detach proxy fields.
+                BitSet loaded = sm.getLoaded();
                 for (FieldMetaData fmd : cmd.getProxyFields()) {
-                    detachProxyField(fmd, pc, sm);
+                    if (loaded.get(fmd.getIndex())) {
+                        detachProxyField(fmd, pc, sm, fm);
+                    }
                 }
                 pc.pcReplaceStateManager(null);
             }
@@ -66,20 +68,20 @@ public class DetachManagerLite {
      * @param sm
      *            The StateManagerImpl that the PersistenceCapable belongs to.
      */
-    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc, StateManagerImpl sm) {
+    private void detachProxyField(FieldMetaData fmd, PersistenceCapable pc, StateManagerImpl sm, TransferFieldManager fm) {
         int fieldIndex = fmd.getIndex();
         if (fmd.isLRS() == true) {
             // need to null out LRS fields.
-            nullField(fieldIndex, pc, sm);
+            nullField(fieldIndex, pc, sm, fm);
         } else {
             Object o = sm.fetchObject(fieldIndex);
             if (o instanceof Proxy) {
                 // Get unproxied object and replace
                 Proxy proxy = (Proxy) o;
                 Object unproxied = proxy.copy(proxy);
-                _fm.storeObjectField(fieldIndex, unproxied);
-                sm.replaceField(pc, _fm, fieldIndex);
-                _fm.clear();
+                fm.storeObjectField(fieldIndex, unproxied);
+                sm.replaceField(pc, fm, fieldIndex);
+                fm.clear();
                 // clean up old proxy
                 proxy.setOwner(null, -1);
                 if (proxy.getChangeTracker() != null) {
@@ -99,9 +101,9 @@ public class DetachManagerLite {
      * @param sm
      *            The StateManagerImpl that the PersistenceCapable belongs to.
      */
-    private void nullField(int fieldIndex, PersistenceCapable pc, StateManagerImpl sm) {
-        _fm.storeObjectField(fieldIndex, null);
-        sm.replaceField(pc, _fm, fieldIndex);
-        _fm.clear();
+    private void nullField(int fieldIndex, PersistenceCapable pc, StateManagerImpl sm, TransferFieldManager fm) {
+        fm.storeObjectField(fieldIndex, null);
+        sm.replaceField(pc, fm, fieldIndex);
+        fm.clear();
     }
 }

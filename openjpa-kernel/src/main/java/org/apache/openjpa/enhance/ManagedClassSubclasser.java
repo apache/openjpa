@@ -289,7 +289,7 @@ public class ManagedClassSubclasser {
         }
     }
 
-    private static void debugBytecodes(BCClass bc) throws IOException {
+    public static void debugBytecodes(BCClass bc) throws IOException {
         // Write the bytecodes to disk for debugging purposes.
         if ("true".equals(System.getProperty(
             ManagedClassSubclasser.class.getName() + ".dumpBytecodes")))
