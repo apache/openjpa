@@ -711,4 +711,16 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             buffer.append(((ExpressionImpl<?>)j).asValue(this)).append(" ");
         }
     }
+    
+    /**
+     * Returns a JPQL-like string, if this receiver is populated. Otherwise 
+     * returns <code>Object.toString()</code>.
+     */
+    public String toString() {
+        try {
+            return toCQL();
+        } catch (Throwable t) {
+            return super.toString();
+        }
+    }
 }
