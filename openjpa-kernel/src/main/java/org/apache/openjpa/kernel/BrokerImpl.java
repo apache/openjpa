@@ -68,6 +68,7 @@ import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -85,6 +86,7 @@ import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -245,6 +247,8 @@ public class BrokerImpl
     private LifecycleEventManager _lifeEventManager = null;
     private int _lifeCallbackMode = 0;
 
+    private DetachManagerLite _dmLite = new DetachManagerLite();
+    
     private transient boolean _initializeWasInvoked = false;
     private transient boolean _fromWriteBehindCallback = false;
     private LinkedList<FetchConfiguration> _fcs;
@@ -3316,7 +3320,7 @@ public class BrokerImpl
             if (!sm.isPersistent())
                 itr.remove();
             else if (!sm.getMetaData().isDetachable()) {
-                sm.release(true);
+                sm.release(true); 
                 itr.remove();
             }
         }
@@ -3349,23 +3353,7 @@ public class BrokerImpl
         if (_transAdditions != null) {
             _transAdditions.clear();
         }
-
-        // Detach all.
-        TransferFieldManager fm = new TransferFieldManager();
-        for (StateManagerImpl s : states) {
-            ClassMetaData cmd = s.getMetaData();
-            if (s.isPersistent() && cmd.isDetachable()) {
-                //Clean up an fields that are LargeResultSets.
-                for (FieldMetaData fmd : cmd.getLrsFields()) {
-                    int index = fmd.getIndex();
-                    fm.storeObjectField(index, null);
-                    s.replaceField(s.getPersistenceCapable(), fm, index);
-                    fm.clear();
-                }
-                s.unproxyFields();
-                s.getPersistenceCapable().pcReplaceStateManager(null);
-            }
-        }
+        _dmLite.detachAll(states);
     }
     public Object attach(Object obj, boolean copyNew, OpCallbacks call) {
         if (obj == null)
