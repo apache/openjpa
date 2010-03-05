@@ -19,6 +19,7 @@
 
 package org.apache.openjpa.persistence.meta;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.metamodel.Attribute;
@@ -199,7 +200,7 @@ public class Members {
         public final PersistentAttributeType getPersistentAttributeType() {
             if (!fmd.isDeclaredTypePC())
                 return super.getPersistentAttributeType();
-            return fmd.getMappedByMetaData() == null 
+            return fmd.getMappedByMetaData() == null || !fmd.getType().isAssignableFrom(Collection.class)
                  ? PersistentAttributeType.ONE_TO_ONE
                  : PersistentAttributeType.ONE_TO_MANY;
         }
