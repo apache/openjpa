@@ -2244,6 +2244,126 @@ We detailed the <literal>ContainerTable</literal> annotation in
 <xref linkend="ref_guide_mapping_jpa_coll_table"/>. Custom map mappings may
 also use this annotation to represent a map table.
             </para>
+    <section id="ref_guide_mapping_jpa_map_keycols">
+        <title>Key Columns</title>
+        <indexterm zone="ref_guide_mapping_jpa_map_keycols">
+            <primary>KeyColumn</primary>
+            <seealso>mapping metadata</seealso>
+        </indexterm>
+        <para>
+        Key columns serve the same role for map keys as the element
+        join columns described in
+        <xref linkend="ref_guide_mapping_jpa_coll_joincols"/> serve for
+        collection elements.  OpenJPA's
+        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
+        <classname>org.apache.openjpa.persistence.jdbc.KeyColumn</classname>
+        </ulink> annotation represents a map key.  To map custom
+        multi-column keys, use the
+        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumns.html">
+        <classname>org.apache.openjpa.persistence.jdbc.KeyColumns</classname>
+        </ulink> annotation, whose value is an array of <classname>KeyColumn</classname>s.
+        </para>
+        <para>
+        A <classname>KeyColumn</classname> always resides in
+        a container table, so it does not have the <literal>table</literal>
+        property of a standard <classname>Column</classname>.  Otherwise, the
+        <classname>KeyColumn</classname> and standard <classname>Column</classname>
+        annotations are equivalent.  See
+        <xref linkend="jpa_overview_mapping_column"/> in the JPA
+        Overview for a review of the <classname>Column</classname> annotation.
+        </para>
+    </section>
+    <section id="ref_guide_mapping_jpa_map_keyjoincols">
+        <title>Key Join Columns</title>
+        <indexterm zone="ref_guide_mapping_jpa_map_keyjoincols">
+            <primary>KeyJoinColumn</primary>
+            <seealso>mapping metadata</seealso>
+        </indexterm>
+        <para>
+        Key join columns are equivalent to standard JPA
+        join columns, except that they represent a join to a map key entity rather than a direct relation.  You represent
+        a key join column with OpenJPA's
+        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html">
+        <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumn</classname></ulink> annotation.  To declare a compound join, enclose an
+        array of <classname>KeyJoinColumn</classname>s in the
+        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html">
+        <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumns</classname>
+        </ulink> annotation.
+        </para>
+        <para>
+        A <classname>KeyJoinColumn</classname> always resides in
+        a container table, so it does not have the <literal>table</literal> property
+        of a standard <classname>JoinColumn</classname>.  Like <classname>XJoinColumn</classname>s above,
+        <classname>KeyJoinColumn</classname>s can reference a linked field
+        rather than a static linked column.  Otherwise, the <classname>KeyJoinColumn</classname>
+        and standard <classname>JoinColumn</classname> annotations are equivalent.  See
+        <xref linkend="jpa_overview_mapping_rel"/> in the JPA
+        Overview for a review of the <classname>JoinColumn</classname> annotation.
+        </para>
+    </section>
+    <section id="ref_guide_mapping_jpa_map_embedkey">
+        <title>Key Embedded Mapping</title>
+        <indexterm zone="ref_guide_mapping_jpa_map_embedkey">
+            <primary>KeyEmbeddedMapping</primary>
+            <seealso>mapping metadata</seealso>
+        </indexterm>
+        <para>
+        The
+        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html">
+        <classname>org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping</classname>
+        </ulink> annotation allows you to map your map field's embedded
+        key type to your container table.  This annotation has exactly
+        the same properties as the
+        <classname>EmbeddedMapping</classname> annotation described
+        <link linkend="ref_guide_mapping_jpa_embed">above</link>.
+        </para>
+    </section>
+    <section id="ref_guide_mapping_jpa_map_ex">
+        <title>Examples</title>
+        <mediaobject>
+            <imageobject>
+                <!-- PNG image data, 410 x 266 (see README) -->
+                <imagedata fileref="img/string-rel-map.png" width="273px"/>
+            </imageobject>
+        </mediaobject>
+        <para>
+        Map mapping in OpenJPA uses the same principles you saw in
+        collection mapping.  The example below maps the <literal>
+        Article.authors</literal> map according to the diagram above.
+        </para>
+        <example id="ref_guide_mapping_jpa_map_stringrelmap">
+            <title>String Key, Entity Value Map Mapping</title>
+<programlisting>
+package org.mag.pub;
+
+import org.apache.openjpa.persistence.*;
+import org.apache.openjpa.persistence.jdbc.*;
+
+@Entity
+@Table(name="AUTH")
+@DataStoreIdColumn(name="AID", columnDefinition="INTEGER64")
+public class Author {
+    ...
+}
+
+package org.mag;
+
+@Entity
+@Table(name="ART")
+public class Article {
+    @Id private long id;
+
+    @PersistentMap
+    @ContainerTable(name="ART_AUTHS", joinColumns=@XJoinColumn(name="ART_ID"))
+    @KeyColumn(name="LNAME")
+    @ElementJoinColumn(name="AUTH_ID")
+    private Map&lt;String,Author&gt; authors;
+
+    ...
+}
+</programlisting>
+                </example>
+            </section>
         </section>
         <section id="ref_guide_mapping_jpa_constraints">
             <title>
@@ -2861,126 +2981,6 @@ public class Employee {
             </example>
         </section>
     </section>
-    <section id="ref_guide_mapping_jpa_map_keycols">
-        <title>Key Columns</title>
-        <indexterm zone="ref_guide_mapping_jpa_map_keycols">
-            <primary>KeyColumn</primary>
-            <seealso>mapping metadata</seealso>
-        </indexterm>
-        <para>
-        Key columns serve the same role for map keys as the element
-        join columns described in
-        <xref linkend="ref_guide_mapping_jpa_coll_joincols"/> serve for
-        collection elements.  OpenJPA's
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
-        <classname>org.apache.openjpa.persistence.jdbc.KeyColumn</classname>
-        </ulink> annotation represents a map key.  To map custom
-        multi-column keys, use the
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumns.html">
-        <classname>org.apache.openjpa.persistence.jdbc.KeyColumns</classname>
-        </ulink> annotation, whose value is an array of <classname>KeyColumn</classname>s.
-        </para>
-        <para>
-        A <classname>KeyColumn</classname> always resides in
-        a container table, so it does not have the <literal>table</literal>
-        property of a standard <classname>Column</classname>.  Otherwise, the
-        <classname>KeyColumn</classname> and standard <classname>Column</classname>
-        annotations are equivalent.  See
-        <xref linkend="jpa_overview_mapping_column"/> in the JPA
-        Overview for a review of the <classname>Column</classname> annotation.
-        </para>
-    </section>
-    <section id="ref_guide_mapping_jpa_map_keyjoincols">
-        <title>Key Join Columns</title>
-        <indexterm zone="ref_guide_mapping_jpa_map_keyjoincols">
-            <primary>KeyJoinColumn</primary>
-            <seealso>mapping metadata</seealso>
-        </indexterm>
-        <para>
-        Key join columns are equivalent to standard JPA
-        join columns, except that they represent a join to a map key entity rather than a direct relation.  You represent
-        a key join column with OpenJPA's
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html">
-        <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumn</classname></ulink> annotation.  To declare a compound join, enclose an
-        array of <classname>KeyJoinColumn</classname>s in the
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html">
-        <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumns</classname>
-        </ulink> annotation.
-        </para>
-        <para>
-        A <classname>KeyJoinColumn</classname> always resides in
-        a container table, so it does not have the <literal>table</literal> property
-        of a standard <classname>JoinColumn</classname>.  Like <classname>XJoinColumn</classname>s above,
-        <classname>KeyJoinColumn</classname>s can reference a linked field
-        rather than a static linked column.  Otherwise, the <classname>KeyJoinColumn</classname>
-        and standard <classname>JoinColumn</classname> annotations are equivalent.  See
-        <xref linkend="jpa_overview_mapping_rel"/> in the JPA
-        Overview for a review of the <classname>JoinColumn</classname> annotation.
-        </para>
-    </section>
-    <section id="ref_guide_mapping_jpa_map_embedkey">
-        <title>Key Embedded Mapping</title>
-        <indexterm zone="ref_guide_mapping_jpa_map_embedkey">
-            <primary>KeyEmbeddedMapping</primary>
-            <seealso>mapping metadata</seealso>
-        </indexterm>
-        <para>
-        The
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html">
-        <classname>org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping</classname>
-        </ulink> annotation allows you to map your map field's embedded
-        key type to your container table.  This annotation has exactly
-        the same properties as the
-        <classname>EmbeddedMapping</classname> annotation described
-        <link linkend="ref_guide_mapping_jpa_embed">above</link>.
-        </para>
-    </section>
-    <section id="ref_guide_mapping_jpa_map_ex">
-        <title>Examples</title>
-        <mediaobject>
-            <imageobject>
-                <!-- PNG image data, 410 x 266 (see README) -->
-                <imagedata fileref="img/string-rel-map.png" width="273px"/>
-            </imageobject>
-        </mediaobject>
-        <para>
-        Map mapping in OpenJPA uses the same principles you saw in
-        collection mapping.  The example below maps the <literal>
-        Article.authors</literal> map according to the diagram above.
-        </para>
-        <example id="ref_guide_mapping_jpa_map_stringrelmap">
-            <title>String Key, Entity Value Map Mapping</title>
-<programlisting>
-package org.mag.pub;
-
-import org.apache.openjpa.persistence.*;
-import org.apache.openjpa.persistence.jdbc.*;
-
-@Entity
-@Table(name="AUTH")
-@DataStoreIdColumn(name="AID", columnDefinition="INTEGER64")
-public class Author {
-    ...
-}
-
-package org.mag;
-
-@Entity
-@Table(name="ART")
-public class Article {
-    @Id private long id;
-
-    @PersistentMap
-    @ContainerTable(name="ART_AUTHS", joinColumns=@XJoinColumn(name="ART_ID"))
-    @KeyColumn(name="LNAME")
-    @ElementJoinColumn(name="AUTH_ID")
-    private Map&lt;String,Author&gt; authors;
-
-    ...
-}
-</programlisting>
-                </example>
-            </section>
     <section id="ref_guide_mapping_limits">
         <title>
             Mapping Limitations
