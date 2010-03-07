@@ -44,7 +44,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.ParameterExpression;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
