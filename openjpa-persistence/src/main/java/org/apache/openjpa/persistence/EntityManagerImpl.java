@@ -105,7 +105,7 @@ public class EntityManagerImpl
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
     private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
-    private RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
+    protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
 
     public EntityManagerImpl() {
         // for Externalizable
@@ -972,7 +972,7 @@ public class EntityManagerImpl
             if (pq != null) {
                 pq.setInto(q);
             }
-            return new QueryImpl(this, _ret, q).setId(qid);
+            return newQueryImpl(q).setId(qid);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
@@ -983,8 +983,7 @@ public class EntityManagerImpl
             return createQuery((String) null);
         assertNotCloseInvoked();
         org.apache.openjpa.kernel.Query q = ((QueryImpl) query).getDelegate();
-        return new QueryImpl(this, _ret, _broker.newQuery(q.getLanguage(),
-            q));
+        return newQueryImpl(_broker.newQuery(q.getLanguage(), q));
     }
     
     @SuppressWarnings("unchecked")
@@ -1014,7 +1013,7 @@ public class EntityManagerImpl
                 del.compile();
             }
             
-            OpenJPAQuery q = new QueryImpl(this, _ret, del).setId(qid);
+            OpenJPAQuery q = newQueryImpl(del).setId(qid);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
@@ -1040,13 +1039,17 @@ public class EntityManagerImpl
         org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(
             QueryLanguages.LANG_SQL, query);
         kernelQuery.setResultMapping(null, mappingName);
-        return new QueryImpl(this, _ret, kernelQuery);
+        return newQueryImpl(kernelQuery);
+    }
+
+    protected <X> QueryImpl<X> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
+        return new QueryImpl<X>(this, _ret, kernelQuery);
     }
 
     /**
      * Validate that the user provided SQL.
      */
-    private static void validateSQL(String query) {
+    protected void validateSQL(String query) {
         if (StringUtils.trimToNull(query) == null)
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
     }
@@ -1325,7 +1328,7 @@ public class EntityManagerImpl
      * closed, it will throw its own more informative exception when we 
      * delegate the pending operation to it.
      */
-    void assertNotCloseInvoked() {
+    protected void assertNotCloseInvoked() {
         if (!_broker.isClosed() && _broker.isCloseInvoked())
             throw new InvalidStateException(_loc.get("close-invoked"), null,
                 null, true);
@@ -1562,7 +1565,7 @@ public class EntityManagerImpl
         
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
         
-        QueryImpl<T> facadeQuery = new QueryImpl<T>(this, _ret, kernelQuery);
+        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery);
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
         
         for (ParameterExpression<?> param : params) {
