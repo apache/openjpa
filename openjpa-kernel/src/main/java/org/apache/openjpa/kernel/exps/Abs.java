@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.apache.openjpa.kernel.Filters;
-import serp.util.Numbers;
 
 /**
  * Take the absolute value of a number.

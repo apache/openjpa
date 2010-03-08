@@ -24,7 +24,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Numbers;
 
 /**
  * Java SQL type constants.

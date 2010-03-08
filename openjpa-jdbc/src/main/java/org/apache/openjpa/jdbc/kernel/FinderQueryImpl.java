@@ -41,7 +41,6 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 
-import serp.util.Numbers;
 
 /**
  * Implements Finder Query identified by ClassMappping for SelectExecutor that 

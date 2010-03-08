@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.meta.ClassMetaData;
-import serp.util.Numbers;
 
 ////////////////////////////////////////////////////////////
 // NOTE: Do not change property names; see SequenceMetaData 

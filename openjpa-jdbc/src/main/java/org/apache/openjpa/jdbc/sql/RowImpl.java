@@ -45,7 +45,6 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
-import serp.util.Numbers;
 
 /**
  * Basic {@link Row} implementation.

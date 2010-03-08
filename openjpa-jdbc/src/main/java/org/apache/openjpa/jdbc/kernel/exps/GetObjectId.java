@@ -34,7 +34,6 @@ import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.UserException;
-import serp.util.Numbers;
 
 /**
  * Select the oid value of an object; typically used in projections.

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel;
 
-import serp.util.Numbers;
 
 /**
  * {@link LockManager} implementation that provides support

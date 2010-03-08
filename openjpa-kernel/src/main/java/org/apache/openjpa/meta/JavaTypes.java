@@ -40,7 +40,6 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.meta.CFMetaDataParser;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Numbers;
 import serp.util.Strings;
 
 /**

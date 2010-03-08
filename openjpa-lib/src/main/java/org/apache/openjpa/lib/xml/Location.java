@@ -22,7 +22,6 @@ import java.text.MessageFormat;
 
 import org.xml.sax.Locator;
 import org.apache.openjpa.lib.util.Localizer;
-import serp.util.Numbers;
 
 /**
  * @author Stephen Kim

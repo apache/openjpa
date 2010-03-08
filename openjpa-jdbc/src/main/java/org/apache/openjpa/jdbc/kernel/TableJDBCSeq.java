@@ -58,7 +58,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 
 ////////////////////////////////////////////////////////////
 // NOTE: Do not change property names; see SequenceMetaData

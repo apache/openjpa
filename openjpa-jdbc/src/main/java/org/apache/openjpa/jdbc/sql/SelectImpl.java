@@ -61,7 +61,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.InternalException;
-import serp.util.Numbers;
 
 /**
  * Standard {@link Select} implementation. Usage note: though this class

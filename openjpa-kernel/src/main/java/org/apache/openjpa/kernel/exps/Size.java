@@ -21,7 +21,6 @@ package org.apache.openjpa.kernel.exps;
 import java.util.Collection;
 import java.util.Map;
 
-import serp.util.Numbers;
 
 /**
  * Returns the count of a collection.

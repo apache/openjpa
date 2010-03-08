@@ -29,7 +29,6 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.util.Id;
-import serp.util.Numbers;
 
 /**
  * {@link Joinable} for the datastore identity column.

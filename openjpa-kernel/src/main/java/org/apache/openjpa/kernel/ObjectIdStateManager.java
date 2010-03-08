@@ -37,7 +37,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.ImplHelper;
-import serp.util.Numbers;
 
 /**
  * State manager used to access state of embedded object id primary key fields.

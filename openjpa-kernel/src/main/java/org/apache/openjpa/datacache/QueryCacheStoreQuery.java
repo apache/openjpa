@@ -51,7 +51,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ObjectNotFoundException;
 
-import serp.util.Numbers;
 
 /**
  * A {@link StoreQuery} implementation that caches the OIDs involved in

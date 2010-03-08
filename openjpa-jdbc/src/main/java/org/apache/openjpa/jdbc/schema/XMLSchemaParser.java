@@ -36,7 +36,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 
 /**
  * Custom SAX parser used to parse {@link Schema} objects. The parser

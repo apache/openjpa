@@ -44,7 +44,6 @@ import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
 
-import serp.util.Numbers;
 
 /**
  * Base {@link Result} implementation wrapped around a result set.

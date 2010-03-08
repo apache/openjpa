@@ -32,7 +32,6 @@ import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.VersionStrategy;
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Numbers;
 
 /**
  * Represents a database column. Closely aligned with the column

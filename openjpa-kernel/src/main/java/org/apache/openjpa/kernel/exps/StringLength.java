@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel.exps;
 
 import org.apache.openjpa.kernel.StoreContext;
-import serp.util.Numbers;
 
 /**
  * Returns the number of characters in the String.

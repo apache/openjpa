@@ -68,7 +68,6 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 
 /**
  * Builder for JPQL expressions. This class takes the query parsed

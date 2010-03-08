@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.OptimisticException;
 import org.apache.openjpa.util.StoreException;
-import serp.util.Numbers;
 
 /**
  * Store manager to a back-end consisting of XML files. This

@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.openjpa.kernel.StoreContext;
 
-import serp.util.Numbers;
 
 /**
  * Returns the entity type.

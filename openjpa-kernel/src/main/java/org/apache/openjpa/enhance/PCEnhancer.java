@@ -101,7 +101,6 @@ import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
 import serp.bytecode.TableSwitchInstruction;
 import serp.bytecode.ClassInstruction;
-import serp.util.Numbers;
 import serp.util.Strings;
 
 /**

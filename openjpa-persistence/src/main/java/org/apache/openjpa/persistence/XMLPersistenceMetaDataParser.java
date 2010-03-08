@@ -76,7 +76,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-import serp.util.Numbers;
 
 /**
  * Custom SAX parser used by the system to quickly parse persistence

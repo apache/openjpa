@@ -122,7 +122,6 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 import serp.util.Strings;
 
 /**

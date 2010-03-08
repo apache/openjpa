@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.util;
 
-import serp.util.Numbers;
 
 /**
  * {@link OpenJPAId} subclass appropriate for long fields.

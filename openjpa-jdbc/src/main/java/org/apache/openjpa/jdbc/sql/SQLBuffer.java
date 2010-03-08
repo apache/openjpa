@@ -38,7 +38,6 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.Parameter;
 
-import serp.util.Numbers;
 
 /**
  * Buffer for SQL statements that can be used to create

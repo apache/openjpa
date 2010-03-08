@@ -48,7 +48,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 
 /**
  * A SQL query.

@@ -70,7 +70,6 @@ import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.UnsupportedException;
 
-import serp.util.Numbers;
 
 /**
  * Mapping for a single-valued relation to another entity.

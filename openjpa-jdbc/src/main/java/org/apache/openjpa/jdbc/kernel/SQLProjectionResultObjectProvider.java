@@ -29,7 +29,6 @@ import org.apache.openjpa.kernel.ResultPacker;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
-import serp.util.Numbers;
 
 /**
  * Provides all column data in a {@link ResultSet}.

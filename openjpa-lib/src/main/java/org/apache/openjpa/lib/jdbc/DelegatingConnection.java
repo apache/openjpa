@@ -37,7 +37,6 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 
-import serp.util.Numbers;
 
 /**
  * Wrapper around an existing connection. Subclasses can override the

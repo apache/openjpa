@@ -68,7 +68,6 @@ import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
-import serp.util.Numbers;
 
 /**
  * Implementation of the {@link OpenJPAStateManager} interface for use

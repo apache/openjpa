@@ -32,7 +32,6 @@ import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
-import serp.util.Numbers;
 
 /**
  * Implementation of {@link OpenJPAStateManager} designed to retrieve

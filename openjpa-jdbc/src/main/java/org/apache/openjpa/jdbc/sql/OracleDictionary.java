@@ -60,7 +60,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Numbers;
 
 /**
  * Dictionary for Oracle.

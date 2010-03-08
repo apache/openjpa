@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.sql.Select;
-import serp.util.Numbers;
 
 /**
  * Tests whether one value contains another.

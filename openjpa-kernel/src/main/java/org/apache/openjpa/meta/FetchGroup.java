@@ -32,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Numbers;
 
 /**
  * Captures fetch group metadata.

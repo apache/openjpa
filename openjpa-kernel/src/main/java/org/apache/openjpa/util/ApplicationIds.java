@@ -41,7 +41,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
-import serp.util.Numbers;
 
 /**
  * Utility class for manipulating application object ids.

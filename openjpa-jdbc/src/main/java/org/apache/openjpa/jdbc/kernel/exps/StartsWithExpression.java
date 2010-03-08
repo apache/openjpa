@@ -29,7 +29,6 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.meta.XMLMetaData;
-import serp.util.Numbers;
 
 /**
  * Test if one string starts with another.

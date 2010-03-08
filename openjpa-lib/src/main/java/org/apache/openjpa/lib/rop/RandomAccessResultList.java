@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import serp.util.Numbers;
 
 /**
  * Random-access result list implementation. It maintains a map

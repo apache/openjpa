@@ -24,7 +24,6 @@ import java.util.HashMap;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.jdbc.schema.Column;
-import serp.util.Numbers;
 
 /**
  * Uses a version number for optimistic versioning.

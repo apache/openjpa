@@ -26,7 +26,6 @@ import org.apache.openjpa.jdbc.meta.strats.AbstractValueHandler;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Numbers;
 
 /**
  * Handler for {@link Point}. This is a sample of how to create custom

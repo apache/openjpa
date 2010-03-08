@@ -23,7 +23,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Numbers;
 
 /**
  * Strategies for persistent value generation.

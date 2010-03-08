@@ -37,7 +37,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.UnsupportedException;
-import serp.util.Numbers;
 
 /**
  * In-memory form of data in datastore backing a single persistent object.

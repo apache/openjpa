@@ -45,7 +45,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.GeneralException;
-import serp.util.Numbers;
 import serp.util.Strings;
 
 /**

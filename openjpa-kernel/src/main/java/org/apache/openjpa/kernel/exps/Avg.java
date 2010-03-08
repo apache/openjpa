@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.openjpa.kernel.Filters;
-import serp.util.Numbers;
 
 /**
  * Average values.

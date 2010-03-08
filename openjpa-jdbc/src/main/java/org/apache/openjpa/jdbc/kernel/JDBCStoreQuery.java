@@ -73,7 +73,6 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
-import serp.util.Numbers;
 
 /**
  * JDBC query implementation.

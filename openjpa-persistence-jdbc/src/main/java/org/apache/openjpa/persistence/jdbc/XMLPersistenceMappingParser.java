@@ -71,7 +71,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
-import serp.util.Numbers;
 /**
  * Custom SAX parser used by the system to parse persistence mapping files.
  *
