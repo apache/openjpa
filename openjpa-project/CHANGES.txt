@@ -461,6 +461,7 @@ Bug
 
 Improvement
 -----------
+    * [OPENJPA-5] - OpenJPA doesn't compile with JDBC 4
     * [OPENJPA-250] - Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
     * [OPENJPA-651] - Disable dangerous "fallback enhancement", make openjpa.RuntimeUnenhancedClasses=unsupported the default
     * [OPENJPA-703] - Cache ResultObjectProvider data to improve query performance
