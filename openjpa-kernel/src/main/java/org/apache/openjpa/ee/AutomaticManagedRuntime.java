@@ -57,12 +57,13 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
 
     private static final String [] JNDI_LOCS = new String []{
         "javax.transaction.TransactionManager", // weblogic
-        "java:/TransactionManager", // jboss & jrun
+        "java:/TransactionManager", // jboss, jrun, Geronimo
         "java:/DefaultDomain/TransactionManager", // jrun too
         "java:comp/pm/TransactionManager", // orion & oracle
         "java:comp/TransactionManager", // generic
         "java:appserver/TransactionManager", // GlassFish
         "java:pm/TransactionManager", // borland
+        "aries:services/javax.transaction.TransactionManager", // Apache Aries
     };
     private static final String [] METHODS = new String[]{
         "com.arjuna.jta.JTA_TransactionManager.transactionManager", // hp
