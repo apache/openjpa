@@ -194,12 +194,11 @@ public class AnnotationPersistenceMetaDataSerializer
     /**
      * Convenience method for interpreting {@link #getMode}. Takes into
      * account whether mapping information is loaded for the given instance.
+     * OPENJPA-1360 - Allow @Column attributes when meta.isEmbeddedOnly()
      */
     protected boolean isMappingMode(ClassMetaData meta) {
         return isMappingMode() && (meta.getSourceMode()
             & MetaDataModes.MODE_MAPPING) != 0
-            && (meta.getEmbeddingMetaData() != null
-            || !meta.isEmbeddedOnly())
             && (meta.getEmbeddingMetaData() == null
             || isMappingMode(meta.getEmbeddingMetaData()));
     }
