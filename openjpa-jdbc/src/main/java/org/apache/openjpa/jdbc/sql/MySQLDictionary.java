@@ -393,7 +393,9 @@ public class MySQLDictionary
     @Override
     public String getTypeName(Column col) {
         if (col.getType() == Types.BLOB) {
-            if (col.getSize() <= 255)
+            if (col.getSize() == 0)   // unknown size
+                return blobTypeName;  // return old default of 64KB
+            else if (col.getSize() <= 255)
                 return tinyBlobTypeName;
             else if (col.getSize() <= 65535)
                 return blobTypeName;  // old default of 64KB
