@@ -79,7 +79,7 @@ public class TemporaryClassLoader extends ClassLoader {
                             getClass().getClassLoader());
                     return frameworkClass;
                 } catch (ClassNotFoundException e) {
-                    // continue, as it must be a user-defined class
+                    // OPENJPA-1121 continue, as it must be a user-defined class
                 }
             }
 
