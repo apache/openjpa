@@ -415,6 +415,7 @@ Bug
     * [OPENJPA-1117] - Missing AgentClass attribute in openjpa-all-xxx.jar manifest.mf
     * [OPENJPA-1119] - NPE in InstrumentationFactory
     * [OPENJPA-1120] - idEquals() broken in BigDecimalId and BigIntegerId
+    * [OPENJPA-1121] - Enums cause a ClassNotFoundException in the MappingTool
     * [OPENJPA-1125] - A message is logged about dynamically loading the class enhancer even though I'm using the -javaagent
     * [OPENJPA-1127] - Typos in user manual and log messages
     * [OPENJPA-1132] - Dropping constraints fails on MySQL
