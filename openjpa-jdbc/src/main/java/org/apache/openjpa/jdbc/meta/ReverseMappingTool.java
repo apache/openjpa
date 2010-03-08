@@ -942,7 +942,7 @@ public class ReverseMappingTool
     /**
      * Returns a list of stringified annotations for specified meta.
      */
-    protected List getAnnotationsForMeta(Object meta) {
+    public List getAnnotationsForMeta(Object meta) {
         if (null == _annos)
             return null;
         return (List) _annos.get(meta);
