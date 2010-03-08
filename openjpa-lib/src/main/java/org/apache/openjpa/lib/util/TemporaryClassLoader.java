@@ -73,9 +73,15 @@ public class TemporaryClassLoader extends ClassLoader {
             // To avoid classloader issues with the JVM (Sun and IBM), we
             // will not load Enums via the TemporaryClassLoader either.
             // Reference JIRA Issue OPENJPA-646 for more information.
-            if (isAnnotation(classBytes) || isEnum(classBytes))
-                return Class.forName(name, resolve, getClass().
-                    getClassLoader());
+            if (isAnnotation(classBytes) || isEnum(classBytes)) {
+                try {
+                    Class<?> frameworkClass = Class.forName(name, resolve,
+                            getClass().getClassLoader());
+                    return frameworkClass;
+                } catch (ClassNotFoundException e) {
+                    // OPENJPA-1121 continue, as it must be a user-defined class
+                }
+            }
 
             try {
                 return defineClass(name, classBytes, 0, classBytes.length);
