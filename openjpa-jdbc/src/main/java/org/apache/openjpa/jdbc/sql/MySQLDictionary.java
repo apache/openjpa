@@ -68,6 +68,11 @@ public class MySQLDictionary
      */
     public boolean optimizeMultiTableDeletes = false;
 
+    public static final String tinyBlobTypeName = "TINYBLOB";
+    public static final String mediumBlobTypeName = "MEDIUMBLOB";
+    public static final String longBlobTypeName = "LONGBLOB";    
+
+
     public MySQLDictionary() {
         platform = "MySQL";
         validationSQL = "SELECT NOW()";
@@ -379,4 +384,27 @@ public class MySQLDictionary
             select += " " + hint;
         return select;
     }    
+
+    /**
+     * OPENJPA-740 Special case for MySql special column types,
+     * like LONGTEXT, LONGBLOG etc.. 
+     * @see org.apache.openjpa.jdbc.sql.DBDictionary#getTypeName(org.apache.openjpa.jdbc.schema.Column)
+     */
+    @Override
+    public String getTypeName(Column col) {
+        if (col.getType() == Types.BLOB) {
+            if (col.getSize() <= 255)
+                return tinyBlobTypeName;
+            else if (col.getSize() <= 65535)
+                return blobTypeName;  // old default of 64KB
+            else if (col.getSize() <= 16777215)
+                return mediumBlobTypeName;
+            else
+                return longBlobTypeName;
+        } else {
+            return super.getTypeName(col);
+        }
+    }
+
 }
+
