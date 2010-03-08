@@ -184,6 +184,7 @@ Improvement
     * [OPENJPA-1502] - Improve msg for unrecognized EntityManager properties
     * [OPENJPA-1512] - Include a BundleActivator to register ourselves as a javax.persistence.provider for Apache Aries
     * [OPENJPA-1516] - Introduce new "clear" method on EntityManagerImpl
+    * [OPENJPA-1517] - Reduce locking in LifecycleEventManager
     * [OPENJPA-1520] - Move trunk (2.0.x) to require Java 6 to build (but target 1.5 runtime)
     * [OPENJPA-1525] - TestCacheMarshallerEndToEnd.Log requires to implement warn() method
     * [OPENJPA-1528] - Upgrade to latest MySQL 5.1.12 for junit tests
