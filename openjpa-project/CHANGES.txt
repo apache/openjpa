@@ -171,6 +171,7 @@ Bug
     * [OPENJPA-1001] - java.lang.IndexOutOfBoundsException when executing attached test case
     * [OPENJPA-1367] - H2 Database Engine does support cross join
     * [OPENJPA-1485] - isLoaded util method does not behave per spec for collection attributes and basic type
+    * [OPENJPA-1496] - Fail to set temporal parameter
     * [OPENJPA-1504] - Validation junits should not rely on Hibernate Impl
     * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
     * [OPENJPA-1507] - NPE with a non-JDBC store manager
