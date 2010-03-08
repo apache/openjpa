@@ -45,7 +45,7 @@ public class TestIncompleteRelationship extends SingleEMFTestCase {
                     IncompleteRelationshipChildEntity.class,
                     IncompleteRelationshipChildEntity.IncompleteRelationshipChildEntityPk.class,
                     IncompleteRelationshipSubclass.class,
-                    "openjpa.jdbc.QuerySQLCache", "true", "openjpa.Log", "JDBC=TRACE,SQL=TRACE");
+                    "openjpa.jdbc.QuerySQLCache", "true");
     }
 
     public void testIncompleteRelationship() {
