@@ -857,9 +857,9 @@ public class StateManagerImpl
             case JavaTypes.FLOAT:
                 return new Float(fetchFloatField(field));
             case JavaTypes.INT:
-                return Numbers.valueOf(fetchIntField(field));
+                return fetchIntField(field);
             case JavaTypes.LONG:
-                return Numbers.valueOf(fetchLongField(field));
+                return fetchLongField(field);
             case JavaTypes.SHORT:
                 return new Short(fetchShortField(field));
             default:
@@ -988,9 +988,9 @@ public class StateManagerImpl
             case JavaTypes.FLOAT:
                 return new Float(fm.fetchFloatField(field));
             case JavaTypes.INT:
-                return Numbers.valueOf(fm.fetchIntField(field));
+                return fm.fetchIntField(field);
             case JavaTypes.LONG:
-                return Numbers.valueOf(fm.fetchLongField(field));
+                return fm.fetchLongField(field);
             case JavaTypes.SHORT:
                 return new Short(fm.fetchShortField(field));
             case JavaTypes.STRING:
@@ -2529,7 +2529,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeIntField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
+            storeField(field, fmd.getFieldValue(externalVal,
                 _broker));
     }
 
@@ -2550,7 +2550,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeLongField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(Numbers.valueOf(externalVal),
+            storeField(field, fmd.getFieldValue(externalVal,
                 _broker));
     }
 

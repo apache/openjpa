@@ -226,7 +226,7 @@ public class NativeJDBCSeq
         throws SQLException {
         Connection conn = getConnection(store);
         try {
-            return Numbers.valueOf(getSequence(conn));
+            return getSequence(conn);
         } finally {
             closeConnection(conn);
         }

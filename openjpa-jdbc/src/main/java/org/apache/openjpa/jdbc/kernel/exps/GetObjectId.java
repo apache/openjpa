@@ -98,7 +98,7 @@ class GetObjectId
         ClassMapping mapping = _path.getClassMapping(state);
         if (mapping.getIdentityType() == mapping.ID_DATASTORE) {
             if (val instanceof Id)
-                return Numbers.valueOf(((Id) val).getId());
+                return ((Id) val).getId();
             return Filters.convert(val, long.class);
         }
 

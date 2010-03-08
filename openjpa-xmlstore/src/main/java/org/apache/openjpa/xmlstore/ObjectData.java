@@ -246,7 +246,7 @@ public final class ObjectData
         // if the version has not been set in the state manager (only true
         // when the object is new), set the version number to 0
         if (_version == null)
-            _version = Numbers.valueOf(0L);
+            _version = 0L;
 
         // run through each persistent field in the state manager and store it
         FieldMetaData[] fmds = _meta.getFields();

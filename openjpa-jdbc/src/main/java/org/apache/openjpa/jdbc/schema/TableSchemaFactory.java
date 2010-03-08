@@ -279,7 +279,7 @@ public class TableSchemaFactory
         DBDictionary dict = _conf.getDBDictionaryInstance();
         SQLBuffer sel = new SQLBuffer(dict).append(_schemaColumn);
         SQLBuffer where = new SQLBuffer(dict).append(_pkColumn).append(" = ").
-            appendValue(Numbers.valueOf(1), _pkColumn);
+            appendValue(1, _pkColumn);
         SQLBuffer tables = new SQLBuffer(dict).append(_pkColumn.getTable());
 
         SQLBuffer select = dict.toSelect(sel, null, tables, where, null,

@@ -1006,7 +1006,7 @@ public class OracleDictionary
     public Object getGeneratedKey(Column col, Connection conn)
         throws SQLException {
         if (!useTriggersForAutoAssign)
-            return Numbers.valueOf(0L);
+            return 0L;
 
         // if we simulate auto-assigned columns using triggers and
         // sequences, then return the current value of the sequence
@@ -1023,7 +1023,7 @@ public class OracleDictionary
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
             rs.next();
-            return Numbers.valueOf(rs.getLong(1));
+            return rs.getLong(1);
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
@@ -1129,7 +1129,7 @@ public class OracleDictionary
         Object data)
         throws SQLException {
         try {
-            method.invoke(target, new Object[]{ Numbers.valueOf(1L), data });
+            method.invoke(target, new Object[]{ 1L, data });
         } catch (InvocationTargetException ite) {
             Throwable t = ite.getTargetException();
             if (t instanceof SQLException)

@@ -61,7 +61,7 @@ class IdentityJoinable
         long id = res.getLong(col);
         if (id == 0 && res.wasNull())
             return null;
-        return Numbers.valueOf(id);
+        return id;
     }
 
     public Column[] getColumns() {

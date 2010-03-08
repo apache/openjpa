@@ -143,7 +143,7 @@ public final class Id
     }
 
     public Object getIdObject() {
-        return Numbers.valueOf(_id);
+        return _id;
     }
 
     protected int idHash() {

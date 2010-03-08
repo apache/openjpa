@@ -473,9 +473,9 @@ public class AnnotationPersistenceMetaDataParser
     private void addSourceMode(Package pkg, int mode) {
         Integer num = _pkgs.get(pkg);
         if (num == null)
-            num = Numbers.valueOf(mode);
+            num = mode;
         else
-            num = Numbers.valueOf(num.intValue() | mode);
+            num = num.intValue() | mode;
         _pkgs.put(pkg, num);
     }
 

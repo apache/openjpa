@@ -950,7 +950,7 @@ public class RelationFieldStrategy
                 col = fk.getColumn(col);   
             long id = res.getLong(col, joins);
             if (field.getObjectIdFieldTypeCode() == JavaTypes.LONG)
-                return Numbers.valueOf(id);
+                return id;
             return store.newDataStoreId(id, relmapping, field.getPolymorphic() 
                 != ValueMapping.POLY_FALSE);
         }

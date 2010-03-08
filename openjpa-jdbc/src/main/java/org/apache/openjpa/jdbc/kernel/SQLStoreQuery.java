@@ -168,7 +168,7 @@ public class SQLStoreQuery
                 
                 int count = executeUpdate(store, conn, stmnt, buf);  
               
-                return Numbers.valueOf(count);
+                return count;
             } catch (SQLException se) {
                 throw SQLExceptions.getStore(se, dict);
             } finally {

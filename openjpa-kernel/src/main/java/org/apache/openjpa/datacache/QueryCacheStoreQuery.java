@@ -593,7 +593,7 @@ public class QueryCacheStoreQuery
             synchronized (this) {
                 if (_maintainCache) {
                     if (result) {
-                        Integer index = Numbers.valueOf(_pos);
+                        Integer index = _pos;
                         if (!_data.containsKey(index)) {
                             Object cached;
                             if (obj == null)

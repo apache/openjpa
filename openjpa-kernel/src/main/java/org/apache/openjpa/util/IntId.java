@@ -52,7 +52,7 @@ public final class IntId extends OpenJPAId {
     }
 
     public Object getIdObject() {
-        return Numbers.valueOf(key);
+        return key;
     }
 
     public String toString() {

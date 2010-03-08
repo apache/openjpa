@@ -291,10 +291,11 @@ public class Filters {
                 return ((Calendar) o).getTime();
             } else if (Number.class.isAssignableFrom(type)) {
                 Integer i = null;
-                if (o instanceof Character)
-                    i = Numbers.valueOf(((Character) o).charValue());
+                if (o instanceof Character) {
+                    i = Integer.valueOf((Character)o);
+                }
                 else if (o instanceof String && ((String) o).length() == 1)
-                    i = Numbers.valueOf(((String) o).charAt(0));
+                    i = Integer.valueOf(((String)o));
 
                 if (i != null) {
                     if (type == Integer.class)
@@ -316,13 +317,13 @@ public class Filters {
                 o.getClass(), type).getMessage());
 
         if (type == Integer.class) {
-            return Numbers.valueOf(((Number) o).intValue());
+            return ((Number) o).intValue();
         } else if (type == Float.class) {
             return new Float(((Number) o).floatValue());
         } else if (type == Double.class) {
             return new Double(((Number) o).doubleValue());
         } else if (type == Long.class) {
-            return Numbers.valueOf(((Number) o).longValue());
+            return ((Number) o).longValue();
         } else if (type == BigDecimal.class) {
             // the BigDecimal constructor doesn't handle the
             // "NaN" string version of Double.NaN and Float.NaN, nor
@@ -344,7 +345,7 @@ public class Filters {
         } else if (type == Byte.class) {
             return new Byte(((Number) o).byteValue());
         } else {
-            return Numbers.valueOf(((Number) o).intValue());
+            return ((Number) o).intValue();
         }
     }
 
@@ -452,7 +453,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return Numbers.valueOf(tot);
+        return tot;
     }
 
     /**
@@ -533,7 +534,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return Numbers.valueOf(tot);
+        return tot;
     }
 
     /**

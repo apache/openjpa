@@ -71,7 +71,7 @@ public class PointHandler extends AbstractValueHandler {
             return null;
 
         Point p = (Point) val;
-        return new Object[]{ Numbers.valueOf(p.x), Numbers.valueOf(p.y) };
+        return new Object[]{ p.x, p.y };
     }
 
     /**

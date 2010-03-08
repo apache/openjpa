@@ -46,7 +46,7 @@ public class MultiColumnVersionStrategy extends NumberVersionStrategy {
     		Column[] cols = vers.getColumns();
     		_initials = new Number[cols.length];
     		for (int i = 0; i < cols.length; i++) {
-                _initials[i] = nextValue(Numbers.valueOf(0), getJavaType(i));
+                _initials[i] = nextValue(0, getJavaType(i));
     		}
     	}
     	super.initialize();

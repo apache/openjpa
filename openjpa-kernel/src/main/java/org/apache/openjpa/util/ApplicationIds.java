@@ -609,11 +609,11 @@ public class ApplicationIds {
         }
 
         public void storeIntField(int field, int val) {
-            store(Numbers.valueOf(val));
+            store(val);
         }
 
         public void storeLongField(int field, long val) {
-            store(Numbers.valueOf(val));
+            store(val);
         }
 
         public void storeFloatField(int field, float val) {

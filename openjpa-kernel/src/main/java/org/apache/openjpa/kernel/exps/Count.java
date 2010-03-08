@@ -47,6 +47,6 @@ class Count
         for (Iterator itr = os.iterator(); itr.hasNext();)
             if (itr.next() != null)
                 count++;
-        return Numbers.valueOf(count);
+        return count;
     }
 }

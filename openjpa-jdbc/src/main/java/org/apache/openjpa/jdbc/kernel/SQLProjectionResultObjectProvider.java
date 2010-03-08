@@ -84,14 +84,14 @@ class SQLProjectionResultObjectProvider
     public Object getResultObject()
         throws SQLException {
         if (_cols == 1) {
-            Object val = _res.getObject(Numbers.valueOf(1),
+            Object val = _res.getObject(1,
                 JavaSQLTypes.JDBC_DEFAULT, null);
             return (_packer == null) ? val : _packer.pack(val);
         }
 
         Object[] vals = new Object[_cols];
         for (int i = 0; i < vals.length; i++)
-            vals[i] = _res.getObject(Numbers.valueOf(i + 1),
+            vals[i] = _res.getObject(i + 1,
                 JavaSQLTypes.JDBC_DEFAULT, null);
         return (_packer == null) ? vals : _packer.pack(vals);
     }

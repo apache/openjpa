@@ -36,13 +36,13 @@ public class NumberVersionStrategy
 
     public static final String ALIAS = "version-number";
 
-    private Number _initial = Numbers.valueOf(1);
+    private Number _initial = 1;
 
     /**
      * Set the initial value for version column. Defaults to 1.
      */
     public void setInitialValue(int initial) {
-        _initial = Numbers.valueOf(initial);
+        _initial = initial;
     }
 
     /**
@@ -63,7 +63,7 @@ public class NumberVersionStrategy
     protected Object nextVersion(Object version) {
         if (version == null)
             return _initial;
-        return Numbers.valueOf(((Number) version).intValue() + 1);
+        return ((Number) version).intValue() + 1;
     }
 
     public Map getBulkUpdateValues() {

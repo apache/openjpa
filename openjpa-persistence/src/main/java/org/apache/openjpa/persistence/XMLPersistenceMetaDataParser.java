@@ -906,8 +906,8 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_META, true);
             Locator locator = getLocation().getLocator();
             if (locator != null) {
-                meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-                meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+                meta.setLineNumber(locator.getLineNumber());
+                meta.setColNumber(locator.getColumnNumber());
             }
             meta.setListingIndex(_clsPos);
             String name = attrs.getValue("name");
@@ -1049,8 +1049,8 @@ public class XMLPersistenceMetaDataParser
         meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            meta.setLineNumber(locator.getLineNumber());
+            meta.setColNumber(locator.getColumnNumber());
         }
         return true;
     }
@@ -1678,8 +1678,8 @@ public class XMLPersistenceMetaDataParser
         }
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            meta.setLineNumber(locator.getLineNumber());
+            meta.setColNumber(locator.getColumnNumber());
         }
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
@@ -1765,8 +1765,8 @@ public class XMLPersistenceMetaDataParser
         meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            meta.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            meta.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            meta.setLineNumber(locator.getLineNumber());
+            meta.setColNumber(locator.getColumnNumber());
         }
         if (isMetaDataMode())
             meta.setSourceMode(MODE_META);

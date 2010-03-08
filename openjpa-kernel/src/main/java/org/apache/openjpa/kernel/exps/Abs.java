@@ -52,19 +52,19 @@ class Abs
     protected Object operate(Object o, Class c) {
         c = Filters.wrap(c);
         if (c == Integer.class)
-            return Numbers.valueOf(Math.abs(((Number) o).intValue()));
+            return Math.abs(((Number) o).intValue());
         if (c == Float.class)
             return new Float(Math.abs(((Number) o).floatValue()));
         if (c == Double.class)
             return new Double(Math.abs(((Number) o).doubleValue()));
         if (c == Long.class)
-            return Numbers.valueOf(Math.abs(((Number) o).longValue()));
+            return Math.abs(((Number) o).longValue());
         if (c == BigDecimal.class)
             return ((BigDecimal) o).abs();
         if (c == BigInteger.class)
             return ((BigInteger) o).abs();
 
         // default to int
-        return Numbers.valueOf(Math.abs(((Number) o).intValue()));
+        return Math.abs(((Number) o).intValue());
     }
 }

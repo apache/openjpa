@@ -1033,7 +1033,7 @@ public class QueryImpl
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 _broker.delete(i.next(), null);
-            return Numbers.valueOf(size);
+            return size;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -1064,7 +1064,7 @@ public class QueryImpl
             int size = 0;
             for (Iterator i = ((Collection) o).iterator(); i.hasNext(); size++)
                 updateInMemory(i.next(), params, q);
-            return Numbers.valueOf(size);
+            return size;
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (Exception e) {
@@ -1909,14 +1909,14 @@ public class QueryImpl
             long num = 0;
             for (int i = 0; i < _executors.length; i++)
                 num += _executors[i].executeDelete(q, params).longValue();
-            return Numbers.valueOf(num);
+            return num;
         }
 
         public Number executeUpdate(StoreQuery q, Object[] params) {
             long num = 0;
             for (int i = 0; i < _executors.length; i++)
                 num += _executors[i].executeUpdate(q, params).longValue();
-            return Numbers.valueOf(num);
+            return num;
         }
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,

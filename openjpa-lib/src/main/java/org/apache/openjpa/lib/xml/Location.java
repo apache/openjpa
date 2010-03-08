@@ -53,8 +53,8 @@ public class Location {
             return _loc.get("no-locator").getMessage();
         }
         return MessageFormat.format(format, new Object []{
-            Numbers.valueOf(_locator.getLineNumber()),
-            Numbers.valueOf(_locator.getColumnNumber()), _locator.getPublicId(),
+            _locator.getLineNumber(),
+            _locator.getColumnNumber(), _locator.getPublicId(),
             _locator.getSystemId() });
     }
 

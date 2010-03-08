@@ -440,12 +440,12 @@ public class RowImpl
 
     public void setInt(Column col, int val)
         throws SQLException {
-        setObject(col, Numbers.valueOf(val), JavaTypes.INT, false);
+        setObject(col, val, JavaTypes.INT, false);
     }
 
     public void setLong(Column col, long val)
         throws SQLException {
-        setObject(col, Numbers.valueOf(val), JavaTypes.LONG, false);
+        setObject(col, val, JavaTypes.LONG, false);
     }
 
     public void setLocale(Column col, Locale val)
@@ -607,12 +607,12 @@ public class RowImpl
 
     public void whereInt(Column col, int val)
         throws SQLException {
-        whereObject(col, Numbers.valueOf(val), JavaTypes.INT);
+        whereObject(col, val, JavaTypes.INT);
     }
 
     public void whereLong(Column col, long val)
         throws SQLException {
-        whereObject(col, Numbers.valueOf(val), JavaTypes.LONG);
+        whereObject(col, val, JavaTypes.LONG);
     }
 
     public void whereLocale(Column col, Locale val)

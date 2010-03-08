@@ -2930,8 +2930,8 @@ public class PCEnhancer {
         if (field == null) {
             Long uid = null;
             try {
-                uid = Numbers.valueOf(ObjectStreamClass.lookup
-                    (_meta.getDescribedType()).getSerialVersionUID());
+                uid = ObjectStreamClass.lookup
+                    (_meta.getDescribedType()).getSerialVersionUID();
             } catch (Throwable t) {
                 // last-chance catch for bug #283 (which can happen
                 // in a variety of ClassLoading environments)

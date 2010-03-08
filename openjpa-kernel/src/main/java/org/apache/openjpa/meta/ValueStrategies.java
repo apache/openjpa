@@ -85,22 +85,22 @@ public class ValueStrategies {
     private static final TreeBidiMap _map = new TreeBidiMap();
 
     static {
-        _map.put("none", Numbers.valueOf(NONE));
-        _map.put("native", Numbers.valueOf(NATIVE));
-        _map.put("sequence", Numbers.valueOf(SEQUENCE));
-        _map.put("autoassign", Numbers.valueOf(AUTOASSIGN));
-        _map.put("increment", Numbers.valueOf(INCREMENT));
-        _map.put("uuid-string", Numbers.valueOf(UUID_STRING));
-        _map.put("uuid-hex", Numbers.valueOf(UUID_HEX));
-        _map.put("uuid-type4-string", Numbers.valueOf(UUID_TYPE4_STRING));
-        _map.put("uuid-type4-hex", Numbers.valueOf(UUID_TYPE4_HEX));
+        _map.put("none", NONE);
+        _map.put("native", NATIVE);
+        _map.put("sequence", SEQUENCE);
+        _map.put("autoassign", AUTOASSIGN);
+        _map.put("increment", INCREMENT);
+        _map.put("uuid-string", UUID_STRING);
+        _map.put("uuid-hex", UUID_HEX);
+        _map.put("uuid-type4-string", UUID_TYPE4_STRING);
+        _map.put("uuid-type4-hex", UUID_TYPE4_HEX);
     }
 
     /**
      * Convert the given strategy to a name.
      */
     public static String getName(int strategy) {
-        Object code = Numbers.valueOf(strategy);
+        Object code = strategy;
         String name = (String) _map.getKey(code);
         if (name != null)
             return name;

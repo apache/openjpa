@@ -47,7 +47,7 @@ class Avg
         if (os.isEmpty())
             return null;
 
-        Object sum = Filters.convert(Numbers.valueOf(0), c);
+        Object sum = Filters.convert(0, c);
         Object cur;
         int size = 0;
         for (Iterator itr = os.iterator(); itr.hasNext();) {
@@ -60,6 +60,6 @@ class Avg
         }
         if (size == 0)
             return null;
-        return Filters.divide(sum, c, Numbers.valueOf(size), int.class);
+        return Filters.divide(sum, c, size, int.class);
     }
 }

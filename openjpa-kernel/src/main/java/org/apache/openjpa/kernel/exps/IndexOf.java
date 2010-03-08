@@ -59,7 +59,7 @@ class IndexOf
                 ((Number) args[1]).intValue());
         } else
             idx = str.toString().indexOf(arg.toString());
-        return Numbers.valueOf(idx);
+        return idx;
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

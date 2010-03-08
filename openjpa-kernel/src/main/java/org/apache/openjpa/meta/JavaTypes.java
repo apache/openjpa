@@ -90,27 +90,27 @@ public class JavaTypes {
     private static final Map<Class<?>, Integer> _typeCodes = new HashMap<Class<?>, Integer>();
 
     static {
-        _typeCodes.put(String.class, Numbers.valueOf(STRING));
-        _typeCodes.put(Boolean.class, Numbers.valueOf(BOOLEAN_OBJ));
-        _typeCodes.put(Byte.class, Numbers.valueOf(BYTE_OBJ));
-        _typeCodes.put(Character.class, Numbers.valueOf(CHAR_OBJ));
-        _typeCodes.put(Double.class, Numbers.valueOf(DOUBLE_OBJ));
-        _typeCodes.put(Float.class, Numbers.valueOf(FLOAT_OBJ));
-        _typeCodes.put(Integer.class, Numbers.valueOf(INT_OBJ));
-        _typeCodes.put(Long.class, Numbers.valueOf(LONG_OBJ));
-        _typeCodes.put(Short.class, Numbers.valueOf(SHORT_OBJ));
-        _typeCodes.put(Date.class, Numbers.valueOf(DATE));
-        _typeCodes.put(java.sql.Date.class, Numbers.valueOf(DATE));
-        _typeCodes.put(java.sql.Timestamp.class, Numbers.valueOf(DATE));
-        _typeCodes.put(java.sql.Time.class, Numbers.valueOf(DATE));
-        _typeCodes.put(BigInteger.class, Numbers.valueOf(BIGINTEGER));
-        _typeCodes.put(BigDecimal.class, Numbers.valueOf(BIGDECIMAL));
-        _typeCodes.put(Number.class, Numbers.valueOf(NUMBER));
-        _typeCodes.put(Locale.class, Numbers.valueOf(LOCALE));
-        _typeCodes.put(Object.class, Numbers.valueOf(OBJECT));
-        _typeCodes.put(PersistenceCapable.class, Numbers.valueOf(PC_UNTYPED));
-        _typeCodes.put(Properties.class, Numbers.valueOf(MAP));
-        _typeCodes.put(Calendar.class, Numbers.valueOf(CALENDAR));
+        _typeCodes.put(String.class, STRING);
+        _typeCodes.put(Boolean.class, BOOLEAN_OBJ);
+        _typeCodes.put(Byte.class, BYTE_OBJ);
+        _typeCodes.put(Character.class, CHAR_OBJ);
+        _typeCodes.put(Double.class, DOUBLE_OBJ);
+        _typeCodes.put(Float.class, FLOAT_OBJ);
+        _typeCodes.put(Integer.class, INT_OBJ);
+        _typeCodes.put(Long.class, LONG_OBJ);
+        _typeCodes.put(Short.class, SHORT_OBJ);
+        _typeCodes.put(Date.class, DATE);
+        _typeCodes.put(java.sql.Date.class, DATE);
+        _typeCodes.put(java.sql.Timestamp.class, DATE);
+        _typeCodes.put(java.sql.Time.class, DATE);
+        _typeCodes.put(BigInteger.class, BIGINTEGER);
+        _typeCodes.put(BigDecimal.class, BIGDECIMAL);
+        _typeCodes.put(Number.class, NUMBER);
+        _typeCodes.put(Locale.class, LOCALE);
+        _typeCodes.put(Object.class, OBJECT);
+        _typeCodes.put(PersistenceCapable.class, PC_UNTYPED);
+        _typeCodes.put(Properties.class, MAP);
+        _typeCodes.put(Calendar.class, CALENDAR);
     }
 
     /**
@@ -316,7 +316,7 @@ public class JavaTypes {
                 if (val instanceof Integer)
                     return val;
                 if (val instanceof Number)
-                    return Numbers.valueOf(((Number) val).intValue());
+                    return ((Number) val).intValue();
                 // no break
             case INT:
                 if (val instanceof String)
@@ -326,7 +326,7 @@ public class JavaTypes {
                 if (val instanceof Long)
                     return val;
                 if (val instanceof Number)
-                    return Numbers.valueOf(((Number) val).longValue());
+                    return ((Number) val).longValue();
                 // no break
             case LONG:
                 if (val instanceof String)

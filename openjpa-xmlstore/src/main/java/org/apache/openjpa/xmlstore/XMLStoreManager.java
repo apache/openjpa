@@ -92,7 +92,7 @@ public class XMLStoreManager
         long version = 0;
         if (sm.getVersion() != null)
             version = ((Long) sm.getVersion()).longValue() + 1;
-        sm.setNextVersion(Numbers.valueOf(version));
+        sm.setNextVersion(version);
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state,

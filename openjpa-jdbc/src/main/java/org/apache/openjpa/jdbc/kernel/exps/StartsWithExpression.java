@@ -167,11 +167,11 @@ class StartsWithExpression
         }
 
         public Object getValue() {
-            return Numbers.valueOf(0);
+            return 0;
         }
 
         public Object getSQLValue() {
-            return Numbers.valueOf(0);
+            return 0;
         }
 
         public boolean isPath() {

@@ -388,28 +388,28 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(int i) {
-        return appendValue(i, null);
+        return appendValue(Integer.valueOf(i), null);
     }
 
     /**
      * Append a parameter value.
      */
     public SQLBuffer appendValue(int i, Column col) {
-        return appendValue(Numbers.valueOf(i), col);
+        return appendValue(Integer.valueOf(i), col);
     }
 
     /**
      * Append a parameter value.
      */
     public SQLBuffer appendValue(long l) {
-        return appendValue(l, null);
+        return appendValue(Long.valueOf(l), null);
     }
 
     /**
      * Append a parameter value.
      */
     public SQLBuffer appendValue(long l, Column col) {
-        return appendValue(Numbers.valueOf(l), col);
+        return appendValue(Long.valueOf(l), col);
     }
 
     /**

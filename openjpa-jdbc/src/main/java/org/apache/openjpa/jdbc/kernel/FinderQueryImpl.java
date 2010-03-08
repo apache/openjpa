@@ -124,7 +124,7 @@ public class FinderQueryImpl
         for (int i = 0; i < _pkCols.length; i++, count++) {
             if (pks == null)
                 val[0] = (oid == null) 
-                    ? null : Numbers.valueOf(((Id) oid).getId());
+                    ? null : ((Id) oid).getId();
             else {
                 val[i] = _joins[i].getJoinValue(pks[_pkIndices[i]], _pkCols[i], 
                     store);

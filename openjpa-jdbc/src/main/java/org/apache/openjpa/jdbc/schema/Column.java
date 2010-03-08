@@ -425,11 +425,11 @@ public class Column
                 break;
             case JavaTypes.INT:
             case JavaTypes.INT_OBJ:
-                _default = Numbers.valueOf(Integer.parseInt(_defaultStr));
+                _default = Integer.parseInt(_defaultStr);
                 break;
             case JavaTypes.LONG:
             case JavaTypes.LONG_OBJ:
-                _default = Numbers.valueOf(Long.parseLong(_defaultStr));
+                _default = Long.parseLong(_defaultStr);
                 break;
             case JavaTypes.NUMBER:
             case JavaTypes.BIGDECIMAL:

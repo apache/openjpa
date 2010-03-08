@@ -98,7 +98,7 @@ public class RandomAccessResultList extends AbstractNonSequentialResultList {
             return _full[index];
         }
 
-        Integer i = Numbers.valueOf(index);
+        Integer i = index;
         Object ret = _rows.get(i);
         if (ret != null) {
             if (ret instanceof Null)

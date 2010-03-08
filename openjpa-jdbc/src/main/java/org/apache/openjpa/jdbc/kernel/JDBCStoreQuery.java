@@ -126,7 +126,7 @@ public class JDBCStoreQuery
     public Object newCompilationKey() {
         JDBCFetchConfiguration fetch = (JDBCFetchConfiguration) ctx
             .getFetchConfiguration();
-        return Numbers.valueOf(fetch.getJoinSyntax());
+        return fetch.getJoinSyntax();
     }
 
     public boolean supportsDataStoreExecution() {
@@ -541,7 +541,7 @@ public class JDBCStoreQuery
         }
 
         localContext.remove();
-        return Numbers.valueOf(count);
+        return count;
     }
 
     /**

@@ -539,10 +539,10 @@ public class DBDictionary
                     return new Float(getFloat(rs, column));
                 } catch (Exception e3) {
                     try {
-                        return Numbers.valueOf(getLong(rs, column));
+                        return getLong(rs, column);
                     } catch (Exception e4) {
                         try {
-                            return Numbers.valueOf(getInt(rs, column));
+                            return getInt(rs, column);
                         } catch (Exception e5) {
                         }
                     }

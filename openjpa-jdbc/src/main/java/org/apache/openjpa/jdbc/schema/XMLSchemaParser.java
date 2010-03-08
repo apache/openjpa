@@ -410,8 +410,8 @@ public class XMLSchemaParser
         Sequence seq = _schema.addSequence(attrs.getValue("name"));
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            seq.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            seq.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            seq.setLineNumber(locator.getLineNumber());
+            seq.setColNumber(locator.getColumnNumber());
         }
         seq.setSource(getSourceFile(), SourceTracker.SRC_XML);
         try {
@@ -434,8 +434,8 @@ public class XMLSchemaParser
         _table.setSource(getSourceFile(), SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            _table.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            _table.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            _table.setLineNumber(locator.getLineNumber());
+            _table.setColNumber(locator.getColumnNumber());
         }
     }
 

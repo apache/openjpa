@@ -477,8 +477,8 @@ public class XMLPersistenceMappingParser
         seq.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            seq.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            seq.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            seq.setLineNumber(locator.getLineNumber());
+            seq.setColNumber(locator.getColumnNumber());
         }
         pushElement(seq);
         return true;
@@ -1091,8 +1091,8 @@ public class XMLPersistenceMappingParser
         result.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
         if (locator != null) {
-            result.setLineNumber(Numbers.valueOf(locator.getLineNumber()));
-            result.setColNumber(Numbers.valueOf(locator.getColumnNumber()));
+            result.setLineNumber(locator.getLineNumber());
+            result.setColNumber(locator.getColumnNumber());
         }
         pushElement(result);
         return true;

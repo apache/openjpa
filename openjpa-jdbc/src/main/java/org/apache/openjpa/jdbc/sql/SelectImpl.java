@@ -1261,7 +1261,7 @@ public class SelectImpl
             return null;
         List idxs = new ArrayList(_ordered.size());
         for (int i = 0; i < _ordered.size(); i++)
-            idxs.add(Numbers.valueOf(_selects.indexOf(_ordered.get(i))));
+            idxs.add(_selects.indexOf(_ordered.get(i)));
         return idxs;
     }
 
@@ -1362,7 +1362,7 @@ public class SelectImpl
         for (int i = 0; i < toCols.length; i++, count++) {
             if (pks == null)
                 val = (oid == null) ? null :
-                        Numbers.valueOf(((Id) oid).getId());
+                        ((Id) oid).getId();
             else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);
@@ -2015,7 +2015,7 @@ public class SelectImpl
             return -1;
 
         // not found; create alias
-        i = Numbers.valueOf(aliasSize(null));
+        i = aliasSize(null);
 //        System.out.println("GetTableIndex\t"+
 //                ((_parent != null) ? "Sub" :"") +
 //                " created alias: "+
@@ -2077,7 +2077,7 @@ public class SelectImpl
     }
 
     private int createAlias(Table table, Object key) {
-        Integer i = Numbers.valueOf(ctx().nextAlias());
+        Integer i = ctx().nextAlias();
 //        System.out.println("\t"+
 //                ((_parent != null) ? "Sub" :"") +
 //                "Query created alias: "+ 

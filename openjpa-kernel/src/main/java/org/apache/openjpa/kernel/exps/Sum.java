@@ -53,7 +53,7 @@ class Sum
             return null;
 
         Class type = getType(c);
-        Object sum = Filters.convert(Numbers.valueOf(0), type);
+        Object sum = Filters.convert(0, type);
         Object cur;
         for (Iterator itr = os.iterator(); itr.hasNext();) {
             cur = itr.next();

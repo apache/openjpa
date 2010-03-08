@@ -318,9 +318,9 @@ public class DetachedValueStateManager
             case JavaTypes.FLOAT:
                 return new Float(fm.fetchFloatField(field));
             case JavaTypes.INT:
-                return Numbers.valueOf(fm.fetchIntField(field));
+                return fm.fetchIntField(field);
             case JavaTypes.LONG:
-                return Numbers.valueOf(fm.fetchLongField(field));
+                return fm.fetchLongField(field);
             case JavaTypes.SHORT:
                 return new Short(fm.fetchShortField(field));
             default:
