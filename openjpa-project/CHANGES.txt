@@ -716,7 +716,8 @@ Bug
     * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
     * [OPENJPA-1099] - <xmp> tag in Javadoc comments causes Javadoc corruption
 
-** Improvement
+Improvement
+-----------
     * [OPENJPA-213] - @Column with precision and scale should result in NUMERIC(precision, scale)
     * [OPENJPA-736] - Combine insert and select SQL together for generated Id strategy=GenerationType.IDENTITY 
     * [OPENJPA-742] - Add line number and column number to QueryMetaData
@@ -767,6 +768,7 @@ New Feature
     * [OPENJPA-918] - Stored procedures not handling returns properly
     * [OPENJPA-956] - OpenJPA 2.0 iteration 5 primary task
     * [OPENJPA-966] - Support Replication-enabled MySQL  
+    * [OPENJPA-985] - Support dynamic addition of slices
     * [OPENJPA-1005] - Add PersistenceXMLSchemaVersion(); support
     * [OPENJPA-1007] - OpenJPA 2.0 iteration 6 primary task
 
