@@ -697,6 +697,7 @@ Bug
     * [OPENJPA-1028] - ClassCastException during findBy when embeddable is involved
     * [OPENJPA-1029] - SQLServerDictionary causes NumberFormatException if MS SQL Server JDBC driver is used
     * [OPENJPA-1031] - Update docs that refer to OpenJPAEntityManager.getExtent(..)
+    * [OPENJPA-1040] - Fix code formatting errors introduced by OPENJPA-1010
     * [OPENJPA-1041] - OrderBy on nested embeddables is not working
     * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
     * [OPENJPA-1047] - Unique Constraint on sibling classes causes name conflict
