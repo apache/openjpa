@@ -591,6 +591,7 @@ Sub-task
     * [OPENJPA-957] - Support lock timeout hint on applicable methods
     * [OPENJPA-960] - Support unwrap methods on EntityManager and Query interfaces
     * [OPENJPA-961] - Support projection of element collection from a JPQL query
+    * [OPENJPA-962] - Support the use of delimited-identifiers
     * [OPENJPA-963] - Add query timeout tests for PU and Map properties
     * [OPENJPA-964] - Finish updating sql-error-state- codes.xml for query timeout support on other DBs
     * [OPENJPA-967] - JPA2 Query support for selction of KEY, VALUE, ENTRY of a Map value
