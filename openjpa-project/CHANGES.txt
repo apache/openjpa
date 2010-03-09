@@ -748,6 +748,7 @@ Bug
     * [OPENJPA-1056] - Add support for Sybase in the query timeout tests
     * [OPENJPA-1063] - Create a new openjpa-all artifact to include runtime depends
     * [OPENJPA-1066] - Generated ID starting with 0 can cause unexpected results
+    * [OPENJPA-1079] - Allow client to access the distributed JDBC connection
 
 New Feature
 -----------
