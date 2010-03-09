@@ -183,6 +183,7 @@ Bug
 
 Improvement
 -----------
+    * [OPENJPA-924] - Cache Finder Query for performance enhancement
     * [OPENJPA-1475] - Performance improvement - don't call syncVersion() when no version is specified
     * [OPENJPA-1493] - Performance improvement in SelectImpl.getTableIndex() for JPQL without subselect
     * [OPENJPA-1502] - Improve msg for unrecognized EntityManager properties
