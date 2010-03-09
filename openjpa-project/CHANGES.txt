@@ -446,6 +446,7 @@ Bug
     * [OPENJPA-1203] - JPA2 - createEMF should return null for unhandled PUs
     * [OPENJPA-1204] - Argument type mismatch when an EmbeddedId contains an Emun type 
     * [OPENJPA-1206] - Bean validation call to provider not Java 2 Enabled
+    * [OPENJPA-1211] - Enable string navigation in a From expression.
     * [OPENJPA-1217] - Ensure comparisons do not contain two parameters with Derby (ie SELECT ... WHERE ? = ?)
     * [OPENJPA-1218] - Cache.evict(Clazz) should remove subclasses as well
     * [OPENJPA-1221] - Change openjpa-integration module pom's to reflect proper artifact-id
