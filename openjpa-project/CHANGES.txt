@@ -222,6 +222,7 @@ Bug
     * [OPENJPA-991] - Implement LockTimeout using db specific server-side lock timeout feature
     * [OPENJPA-993] - PCEnhancer can't execute if a non-OpenJPA PU is found
     * [OPENJPA-1005] - Add PersistenceXMLSchemaVersion(); support
+    * [OPENJPA-1020] - eager fetching of PersistentCollection of a primitive type fails
     * [OPENJPA-1025] - AbstractResultList.subList throws UnsupportedOperationException
     * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
     * [OPENJPA-1141] - NPE at org.apache.openjpa.jdbc.meta.MappingInfo.mergeJoinColumn(MappingInfo.java:1400)
