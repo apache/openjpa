@@ -359,6 +359,7 @@ Sub-task
     * [OPENJPA-1106] - Integration tests for Bean Validation providers - Part 1
     * [OPENJPA-1107] - Provide TraversableResolver for use with Bean Validation Factory
     * [OPENJPA-1111] - Validation mode of callback should cause a PersistenceException when no provider is available
+    * [OPENJPA-1112] - JPA2 Query result of embeddable object can not be further updated
     * [OPENJPA-1130] - Use maven-jar-plugin to create a o-p-j-tests.jar to share base TestCase classes across modules
     * [OPENJPA-1131] - Upgrade to maven-jar-plugin-2.2
     * [OPENJPA-1149] - Add embeddables sample to the examples module
