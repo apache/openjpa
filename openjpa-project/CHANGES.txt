@@ -211,6 +211,7 @@ Sub-task
     * [OPENJPA-1353] - Add legal info to the docs
     * [OPENJPA-1358] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
     * [OPENJPA-1404] - Add find method that accepts properties to entity manager
+    * [OPENJPA-1405] - Add refresh method that accepts properties to entity manager
     * [OPENJPA-1453] - Add support for testing with final JPA 2.0 TCK
     * [OPENJPA-1476] - Turn off QueryCache by default
 
