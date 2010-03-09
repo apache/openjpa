@@ -262,6 +262,7 @@ Bug
     * [OPENJPA-1379] - Locking problem when using timestamp QueryCache eviction policy.
     * [OPENJPA-1380] - Query not getting evicted from QueryCache
     * [OPENJPA-1381] - IllegalStateException on query method call after named query is created twice.
+    * [OPENJPA-1383] - tests rely on US date formatting without setting the correct Locale
     * [OPENJPA-1384] - ClassNotFoundException for custom DBDictionary used by EJB
     * [OPENJPA-1385] - Parameter in having clause of Criteria query not recognized
     * [OPENJPA-1386] - Metamodel Generator does not handle field types that can hide another
