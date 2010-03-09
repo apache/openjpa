@@ -598,6 +598,7 @@ Sub-task
     * [OPENJPA-978] - Allow third argument of JPQL SUBSTRING function to be optional
     * [OPENJPA-990] - setHint should return IllegalArgumentException for invalid query/lock timeout values
     * [OPENJPA-1012] - Test failures in TestManagedInterface with @ManagedInterface annotation when using JDK6
+    * [OPENJPA-1016] - JPA2 Query support for embeddables; nested embeddables; relationships from embeddables
     * [OPENJPA-1023] - Message files contain windows EOL characters
     * [OPENJPA-1024] - JPA2 Query scalar expression  in subquery 
     * [OPENJPA-1026] - Ensure newlines at end of fie
