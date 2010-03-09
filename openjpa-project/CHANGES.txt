@@ -810,6 +810,7 @@ Bug
 Improvement
 -----------
     * [OPENJPA-703] - Cache ResultObjectProvider data to improve query performance
+    * [OPENJPA-841] - Create structures to hold Slice information with StateManangers
     * [OPENJPA-858] - Allow postPersist be invoked immediately after persist()
     * [OPENJPA-968] - Change in default detach() behavior for JPA 2.0
 
