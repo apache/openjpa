@@ -802,6 +802,7 @@ Sub-task
 Bug
 ---
     * [OPENJPA-828] - Externalizer fails with ClassCastException with runtime enhancement
+    * [OPENJPA-845] - Ordering across slice fails when ordering terms are not included in projection items
     * [OPENJPA-886] - Certain query failing after svn:739123
     * [OPENJPA-955] - MethodQL parameter passing broken
     * [OPENJPA-1039] - Dynamic query predicates must not treat AND OR operators as associative
