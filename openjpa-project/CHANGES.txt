@@ -370,6 +370,7 @@ Sub-task
     * [OPENJPA-1177] - Upgrade to Bean Validation JSR-303 1.0 CR3 Spec API
     * [OPENJPA-1182] - PreUpdate and PostUpdate behavior
     * [OPENJPA-1190] - Use Geronimo EA5 JPA spec jar
+    * [OPENJPA-1194] - LockManager tests call platformSpeedTest() for every test method
     * [OPENJPA-1202] - Compile against Geronimo JPA EA6
     * [OPENJPA-1208] - Set specification level based upon persistence.xml version
     * [OPENJPA-1210] - Specify derby timeouts via properties.
