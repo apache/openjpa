@@ -507,6 +507,7 @@ New Feature
     * [OPENJPA-1089] - Provide for password encryption within persistence.xml
     * [OPENJPA-1123] - MySQL query hints support
     * [OPENJPA-1150] - Add WriteBehind mode to cache updates before flushing to backing store
+    * [OPENJPA-1152] - OpenJPA 2.0 iteration 9 primary task
     * [OPENJPA-1187] - Output control for generated canonical metamodel source code
     * [OPENJPA-1195] - Allow datastore function as query expression
     * [OPENJPA-1198] - Query by Example
