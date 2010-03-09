@@ -708,6 +708,7 @@ Bug
     * [OPENJPA-1058] - Duplicate rows in DB when UniqueConstraint set
     * [OPENJPA-1060] - Attempting to returning a list over RMI/IIOP results in serialization exception
     * [OPENJPA-1067] - SetQueryTimeout(x) where x != 0 causes SQLException with DB2 on Z/OS
+    * [OPENJPA-1070] - Restore support for composite foreign keys on MySQL
     * [OPENJPA-1072] - Nested embeddable with a relationship to an Entity with a generated id doesn't persist the relationship
     * [OPENJPA-1088] - Build updates for openjpa-examples and openjpa-integration/examples
     * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
