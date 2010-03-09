@@ -648,6 +648,7 @@ Bug
     * [OPENJPA-787] - slices query.getSingleResult is broken
     * [OPENJPA-792] - An entity persist may fail when @MappedSupercalss is specified. 
     * [OPENJPA-795] - enhancer throws an exception when parsing column name "first.name" because it thinks 'first' is a table name
+    * [OPENJPA-798] - slices does can not work with sequences properly (no adding objects?)
     * [OPENJPA-811] - With Oracle, OpenJPA allows setting non-nullable field to null
     * [OPENJPA-815] - Exception is thrown when retrieving an entity which contains an embeddable and the embeddable contains a toMany relation 
     * [OPENJPA-818] - TCK module should use Geronimo JPA 2.0 EA jar
