@@ -379,6 +379,7 @@ Sub-task
     * [OPENJPA-1223] - Update documentation for autoOff config option
     * [OPENJPA-1228] - Change in default value of exclude-unlisted-classes in JPA 2.0
     * [OPENJPA-1231] - Bean Validation sample
+    * [OPENJPA-1232] - Keys in an EmbeddedCollection are returned as PCData objects when DataCache is enabled
     * [OPENJPA-1233] - Update DerbyDictionary with new reserved words
     * [OPENJPA-1235] - Support for optional name property on UniqueConstraint annotation and XML
     * [OPENJPA-1237] - WriteBehind configuration exception not thrown when it should be
