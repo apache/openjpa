@@ -589,6 +589,7 @@ Sub-task
     * [OPENJPA-937] - @AssociationOverride updates 
     * [OPENJPA-946] - Oracle create table(s) exceptions
     * [OPENJPA-957] - Support lock timeout hint on applicable methods
+    * [OPENJPA-959] - Support lock mode on Query interface
     * [OPENJPA-960] - Support unwrap methods on EntityManager and Query interfaces
     * [OPENJPA-961] - Support projection of element collection from a JPQL query
     * [OPENJPA-962] - Support the use of delimited-identifiers
