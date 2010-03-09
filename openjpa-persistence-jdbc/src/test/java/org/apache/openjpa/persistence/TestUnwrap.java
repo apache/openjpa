@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.Map;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
@@ -70,8 +71,9 @@ public class TestUnwrap extends SingleEMFTestCase {
     }
     
     /**
-     * Tests a EntityManager can be unwrapped as an instance of a series of 
-     * class or interface. 
+     * Tests a EntityManager can not be unwrapped as Object class, null or an interface. 
+     * And each such failure raises a Persistence Exception and causes an active transaction
+     * to rollback.
      */
     public void testInvalidEntityManagerUnwrap() {
         EntityManager em = emf.createEntityManager();
@@ -79,15 +81,46 @@ public class TestUnwrap extends SingleEMFTestCase {
         Class<?>[] invalidCasts = new Class[] {
             Object.class,
             Properties.class,
+            Map.class, 
             null,
         };
         for (Class<?> c : invalidCasts) {
             try {
+                em.getTransaction().begin();
                 em.unwrap(c);
-                fail("Expected to fail to unwarp with " + c);
-            } catch (Exception e) {
+                fail("Expected to fail to unwarp with invalid " + c);
+            } catch (PersistenceException e) {
                 EntityTransaction txn = em.getTransaction();
-                assertFalse(txn.isActive());
+                assertTrue(txn.getRollbackOnly());
+                txn.rollback();
+            }
+        }
+    }
+    
+    /**
+     * Tests a Query can not be unwrapped as Object class, null or an interface. 
+     * And each such failure raises a Persistence Exception and causes an active transaction
+     * to rollback.
+     */
+    public void testInvalidQueryUnwrap() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        
+        Class<?>[] invalidCasts = new Class[] {
+            Object.class,
+            Properties.class,
+            Map.class, 
+            null,
+        };
+        for (Class<?> c : invalidCasts) {
+            try {
+                em.getTransaction().begin();
+                Query query = em.createQuery(QueryLanguages.LANG_SQL,"");
+                query.unwrap(c);
+                fail("Expected to fail to unwarp with invalid " + c);
+            } catch (PersistenceException e) {
+                EntityTransaction txn = em.getTransaction();
+                assertTrue(txn.getRollbackOnly());
+                txn.rollback();
             }
         }
     }

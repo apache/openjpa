@@ -461,28 +461,28 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     }
 
     /**
-     * Returns the innermost implementation that is an instance of the given 
-     * class. 
+     * Unwraps this receiver to an instance of the given class, if possible.
      * 
-     * @throws PersistenceException if none in the delegate chain is an 
-     * instance of the given class.
+     * @exception if the given class is null, generic <code>Object.class</code> or a class
+     * that is not wrapped by this receiver.  
      * 
      * @since 2.0.0
      */
     public <T> T unwrap(Class<T> cls) {
-        Object[] delegates = new Object[]{_query.getInnermostDelegate(), 
-            _query.getDelegate(), _query, this};
-        if (cls == null || cls == Object.class) {
-            throw new PersistenceException(_loc.get("unwrap-em-invalid", cls)
-                    .toString(), null, this, false);
-        }
+        Object[] delegates = new Object[]{_query.getInnermostDelegate(), _query.getDelegate(), _query, this};
         for (Object o : delegates) {
-            if (cls.isInstance(o))
+            if (cls != null && cls != Object.class && cls.isInstance(o))
                 return (T)o;
         }
-        throw new PersistenceException(_loc.get("unwrap-query-invalid", cls)
-            .toString(), null, this, false);
+        // Set this transaction to rollback only (as per spec) here because the raised exception 
+        // does not go through normal exception translation pathways
+        RuntimeException ex = new PersistenceException(_loc.get("unwrap-query-invalid", cls).toString(), null, 
+                this, false);
+        if (_em.isActive())
+            _em.setRollbackOnly(ex);
+        throw ex;
     }
+
     
     // =======================================================================
     // Prepared Query Cache related methods
