@@ -840,3 +840,7 @@ Task
 ----
     * [OPENJPA-995] - Migrate existing Criteria Query implementation as OpenJPA extension to prepare for upcoming JPA 2.0 spec changes
 
+Test
+----
+    * [OPENJPA-766] - Tests that currently fail should be committed to the repository
+
