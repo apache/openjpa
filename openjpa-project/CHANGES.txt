@@ -690,6 +690,7 @@ Bug
     * [OPENJPA-970] - SchemaToolTask does not have "dropTables" argument
     * [OPENJPA-973] - Allow DB2 JCC driver to work with Informix database
     * [OPENJPA-974] - Docs:  Add new Exception types
+    * [OPENJPA-981] - @Replicated is only recognized for root instance but not the instanes reachable from the root during persist() operation.
     * [OPENJPA-992] - Failed to throw EntityExistException on duplicated persist in DB2
     * [OPENJPA-999] - Missing sql-warning in the localizer.properties
     * [OPENJPA-1002] - Select range doesn't work on Oracle JDBC driver
