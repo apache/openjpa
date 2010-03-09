@@ -804,6 +804,7 @@ Sub-task
 
 Bug
 ---
+    * [OPENJPA-645] - Date millisecond precision lost for Informix IDS and SQLServer
     * [OPENJPA-662] - Version field returns null when explicitly projected in SELECT clause
     * [OPENJPA-677] - Single Table Inheritance Strategy causes entity identity issues
     * [OPENJPA-699] - SQLWarnings not handled properly with WarningAction set to "handle"
