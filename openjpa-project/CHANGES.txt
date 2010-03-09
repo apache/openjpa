@@ -207,6 +207,7 @@ Sub-task
 --------
     * [OPENJPA-1103] - Remove early-access disclaimer from the NOTICE files once the spec is released
     * [OPENJPA-1115] - Finish support for delimited identifiers
+    * [OPENJPA-1345] - Update to JPA Spec Version EA9 (dated 10-08-2009)
     * [OPENJPA-1347] - Upgrade to Validation API 1.0.0.GA
     * [OPENJPA-1353] - Add legal info to the docs
     * [OPENJPA-1358] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
