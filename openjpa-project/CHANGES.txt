@@ -170,6 +170,7 @@ Bug
 ---
     * [OPENJPA-1001] - java.lang.IndexOutOfBoundsException when executing attached test case
     * [OPENJPA-1367] - H2 Database Engine does support cross join
+    * [OPENJPA-1460] - Fix scope visibility of orm.xml when it is packaged in both ear file and war file
     * [OPENJPA-1483] - count (Distinct e) in JPQL gives wrong result when the id field is a compound primary key
     * [OPENJPA-1485] - isLoaded util method does not behave per spec for collection attributes and basic type
     * [OPENJPA-1496] - Fail to set temporal parameter
