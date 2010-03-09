@@ -793,6 +793,7 @@ Included Changes in OpenJPA 2.0.0 Milestone 1
 Sub-task
 --------
     * [OPENJPA-765] - Check for insertable or updateable before checking value for null
+    * [OPENJPA-806] - Support Criteria API for JPA 2.0 - Iteration 1
     * [OPENJPA-857] - Detect and store JPA version
     * [OPENJPA-899] - Add support for JPA2.0 method Query.getHints()
     * [OPENJPA-900] - Add support for JPA2.0 method Query.getSupportedHints()
