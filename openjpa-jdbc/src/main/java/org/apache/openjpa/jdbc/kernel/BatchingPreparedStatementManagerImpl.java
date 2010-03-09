@@ -194,9 +194,9 @@ public class BatchingPreparedStatementManagerImpl extends
                 //When we do a 'getNextException', the 'next exception' doesn't contain the same message as se.
                 //That is, 'next exception' contains a subset msg which is contained in se.  For legacy, should
                 //we continute to use 'sqex' in the 'old path' and use 'se' in the next path/code?????
-//                SQLException sqex = se.getNextException();
-  //              if (sqex == null)
-    //                sqex = se;
+                //SQLException sqex = se.getNextException();
+                //if (sqex == null)
+                //    sqex = se;
                 SQLException sqex = se;
                 
                 if (se instanceof ReportingSQLException){
