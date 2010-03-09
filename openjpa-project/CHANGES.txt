@@ -804,6 +804,7 @@ Sub-task
 
 Bug
 ---
+    * [OPENJPA-699] - SQLWarnings not handled properly with WarningAction set to "handle"
     * [OPENJPA-794] - issues with closing/opening entity manager (slices) (can't seem to be able to create multiple entityManagers )
     * [OPENJPA-799] - slices: can not handle multiple projections in one query ( select count(*), max(fieldA) .......)
     * [OPENJPA-801] - slices: basic query is failing on sort.. not sure why
