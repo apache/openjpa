@@ -802,6 +802,7 @@ Sub-task
 Bug
 ---
     * [OPENJPA-821] - slices: hangs with multithreaded true
+    * [OPENJPA-824] - org.apache.openjpa.lib.util.ParseException when try to get property descriptor for property: CacheMarshallers
     * [OPENJPA-828] - Externalizer fails with ClassCastException with runtime enhancement
     * [OPENJPA-845] - Ordering across slice fails when ordering terms are not included in projection items
     * [OPENJPA-886] - Certain query failing after svn:739123
