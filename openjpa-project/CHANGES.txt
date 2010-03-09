@@ -303,6 +303,7 @@ Improvement
     * [OPENJPA-839] - change pom.xml to publish sources as well.
     * [OPENJPA-1085] - Add toString() method to PCState classes
     * [OPENJPA-1172] - Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
+    * [OPENJPA-1258] - make warning message more friendly when other persistence provider configured by application
     * [OPENJPA-1356] - Use maven-enforcer-plugin to verify proper Java and Maven levels
     * [OPENJPA-1363] - Upgrade to latest commons-pool maintenance release
     * [OPENJPA-1366] - Remove need for an EMF from OpenJPAPersistenceUtil and TraversableResolverImpl
