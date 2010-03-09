@@ -355,6 +355,7 @@ Sub-task
     * [OPENJPA-1078] - Cache mode elements added to persistence.xml
     * [OPENJPA-1082] - Validation target groups via persistence.xml or createEMF properties Map
     * [OPENJPA-1083] - org.apache.openjpa.persistence.kernel.TestEJBState fails with two exceptions ORA-00904 and ORA-02275 against oracleDB.
+    * [OPENJPA-1105] - OpenJPA 2.0 iteration 8 primary task
     * [OPENJPA-1106] - Integration tests for Bean Validation providers - Part 1
     * [OPENJPA-1107] - Provide TraversableResolver for use with Bean Validation Factory
     * [OPENJPA-1111] - Validation mode of callback should cause a PersistenceException when no provider is available
