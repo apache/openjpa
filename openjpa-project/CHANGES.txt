@@ -178,6 +178,7 @@ Bug
     * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
     * [OPENJPA-1507] - NPE with a non-JDBC store manager
     * [OPENJPA-1509] - Enum field types cannot be modified in an in-memory JPQL bulk update statement
+    * [OPENJPA-1518] - Remove WARN messages for uncacheable finder select statements
     * [OPENJPA-1533] - JPA2 select math mix with aggregate reports syntax error
 
 Improvement
