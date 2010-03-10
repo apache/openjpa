@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 
 import org.apache.openjpa.jdbc.meta.strats.NoneFieldStrategy;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
@@ -56,7 +57,10 @@ public class RuntimeStrategyInstaller
     }
 
     public void installStrategy(FieldMapping field) {
-        FieldStrategy strategy = repos.namedStrategy(field, true);
+        FieldStrategy strategy = null;
+        ClassMapping owner = getOutermostDefiningMapping(field); 
+        if (owner != null && !owner.isEmbeddable())
+            strategy = repos.namedStrategy(field, true);
         if (strategy == null) {
             try {
                 strategy = repos.defaultStrategy(field, true, false);
@@ -76,6 +80,20 @@ public class RuntimeStrategyInstaller
             }
         }
         field.setStrategy(strategy, Boolean.FALSE);
+    }
+    
+    private ClassMapping getOutermostDefiningMapping(ValueMetaData vm) {
+        if (vm instanceof FieldMapping) {
+            ClassMapping owner = ((FieldMapping)vm).getDefiningMapping();
+            ValueMetaData val = owner.getEmbeddingMetaData();
+            if (val == null)
+                return owner; 
+            return getOutermostDefiningMapping(val);
+        } else if (vm instanceof ValueMappingImpl) {
+            FieldMapping owner = ((ValueMappingImpl)vm).getFieldMapping();
+            return getOutermostDefiningMapping(owner);
+        }
+        return null;
     }
 
     public void installStrategy(Version version) {

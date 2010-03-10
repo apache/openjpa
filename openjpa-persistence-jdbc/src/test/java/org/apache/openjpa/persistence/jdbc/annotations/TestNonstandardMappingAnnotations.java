@@ -45,8 +45,8 @@ public class TestNonstandardMappingAnnotations
     private DBDictionary _dict;
 
     public void setUp() {
-        setUp(NonstandardMappingEntity.class, ExtensionsEntity.class,
-            NonstandardMappingMappedSuper.class, EmbedValue2.class,
+        setUp(NonstandardMappingEntity.class, NonstandardMappingEntity3.class, ExtensionsEntity.class,
+            NonstandardMappingMappedSuper.class, EmbedValue2.class, EmbedValue3.class,
             EmbedValue.class,
             CLEAR_TABLES, RETAIN_DATA);
 
@@ -277,4 +277,34 @@ public class TestNonstandardMappingAnnotations
         assertEquals("basic", pc.getEmbedCollection().get(0).getBasic());
         em.close();
     }
+
+    public void testInsertAndRetrieveEmbeddedObjectWithStrategy() {
+        NonstandardMappingEntity3 pc = new NonstandardMappingEntity3();
+        EmbedValue3 embed3 = new EmbedValue3();
+        embed3.setBasic("basic");
+        Point point = new Point();
+        point.setLocation(1, 2);
+        embed3.setPoint(point);
+        pc.getEmbedVal3s().add(embed3);
+        pc.setEmbedVal3(embed3);
+        pc.setId(1);
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(pc);
+        em.getTransaction().commit();
+        Object pcId = em.getObjectId(pc);
+        em.close();
+
+        em = emf.createEntityManager();
+        pc = em.find(NonstandardMappingEntity3.class, pcId);
+        assertEquals(1, pc.getEmbedVal3s().size());
+        assertEquals("basic", pc.getEmbedVal3s().get(0).getBasic());
+        assertEquals(1.0, pc.getEmbedVal3s().get(0).getPoint().getX());
+        assertEquals(2.0, pc.getEmbedVal3s().get(0).getPoint().getY());
+        assertEquals(1.0, pc.getEmbedVal3().getPoint().getX());
+        assertEquals(2.0, pc.getEmbedVal3().getPoint().getY());
+        em.close();
+    }
+
 }
