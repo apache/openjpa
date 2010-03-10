@@ -855,10 +855,20 @@ public class AnnotationPersistenceMetaDataParser
     private Collection<LifecycleCallbacks>[] parseEntityListeners
         (ClassMetaData meta, EntityListeners listeners) {
         Class<?>[] classes = listeners.value();
+        Collection<Class<?>> listenerColl = null;
         Collection<LifecycleCallbacks>[] parsed = null;
-        for (Class<?> cls : classes)
+        for (Class<?> cls : classes) {
+            if (!_conf.getCallbackOptionsInstance().getAllowsDuplicateListener()) {
+                if (listenerColl == null)
+                    listenerColl = new ArrayList<Class<?>>();
+                if (listenerColl.contains(cls)) 
+                    continue;
+                listenerColl.add(cls);
+            }
+            
             parsed = parseCallbackMethods(cls, parsed, true, true,
                 getRepository());
+        }
         return parsed;
     }
 

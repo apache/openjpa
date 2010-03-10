@@ -23,6 +23,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public class TestEntityListeners extends SingleEMFTestCase {
 
+    private static final int ENTITY_LISTENER_ENTITY = 1;
+    private static final int GLOBAL_LISTENER_ENTITY = 2;
+    private static final int DUPLICATE_LISTENER_ENTITY = 3;
+    
     public void setUp() {
         setUp(CLEAR_TABLES);
         ListenerImpl.prePersistCount = 0;
@@ -40,22 +44,38 @@ public class TestEntityListeners extends SingleEMFTestCase {
     }
 
     public void testEntityListeners() {
-        helper(true);
+        helper(ENTITY_LISTENER_ENTITY);
     }
 
     public void testGlobalListeners() {
-        helper(false);
+        helper(GLOBAL_LISTENER_ENTITY);
+    }
+    
+    public void testDuplicateListeners() {
+        super.setUp(CLEAR_TABLES, DuplicateListenerEntity.class, 
+            "openjpa.Callbacks", "AllowsDuplicateListener=false");
+        assertFalse(emf.getConfiguration().getCallbackOptionsInstance()
+            .getAllowsDuplicateListener());
+        helper(DUPLICATE_LISTENER_ENTITY);
     }
 
-    public void helper(boolean entityListeners) {
+    public void helper(int entityListeners) {
         OpenJPAEntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            ListenerTestEntity o;
-            if (entityListeners)
+            ListenerTestEntity o = null;
+            switch (entityListeners) {
+            case ENTITY_LISTENER_ENTITY:
                 o = new EntityListenerEntity();
-            else
+                break;
+            case GLOBAL_LISTENER_ENTITY:
                 o = new GlobalListenerEntity();
+                break;
+            case DUPLICATE_LISTENER_ENTITY:
+                o = new DuplicateListenerEntity();
+                break;
+                
+            }
             em.persist(o);
 
             assertStatus(1, 0, 0, 0, 0, 0, 0);
@@ -68,11 +88,18 @@ public class TestEntityListeners extends SingleEMFTestCase {
 
             em = emf.createEntityManager();
             em.getTransaction().begin();
-            if (entityListeners)
+            switch (entityListeners) {
+            case ENTITY_LISTENER_ENTITY:
                 o = em.find(EntityListenerEntity.class, id);
-            else
+                break;
+            case GLOBAL_LISTENER_ENTITY:
                 o = em.find(GlobalListenerEntity.class, id);
-
+                break;
+            case DUPLICATE_LISTENER_ENTITY:
+                o = em.find(DuplicateListenerEntity.class, id);
+                break;
+                
+            }
             assertNotNull(o);
             assertStatus(1, 1, 0, 0, 0, 0, 1);
 

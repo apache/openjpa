@@ -28,6 +28,7 @@ import java.io.Serializable;
 public class CallbackOptions implements Serializable {
     private boolean _isPostPersistCallbackImmediate = false;
     private boolean _allowsMultipleMethodsForSameCallback = false;
+    private boolean _allowsDuplicateListener = true;
     
     /**
      * Affirms if the post-persist callback is invoked as soon as a new instance
@@ -64,4 +65,22 @@ public class CallbackOptions implements Serializable {
     public void setAllowsMultipleMethodsForSameCallback(boolean flag) {
         _allowsMultipleMethodsForSameCallback = flag;
     }
+
+    /** 
+     * Flags if duplicate listeners are allowed to handle the same 
+     * callback event.
+     * Defaults to true.
+     */
+    public boolean getAllowsDuplicateListener() {
+        return _allowsDuplicateListener;
+    }
+    
+    /** 
+     * Flags if duplicate listeners are allowed to handle the same 
+     * callback event.
+     */
+    public void setAllowsDuplicateListener(boolean flag) {
+        _allowsDuplicateListener = flag;
+    }
+
 }

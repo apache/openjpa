@@ -208,6 +208,7 @@ public class XMLPersistenceMetaDataParser
 
     private Class<?> _listener = null;
     private Collection<LifecycleCallbacks>[] _callbacks = null;
+    private Collection<Class<?>> _listeners = null;
     private int[] _highs = null;
     private boolean _isXMLMappingMetaDataComplete = false;
 
@@ -1831,6 +1832,14 @@ public class XMLPersistenceMetaDataParser
     private boolean startEntityListener(Attributes attrs)
         throws SAXException {
         _listener = classForName(attrs.getValue("class"));
+        if (!_conf.getCallbackOptionsInstance().getAllowsDuplicateListener()) {
+            if (_listeners == null)
+                _listeners = new ArrayList<Class<?>>();
+            if (_listeners.contains(_listener)) 
+                return true;
+            _listeners.add(_listener);    
+        }
+            
         boolean system = currentElement() == null;
         Collection<LifecycleCallbacks>[] parsed =
             AnnotationPersistenceMetaDataParser.parseCallbackMethods(_listener,
