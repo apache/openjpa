@@ -18,17 +18,20 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
+import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheScheduler;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.datacache.common.apps.ScheduledEviction;
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestDataCacheScheduler extends SingleEMTestCase {
+public class TestDataCacheScheduler extends SingleEMFTestCase {
 
     private static String getMinutesString() {
         StringBuffer buf = new StringBuffer();
@@ -40,11 +43,16 @@ public class TestDataCacheScheduler extends SingleEMTestCase {
     }
 
     public void setUp() {
-        setUp(ScheduledEviction.class, CLEAR_TABLES
+        setUp(
+            "openjpa.DataCache", "true(EvictionSchedule=+1)"
+            , "openjpa.QueryCache", "true"
+            ,"openjpa.RemoteCommitProvider", "sjvm"
+            ,ScheduledEviction.class, CLEAR_TABLES
             );
     }
 
     public void testBasic() throws Exception {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
         DataCacheScheduler scheduler = new DataCacheScheduler(conf);
         // Make the scheduler run every 1 minute
@@ -80,6 +88,32 @@ public class TestDataCacheScheduler extends SingleEMTestCase {
         Thread.currentThread().sleep(60000);
         assertEquals(3,cache1.getClearCount());
         assertEquals(2,cache2.getClearCount());
+    }
+    
+    public void testMultithreadedInitialization() throws Exception {
+        final OpenJPAConfiguration conf =  emf.getConfiguration();
+        final List<DataCacheManager> dcms = new ArrayList<DataCacheManager>();
+        Runnable r = new Runnable(){
+            public void run() {
+                dcms.add(conf.getDataCacheManagerInstance());
+            }
+        };
+        List<Thread> workers = new ArrayList<Thread>();
+        for(int i = 0;i<20;i++){
+            workers.add(new Thread(r));
+        }
+        for(Thread t : workers){
+            t.start();
+        }
+        for(Thread t : workers){
+            t.join();
+        }
+        DataCacheManager prev = dcms.get(0);
+        for(DataCacheManager dcm : dcms){
+            assertTrue(prev == dcm);
+            prev = dcm;
+        }
+
     }
 
     /**

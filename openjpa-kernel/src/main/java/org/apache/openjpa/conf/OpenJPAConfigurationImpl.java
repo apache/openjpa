@@ -679,13 +679,24 @@ public class OpenJPAConfigurationImpl
         dataCacheManagerPlugin.set(dcm);
     }
 
+    // This boolean is used for double checked locking. We want to minimize the amount of time that
+    // we're locking here.
+    private boolean dataCacheManagerInitialized = false;
     public DataCacheManager getDataCacheManagerInstance() {
-        DataCacheManager dcm = (DataCacheManager) dataCacheManagerPlugin.get();
-        if (dcm == null) {
-            dcm =  (DataCacheManager) dataCacheManagerPlugin.instantiate(DataCacheManager.class, this);
-            dcm.initialize(this, dataCachePlugin, queryCachePlugin);
+        if (dataCacheManagerInitialized == false) {
+            synchronized (this) {
+                if (dataCacheManagerInitialized == false) {
+                    DataCacheManager dcm = (DataCacheManager) dataCacheManagerPlugin.get();
+                    if (dcm == null) {
+                        dcm = (DataCacheManager) dataCacheManagerPlugin.instantiate(DataCacheManager.class, this);
+                        dcm.initialize(this, dataCachePlugin, queryCachePlugin);
+                    }
+                    dataCacheManagerInitialized = true;
+                    return dcm;
+                }
+            }
         }
-        return dcm;
+        return (DataCacheManager) dataCacheManagerPlugin.get();
     }
 
     public void setDataCache(String dataCache) {
