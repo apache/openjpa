@@ -73,7 +73,19 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
             List results = q.getResultList();
             Assert.assertEquals(1, results.size());
         }
+        
+        // Test support in HAVING clause.
+        String[] havingJpql = {
+            "select a from Employee a group by a.hireTime having a.hireTime >= {t '00:00:00'}",
+            "select a from Employee a group by a.hireDate having a.hireDate >= {d '2009-08-25'}",
+            "select a from Employee a group by a.hireTimestamp having a.hireTimestamp >= {d '2009-08-25'}"
+        };
 
+        for (int j = 0; j < havingJpql.length; j++) {
+            Query q = em.createQuery(havingJpql[j]);
+            List results = q.getResultList();
+            Assert.assertEquals(1, results.size());
+        }
         em.getTransaction().begin();
         String update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123456'} where a.empId = 1";
         Query q = em.createQuery(update);
