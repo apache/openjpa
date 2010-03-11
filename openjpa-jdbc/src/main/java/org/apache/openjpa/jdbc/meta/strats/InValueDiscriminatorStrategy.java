@@ -107,14 +107,25 @@ public abstract class InValueDiscriminatorStrategy
 
     public Class getClass(JDBCStore store, ClassMapping base, Result res)
         throws SQLException, ClassNotFoundException {
-        if (isFinal || !res.contains(disc.getColumns()[0])
-            || (base.getPCSuperclass() == null
-            && base.getJoinablePCSubclassMappings().length == 0))
+        if (isFinal 
+                || !useDiscrimColumn(base, res)
+                || (base.getPCSuperclass() == null && base.getJoinablePCSubclassMappings().length == 0)) {
             return base.getDescribedType();
+        }
 
-        Object cls =
-                res.getObject(disc.getColumns()[0], disc.getJavaType(), null);
+        Object cls = res.getObject(disc.getColumns()[0], disc.getJavaType(), null);
         return getClass(cls, store);
+    }
+    
+    private final boolean useDiscrimColumn(ClassMapping base, Result res) throws SQLException {
+        if (res.getBaseMapping() != null && base != null) {
+            // check whether the result type is assignable to the base mapping.
+            // if not assignable the discriminator value will not be correct.
+            if (!base.getDescribedType().isAssignableFrom(res.getBaseMapping().getDescribedType())) {
+                return false;
+            }
+        }
+        return res.contains(disc.getColumns()[0]);
     }
 
     public boolean hasClassConditions(ClassMapping base, boolean subclasses) {
@@ -161,3 +172,4 @@ public abstract class InValueDiscriminatorStrategy
         return sql;
     }
 }
+
