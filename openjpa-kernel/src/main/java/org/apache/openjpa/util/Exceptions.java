@@ -272,4 +272,13 @@ public class Exceptions {
             return toClassName(cls.getComponentType())+"[]";
         return cls.getName();
     }
+    
+    public static String toClassNames(Collection<? extends Class<?>> classes) {
+        if (classes == null) return "";
+        StringBuilder buffer = new StringBuilder();
+        for (Class<?> cls : classes) {
+            buffer.append("\r\n").append(toClassName(cls));
+        }
+        return buffer.toString();
+    }
 }

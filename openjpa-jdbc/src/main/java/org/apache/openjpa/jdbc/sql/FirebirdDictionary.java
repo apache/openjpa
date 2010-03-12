@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +39,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 
 /**
@@ -482,10 +484,12 @@ public class FirebirdDictionary
      * Use error code as SQL state returned by Firebird is ambiguous.
      */
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        int errorCode = ex.getErrorCode();
-        return errorStates.contains(String.valueOf(errorCode)) ? Boolean.FALSE
-            : null;
+    protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
+        String errorState = ""+ex.getErrorCode();
+        for (Map.Entry<Integer,Set<String>> states : errorStates.entrySet()) {
+            if (states.getValue().contains(errorState))
+                return states.getKey();
+        }
+        return StoreException.GENERAL;
     }
 }

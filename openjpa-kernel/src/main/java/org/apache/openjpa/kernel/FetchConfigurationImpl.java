@@ -719,13 +719,14 @@ public class FetchConfigurationImpl
                 } else if ("setWriteLockLevel".equals(methodName) && !isActiveTransaction()) {
                     _state.writeLockLevel = (Integer)value;
                 } else {
-                    setter.invoke(this, value);
+                    setter.invoke(this, Filters.convertToMatchMethodArgument(value, setter));
                 }
             } catch (Exception e) {
-                if (e instanceof IllegalArgumentException)
-                    throw (IllegalArgumentException)e;
-                throw new IllegalArgumentException(_loc.get("bad-hint-value", key, toString(value), 
-                        toString(original)).getMessage(), e);
+                String message = _loc.get("bad-hint-value", key, toString(value), toString(original)).getMessage();
+                if (e instanceof IllegalArgumentException) {
+                    throw new IllegalArgumentException(message);
+                }
+                throw new IllegalArgumentException(message, e);
             }
         }
         addHint(key, original);

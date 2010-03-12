@@ -281,20 +281,12 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     }
     
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        Boolean recoverable = null;
+    protected boolean isFatalException(int subtype,  SQLException ex) {
         String errorState = ex.getSQLState();
-        if (errorStates.contains(errorState)) {
-            recoverable = Boolean.FALSE;
-            if (subtype == StoreException.LOCK && errorState.equals("1222")) {
-                recoverable = Boolean.TRUE;
-            } else if (subtype == StoreException.QUERY &&
-                errorState.equals("HY008")) {
-                recoverable = Boolean.TRUE;
-            }
-        }
-        return recoverable;
+        if ((subtype == StoreException.LOCK  && "1222".equals(errorState))
+          ||(subtype == StoreException.QUERY && "HY008".equals(errorState)))
+         return false;
+        return super.isFatalException(subtype, ex);
     }
 
     /**

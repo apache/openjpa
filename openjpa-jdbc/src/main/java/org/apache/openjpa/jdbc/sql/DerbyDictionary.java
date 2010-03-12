@@ -135,7 +135,7 @@ public class DerbyDictionary
                 DriverManager.getConnection(conf.getConnectionURL()
                     + ";shutdown=true");
             } catch (SQLException e) {
-                // we actuall expect a SQLException to be thrown here:
+                // we actually expect a SQLException to be thrown here:
                 // Derby strangely uses that as a mechanism to report
                 // a successful shutdown
             }
@@ -143,19 +143,13 @@ public class DerbyDictionary
     }
     
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        Boolean recoverable = null;
-        String errorState = ex.getSQLState();
+    protected boolean isFatalException(int subtype, SQLException ex) {
         int errorCode = ex.getErrorCode();
-        if (errorStates.contains(errorState)) {
-            recoverable = Boolean.FALSE;
-            if ((subtype == StoreException.LOCK ||
-                    subtype == StoreException.QUERY) && errorCode < 30000) {
-                recoverable = Boolean.TRUE;
-            }
+        if ((subtype == StoreException.LOCK ||
+             subtype == StoreException.QUERY) && errorCode <= 30000) {
+            return false;
         }
-        return recoverable;
+        return super.isFatalException(subtype, ex);
     }
 
 }

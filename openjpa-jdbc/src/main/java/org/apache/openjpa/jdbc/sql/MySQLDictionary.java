@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Dictionary for MySQL.
@@ -420,6 +421,15 @@ public class MySQLDictionary
         }
         return result;
     }
+    
+    @Override
+    protected boolean isFatalException(int subtype, SQLException ex) {
+        if ((subtype == StoreException.LOCK  && ex.getErrorCode() == 1205)
+          ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
+            return false;
+        }
+        return super.isFatalException(subtype, ex);
+    }
 
     /**
      * OPENJPA-740 Special case for MySql special column types,
@@ -443,6 +453,5 @@ public class MySQLDictionary
             return super.getTypeName(col);
         }
     }
-
 }
 
