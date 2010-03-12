@@ -40,6 +40,7 @@ import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.GeneratedClasses;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
@@ -108,23 +109,22 @@ public class ManagedClassSubclasser {
                             + unenhanced.toString());
                     }
                 }
-                Message msg = _loc.get("runtime-optimization-disabled",
-                    unenhanced);
-                if (conf.getRuntimeUnenhancedClassesConstant()
-                    == RuntimeUnenhancedClassesModes.WARN)
+                Message msg = _loc.get("runtime-optimization-disabled", Exceptions.toClassNames(unenhanced));
+                if (conf.getRuntimeUnenhancedClassesConstant() == RuntimeUnenhancedClassesModes.WARN) {
                     log.warn(msg);
-                else
+                } else {
                     throw new UserException(msg);
+                }
             }
             return null;
         }
 
         boolean redefine = ClassRedefiner.canRedefineClasses(log);
-        if (redefine)
+        if (redefine) {
             log.info(_loc.get("enhance-and-subclass-and-redef-start", classes));
-        else
+        } else {
             log.info(_loc.get("enhance-and-subclass-no-redef-start",  classes));
-
+        }
         final Map<Class<?>, byte[]> map = new HashMap<Class<?>, byte[]>();
         final List<Class<?>> subs = new ArrayList<Class<?>>(classes.size());
         final List<Class<?>> ints = new ArrayList<Class<?>>(classes.size());
@@ -171,7 +171,8 @@ public class ManagedClassSubclasser {
         }
 
         if (unspecified != null && !unspecified.isEmpty())
-            throw new UserException(_loc.get("unspecified-unenhanced-types", classes, unspecified));
+            throw new UserException(_loc.get("unspecified-unenhanced-types", Exceptions.toClassNames(classes), 
+                    unspecified));
 
         ClassRedefiner.redefineClasses(conf, map);
         for (Class<?> cls : map.keySet()) {
