@@ -1042,8 +1042,8 @@ public class EntityManagerImpl
         return newQueryImpl(kernelQuery);
     }
 
-    protected <X> QueryImpl<X> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
-        return new QueryImpl<X>(this, _ret, kernelQuery);
+    protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
+        return new QueryImpl<T>(this, _ret, kernelQuery);
     }
 
     /**
@@ -1565,7 +1565,7 @@ public class EntityManagerImpl
         
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
         
-        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery);
+        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery).setId(criteriaQuery.toString());
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
         
         for (ParameterExpression<?> param : params) {
