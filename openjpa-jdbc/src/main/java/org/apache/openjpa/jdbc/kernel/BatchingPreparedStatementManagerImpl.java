@@ -224,9 +224,10 @@ public class BatchingPreparedStatementManagerImpl extends
             } finally {
                 _batchedSql = null;
                 batchedRows.clear();
-                //Clear the Params now....should this be done above?
-                ps.clearParameters();
                 if (ps != null) {
+                    //Clear the Params now....should this be done above? No. 
+                    //if JDBC provider using PureQuery, ps is null
+                    ps.clearParameters();
                     try {
                         ps.close();
                     } catch (SQLException sqex) {
