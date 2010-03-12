@@ -150,7 +150,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	}
 
 	public String getQueryString() {
-		return _query.getQueryString();
+		String result = _query.getQueryString();
+		return result != null ? result : _id;
 	}
 
 	public boolean getIgnoreChanges() {
@@ -291,6 +292,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
                 postExecute(result);
             }
             return result;
+		} catch (LockTimeoutException e) {
+		    throw new QueryTimeoutException(e.getMessage(), new Throwable[]{e}, getQueryString(), e.isFatal());
 		} finally {
 		    unlock();
 		}
@@ -528,7 +531,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             }
             stats.recordExecution(pq.getOriginalQuery());
         } else {
-            stats.recordExecution(_query.getQueryString());
+            stats.recordExecution(getQueryString());
         }
         return registered == Boolean.TRUE;
     }
