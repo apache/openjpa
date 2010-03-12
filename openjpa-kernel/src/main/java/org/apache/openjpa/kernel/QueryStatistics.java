@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Records query execution statistics.
@@ -38,6 +39,11 @@ import java.util.Map;
  * 
  */
 public interface QueryStatistics<T> extends Serializable {
+    
+    /**
+     *  Gets all the identifier keys for the cached queries.
+     */
+    public Set<T> keys();
 	
 	/**
 	 * Record that the given query has been executed. 
@@ -126,6 +132,10 @@ public interface QueryStatistics<T> extends Serializable {
 		private Map<T, long[]> astats = new HashMap<T, long[]>();
 		private Date start = new Date();
 		private Date since = start;
+		
+		public Set<T> keys() {
+		    return stats.keySet();
+		}
 
 		public long getExecutionCount() {
 			return stat[READ];
@@ -205,6 +215,8 @@ public interface QueryStatistics<T> extends Serializable {
 		}
 		
 		public void recordExecution(T query) {
+		    if (query == null)
+		        return;
 		    boolean cached = (astats.containsKey(query));
 			addSample(query, READ);
 			if (cached)
