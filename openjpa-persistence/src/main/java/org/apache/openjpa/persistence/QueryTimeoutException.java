@@ -35,6 +35,7 @@ import org.apache.openjpa.util.StoreException;
  * @since 2.0.0
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class QueryTimeoutException
     extends javax.persistence.QueryTimeoutException
     implements Serializable, ExceptionInfo {
@@ -43,8 +44,11 @@ public class QueryTimeoutException
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
 
-    public QueryTimeoutException(String msg, Throwable[] nested,
-        Object failed, boolean fatal) {
+    public QueryTimeoutException(String msg, Throwable[] nested, Object failed) {
+        this(msg, nested, failed, false);
+    }
+    
+    public QueryTimeoutException(String msg, Throwable[] nested, Object failed, boolean fatal) {
         super(msg);
         _nested = nested;
         _failed = failed;

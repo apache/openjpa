@@ -30,13 +30,13 @@ import org.apache.openjpa.lib.util.Localizer;
  * @author Marc Prud'hommeaux
  * @since 0.3.1
  */
+@SuppressWarnings("serial")
 public class LockException
     extends StoreException {
 
-    private static final transient Localizer _loc = Localizer.forPackage
-        (LockException.class);
+    private static final transient Localizer _loc = Localizer.forPackage(LockException.class);
 
-    private int timeout = -1;
+    private int timeout   = -1;
     private int lockLevel = -1;
     
     public LockException(Object failed) {
@@ -49,8 +49,7 @@ public class LockException
     }
     
     public LockException(Object failed, int timeout, int lockLevel) {
-        super(_loc.get("lock-timeout", Exceptions.toString(failed),
-            String.valueOf(timeout)));
+        super(_loc.get("lock-timeout", Exceptions.toString(failed), String.valueOf(timeout)));
         setFailedObject(failed);
         setTimeout(timeout);
     }
@@ -86,8 +85,7 @@ public class LockException
         String str = super.toString();
         if (timeout < 0)
             return str;
-        return str + Exceptions.SEP + "Timeout: " + timeout + ", LockLevel"
-            + lockLevel;
+        return str + Exceptions.SEP + "Timeout: " + timeout + ", LockLevel" + lockLevel;
     }
 
     private void writeObject(ObjectOutputStream out)

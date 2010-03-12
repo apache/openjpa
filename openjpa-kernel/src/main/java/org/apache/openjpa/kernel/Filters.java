@@ -245,11 +245,30 @@ public class Filters {
             return true;
         return false;
     }
+    
+    /**
+     * Convert the given value to match the given (presumably a setter) method argument type.
+     *  
+     * @param o given value
+     * @param method a presumably setter method 
+     * 
+     * @return the same value if the method does not have one and only one input argument.
+     */
+    public static Object convertToMatchMethodArgument(Object o, Method method) {
+        if (method == null || method.getParameterTypes().length != 1) {
+            return o;
+        }
+        return convert(o, method.getParameterTypes()[0], true);
+    }
 
+    public static Object convert(Object o, Class<?> type) {
+        return convert(o, type, false);
+    }
+    
     /**
      * Convert the given value to the given type.
      */
-    public static Object convert(Object o, Class<?> type) {
+    public static Object convert(Object o, Class<?> type, boolean strictNumericConversion) {
         if (o == null)
             return null;
         if (o.getClass() == type)
@@ -315,13 +334,13 @@ public class Filters {
             throw new ClassCastException(_loc.get("cant-convert", o,
                 o.getClass(), type).getMessage());
 
-        if (type == Integer.class) {
+        if (type == Integer.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).intValue();
-        } else if (type == Float.class) {
+        } else if (type == Float.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return new Float(((Number) o).floatValue());
         } else if (type == Double.class) {
             return new Double(((Number) o).doubleValue());
-        } else if (type == Long.class) {
+        } else if (type == Long.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).longValue();
         } else if (type == BigDecimal.class) {
             // the BigDecimal constructor doesn't handle the
@@ -339,13 +358,27 @@ public class Filters {
             return new BigDecimal(o.toString());
         } else if (type == BigInteger.class) {
             return new BigInteger(o.toString());
-        } else if (type == Short.class) {
+        } else if (type == Short.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return new Short(((Number) o).shortValue());
-        } else if (type == Byte.class) {
+        } else if (type == Byte.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return new Byte(((Number) o).byteValue());
-        } else {
+        } else if (!strictNumericConversion) {
             return ((Number) o).intValue();
+        } else {
+            throw new ClassCastException(_loc.get("cant-convert", o, o.getClass(), type).getMessage());
         }
+    }
+    
+    private static boolean allowNumericConversion(Class<?> actual, Class<?> target, boolean strict) {
+        if (!strict || actual == target)
+            return true;
+        if (actual == Byte.class)    return false;
+        if (actual == Double.class)  return target == Float.class;
+        if (actual == Float.class)   return target == Double.class;
+        if (actual == Integer.class) return target == Long.class || target == Short.class;
+        if (actual == Long.class)    return target == Integer.class || target == Short.class;
+        if (actual == Short.class)   return target == Long.class || target == Integer.class;
+        return false;
     }
 
     /**

@@ -293,7 +293,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             }
             return result;
 		} catch (LockTimeoutException e) {
-		    throw new QueryTimeoutException(e.getMessage(), new Throwable[]{e}, getQueryString(), e.isFatal());
+		    throw new QueryTimeoutException(e.getMessage(), new Throwable[]{e}, this);
 		} finally {
 		    unlock();
 		}

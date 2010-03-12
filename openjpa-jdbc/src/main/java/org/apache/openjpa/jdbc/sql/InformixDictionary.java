@@ -377,23 +377,17 @@ public class InformixDictionary
     }
         
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        Boolean recoverable = null;
-        String errorState = ex.getSQLState();
-        if (errorStates.contains(errorState)) {
-            // SQL State of IX000 is a general purpose Informix error code
-            // category, so only return Boolean.TRUE if we match SQL Codes
-            // recoverable = Boolean.FALSE;
-            if (subtype == StoreException.LOCK &&
-                ex.getErrorCode() == -154) {
-                recoverable = Boolean.TRUE;
-            } else if (subtype == StoreException.QUERY &&
-                ex.getErrorCode() == -213) {
-                recoverable = Boolean.TRUE;
-            }
+    protected boolean isFatalException(int subtype, SQLException ex) {
+        
+        // SQL State of IX000 is a general purpose Informix error code
+        // category, so only return Boolean.TRUE if we match SQL Codes
+        // recoverable = Boolean.FALSE;
+        if ((subtype == StoreException.LOCK && ex.getErrorCode() == -154) 
+          ||(subtype == StoreException.QUERY && ex.getErrorCode() == -213)) {
+            return false;
         }
-        return recoverable;
+        
+        return super.isFatalException(subtype, ex);
     }
 }
 

@@ -31,24 +31,24 @@ import org.apache.openjpa.util.StoreException;
 
 /**
  * Pessimistic concurrency violation.
+ * This exception is always fatal in contrast to {@linkplain LockTimeoutException}.
  *
  * @since 2.0.0
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class PessimisticLockException
     extends javax.persistence.PessimisticLockException
     implements Serializable, ExceptionInfo {
 
-    private transient boolean _fatal = false;
+    private transient boolean _fatal = true;
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
 
-    public PessimisticLockException(String msg, Throwable[] nested,
-        Object failed, boolean fatal) {
+    public PessimisticLockException(String msg, Throwable[] nested, Object failed) {
         super(msg);
         _nested = nested;
         _failed = failed;
-        _fatal = fatal;
     }
 
     public int getType() {

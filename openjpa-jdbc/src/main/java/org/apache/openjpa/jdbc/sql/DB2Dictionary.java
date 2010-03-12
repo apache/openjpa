@@ -923,22 +923,18 @@ public class DB2Dictionary
     }
 
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        Boolean recoverable = null;
+    protected boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
-        if (errorStates.contains(errorState)) {
-            recoverable = Boolean.FALSE;
-            if (subtype == StoreException.LOCK && errorState.equals("57033")
-                && ex.getMessage().indexOf("80") != -1) {
-                recoverable = Boolean.TRUE;
-            } else if ((subtype == StoreException.QUERY &&
-                errorState.equals("57014")) &&
-                (ex.getErrorCode() == -952 || ex.getErrorCode() == -905)) {
-                recoverable = Boolean.TRUE;
-            }
+        int errorCode = ex.getErrorCode();
+        if (subtype == StoreException.LOCK && "57033".equals(errorState)
+            && ex.getMessage().indexOf("80") != -1) {
+            return false;
+        } 
+        if ((subtype == StoreException.QUERY && "57014".equals(errorState) &&
+            (errorCode == -952 || errorCode == -905))) {
+            return false;
         }
-        return recoverable;
+        return super.isFatalException(subtype, ex);
     }
     
     @Override

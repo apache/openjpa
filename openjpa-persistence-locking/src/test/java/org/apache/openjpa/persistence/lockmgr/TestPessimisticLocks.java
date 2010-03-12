@@ -30,6 +30,7 @@ import javax.persistence.QueryTimeoutException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
@@ -40,6 +41,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     private DBDictionary dict = null;
 
     public void setUp() {
+        setUp(Employee.class, Department.class, "openjpa.LockManager", "mixed");
         setSupportedDatabases(
                 org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
 //                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
@@ -48,7 +50,6 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             return;
         }
 
-        setUp(Employee.class, Department.class, "openjpa.LockManager", "mixed");
         String empTable = getMapping(Employee.class).getTable().getFullName();
         String deptTable = getMapping(Department.class).getTable().getFullName();
 
@@ -125,10 +126,11 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             // find Employee(2) with a lock, should block and expected a PessimisticLockException
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (QueryTimeoutException e) {            
+        } catch (LockTimeoutException e) {            
             // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
             // Remove this when the problem is fixed
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
+            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage() + " Failed " 
+                    + e.getFailedObject());
         } catch (PessimisticLockException e) {
             // TODO: This is the expected exception but will be fixed under OPENJPA-991
 //            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
@@ -208,10 +210,11 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             // find Employee(2) with a lock, should block and expected a PessimisticLockException
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (QueryTimeoutException e) {            
+        } catch (LockTimeoutException e) {            
             // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
             // Remove this when the problem is fixed
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
+            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage() + " Failed " + 
+                    e.getFailedObject());
         } catch (PessimisticLockException e) {
             // TODO: This is the expected exception but will be fixed under OPENJPA-991
 //            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());

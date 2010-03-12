@@ -1259,25 +1259,21 @@ public class OracleDictionary
     }
     
     @Override
-    protected Boolean matchErrorState(int subtype, Set<String> errorStates,
-        SQLException ex) {
-        Boolean recoverable = null;
+    protected boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
         int errorCode = ex.getErrorCode();
-        if (errorStates.contains(errorState)) {
-            recoverable = Boolean.FALSE;
-            if ((subtype == StoreException.LOCK)
-                && ((errorState.equals("61000") && (errorCode == 54 ||
-                     errorCode == 60 || errorCode == 4020 ||
-                     errorCode == 4021 || errorCode == 4022))
-                    || (errorState.equals("42000") && errorCode == 2049))) {
-                recoverable = Boolean.TRUE;
-            } else if (subtype == StoreException.QUERY &&
-                errorState.equals("72000") && errorCode == 1013) {
-                recoverable = Boolean.TRUE;
-            }
+        if ((subtype == StoreException.LOCK)
+            && (("61000".equals(errorState) && (errorCode == 54 ||
+                 errorCode == 60 || errorCode == 4020 ||
+                 errorCode == 4021 || errorCode == 4022))
+                || ("42000".equals(errorState) && errorCode == 2049))) {
+            return false;
+        } 
+        if (subtype == StoreException.QUERY &&
+            "72000".equals(errorState) && errorCode == 1013) {
+            return false;
         }
-        return recoverable;
+        return super.isFatalException(subtype, ex);
     }
     
     @Override

@@ -29,7 +29,7 @@
 <sql-state-codes>
 
 	<dictionary class="org.apache.openjpa.jdbc.sql.DB2Dictionary">
-		<lock>40001,57033,57011</lock>
+		<lock>40001,57033,57011,57014</lock>
 		<referential-integrity>23502,42912,23001,23504,23511,23512,23513,23515,23520</referential-integrity>
 		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>
@@ -155,12 +155,12 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.MySQLDictionary">
-		<lock>1205,1213</lock>
+		<lock>41000</lock>
 		<referential-integrity>630,839,840,893,1062,1169,1215,1216,1217,1451,1452,1557</referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
-		<optimistic>41000</optimistic>
-		<query></query>
+		<optimistic></optimistic>
+		<query>70100</query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.OracleDictionary">

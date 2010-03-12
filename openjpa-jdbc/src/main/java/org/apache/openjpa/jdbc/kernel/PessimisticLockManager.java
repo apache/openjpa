@@ -35,6 +35,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.VersionLockManager;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.LockException;
 
 /**
@@ -117,8 +118,7 @@ public class PessimisticLockManager
         JDBCFetchConfiguration fetch = _store.getFetchConfiguration();
         if (dict.simulateLocking)
             return;
-        dict.assertSupport(dict.supportsSelectForUpdate,
-            "SupportsSelectForUpdate");
+        dict.assertSupport(dict.supportsSelectForUpdate, "SupportsSelectForUpdate");
 
         Object id = sm.getObjectId();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
@@ -137,7 +137,7 @@ public class PessimisticLockManager
                 checkLock(rs, sm, timeout);
             }
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, dict, level);
+            throw SQLExceptions.getStore(se, Exceptions.toString(sm.getPersistenceCapable()), dict, level);
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}

@@ -35,6 +35,7 @@ import org.apache.openjpa.util.StoreException;
  * @since 2.0.0
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class LockTimeoutException
     extends javax.persistence.LockTimeoutException
     implements Serializable, ExceptionInfo {
@@ -43,12 +44,10 @@ public class LockTimeoutException
     private transient Object _failed = null;
     private transient Throwable[] _nested = null;
 
-    public LockTimeoutException(String msg, Throwable[] nested,
-        Object failed, boolean fatal) {
+    public LockTimeoutException(String msg, Throwable[] nested,  Object failed) {
         super(msg);
         _nested = nested;
         _failed = failed;
-        _fatal = fatal;
     }
 
     public int getType() {
