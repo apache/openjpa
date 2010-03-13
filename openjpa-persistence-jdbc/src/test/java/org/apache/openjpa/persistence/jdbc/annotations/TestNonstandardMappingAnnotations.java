@@ -47,7 +47,7 @@ public class TestNonstandardMappingAnnotations
     public void setUp() {
         setUp(NonstandardMappingEntity.class, NonstandardMappingEntity3.class, ExtensionsEntity.class,
             NonstandardMappingMappedSuper.class, EmbedValue2.class, EmbedValue3.class,
-            EmbedValue.class,
+            EmbedValue.class, NonstandardMappingEntity4.class, NonstandardMappingMappedSuper4.class, 
             CLEAR_TABLES, RETAIN_DATA);
 
         // trigger complete resolution of metadata etc.
@@ -307,4 +307,25 @@ public class TestNonstandardMappingAnnotations
         em.close();
     }
 
-}
+    public void testInsertAndRetrieveMappedSuperWithStrategy() {
+        NonstandardMappingEntity4 pc = new NonstandardMappingEntity4();
+        Point point = new Point();
+        point.setLocation(1, 2);
+        pc.setPoint(point);
+        pc.setId(1);
+        pc.setName("name1");
+        
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        em.persist(pc);
+        em.getTransaction().commit();
+        Object pcId = em.getObjectId(pc);
+        em.close();
+
+        em = emf.createEntityManager();
+        pc = em.find(NonstandardMappingEntity4.class, pcId);
+        assertEquals("name1", pc.getName());
+        assertEquals(1.0, pc.getPoint().getX());
+        assertEquals(2.0, pc.getPoint().getY());
+        em.close();
+    }}
