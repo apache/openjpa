@@ -44,10 +44,5 @@ javax.persistence Javadoc</ulink>
 <ulink url="../javadoc/index.html">OpenJPA Javadoc</ulink>
             </para>
         </listitem>
-        <listitem>
-            <para>
-<ulink url="Persistence.pdf">Locally mirrored JPA specification</ulink>
-            </para>
-        </listitem>
     </itemizedlist>
 </appendix>

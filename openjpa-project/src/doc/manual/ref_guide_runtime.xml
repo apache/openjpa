@@ -1814,7 +1814,7 @@ and remove listeners. These methods are outside the bounds of the published Open
         <para>
 For details on the transaction framework, see the <literal>
 org.apache.openjpa.event</literal> package
-<ulink url="../javadoc/org/apache/openjpa/event/package.html">Javadoc</ulink>.
+<ulink url="../javadoc/org/apache/openjpa/event/package-summary.html">Javadoc</ulink>.
 Also see <xref linkend="ref_guide_event"/> for a description of OpenJPA's
 remote event support.
         </para>

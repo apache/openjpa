@@ -388,8 +388,8 @@ log4j.appender.console=org.apache.log4j.ConsoleAppender
         </indexterm>
         <para>
 Set the <literal>openjpa.Log</literal> property to <literal>commons</literal> to
-use the <ulink url="http://jakarta.apache.org/commons/logging.html"> Apache
-Jakarta Commons Logging</ulink> thin library for issuing log messages. The
+use the <ulink url="http://commons.apache.org/logging/"> Apache
+Commons Logging</ulink> thin library for issuing log messages. The
 Commons Logging libraries act as a wrapper around a number of popular logging
 APIs, including the
 <ulink url="http://jakarta.apache.org/log4j/docs/index.html"> Jakarta Log4J

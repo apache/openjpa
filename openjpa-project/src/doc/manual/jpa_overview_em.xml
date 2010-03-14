@@ -515,7 +515,7 @@ public void lock(Object entity, LockModeType mode);
             </seealso>
         </indexterm>
 This method locks the given entity using the named mode. The
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/LockmodeType.html">
+<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/LockModeType.html">
 <classname>javax.persistence.LockModeType</classname></ulink> enum defines two
 modes:
         </para>

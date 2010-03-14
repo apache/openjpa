@@ -3093,8 +3093,8 @@ openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the JPA
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/SubclassFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.SubclassFetchMode</classname>
 </ulink> annotation to a value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/EagerFetchType.html">
-<classname>org.apache.openjpa.persistence.jdbc.EagerFetchType</classname>
+<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/FetchMode.html">
+<classname>org.apache.openjpa.persistence.jdbc.FetchMode</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
 <literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
  for a discussion of eager fetching.

@@ -131,7 +131,7 @@ configuration resource to use, and to override any property.
             <para>
 Internally, the OpenJPA runtime environment and development
 tools manipulate property settings through a general
-<ulink url="../javadoc/ResultObjectProvider/lib/conf/Configuration.html">
+<ulink url="../javadoc/org/apache/openjpa/lib/conf/Configuration.html">
 <classname>Configuration</classname></ulink> interface, and in particular its
 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html">
 <classname>OpenJPAConfiguration</classname></ulink> and
@@ -1874,8 +1874,8 @@ runtime. See <xref linkend="ref_guide_dbsetup_lrs"/> for details.
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin list string (see
 <xref linkend="ref_guide_conf_plugins"/>) describing the
-<ulink url="../javadoc/org/apache/openjpa/lib/EncryptionProvider.html"><classname>
-org.apache.openjpa.lib.EncryptionProvider</classname></ulink>s to use for connection password
+<ulink url="../javadoc/org/apache/openjpa/lib/encryption/EncryptionProvider.html"><classname>
+org.apache.openjpa.lib.encryption.EncryptionProvider</classname></ulink>s to use for connection password
 encryption. See <xref linkend="ref_guide_encryption"/> for details.
             </para>
         </section>
