@@ -1055,7 +1055,7 @@ savepoint state. OpenJPA includes the following <classname>SavepointManager
                 <listitem>
                     <para>
 <literal>in-mem</literal>: The default. This is an alias for the
-<ulink url="org.apache.openjpa.kernel.InMemorySavepointManager"><classname>
+<ulink url="../javadoc/org/apache/openjpa/kernel/InMemorySavepointManager.html"><classname>
 org.apache.openjpa.kernel.InMemorySavepointManager</classname></ulink>. This
 plugin stores all state, including field values, in memory. Due to this
 behavior, each set savepoint is designed for small to medium transactional
@@ -1065,22 +1065,11 @@ object counts.
                 <listitem>
                     <para>
 <literal>jdbc</literal>: This is an alias for the
-<ulink url="org.apache.openjpa.jdbc.kernel.JDBCSavepointManager"><classname>
-org.apache.openjpa.jdbc.kernel.JDBCSavepointManager</classname></ulink>. This
+<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html"><classname>
+org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager</classname></ulink>. This
 plugin requires <literal>JDBC 3</literal> and <classname> java.sql.Savepoint
 </classname> support to operate. Note that this plugin implements savepoints by
 issuing a flush to the database.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-<literal>oracle</literal>: This is an alias for the
-<ulink url="org.apache.openjpa.jdbc.sql.OracleSavepointManager"><classname>
-org.apache.openjpa.jdbc.sql.OracleSavepointManager</classname></ulink>. This
-plugin operates similarly to the <literal>JDBC</literal> plugin; however, it
-uses Oracle-specific calls. This plugin requires using the Oracle JDBC driver
-and database, versions <literal>9.2</literal> or higher. Note that this plugin
-implements savepoints by issuing a flush to the database.
                     </para>
                 </listitem>
             </itemizedlist>
