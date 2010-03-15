@@ -282,7 +282,7 @@ Changing the field value has undefined results.
             </para>
             <note>
                 <para>
-OpenJPA fully supports version fields, but does not require them for concurrency
+OpenJPA fully supports version fields, but does not require them within the actual entity for concurrency
 detection. OpenJPA can maintain surrogate version values or use state
 comparisons to detect concurrent modifications. See
 <xref linkend="ref_guide_mapping_jpa"/> in the Reference Guide.
