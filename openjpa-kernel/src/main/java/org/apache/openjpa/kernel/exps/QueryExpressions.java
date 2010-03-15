@@ -19,12 +19,13 @@
 package org.apache.openjpa.kernel.exps;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreQuery;
@@ -48,7 +49,7 @@ public class QueryExpressions
     public static final int DISTINCT_TRUE = 2 << 1;
     public static final int DISTINCT_FALSE = 2 << 2;
     public static final Value[] EMPTY_VALUES = new Value[0];
-
+    
     /**
      * Map of {@link FieldMetaData},{@link Value} for update statements.
      */
@@ -109,6 +110,15 @@ public class QueryExpressions
     public boolean isDistinct() {
         return distinct != DISTINCT_FALSE;
     }
+    
+    /**
+     * Gets the fields that are bound to parameters.
+     * 
+     * @return empty if the query has no filtering condition or no parameters.
+     */
+    public List<FieldMetaData> getParameterizedFields() {
+        return ParameterExpressionVisitor.collectParameterizedFields(filter);
+    }
 
     /**
      * Add an update.
@@ -154,5 +164,39 @@ public class QueryExpressions
             if (val == _sub)
                 _sub = null;
         }
+    }
+    
+    /**
+     * Visits the expression tree to find the parameter nodes.
+     * @author Pinaki Poddar
+     *
+     */
+    private static class ParameterExpressionVisitor extends AbstractExpressionVisitor {
+        private FieldMetaData _parameterized;
+        private List<FieldMetaData> _collected = new ArrayList<FieldMetaData>();
+        /**
+         * Enters the current node.
+         */
+        public void enter(Value val) {
+            if (val instanceof Parameter) {
+                if (_parameterized != null) {
+                    _collected.add(_parameterized);
+                } 
+            } else if (val instanceof Path) {
+                _parameterized = ((Path)val).last();
+            } else {
+                _parameterized = null;
+            }
+        }
+        
+        public static List<FieldMetaData> collectParameterizedFields(Expression e) {
+            if (e == null) {
+                return Collections.emptyList();
+            }
+            ParameterExpressionVisitor visitor = new ParameterExpressionVisitor();
+            e.acceptVisit(visitor);
+            return visitor._collected;
+        }
+        
     }
 }

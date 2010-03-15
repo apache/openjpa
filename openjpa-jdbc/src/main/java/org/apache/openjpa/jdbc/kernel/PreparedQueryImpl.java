@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
@@ -202,6 +203,11 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (executor instanceof StoreQuery.Executor == false)
             return new Object[]{null, _loc.get("exclude-not-executor")};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
+        for (int i = 0; i < _exps.length; i++) {
+            if (isUsingExternalizedParameter(_exps[i])) {
+                return new Object[]{null, _loc.get("exclude-externalized-param", provider.getClass().getName())};
+            }
+        }
         if (_exps[0].projections.length == 0) {
             _projTypes = StoreQuery.EMPTY_CLASSES;
         } else {
@@ -234,6 +240,20 @@ public class PreparedQueryImpl implements PreparedQuery {
         
         return null;
     }
+    
+    private boolean isUsingExternalizedParameter(QueryExpressions exp) {
+        if (exp == null)
+            return false;
+        List<FieldMetaData> fmds = exp.getParameterizedFields();
+        if (fmds == null || fmds.isEmpty())
+            return false;
+        for (FieldMetaData fmd : fmds) {
+            if (fmd.isExternalized())
+                return true;
+        }
+        return false;
+    }
+
     
     /**
      * Merge the given user parameters with its own parameter. The given map
