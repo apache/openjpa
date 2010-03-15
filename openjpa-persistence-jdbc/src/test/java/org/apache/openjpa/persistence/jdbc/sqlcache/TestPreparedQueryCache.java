@@ -171,8 +171,8 @@ public class TestPreparedQueryCache extends TestCase {
         CD     c1 = new CD("CD1");
         CD     c2 = new CD("CD2");
         
-        b1.setId(id++);
-        b2.setId(id++);
+        b1.setId(id++); b1.setTitle("title-1"); b1.setToken("LARGE");
+        b2.setId(id++); b2.setTitle("title-2"); b2.setToken("MEDIUM");
         c1.setId(id++);
         c2.setId(id++);
         b1.addAuthor(a1);
@@ -805,6 +805,34 @@ public class TestPreparedQueryCache extends TestCase {
                 fail();
             }
         }
+    }
+    
+    public void testParameterOnExternalizedFieldIsExcluded() {
+        String jpql = "select b from Book b where b.title=:title and b.token=:token";
+        Query q1 = em.createQuery(jpql)
+          .setParameter("title", "title-1")
+          .setParameter("token", "LARGE");
+        // default fetches authors eagerly and thus creates multiple SQL and hence not caches anyway
+        OpenJPAPersistence.cast(q1).getFetchPlan().removeFetchGroup("default");
+        assertFalse(q1.getResultList().isEmpty());
+        assertNotCached(jpql);
+        Query q2 = em.createQuery(jpql)
+                     .setParameter("title", "title-2")
+                     .setParameter("token", "MEDIUM");
+       assertFalse(q2.getResultList().isEmpty());
+    }
+    
+    public void testNoParameterOnExternalizedFieldIsIncluded() {
+        String jpql = "select b from Book b where b.title=:title";
+        Query q1 = em.createQuery(jpql)
+          .setParameter("title", "title-1");
+        // default fetches authors eagerly and thus creates multiple SQL and hence not caches anyway
+        OpenJPAPersistence.cast(q1).getFetchPlan().removeFetchGroup("default");
+        assertFalse(q1.getResultList().isEmpty());
+        assertCached(jpql);
+        Query q2 = em.createQuery(jpql)
+                     .setParameter("title", "title-2");
+       assertFalse(q2.getResultList().isEmpty());
     }
     
     

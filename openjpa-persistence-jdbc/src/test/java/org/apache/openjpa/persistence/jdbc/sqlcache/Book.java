@@ -26,6 +26,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
+import org.apache.openjpa.persistence.ExternalValues;
+
 @Entity
 @DiscriminatorValue("BOOK")
 public class Book extends Merchandise {
@@ -34,8 +36,12 @@ public class Book extends Merchandise {
     @ManyToMany(fetch=FetchType.EAGER)
     private Set<Author> authors;
 
+    @ExternalValues({"SMALL=S", "MEDIUM=M", "LARGE=L"})
+    private String token;
+    
     public Book() {
         this("?");
+        token = "MEDIUM";
     }
     
     public Book(String title) {
@@ -61,5 +67,13 @@ public class Book extends Merchandise {
         if (authors.add(a)) {
             a.addBook(this);
         }
+    }
+    
+    public String getToken() {
+        return token;
+    }
+    
+    public void setToken(String t) {
+        token = t;
     }
 }
