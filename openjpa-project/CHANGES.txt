@@ -225,7 +225,6 @@ Bug
     * [OPENJPA-757] - Map existing OpenJPA extensions to new features of JPA 2.0
     * [OPENJPA-859] - OpenJPA requires all persistent fields to be specified on an XML defined entity
     * [OPENJPA-944] - FetchAttribute.recursionDepth = -1 does not load properly self referenced entities in a complex relation
-    * [OPENJPA-991] - Implement LockTimeout using db specific server-side lock timeout feature
     * [OPENJPA-993] - PCEnhancer can't execute if a non-OpenJPA PU is found
     * [OPENJPA-1005] - Add PersistenceXMLSchemaVersion(); support
     * [OPENJPA-1020] - eager fetching of PersistentCollection of a primitive type fails
