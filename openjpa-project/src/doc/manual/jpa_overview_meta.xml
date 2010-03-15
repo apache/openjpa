@@ -966,8 +966,8 @@ to:
 <literal>uuid-string</literal>: OpenJPA will generate a 128-bit type 1 UUID
 unique within the network, represented as a 16-character string. For more
 information on UUIDs, see the IETF UUID draft specification at:
-<ulink url="http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/">
-http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
+<ulink url="http://www.ics.uci.edu/~ejw/authoring/uuid-guid/">
+http://www.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
                         </para>
                     </listitem>
                     <listitem>
@@ -1007,8 +1007,8 @@ represents the type 1 UUID as a 32-character hexadecimal string.
 <literal>uuid-type4-string</literal>: OpenJPA will generate a 128-bit type 4
 pseudo-random UUID, represented as a 16-character string. For more
 information on UUIDs, see the IETF UUID draft specification at:
-<ulink url="http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/">
-http://www1.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
+<ulink url="http://www.ics.uci.edu/~ejw/authoring/uuid-guid/">
+http://www.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
                         </para>
                     </listitem>
                     <listitem>

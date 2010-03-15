@@ -1830,7 +1830,7 @@ an implementation of the
 org.apache.openjpa.kernel.StoreManager</literal></ulink> interface. OpenJPA
 provides an abstract <literal>StoreManager</literal> implementation to
 facilitate this process. See the <literal>org.apache.openjpa.abstractstore
-</literal> package <ulink url="../javadoc/org/apache/openjpa/abstractstore">
+</literal> package <ulink url="../javadoc/org/apache/openjpa/abstractstore/package-summary.html">
 Javadoc</ulink> for details.
         </para>
     </section>

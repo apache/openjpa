@@ -38,10 +38,10 @@ The following chapter will illustrate these integration features.
 Ant is a very popular tool for building Java projects. It is similar to the
 <literal>make</literal> command, but is Java-centric and has more modern
 features. Ant is open source, and can be downloaded from Apache's Ant web page
-at <ulink url="http://jakarta.apache.org/ant/"> http://jakarta.apache.org/ant/
+at <ulink url="http://ant.apache.org/"> http://ant.apache.org/
 </ulink>. Ant has become the de-facto standard build tool for Java, and many
 commercial integrated development environments provide some support for using
-ant build files. The remainder of this section assumes familiarity with writing
+Ant build files. The remainder of this section assumes familiarity with writing
 Ant <filename>build.xml</filename> files.
         </para>
         <para>
@@ -77,9 +77,9 @@ OpenJPA provides pre-built Ant task definitions for all bundled tools:
             </listitem>
         </itemizedlist>
         <para>
-The source code for all the ant tasks is provided with the distribution under
+The source code for all the Ant tasks is provided with the distribution under
 the <filename>src</filename> directory. This allows you to customize various
-aspects of the ant tasks in order to better integrate into your development
+aspects of the Ant tasks in order to better integrate into your development
 environment.
         </para>
         <section id="ref_guide_integration_conf">

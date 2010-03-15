@@ -349,7 +349,7 @@ a jar file, or in the root of one of the <literal>CLASSPATH</literal>
 directories). When deploying to a web or EJB application server, Log4J
 configuration is often performed in a <filename>log4j.xml</filename> file
 instead of a properties file. For further details on configuring Log4J, please
-see the <ulink url="http://jakarta.apache.org/log4j/docs/manual.html">Log4J
+see the <ulink url="http://logging.apache.org/log4j/1.2/manual.html">Log4J
 Manual</ulink>. We present an example <filename>log4j.properties</filename> file
 below.
         </para>
@@ -392,7 +392,7 @@ use the <ulink url="http://commons.apache.org/logging/"> Apache
 Commons Logging</ulink> thin library for issuing log messages. The
 Commons Logging libraries act as a wrapper around a number of popular logging
 APIs, including the
-<ulink url="http://jakarta.apache.org/log4j/docs/index.html"> Jakarta Log4J
+<ulink url="http://logging.apache.org/log4j/1.2/index.html"> Jakarta Log4J
 </ulink> project, and the native
 <ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
 java.util.logging</ulink> package in JDK 1.4. If neither of these libraries are

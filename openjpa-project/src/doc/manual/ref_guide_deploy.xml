@@ -232,7 +232,7 @@ you can pass to these plugins in your configuration string.
         </indexterm>
         <para>
 The X/Open Distributed Transaction Processing (X/Open DTP) model, designed by
-<ulink url="http://www.xopen.org">Open Group</ulink> (a vendor consortium),
+<ulink url="http://www.opengroup.org/">The Open Group</ulink> (a vendor consortium),
 defines a standard communication architecture that provides the following:
         </para>
         <itemizedlist>

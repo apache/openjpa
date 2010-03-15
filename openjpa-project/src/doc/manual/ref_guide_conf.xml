@@ -138,7 +138,7 @@ tools manipulate property settings through a general
 <ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html">
 <classname>JDBCConfiguration</classname></ulink> subclasses. For advanced
 customization, OpenJPA's extended runtime interfaces and its development tools
-allow you to access these interfaces directly. See the <ulink url="../javadoc">
+allow you to access these interfaces directly. See the <ulink url="../javadoc/">
 Javadoc</ulink> for details.
             </para>
         </note>
