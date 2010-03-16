@@ -926,6 +926,8 @@ public class DB2Dictionary
     protected boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
         int errorCode = ex.getErrorCode();
+        if (errorCode == -952 && "57014".equals(errorState))
+            return false;
         if (subtype == StoreException.LOCK && "57033".equals(errorState)
             && ex.getMessage().indexOf("80") != -1) {
             return false;
