@@ -684,6 +684,7 @@ Bug
     * [OPENJPA-927] - Fix definition of javax.persistence.query.timeout property
     * [OPENJPA-928] - getSupportedProperties() shows wsjpa property by default
     * [OPENJPA-933] - Database version detection in MySQLDictionary is not reliable
+    * [OPENJPA-935] - Removing entities with Embedded field issue multiple delete statements
     * [OPENJPA-947] - Overly verbose TestCases
     * [OPENJPA-951] - Javadoc jar file does not contain legal files
     * [OPENJPA-954] - openjpa-slice build fails due to tests relying on openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/test/AllowFailure.java
