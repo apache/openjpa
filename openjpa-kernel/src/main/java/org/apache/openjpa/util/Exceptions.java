@@ -91,7 +91,13 @@ public class Exceptions {
         if (oid != null) {
             if (oid instanceof Id)
                 return oid.toString();
-            return ob.getClass().getName() + "-" + oid.toString();
+            String oidString = oid.toString();
+            // some oids stringify their class names. Some do not.
+            if (oidString.indexOf(ob.getClass().getName()) == -1) {
+                return ob.getClass().getName() + "-" + oidString;
+            } else {
+                return oidString;
+            }
         }
 
         if (ImplHelper.isManagedType(null, ob.getClass())) {
