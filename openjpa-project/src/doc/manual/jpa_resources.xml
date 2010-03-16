@@ -24,13 +24,13 @@
     <itemizedlist>
         <listitem>
             <para>
-<ulink url="http://java.sun.com/aboutJava/communityprocess/jsr/jsr_220_dataobj.html">
-EJB 3 JSR page</ulink>
+<ulink url="http://www.jcp.org/en/jsr/detail?id=317">
+Java Persistence 2.0 page</ulink>
             </para>
         </listitem>
         <listitem>
             <para>
-<ulink url="http://java.sun.com/products/ejb/">Sun EJB page</ulink>
+<ulink url="http://jcp.org/en/jsr/detail?id=318">Enterprise JavaBeans 3.1 page</ulink>
             </para>
         </listitem>
         <listitem>
