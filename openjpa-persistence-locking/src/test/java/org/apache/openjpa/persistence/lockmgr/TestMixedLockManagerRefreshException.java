@@ -255,28 +255,28 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             {Act.Remove},
 
             {Act.Refresh, 1, LockModeType.NONE },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
       
             {Act.Refresh, 1, LockModeType.READ },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.WRITE },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.OPTIMISTIC },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.OPTIMISTIC_FORCE_INCREMENT },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_READ },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_WRITE },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
 
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
-            {Act.TestException},
+            {Act.TestException, 1, IllegalArgumentException.class },
             
             {Act.RollbackTx},
         };

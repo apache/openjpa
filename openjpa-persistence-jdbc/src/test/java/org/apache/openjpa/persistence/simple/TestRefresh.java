@@ -116,6 +116,23 @@ public class TestRefresh extends SingleEMTestCase {
         assertEquals(mode, CacheStoreMode.USE);
     }
     
+    public void testRefreshAfterRemove() {
+        try {
+            em.getTransaction().begin();
+            Item item = new Item();
+            item.setItemData("Test Data");
+            em.persist(item);
+            em.flush();
+            em.remove(item);
+            em.flush();
+            em.refresh(item);
+            em.getTransaction().commit();
+            fail("Did not catch expected IllegalArgumentException for refresh() of removed entity");
+        } catch (IllegalArgumentException e) {
+            // Expected exception
+        }
+    }
+    
     
     void assertCached(Class<?> cls, Object oid) {
         assertTrue(cls + ":" + oid + " should be in L2 cache, but not", emf.getCache().contains(cls, oid));

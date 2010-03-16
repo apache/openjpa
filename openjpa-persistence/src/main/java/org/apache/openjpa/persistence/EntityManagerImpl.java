@@ -101,6 +101,10 @@ public class EntityManagerImpl
 
     private static final Localizer _loc = Localizer.forPackage(EntityManagerImpl.class);
     private static final Object[] EMPTY_OBJECTS = new Object[0];
+    
+    private static final String GET_LOCK_MODE = "getLockMode";
+    private static final String LOCK = "lock";
+    private static final String REFRESH = "refresh";
 
     private DelegatingBroker _broker;
     private EntityManagerFactoryImpl _emf;
@@ -742,7 +746,7 @@ public class EntityManagerImpl
 
     public void refresh(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity("refresh", entity);
+        assertValidAttchedEntity(REFRESH, entity);
 
         _broker.assertWriteOperation();
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
@@ -1144,7 +1148,7 @@ public class EntityManagerImpl
     public LockModeType getLockMode(Object entity) {
         assertNotCloseInvoked();
         _broker.assertActiveTransaction();
-        assertValidAttchedEntity("getLockMode", entity);
+        assertValidAttchedEntity(GET_LOCK_MODE, entity);
         return MixedLockLevelsHelper.fromLockLevel(
             _broker.getLockLevel(entity));
     }
@@ -1155,13 +1159,13 @@ public class EntityManagerImpl
 
     public void lock(Object entity) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity("lock", entity);
+        assertValidAttchedEntity(LOCK, entity);
         _broker.lock(entity, this);
     }
 
     public void lock(Object entity, LockModeType mode, int timeout) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity("lock", entity);
+        assertValidAttchedEntity(LOCK, entity);
 
         configureCurrentFetchPlan(pushFetchPlan(), null, mode, false);
         try {
@@ -1173,7 +1177,7 @@ public class EntityManagerImpl
 
     public void lock(Object entity, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        assertValidAttchedEntity("lock", entity);
+        assertValidAttchedEntity(LOCK, entity);
         _broker.assertActiveTransaction();
         configureCurrentCacheModes(getFetchPlan(), properties);
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, false);
@@ -1341,7 +1345,7 @@ public class EntityManagerImpl
      */
     void assertValidAttchedEntity(String call, Object entity) {
         OpenJPAStateManager sm = _broker.getStateManager(entity);
-        if (sm == null || !sm.isPersistent() || sm.isDetached()) {
+        if (sm == null || !sm.isPersistent() || sm.isDetached() || (call.equals(REFRESH) && sm.isDeleted())) {
             throw new IllegalArgumentException(_loc.get("invalid_entity_argument", 
                 call, entity == null ? "null" : Exceptions.toString(entity)).getMessage());
         }
