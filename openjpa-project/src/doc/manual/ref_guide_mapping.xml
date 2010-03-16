@@ -610,8 +610,7 @@ for every many-1/1-1 relation detected.
                     <listitem>
                         <para>
 <literal>-useGenericCollections/-gc &lt;true/t | false/f&gt;</literal>: Set to
-true to use generic collections on OneToMany and ManyToMany relations (requires
-JDK 1.5 or higher).
+true to use generic collections on OneToMany and ManyToMany relations.
                         </para>
                     </listitem>
                     <listitem>
