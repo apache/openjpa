@@ -44,17 +44,17 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertNotNull(compat);
         if (log.isTraceEnabled()) {
-            log.info("Before set, FlushBeforeDetach=" + compat.getFlushBeforeDetach());
-            log.info("Before set, CopyOnDetach=" + compat.getCopyOnDetach());
-            log.info("Before set, CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("Before set, FlushBeforeDetach=" + compat.getFlushBeforeDetach());
+            log.trace("Before set, CopyOnDetach=" + compat.getCopyOnDetach());
+            log.trace("Before set, CascadeWithDetach=" + compat.getCascadeWithDetach());
         }
         compat.setFlushBeforeDetach(false);
         compat.setCopyOnDetach(false);
         compat.setCascadeWithDetach(false);
         if (log.isTraceEnabled()) {
-            log.info("After set, FlushBeforeDetach=" + compat.getFlushBeforeDetach());
-            log.info("After set, CopyOnDetach=" + compat.getCopyOnDetach());
-            log.info("After set, CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("After set, FlushBeforeDetach=" + compat.getFlushBeforeDetach());
+            log.trace("After set, CopyOnDetach=" + compat.getCopyOnDetach());
+            log.trace("After set, CascadeWithDetach=" + compat.getCascadeWithDetach());
         }
         createEntities(numEntities);
     }
@@ -76,7 +76,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      */
     public void testDetach() {
         if (log.isTraceEnabled())
-            log.info("***** testDetach() *****");
+            log.trace("***** testDetach() *****");
         Integer id = new Integer(0);
         OpenJPAEntityManager em = emf.createEntityManager();
         
@@ -85,6 +85,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         if (log.isTraceEnabled())
             log.trace("** after find");
         assertTrue(em.contains(e20));
+        assertFalse(em.isDetached(e20));
         verifySerializable(e20, true);
         
         // new openjpa-2.0.0 behavior, where detach() doesn't return updated entity, but does it in-place
@@ -92,6 +93,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         if (log.isTraceEnabled())
             log.trace("** after detach");
         // in-place updated entity should not have any proxy classes and should be detached
+        assertFalse(em.contains(e20));
         assertTrue(em.isDetached(e20));
         verifySerializable(e20, false);
                
@@ -103,7 +105,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      */
     public void testDetachCopy() {
         if (log.isTraceEnabled())
-            log.info("***** testDetachCopy() *****");
+            log.trace("***** testDetachCopy() *****");
         Integer id = new Integer(0);
         OpenJPAEntityManager em = emf.createEntityManager();
         em.clear();
@@ -112,12 +114,19 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         if (log.isTraceEnabled())
             log.trace("** after find");
         assertTrue(em.contains(e20));
+        assertFalse(em.isDetached(e20));
         verifySerializable(e20, true);
         
         // Test new detachCopy() method added in 2.0.0
         Entity20 e20copy = em.detachCopy(e20);
         if (log.isTraceEnabled())
             log.trace("** after detachCopy");
+        // verify e20 is same as above
+        assertTrue(em.contains(e20));
+        assertFalse(em.isDetached(e20));
+        verifySerializable(e20, true);
+        // verify copy does not have any proxy classes (in-place updated) is detached
+        assertFalse(em.contains(e20copy));
         assertTrue(em.isDetached(e20copy));
         verifySerializable(e20copy, false);
         
@@ -129,7 +138,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      */
     public void testDetachAll() {
         if (log.isTraceEnabled())
-            log.info("***** testDetachAll() *****");
+            log.trace("***** testDetachAll() *****");
         OpenJPAEntityManager em = emf.createEntityManager();
         em.clear();
 
@@ -140,6 +149,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             if (log.isTraceEnabled())
                 log.trace("** after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
+            assertFalse(em.isDetached(e20));
             verifySerializable(e20, true);            
         }
 
@@ -151,7 +161,8 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             if (log.isTraceEnabled())
                 log.trace("** after EM.clear() verify Entity20(" + i + ")");
             Entity20 e20 = e20List.get(i);
-            // entity should not have any proxy classes and should be detached
+            // entity should not have any proxy classes (in-place updated) and is detached
+            assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
             verifySerializable(e20, false);
         }
@@ -164,7 +175,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
      */
     public void testClear() {
         if (log.isTraceEnabled())
-            log.info("***** testClear() *****");
+            log.trace("***** testClear() *****");
         OpenJPAEntityManager em = emf.createEntityManager();
         em.clear();
 
@@ -175,6 +186,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             if (log.isTraceEnabled())
                 log.trace("** after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
+            assertFalse(em.isDetached(e20));
             verifySerializable(e20, true);            
         }
 
@@ -183,8 +195,11 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             if (log.isTraceEnabled())
                 log.trace("** after EM.clear() verify Entity20(" + i + ")");
             Entity20 e20 = e20List.get(i);
+            assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
-            verifySerializable(e20, false);
+            // entity should still have proxy classes and is detached,
+            // but once serialized the $proxy classes will be removed
+            verifySerializable(e20, true);
         }
 
         em.close();
@@ -215,7 +230,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             }
         }
         
-        // then deserialize
+        // then deserialize and assert no $proxy classes exist
         ByteArrayInputStream bais = new ByteArrayInputStream(e20bytes);
         ObjectInputStream ois = null;
         Entity20 e20new = null;
@@ -241,8 +256,8 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
 
     private void verifyEntities(Entity20 e20, boolean usesProxy) {
         if (log.isTraceEnabled()) {
+            log.trace("verifyEntities() - asserting expected proxy usage is " + usesProxy);
             printClassNames(e20);
-            log.trace("asserting expected proxy usage");
         }
         assertTrue("Expected sqlDate endsWith($proxy) to return " + usesProxy,
             usesProxy == e20.getDate().getClass().getCanonicalName().endsWith(PROXY));
@@ -254,9 +269,10 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     }
     
     private void printClassNames(Entity20 e20) {
-        log.info("sqlDate = " + e20.getDate().getClass().getCanonicalName());
-        log.info("sqlTime = " + e20.getTime().getClass().getCanonicalName());
-        log.info("sqlTimestamp = " + e20.getTimestamp().getClass().getCanonicalName());
+        if (log.isTraceEnabled()) {
+            log.trace("sqlDate = " + e20.getDate().getClass().getCanonicalName());
+            log.trace("sqlTime = " + e20.getTime().getClass().getCanonicalName());
+            log.trace("sqlTimestamp = " + e20.getTimestamp().getClass().getCanonicalName());
+        }
     }
-    
 }

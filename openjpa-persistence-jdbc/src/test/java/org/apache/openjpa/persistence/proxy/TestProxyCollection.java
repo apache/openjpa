@@ -125,11 +125,10 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		em.merge(modified);
 		em.getTransaction().commit();
 
-		// this was unproxied by EM.clear() in create() below
-		// assertProxyCollection(root.getNodes(), true);
-		assertNotProxyCollection(root.getNodes());
-
 		em.clear();
+
+		assertProxyCollection(root.getNodes(), false);
+
 		verify(root, modifier);
 	}
 	
@@ -147,11 +146,7 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		em.getTransaction().begin();
 		em.persist(root);
 		em.getTransaction().commit();
-		// OPENJPA-1097 Fixed behavior so entities will use the proxy classes until EM.clear() is called
-		assertProxyCollection(root.getNodes(), true);
 		em.clear();
-		// OPENJPA-1097 All proxies are removed after EM.clear()
-		assertNotProxyCollection(root.getNodes());
 		
 		return root;
 	}

@@ -567,9 +567,8 @@ public class DetachManager
                         if (proxy.getChangeTracker() != null)
                             proxy.getChangeTracker().stopTracking();
                         proxy.setOwner(dsm, (dsm == null) ? -1 : fmd.getIndex());
-                        objval = proxy.copy(proxy);
-                        sm.replaceField(getDetachedPersistenceCapable(), this, fmd.getIndex());
                     }
+                    sm.provideField(getDetachedPersistenceCapable(), this, fmd.getIndex());
                 }
             }
             clear();
@@ -710,7 +709,7 @@ public class DetachManager
          * Set the owner of the field's proxy to the detached state manager.
          */
         private Object reproxy(Object obj, int field) {
-            if (obj != null && _detSM != null && obj instanceof Proxy){
+            if (obj != null && _detSM != null && obj instanceof Proxy) {
                 ((Proxy) obj).setOwner(_detSM, field);
                 return ((Proxy) obj).copy(obj); 
             }

@@ -80,10 +80,16 @@ public class Proxies {
      * Used by proxy types to serialize non-proxy versions.
      */
     public static Object writeReplace(Proxy proxy, boolean detachable) {
-        if (detachable && (proxy == null || proxy.getOwner() == null 
-            || proxy.getOwner().isDetached()))
+        /* OPENJPA-1097 Always remove $proxy classes during serialization if detachable
+            if (detachable && (proxy == null || proxy.getOwner() == null 
+                || proxy.getOwner().isDetached()))
+                return proxy;
+        */
+        if (!detachable || proxy == null || proxy.getOwner() == null) {
             return proxy;
-        return proxy.copy(proxy);
+        } else {
+            return proxy.copy(proxy);
+        }
     }
 }
 
