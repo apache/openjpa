@@ -159,7 +159,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         em.detachAll(e20List.get(0), e20List.get(1), e20List.get(2));
         for (int i=0; i<numEntities; i++) {
             if (log.isTraceEnabled())
-                log.trace("** after EM.clear() verify Entity20(" + i + ")");
+                log.trace("** after EM.detachAll() verify e20List(" + i + ")");
             Entity20 e20 = e20List.get(i);
             // entity should not have any proxy classes (in-place updated) and is detached
             assertFalse(em.contains(e20));
@@ -171,7 +171,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     }
 
     /*
-     * Verify that after EM.clear() in-place detached entities do not contain any proxy classes.
+     * Verify that after EM.clear() entities still contain proxy classes.
      */
     public void testClear() {
         if (log.isTraceEnabled())
@@ -191,6 +191,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         }
 
         em.clear();
+
         for (int i=0; i<numEntities; i++) {
             if (log.isTraceEnabled())
                 log.trace("** after EM.clear() verify Entity20(" + i + ")");

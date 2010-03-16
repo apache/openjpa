@@ -568,7 +568,6 @@ public class DetachManager
                             proxy.getChangeTracker().stopTracking();
                         proxy.setOwner(dsm, (dsm == null) ? -1 : fmd.getIndex());
                     }
-                    sm.provideField(getDetachedPersistenceCapable(), this, fmd.getIndex());
                 }
             }
             clear();
