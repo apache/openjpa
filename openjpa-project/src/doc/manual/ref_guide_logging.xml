@@ -390,13 +390,12 @@ log4j.appender.console=org.apache.log4j.ConsoleAppender
 Set the <literal>openjpa.Log</literal> property to <literal>commons</literal> to
 use the <ulink url="http://commons.apache.org/logging/"> Apache
 Commons Logging</ulink> thin library for issuing log messages. The
-Commons Logging libraries act as a wrapper around a number of popular logging
+Commons Logging library act as a wrapper around a number of popular logging
 APIs, including the
 <ulink url="http://logging.apache.org/log4j/1.2/index.html"> Jakarta Log4J
 </ulink> project, and the native
-<ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
-java.util.logging</ulink> package in JDK 1.4. If neither of these libraries are
-available, then logging will fall back to using simple console logging.
+<ulink url="http://java.sun.com/javase/6/docs/api/java/util/logging/package-summary.html">
+java.util.logging</ulink> package in JDK.
         </para>
         <para>
 When using the Commons Logging framework in conjunction with Log4J,
@@ -404,29 +403,29 @@ configuration will be the same as was discussed in the Log4J section above.
         </para>
         <section id="ref_guide_logging_jdk14">
             <title>
-                JDK 1.4 java.util.logging
+                JDK java.util.logging
             </title>
             <indexterm zone="ref_guide_logging_jdk14">
                 <primary>
                     logging
                 </primary>
                 <secondary>
-                    JDK 1.4
+                    JDK
                 </secondary>
             </indexterm>
             <para>
-When using JDK 1.4 or higher in conjunction with OpenJPA's Commons Logging
+When using JDK logging in conjunction with OpenJPA's Commons Logging
 support, logging will proceed through Java's built-in logging provided by the
-<ulink url="http://java.sun.com/j2se/1.4/docs/api/java/util/logging/package-summary.html">
+<ulink url="http://java.sun.com/javase/6/docs/api/java/util/logging/package-summary.html">
 java.util.logging</ulink> package. For details on configuring the built-in
 logging system, please see the
-<ulink url="http://java.sun.com/j2se/1.4/docs/guide/util/logging/overview.html">
+<ulink url="http://java.sun.com/javase/6/docs/technotes/guides/logging/overview.html">
 Java Logging Overview</ulink>.
             </para>
             <para>
-By default, JDK 1.4's logging package looks in the <filename>
+By default, JDK's logging package looks in the <filename>
 JAVA_HOME/lib/logging.properties</filename> file for logging configuration. This
-can be overridden with the <literal> java.util.logging.config.file</literal>
+can be overridden with the <literal>java.util.logging.config.file</literal>
 system property. For example:
             </para>
 <programlisting>
@@ -434,7 +433,7 @@ java -Djava.util.logging.config.file=mylogging.properties com.company.MyClass
 </programlisting>
             <example id="ref_guide_logging_jdk14_propfile">
                 <title>
-                    JDK 1.4 Log Properties
+                    JDK Log Properties
                 </title>
 <programlisting>
 # specify the handlers to create in the root logger
