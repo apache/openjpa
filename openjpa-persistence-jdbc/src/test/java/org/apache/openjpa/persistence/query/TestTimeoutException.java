@@ -60,16 +60,12 @@ public class TestTimeoutException extends SingleEMFTestCase {
         query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         long timeout = 1000;
         query.setHint("javax.persistence.query.timeout", timeout);
-        assertError(new Callable<Throwable>() {
-            public Throwable call() throws Exception {
-                try {
-                    query.getResultList();
-                } catch (Throwable t) {
-                    return t;
-                }
-                return null;
-            }
-        }, QueryTimeoutException.class, timeout);
+        try {
+            query.getResultList();
+            fail("Expected " + QueryTimeoutException.class.getName());
+        } catch (Throwable t) {
+            assertError(t, QueryTimeoutException.class, timeout);
+        }
         
         assertTrue(em2.getTransaction().isActive());
         em2.getTransaction().rollback();
@@ -90,18 +86,14 @@ public class TestTimeoutException extends SingleEMFTestCase {
         em2.getTransaction().begin();
         final Object entity2 = em2.find(entityClass, oid);
         final long timeout = 1000;
-        assertError(new Callable<Throwable>() {
-            public Throwable call() throws Exception {
-                try {
-                    Map<String,Object> hint = new HashMap<String, Object>();
-                    hint.put("javax.persistence.lock.timeout", timeout);
-                    em2.lock(entity2, LockModeType.PESSIMISTIC_WRITE, hint);
-                } catch (Throwable t) {
-                    return t;
-                }
-                return null;
-            }
-        }, LockTimeoutException.class, timeout);
+        try {
+            Map<String,Object> hint = new HashMap<String, Object>();
+            hint.put("javax.persistence.lock.timeout", timeout);
+            em2.lock(entity2, LockModeType.PESSIMISTIC_WRITE, hint);
+            fail("Expected " + LockTimeoutException.class.getName());
+        } catch (Throwable t) {
+           assertError(t, LockTimeoutException.class, timeout);
+        }
         assertTrue(em2.getTransaction().isActive());
         em2.getTransaction().rollback();
         
@@ -125,22 +117,13 @@ public class TestTimeoutException extends SingleEMFTestCase {
      * @param t
      * @param expeceted
      */
-    void assertError(Callable<Throwable> task, Class<? extends Throwable> expected, long timeout) {
-        try {
-            Future<Throwable> future = scheduler.submit(task);
-            Throwable error = future.get();
-            if (error == null) {
-                throw new AssertionFailedError("No exception was raised but expected " + expected.getName());
-            } else if (!expected.isAssignableFrom(error.getClass())) {
-                error.printStackTrace();
-                throw new AssertionFailedError(error.getClass().getName() + " was raised but expected " + 
+    void assertError(Throwable actual, Class<? extends Throwable> expected, long timeout) {
+        if (!expected.isAssignableFrom(actual.getClass())) {
+                actual.printStackTrace();
+                throw new AssertionFailedError(actual.getClass().getName() + " was raised but expected " + 
                         expected.getName());
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw new AssertionFailedError(t.getClass().getName() + " was raised but expected " + 
-                    expected.getName());
         }
+        
     }   
     
 }

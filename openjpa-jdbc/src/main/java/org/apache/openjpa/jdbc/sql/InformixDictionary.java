@@ -377,7 +377,7 @@ public class InformixDictionary
     }
         
     @Override
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         
         // SQL State of IX000 is a general purpose Informix error code
         // category, so only return Boolean.TRUE if we match SQL Codes

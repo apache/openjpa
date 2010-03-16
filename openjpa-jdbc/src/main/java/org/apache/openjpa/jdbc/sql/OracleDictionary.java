@@ -1259,7 +1259,7 @@ public class OracleDictionary
     }
     
     @Override
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
         int errorCode = ex.getErrorCode();
         if ((subtype == StoreException.LOCK)

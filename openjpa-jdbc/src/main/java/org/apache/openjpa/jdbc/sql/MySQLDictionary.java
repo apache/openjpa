@@ -423,7 +423,7 @@ public class MySQLDictionary
     }
     
     @Override
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         if ((subtype == StoreException.LOCK  && ex.getErrorCode() == 1205)
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == 1317)) {
             return false;

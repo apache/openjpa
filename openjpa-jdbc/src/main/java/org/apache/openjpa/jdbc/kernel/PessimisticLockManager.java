@@ -37,6 +37,7 @@ import org.apache.openjpa.kernel.VersionLockManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.LockException;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Lock manager that uses exclusive database locks.
@@ -137,7 +138,10 @@ public class PessimisticLockManager
                 checkLock(rs, sm, timeout);
             }
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, Exceptions.toString(sm.getPersistenceCapable()), dict, level);
+            LockException e = new LockException(sm.getPersistenceCapable(), timeout, level);
+            e.setCause(se);
+            e.setFatal(dict.isFatalException(StoreException.LOCK, se));
+            throw e;
         } finally {
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}

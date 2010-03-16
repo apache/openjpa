@@ -281,10 +281,10 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     }
     
     @Override
-    protected boolean isFatalException(int subtype,  SQLException ex) {
+    public boolean isFatalException(int subtype,  SQLException ex) {
         String errorState = ex.getSQLState();
-        if ((subtype == StoreException.LOCK  && "1222".equals(errorState))
-          ||(subtype == StoreException.QUERY && "HY008".equals(errorState)))
+        if ((subtype == StoreException.LOCK  || subtype == StoreException.QUERY)
+          &&("1222".equals(errorState) || "HY008".equals(errorState)))
          return false;
         return super.isFatalException(subtype, ex);
     }

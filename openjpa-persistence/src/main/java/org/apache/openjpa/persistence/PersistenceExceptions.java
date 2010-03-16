@@ -165,12 +165,10 @@ public class PersistenceExceptions
             	e = new org.apache.openjpa.persistence.OptimisticLockException(msg, nested, failed, fatal);
         } else if (subtype == StoreException.LOCK || cause instanceof LockException) {
             LockException lockEx = (LockException) (ke instanceof LockException ? ke : cause);
-            if (lockEx != null && lockEx.getLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
-                if (!lockEx.isFatal()) {
-                    e = new org.apache.openjpa.persistence.LockTimeoutException(msg, nested, failed);
-                } else {
-                    e = new org.apache.openjpa.persistence.PessimisticLockException(msg, nested, failed);
-                }
+            if (!lockEx.isFatal()) {
+                e = new org.apache.openjpa.persistence.LockTimeoutException(msg, nested, failed);
+            } else if (lockEx != null && lockEx.getLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
+                e = new org.apache.openjpa.persistence.PessimisticLockException(msg, nested, failed);
             } else {
                 e = new org.apache.openjpa.persistence.OptimisticLockException(msg, nested, failed, fatal);
             }

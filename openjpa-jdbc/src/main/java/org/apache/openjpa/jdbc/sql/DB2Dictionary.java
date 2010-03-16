@@ -923,7 +923,7 @@ public class DB2Dictionary
     }
 
     @Override
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
         int errorCode = ex.getErrorCode();
         if (errorCode == -952 && "57014".equals(errorState))

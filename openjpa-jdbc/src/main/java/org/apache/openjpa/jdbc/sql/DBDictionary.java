@@ -4862,7 +4862,7 @@ public class DBDictionary
      * 
      * @return false if the error is fatal. 
      */
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         return true;
     }
     

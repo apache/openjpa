@@ -143,7 +143,7 @@ public class DerbyDictionary
     }
     
     @Override
-    protected boolean isFatalException(int subtype, SQLException ex) {
+    public boolean isFatalException(int subtype, SQLException ex) {
         int errorCode = ex.getErrorCode();
         if ((subtype == StoreException.LOCK ||
              subtype == StoreException.QUERY) && errorCode <= 30000) {
