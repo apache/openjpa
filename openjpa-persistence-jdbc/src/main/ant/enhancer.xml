@@ -84,7 +84,7 @@
         <openjpac>
             <classpath refid="cp" />
             <fileset refid="enhance.path.ref" />
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
         <!--  Set detach state for serialization tests -->
         <openjpac>
@@ -97,7 +97,7 @@
 				<exclude name="**/persistence/delimited/identifiers/xml/*.class"/>
                 <exclude name="**/Test*.class" />
             </fileset>
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
 		<!-- Enhance with private persistent properties compatibility option -->
         <openjpac>
@@ -106,7 +106,7 @@
             <fileset dir="${project.build.testOutputDirectory}">
 				<include name="**/persistence/property/AccessModsEntity.class"/>
             </fileset>
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
 		<!-- Enhance delimited identifiers XML-based entities separately -->
         <openjpac>
@@ -116,7 +116,7 @@
 				<include name="**/persistence/delimited/identifiers/xml/*.class"/>
 				<exclude name="**/persistence/delimited/identifiers/xml/Test*.class"/>
             </fileset>
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}"/>
         </openjpac>
     </target>
 </project>

@@ -116,7 +116,7 @@
                                     <property name="test" value="${test}" />
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.loglevel" value="${openjpa.loglevel}" />
+                                    <property name="openjpa.Log" value="${openjpa.Log}"/>
                                 </ant>
                             </tasks>
                         </configuration>
@@ -147,7 +147,7 @@
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
-                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                            <value>${openjpa.Log}</value>
                         </property>
                         <property>
                             <name>derby.stream.error.file</name>

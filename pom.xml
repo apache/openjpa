@@ -43,6 +43,7 @@
     <properties>
         <openjpa.version>${pom.version}</openjpa.version>
         <openjpa.loglevel>INFO</openjpa.loglevel>
+        <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
         <!-- the test settings can be overridden my specific profiles -->

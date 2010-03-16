@@ -192,7 +192,7 @@
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
-                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                            <value>${openjpa.Log}</value>
                         </property>
                         <property>
                             <name>openjpa.DynamicEnhancementAgent</name>

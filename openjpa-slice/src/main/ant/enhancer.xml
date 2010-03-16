@@ -24,15 +24,20 @@
         processing easier.
         
         Test classes will not be compiled if maven is invoked with 
-        -Dmaven.tests.skip=true. 
+        -Dmaven.test.skip=true. 
     -->
 
     <condition property="maven.test.skip.istrue">
         <istrue value="${maven.test.skip}" />
     </condition>
 
-    <condition property="test.isfalse">
+	<condition property="skip.enhance">
+		<or>
         <equals arg1="${test}" arg2="false" />
+			<equals arg1="${build.enhance}" arg2="false" />
+			<istrue value="${maven.test.skip}" />
+			<istrue value="${skipTests}" />
+        </or>
     </condition>
 
     <!-- ================================= 
@@ -40,7 +45,7 @@
          ================================= -->
     <target name="enhance"
             description="--> run the enhancer unless test=false"
-            unless="test.isfalse">
+            unless="skip.enhance">
         <antcall target="enhance.all.entities"
                  inheritall="true"
                  inheritrefs="true" />
@@ -51,7 +56,7 @@
          ================================= -->
     <target name="enhance.all.entities"
             description="--> enhance the test entities"
-            unless="maven.test.skip.istrue">
+            unless="skip.enhance">
         <echo> running enhancer</echo>
         <!-- 
             Inherited references won't be present until the task is called. 
@@ -74,7 +79,7 @@
         <openjpac>
             <classpath refid="cp" />
             <fileset refid="enhance.path.ref" />
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
     </target>
 </project>

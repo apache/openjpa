@@ -61,7 +61,7 @@
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
-                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                            <value>${openjpa.Log}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
@@ -734,7 +734,7 @@
                                     <property name="test" value="${test}" />
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.loglevel" value="${openjpa.loglevel}" />
+                                    <property name="openjpa.Log" value="${openjpa.Log}"/>
                                     <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
                             </tasks>
@@ -970,7 +970,7 @@
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
-                            <value>DefaultLevel=${openjpa.loglevel}</value>
+                            <value>${openjpa.Log}</value>
                         </property>
                         <property>
                             <name>openjpa.DynamicEnhancementAgent</name>
