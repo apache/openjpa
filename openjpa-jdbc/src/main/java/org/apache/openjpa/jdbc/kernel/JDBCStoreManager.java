@@ -78,6 +78,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
+import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InvalidStateException;
@@ -328,7 +329,8 @@ public class JDBCStoreManager
         } catch (ClassNotFoundException cnfe) {
             throw new UserException(cnfe);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, _dict, fetch.getReadLockLevel());
+            throw SQLExceptions.getStore(se, Exceptions.toString(sm.getPersistenceCapable()), 
+                    _dict, fetch.getReadLockLevel());
         }
     }
 

@@ -482,6 +482,7 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
+        configureCurrentCacheModes(getFetchPlan(), properties);
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
         try {
             oid = _broker.newObjectId(cls, oid);
@@ -1174,7 +1175,7 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         assertValidAttchedEntity("lock", entity);
         _broker.assertActiveTransaction();
-
+        configureCurrentCacheModes(getFetchPlan(), properties);
         configureCurrentFetchPlan(pushFetchPlan(), properties, mode, false);
         try {
             _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
@@ -1663,7 +1664,6 @@ public class EntityManagerImpl
     private void configureCurrentFetchPlan(FetchPlan fetch, Map<String, Object> properties, 
             LockModeType lock, boolean requiresTxn) {
         // handle properties in map first
-        configureCurrentCacheModes(fetch, properties);
         if (properties != null) {
             for (Map.Entry<String, Object> entry : properties.entrySet())
                 fetch.setHint(entry.getKey(), entry.getValue());
@@ -1680,6 +1680,16 @@ public class EntityManagerImpl
         }
     }
     
+    /**
+     * Populate the fetch configuration with specified cache mode properties.
+     * The cache mode properties modify the fetch configuration and remove those
+     * properties. This method should be called <em>before</em> the fetch configuration of the current 
+     * context has been pushed.
+     * @param fetch the fetch configuration of the current context. Not the 
+     * new configuration pushed (and later popped) during a single operation.
+     * 
+     * @param properties
+     */
     private void configureCurrentCacheModes(FetchPlan fetch, Map<String, Object> properties) {
         if (properties == null)
             return;

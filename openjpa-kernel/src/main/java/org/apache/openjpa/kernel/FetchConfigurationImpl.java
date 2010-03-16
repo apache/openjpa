@@ -228,6 +228,8 @@ public class FetchConfigurationImpl
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
         copyHints(fetch);
+        setCacheRetrieveMode(fetch.getCacheRetrieveMode());
+        setCacheStoreMode(fetch.getCacheStoreMode());
         addFields(fetch.getFields());
 
         // don't use setters because require active transaction
