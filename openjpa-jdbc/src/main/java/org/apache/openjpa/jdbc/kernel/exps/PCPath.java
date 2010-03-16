@@ -189,6 +189,12 @@ public class PCPath
         if (_cid)
             return;
 
+        Action last = _actions == null ? null : (Action) _actions.getLast();
+        if (last != null && last.op == Action.VAR && ((String)last.data).equals(last.var)) {
+            _cid = true;
+            return;
+        }            
+            
         // treat it just like a unique variable
         Action action = new Action();
         action.op = Action.VAR;

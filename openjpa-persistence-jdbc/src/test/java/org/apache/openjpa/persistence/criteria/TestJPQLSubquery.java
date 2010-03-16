@@ -35,8 +35,6 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
-import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
-import org.apache.openjpa.persistence.embed.Division;
 
 /**
  * Tests type-strict version of Criteria API.
@@ -658,17 +656,16 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "select c from Customer c left join c.orders o where exists"
             + " (select o2 from c.orders o2 where o2 = o)";
 
-        String expectedSQL = "SELECT t0.id, t0.accountNum, t5.id, t5.city, t5.country, t5.county, "
-            + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, "
-            + "t5.zipCode, t0.balanceOwed, t0.creditRating, t0.filledOrderCount, t0.firstName, t0.lastName, "
+        String expectedSQL = "SELECT t0.id, t0.accountNum, t4.id, t4.city, t4.country, t4.county, "
+            + "t4.state, t4.street, t5.userid, t5.DTYPE, t5.age, t5.compName, t5.creditRating, t5.name, "
+            + "t4.zipCode, t0.balanceOwed, t0.creditRating, t0.filledOrderCount, t0.firstName, t0.lastName, "
             + "t0.name, t0.status "
             + "FROM CR_CUST t0 "
             + "LEFT OUTER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID "
-            + "LEFT OUTER JOIN CR_ODR t2 ON t0.id = t2.CUSTOMER_ID "
-            + "LEFT OUTER JOIN CR_ADDR t5 ON t0.ADDRESS_ID = t5.id "
-            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID WHERE (EXISTS ("
-            + "SELECT t4.id FROM CR_ODR t3, CR_ODR t4 WHERE (t2.id = t4.id AND t3.id = t4.id) "
-            + "AND (t0.id = t3.CUSTOMER_ID)))";
+            + "LEFT OUTER JOIN CR_ADDR t4 ON t0.ADDRESS_ID = t4.id "
+            + "LEFT OUTER JOIN CompUser t5 ON t4.id = t5.ADD_ID WHERE (EXISTS (" 
+            + "SELECT t3.id FROM CR_ODR t2, CR_ODR t3 WHERE (t1.id = t3.id AND t2.id = t3.id) "
+            + "AND (t0.id = t2.CUSTOMER_ID)))";
 
         executeAndCompareSQL(jpql, expectedSQL);
 
@@ -711,17 +708,16 @@ public class TestJPQLSubquery extends CriteriaTest {
         String jpql = "select c from Customer c left join c.orders o where not exists"
             + " (select o2 from c.orders o2 where o2 = o)";
 
-        String expectedSQL = "SELECT t0.id, t0.accountNum, t5.id, t5.city, t5.country, t5.county, "
-            + "t5.state, t5.street, t6.userid, t6.DTYPE, t6.age, t6.compName, t6.creditRating, t6.name, "
-            + "t5.zipCode, t0.balanceOwed, t0.creditRating, t0.filledOrderCount, t0.firstName, t0.lastName, "
+        String expectedSQL = "SELECT t0.id, t0.accountNum, t4.id, t4.city, t4.country, t4.county, "
+            + "t4.state, t4.street, t5.userid, t5.DTYPE, t5.age, t5.compName, t5.creditRating, t5.name, "
+            + "t4.zipCode, t0.balanceOwed, t0.creditRating, t0.filledOrderCount, t0.firstName, t0.lastName, "
             + "t0.name, t0.status "
             + "FROM CR_CUST t0 "
             + "LEFT OUTER JOIN CR_ODR t1 ON t0.id = t1.CUSTOMER_ID "
-            + "LEFT OUTER JOIN CR_ODR t2 ON t0.id = t2.CUSTOMER_ID "
-            + "LEFT OUTER JOIN CR_ADDR t5 ON t0.ADDRESS_ID = t5.id "
-            + "LEFT OUTER JOIN CompUser t6 ON t5.id = t6.ADD_ID WHERE (NOT (EXISTS ("
-            + "SELECT t4.id FROM CR_ODR t3, CR_ODR t4 WHERE (t2.id = t4.id AND t3.id = t4.id) "
-            + "AND (t0.id = t3.CUSTOMER_ID))))";
+            + "LEFT OUTER JOIN CR_ADDR t4 ON t0.ADDRESS_ID = t4.id "
+            + "LEFT OUTER JOIN CompUser t5 ON t4.id = t5.ADD_ID WHERE (NOT (EXISTS ("
+            + "SELECT t3.id FROM CR_ODR t2, CR_ODR t3 WHERE (t1.id = t3.id AND t2.id = t3.id) "
+            + "AND (t0.id = t2.CUSTOMER_ID))))";
 
         executeAndCompareSQL(jpql, expectedSQL);
 

@@ -65,6 +65,44 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         rsAllDepartment3 = getAll(Department3.class);
     }
 
+    public void testHavingClauseWithEntityExpression() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        Employee1 e1 = em.find(Employee1.class, 1);
+        em.clear();
+        String query = "select e from Department1 d, " +
+            " in (d.empMap) e " +
+            "group by e " +
+            "having e = ?1"; 
+        Query q = em.createQuery(query); 
+        q.setParameter(1, e1);
+        List<Employee1> rs = (List<Employee1>) q.getResultList();
+        Employee1 e2 = rs.get(0);
+        assertEquals(e1.getEmpId(), e2.getEmpId());
+
+        em.clear();
+        query = "select e from Department1 d, " +
+            " in (d.empMap) e " +
+            "group by e " +
+            "having e <> ?1"; 
+        q = em.createQuery(query); 
+        q.setParameter(1, e1);
+        rs = (List<Employee1>) q.getResultList();
+        Employee1 e3 = rs.get(0);
+        assertNotEquals(e1.getEmpId(), e3.getEmpId());
+
+        em.clear();
+        query = "select value(e) from Department1 d, " +
+            " in (d.empMap) e " +
+            "group by value(e) " +
+            "having value(e) = ?1"; 
+        q = em.createQuery(query); 
+        q.setParameter(1, e1);
+        rs = (List<Employee1>) q.getResultList();
+        Employee1 e4 = rs.get(0);
+        assertEquals(e1.getEmpId(), e4.getEmpId());
+        em.close();
+    }
+
     @AllowFailure
     public void testQueryInMemoryQualifiedId() throws Exception {
         queryQualifiedId(true);
