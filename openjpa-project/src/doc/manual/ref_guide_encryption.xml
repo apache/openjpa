@@ -22,25 +22,27 @@
         Encryption Provider
     </title>
     <para>
-	OpenJPA provides an interface for a provider to implement to allow 
-	connection passwords to be encrypted. Whenever a connection password 
-	is needed, the decrypt(String) method will be invoked. See 
+	OpenJPA provides an interface for a provider to implement 
+	connection password encryption. Whenever a connection password 
+	is needed, the <methodname>decrypt(String)</methodname> method will be invoked. See 
 	<ulink url="../javadoc/org/apache/openjpa/lib/encryption/EncryptionProvider.html">
 	<classname>org.apache.openjpa.lib.encryption.EncryptionProvider</classname>
-	</ulink> for the detailed javadoc. 
+	</ulink> for the detailed Javadoc. 
     </para>
     <para>
     	Notes:
     <itemizedlist>
         <listitem>
             <para>
-                It is an OpenJPA users responsibility to implement the EncryptionProvider
-                interface. There is not a default implementation.
+                It is an OpenJPA user responsibility to implement the
+                <classname>EncryptionProvider</classname>
+                interface. There is no default implementation.
             </para>
         </listitem>
         <listitem>
             <para>
-                The interface has an encrypt(String) method, but it is not called by the OpenJPA runtime. 
+                The interface has an <methodname>encrypt(String)</methodname> method,
+                but it is not called by the OpenJPA runtime. 
             </para>
         </listitem>        
     </itemizedlist>        
