@@ -170,13 +170,13 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (selector == null || selector.hasMultipleSelects()
             || ((selector instanceof Union) 
             && (((Union)selector).getSelects().length != 1)))
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-multi-select").getMessage());
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-multi-select", _id).getMessage());
         select = extractImplementation(selector);
         if (select == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select").getMessage());
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-select", _id).getMessage());
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
-            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql").getMessage());;
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());;
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
@@ -194,18 +194,18 @@ public class PreparedQueryImpl implements PreparedQuery {
      */
     private Object[] extractSelectExecutor(Object result) {
         if (result instanceof ResultList == false)
-            return new Object[]{null, _loc.get("exclude-not-result")};
+            return new Object[]{null, _loc.get("exclude-not-result", _id)};
         Object userObject = ((ResultList<?>)result).getUserObject();
         if (userObject == null || !userObject.getClass().isArray() || ((Object[])userObject).length != 2)
-            return new Object[]{null, _loc.get("exclude-no-user-object")};
+            return new Object[]{null, _loc.get("exclude-no-user-object", _id)};
         Object provider = ((Object[])userObject)[0];
         Object executor = ((Object[])userObject)[1];
         if (executor instanceof StoreQuery.Executor == false)
-            return new Object[]{null, _loc.get("exclude-not-executor")};
+            return new Object[]{null, _loc.get("exclude-not-executor", _id)};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
         for (int i = 0; i < _exps.length; i++) {
             if (isUsingExternalizedParameter(_exps[i])) {
-                return new Object[]{null, _loc.get("exclude-externalized-param", provider.getClass().getName())};
+                return new Object[]{null, _loc.get("exclude-externalized-param", _id)};
             }
         }
         if (_exps[0].projections.length == 0) {
@@ -225,7 +225,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         if (provider instanceof SelectResultObjectProvider) {
             return new Object[]{((SelectResultObjectProvider)provider).getSelect(), null};
         } 
-        return new Object[]{null, _loc.get("exclude-not-select-rop", provider.getClass().getName())};
+        return new Object[]{null, _loc.get("exclude-not-select-rop", _id, provider.getClass().getName())};
     }
     
     private SelectImpl extractImplementation(SelectExecutor selector) {
