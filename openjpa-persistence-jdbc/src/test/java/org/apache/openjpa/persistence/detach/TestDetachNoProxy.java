@@ -86,7 +86,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             log.trace("** after find");
         assertTrue(em.contains(e20));
         assertFalse(em.isDetached(e20));
-        verifySerializable(e20, true);
+        verifySerializable(e20, true, false);
         
         // new openjpa-2.0.0 behavior, where detach() doesn't return updated entity, but does it in-place
         em.detach(e20);
@@ -95,7 +95,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         // in-place updated entity should not have any proxy classes and should be detached
         assertFalse(em.contains(e20));
         assertTrue(em.isDetached(e20));
-        verifySerializable(e20, false);
+        verifySerializable(e20, false, false);
                
         em.close();
     }
@@ -115,7 +115,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             log.trace("** after find");
         assertTrue(em.contains(e20));
         assertFalse(em.isDetached(e20));
-        verifySerializable(e20, true);
+        verifySerializable(e20, true, false);
         
         // Test new detachCopy() method added in 2.0.0
         Entity20 e20copy = em.detachCopy(e20);
@@ -124,11 +124,11 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         // verify e20 is same as above
         assertTrue(em.contains(e20));
         assertFalse(em.isDetached(e20));
-        verifySerializable(e20, true);
+        verifySerializable(e20, true, false);
         // verify copy does not have any proxy classes (in-place updated) is detached
         assertFalse(em.contains(e20copy));
         assertTrue(em.isDetached(e20copy));
-        verifySerializable(e20copy, false);
+        verifySerializable(e20copy, false, false);
         
         em.close();
     }
@@ -150,7 +150,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true);            
+            verifySerializable(e20, true, false);            
         }
 
         // new openjpa-2.0.0 behavior, where detachAll() updates entities in-place
@@ -164,7 +164,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             // entity should not have any proxy classes (in-place updated) and is detached
             assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
-            verifySerializable(e20, false);
+            verifySerializable(e20, false, false);
         }
 
         em.close();
@@ -187,7 +187,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
                 log.trace("** after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
-            verifySerializable(e20, true);            
+            verifySerializable(e20, true, false);            
         }
 
         em.clear();
@@ -199,22 +199,35 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
             // entity should still have proxy classes and is detached,
-            // but once serialized the $proxy classes will be removed
-            verifySerializable(e20, true);
+            // Old 1.2.x Behavior -
+            //   the $proxy classes are not removed during serialization
+            // verifySerializable(e20, true, true);
+            // OPENJPA-1097 New behavior - $proxy classes are removed
+            verifySerializable(e20, true, false);
         }
 
         em.close();
     }
 
-    
-    private void verifySerializable(Entity20 e20, boolean usesProxy) {
+    /**
+     * Test that the entity is/is not using our $proxy classes before
+     * and after serialization.
+     *
+     * @param e20 Entity to test.
+     * @param usesProxyBefore verify that the entity uses the $proxy classes
+     *        before serialization if true and does not if false.
+     * @param usesProxyAfter verify that the entity uses the $proxy classes
+     *        after serialization if true and does not if false.
+     */
+    private void verifySerializable(Entity20 e20, boolean usesProxyBefore,
+            boolean usesProxyAfter) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
         byte[] e20bytes = null;
         
         if (log.isTraceEnabled())
             log.trace("verifySerializable() - before serialize");
-        verifyEntities(e20, usesProxy);
+        verifyEntities(e20, usesProxyBefore);
 
         // first serialize
         try {
@@ -240,7 +253,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             e20new = (Entity20) ois.readObject();
             if (log.isTraceEnabled())
                 log.trace("verifySerializable() - after deserialize");
-            verifyEntities(e20new, false);
+            verifyEntities(e20new, usesProxyAfter);
         } catch (IOException e) {
             fail(e.toString());
         } catch (ClassNotFoundException e) {
