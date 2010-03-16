@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import java.awt.*;
 import java.util.Map;
 
+import javax.persistence.Query;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
@@ -327,5 +329,17 @@ public class TestNonstandardMappingAnnotations
         assertEquals("name1", pc.getName());
         assertEquals(1.0, pc.getPoint().getX());
         assertEquals(2.0, pc.getPoint().getY());
+        
+        for (int i = 0; i < 2; i++) {
+            Query query = em.createQuery("select s from NonstandardMappingEntity4 s where s.point = :point");
+            query.setParameter("point", new Point(1, 2));
+            java.util.List<NonstandardMappingEntity4> list = query.getResultList();
+            for (NonstandardMappingEntity4 pc1 : list) {
+                assertEquals(1.0, pc1.getPoint().getX());
+                assertEquals(2.0, pc1.getPoint().getY());
+            }
+            em.clear();
+        }
+        
         em.close();
     }}

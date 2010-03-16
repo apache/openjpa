@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.LogicalUnion;
@@ -177,6 +178,10 @@ public class PreparedQueryImpl implements PreparedQuery {
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
             return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());;
+        boolean useFieldStrategy = isUsingFieldStrategy(); 
+        if (useFieldStrategy)
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, 
+                _loc.get("exclude-user-strategy", _id).getMessage());;
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
@@ -253,7 +258,28 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
         return false;
     }
+    
+    private boolean isUsingFieldStrategy() {
+        for (int i = 0; i < _exps.length; i++) {
+            if (isUsingFieldStrategy(_exps[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    private boolean isUsingFieldStrategy(QueryExpressions exp) {
+        if (exp == null)
+            return false;
+        List<FieldMetaData> fmds = exp.getParameterizedFields();
+        if (fmds == null || fmds.isEmpty())
+            return false;
+        for (FieldMetaData fmd : fmds) {
+            if (((FieldMapping)fmd).getMappingInfo().getStrategy() != null)
+                return true;
+        }
+        return false;
+    }
     
     /**
      * Merge the given user parameters with its own parameter. The given map
