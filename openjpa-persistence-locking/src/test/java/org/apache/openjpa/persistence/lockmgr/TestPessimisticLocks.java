@@ -27,79 +27,58 @@ import javax.persistence.LockModeType;
 import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
+import javax.persistence.TypedQuery;
+
+import junit.framework.AssertionFailedError;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
- * Test Pessimistic Lock and exception behavior against EntityManager and Query interface methods.
+ * Test Pessimistic Lock and exception behavior against EntityManager and Query
+ * interface methods.
  */
 public class TestPessimisticLocks extends SQLListenerTestCase {
 
     private DBDictionary dict = null;
 
     public void setUp() {
-        setUp(Employee.class, Department.class, "openjpa.LockManager", "mixed");
-        setSupportedDatabases(
-                org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
-//                org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
-        if (isTestsDisabled()) {
-            return;
-        }
-
-        String empTable = getMapping(Employee.class).getTable().getFullName();
-        String deptTable = getMapping(Department.class).getTable().getFullName();
-
-        dict= ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        setUp(CLEAR_TABLES, Employee.class, Department.class, "openjpa.LockManager", "mixed");
 
         EntityManager em = null;
-        try {
-            em = emf.createEntityManager();
-            em.getTransaction().begin();
+        em = emf.createEntityManager();
+        em.getTransaction().begin();
 
-            em.createQuery("delete from " + empTable).executeUpdate();
-            em.createQuery("delete from " + deptTable).executeUpdate();
+        Employee e1, e2;
+        Department d1, d2;
+        d1 = new Department();
+        d1.setId(10);
+        d1.setName("D10");
 
-            em.getTransaction().commit();
+        e1 = new Employee();
+        e1.setId(1);
+        e1.setDepartment(d1);
+        e1.setFirstName("first.1");
+        e1.setLastName("last.1");
 
-            Employee e1, e2;
-            Department d1, d2;
-            d1 = new Department();
-            d1.setId(10);
-            d1.setName("D10");
+        d2 = new Department();
+        d2.setId(20);
+        d2.setName("D20");
 
-            e1 = new Employee();
-            e1.setId(1);
-            e1.setDepartment(d1);
-            e1.setFirstName("first.1");
-            e1.setLastName("last.1");
+        e2 = new Employee();
+        e2.setId(2);
+        e2.setDepartment(d2);
+        e2.setFirstName("first.2");
+        e2.setLastName("last.2");
 
-            d2 = new Department();
-            d2.setId(20);
-            d2.setName("D20");
-
-            e2 = new Employee();
-            e2.setId(2);
-            e2.setDepartment(d2);
-            e2.setFirstName("first.2");
-            e2.setLastName("last.2");
-
-            em.getTransaction().begin();
-            em.persist(d1);
-            em.persist(d2);
-            em.persist(e1);
-            em.persist(e2);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
-            }
-        }
+        em.persist(d1);
+        em.persist(d2);
+        em.persist(e1);
+        em.persist(e2);
+        em.getTransaction().commit();
     }
 
     /*
@@ -108,79 +87,62 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     public void testFindAfterQueryWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
-        try {
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e from Employee e where e.id < 10").setFirstResult(1);
-            // Lock all selected Employees, skip the first one, i.e should lock Employee(2)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            List<Employee> q = query.getResultList();
-            assertEquals("Expected 1 element with emplyee id=2", q.size(), 1);
-            assertTrue("Test Employee first name = 'first.2'", q.get(0).getFirstName().equals("first.1")
-                    || q.get(0).getFirstName().equals("first.2"));
+        em1.getTransaction().begin();
+        TypedQuery<Employee> query = em1.createQuery("select e from Employee e where e.id < 10", Employee.class)
+                .setFirstResult(1);
+        // Lock all selected Employees, skip the first one, i.e should lock
+        // Employee(2)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
+        List<Employee> employees = query.getResultList();
+        assertEquals("Expected 1 element with emplyee id=2", employees.size(), 1);
+        assertTrue("Test Employee first name = 'first.2'", employees.get(0).getFirstName().equals("first.1")
+                || employees.get(0).getFirstName().equals("first.2"));
 
-            em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // find Employee(2) with a lock, should block and expected a PessimisticLockException
-            em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
+        em2.getTransaction().begin();
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put("javax.persistence.lock.timeout", 2000);
+        // find Employee(2) with a lock, should block and expected a
+        // PessimisticLockException
+        try {
+            em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, hints);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (LockTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage() + " Failed " 
-                    + e.getFailedObject());
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (Exception ex) {
-            fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
+        } catch (Throwable e) {
+            assertError(e, LockTimeoutException.class);
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
 
-        try {
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e.department from Employee e where e.id < 10").setFirstResult(1);
-            // Lock all selected Departments, skip the first one, i.e should lock Department(20)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            List<Department> q = query.getResultList();
-            assertEquals("Expected 1 element with department id=20", q.size(), 1);
-            assertTrue("Test department name = 'D20'", q.get(0).getName().equals("D10")
-                    || q.get(0).getName().equals("D20"));
+        em1.getTransaction().begin();
+        TypedQuery<Department> query2 = em1.createQuery("select e.department from Employee e where e.id < 10",
+                Department.class).setFirstResult(1);
+        // Lock all selected Departments, skip the first one, i.e should
+        // lock Department(20)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
+        List<Department> depts = query2.getResultList();
+        assertEquals("Expected 1 element with department id=20", depts.size(), 1);
+        assertTrue("Test department name = 'D20'", depts.get(0).getName().equals("D10")
+                || depts.get(0).getName().equals("D20"));
 
-            em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // find Employee(2) with a lock, no block since only department was locked
+        em2.getTransaction().begin();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // find Employee(2) with a lock, no block since only department was
+        // locked
+        try {
             Employee emp = em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
             assertNotNull("Query locks department only, therefore should find Employee.", emp);
             assertEquals("Test Employee first name = 'first.1'", emp.getFirstName(), "first.1");
-        } catch (QueryTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
         } catch (Exception ex) {
             fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
         em1.close();
@@ -195,9 +157,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         EntityManager em2 = emf.createEntityManager();
         try {
             em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e from Employee e where e.id < 10 order by e.id").setFirstResult(1);
-            // Lock all selected Employees, skip the first one, i.e should lock Employee(2)
+            Query query = em1.createQuery("select e from Employee e where e.id < 10 order by e.id").setFirstResult(1);
+            // Lock all selected Employees, skip the first one, i.e should lock
+            // Employee(2)
             query.setLockMode(LockModeType.PESSIMISTIC_READ);
             query.setHint("javax.persistence.query.timeout", 2000);
             List<Employee> q = query.getResultList();
@@ -205,65 +167,47 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             assertEquals("Test Employee first name = 'first.2'", q.get(0).getFirstName(), "first.2");
 
             em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
+            Map<String, Object> map = new HashMap<String, Object>();
             map.put("javax.persistence.lock.timeout", 2000);
-            // find Employee(2) with a lock, should block and expected a PessimisticLockException
+            // find Employee(2) with a lock, should block and expected a
+            // PessimisticLockException
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (LockTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage() + " Failed " + 
-                    e.getFailedObject());
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (Exception ex) {
-            fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
+        } catch (LockTimeoutException e) {
+            assertError(e, LockTimeoutException.class);
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
 
-        try {
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e.department from Employee e where e.id < 10 order by e.department.id").setFirstResult(1);
-            // Lock all selected Departments, skip the first one, i.e should lock Department(20)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            List<Department> q = query.getResultList();
-            assertEquals("Expected 1 element with department id=20", q.size(), 1);
-            assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
+        em1.getTransaction().begin();
+        Query query = em1.createQuery("select e.department from Employee e where e.id < 10 order by e.department.id")
+                .setFirstResult(1);
+        // Lock all selected Departments, skip the first one, i.e should
+        // lock Department(20)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
+        List<Department> q = query.getResultList();
+        assertEquals("Expected 1 element with department id=20", q.size(), 1);
+        assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
 
-            em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // find Employee(2) with a lock, no block since only department was locked
+        em2.getTransaction().begin();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // find Employee(2) with a lock, no block since only department was
+        // locked
+        try {
             Employee emp = em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
             assertNotNull("Query locks department only, therefore should find Employee.", emp);
             assertEquals("Test Employee first name = 'first.1'", emp.getFirstName(), "first.1");
-        } catch (QueryTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
         } catch (Exception ex) {
             fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
         em1.close();
@@ -278,71 +222,52 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         EntityManager em2 = emf.createEntityManager();
         try {
             em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
+            Map<String, Object> map = new HashMap<String, Object>();
             map.put("javax.persistence.lock.timeout", 2000);
             // Lock Emplyee(1), no department should be locked
             em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
 
             em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e.department from Employee e where e.id < 10").setFirstResult(1);
+            Query query = em1.createQuery("select e.department from Employee e where e.id < 10").setFirstResult(1);
             query.setLockMode(LockModeType.PESSIMISTIC_READ);
             query.setHint("javax.persistence.query.timeout", 2000);
-            // Lock all selected Department but skip the first, i.e. lock Department(20), should query successfully.
+            // Lock all selected Department but skip the first, i.e. lock
+            // Department(20), should query successfully.
             List<Department> q = query.getResultList();
             assertEquals("Expected 1 element with department id=20", q.size(), 1);
             assertTrue("Test department name = 'D20'", q.get(0).getName().equals("D10")
                     || q.get(0).getName().equals("D20"));
-        } catch (QueryTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
         } catch (Exception ex) {
             fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
             if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
-        
+
+        em2.getTransaction().begin();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // Lock Emplyee(2), no department should be locked
+        em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
+
+        em1.getTransaction().begin();
+        Query query = em1.createQuery("select e from Employee e where e.id < 10").setFirstResult(1);
+        // Lock all selected Employees, skip the first one, i.e should lock
+        // Employee(2)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
         try {
-            em2.getTransaction().begin();
-
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // Lock Emplyee(2), no department should be locked
-            em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
-
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e from Employee e where e.id < 10").setFirstResult(1);
-            // Lock all selected Employees, skip the first one, i.e should lock Employee(2)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
             List<Employee> q = query.getResultList();
             fail("Unexcpected find succeeded. Should throw a QueryLockException.");
-        } catch (QueryTimeoutException e) {            
-            // This is the expected exception.
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (Exception ex) {
-            fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
+        } catch (Exception e) {
+            assertError(e, QueryTimeoutException.class);
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
         em1.close();
@@ -355,75 +280,92 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     public void testQueryOrderByAfterFindWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
-        try {
-            em2.getTransaction().begin();
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // Lock Emplyee(1), no department should be locked
-            em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
+        em2.getTransaction().begin();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // Lock Emplyee(1), no department should be locked
+        em2.find(Employee.class, 1, LockModeType.PESSIMISTIC_READ, map);
 
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e.department from Employee e where e.id < 10 order by e.department.id").setFirstResult(1);
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            // Lock all selected Department but skip the first, i.e. lock Department(20), should query successfully.
+        em1.getTransaction().begin();
+        Query query = em1.createQuery("select e.department from Employee e where e.id < 10 order by e.department.id")
+                .setFirstResult(1);
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
+        // Lock all selected Department but skip the first, i.e. lock
+        // Department(20), should query successfully.
+        try {
             List<Department> q = query.getResultList();
             assertEquals("Expected 1 element with department id=20", q.size(), 1);
             assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
-        } catch (QueryTimeoutException e) {            
-            // TODO: DB2: This is the current unexpected exception due to OPENJPA-991.
-            // Remove this when the problem is fixed
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//          System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-            if( !(dict instanceof org.apache.openjpa.jdbc.sql.DB2Dictionary)) {
-                fail("Caught unexpected " + e.getClass().getName() + ":" + e.getMessage());
-            }
         } catch (Exception ex) {
             fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
             if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
-        
+
+        em2.getTransaction().begin();
+
+        map.clear();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // Lock Emplyee(2), no department should be locked
+        em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
+
+        em1.getTransaction().begin();
+        query = em1.createQuery("select e from Employee e where e.id < 10 order by e.department.id")
+                .setFirstResult(1);
+        // Lock all selected Employees, skip the first one, i.e should lock
+        // Employee(2)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
         try {
-            em2.getTransaction().begin();
-
-            Map<String,Object> map = new HashMap<String,Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // Lock Emplyee(2), no department should be locked
-            em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
-
-            em1.getTransaction().begin();
-            Query query = em1.createQuery(
-                    "select e from Employee e where e.id < 10 order by e.department.id").setFirstResult(1);
-            // Lock all selected Employees, skip the first one, i.e should lock Employee(2)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            List<Employee> q = query.getResultList();
+            List<?> q = query.getResultList();
             fail("Unexcpected find succeeded. Should throw a QueryLockException.");
-        } catch (QueryTimeoutException e) {            
-            // This is the expected exception.
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (PessimisticLockException e) {
-            // TODO: This is the expected exception but will be fixed under OPENJPA-991
-//            System.out.println("Caught " + e.getClass().getName() + ":" + e.getMessage());
-        } catch (Exception ex) {
-            fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
+        } catch (Exception e) {
+            assertError(e, QueryTimeoutException.class);
         } finally {
-            if( em1.getTransaction().isActive())
+            if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
-            if( em2.getTransaction().isActive())
+            if (em2.getTransaction().isActive())
                 em2.getTransaction().rollback();
         }
         em1.close();
         em2.close();
     }
+
+    /**
+     * Assert that an exception of proper type has been thrown. Also checks that
+     * that the exception has populated the failed object.
+     * 
+     * @param actual
+     *            exception being thrown
+     * @param expeceted
+     *            type of the exception
+     */
+    void assertError(Throwable actual, Class<? extends Throwable> expected) {
+        if (!expected.isAssignableFrom(actual.getClass())) {
+            actual.printStackTrace();
+            throw new AssertionFailedError(actual.getClass().getName() + " was raised but expected "
+                    + expected.getName());
+        }
+        Object failed = getFailedObject(actual);
+        assertNotNull("Failed object is null", failed);
+        assertNotEquals("null", failed);
+    }
+
+    Object getFailedObject(Throwable e) {
+        if (e instanceof LockTimeoutException) {
+            return ((LockTimeoutException) e).getObject();
+        }
+        if (e instanceof QueryTimeoutException) {
+            return ((QueryTimeoutException) e).getQuery();
+        }
+        if (e instanceof OpenJPAException) {
+            return ((OpenJPAException) e).getFailedObject();
+        }
+        return null;
+    }
+
 }
