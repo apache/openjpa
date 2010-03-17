@@ -151,6 +151,19 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
             setCandidate(q, Department3.class);
         rs = q.getResultList();
         EmployeeName3 d3 = (EmployeeName3) rs.get(0);
+        
+        // Check HAVING clause support for KEY
+        query = "select KEY(e) from Department1 d, " +
+        " in (d.empMap) e " +
+        "group by KEY(e) " +
+        "having KEY(e) = 2";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Department1.class);
+        rs = q.getResultList();
+        Integer deptId = (Integer) rs.get(0);
+        assertEquals("dept id is not 2", 2, deptId.intValue());
+        
         em.close();
     }
 
