@@ -1557,6 +1557,8 @@ public class EntityManagerImpl
     }
 
     public void detach(Object entity) {
+        if (entity == null)
+            throw new IllegalArgumentException(_loc.get("null-detach").getMessage());
         assertNotCloseInvoked();
         _broker.detach(entity, this);
     }
