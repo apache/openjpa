@@ -79,8 +79,7 @@ public class InstrumentationFactory {
      * @return null if Instrumentation can not be obtained, or if any 
      * Exceptions are encountered.
      */
-    public static synchronized Instrumentation 
-        getInstrumentation(final Log log) {
+    public static synchronized Instrumentation getInstrumentation(final Log log) {
         if (_inst != null || !_dynamicallyInstall)
             return _inst;
 
@@ -90,6 +89,18 @@ public class InstrumentationFactory {
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
+                // Dynamic agent enhancement should only occur when the OpenJPA library is 
+                // loaded using the system class loader.  Otherwise, the OpenJPA
+                // library may get loaded by separate, disjunct loaders, leading to linkage issues.
+                try {
+                    if (!InstrumentationFactory.class.getClassLoader().equals(
+                        ClassLoader.getSystemClassLoader())) {
+                        return null;
+                    }
+                } catch (Throwable t) {
+                    return null;
+                }
+                
                 // If we can't find the tools.jar, we can't load the agent.
                 File toolsJar = findToolsJar(log);
                 if (toolsJar == null) {
