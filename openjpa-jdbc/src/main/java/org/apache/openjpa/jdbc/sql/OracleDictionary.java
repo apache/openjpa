@@ -1269,8 +1269,7 @@ public class OracleDictionary
                 || ("42000".equals(errorState) && errorCode == 2049))) {
             return false;
         } 
-        if (subtype == StoreException.QUERY &&
-            "72000".equals(errorState) && errorCode == 1013) {
+        if ("72000".equals(errorState) && errorCode == 1013) {
             return false;
         }
         return super.isFatalException(subtype, ex);
