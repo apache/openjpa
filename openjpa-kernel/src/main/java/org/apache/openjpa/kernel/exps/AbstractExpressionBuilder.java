@@ -288,6 +288,9 @@ public abstract class AbstractExpressionBuilder {
         if (fmd == null) {
             Object val = traverseStaticField(meta.getDescribedType(), field);
             if (val == null) {
+                if (isMultiValuedTraversalAttempt(path, field)) {
+                    throw parseException(EX_USER, "multi-valued-travesal", new Object[]{field, path.last()}, null);
+                }
             	String[] all = meta.getFieldNames();
             	Class<?> cls = meta.getDescribedType();
                 throw parseException(EX_USER, "no-field",
@@ -332,6 +335,15 @@ public abstract class AbstractExpressionBuilder {
             // count not locate the field: return null
             return null;
         }
+    }
+    
+    private boolean isMultiValuedTraversalAttempt(Path path, String field) {
+        if (path == null) return false;
+        if (path.last() == null) return false;
+        if (path.last().getElement() == null) return false;
+        if (path.last().getElement().getDeclaredTypeMetaData() == null) return false;
+        if (path.last().getElement().getDeclaredTypeMetaData().getField(field) == null) return false;
+        return true;
     }
 
     /**
