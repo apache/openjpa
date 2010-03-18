@@ -207,6 +207,7 @@
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Merchandise</class>
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Person</class>
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Singer</class>
+        <class>org.apache.openjpa.persistence.jdbc.sqlcache.OrderJPA</class>
 		
 		<properties>
 		  <property name="openjpa.jdbc.QuerySQLCache"

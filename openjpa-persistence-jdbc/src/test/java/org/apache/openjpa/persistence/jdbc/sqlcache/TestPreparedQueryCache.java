@@ -187,7 +187,24 @@ public class TestPreparedQueryCache extends TestCase {
         em.persist(b1); em.persist(b2);
         em.persist(c1); em.persist(c2);
 
-	    em.getTransaction().commit();
+        id = (int)System.currentTimeMillis();
+        OrderJPA o1 = new OrderJPA();
+        o1.setOrderId(id++);
+        o1.setCustomerId(339);
+        o1.setDistrictId(3);
+        o1.setWarehouseId(23);
+        
+        OrderJPA o2 = new OrderJPA();
+        o2.setOrderId(id++);
+        o2.setCustomerId(2967);
+        o2.setDistrictId(5);
+        o2.setWarehouseId(22);
+        
+        em.persist(o1);
+        em.persist(o2);
+        
+        
+        em.getTransaction().commit();
 	}
 
 	public void tearDown() throws Exception {
@@ -835,6 +852,129 @@ public class TestPreparedQueryCache extends TestCase {
        assertFalse(q2.getResultList().isEmpty());
     }
     
+    public void testRepeatedParameterInSubqueryInDifferentOrder() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql =  "select o from OrderJPA o " 
+                             + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
+                                   +  "where ((o1.CustomerId = :customerId) " 
+                                   +  "and   (o1.DistrictId = :districtId) " 
+                                   +  "and   (o1.WarehouseId = :warehouseId))) " 
+                    +  "and (o.CustomerId = :customerId) "
+                    +  "and (o.WarehouseId = :warehouseId) "
+                    +  "and (o.DistrictId = :districtId)";
+
+        em.getTransaction().begin();
+        TypedQuery<OrderJPA> q1 = em.createQuery(jpql, OrderJPA.class);
+        q1.setParameter("customerId", 339)
+          .setParameter("districtId", 3)
+          .setParameter("warehouseId", 23);
+                  
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        assertFalse(q1.getResultList().isEmpty());
+        
+        
+        TypedQuery<OrderJPA> q2 = em.createQuery(jpql, OrderJPA.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setParameter("customerId", 2967)
+          .setParameter("districtId", 5)
+          .setParameter("warehouseId", 22);
+        
+        assertFalse(q2.getResultList().isEmpty());
+        em.getTransaction().rollback();
+    }
+    
+    public void testRepeatedParameterInSubqueryInSameOrder() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql =  "select o from OrderJPA o " 
+                             + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
+                             +  "where ((o1.CustomerId = :customerId) " 
+                             +  "and   (o1.DistrictId = :districtId) " 
+                             +  "and   (o1.WarehouseId = :warehouseId))) " 
+                        +  "and (o.CustomerId = :customerId) "
+                        +  "and (o.DistrictId = :districtId) "
+                        +  "and (o.WarehouseId = :warehouseId)";
+
+        em.getTransaction().begin();
+        TypedQuery<OrderJPA> q1 = em.createQuery(jpql, OrderJPA.class);
+        q1.setParameter("customerId", 339)
+          .setParameter("districtId", 3)
+          .setParameter("warehouseId", 23);
+                  
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        assertFalse(q1.getResultList().isEmpty());
+        
+        
+        TypedQuery<OrderJPA> q2 = em.createQuery(jpql, OrderJPA.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setParameter("customerId", 2967)
+          .setParameter("districtId", 5)
+          .setParameter("warehouseId", 22);
+        
+        assertFalse(q2.getResultList().isEmpty());
+        em.getTransaction().rollback();
+    }
+    
+    public void testPartiallyRepeatedParameterInSubquery() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql =  "select o from OrderJPA o " 
+                             + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
+                             +  "where ((o1.CustomerId = :customerId) " 
+                             +  "and   (o1.WarehouseId = :warehouseId))) " 
+                        +  "and (o.CustomerId = :customerId) "
+                        +  "and (o.DistrictId = :districtId) "
+                        +  "and (o.WarehouseId = :warehouseId)";
+
+        em.getTransaction().begin();
+        TypedQuery<OrderJPA> q1 = em.createQuery(jpql, OrderJPA.class);
+        q1.setParameter("customerId", 339)
+          .setParameter("districtId", 3)
+          .setParameter("warehouseId", 23);
+                  
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        assertFalse(q1.getResultList().isEmpty());
+        
+        
+        TypedQuery<OrderJPA> q2 = em.createQuery(jpql, OrderJPA.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setParameter("customerId", 2967)
+          .setParameter("districtId", 5)
+          .setParameter("warehouseId", 22);
+        
+        assertFalse(q2.getResultList().isEmpty());
+        em.getTransaction().rollback();
+    }
+    
+    public void testPartiallyRepeatedParameterInMainquery() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql =  "select o from OrderJPA o " 
+                             + "where o.OrderId in (select max(o1.OrderId) from OrderJPA o1 "
+                             +  "where ((o1.CustomerId = :customerId) " 
+                             +  "and   (o1.DistrictId = :districtId) " 
+                             +  "and   (o1.WarehouseId = :warehouseId))) " 
+                        +  "and (o.CustomerId = :customerId) "
+                        +  "and (o.WarehouseId = :warehouseId)";
+
+        em.getTransaction().begin();
+        TypedQuery<OrderJPA> q1 = em.createQuery(jpql, OrderJPA.class);
+        q1.setParameter("customerId", 339)
+          .setParameter("districtId", 3)
+          .setParameter("warehouseId", 23);
+                  
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        assertFalse(q1.getResultList().isEmpty());
+        
+        
+        TypedQuery<OrderJPA> q2 = em.createQuery(jpql, OrderJPA.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setParameter("customerId", 2967)
+          .setParameter("districtId", 5)
+          .setParameter("warehouseId", 22);
+        
+        assertFalse(q2.getResultList().isEmpty());
+        em.getTransaction().rollback();
+    }
+
+
     
     PreparedQueryCache getPreparedQueryCache() {
         return emf.getConfiguration().getQuerySQLCacheInstance();
