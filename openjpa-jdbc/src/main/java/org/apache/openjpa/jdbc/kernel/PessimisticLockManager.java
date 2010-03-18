@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.VersionLockManager;
@@ -140,7 +141,8 @@ public class PessimisticLockManager
         } catch (SQLException se) {
             LockException e = new LockException(sm.getPersistenceCapable(), timeout, level);
             e.setCause(se);
-            e.setFatal(dict.isFatalException(StoreException.LOCK, se));
+            e.setFatal(dict.isFatalException(StoreException.LOCK, se) 
+                    || level >= MixedLockLevels.LOCK_PESSIMISTIC_READ);
             throw e;
         } finally {
             if (stmnt != null)

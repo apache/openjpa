@@ -52,6 +52,7 @@ public class LockException
         super(_loc.get("lock-timeout", Exceptions.toString(failed), String.valueOf(timeout)));
         setFailedObject(failed);
         setTimeout(timeout);
+        setLockLevel(lockLevel);
     }
 
     public int getSubtype() {

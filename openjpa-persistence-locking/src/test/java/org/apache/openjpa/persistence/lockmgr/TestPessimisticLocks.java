@@ -108,7 +108,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, hints);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Throwable e) {
-            assertError(e, LockTimeoutException.class);
+            assertError(e, PessimisticLockException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -155,26 +155,26 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     public void testFindAfterQueryOrderByWithPessimisticLocks() {
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
-        try {
-            em1.getTransaction().begin();
-            Query query = em1.createQuery("select e from Employee e where e.id < 10 order by e.id").setFirstResult(1);
-            // Lock all selected Employees, skip the first one, i.e should lock
-            // Employee(2)
-            query.setLockMode(LockModeType.PESSIMISTIC_READ);
-            query.setHint("javax.persistence.query.timeout", 2000);
-            List<Employee> q = query.getResultList();
-            assertEquals("Expected 1 element with emplyee id=2", q.size(), 1);
-            assertEquals("Test Employee first name = 'first.2'", q.get(0).getFirstName(), "first.2");
+        em1.getTransaction().begin();
+        Query query = em1.createQuery("select e from Employee e where e.id < 10 order by e.id").setFirstResult(1);
+        // Lock all selected Employees, skip the first one, i.e should lock
+        // Employee(2)
+        query.setLockMode(LockModeType.PESSIMISTIC_READ);
+        query.setHint("javax.persistence.query.timeout", 2000);
+        List<Employee> q = query.getResultList();
+        assertEquals("Expected 1 element with emplyee id=2", q.size(), 1);
+        assertEquals("Test Employee first name = 'first.2'", q.get(0).getFirstName(), "first.2");
 
-            em2.getTransaction().begin();
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("javax.persistence.lock.timeout", 2000);
-            // find Employee(2) with a lock, should block and expected a
-            // PessimisticLockException
+        em2.getTransaction().begin();
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("javax.persistence.lock.timeout", 2000);
+        // find Employee(2) with a lock, should block and expected a
+        // PessimisticLockException
+        try {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
-        } catch (LockTimeoutException e) {
-            assertError(e, LockTimeoutException.class);
+        } catch (Exception e) {
+            assertError(e, PessimisticLockException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -183,18 +183,18 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         }
 
         em1.getTransaction().begin();
-        Query query = em1.createQuery("select e.department from Employee e where e.id < 10 order by e.department.id")
+        query = em1.createQuery("select e.department from Employee e where e.id < 10 order by e.department.id")
                 .setFirstResult(1);
         // Lock all selected Departments, skip the first one, i.e should
         // lock Department(20)
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("javax.persistence.query.timeout", 2000);
-        List<Department> q = query.getResultList();
+        List<Department> result = query.getResultList();
         assertEquals("Expected 1 element with department id=20", q.size(), 1);
-        assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
+        assertEquals("Test department name = 'D20'", result.get(0).getName(), "D20");
 
         em2.getTransaction().begin();
-        Map<String, Object> map = new HashMap<String, Object>();
+        map.clear();
         map.put("javax.persistence.lock.timeout", 2000);
         // find Employee(2) with a lock, no block since only department was
         // locked
@@ -258,12 +258,12 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // Lock all selected Employees, skip the first one, i.e should lock
         // Employee(2)
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
-        query.setHint("javax.persistence.query.timeout", 2000);
+        query.setHint("javax.persistence.query.timeout", 1000);
         try {
             List<Employee> q = query.getResultList();
-            fail("Unexcpected find succeeded. Should throw a QueryLockException.");
+            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
-            assertError(e, QueryTimeoutException.class);
+            assertError(e, PessimisticLockException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -314,17 +314,16 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
 
         em1.getTransaction().begin();
-        query = em1.createQuery("select e from Employee e where e.id < 10 order by e.department.id")
-                .setFirstResult(1);
+        query = em1.createQuery("select e from Employee e where e.id < 10 order by e.department.id").setFirstResult(1);
         // Lock all selected Employees, skip the first one, i.e should lock
         // Employee(2)
         query.setLockMode(LockModeType.PESSIMISTIC_READ);
         query.setHint("javax.persistence.query.timeout", 2000);
         try {
             List<?> q = query.getResultList();
-            fail("Unexcpected find succeeded. Should throw a QueryLockException.");
+            fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
-            assertError(e, QueryTimeoutException.class);
+            assertError(e, PessimisticLockException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -358,6 +357,9 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     Object getFailedObject(Throwable e) {
         if (e instanceof LockTimeoutException) {
             return ((LockTimeoutException) e).getObject();
+        }
+        if (e instanceof PessimisticLockException) {
+            return ((PessimisticLockException) e).getEntity();
         }
         if (e instanceof QueryTimeoutException) {
             return ((QueryTimeoutException) e).getQuery();

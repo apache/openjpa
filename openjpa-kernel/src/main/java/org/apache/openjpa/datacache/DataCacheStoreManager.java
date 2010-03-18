@@ -326,7 +326,7 @@ public class DataCacheStoreManager
         boolean fromDatabase; 
         DataCache cache = _mgr.selectCache(sm);
         DataCachePCData data = null;
-        boolean updateCache = _ctx.getFetchConfiguration().getCacheStoreMode() != DataCacheStoreMode.BYPASS 
+        boolean updateCache = _ctx.getFetchConfiguration().getCacheRetrieveMode() != DataCacheRetrieveMode.BYPASS
                             && _ctx.getPopulateDataCache();
         if (cache == null || sm.isEmbedded() 
             || _ctx.getFetchConfiguration().getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS

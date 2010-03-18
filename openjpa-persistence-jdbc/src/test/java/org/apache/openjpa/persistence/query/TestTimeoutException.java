@@ -15,14 +15,11 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.LockTimeoutException;
+import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 
@@ -30,6 +27,7 @@ import junit.framework.AssertionFailedError;
 
 import org.apache.openjpa.persistence.exception.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.util.OpenJPAException;
 
 /**
  * Tests that correct timeout exceptions are being thrown depending on whether it is a query or a lock operation.
@@ -39,7 +37,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
-    private final ExecutorService scheduler = Executors.newCachedThreadPool();
+
     public void setUp() {
         super.setUp(entityClass);
     }
@@ -64,7 +62,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
             query.getResultList();
             fail("Expected " + QueryTimeoutException.class.getName());
         } catch (Throwable t) {
-            assertError(t, QueryTimeoutException.class, timeout);
+            assertError(t, QueryTimeoutException.class);
         }
         
         assertTrue(em2.getTransaction().isActive());
@@ -90,9 +88,9 @@ public class TestTimeoutException extends SingleEMFTestCase {
             Map<String,Object> hint = new HashMap<String, Object>();
             hint.put("javax.persistence.lock.timeout", timeout);
             em2.lock(entity2, LockModeType.PESSIMISTIC_WRITE, hint);
-            fail("Expected " + LockTimeoutException.class.getName());
+            fail("Expected " + PessimisticLockException.class.getName());
         } catch (Throwable t) {
-           assertError(t, LockTimeoutException.class, timeout);
+           assertError(t, PessimisticLockException.class);
         }
         assertTrue(em2.getTransaction().isActive());
         em2.getTransaction().rollback();
@@ -100,6 +98,29 @@ public class TestTimeoutException extends SingleEMFTestCase {
         em1.getTransaction().rollback();
     }
 
+    public void testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
+        EntityManager em1 = emf.createEntityManager();
+        EntityManager em2 = emf.createEntityManager();
+        assertNotSame(em1, em2);
+        Object oid = createEntity(em1);
+        
+        em1.getTransaction().begin();
+        Object entity = em1.find(entityClass, oid);
+        assertNotNull(entity);
+        em1.lock(entity, LockModeType.PESSIMISTIC_WRITE);
+        
+        em2.getTransaction().begin();
+        try {
+            em2.find(entityClass, oid, LockModeType.PESSIMISTIC_WRITE);
+            fail("Expected " + LockTimeoutException.class.getName());
+        } catch (Throwable t) {
+            assertError(t, LockTimeoutException.class);
+        }
+        
+        assertTrue(em2.getTransaction().isActive());
+        em2.getTransaction().rollback();
+        em1.getTransaction().rollback();
+    }
     
     public Object createEntity(EntityManager em) {
         long id = System.nanoTime();
@@ -113,17 +134,36 @@ public class TestTimeoutException extends SingleEMFTestCase {
     
     
     /**
-     * Assert that an exception of proper type has been thrown by the given task within the given timeout.
-     * @param t
-     * @param expeceted
+     * Assert that an exception of proper type has been thrown.
+     * Also checks that that the exception has populated the failed object.
+     * @param actual exception being thrown
+     * @param expeceted type of the exception
      */
-    void assertError(Throwable actual, Class<? extends Throwable> expected, long timeout) {
+    void assertError(Throwable actual, Class<? extends Throwable> expected) {
         if (!expected.isAssignableFrom(actual.getClass())) {
                 actual.printStackTrace();
                 throw new AssertionFailedError(actual.getClass().getName() + " was raised but expected " + 
                         expected.getName());
         }
-        
-    }   
+        Object failed = getFailedObject(actual);
+        assertNotNull("Failed object is null", failed);
+        assertNotEquals("null", failed);
+    } 
+    
+    Object getFailedObject(Throwable e) {
+        if (e instanceof LockTimeoutException) {
+            return ((LockTimeoutException) e).getObject();
+        }
+        if (e instanceof PessimisticLockException) {
+            return ((PessimisticLockException) e).getEntity();
+        }
+        if (e instanceof QueryTimeoutException) {
+            return ((QueryTimeoutException) e).getQuery();
+        }
+        if (e instanceof OpenJPAException) {
+            return ((OpenJPAException) e).getFailedObject();
+        }
+        return null;
+    }
     
 }

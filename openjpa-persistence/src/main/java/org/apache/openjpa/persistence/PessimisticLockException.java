@@ -46,9 +46,10 @@ public class PessimisticLockException
     private transient Throwable[] _nested = null;
 
     public PessimisticLockException(String msg, Throwable[] nested, Object failed) {
-        super(msg);
+        super(msg, nested == null ? null : nested[0], failed);
         _nested = nested;
         _failed = failed;
+        
     }
 
     public int getType() {

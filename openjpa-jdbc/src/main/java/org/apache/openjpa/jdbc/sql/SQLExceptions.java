@@ -129,8 +129,7 @@ public class SQLExceptions {
     /**
      * Convert the specified exception into a {@link StoreException}.
      */
-    public static OpenJPAException getStore(String msg, SQLException se,
-        Object failed, DBDictionary dict, int level) {
+    public static OpenJPAException getStore(String msg, SQLException se, Object failed, DBDictionary dict, int level) {
         if (msg == null)
             msg = se.getClass().getName();
         SQLException[] ses = getSQLExceptions(se);

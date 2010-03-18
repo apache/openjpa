@@ -164,14 +164,16 @@ public class PersistenceExceptions
         } else if (subtype == StoreException.OPTIMISTIC	|| cause instanceof OptimisticException) {
             	e = new org.apache.openjpa.persistence.OptimisticLockException(msg, nested, failed, fatal);
         } else if (subtype == StoreException.LOCK || cause instanceof LockException) {
-            LockException lockEx = (LockException) (ke instanceof LockException ? ke : cause);
-            if (!lockEx.isFatal()) {
-                e = new org.apache.openjpa.persistence.LockTimeoutException(msg, nested, failed);
-            } else if (lockEx != null && lockEx.getLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) {
-                e = new org.apache.openjpa.persistence.PessimisticLockException(msg, nested, failed);
-            } else {
-                e = new org.apache.openjpa.persistence.OptimisticLockException(msg, nested, failed, fatal);
-            }
+            LockException lockEx = (LockException) (ke instanceof LockException ? ke : cause); 
+            if (lockEx != null && lockEx.getLockLevel() >= MixedLockLevels.LOCK_PESSIMISTIC_READ) { 
+                if (!lockEx.isFatal()) { 
+                    e = new org.apache.openjpa.persistence.LockTimeoutException(msg, nested, failed); 
+                } else { 
+                    e = new org.apache.openjpa.persistence.PessimisticLockException(msg, nested, failed); 
+                } 
+            } else { 
+                e = new org.apache.openjpa.persistence.OptimisticLockException(msg, nested, failed, fatal); 
+            } 
         } else if (subtype == StoreException.OBJECT_EXISTS || cause instanceof ObjectExistsException) {
                 e = new org.apache.openjpa.persistence.EntityExistsException(msg, nested, failed, fatal);
         } else if (subtype == StoreException.QUERY || cause instanceof QueryException) {

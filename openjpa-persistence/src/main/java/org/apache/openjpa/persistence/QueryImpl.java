@@ -98,8 +98,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 * @param ret Exception translator for this query
 	 * @param query The underlying "kernel" query.
 	 */
-	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret,
-			org.apache.openjpa.kernel.Query query) {
+	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
 		_em = em;
 		_query = new DelegatingQuery(query, ret);
 		_lock = new ReentrantLock();
@@ -110,8 +109,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 * 
 	 * @deprecated
 	 */
-	public QueryImpl(EntityManagerImpl em,
-	        org.apache.openjpa.kernel.Query query) {
+	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
 		this(em, null, query);
 	}
 
@@ -1084,4 +1082,9 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     }
     
     // ================== End of Parameter Processing routines ================================
+    
+    public String toString() {
+        String result = _query.getQueryString(); 
+        return result != null ? result : _id;
+    }
 }
