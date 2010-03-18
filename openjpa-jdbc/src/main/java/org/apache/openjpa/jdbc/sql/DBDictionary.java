@@ -2134,14 +2134,18 @@ public class DBDictionary
             Path path = (Path) updateParams.keySet().iterator().next();
             FieldMapping fm = (FieldMapping) path.last();
             ClassMapping meta = fm.getDeclaringMapping();
-            Map updates = meta.getVersion().getBulkUpdateValues();
-            for (Iterator iter = updates.entrySet().iterator();
-                iter.hasNext(); ) {
-                Map.Entry e = (Map.Entry) iter.next();
+            Map<Column,?> updates = meta.getVersion().getBulkUpdateValues();
+            for (Map.Entry e : updates.entrySet()) {
                 Column col = (Column) e.getKey();
-                String val = (String) e.getValue();
-                sql.append(", ").append(toDBName(col.getIdentifier()))
-                    .append(" = ").append(val);
+                Object val = e.getValue();
+                sql.append(", ").append(toDBName(col.getIdentifier())).append(" = ");
+                // Version update value for Numeric version is encoded in a String
+                // to make SQL such as version = version+1 while Time stamp version is parameterized
+                if (val instanceof String) {
+                    sql.append((String)val);
+                } else {
+                    sql.appendValue(val);
+                }
             }
         }
     }

@@ -65,9 +65,9 @@ public class NumberVersionStrategy
         return ((Number) version).intValue() + 1;
     }
 
-    public Map getBulkUpdateValues() {
+    public Map<Column,String> getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
-        Map map = new HashMap(cols.length);
+        Map<Column,String> map = new HashMap<Column,String>(cols.length);
         for (int i = 0; i < cols.length; i++)
             map.put(cols[i], cols[i].getName() + " + 1");
         return map;

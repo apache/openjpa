@@ -368,12 +368,12 @@ public class Version
     }
 
     /**
-     * @return a Map<Column,String> specifying how to update each version
+     * @return a Map<Column,Object> specifying how to update each version
      * column in this instance during a bulk update.
      *
      * @since 1.0.0
      */
-    public Map getBulkUpdateValues() {
+    public Map<Column,?> getBulkUpdateValues() {
         return _strategy.getBulkUpdateValues();
     }
 }
