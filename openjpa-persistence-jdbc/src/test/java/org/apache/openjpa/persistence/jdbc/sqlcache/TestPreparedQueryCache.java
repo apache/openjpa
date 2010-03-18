@@ -974,7 +974,27 @@ public class TestPreparedQueryCache extends TestCase {
         em.getTransaction().rollback();
     }
 
+    public void testRangeIsExcluded() {
+        List<Company> l = null;
 
+        l = getAllCompaniesPaged(0, 1);
+        assertEquals(1, l.size());
+        assertEquals("acme.org", l.get(0).getName());
+        l = getAllCompaniesPaged(1, 1);
+        assertEquals(1, l.size());
+        assertEquals("BEA", l.get(0).getName());
+        l = getAllCompaniesPaged(2, 1);
+        assertEquals(1, l.size());
+        assertEquals("IBM", l.get(0).getName());
+    }
+
+    public List<Company> getAllCompaniesPaged(int start, int max) {
+        EntityManager em = emf.createEntityManager();
+        Query q = em.createQuery("select p from Company p order by p.name");
+        q.setFirstResult(start);
+        q.setMaxResults(max);
+        return (List<Company>) q.getResultList();
+    }
     
     PreparedQueryCache getPreparedQueryCache() {
         return emf.getConfiguration().getQuerySQLCacheInstance();

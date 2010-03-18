@@ -178,10 +178,14 @@ public class PreparedQueryImpl implements PreparedQuery {
         SQLBuffer buffer = selector.getSQL();
         if (buffer == null)
             return new PreparedQueryCacheImpl.StrongExclusion(_id, _loc.get("exclude-no-sql", _id).getMessage());;
-        boolean useFieldStrategy = isUsingFieldStrategy(); 
-        if (useFieldStrategy)
+        if (isUsingFieldStrategy())
             return new PreparedQueryCacheImpl.StrongExclusion(_id, 
                 _loc.get("exclude-user-strategy", _id).getMessage());;
+                
+        if (isPaginated())
+            return new PreparedQueryCacheImpl.StrongExclusion(_id, 
+                _loc.get("exclude-pagination", _id).getMessage());;
+
         setTargetQuery(buffer.getSQL());
         setParameters(buffer.getParameters());
         setUserParameterPositions(buffer.getUserParameters());
@@ -259,6 +263,14 @@ public class PreparedQueryImpl implements PreparedQuery {
         return false;
     }
     
+    private boolean isPaginated() {
+        if (select instanceof SelectImpl) {
+            if (((SelectImpl)select).getStartIndex() != 0 || 
+                ((SelectImpl)select).getEndIndex() != Long.MAX_VALUE)
+                return true;
+        }
+        return false;
+    }        
     private boolean isUsingFieldStrategy() {
         for (int i = 0; i < _exps.length; i++) {
             if (isUsingFieldStrategy(_exps[i])) {
