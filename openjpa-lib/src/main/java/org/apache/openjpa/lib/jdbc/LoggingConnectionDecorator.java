@@ -1045,7 +1045,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     // we are tracking parameters, then set the current
                     // parameter set to be the index of the failed
                     // statement so that the ReportingSQLException will
-                    // show the correct param
+                    // show the correct param(s)
                     if (se instanceof BatchUpdateException
                         && _paramBatch != null && shouldTrackParameters()) {
                         int[] count = ((BatchUpdateException) se).
@@ -1055,7 +1055,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             for (int i = 0; i < count.length; i++) {
                                 // -3 is Statement.STATEMENT_FAILED, but is
                                 // only available in JDK 1.4+
-                                if (count[i] == Statement.EXECUTE_FAILED) {
+                                if (count[i] == -3) {
                                     indexOfFirstFailedObject = i;
                                     break;
                                 }
@@ -1092,7 +1092,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     throw err;
                 } finally {
                     logTime(start);
-                    clearLogParameters(true);
                     handleSQLErrors(LoggingPreparedStatement.this, err);
                 }
             }
@@ -1335,16 +1334,12 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             private void clearLogParameters(boolean batch) {
-                //Made !batch...we only want to clear if
-                //we are NOT using batching.  If we clear now,
-                //the _params will not be displayed in the resultant
-                //exception message.  But when should we 'clear' them???
-                if (!batch){                    
-                    if (_params != null)
-                        _params.clear();
-                    
-                    if (_paramBatch != null)
-                        _paramBatch.clear();                
+                if (_params != null) {
+                    _params.clear();
+                }
+
+                if (batch && _paramBatch != null) {
+                    _paramBatch.clear();
                 }
             }
 
@@ -1531,6 +1526,9 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             private final String _sql;
             private List _params = null;
             private List _paramBatch = null;
+            //When batching is used, this variable contains the index into the last
+            //successfully executed batched statement.
+            int batchedRowsBaseIndex = 0;            
 
             public LoggingCallableStatement(CallableStatement stmt, String sql) 
                 throws SQLException {
@@ -1626,11 +1624,29 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public int[] executeBatch() throws SQLException {
+                int indexOfFirstFailedObject = -1;
+
                 logBatchSQL(this);
                 long start = System.currentTimeMillis();
                 SQLException err = null;                
                 try {
-                    return super.executeBatch();
+                    int[] toReturn = super.executeBatch();
+                    //executeBatch is called any time the number of batched statements
+                    //is equal to, or less than, batchLimit.  In the 'catch' block below, 
+                    //the logic seeks to find an index based on the current executeBatch 
+                    //results.  This is fine when executeBatch is only called once, but 
+                    //if executeBatch is called many times, the _paramsBatch will continue 
+                    //to grow, as such, to index into _paramsBatch, we need to take into 
+                    //account the number of times executeBatch is called in order to 
+                    //correctly index into _paramsBatch.  To that end, each time executeBatch 
+                    //is called, lets get the size of _paramBatch.  This will effectively 
+                    //tell us the index of the last successfully executed batch statement.  
+                    //If an exception is caused, then we know that _paramBatch.size was 
+                    //the index of the LAST row to successfully execute.
+                    if (_paramBatch != null){
+                        batchedRowsBaseIndex = _paramBatch.size();                        
+                    }
+                    return toReturn; 
                 } catch (SQLException se) {
                     // if the exception is a BatchUpdateException, and
                     // we are tracking parameters, then set the current
@@ -1643,12 +1659,11 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             getUpdateCounts();
                         if (count != null && count.length <= _paramBatch.size())
                         {
-                            int index = -1;
                             for (int i = 0; i < count.length; i++) {
                                 // -3 is Statement.STATEMENT_FAILED, but is
                                 // only available in JDK 1.4+
                                 if (count[i] == Statement.EXECUTE_FAILED) {
-                                    index = i;
+                                    indexOfFirstFailedObject = i;
                                     break;
                                 }
                             }
@@ -1656,19 +1671,35 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             // no -3 element: it may be that the server stopped
                             // processing, so the size of the count will be
                             // the index
-                            if (index == -1)
-                                index = count.length + 1;
+                            //See the Javadoc for 'getUpdateCounts'; a provider 
+                            //may stop processing when the first failure occurs, 
+                            //as such, it may only return 'UpdateCounts' for the 
+                            //first few which pass.  As such, the failed 
+                            //index is 'count.length', NOT count.length+1.  That
+                            //is, if the provider ONLY returns the first few that 
+                            //passes (i.e. say an array of [1,1] is returned) then
+                            //length is 2, and since _paramBatch starts at 0, we 
+                            //don't want to use length+1 as that will give us the 
+                            //wrong index.
+                            if (indexOfFirstFailedObject == -1){
+                                indexOfFirstFailedObject = count.length;
+                            }
+                            
+                            //Finally, whatever the index is at this point, add batchedRowsBaseIndex
+                            //to it to get the final index.  Recall, we need to start our index from the
+                            //last batch which successfully executed.
+                            indexOfFirstFailedObject += batchedRowsBaseIndex;
 
                             // set the current params to the saved values
-                            if (index < _paramBatch.size())
-                                _params = (List) _paramBatch.get(index);
+                            if (indexOfFirstFailedObject < _paramBatch.size()){
+                                _params = (List) _paramBatch.get(indexOfFirstFailedObject);
+                            }
                         }
                     }
-                    err = wrap(se, LoggingCallableStatement.this);
+                    err = wrap(se, LoggingCallableStatement.this, indexOfFirstFailedObject);
                     throw err;
                 } finally {
                     logTime(start);
-                    clearLogParameters(true);
                     handleSQLErrors(LoggingCallableStatement.this, err);
                 }
             }
