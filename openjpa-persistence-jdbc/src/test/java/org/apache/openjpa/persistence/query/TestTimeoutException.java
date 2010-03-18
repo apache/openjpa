@@ -25,6 +25,8 @@ import javax.persistence.QueryTimeoutException;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.exception.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.OpenJPAException;
@@ -39,6 +41,9 @@ public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
 
     public void setUp() {
+        setUnsupportedDatabases(OracleDictionary.class, DB2Dictionary.class);
+        if (isTestsDisabled())
+            return;
         super.setUp(entityClass);
     }
     
