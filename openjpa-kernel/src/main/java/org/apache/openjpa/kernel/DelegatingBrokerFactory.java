@@ -223,4 +223,12 @@ public class DelegatingBrokerFactory
             throw translate(re);
 		}
 	}
+    
+    public void assertOpen() {
+        try {
+            _factory.assertOpen();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

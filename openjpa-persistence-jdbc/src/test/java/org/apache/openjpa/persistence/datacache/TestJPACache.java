@@ -271,6 +271,28 @@ public class TestJPACache extends SingleEMFTestCase {
             // expected exception
         }
     }
+    
+    public void testIllegalStateExceptionAfterClose() { 
+        emf.close();
+        try {
+            emf.getCache();
+            fail("Expected IllegalStateException");
+        }
+        catch(IllegalStateException ise) {
+            // expected
+        }
+    }
+    public void testIllegalStateExceptionGetAfterClose() {
+        emf.getCache();  // populate the EntityManagerFactoryImpl's wrapper for the StoreCache.
+        emf.close();
+        try {
+            emf.getCache();
+            fail("Expected IllegalStateException");
+        }
+        catch(IllegalStateException ise) {
+            // expected
+        }
+    }
 
     /**
      * Convenience method. Asserts that the class & primary key do exist in the cache

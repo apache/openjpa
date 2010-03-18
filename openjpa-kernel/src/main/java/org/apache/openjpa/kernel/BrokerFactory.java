@@ -150,4 +150,10 @@ public interface BrokerFactory
      * Release the internal lock.
      */
     public void unlock ();
+    
+    /**
+     * assert that this broker is open. If the broker has been closed an IllegalStateException will be thrown
+     * with information on when the broker was closed. 
+     */
+    public void assertOpen(); 
 }

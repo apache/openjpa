@@ -656,7 +656,7 @@ public abstract class AbstractBrokerFactory
      * Throw an exception if the factory is closed.  The exact message and
      * content of the exception varies whether TRACE is enabled or not.
      */
-    private void assertOpen() {
+    public void assertOpen() {
         if (_closed) {
             if (_closedException == null)  // TRACE not enabled
                 throw new InvalidStateException(_loc

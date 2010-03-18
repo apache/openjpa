@@ -303,6 +303,7 @@ public class EntityManagerFactoryImpl
 	}
 
     public Cache getCache() {
+        _factory.assertOpen();
         return getStoreCache();
     }
 
