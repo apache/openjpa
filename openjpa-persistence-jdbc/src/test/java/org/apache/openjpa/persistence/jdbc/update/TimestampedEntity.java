@@ -19,14 +19,11 @@
 package org.apache.openjpa.persistence.jdbc.update;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
@@ -37,6 +34,7 @@ import javax.persistence.Version;
  *
  */
 @Entity
+@Table(name="TSENTITY")
 public class TimestampedEntity {
 	@Id
 	@GeneratedValue
