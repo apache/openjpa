@@ -20,9 +20,13 @@ package org.apache.openjpa.util;
 
 import java.security.AccessController;
 
+import org.apache.openjpa.conf.DetachOptions;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Utility methods for managing proxies.
@@ -81,14 +85,36 @@ public class Proxies {
      */
     public static Object writeReplace(Proxy proxy, boolean detachable) {
         /* OPENJPA-1097 Always remove $proxy classes during serialization if detachable
-            if (detachable && (proxy == null || proxy.getOwner() == null 
-                || proxy.getOwner().isDetached()))
-                return proxy;
-        */
-        if (!detachable || proxy == null || proxy.getOwner() == null) {
+         * 
+         * Original code -
+         * 
+         *  if (detachable && (proxy == null || proxy.getOwner() == null 
+         *      || proxy.getOwner().isDetached()))
+         *      return proxy;
+         *
+         */
+        if (proxy == null) {
             return proxy;
-        } else {
+        } else if (!detachable) {
+            // OPENJPA-1571 - using our runtime generated proxies, so remove any $proxy
             return proxy.copy(proxy);
+        } else if (proxy.getOwner() == null) {
+            // no StateManager (DetachedStateField==false), so no $proxy to remove
+            return proxy;
+        } else if (proxy.getOwner().isDetached()) {
+            // already detached, so remove any $proxy
+            return proxy.copy(proxy);
+        } else {
+            // using a StateManager, so determine what DetachedState is being used
+            OpenJPAStateManager sm = proxy.getOwner();  // !null checked for above
+            ClassMetaData meta = sm.getMetaData();      // if null, no proxies?
+            if ((meta != null) && (!Boolean.TRUE.equals(meta.usesDetachedState()))) {
+                // configured to use transient (null) or no (FALSE) StateManger, so remove any $proxy
+                return proxy.copy(proxy);
+            } else {
+                // DetachedStateField==true, which means to keep the SM and $proxy in the serialized objects
+                return proxy;
+            }
         }
     }
 }
