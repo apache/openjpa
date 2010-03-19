@@ -23,8 +23,10 @@ import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
+import javax.persistence.SharedCacheMode;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 
@@ -128,10 +130,12 @@ public class JPAProperties {
             return null;
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
-            if (value instanceof CacheRetrieveMode) {
+            if (value instanceof CacheRetrieveMode || (value instanceof String && CACHE_RETRIEVE_MODE.equals(key))) {
                 return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
-            } else if (value instanceof CacheStoreMode) {
+            } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
                 return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase());
+            } else if (value instanceof SharedCacheMode || (value instanceof String && CACHE_MODE.equals(key))) {
+                return (T)DataCacheMode.valueOf(value.toString().trim().toUpperCase());
             }
         }
         return (T)value;
