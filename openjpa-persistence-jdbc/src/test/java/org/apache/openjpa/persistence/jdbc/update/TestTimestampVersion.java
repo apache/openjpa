@@ -45,6 +45,12 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         em.persist(pc);
         em.getTransaction().commit();
         
+        try {
+            // delay to ensure the new timestamp exceeds the timer's resolution.
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+        }
+
         em.getTransaction().begin();
         Timestamp oldVersion = pc.getVersion();
         String jpql = "UPDATE TimestampedEntity t SET t.name=:newname WHERE t.name=:oldname";
