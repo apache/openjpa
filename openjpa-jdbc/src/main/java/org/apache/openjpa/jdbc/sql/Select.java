@@ -733,4 +733,8 @@ public interface Select
      */
     public boolean getHasSubselect();
    
+    /**
+     * Extended trace that logs eager relations
+     */
+    public void logEagerRelations();
 }

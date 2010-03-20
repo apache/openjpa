@@ -54,6 +54,12 @@ public interface JDBCConfiguration
     public static final String LOG_SQL = "openjpa.jdbc.SQL";
 
     /**
+     * Name of the logger for additional jdbc messages:
+     * <code>openjpa.jdbc.DIAG</code>.
+     */
+    public static final String LOG_DIAG = "openjpa.jdbc.SQLDiag";
+
+    /**
      * Name of the logger for JDBC-related messages:
      * <code>openjpa.jdbc.JDBC</code>.
      */

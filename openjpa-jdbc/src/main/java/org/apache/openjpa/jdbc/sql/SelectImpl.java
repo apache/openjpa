@@ -377,6 +377,7 @@ public class SelectImpl
                 forUpdate = lm.selectForUpdate(this, lockLevel);
         }
 
+        logEagerRelations();
         SQLBuffer sql = toSelect(forUpdate, fetch);
         boolean isLRS = isLRS();
         int rsType = (isLRS && supportsRandomAccess(forUpdate))
@@ -1766,6 +1767,13 @@ public class SelectImpl
      */
     public Map getEagerMap() {
         return _eager;
+    }
+
+    public void logEagerRelations() {
+        if (_eagerKeys != null) {
+            _conf.getLog(JDBCConfiguration.LOG_DIAG).trace(
+                "Eager relations: "+_eagerKeys);
+        }
     }
 
     public SelectExecutor getEager(FieldMapping key) {

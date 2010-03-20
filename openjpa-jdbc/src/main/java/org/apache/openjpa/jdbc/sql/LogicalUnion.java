@@ -901,6 +901,10 @@ public class LogicalUnion
         public void setSchemaAlias(String schemaAlias) {
             sel.setSchemaAlias(schemaAlias);
         }
+
+        public void logEagerRelations() {
+            sel.logEagerRelations();            
+        }
     }
 
     /**

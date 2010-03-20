@@ -69,6 +69,8 @@ import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.DelegatingStatement;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactoryImpl.LogImpl;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
@@ -107,6 +109,7 @@ public class JDBCStoreManager
     private DataSource _ds = null;
     private RefCountConnection _conn = null;
     private boolean _active = false;
+    private Log _log = null;
 
     // track the pending statements so we can cancel them
     private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
@@ -144,6 +147,7 @@ public class JDBCStoreManager
         _conf = conf;
         _dict = _conf.getDBDictionaryInstance();
         _sql = _conf.getSQLFactoryInstance();
+        _log = _conf.getLog(JDBCConfiguration.LOG_DIAG);
 
         LockManager lm = ctx.getLockManager();
         if (lm instanceof JDBCLockManager)
@@ -299,6 +303,9 @@ public class JDBCStoreManager
             mapping = mapping.getJoinablePCSuperclassMapping();
 
         sel.wherePrimaryKey(oid, mapping, this);
+        if (_log.isTraceEnabled()) {
+            _log.trace("exists: oid="+oid+" "+mapping.getDescribedType());
+        }
         try {
             return sel.getCount(this) != 0;
         } catch (SQLException se) {
@@ -564,6 +571,9 @@ public class JDBCStoreManager
             return null;
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
         sel.setExpectedResultCount(1, false);
+        if (_log.isTraceEnabled()) {
+            _log.trace("getInitializeStateResult: oid="+sm.getObjectId()+" "+mapping.getDescribedType());
+        }
         Result result = sel.execute(this, fetch);
         cacheFinder(mapping, sel, fetch);
         return result;
@@ -615,6 +625,9 @@ public class JDBCStoreManager
         Select sel = _sql.newSelect();
         sel.select(base.getPrimaryKeyColumns());
         sel.wherePrimaryKey(sm.getObjectId(), base, this);
+        if (_log.isTraceEnabled()) {
+            _log.trace("selectPrimaryKey: oid="+sm.getObjectId()+" "+mapping.getDescribedType());
+        }
         Result exists = sel.execute(this, fetch);
         try {
             if (isEmptyResult(exists))
@@ -666,6 +679,9 @@ public class JDBCStoreManager
             if (select(sel, mapping, Select.SUBS_EXACT, sm, fields, jfetch,
                 EagerFetchModes.EAGER_JOIN, true, false)) {
                 sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
+                if (_log.isTraceEnabled()) {
+                    _log.trace("load: "+mapping.getDescribedType()+" oid: "+sm.getObjectId()); 
+                }
                 res = sel.execute(this, jfetch, lockLevel);
                 try {
                  	if (isEmptyResult(res))
@@ -679,8 +695,13 @@ public class JDBCStoreManager
             // now allow the fields to load themselves individually too
             FieldMapping[] fms = mapping.getFieldMappings();
             for (int i = 0; i < fms.length; i++)
-                if (fields.get(i) && !sm.getLoaded().get(i))
+                if (fields.get(i) && !sm.getLoaded().get(i)) {
+                    if (_log.isTraceEnabled()) {
+                        _log.trace("load field: '"+ fms[i].getName() + "' for oid="+sm.getObjectId()
+                            +" "+mapping.getDescribedType());
+                    }
                     fms[i].load(sm, this, jfetch.traverseJDBC(fms[i]));
+                }
             mapping.getVersion().afterLoad(sm, this);
             return true;
         } catch (ClassNotFoundException cnfe) {
@@ -713,6 +734,11 @@ public class JDBCStoreManager
             if (_conn != null && _conn.getInnermostDelegate().isReadOnly())
                 _conn.setReadOnly(false);
         } catch (SQLException e) {
+        }
+        if (_log.isTraceEnabled()) {
+            for (OpenJPAStateManager sm: (Collection<OpenJPAStateManager>)sms) {
+                _log.trace("flush: "+sm.getPCState().getClass().getName() + " for oid="+sm.getObjectId());
+            }
         }
         return _conf.getUpdateManagerInstance().flush(sms, this);
     }
@@ -824,6 +850,10 @@ public class JDBCStoreManager
 
                     Select sel = _sql.newSelect();
                     sel.setLRS(true);
+                    if (_log.isTraceEnabled()) {
+                        _log.trace("executeExtent: "+mappings[i].getDescribedType());
+                        sel.logEagerRelations();
+                    }
                     BitSet paged = selectExtent(sel, mappings[i], jfetch,
                         subclasses);
                     if (paged == null)
@@ -958,6 +988,9 @@ public class JDBCStoreManager
         JDBCFetchConfiguration fetch) {
         if (oid == null)
             return null;
+        if (_log.isTraceEnabled()) {
+            _log.trace("find: oid="+oid+" "+vm.getDeclaredTypeMapping().getDescribedType());
+        }
         Object pc = _ctx.find(oid, fetch, null, null, 0);
         if (pc == null && vm != null) {
             OrphanedKeyAction action = _conf.getOrphanedKeyActionInstance();
@@ -1016,9 +1049,13 @@ public class JDBCStoreManager
     private void load(ClassMapping mapping, OpenJPAStateManager sm,
         JDBCFetchConfiguration fetch, Result res) throws SQLException {
         FieldMapping eagerToMany = load(mapping, sm, fetch, res, null);
-        if (eagerToMany != null)
+        if (eagerToMany != null) {
+            if (_log.isTraceEnabled()) {
+                _log.trace("Loading eager toMany: "+eagerToMany.getName()+" for "+mapping);
+            }
             eagerToMany.loadEagerJoin(sm, this, fetch.traverseJDBC(eagerToMany),
                 res);
+        }
         if (_active && _lm != null && res.isLocking())
             _lm.loadedForUpdate(sm);
     }
