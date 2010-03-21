@@ -1702,14 +1702,14 @@ public class EntityManagerImpl
         CacheRetrieveMode rMode = JPAProperties.getEnumValue(CacheRetrieveMode.class, 
                 JPAProperties.CACHE_RETRIEVE_MODE, properties);
         if (rMode != null) {
-            fetch.setCacheRetrieveMode(JPAProperties.convertToKenelValue(DataCacheRetrieveMode.class, 
+            fetch.setCacheRetrieveMode(JPAProperties.convertToKernelValue(DataCacheRetrieveMode.class, 
                     JPAProperties.CACHE_RETRIEVE_MODE, rMode));
             properties.remove(JPAProperties.CACHE_RETRIEVE_MODE);
         }
         CacheStoreMode sMode = JPAProperties.getEnumValue(CacheStoreMode.class, 
                 JPAProperties.CACHE_STORE_MODE, properties);
         if (sMode != null) {
-            fetch.setCacheStoreMode(JPAProperties.convertToKenelValue(DataCacheStoreMode.class, 
+            fetch.setCacheStoreMode(JPAProperties.convertToKernelValue(DataCacheStoreMode.class, 
                     JPAProperties.CACHE_STORE_MODE, sMode));
             properties.remove(JPAProperties.CACHE_STORE_MODE);
         }
@@ -1791,7 +1791,7 @@ public class EntityManagerImpl
      */
     Object convertUserValue(String key, Object value, Class<?> targetType) {
         if (JPAProperties.isValidKey(key)) 
-            return JPAProperties.convertToKenelValue(targetType, key, value);
+            return JPAProperties.convertToKernelValue(targetType, key, value);
         if (value instanceof String) {
             if ("null".equals(value)) {
                 return null;

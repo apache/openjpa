@@ -125,7 +125,7 @@ public class JPAProperties {
      * 
      * @return the same value if the given key is not a valid JPA property key or the value is null.
      */
-    public static <T> T  convertToKenelValue(Class<T> resultType, String key, Object value) {
+    public static <T> T  convertToKernelValue(Class<T> resultType, String key, Object value) {
         if (value == null)
             return null;
         if (JPAProperties.isValidKey(key)) {
@@ -134,8 +134,6 @@ public class JPAProperties {
                 return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
             } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
                 return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase());
-            } else if (value instanceof SharedCacheMode || (value instanceof String && CACHE_MODE.equals(key))) {
-                return (T)DataCacheMode.valueOf(value.toString().trim().toUpperCase());
             }
         }
         return (T)value;
