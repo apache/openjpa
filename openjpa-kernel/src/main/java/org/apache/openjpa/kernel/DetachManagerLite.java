@@ -46,14 +46,16 @@ public class DetachManagerLite {
             ClassMetaData cmd = sm.getMetaData();
             if (sm.isPersistent() && cmd.isDetachable()) {
                 PersistenceCapable pc = sm.getPersistenceCapable();
-                // Detach proxy fields.
-                BitSet loaded = sm.getLoaded();
-                for (FieldMetaData fmd : cmd.getProxyFields()) {
-                    if (loaded.get(fmd.getIndex())) {
-                        detachProxyField(fmd, pc, sm, fm);
+                if(pc.pcIsDetached() == false){
+                    // Detach proxy fields.
+                    BitSet loaded = sm.getLoaded();
+                    for (FieldMetaData fmd : cmd.getProxyFields()) {
+                        if (loaded.get(fmd.getIndex())) {
+                            detachProxyField(fmd, pc, sm, fm);
+                        }
                     }
+                    pc.pcReplaceStateManager(null);
                 }
-                pc.pcReplaceStateManager(null);
             }
         }
     }
