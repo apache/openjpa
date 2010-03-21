@@ -208,6 +208,29 @@ Pretty-printing properties configuration might look like so:
                 <para>
                 <indexterm>
                     <primary>
+                        SQLDiag
+                    </primary>
+                    <secondary>
+                        log messages
+                    </secondary>
+                </indexterm>
+<literal>openjpa.jdbc.SQLDiag</literal>: This logging channel provides additional
+information about entity actitvies such as create, find, update or delete, and eager 
+loading of relation or field properties. If you enable this channel, it is recommanded
+that <literal>openjpa.jdbc.SQL</literal> channel is also enabled. 
+The additional trace can help you relate the entity activities to the execution of 
+SQL statements that OpenJPA issued to the datastore.
+                </para>
+                <para>
+When using the built-in OpenJPA logging facilities, you can enable SQLDiag logging
+by adding <literal>SQLDiag=TRACE</literal> to your <literal>openjpa.Log</literal>
+property.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
                         schema
                     </primary>
                     <secondary>
@@ -367,6 +390,7 @@ log4j.category.openjpa.MetaData=WARN
 log4j.category.openjpa.Enhance=WARN
 log4j.category.openjpa.Query=WARN
 log4j.category.openjpa.jdbc.SQL=WARN
+log4j.category.openjpa.jdbc.SQLDiag=WARN
 log4j.category.openjpa.jdbc.JDBC=WARN
 log4j.category.openjpa.jdbc.Schema=WARN
 
@@ -462,6 +486,7 @@ openjpa.MetaData.level=INFO
 openjpa.Enhance.level=INFO
 openjpa.Query.level=INFO
 openjpa.jdbc.SQL.level=INFO
+openjpa.jdbc.SQLDiag.level=INFO
 openjpa.jdbc.JDBC.level=INFO
 openjpa.jdbc.Schema.level=INFO
 </programlisting>
