@@ -3381,4 +3381,8 @@ public class StateManagerImpl
     public boolean requiresFetch(FieldMetaData fmd) {
         return (_broker.getFetchConfiguration().requiresFetch(fmd) != FetchConfiguration.FETCH_NONE);
     }
+    
+    public void setPc(PersistenceCapable pc) {
+        _pc = pc;
+    }
 }
