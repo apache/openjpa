@@ -35,7 +35,6 @@
 	</parent>
 	<properties>
         <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
-		<openjpa.loglevel>INFO</openjpa.loglevel>
 		<!-- to set debug arguments, you might set the following at the command line:
 			-Dtest.jvm.args="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000"
 		-->
@@ -144,7 +143,6 @@
 									<property name="test" value="${test}" />
 									<property name="outdir" value="${project.build.outputDirectory}" />
 									<property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-									<property name="openjpa.loglevel" value="${openjpa.loglevel}" />
 								</ant>
 							</tasks>
 						</configuration>
@@ -161,10 +159,6 @@
                 <configuration>
                     <argLine>${test.jvm.arguments}</argLine>
                     <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>DefaultLevel=${openjpa.loglevel}</value>
-                        </property>
                         <property>
                             <name>derby.stream.error.file</name>
                             <value>target/derby.log</value>
