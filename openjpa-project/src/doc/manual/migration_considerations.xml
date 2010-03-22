@@ -15,117 +15,118 @@
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <appendix id="migration_considerations" role="non-normative">
     <title>
         Migration Considerations
     </title>
     <section id="jpa_2.0">
-    	<title>
-    		JPA 2.0
-    	</title>
-    	<section id="jpa_2.0_incompatibilities">
-    		<title>
-    			Incompatibilities
-    		</title>
-    		<para>
-    		The following sections indicate changes that are incompatible between
-    		OpenJPA 1.x.x releases and the 2.0 release. Some may
-    		require application changes. Others can be remedied through the use
-            of compatibility options.  If your application uses a version 1.0 persistence.xml,
-            compatibility options will be set appropriately to maintain backward 
-            compatibility.  OpenJPA 2.0 applications using a version 2.0 persistence.xml
-            and require OpenJPA 1.x.x compatibility may need to configure the appropriate
-            compatibility options to get the desired behavior.
-    		</para>
+        <title>
+            JPA 2.0
+        </title>
+        <section id="jpa_2.0_incompatibilities">
+            <title>
+                Incompatibilities
+            </title>
+            <para>
+                The following sections indicate changes that are incompatible
+                between OpenJPA 1.x.x releases and the 2.0 release. Some may
+                require application changes. Others can be remedied through the
+                use of compatibility options.  If your application uses a
+                version 1.0 persistence.xml, compatibility options will be set
+                appropriately to maintain backward compatibility.  OpenJPA 2.0
+                applications using a version 2.0 persistence.xml and require
+                OpenJPA 1.x.x compatibility may need to configure the
+                appropriate compatibility options to get the desired behavior.
+            </para>
+            <para>
+                See OPENJPA-1208 for test cases that
+                demonstrate the behavioral differences.
+            </para>
+            <section id="getProperties">
+                <title>
+                    getProperties()
+                </title>
                 <para>
-                    See OPENJPA-1208 for test cases that
-                    demonstrate the behavioral differences.
+                    The OpenJPAEntityManagerFactory interface getProperties()
+                    method was changed to return a Map instead of a
+                    Properties object. This change was made in order to
+                    support the getProperties() method defined in the 2.0
+                    JPA specification.
                 </para>
-    		<section id="getProperties">
-    			<title>
-    				getProperties()
-    			</title>
-    			<para>
-    				The OpenJPAEntityManagerFactory interface getProperties()
-    				method was changed to return a Map instead of a
-    				Properties object. This change was made in order to
-    				support the getProperties() method defined in the 2.0
-    				JPA specification.
-    			</para>
                     <para>
                         See OPENJPA-849 for test cases that
                         demonstrate the behavioral differences.
                     </para>
-    		</section>
-    		<section id="migration_detach_behavior">
-    			<title>
-    				Detach Behavior
-    			</title>
-    			<para>
-    			The detach behavior has changed in several ways:
-					<itemizedlist>
-						<listitem>
-							<para>
-							In the 1.x.x release, managed entities
-							were flushed to the database as part of the
-							detach operation. This is no longer done in
-							2.0.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-							In the 1.x.x release, entities were copied
-							and returned. In 2.0, for those methods
-							that have return values, the original
-							entities are returned.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-							In the 1.x.x release, managed entities still
-							exist in the persistent context. In 2.0,
-							they are removed.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-							In the 1.x.x release, the detach operation
-							is recursively cascaded to all referenced
-							entities. In 2.0, the detach operation is
-							only cascade to those entities for which
-							Cascade=detach has been specified.
-							</para>
-						</listitem>
-					</itemizedlist>
-    			</para>
-    			<para>
-    				Applications that use a 1.0 persistence.xml will automatically 
-                    maintain OpenJPA 1.0 behavior.  It is possible for a version 2.0 
-                    application to revert back to the 1.x.x behavior for
-    				some of these items by setting the openjpa.Compatibility
-    				property as follows:
-    				<simplelist>
-    					<member>CopyOnDetach=true</member>
-    					<member>FlushBeforeDetach=true</member>
-    					<member>CascadeWithDetach=true</member>
-    				</simplelist>
-    			</para>
-    			<para>
-    				In addition, a new method has been provided on the
-    				<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
-					<classname>OpenJPAEntityManager</classname></ulink>
-    				interface to return a copy of the entity:
-    				<programlisting>
-					public &lt;T&gt; T detachCopy(T pc):
-					</programlisting>
-			</para>
-                    <para>
-                        See OPENJPA-1215 for test cases that
-                        demonstrate the behavioral differences.
-                    </para>
-    		</section>
+            </section>
+            <section id="migration_detach_behavior">
+                <title>
+                    Detach Behavior
+                </title>
+                <para>
+                    The detach behavior has changed in several ways:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                In the 1.x.x release, managed entities
+                                were flushed to the database as part of the
+                                detach operation. This is no longer done in
+                                2.0.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                In the 1.x.x release, entities were copied
+                                and returned. In 2.0, for those methods
+                                that have return values, the original
+                                entities are returned.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                In the 1.x.x release, managed entities still
+                                exist in the persistent context. In 2.0,
+                                they are removed.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                In the 1.x.x release, the detach operation
+                                is recursively cascaded to all referenced
+                                entities. In 2.0, the detach operation is
+                                only cascade to those entities for which
+                                Cascade=detach has been specified.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+                <para>
+                    Applications that use a 1.0 persistence.xml will
+                    automatically maintain OpenJPA 1.0 behavior.  It is
+                    possible for a version 2.0 application to revert back to
+                    the 1.x.x behavior for some of these items by setting the
+                    openjpa.Compatibility property as follows:
+                    <simplelist>
+                        <member>CopyOnDetach=true</member>
+                        <member>FlushBeforeDetach=true</member>
+                        <member>CascadeWithDetach=true</member>
+                    </simplelist>
+                </para>
+                <para>
+                    In addition, a new method has been provided on the
+                    <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+                    <classname>OpenJPAEntityManager</classname></ulink>
+                    interface to return a copy of the entity:
+                    <programlisting>
+    public &lt;T&gt; T detachCopy(T pc):
+                    </programlisting>
+                </para>
+                <para>
+                    See OPENJPA-1215 for test cases that
+                    demonstrate the behavioral differences.
+                </para>
+            </section>
             <section id="private_persistent_properties">
                 <title>
                     Use of private persistent properties
@@ -139,10 +140,11 @@
                     persistent by default.
                 </para>
                 <para>
-                    Applications that use a 1.0 persistence.xml will automatically 
-                    maintain OpenJPA 1.x.x behavior. It is possible for a version 2.0 
-                    application to revert back to the 1.x.x behavior by setting the 
-                    value of the <literal>openjpa.Compatibility</literal> 
+                    Applications that use a 1.0 persistence.xml will
+                    automatically maintain OpenJPA 1.x.x behavior. It is
+                    possible for a version 2.0 application to revert back to
+                    the 1.x.x behavior by setting the value of the
+                    <literal>openjpa.Compatibility</literal> 
                     property <literal>PrivatePersistentProperties</literal> to 
                     <literal>true</literal>.  If compile time enhancement is 
                     used, this property must be specified at the time of 
@@ -178,135 +180,140 @@
                 Disabling AutoOff Collection Tracking
             </title>
             <para>
-                The default behavior of openJPA in tracking collections is that if the number of
-                modifications to the collection exceeds the current number of elements in
-                collection then openJPA will disable tracking the collections.
-                Added a Compatibility property to disable turning off the collection tracking.
+                The default behavior of openJPA in tracking collections is that
+                if the number of modifications to the collection exceeds the
+                current number of elements in collection then openJPA will
+                disable tracking the collections.  Added a Compatibility
+                property to disable turning off the collection tracking.
             </para>
             <para>
-                The behavior of Auto disabling of collection tracking can be avoided by setting
-                the value of the <literal>openjpa.Compatibility</literal>
-                property <literal>autoOff</literal> to  <literal>false</literal>.
+                The behavior of Auto disabling of collection tracking can be
+                avoided by setting the value of the
+                <literal>openjpa.Compatibility</literal> property
+                <literal>autoOff</literal> to  <literal>false</literal>.
                 The default behavior of auto disabling the collection tracking
-                is not changed. But when the above property is set then the collection tracking
-                will not be disabled automatically.
+                is not changed. But when the above property is set then the
+                collection tracking will not be disabled automatically.
             </para>
             <para>
                 See OPENJPA-1223 and OPENJPA-1163 for test cases that
                 demonstrate the behavioral differences.
             </para>
         </section>
-    	<section id="internal_differences">
-    		<title>
-    			Internal Behavioral Differences
-    		</title>
-    		<para>
-    		The following sections indicate internal changes between
-    		OpenJPA 1.x.x releases and the 2.0 release. As these are
+        <section id="internal_differences">
+            <title>
+                Internal Behavioral Differences
+            </title>
+            <para>
+                The following sections indicate internal changes between
+                OpenJPA 1.x.x releases and the 2.0 release. As these are
                 internal implementation specific behaviors not covered by
                 the JPA specification, no changes should be required for
                 applications that did not use or depend upon OpenJPA specific
                 APIs or behavior.
-    		</para>
-    		<section id="getStrategy">
-    			<title>
-    				FieldMapping.getStrategy()
-    			</title>
-    			<para>
-    				The FieldMapping.getStrategy() in OpenJPA 1.x
-				returned an instance of RelationFieldStrategy
-				for embded super classes, but will now return an
-				EmbedFieldStrategy.
-			</para>
-			<para>
-                                See OPENJPA-1214 for an
-				example test case demonstrating the change.
-			</para>
-		</section>
-    		<section id="prePostUpdate">
-    			<title>
-    				PreUpdate/PostUpdate Life Cycle Callbacks
-    			</title>
-    			<para>
-    				If an entity was updated between the persist()
-                                and commit() operations in OpenJPA 1.x, then 
-                                any PreUpdate and PostUpdate life cycle callback
-                                methods would be executed.  Starting in OpenJPA
-                                1.3 and 2.0, these callbacks will not get 
-                                executed.
-			</para>
-			<para>
-                                The JPA 2.0 specification section on "Semantics
-                                of the Life Cycle Callback Methods for Entities"
-                                has been updated to include a Note that the
-                                callback behavior for updating an entity after
-                                the persist operation is implementation specific
-                                and should not be relied upon.
-			</para>
-			<para>
-                                See OPENJPA-1182 for an
-				example test case demonstrating the change.
-			</para>
-		</section>
-    		<section id="createemf">
-    			<title>
-    			createEntityManagerFactory Exceptions	
-    			</title>
-    			<para>
-    				The JPA 2.0 specification section on
-                                "Bootstrapping in Java SE Environments" states
-                                that persistence providers must return null
-                                if they are not a qualified provider for the 
-                                given persistence unit.
-			</para>
-    			<para>
-                                However, OpenJPA may throw a RuntimeException
-                                if an error occurs while trying to create a
-                                qualified persistence unit, like for invalid
-                                openjpa.* specific configuration settings or
-                                for schema validation failures.
-			</para>
-    			<para>
-                                If the Apache Geronimo JPA 2.0 Spec APIs are
-                                used, then any exceptions returned by a
-                                persistence provider will be wrapped within
-                                a PersistenceException.  When the JPA 2.0 API
-                                reference implementation is used, any
-                                RuntimeExceptions will be returned to the
-                                calling application without being wrapped.
-                                Other JPA 2.0 API and implementation providers
-                                or versions may behave differently.
-			</para>
-			<para>
-                                See OPENJPA-1203 for more details.
-			</para>
-		</section>
-            <section id="querycache">
+            </para>
+            <section id="getStrategy">
                 <title>
-                openjpa.QueryCache default   
+                    FieldMapping.getStrategy()
                 </title>
                 <para>
-                    In previous releases, the default value for the openjpa.QueryCache property was 
-                    <literal>true</literal> when the openjpa.DataCache was enabled.  Depending on application
-                    characteristics, this default QueryCache enablement actually could negate much of the potential
-                    gains achieved by using the DataCache.  Thus, the default value for the openjpa.QueryCache
-                    property will now by <emphasis><literal>false</literal></emphasis>.
+                    The FieldMapping.getStrategy() in OpenJPA 1.x
+                    returned an instance of RelationFieldStrategy
+                    for embded super classes, but will now return an
+                    EmbedFieldStrategy.
+            </para>
+            <para>
+                See OPENJPA-1214 for an
+                example test case demonstrating the change.
+            </para>
+        </section>
+            <section id="prePostUpdate">
+                <title>
+                    PreUpdate/PostUpdate Life Cycle Callbacks
+                </title>
+                <para>
+                    If an entity was updated between the persist()
+                    and commit() operations in OpenJPA 1.x, then 
+                    any PreUpdate and PostUpdate life cycle callback
+                    methods would be executed.  Starting in OpenJPA
+                    1.3 and 2.0, these callbacks will not get executed.
                 </para>
                 <para>
-                    To re-enable the default QueryCache behavior, you just need to include the following property
-                    into your persistence.xml configuration.
-                    
+                    The JPA 2.0 specification section on "Semantics
+                    of the Life Cycle Callback Methods for Entities"
+                    has been updated to include a Note that the
+                    callback behavior for updating an entity after
+                    the persist operation is implementation specific
+                    and should not be relied upon.
+                </para>
+                <para>
+                    See OPENJPA-1182 for an
+                    example test case demonstrating the change.
+                </para>
+            </section>
+            <section id="createemf">
+                <title>
+                    createEntityManagerFactory Exceptions
+                </title>
+                <para>
+                    The JPA 2.0 specification section on
+                    "Bootstrapping in Java SE Environments" states
+                    that persistence providers must return null
+                    if they are not a qualified provider for the 
+                    given persistence unit.
+                </para>
+                <para>
+                    However, OpenJPA may throw a RuntimeException
+                    if an error occurs while trying to create a
+                    qualified persistence unit, like for invalid
+                    openjpa.* specific configuration settings or
+                    for schema validation failures.
+                </para>
+                <para>
+                    If the Apache Geronimo JPA 2.0 Spec APIs are
+                    used, then any exceptions returned by a
+                    persistence provider will be wrapped within
+                    a PersistenceException.  When the JPA 2.0 API
+                    reference implementation is used, any
+                    RuntimeExceptions will be returned to the
+                    calling application without being wrapped.
+                    Other JPA 2.0 API and implementation providers
+                    or versions may behave differently.
+                </para>
+                <para>
+                    See OPENJPA-1203 for more details.
+                </para>
+            </section>
+            <section id="querycache">
+                <title>
+                    openjpa.QueryCache default
+                </title>
+                <para>
+                    In previous releases, the default value for the
+                    openjpa.QueryCache property was <literal>true</literal>
+                    when the openjpa.DataCache was enabled.  Depending on
+                    application characteristics, this default QueryCache
+                    enablement actually could negate much of the potential
+                    gains achieved by using the DataCache.  Thus, the default
+                    value for the openjpa.QueryCache property will now by
+                    <emphasis><literal>false</literal></emphasis>.
+                </para>
+                <para>
+                    To re-enable the default QueryCache behavior, you need to
+                    include the following property in your persistence.xml
+                    configuration.
                     <programlisting>
-                    &lt;property name="openjpa.QueryCache" value="true"/&gt;
+    &lt;property name="openjpa.QueryCache" value="true"/&gt;
                     </programlisting>
                 </para>
                 <para>
-                    If your configuration had previously enabled the QueryCache explicitly, then you might have to 
-                    include the <literal>true</literal> value into your configuration (if you relied on the previous 
-                    default).  Otherwise, your current QueryCache enablement will continue to work.
-                    
+                    If your configuration had previously enabled the QueryCache
+                    explicitly, then you might have to include the
+                    <literal>true</literal> value into your configuration
+                    (if you relied on the previous default).  Otherwise, your
+                    current QueryCache enablement will continue to work.
                     <programlisting>
-                    &lt;property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/&gt;
+    &lt;property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/&gt;
                     </programlisting>
                 </para>
                 <para>
