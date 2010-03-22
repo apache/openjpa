@@ -41,12 +41,6 @@
         <dbcp.minIdle>2</dbcp.minIdle>
         <dbcp.maxWait>10000</dbcp.maxWait>
         <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-<!--
-        <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
-        <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-        <connection.username />
-        <connection.password />
--->
     </properties>
 
     <dependencies>
@@ -55,7 +49,7 @@
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
         </dependency>
-<!--
+        <!-- Maybe one day we can used published artifacts for this...
         <dependency>
             <groupId>org.apache.geronimo.daytrader.modules</groupId>
             <artifactId>daytrader-web</artifactId>
@@ -66,7 +60,7 @@
             <artifactId>daytrader-entities</artifactId>
             <version>${daytrader.version}</version>
         </dependency>
--->
+        -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
@@ -112,7 +106,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- old way of using antrun to enhance classes
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -126,7 +120,7 @@
                                     <property name="test" value="${test}" />
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.loglevel" value="${openjpa.loglevel}" />
+                                    <property name="openjpa.Log" value="${openjpa.Log}" />
                                     <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
                             </tasks>
@@ -137,8 +131,9 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
-            <!-- new way of using openjpa-maven-plugin to enhance classes -->
+
+            <!-- new way of using openjpa-maven-plugin to enhance classes
+                 BUT, we need 1.1 released before we can switch
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
@@ -152,16 +147,8 @@
                 <executions>
                     <execution>
                         <id>enhancer</id>
-                        <!-- phase used to enhance source
-                        <phase>process-classes</phase>
-                        -->
-                        <!-- phase used to enhance tests -->
                         <phase>process-test-classes</phase>
                         <goals>
-                            <!-- goal used to enhance source
-                            <goal>enhance</goal>
-                            -->
-                            <!-- goal used to enhance tests -->
                             <goal>test-enhance</goal>
                         </goals>
                     </execution>
@@ -174,6 +161,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
