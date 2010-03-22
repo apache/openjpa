@@ -45,9 +45,9 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public int deptId = 1;
     public int empId = 1;
 
-    public List rsAllDepartment1 = null;
-    public List rsAllDepartment2 = null;
-    public List rsAllDepartment3 = null;
+    public List<Department1> rsAllDepartment1 = null;
+    public List<Department2> rsAllDepartment2 = null;
+    public List<Department3> rsAllDepartment3 = null;
 
     public void setUp() {
         super.setUp(DROP_TABLES,
@@ -112,7 +112,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class<?> clz) 
         throws Exception {
         org.apache.openjpa.persistence.QueryImpl q1 = 
             (org.apache.openjpa.persistence.QueryImpl) q;
@@ -133,7 +133,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         Query q = em.createQuery(query);
         if (inMemory) 
             setCandidate(q, Department1.class);
-        List rs = q.getResultList();
+        List<?> rs = q.getResultList();
         Integer d = (Integer) rs.get(0);
         
         query = "select KEY(e) from Department2 d, " +
@@ -164,6 +164,15 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
         Integer deptId = (Integer) rs.get(0);
         assertEquals("dept id is not 2", 2, deptId.intValue());
         
+        query = "select KEY(e).lName from Department3 d, " + "in (d.emps) e " + "group by KEY(e).lName "
+                + "having KEY(e).lName like 'l%'";
+        q = em.createQuery(query);
+        if (inMemory)
+            setCandidate(q, Department1.class);
+        rs = q.getResultList();
+        assertEquals("number of employees is not equal to numDepartments*numEmployeesPerDept", numDepartments
+                * numEmployeesPerDept, rs.size());
+
         em.close();
     }
 
@@ -192,7 +201,7 @@ public class TestSpec10_1_26 extends SQLListenerTestCase {
     public void createDepartment1(EntityManager em, int id) {
         Department1 d = new Department1();
         d.setDeptId(id);
-        Map empMap = new HashMap();
+        Map<Integer,Employee1> empMap = new HashMap<Integer,Employee1>();
         for (int i = 0; i < numEmployeesPerDept; i++) {
             Employee1 e = createEmployee1(em, empId++);
             //d.addEmployee1(e);
