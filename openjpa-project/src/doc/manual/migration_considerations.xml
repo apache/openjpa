@@ -50,6 +50,28 @@
                     demonstrate the behavioral differences.
             </para>
         </section>
+        <section id="serialization">
+            <title>
+                Serialization of Entities
+            </title>
+            <para>
+                    In prior releases of OpenJPA, when an entity was serialized
+                    after calling EntityManager.find(), detach() or detachAll()
+                    then all <xref linkend="ref_guide_pc_scos_proxy"/>
+                    were removed as expected, but when the same entity instance
+                    was serialized after calling EntityManager.clear() the
+                    proxy classes were not removed.
+            </para>
+            <para>
+                    Starting with OpenJPA 1.3, this behavior has been
+                    modified, so that by default all proxies will be removed
+                    during serialization.  See
+                    <xref linkend="ref_guide_detach_state"/>
+                    on how the behavior changes based on the
+                    <literal>DetachedStateField</literal> setting along with
+                    how to override the default behavior.
+            </para>
+        </section>
         <section id="prePostUpdate">
             <title>
                 PreUpdate/PostUpdate Life Cycle Callbacks

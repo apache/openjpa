@@ -1411,6 +1411,61 @@ You can plug your custom proxy manager into the OpenJPA runtime through the
 </programlisting>
                 </example>
             </section>
+            <section id="ref_guide_pc_scos_proxy_serial">
+                <title>
+                    Serialization
+                </title>
+                <indexterm zone="ref_guide_pc_scos_proxy_serial">
+                    <primary>
+                        proxies
+                    </primary>
+                    <secondary>
+                        serialization
+                    </secondary>
+                </indexterm>
+                <indexterm zone="ref_guide_pc_scos_proxy_serial">
+                    <primary>
+                        proxies
+                    </primary>
+                    <secondary>
+                        DetachedStateField
+                    </secondary>
+                </indexterm>
+                <para>
+When objects are serialized, the <literal>DetachedStateField</literal> in
+section <xref linkend="ref_guide_detach_state"/>
+will be used to help determine when build time proxies will be removed.
+If runtime created proxies are being used (proxies not supplied by OpenJPA)
+or if an entity has already been detached, then any found proxies will be
+removed during serialization.
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>transient</literal>: Use a transient detached state field. This gives
+the benefits of a detached state field to local objects that are never
+serialized, but retains serialization compatibility for client tiers without
+access to the enhanced versions of your classes or the OpenJPA runtime.
+All proxies will be removed during serialization.  This is the default.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>true</literal>: Use a non-transient detached state field so that
+objects crossing serialization barriers can still be attached efficiently. This
+requires, however, that your client tier have the enhanced versions of your
+classes and the OpenJPA runtime.
+No OpenJPA provided proxies will be removed during serialization.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>false</literal>: Do not use a detached state field.
+All proxies will be removed during serialization.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </section>
         </section>
         <section id="ref_guide_pc_extern">
             <title>
