@@ -290,7 +290,8 @@ to your application. Set this property to one of the following values:
 <literal>transient</literal>: Use a transient detached state field. This gives
 the benefits of a detached state field to local objects that are never
 serialized, but retains serialization compatibility for client tiers without
-access to the enhanced versions of your classes. This is the default.
+access to the enhanced versions of your classes or the OpenJPA runtime.
+This is the default.
                                 </para>
                             </listitem>
                             <listitem>
@@ -298,15 +299,21 @@ access to the enhanced versions of your classes. This is the default.
 <literal>true</literal>: Use a non-transient detached state field so that
 objects crossing serialization barriers can still be attached efficiently. This
 requires, however, that your client tier have the enhanced versions of your
-classes and the OpenJPA libraries.
+classes and the OpenJPA runtime.
                                 </para>
                             </listitem>
                             <listitem>
                                 <para>
-<literal>false</literal>: Do not use a detached state field.
+<literal>false</literal>: Do not use a detached state field.  No OpenJPA runtime
+will be required for client tiers.
                                 </para>
                             </listitem>
                         </itemizedlist>
+                        <para>
+The detached state field is also used to determine when proxies should be
+removed from entities during serialization.  See the 
+<xref linkend="ref_guide_pc_scos_proxy_serial"/> section for more details.
+                        </para>
                         <para>
 You can override the setting of this property or declare your own detached state
 field on individual classes using OpenJPA's metadata extensions. See
