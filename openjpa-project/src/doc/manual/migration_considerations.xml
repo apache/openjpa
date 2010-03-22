@@ -29,6 +29,7 @@
             <title>
                 Incompatibilities
             </title>
+            <!-- See OPENJPA-1208 for details. -->
             <para>
                 The following sections indicate changes that are incompatible
                 between OpenJPA 1.x.x releases and the 2.0 release. Some may
@@ -40,14 +41,11 @@
                 OpenJPA 1.x.x compatibility may need to configure the
                 appropriate compatibility options to get the desired behavior.
             </para>
-            <para>
-                See OPENJPA-1208 for test cases that
-                demonstrate the behavioral differences.
-            </para>
             <section id="getProperties">
                 <title>
                     getProperties()
                 </title>
+                <!-- See OPENJPA-849 for details. -->
                 <para>
                     The OpenJPAEntityManagerFactory interface getProperties()
                     method was changed to return a Map instead of a
@@ -55,15 +53,12 @@
                     support the getProperties() method defined in the 2.0
                     JPA specification.
                 </para>
-                    <para>
-                        See OPENJPA-849 for test cases that
-                        demonstrate the behavioral differences.
-                    </para>
             </section>
             <section id="migration_detach_behavior">
                 <title>
                     Detach Behavior
                 </title>
+                <!-- See OPENJPA-1215 for details. -->
                 <para>
                     The detach behavior has changed in several ways:
                     <itemizedlist>
@@ -122,15 +117,12 @@
     public &lt;T&gt; T detachCopy(T pc):
                     </programlisting>
                 </para>
-                <para>
-                    See OPENJPA-1215 for test cases that
-                    demonstrate the behavioral differences.
-                </para>
             </section>
             <section id="private_persistent_properties">
                 <title>
                     Use of private persistent properties
                 </title>
+                <!-- See OPENJPA-1176 for details. -->
                 <para>
                     In 1.x.x releases of OpenJPA, if property access was used,
                     private properties were considered persistent. This is 
@@ -150,15 +142,12 @@
                     used, this property must be specified at the time of 
                     enhancement and at runtime.
                 </para>
-                <para>
-                    See OPENJPA-1176 for test cases that
-                    demonstrate the behavioral differences.
-                </para>
             </section>
             <section id="setParameters">
                 <title>
                     Query.setParameteres()
                 </title>
+                <!-- See OPENJPA-1213 for details. -->
                 <para>
                     The Query interface setParameters() method behavior has
                     changed to throw an IllegalArgumentException if more
@@ -169,15 +158,12 @@
                     supplied parameter substitutions and allow the Query to be
                     processed.
                 </para>
-                <para>
-                    See OPENJPA-1213 for test cases that
-                    demonstrate the behavioral differences.
-                </para>
             </section>
             <section id="serialization">
                 <title>
                     Serialization of Entities
                 </title>
+                <!-- See OPENJPA-1097 for details. -->
                 <para>
                     In 1.x.x releases of OpenJPA, when an entity was serialized
                     after calling EntityManager.find(), detach() or detachAll()
@@ -203,6 +189,7 @@
             <title>
                 Disabling AutoOff Collection Tracking
             </title>
+            <!-- See OPENJPA-1223 and OPENJPA-1163 for details. -->
             <para>
                 The default behavior of openJPA in tracking collections is that
                 if the number of modifications to the collection exceeds the
@@ -218,10 +205,6 @@
                 The default behavior of auto disabling the collection tracking
                 is not changed. But when the above property is set then the
                 collection tracking will not be disabled automatically.
-            </para>
-            <para>
-                See OPENJPA-1223 and OPENJPA-1163 for test cases that
-                demonstrate the behavioral differences.
             </para>
         </section>
         <section id="internal_differences">
@@ -240,21 +223,19 @@
                 <title>
                     FieldMapping.getStrategy()
                 </title>
+                <!-- See OPENJPA-1214 for details. -->
                 <para>
                     The FieldMapping.getStrategy() in OpenJPA 1.x
                     returned an instance of RelationFieldStrategy
                     for embded super classes, but will now return an
                     EmbedFieldStrategy.
-            </para>
-            <para>
-                See OPENJPA-1214 for an
-                example test case demonstrating the change.
-            </para>
-        </section>
+                </para>
+            </section>
             <section id="prePostUpdate">
                 <title>
                     PreUpdate/PostUpdate Life Cycle Callbacks
                 </title>
+                <!-- See OPENJPA-1182 for details. -->
                 <para>
                     If an entity was updated between the persist()
                     and commit() operations in OpenJPA 1.x, then 
@@ -270,15 +251,12 @@
                     the persist operation is implementation specific
                     and should not be relied upon.
                 </para>
-                <para>
-                    See OPENJPA-1182 for an
-                    example test case demonstrating the change.
-                </para>
             </section>
             <section id="createemf">
                 <title>
                     createEntityManagerFactory Exceptions
                 </title>
+                <!-- See OPENJPA-1203 for details. -->
                 <para>
                     The JPA 2.0 specification section on
                     "Bootstrapping in Java SE Environments" states
@@ -304,14 +282,12 @@
                     Other JPA 2.0 API and implementation providers
                     or versions may behave differently.
                 </para>
-                <para>
-                    See OPENJPA-1203 for more details.
-                </para>
             </section>
             <section id="querycache">
                 <title>
                     openjpa.QueryCache default
                 </title>
+                <!-- See OPENJPA-1469 and sub-tasks for details. -->
                 <para>
                     In previous releases, the default value for the
                     openjpa.QueryCache property was <literal>true</literal>
@@ -339,9 +315,6 @@
                     <programlisting>
     &lt;property name="openjpa.QueryCache" value="true(CacheSize=1000, SoftReferenceSize=100)"/&gt;
                     </programlisting>
-                </para>
-                <para>
-                    See OPENJPA-1469 and sub-tasks for more details.
                 </para>
             </section>
         </section>
