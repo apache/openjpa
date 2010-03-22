@@ -20,9 +20,6 @@ package org.apache.openjpa.util;
 
 import java.security.AccessController;
 
-import org.apache.openjpa.conf.DetachOptions;
-import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -84,9 +81,22 @@ public class Proxies {
      * Used by proxy types to serialize non-proxy versions.
      */
     public static Object writeReplace(Proxy proxy, boolean detachable) {
-        /* OPENJPA-1097 Always remove $proxy classes during serialization if detachable
+        /* OPENJPA-1097 Remove $proxy classes during serialization based on:
+         *   1) No Proxy, then return as-is
+         *   2) Runtime created proxy (!detachable), then unproxy
+         *   3) No StateManager (DetachedStateField==false), then return as-is
+         *   4) If detached, then unproxy
+         *   5) If ClassMetaData exists and DetachedStateField != TRUE
+         *      (default of DetachedStateField==transient), then unproxy
+         *   6) Else, return as-is
          * 
          * Original code -
+         *   1) Runtime created proxy (!detachable), then unproxy
+         *   2) No Proxy, then return as-is
+         *   3) No StateManager (DetachedStateField==false), then return as-is
+         *   4) If detached, then return as-is <--- ERROR as EM.clear() marks
+         *      entity as detached but doesn't remove any $proxy usage
+         *   5) Else, unproxy
          * 
          *  if (detachable && (proxy == null || proxy.getOwner() == null 
          *      || proxy.getOwner().isDetached()))
