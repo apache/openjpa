@@ -48,7 +48,7 @@ import org.apache.openjpa.util.ImplHelper;
  *
  * @author Marc Prud'hommeaux
  */
-class AttachManager {
+public class AttachManager {
 
     private static final Localizer _loc = Localizer.forPackage
         (AttachManager.class);
