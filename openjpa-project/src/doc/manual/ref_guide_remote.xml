@@ -224,89 +224,103 @@ When detached objects lose their association with the OpenJPA runtime, they also
 lose the ability to load additional state from the datastore. It is important,
 therefore, to populate objects with all the persistent state you will need
 before detaching them. While you are free to do this manually, OpenJPA includes
-facilities for automatically populating objects when they detach. The
-<link linkend="openjpa.DetachState"><literal>openjpa.DetachState</literal>
+facilities for automatically populating objects when they detach.
+            </para>
+            <section id="ref_guide_detach_state">
+                <title>
+                    Detached State
+                </title>
+                <indexterm zone="ref_guide_detach_state">
+                    <primary>
+                        detachment
+                    </primary>
+                    <secondary>
+                        detached state
+                    </secondary>
+                </indexterm>
+                <para>
+The <link linkend="openjpa.DetachState"><literal>openjpa.DetachState</literal>
 </link> configuration property determines which fields and relations are
 detached by default. All settings are recursive. They are:
-            </para>
-            <orderedlist>
-                <listitem>
-                    <para>
+                </para>
+                <orderedlist>
+                    <listitem>
+                        <para>
 <literal>loaded</literal>: Detach all fields and relations that are already
 loaded, but don't include unloaded fields in the detached graph. This is the
 default.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>fetch-groups</literal>: Detach all fields and relations in the current
 <link linkend="ref_guide_runtime">fetch configuration</link>. For more
 information on custom fetch groups, see <xref linkend="ref_guide_fetch"/>.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>all</literal>: Detach all fields and relations. Be very careful when
 using this mode; if you have a highly-connected domain model, you could end up
 bringing every object in the database into memory!
-                    </para>
-                </listitem>
-            </orderedlist>
-            <para>
+                        </para>
+                    </listitem>
+                </orderedlist>
+                <para>
 Any field that is not included in the set determined by the detach mode is set
 to its Java default value in the detached instance.
-            </para>
-            <para>
+                </para>
+                <para>
 The <literal>openjpa.DetachState</literal> option is actually a plugin string
 (see <xref linkend="ref_guide_conf_plugins"/>) that allows you to also
 configure the following options related to detached state:
-            </para>
-            <itemizedlist>
-                <listitem>
-                    <para>
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
 <literal>DetachedStateField</literal>: As described in
 <xref linkend="ref_guide_attach_behavior"/> above, OpenJPA can take
 advantage of a <emphasis>detached state field</emphasis> to make the attach
 process more efficient. This field is added by the enhancer and is not visible
 to your application. Set this property to one of the following values:
-                    </para>
-                    <itemizedlist>
-                        <listitem>
-                            <para>
+                        </para>
+                        <itemizedlist>
+                            <listitem>
+                                <para>
 <literal>transient</literal>: Use a transient detached state field. This gives
 the benefits of a detached state field to local objects that are never
 serialized, but retains serialization compatibility for client tiers without
 access to the enhanced versions of your classes. This is the default.
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para>
 <literal>true</literal>: Use a non-transient detached state field so that
 objects crossing serialization barriers can still be attached efficiently. This
 requires, however, that your client tier have the enhanced versions of your
 classes and the OpenJPA libraries.
-                            </para>
-                        </listitem>
-                        <listitem>
-                            <para>
+                                </para>
+                            </listitem>
+                            <listitem>
+                                <para>
 <literal>false</literal>: Do not use a detached state field.
-                            </para>
-                        </listitem>
-                    </itemizedlist>
-                    <para>
+                                </para>
+                            </listitem>
+                        </itemizedlist>
+                        <para>
 You can override the setting of this property or declare your own detached state
 field on individual classes using OpenJPA's metadata extensions. See
 <xref linkend="ref_guide_detach_field"/> below.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>DetachedStateManager</literal>: Whether to use a detached state
 manager. A detached state manager makes attachment much more efficient. Like a
 detached state field, however, it breaks serialization compatibility with the
 unenhanced class if it isn't transient.
-                    </para>
-                    <para>
+                        </para>
+                        <para>
 This setting piggybacks on the <literal>DetachedStateField</literal> setting
 above. If your detached state field is transient, the detached state manager
 will also be transient. If the detached state field is disabled, the detached
@@ -317,18 +331,18 @@ setting this property to false, however, you can use a detached state field
 may be useful for debugging or for legacy OpenJPA users who find differences
 between OpenJPA's behavior with a detached state manager and OpenJPA's older
 behavior without one.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
 <literal>AccessUnloaded</literal>: Whether to allow access to unloaded fields
 of detached objects. Defaults to true. Set to false to throw an exception
 whenever an unloaded field is accessed. This option is only available when you
 use detached state managers, as determined by the settings above.
-                    </para>
-                </listitem>
-                <listitem>                    
-                    <para>
+                        </para>
+                    </listitem>
+                    <listitem>                    
+                        <para>
 <literal>LiteAutoDetach</literal>: <emphasis role="bold">This option is ONLY valid for the <literal>loaded</literal> 
 DetachState setting.</emphasis> Detach all fields and relations as described by the loaded 
 property when an explicit detach is requested or when a 
@@ -338,43 +352,43 @@ the minimal amount of work will be completed to disassociate all Entities from
 the persistence context. <emphasis role="bold">It is highly recommended that all Entities have a 
 @Version field when using this property</emphasis>. In addition, care needs to be taken 
 when this value is set to true as the following caveats apply: 
-            <itemizedlist>
-                <listitem>
-                    <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
 A relationship from a managed Entity to an unmanaged Entity which was detached by the lite detach setting will not be persisted.                                       
-                    </para>       
-                </listitem>
-                <listitem>
-                    <para>
+                        </para>       
+                    </listitem>
+                    <listitem>
+                        <para>
 When merging a detached Entity back into the persistence context any lazily loaded fields that were marked to null when detached will not be persisted.                                       
-                    </para>       
-                </listitem>                
-            </itemizedlist>
-                    </para>
-                </listitem>
-            </itemizedlist>
-            <example id="ref_guide_detach_graph_confex">
-                <title>
-                    Configuring Detached State
-                </title>
+                        </para>       
+                    </listitem>                
+                </itemizedlist>
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <example id="ref_guide_detach_graph_confex">
+                    <title>
+                        Configuring Detached State
+                    </title>
 <programlisting>
 &lt;property name="openjpa.DetachState" value="fetch-groups(DetachedStateField=true)"/&gt;
 </programlisting>
-            </example>
-            <para>
+                </example>
+                <para>
 You can also alter the set of fields that will be included in the detached graph
 at runtime.
 <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>s expose the following APIs
 for controlling detached state:
-            </para>
+                </para>
 <programlisting>
 public DetachStateType getDetachState();
 public void setDetachState(DetachStateType type);
 </programlisting>
-            <para>
+                <para>
 The <classname>DetachStateType</classname> enum contains the following values:
-            </para>
+                </para>
 <programlisting>
 enum DetachStateType {
     FETCH_GROUPS,
@@ -382,6 +396,7 @@ enum DetachStateType {
     ALL
 }
 </programlisting>
+            </section>
             <section id="ref_guide_detach_field">
                 <title>
                     Detached State Field
