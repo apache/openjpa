@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.openjpa.lib.util.Clearable;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
@@ -40,7 +41,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * @author Pinaki Poddar
  */
 public interface DataCache
-    extends Closeable {
+    extends Closeable, Clearable {
 
     /**
      * The name of the default data cache: <code>default</code>

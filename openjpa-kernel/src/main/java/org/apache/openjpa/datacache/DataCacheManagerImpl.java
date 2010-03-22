@@ -31,7 +31,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
- * Default data cache manager provides handle to utilities {@linkplain PCDataGenerator}, {@linkplain DataCacheScheduler}
+ * Default data cache manager provides handle to utilities {@linkplain PCDataGenerator}, {@linkplain ClearableScheduler}
  * and {@linkplain CacheDistributionPolicy} for the cache operation. This implementation also determines whether a
  * managed type is eligible to cache.
  * 
@@ -46,7 +46,7 @@ public class DataCacheManagerImpl
     private DataCache _cache = null;
     private QueryCache _queryCache = null;
     private DataCachePCDataGenerator _pcGenerator = null;
-    private DataCacheScheduler _scheduler = null;
+    private ClearableScheduler _scheduler = null;
     private CacheDistributionPolicy _policy = new DefaultCacheDistributionPolicy();
     private Map<ClassMetaData,Boolean> _cacheable = new HashMap<ClassMetaData, Boolean>();
     
@@ -64,7 +64,7 @@ public class DataCacheManagerImpl
         // create helpers before initializing caches
         if (conf.getDynamicDataStructs())
             _pcGenerator = new DataCachePCDataGenerator(conf);
-        _scheduler = new DataCacheScheduler(conf);
+        _scheduler = new ClearableScheduler(conf);
         
         _policy = conf.getCacheDistributionPolicyInstance();
 
@@ -104,7 +104,7 @@ public class DataCacheManagerImpl
         return _pcGenerator;
     }
 
-    public DataCacheScheduler getDataCacheScheduler() {
+    public ClearableScheduler getClearableScheduler() {
         return _scheduler;
     }
 

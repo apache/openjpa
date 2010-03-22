@@ -26,12 +26,12 @@ import java.util.List;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
-import org.apache.openjpa.datacache.DataCacheScheduler;
+import org.apache.openjpa.datacache.ClearableScheduler;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.datacache.common.apps.ScheduledEviction;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestDataCacheScheduler extends SingleEMFTestCase {
+public class TestClearableScheduler extends SingleEMFTestCase {
 
     private static String getMinutesString() {
         StringBuffer buf = new StringBuffer();
@@ -54,7 +54,7 @@ public class TestDataCacheScheduler extends SingleEMFTestCase {
     public void testBasic() throws Exception {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         OpenJPAConfiguration conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
-        DataCacheScheduler scheduler = new DataCacheScheduler(conf);
+        ClearableScheduler scheduler = new ClearableScheduler(conf);
         // Make the scheduler run every 1 minute
         scheduler.setInterval(1);
         DummyCache cache1 = new DummyCache();

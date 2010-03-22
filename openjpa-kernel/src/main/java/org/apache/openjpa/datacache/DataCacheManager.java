@@ -77,7 +77,7 @@ public interface DataCacheManager {
     /**
      * Return the runnable which schedules evictions.
      */
-    public DataCacheScheduler getDataCacheScheduler();
+    public ClearableScheduler getClearableScheduler();
     
     /**
      * Select the cache where the given managed proxy instance should be cached.

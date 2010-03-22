@@ -105,7 +105,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     
     public void initialize(DataCacheManager manager) {
         if (_schedule != null && !"".equals(_schedule)) {
-            DataCacheScheduler scheduler = manager.getDataCacheScheduler();
+            ClearableScheduler scheduler = manager.getClearableScheduler();
             if (scheduler != null)
                 scheduler.scheduleEviction(this, _schedule);
         }
