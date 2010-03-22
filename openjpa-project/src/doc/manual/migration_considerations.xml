@@ -35,6 +35,7 @@
             <title>
                 Query.setParameteres()
             </title>
+            <!-- See OPENJPA-1213 for details. -->
             <para>
                     The Query interface setParameters() method behavior has
                     changed to throw an ArgumentException if more
@@ -44,10 +45,6 @@
                     OpenJPA 1.2.x and prior versions would silently ignore the
                     supplied parameter substitutions and allow the Query to be
                     processed.
-            </para>
-            <para>
-                    See OPENJPA-1213 for test cases that
-                    demonstrate the behavioral differences.
             </para>
         </section>
         <section id="serialization">
@@ -76,6 +73,7 @@
             <title>
                 PreUpdate/PostUpdate Life Cycle Callbacks
             </title>
+            <!-- See OPENJPA-1182 for details. -->
             <para>
                 If an entity was updated between the persist()
                 and commit() operations in OpenJPA 1.x, then
@@ -90,10 +88,6 @@
                 callback behavior for updating an entity after
                 the persist operation is implementation specific
                 and should not be relied upon.
-            </para>
-            <para>
-                See OPENJPA-1182 for an
-                example test case demonstrating the change.
             </para>
         </section>
     </section>
