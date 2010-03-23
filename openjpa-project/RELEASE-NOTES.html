@@ -147,11 +147,12 @@
 </ul>
 </p>
 
-<p>This Beta 2 distribution is based upon the contributions provided in
-development iterations after the Beta, as defined in the JPA 2.0 Roadmap at:
-<a href="http://openjpa.apache.org/jpa-20-roadmap.html">http://openjpa.apache.org/jpa-20-roadmap.html</a></p>
+<p>This SNAPSHOT distribution is based upon the contributions provided in
+development iterations after the 2.0.0 release, as defined in the 
+OpenJPA 2.1 Roadmap at:
+<a href="http://openjpa.apache.org/jpa-21-roadmap.html">http://openjpa.apache.org/jpa-21-roadmap.html</a></p>
 
-<p>The JPA 2.0 Roadmap contains a complete list of implemented features and
+<p>The OpenJPA 2.1 Roadmap contains a complete list of implemented features and
 feature summaries, including what is on deck for future iterations.</p>
 
 <p>Additional information on the OpenJPA project may be found at the project web site: <a href="http://openjpa.apache.org">http://openjpa.apache.org</a></p>
@@ -234,6 +235,148 @@ in each release of OpenJPA.</P>
 
 <hr>
 <h3><a name="200beta3">OpenJPA 2.0.0-beta3</h3>
+<h4>Sub-task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1101'>OPENJPA-1101</a>] -         OSGi Integration tests
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1505'>OPENJPA-1505</a>] -         Add a boolean provision CallbackOptions.AllowsDuplicateListener 
+</li>
+</ul>
+    
+<h4>Bug</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-740'>OPENJPA-740</a>] -         In MySQL use LONGBLOB, MEDIUMBLOB etc.. when needed, cause BLOB only holds 64kb of data.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-774'>OPENJPA-774</a>] -         Executing native queries with Firebird
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1097'>OPENJPA-1097</a>] -         Detachment processing of our proxied mutable types (Date, Timestamp, etc) needs to be consistent
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1234'>OPENJPA-1234</a>] -         Make AllowFailure configurable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1248'>OPENJPA-1248</a>] -         LOB streaming does not work as expected
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1360'>OPENJPA-1360</a>] -         ReverseMappingTool omits nullable, length, etc. when ClassMapping.setEmbedded(true) is called
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1395'>OPENJPA-1395</a>] -         MappingTool attempts to create table in Oracle even when the table already exist
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1406'>OPENJPA-1406</a>] -         (In)Compatibility section in OpenJPA doc needs some work...
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1410'>OPENJPA-1410</a>] -         Class linkage exception when creating an EMF with OpenJPA M3
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1438'>OPENJPA-1438</a>] -         Fail to remove an entity which has derived identity
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1455'>OPENJPA-1455</a>] -         SynchronizeMapping ALTER TABLE ADD COLUMN fails with column already exist exception
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1458'>OPENJPA-1458</a>] -         Named parameters are not handled by OpenJPA correctly
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1477'>OPENJPA-1477</a>] -         Multithreaded attempt to set Query parameter occassionally fails
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1482'>OPENJPA-1482</a>] -         NoSuchMethodError when calling setVersion on an enhanced property access Entity
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1486'>OPENJPA-1486</a>] -         Lazy fetched embeddable should not be materialized in the query result
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1491'>OPENJPA-1491</a>] -         org.apache.openjpa.kernel.Bootstrap uses the application classloader to load OpenJPA internals
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1500'>OPENJPA-1500</a>] -         DataCache types and excludedTypes are case sensitive
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1503'>OPENJPA-1503</a>] -         Metamodel class loading fails with security manager
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1506'>OPENJPA-1506</a>] -         ConfigurationImpl.equals fails using a OpenJPA derived provider
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1524'>OPENJPA-1524</a>] -         ManagedRuntime does not work for OSGi
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1535'>OPENJPA-1535</a>] -         Inconsistency in exceptions thrown from MetaDataRepository.resolve()
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1536'>OPENJPA-1536</a>] -         SQL with outer join cannot handle null columns when inheritance is involved
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1538'>OPENJPA-1538</a>] -         Move hard coded text in OpenJPAVersion.java to localizer.properties
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1542'>OPENJPA-1542</a>] -         Support openjpa.DataCache Types and ExcludedTypes configuration
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1543'>OPENJPA-1543</a>] -         Need to change fragmented messages that are combined by PreparedQueryImpl and PreparedQueryCacheImpl to complete messages
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1544'>OPENJPA-1544</a>] -         Remove WebSphere version number from org/apache/ee/localizer.properties
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1546'>OPENJPA-1546</a>] -         OpenJPA doesn't work as internal JPA inside web applicaion in JBoss AS
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1547'>OPENJPA-1547</a>] -         NOT IN with MEMBER OF returns syntax error
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1556'>OPENJPA-1556</a>] -         Exception thrown on first use of @Strategy in @Embeddable classes
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1558'>OPENJPA-1558</a>] -         Many side of a MxO relationship contains null reference if One side is loaded first.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1565'>OPENJPA-1565</a>] -         QueryTimeOut and LockTimeOut exceptions are not raised correctly
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1568'>OPENJPA-1568</a>] -         Make createConnectionFactory() in JDBCConfigurationImpl public
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1570'>OPENJPA-1570</a>] -         Exception using @Strategy in @MappedSuperclass or @Embeddable classes
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1571'>OPENJPA-1571</a>] -         The change in the element collection is not persisted to the database during merging a detached entity
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1573'>OPENJPA-1573</a>] -         Incorrect SQL for HAVING = entity variable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1575'>OPENJPA-1575</a>] -         Query parameter on externalized field breaks Prepared Query Cache
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1576'>OPENJPA-1576</a>] -         maven plugin broken as of 3/16/2010 2:30 AM PST using openjpa-2.0.0-SNAPSHOT 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1577'>OPENJPA-1577</a>] -         Using @Strategy in Queries not working properly
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1578'>OPENJPA-1578</a>] -         CacheStoreMode.REFRESH is not recognized
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1580'>OPENJPA-1580</a>] -         Using firstResult and maxResults in queries is not working properly
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1581'>OPENJPA-1581</a>] -         getCache() should throw IllegalStateException if the EMF has been closed. 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1583'>OPENJPA-1583</a>] -         Update by query fails on entities using Timestamp as Version field
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1588'>OPENJPA-1588</a>] -         modify 925451 revision for setProperty processing for enums
+</li>
+</ul>
+    
+<h4>Improvement</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-979'>OPENJPA-979</a>] -         Define process for contributions 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1118'>OPENJPA-1118</a>] -         code changes towards broader use of JDK5 features
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1443'>OPENJPA-1443</a>] -         Turn on some additional DataCache and PCData testcases
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1492'>OPENJPA-1492</a>] -         Change access on ReverseMappingTool#getAnnotationsForMeta(Object) from private to public
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1498'>OPENJPA-1498</a>] -         Update localizer.properties files for easier translation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1530'>OPENJPA-1530</a>] -         MySQL storage engine support
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1531'>OPENJPA-1531</a>] -         The DataCache EvictionSchedule property should accept other time formats.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1539'>OPENJPA-1539</a>] -         DataCacheManager should cache whether or not a given type is cacheable or not.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1548'>OPENJPA-1548</a>] -         Miscellaneous ClassMetaData performance improvements
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1549'>OPENJPA-1549</a>] -         StateManagerImpl performance improvement
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1551'>OPENJPA-1551</a>] -         Allow connectionFactoryName to be specified when creating an EntityManager
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1552'>OPENJPA-1552</a>] -         Enable EntityManager to perform property QueryImpl creation by its subclass
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1561'>OPENJPA-1561</a>] -         Cache Criteria Query
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1566'>OPENJPA-1566</a>] -         Provide all the cached prepared query strings in QueryStatistics
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1585'>OPENJPA-1585</a>] -         Additional trace to relate SQL pushdowns with entity action or JPQL query
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1591'>OPENJPA-1591</a>] -         Refactor various parts to allow for greater extensibility
+</li>
+</ul>
+                                
+<h4>Test</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1411'>OPENJPA-1411</a>] -         Include DayTrader test case to OpenJpa
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1586'>OPENJPA-1586</a>] -         Additional test single valued path expression which references qualified path in JPQL
+</li>
+</ul>
+
 
 <hr>
 <h3><a name="200beta2">OpenJPA 2.0.0-beta2</h3>
