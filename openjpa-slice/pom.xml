@@ -116,7 +116,7 @@
                                     <property name="test" value="${test}" />
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
-                                    <property name="openjpa.Log" value="${openjpa.Log}"/>
+                                    <property name="openjpa.Log" value="${openjpa.Log}" />
                                 </ant>
                             </tasks>
                         </configuration>
