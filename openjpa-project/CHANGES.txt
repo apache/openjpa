@@ -450,6 +450,7 @@ Bug
     * [OPENJPA-1201] - "Mapped by" field not set when contained in superclass 
     * [OPENJPA-1203] - JPA2 - createEMF should return null for unhandled PUs
     * [OPENJPA-1204] - Argument type mismatch when an EmbeddedId contains an Emun type 
+    * [OPENJPA-1205] - Cannot retrieve Map<PersistenceCapable, PersistenceCapable> fields when DataCache is on
     * [OPENJPA-1206] - Bean validation call to provider not Java 2 Enabled
     * [OPENJPA-1211] - Enable string navigation in a From expression.
     * [OPENJPA-1217] - Ensure comparisons do not contain two parameters with Derby (ie SELECT ... WHERE ? = ?)
