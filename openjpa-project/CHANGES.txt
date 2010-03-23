@@ -1,5 +1,5 @@
-                         Apache OpenJPA 2.0.0-SNAPSHOT
-                         -----------------------------
+                          Apache OpenJPA 2.0.0-beta3
+                          --------------------------
 
 Content
 -------
@@ -19,7 +19,7 @@ Content
 
 Overview
 --------
-   The Apache OpenJPA community is proud to release a Beta 2 distribution of
+   The Apache OpenJPA community is proud to release a Beta 3 distribution of
    OpenJPA 2.0.0. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatiable with prior releases based on the
@@ -72,8 +72,8 @@ Overview
      Properties, LockModeType, and Detach
    * And many more...
 
-   This Beta 2 distribution is based upon the contributions provided in
-   development iterations after the Beta, as defined in the JPA 2.0 Roadmap at:
+   This Beta 3 distribution is based upon the contributions provided in
+   development iterations after the Beta 2, as defined in the JPA 2.0 Roadmap:
       http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
@@ -161,6 +161,85 @@ Getting Involved
         * Informal discussion also occurs on the #openjpa IRC channel on
           freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
+
+
+Included Changes in OpenJPA 2.0.0 Beta 3
+----------------------------------------
+
+Sub-task
+--------
+    * [OPENJPA-1101] - OSGi Integration tests
+    * [OPENJPA-1505] - Add a boolean provision CallbackOptions.AllowsDuplicateListener 
+
+Bug
+---
+    * [OPENJPA-740] - In MySQL use LONGBLOB, MEDIUMBLOB etc.. when needed, cause BLOB only holds 64kb of data.
+    * [OPENJPA-774] - Executing native queries with Firebird
+    * [OPENJPA-1097] - Detachment processing of our proxied mutable types (Date, Timestamp, etc) needs to be consistent
+    * [OPENJPA-1234] - Make AllowFailure configurable
+    * [OPENJPA-1248] - LOB streaming does not work as expected
+    * [OPENJPA-1360] - ReverseMappingTool omits nullable, length, etc. when ClassMapping.setEmbedded(true) is called
+    * [OPENJPA-1395] - MappingTool attempts to create table in Oracle even when the table already exist
+    * [OPENJPA-1406] - (In)Compatibility section in OpenJPA doc needs some work...
+    * [OPENJPA-1410] - Class linkage exception when creating an EMF with OpenJPA M3
+    * [OPENJPA-1438] - Fail to remove an entity which has derived identity
+    * [OPENJPA-1455] - SynchronizeMapping ALTER TABLE ADD COLUMN fails with column already exist exception
+    * [OPENJPA-1458] - Named parameters are not handled by OpenJPA correctly
+    * [OPENJPA-1477] - Multithreaded attempt to set Query parameter occassionally fails
+    * [OPENJPA-1482] - NoSuchMethodError when calling setVersion on an enhanced property access Entity
+    * [OPENJPA-1486] - Lazy fetched embeddable should not be materialized in the query result
+    * [OPENJPA-1491] - org.apache.openjpa.kernel.Bootstrap uses the application classloader to load OpenJPA internals
+    * [OPENJPA-1500] - DataCache types and excludedTypes are case sensitive
+    * [OPENJPA-1503] - Metamodel class loading fails with security manager
+    * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
+    * [OPENJPA-1524] - ManagedRuntime does not work for OSGi
+    * [OPENJPA-1535] - Inconsistency in exceptions thrown from MetaDataRepository.resolve()
+    * [OPENJPA-1536] - SQL with outer join cannot handle null columns when inheritance is involved
+    * [OPENJPA-1538] - Move hard coded text in OpenJPAVersion.java to localizer.properties
+    * [OPENJPA-1542] - Support openjpa.DataCache Types and ExcludedTypes configuration
+    * [OPENJPA-1543] - Need to change fragmented messages that are combined by PreparedQueryImpl and PreparedQueryCacheImpl to complete messages
+    * [OPENJPA-1544] - Remove WebSphere version number from org/apache/ee/localizer.properties
+    * [OPENJPA-1546] - OpenJPA doesn't work as internal JPA inside web applicaion in JBoss AS
+    * [OPENJPA-1547] - NOT IN with MEMBER OF returns syntax error
+    * [OPENJPA-1556] - Exception thrown on first use of @Strategy in @Embeddable classes
+    * [OPENJPA-1558] - Many side of a MxO relationship contains null reference if One side is loaded first.
+    * [OPENJPA-1565] - QueryTimeOut and LockTimeOut exceptions are not raised correctly
+    * [OPENJPA-1568] - Make createConnectionFactory() in JDBCConfigurationImpl public
+    * [OPENJPA-1570] - Exception using @Strategy in @MappedSuperclass or @Embeddable classes
+    * [OPENJPA-1571] - The change in the element collection is not persisted to the database during merging a detached entity
+    * [OPENJPA-1573] - Incorrect SQL for HAVING = entity variable
+    * [OPENJPA-1575] - Query parameter on externalized field breaks Prepared Query Cache
+    * [OPENJPA-1576] - maven plugin broken as of 3/16/2010 2:30 AM PST using openjpa-2.0.0-SNAPSHOT 
+    * [OPENJPA-1577] - Using @Strategy in Queries not working properly
+    * [OPENJPA-1578] - CacheStoreMode.REFRESH is not recognized
+    * [OPENJPA-1580] - Using firstResult and maxResults in queries is not working properly
+    * [OPENJPA-1581] - getCache() should throw IllegalStateException if the EMF has been closed. 
+    * [OPENJPA-1583] - Update by query fails on entities using Timestamp as Version field
+    * [OPENJPA-1588] - modify 925451 revision for setProperty processing for enums
+
+Improvement
+-----------
+    * [OPENJPA-979] - Define process for contributions 
+    * [OPENJPA-1118] - code changes towards broader use of JDK5 features
+    * [OPENJPA-1443] - Turn on some additional DataCache and PCData testcases
+    * [OPENJPA-1492] - Change access on ReverseMappingTool#getAnnotationsForMeta(Object) from private to public
+    * [OPENJPA-1498] - Update localizer.properties files for easier translation
+    * [OPENJPA-1530] - MySQL storage engine support
+    * [OPENJPA-1531] - The DataCache EvictionSchedule property should accept other time formats.
+    * [OPENJPA-1539] - DataCacheManager should cache whether or not a given type is cacheable or not.
+    * [OPENJPA-1548] - Miscellaneous ClassMetaData performance improvements
+    * [OPENJPA-1549] - StateManagerImpl performance improvement
+    * [OPENJPA-1551] - Allow connectionFactoryName to be specified when creating an EntityManager
+    * [OPENJPA-1552] - Enable EntityManager to perform property QueryImpl creation by its subclass
+    * [OPENJPA-1561] - Cache Criteria Query
+    * [OPENJPA-1566] - Provide all the cached prepared query strings in QueryStatistics
+    * [OPENJPA-1585] - Additional trace to relate SQL pushdowns with entity action or JPQL query
+    * [OPENJPA-1591] - Refactor various parts to allow for greater extensibility
+
+Test
+----
+    * [OPENJPA-1411] - Include DayTrader test case to OpenJpa
+    * [OPENJPA-1586] - Additional test single valued path expression which references qualified path in JPQL
 
 
 Included Changes in OpenJPA 2.0.0 Beta 2
