@@ -60,6 +60,10 @@
                      </includes>
                     <systemProperties>
                         <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>
+                        <property>
                             <name>openjpa.ConnectionDriverName</name>
                             <value>org.apache.commons.dbcp.BasicDataSource</value>
                         </property>
@@ -705,6 +709,7 @@
                                     <property name="test" value="${test}" />
                                     <property name="outdir" value="${project.build.outputDirectory}" />
                                     <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
+                                    <property name="openjpa.Log" value="${openjpa.Log}" />
                                     <property name="build.enhance" value="${build.enhance}" />
                                 </ant>
                             </tasks>
@@ -921,6 +926,10 @@
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
                     </excludes>
                     <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
                             <value>org.apache.commons.dbcp.BasicDataSource</value>

@@ -79,7 +79,7 @@
         <openjpac>
             <classpath refid="cp" />
             <fileset refid="enhance.path.ref" />
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
         <!--  Set detach state for serialization tests -->
         <openjpac>
@@ -91,7 +91,7 @@
                 <include name="**/xml/*.class" />
                 <exclude name="**/Test*.class" />
             </fileset>
-            <config log="DefaultLevel=${openjpa.loglevel}" />
+            <config log="${openjpa.Log}" />
         </openjpac>
 
     </target>

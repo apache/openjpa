@@ -128,6 +128,7 @@
 		</profile>
 
 	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -143,6 +144,7 @@
 									<property name="test" value="${test}" />
 									<property name="outdir" value="${project.build.outputDirectory}" />
 									<property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
+                                    <property name="openjpa.Log" value="${openjpa.Log}" />
 								</ant>
 							</tasks>
 						</configuration>
@@ -159,6 +161,10 @@
                 <configuration>
                     <argLine>${test.jvm.arguments}</argLine>
                     <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>
                         <property>
                             <name>derby.stream.error.file</name>
                             <value>target/derby.log</value>
