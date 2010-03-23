@@ -63,6 +63,9 @@
              anything else allows the test to execute normally
         -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
+        <!--turn off sources.jar generation by setting to none and false -->
+        <createSource>verify</createSource>
+        <createSources>true</createSources>
         <!-- common JDBC driver versions -->
         <derby.version>10.5.3.0_1</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
@@ -154,7 +157,6 @@
     </modules>
 
     <profiles>
-
         <!-- ================ -->
         <!--  Build Profiles  -->
         <!-- ================ -->
@@ -309,20 +311,6 @@
                                     <exclude>**/internal-repository/**</exclude>
                                 </excludes>
                             </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                    <goal>test-jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -1021,6 +1009,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>${createSource}</phase>
+                        <goals>
+                            <goal>jar</goal>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
