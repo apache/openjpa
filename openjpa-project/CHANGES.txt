@@ -216,6 +216,7 @@ Bug
     * [OPENJPA-1581] - getCache() should throw IllegalStateException if the EMF has been closed. 
     * [OPENJPA-1583] - Update by query fails on entities using Timestamp as Version field
     * [OPENJPA-1588] - modify 925451 revision for setProperty processing for enums
+    * [OPENJPA-1596] - Index name too long for DB2 zOS
 
 Improvement
 -----------

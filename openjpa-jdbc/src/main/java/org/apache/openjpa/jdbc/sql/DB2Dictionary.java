@@ -912,7 +912,8 @@ public class DB2Dictionary
             // build the index for the sequence tables
             // the index name will be the fully qualified table name + _IDX
             Table tab = schema.getTable(table);
-            Index idx = tab.addIndex(DBIdentifier.append(tab.getFullIdentifier(), "IDX"));
+            DBIdentifier idxName = DBIdentifier.append(tab.getFullIdentifier(), "IDX");
+            Index idx = tab.addIndex(getValidIndexName(idxName, tab));
             idx.setUnique(true);
             idx.addColumn(pkColumn);
         }
