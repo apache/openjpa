@@ -38,7 +38,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0-beta3</version>
 
     <properties>
         <openjpa.version>${pom.version}</openjpa.version>
@@ -134,9 +134,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/2.0.x</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/2.0.x</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/branches/2.0.x</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/2.0.0-beta3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/2.0.0-beta3</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/tags/2.0.0-beta3</url>
     </scm>
 
     <modules>
@@ -252,7 +252,7 @@
                         <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
                             <goals>deploy site site-deploy</goals>
-                            <arguments>-Prelease,docbook-profile</arguments>
+                            <arguments>-Prelease,docbook-profile,test-derby -DskipTests=true</arguments>
                             <autoVersionSubmodules>true</autoVersionSubmodules>
                         </configuration>
                     </plugin>
