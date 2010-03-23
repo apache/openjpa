@@ -423,6 +423,7 @@ Test
 ----
     * [OPENJPA-1153] - Test suite speed-up outside SingleEMFTestCase
     * [OPENJPA-1342] - Build a mechanics to test JTA transaction semantics within JSE
+    * [OPENJPA-1466] - Some JUnit test failures on Oracle backeend
 
 
 Included Changes in OpenJPA 2.0.0 Milestone 3
