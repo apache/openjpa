@@ -425,6 +425,7 @@ Bug
     * [OPENJPA-1049] - Query against a MappedSuperclass is not supported
     * [OPENJPA-1061] - Entities extending from a Mapped Superclass that defines the ID fields share the same ObjectID type parameter
     * [OPENJPA-1065] - Prepared Query Cache does not work with DataCache 
+    * [OPENJPA-1074] - OrderColumn does not maintain index upon inter-list element removal - Phase 1
     * [OPENJPA-1100] - @Version-Annotation on Column with unsupported type (e.g. BigDecimal) is silently ignored, but should raise an error
     * [OPENJPA-1116] - Annotation Strategy not working
     * [OPENJPA-1117] - Missing AgentClass attribute in openjpa-all-xxx.jar manifest.mf
