@@ -216,7 +216,7 @@ Pretty-printing properties configuration might look like so:
                 </indexterm>
 <literal>openjpa.jdbc.SQLDiag</literal>: This logging channel provides additional
 information about entity actitvies such as create, find, update or delete, and eager 
-loading of relation or field properties. If you enable this channel, it is recommanded
+loading of relation or field properties. If you enable this channel, it is recommended
 that <literal>openjpa.jdbc.SQL</literal> channel is also enabled. 
 The additional trace can help you relate the entity activities to the execution of 
 SQL statements that OpenJPA issued to the datastore.
