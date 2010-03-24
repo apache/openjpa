@@ -233,6 +233,7 @@ Improvement
     * [OPENJPA-1549] - StateManagerImpl performance improvement
     * [OPENJPA-1551] - Allow connectionFactoryName to be specified when creating an EntityManager
     * [OPENJPA-1552] - Enable EntityManager to perform property QueryImpl creation by its subclass
+    * [OPENJPA-1557] - Logging configuration is difficult for running tests
     * [OPENJPA-1561] - Cache Criteria Query
     * [OPENJPA-1566] - Provide all the cached prepared query strings in QueryStatistics
     * [OPENJPA-1585] - Additional trace to relate SQL pushdowns with entity action or JPQL query
