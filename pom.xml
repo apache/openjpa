@@ -252,7 +252,7 @@
                         <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
                             <goals>deploy site site-deploy</goals>
-                            <arguments>-Prelease,docbook-profile</arguments>
+                            <arguments>-Prelease,docbook-profile,test-derby -DskipTests=true</arguments>
                             <autoVersionSubmodules>true</autoVersionSubmodules>
                         </configuration>
                     </plugin>
