@@ -203,6 +203,7 @@ Bug
     * [OPENJPA-1547] - NOT IN with MEMBER OF returns syntax error
     * [OPENJPA-1556] - Exception thrown on first use of @Strategy in @Embeddable classes
     * [OPENJPA-1558] - Many side of a MxO relationship contains null reference if One side is loaded first.
+    * [OPENJPA-1562] - EntityManager:Refresh on Removed entity does not trigger IllegalArgumentException
     * [OPENJPA-1565] - QueryTimeOut and LockTimeOut exceptions are not raised correctly
     * [OPENJPA-1568] - Make createConnectionFactory() in JDBCConfigurationImpl public
     * [OPENJPA-1570] - Exception using @Strategy in @MappedSuperclass or @Embeddable classes
