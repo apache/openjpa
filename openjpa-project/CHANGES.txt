@@ -241,6 +241,7 @@ Improvement
 Test
 ----
     * [OPENJPA-1411] - Include DayTrader test case to OpenJpa
+    * [OPENJPA-1560] - Additional tests for JDBC date/timestamp literals in JPQL
     * [OPENJPA-1586] - Additional test single valued path expression which references qualified path in JPQL
 
 
