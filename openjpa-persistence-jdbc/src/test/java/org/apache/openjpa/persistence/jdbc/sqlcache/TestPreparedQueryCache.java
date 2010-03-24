@@ -983,20 +983,20 @@ public class TestPreparedQueryCache extends TestCase {
 
         l = getAllCompaniesPaged(0, 1);
         assertEquals(1, l.size());
-        assertEquals("BEA", l.get(0).getName());
+        assertEquals(1900, l.get(0).getStartYear());
         
         l = getAllCompaniesPaged(1, 1);
         assertEquals(1, l.size());
-        assertEquals("IBM", l.get(0).getName());
+        assertEquals(2000, l.get(0).getStartYear());
         
         l = getAllCompaniesPaged(2, 1);
         assertEquals(1, l.size());
-        assertEquals("acme.org", l.get(0).getName());
+        assertEquals(2010, l.get(0).getStartYear());
     }
 
     public List<Company> getAllCompaniesPaged(int start, int max) {
         EntityManager em = emf.createEntityManager();
-        Query q = em.createQuery("select p from Company p order by p.name");
+        Query q = em.createQuery("select p from Company p order by p.startYear");
         q.setFirstResult(start);
         q.setMaxResults(max);
         return (List<Company>) q.getResultList();
