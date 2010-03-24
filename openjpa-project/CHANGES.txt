@@ -563,6 +563,7 @@ Bug
     * [OPENJPA-1333] - Oracle driver returns incorrect update count on batched insert
     * [OPENJPA-1335] - Alternating manual delim id tests fail
     * [OPENJPA-1338] - Allow comparison for VALUE(e) that maps to basic type
+    * [OPENJPA-1371] - Insert is called instead of Update when merge() with derived Identity
 
 Improvement
 -----------
