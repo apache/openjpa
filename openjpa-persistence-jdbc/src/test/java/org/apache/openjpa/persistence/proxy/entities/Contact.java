@@ -28,7 +28,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="CONTACT")
+@Table(name="CONTACT_ANNUITY")
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
 public class Contact extends AnnuityPersistebleObject implements IContact {
 	private static final long serialVersionUID = 4015672780551057807L;
