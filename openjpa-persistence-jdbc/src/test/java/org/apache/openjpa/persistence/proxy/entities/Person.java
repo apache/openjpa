@@ -29,10 +29,12 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
+@Table(name="PERSON_ANNUITY")
 @Inheritance(strategy=InheritanceType.JOINED)
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
 public class Person extends AnnuityPersistebleObject implements IPerson {
