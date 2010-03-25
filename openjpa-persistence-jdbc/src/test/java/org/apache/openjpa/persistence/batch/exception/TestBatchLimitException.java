@@ -285,11 +285,10 @@ public class TestBatchLimitException extends PersistenceTestCase {
     // Verify that the resultant exception contains the correct 'failed object'
     // and exception message.
     public void verifyExDetails(Throwable excp) throws Throwable {
-        // The cause should contain the 'failed object'
-        Throwable cause = excp.getCause();
-        verifyFailedObject(cause);
+        // The exception should contain the 'failed object'
+        verifyFailedObject(excp);
         // The second cause should contain the message which shows the failing prepared statement.
-        cause = cause.getCause();
+        Throwable cause = excp.getCause().getCause();
         verifyExMsg(cause.getMessage());
     }
 

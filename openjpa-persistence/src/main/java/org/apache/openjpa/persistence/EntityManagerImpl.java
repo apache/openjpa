@@ -62,6 +62,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -520,7 +521,12 @@ public class EntityManagerImpl
             // should be thrown whenever the commit fails for any reason at
             // all, wheras the exception translator handles exceptions that
             // are caused for specific reasons
-            throw new RollbackException(e);
+            // pass along the failed object if one is available.
+            Object failedObject = null;
+            if (e instanceof ExceptionInfo) {
+                failedObject = ((ExceptionInfo) e).getFailedObject();
+            }
+            throw new RollbackException(e).setFailedObject(failedObject);
         }
     }
 

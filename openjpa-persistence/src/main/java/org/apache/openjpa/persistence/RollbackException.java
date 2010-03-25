@@ -38,6 +38,8 @@ import org.apache.openjpa.util.Exceptions;
 public class RollbackException
     extends javax.persistence.RollbackException
     implements Serializable, ExceptionInfo {
+	
+    private transient Object _failed = null;
 
     private transient Throwable[] _nested;
 
@@ -67,7 +69,12 @@ public class RollbackException
     }
 
     public Object getFailedObject() {
-        return null;
+        return _failed;
+    }
+
+    public RollbackException setFailedObject(Object failed) {
+        _failed = failed;
+        return this;
     }
 
     public String toString() {
