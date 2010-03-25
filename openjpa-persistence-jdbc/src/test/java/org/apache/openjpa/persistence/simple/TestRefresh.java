@@ -18,15 +18,12 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityManager;
 
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.persistence.JPAProperties;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
@@ -133,6 +130,92 @@ public class TestRefresh extends SingleEMTestCase {
         }
     }
     
+    public void testFindWithCacheRetrieveProperty() {
+        String key = "Test property in find.";
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item item = new Item();
+        item.setItemData(key);
+        em.persist(item);
+        em.flush();
+        em.getTransaction().commit();
+        int id = item.getItemId();
+        em.clear();
+        emf.getCache().evictAll();
+
+        assertEquals(key, item.getItemData());
+
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.USE);
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
+        Map<String, Object> properties = em.getProperties();
+        if (!properties.containsKey(JPAProperties.CACHE_STORE_MODE)) {
+            System.err.println(properties);
+            fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
+        }
+        if (!properties.containsKey(JPAProperties.CACHE_RETRIEVE_MODE)) {
+            System.err.println(properties);
+            fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
+        }
+        Map<String, Object> paramProperties = new HashMap<String, Object>();
+        paramProperties.put(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
+        paramProperties.put(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+        Item fItem = em.find(Item.class, id, paramProperties);
+        assertEquals(fItem.getItemData(), key);
+        assertNotCached(Item.class, id);
+
+        Object mode = em.getProperties().get(JPAProperties.CACHE_STORE_MODE);
+        assertEquals(mode, CacheStoreMode.USE);        
+        mode = em.getProperties().get(JPAProperties.CACHE_RETRIEVE_MODE);
+        assertEquals(mode, CacheRetrieveMode.USE);        
+    }
+
+    public void testRefreshWithCacheRetrieveProperty() {
+        String key = "Test property in refresh.";
+        String updatedKey = "Updated test property in refresh.";
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Item item = new Item();
+        item.setItemData(key);
+        em.persist(item);
+        em.flush();
+        em.getTransaction().commit();
+        assertEquals(key, item.getItemData());
+        
+        int id = item.getItemId();
+        emf.getCache().evictAll();
+
+        assertEquals(key, item.getItemData());
+
+        em.setProperty(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.USE);
+        em.setProperty(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.USE);
+        Map<String, Object> properties = em.getProperties();
+        if (!properties.containsKey(JPAProperties.CACHE_STORE_MODE)) {
+            System.err.println(properties);
+            fail("Expected " + JPAProperties.CACHE_STORE_MODE + " properties be returned");
+        }
+        if (!properties.containsKey(JPAProperties.CACHE_RETRIEVE_MODE)) {
+            System.err.println(properties);
+            fail("Expected " + JPAProperties.CACHE_RETRIEVE_MODE + " properties be returned");
+        }
+        Map<String, Object> paramProperties = new HashMap<String, Object>();
+        paramProperties.put(JPAProperties.CACHE_STORE_MODE, CacheStoreMode.BYPASS);
+        paramProperties.put(JPAProperties.CACHE_RETRIEVE_MODE, CacheRetrieveMode.BYPASS);
+        Item fItem = em.find(Item.class, id, paramProperties);
+        assertEquals(key, fItem.getItemData());
+        assertNotCached(Item.class, id);
+
+        fItem.setItemData(updatedKey);
+        assertEquals(updatedKey, fItem.getItemData());
+
+        em.refresh(fItem, paramProperties);
+        assertEquals(key, fItem.getItemData());
+        assertNotCached(Item.class, id);
+
+        Object mode = em.getProperties().get(JPAProperties.CACHE_STORE_MODE);
+        assertEquals(mode, CacheStoreMode.USE);        
+        mode = em.getProperties().get(JPAProperties.CACHE_RETRIEVE_MODE);
+        assertEquals(mode, CacheRetrieveMode.USE);        
+    }
     
     void assertCached(Class<?> cls, Object oid) {
         assertTrue(cls + ":" + oid + " should be in L2 cache, but not", emf.getCache().contains(cls, oid));
