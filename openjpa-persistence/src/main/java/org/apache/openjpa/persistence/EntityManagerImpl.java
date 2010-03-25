@@ -487,8 +487,8 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
-        configureCurrentCacheModes(getFetchPlan(), properties);
-        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
+        configureCurrentCacheModes(pushFetchPlan(), properties);
+        configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
         try {
             oid = _broker.newObjectId(cls, oid);
             return (T) _broker.find(oid, true, this);
@@ -765,7 +765,6 @@ public class EntityManagerImpl
                 Log log = _broker.getConfiguration().getConfigurationLog();
                 log.warn(_loc.get("cache-retrieve-override", Exceptions.toString(entity)));
             }
-                
         }
         try {
             _broker.refresh(entity, this);
@@ -1187,8 +1186,8 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         assertValidAttchedEntity(LOCK, entity);
         _broker.assertActiveTransaction();
-        configureCurrentCacheModes(getFetchPlan(), properties);
-        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, false);
+        configureCurrentCacheModes(pushFetchPlan(), properties);
+        configureCurrentFetchPlan(getFetchPlan(), properties, mode, false);
         try {
             _broker.lock(entity, MixedLockLevelsHelper.toLockLevel(mode),
                 _broker.getFetchConfiguration().getLockTimeout(), this);
