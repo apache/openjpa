@@ -31,8 +31,9 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.IdentityHashMap;
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
@@ -46,6 +47,7 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingBroker;
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FindCallbacks;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpCallbacks;
@@ -53,7 +55,6 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
@@ -61,6 +62,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -519,7 +521,13 @@ public class EntityManagerImpl
             // should be thrown whenever the commit fails for any reason at
             // all, wheras the exception translator handles exceptions that
             // are caused for specific reasons
-            throw new RollbackException(e);
+            // pass along the failed object if one is available.
+            Object failedObject = null;
+            if (e instanceof ExceptionInfo){
+                failedObject = ((ExceptionInfo)e).getFailedObject();
+            }
+        	
+            throw new RollbackException(e).setFailedObject(failedObject);
         }
     }
 
