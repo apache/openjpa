@@ -33,6 +33,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -487,6 +488,7 @@ public class EntityManagerImpl
     @SuppressWarnings("unchecked")
     public <T> T find(Class<T> cls, Object oid, LockModeType mode, Map<String, Object> properties) {
         assertNotCloseInvoked();
+        properties = cloneProperties(properties);
         configureCurrentCacheModes(pushFetchPlan(), properties);
         configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
         try {
@@ -1186,6 +1188,7 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         assertValidAttchedEntity(LOCK, entity);
         _broker.assertActiveTransaction();
+        properties = cloneProperties(properties);
         configureCurrentCacheModes(pushFetchPlan(), properties);
         configureCurrentFetchPlan(getFetchPlan(), properties, mode, false);
         try {
@@ -1807,5 +1810,12 @@ public class EntityManagerImpl
             }
         }
         return value;
+    }
+
+    private Map<String, Object> cloneProperties(Map<String, Object> properties) {
+        if (properties != null) {
+            properties = new HashMap<String, Object>(properties);
+        }
+        return properties;
     }
 }
