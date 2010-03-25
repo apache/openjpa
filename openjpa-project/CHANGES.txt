@@ -206,6 +206,7 @@ Bug
     * [OPENJPA-1544] - Remove WebSphere version number from org/apache/ee/localizer.properties
     * [OPENJPA-1546] - OpenJPA doesn't work as internal JPA inside web applicaion in JBoss AS
     * [OPENJPA-1547] - NOT IN with MEMBER OF returns syntax error
+    * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
     * [OPENJPA-1556] - Exception thrown on first use of @Strategy in @Embeddable classes
     * [OPENJPA-1558] - Many side of a MxO relationship contains null reference if One side is loaded first.
     * [OPENJPA-1562] - EntityManager:Refresh on Removed entity does not trigger IllegalArgumentException
