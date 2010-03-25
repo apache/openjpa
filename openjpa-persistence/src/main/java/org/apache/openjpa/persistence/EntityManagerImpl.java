@@ -81,6 +81,7 @@ import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
+import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
@@ -569,8 +570,15 @@ public class EntityManagerImpl
             // normal exception translator, since the spec says they
             // should be thrown whenever the commit fails for any reason at
             // all, wheras the exception translator handles exceptions that
-            // are caused for specific reasons
-            throw new RollbackException(e);
+            // are caused for specific reasons            
+
+            // pass along the failed object if one is available.
+            Object failedObject = null;
+            if (e instanceof ExceptionInfo){
+            	failedObject = ((ExceptionInfo)e).getFailedObject();            	
+            }
+            
+            throw new RollbackException(e).setFailedObject(failedObject);
         }
     }
 
