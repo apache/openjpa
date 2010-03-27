@@ -25,6 +25,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -62,6 +63,7 @@ public class DetachedStateManager
     private final Object _oid;
     private final Object _version;
     private final ReentrantLock _lock;
+    private final boolean _useDSFForUnproxy;   // old releases will default to FALSE, which is the old behavior
 
     /**
      * Constructor.
@@ -89,6 +91,14 @@ public class DetachedStateManager
             _lock = new ReentrantLock();
         else
             _lock = null;
+        if (sm.getContext() != null && sm.getContext().getConfiguration() != null) {
+            Compatibility compat = sm.getContext().getConfiguration().getCompatibilityInstance();
+            if (compat != null && !compat.getIgnoreDetachedStateFieldForProxySerialization())
+                _useDSFForUnproxy = true;      // new 2.0 behavior
+            else
+                _useDSFForUnproxy = false;
+        } else
+            _useDSFForUnproxy = false;
     }
 
     /////////////////////////////////
@@ -729,6 +739,15 @@ public class DetachedStateManager
 
     public BitSet getDirty() {
         return _dirty;
+    }
+
+    /**
+     * Should DetachedStateField be used by Proxies to determine when to remove
+     * $proxy wrappers during serialization.
+     * @since 2.0.0
+     */
+    public boolean getUseDSFForUnproxy() {
+        return _useDSFForUnproxy;
     }
 
     public BitSet getFlushed() {

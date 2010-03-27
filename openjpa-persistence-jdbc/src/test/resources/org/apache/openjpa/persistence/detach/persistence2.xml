@@ -24,26 +24,31 @@
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 
     <!-- 
-         This is the original PU from 1.0, but running as a 2.0 app
+         This is the new PU for 2.0, which takes the default 2.0 
+         behavior of removing $proxy for default DetachedStateField=transient
     -->
-    <persistence-unit name="Annuity2Compat">
-        <class>org.apache.openjpa.persistence.proxy.entities.Address</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Annuity</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.AnnuityHolder</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.AnnuityPersistebleObject</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Contact</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.EquityAnnuity</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.FixedAnnuity</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Payor</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Payout</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Person</class>
-        <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
+    <persistence-unit name="NoProxy2New">
+        <class>org.apache.openjpa.persistence.detach.Entity20</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>			
-            <property name="openjpa.DetachState"
-                value="fgs(DetachedStateField=true)" />
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)" />
+        </properties>
+    </persistence-unit>
+
+    <!-- 
+         This is the original PU from 1.0, but running as a 2.0 app
+         with the new Compatibility flag set to use the old 1.0 behavior,
+         which is to not remove $proxy after calling EM.clear()
+    -->
+    <persistence-unit name="NoProxy2Compat">
+        <class>org.apache.openjpa.persistence.detach.Entity20</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>			
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema(ForeignKeys=true)" />
+            <property name="openjpa.Compatibility"
+                value="IgnoreDetachedStateFieldForProxySerialization=true" />
         </properties>
     </persistence-unit>
 

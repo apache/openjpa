@@ -71,6 +71,7 @@ public class TestContainerSpecCompatibilityOptions
         Compatibility compat = emf1.getConfiguration().getCompatibilityInstance();
         assertTrue(compat.getFlushBeforeDetach());
         assertTrue(compat.getCopyOnDetach());
+        assertTrue(compat.getIgnoreDetachedStateFieldForProxySerialization());
         assertTrue(compat.getPrivatePersistentProperties());
         assertFalse(compat.isAbstractMappingUniDirectional());
         assertFalse(compat.isNonDefaultMappingAllowed());
@@ -92,6 +93,7 @@ public class TestContainerSpecCompatibilityOptions
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertFalse(compat.getFlushBeforeDetach());
         assertFalse(compat.getCopyOnDetach());
+        assertFalse(compat.getIgnoreDetachedStateFieldForProxySerialization());
         assertFalse(compat.getPrivatePersistentProperties());
         assertTrue(compat.isAbstractMappingUniDirectional());
         assertTrue(compat.isNonDefaultMappingAllowed());
