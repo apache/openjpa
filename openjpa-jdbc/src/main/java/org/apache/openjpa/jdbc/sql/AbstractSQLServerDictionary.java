@@ -37,7 +37,7 @@ public abstract class AbstractSQLServerDictionary
     extends DBDictionary {
 
     public AbstractSQLServerDictionary() {
-        reservedWordSet.addAll(Arrays.asList(new String[]{ "FILE", "INDEX" }));
+        reservedWordSet.addAll(Arrays.asList(new String[]{ "FILE", "INDEX", "RULE" }));
         systemTableSet.add("DTPROPERTIES");
         validationSQL = "SELECT GETDATE()";
         rangePosition = RANGE_POST_DISTINCT;
