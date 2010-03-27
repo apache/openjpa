@@ -21,7 +21,9 @@ package org.apache.openjpa.persistence.proxy;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -75,7 +77,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /* 
      * Test default 1.0 compatibility behavior, which should pass AS-IS
      */
-    @AllowFailure(message="Will fail until OPENJPA-1597 is fixed")
+    @AllowFailure(message="Will fail until root cause of OPENJPA-1597 is found")
     public void testAnnuity1Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -91,6 +93,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
             log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
             log.trace("CopyOnDetach=" + compat.getCopyOnDetach());
             log.trace("CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
+                compat.getIgnoreDetachedStateFieldForProxySerialization());
         }
 
         try {
@@ -105,7 +109,7 @@ public class TestDetachMerge extends SingleEMFTestCase {
     /* 
      * Test 2.0 behavior with Compatibility flag and DetachedStateField=true, which should PASS
      */
-    @AllowFailure(message="Will fail until OPENJPA-1597 is fixed")
+    @AllowFailure(message="Will fail until root cause of OPENJPA-1597 is found")
     public void testAnnuity2Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf2 = 
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
@@ -121,6 +125,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
             log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
             log.trace("CopyOnDetach=" + compat.getCopyOnDetach());
             log.trace("CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
+                compat.getIgnoreDetachedStateFieldForProxySerialization());
         }
 
         try {
@@ -150,6 +156,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
             log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
             log.trace("CopyOnDetach=" + compat.getCopyOnDetach());
             log.trace("CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
+                compat.getIgnoreDetachedStateFieldForProxySerialization());
         }
 
         try {
@@ -184,6 +192,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
             log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
             log.trace("CopyOnDetach=" + compat.getCopyOnDetach());
             log.trace("CascadeWithDetach=" + compat.getCascadeWithDetach());
+            log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
+                compat.getIgnoreDetachedStateFieldForProxySerialization());
         }
 
         try {
@@ -613,7 +623,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
         if (payors == null)
             throw new RuntimeException("Annuity: IPayor list not the same (payors was null)!");
         if (payors.size() != payors2.size())
-            throw new RuntimeException("Annuity: IPayor list not the same (payors size not the same)!");
+            throw new RuntimeException("Annuity: IPayor list not the same (payors size not the same)! payors=" +
+                payors.toArray().toString() + ", payors2=" + payors2.toString());
         for (int i = 0; i < payors.size(); i++) {
             IPayor payor = payors.get(i);
             boolean found = false;

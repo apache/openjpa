@@ -40,10 +40,10 @@
         <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>			
-            <property name="openjpa.DetachState" value="fgs(DetachedStateField=true)" />
-            <!-- <property name="openjpa.jdbc.Schema" value="EJB30"/> -->
+            <property name="openjpa.DetachState"
+                value="fgs(DetachedStateField=true)" />
             <property name="openjpa.jdbc.SynchronizeMappings"
-                value="buildSchema(ForeignKeys=true)"/>
+                value="buildSchema(ForeignKeys=true)" />
         </properties>
     </persistence-unit>
 
@@ -66,10 +66,10 @@
         <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>			
-            <!-- <property name="openjpa.DetachState" value="fgs(DetachedStateField=true)" /> -->
-            <!-- <property name="openjpa.jdbc.Schema" value="EJB30"/> -->
+            <!-- <property name="openjpa.DetachState"
+                value="fgs(DetachedStateField=true)" /> -->
             <property name="openjpa.jdbc.SynchronizeMappings"
-                value="buildSchema(ForeignKeys=true)"/>
+                value="buildSchema(ForeignKeys=true)" />
         </properties>
     </persistence-unit>
 
@@ -92,11 +92,12 @@
         <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>			
-            <!-- <property name="openjpa.Compatibility.xxxxx" value="true)" /> -->
-            <property name="openjpa.DetachState" value="fgs(DetachedStateField=true)" />
-            <!-- <property name="openjpa.jdbc.Schema" value="EJB30"/> -->
+            <property name="openjpa.Compatibility"
+                value="IgnoreDetachedStateFieldForProxySerialization=true" />
+            <property name="openjpa.DetachState"
+                value="fgs(DetachedStateField=true)" />
             <property name="openjpa.jdbc.SynchronizeMappings"
-                value="buildSchema(ForeignKeys=true)"/>
+                value="buildSchema(ForeignKeys=true)" />
         </properties>
     </persistence-unit>
 </persistence>

@@ -20,6 +20,8 @@ package org.apache.openjpa.util;
 
 import java.security.AccessController;
 
+import org.apache.openjpa.conf.Compatibility;
+import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -111,19 +113,47 @@ public class Proxies {
         } else if (proxy.getOwner() == null) {
             // no StateManager (DetachedStateField==false), so no $proxy to remove
             return proxy;
-        } else if (proxy.getOwner().isDetached()) {
-            // already detached, so remove any $proxy
-            return proxy.copy(proxy);
         } else {
             // using a StateManager, so determine what DetachedState is being used
-            OpenJPAStateManager sm = proxy.getOwner();  // !null checked for above
-            ClassMetaData meta = sm.getMetaData();      // if null, no proxies?
-            if ((meta != null) && (!Boolean.TRUE.equals(meta.usesDetachedState()))) {
-                // configured to use transient (null) or no (FALSE) StateManger, so remove any $proxy
-                return proxy.copy(proxy);
+            OpenJPAStateManager sm = proxy.getOwner();  // null checked for above
+            ClassMetaData meta = null;          // if null, no proxies?
+            boolean useDSFForUnproxy = false;   // default to false for old 1.0 behavior
+
+            // DetachedStateMnager has no context or metadata, so we can't get configuration settings
+            if (!proxy.getOwner().isDetached()) {
+                Compatibility compat = null;
+                meta = sm.getMetaData();
+                if (meta != null) {
+                    compat = meta.getRepository().getConfiguration().getCompatibilityInstance();
+                } else if (sm.getContext() != null && sm.getContext().getConfiguration() != null) {
+                    compat = sm.getContext().getConfiguration().getCompatibilityInstance();
+                } else {
+                    // no-op - using a StateManager, but no Compatibilty settings available
+                }
+                if (compat != null) {
+                    // new 2.0 behavior of using DetachedStateField to determine unproxy during serialization
+                    useDSFForUnproxy = !compat.getIgnoreDetachedStateFieldForProxySerialization();
+                }
             } else {
-                // DetachedStateField==true, which means to keep the SM and $proxy in the serialized objects
-                return proxy;
+                // Using a DetachedStateManager, so use the new flag since there is no context or metadata
+                useDSFForUnproxy = ((DetachedStateManager)sm).getUseDSFForUnproxy();
+            }
+            
+            if (useDSFForUnproxy) {
+                // use new 2.0 behavior
+                if ((meta != null) && (Boolean.TRUE.equals(meta.usesDetachedState()))) {
+                    // configured to always use and serialize a StateManger, so keep any $proxy
+                    return proxy;
+                } else {
+                    // already detached or using DetachedStateField==false or transient, so remove any $proxy
+                    return proxy.copy(proxy);
+                }
+            } else {
+                // use old 1.0 behavior
+                if (proxy.getOwner().isDetached())
+                    return proxy;
+                else
+                    return proxy.copy(proxy);
             }
         }
     }

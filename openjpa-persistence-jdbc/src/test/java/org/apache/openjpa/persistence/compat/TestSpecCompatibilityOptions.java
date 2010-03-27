@@ -57,6 +57,7 @@ extends AbstractCachedEMFTestCase {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertTrue(compat.getFlushBeforeDetach());
         assertTrue(compat.getCopyOnDetach());
+        assertTrue(compat.getIgnoreDetachedStateFieldForProxySerialization());
         assertTrue(compat.getPrivatePersistentProperties());
         String vMode = emf.getConfiguration().getValidationMode();
         assertEquals("NONE", vMode);
@@ -65,7 +66,6 @@ extends AbstractCachedEMFTestCase {
         assertEquals(spec.getVersion(), 1);
         
         emf.close();
-
     }
 
     /*
@@ -82,6 +82,7 @@ extends AbstractCachedEMFTestCase {
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         assertFalse(compat.getFlushBeforeDetach());
         assertFalse(compat.getCopyOnDetach());
+        assertFalse(compat.getIgnoreDetachedStateFieldForProxySerialization());
         assertFalse(compat.getPrivatePersistentProperties());
         String vMode = emf.getConfiguration().getValidationMode();
         assertEquals("AUTO", vMode);

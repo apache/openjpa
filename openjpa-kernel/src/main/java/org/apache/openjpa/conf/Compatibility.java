@@ -66,6 +66,7 @@ public class Compatibility {
     private boolean _isNonDefaultMappingAllowed = false;
     private boolean _reorderMetaDataResolution = true;
     private boolean _reloadOnDetach = false;
+    private boolean _ignoreDetachedStateFieldForProxySerialization = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -293,6 +294,39 @@ public class Compatibility {
      */
     public boolean getFlushBeforeDetach() {
         return _flushBeforeDetach;
+    }
+
+    /**
+     * Whether OpenJPA should ignore the DetachedStateField value when
+     * determining if our Proxy classes should be removed during serialization.
+     * <P>Starting with version 2.0.0, when the DetachedStateFiled==true, the
+     * build time $proxy classes will not be removed.
+     * <P>Prior to version 2.0.0, the DetachedStateFiled was not used and
+     * the $proxy classes were not being removed during serialization after
+     * the Persistence context was cleared.
+     * 
+     * @param ignoreDSF if true the old Proxy serialization behavior will be used.
+     * 
+     * @since 2.0.0
+     */
+    public void setIgnoreDetachedStateFieldForProxySerialization(boolean ignoreDSF) {
+        _ignoreDetachedStateFieldForProxySerialization = ignoreDSF;
+    }
+    
+    /**
+     * Whether OpenJPA should ignore the DetachedStateField value when
+     * determining if our Proxy classes should be removed during serialization.
+     * <P>Starting with version 2.0.0, when the DetachedStateFiled==true, the
+     * build time $proxy classes will not be removed.
+     * <P>Prior to version 2.0.0, the DetachedStateFiled was not used and
+     * the $proxy classes were not being removed during serialization after
+     * the Persistence context was cleared.
+     * 
+     * @since 2.0.0
+     * @return true if the old Proxy serialization will be used, otherwise false.
+     */
+    public boolean getIgnoreDetachedStateFieldForProxySerialization() {
+        return _ignoreDetachedStateFieldForProxySerialization;
     }
 
     /**

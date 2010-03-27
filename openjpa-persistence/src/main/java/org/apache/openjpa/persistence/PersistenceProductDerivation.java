@@ -287,6 +287,7 @@ public class PersistenceProductDerivation
             compatibility.setFlushBeforeDetach(true);
             compatibility.setCopyOnDetach(true);
             compatibility.setPrivatePersistentProperties(true);
+            compatibility.setIgnoreDetachedStateFieldForProxySerialization(true);
             // Disable bean validation for spec level < 2 configurations
             conf.validationMode.set(String.valueOf(ValidationMode.NONE));
         } else {
