@@ -25,8 +25,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="RIDER_ANNUITY")
 @AttributeOverride(name="lastUpdateDate", column=@Column(name="LAST_UPDATE_TS"))
 public class Rider extends AnnuityPersistebleObject implements IRider {
 	private static final long serialVersionUID = 2088116709551706187L;
@@ -42,6 +44,8 @@ public class Rider extends AnnuityPersistebleObject implements IRider {
 	public void setEffectiveDate(Date effectiveDate) {
 		this.effectiveDate = effectiveDate;
 	}
+
+	@Column(name="RIDER_RULE")
 	public String getRule() {
 		return rule;
 	}
