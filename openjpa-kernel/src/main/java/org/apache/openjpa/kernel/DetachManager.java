@@ -708,10 +708,8 @@ public class DetachManager
          * Set the owner of the field's proxy to the detached state manager.
          */
         private Object reproxy(Object obj, int field) {
-            if (obj != null && _detSM != null && obj instanceof Proxy) {
+            if (obj != null && _detSM != null && obj instanceof Proxy)
                 ((Proxy) obj).setOwner(_detSM, field);
-                return ((Proxy) obj).copy(obj); 
-            }
             return obj;
         }
 

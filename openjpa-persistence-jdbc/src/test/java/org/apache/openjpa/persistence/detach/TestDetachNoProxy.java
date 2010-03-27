@@ -97,7 +97,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         // in-place updated entity should not have any proxy classes and should be detached
         assertFalse(em.contains(e20));
         assertTrue(em.isDetached(e20));
-        verifySerializable(e20, false, false);
+        verifySerializable(e20, true, false);
                
         em.close();
         emf2.close();
@@ -202,7 +202,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             // entity should not have any proxy classes (in-place updated) and is detached
             assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
-            verifySerializable(e20, false, false);
+            verifySerializable(e20, true, false);
         }
 
         em.close();
