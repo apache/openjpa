@@ -163,7 +163,7 @@
                 <title>
                     Serialization of Entities
                 </title>
-                <!-- See OPENJPA-1097 for details. -->
+                <!-- See OPENJPA-1097 and OPENJPA-1597 for details. -->
                 <para>
                     In 1.x.x releases of OpenJPA, when an entity was serialized
                     after calling EntityManager.find(), detach() or detachAll()
@@ -173,7 +173,7 @@
                     proxy classes were not removed.
                 </para>
                 <para>
-                    Starting with OpenJPA 1.3 and 2.0, this behavior has been
+                    Starting with OpenJPA 2.0, this behavior has been
                     modified, so that by default all proxies will be removed
                     during serialization.  See 
                     <xref linkend="ref_guide_pc_scos_proxy_serial"/> 
@@ -182,6 +182,16 @@
                     <xref linkend="ref_guide_detach_state"/> 
                     for more details on how to override the default
                     <literal>DetachedStateField</literal> setting.
+                </para>
+                <para>
+                    Applications that use a 1.0 persistence.xml will
+                    automatically maintain the old behavior.  It is
+                    possible for a version 2.0 application to revert back to
+                    the prior 1.x.x behavior by setting the following
+                    openjpa.Compatibility property as follows:
+                    <simplelist>
+                        <member>IgnoreDetachedStateFieldForProxySerialization=true</member>
+                    </simplelist>
                 </para>
             </section>
         </section>
