@@ -96,9 +96,18 @@ public class Proxies {
          *   1) Runtime created proxy (!detachable), then unproxy
          *   2) No Proxy, then return as-is
          *   3) No StateManager (DetachedStateField==false), then return as-is
-         *   4) If detached, then return as-is <--- ERROR as EM.clear() marks
-         *      entity as detached but doesn't remove any $proxy usage
-         *   5) Else, unproxy
+         *   Get the new IgnoreDetachedStateFieldForProxySerialization
+         *      Compatibility flag from either the metadata/configuration if
+         *      this is a normal StateManager, otherwise use the new flag
+         *      added to the DetachedStateManager
+         *   4) If new 2.0 behavior
+         *      4a) If ClassMetaData exists and DetachedStateField == TRUE
+         *          then do not remove the proxy and return as-is
+         *      4b) Else, using DetachedStateField of transient(default) or
+         *          false, so unproxy
+         *   5) If 1.0 app or requested old 1.0 behavior
+         *      5a) If detached, then do not unproxy and return as-is
+         *      5b) Else, unproxy
          * 
          *  if (detachable && (proxy == null || proxy.getOwner() == null 
          *      || proxy.getOwner().isDetached()))
@@ -128,7 +137,7 @@ public class Proxies {
                 } else if (sm.getContext() != null && sm.getContext().getConfiguration() != null) {
                     compat = sm.getContext().getConfiguration().getCompatibilityInstance();
                 } else {
-                    // no-op - using a StateManager, but no Compatibilty settings available
+                    // no-op - using a StateManager, but no Compatibility settings available
                 }
                 if (compat != null) {
                     // new 2.0 behavior of using DetachedStateField to determine unproxy during serialization
