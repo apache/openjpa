@@ -34,4 +34,7 @@
     <entity class="EntityListenerEntity">
         <exclude-default-listeners/>
     </entity>
+    <entity class="Message">
+        <exclude-default-listeners/>
+    </entity>
 </entity-mappings>
