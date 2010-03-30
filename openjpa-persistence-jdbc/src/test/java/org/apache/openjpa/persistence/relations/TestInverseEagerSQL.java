@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.relations;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -41,13 +42,18 @@ public class TestInverseEagerSQL
 
     public int numCustomers = 1;
     public int numOrdersPerCustomer = 4;
+    
+    public int _nPeople = 3; 
+    public int _nPhones = 3;
 
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class, 
             EntityAInverseEager.class, EntityA1InverseEager.class,
             EntityA2InverseEager.class, EntityBInverseEager.class,
             EntityCInverseEager.class, EntityDInverseEager.class,
-            Publisher.class, Magazine.class, DROP_TABLES);
+            Publisher.class, Magazine.class, 
+            PPerson.class, PPhone.class, 
+            DROP_TABLES);
 
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
@@ -131,6 +137,21 @@ public class TestInverseEagerSQL
             magazine.setIdPublisher(p2);
             magazine.setName("magagine"+i+"_"+p2.getName());
             em.persist(magazine);
+        }
+        
+        PPerson person;
+        PPhone phone;
+        for(int i =0; i < _nPeople; i++) { 
+            person = new PPerson();
+            person.setPhones(new ArrayList<PPhone>());
+            em.persist(person);
+            for(int j = 0; j < _nPhones; j++) { 
+                phone = new PPhone(); 
+                phone.setPeople(new ArrayList<PPerson>());
+                phone.getPeople().add(person);
+                person.getPhones().add(phone);
+                em.persist(phone);
+            }
         }
 
         em.flush();
@@ -255,8 +276,8 @@ public class TestInverseEagerSQL
         // Not all databases support GenerationType.IDENTITY column(s)
         if (!((JDBCConfiguration) emf.getConfiguration()).
             getDBDictionaryInstance().supportsAutoAssign) {
-			return;
-		}
+            return;
+        }
         sql.clear();
 
         OpenJPAEntityManager em = emf.createEntityManager();
@@ -279,6 +300,36 @@ public class TestInverseEagerSQL
             }
         }
 
+        assertEquals(0, sql.size());
+        em.close();
+    }
+    
+    public void testManyToManyEagerEagerInverseLazyQuery() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).
+            getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
+        sql.clear();
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String query = "select p FROM PPerson p";
+        Query q = em.createQuery(query);
+        List list = q.getResultList();
+        assertEquals(_nPeople, list.size());
+        assertEquals(7, sql.size());
+
+        sql.clear();
+        em.clear();
+        for (int i = 0; i < list.size(); i++) {
+            PPerson p = (PPerson) list.get(i);
+            Collection<PPhone> phones = p.getPhones();
+            assertEquals(_nPhones, phones.size());
+            for(PPhone phone : p.getPhones()) {
+                assertNotNull(phone.getPeople());
+                assertTrue(phone.getPeople().contains(p));
+            }
+        }
         assertEquals(0, sql.size());
         em.close();
     }

@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.Closeable;
@@ -99,6 +100,13 @@ public interface StoreManager
      * if it does not.
      */
     public boolean exists(OpenJPAStateManager sm, Object edata);
+    
+    /**
+     * Verify that the given instance exists in the data store in memory; return false
+     * if it does not. When an object is found in memory the corresponding element of 
+     * the BitSet is set to 1. 
+     */
+    public boolean isCached(List<Object> oids, BitSet edata);
 
     /**
      * Update the version information in the given state manager to the

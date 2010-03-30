@@ -57,7 +57,11 @@ public class DataCacheManagerImpl
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
+        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
+        if (_queryCache != null)
+            _queryCache.initialize(this);
         _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
+
         if (_cache == null)
             return;
          
@@ -69,9 +73,7 @@ public class DataCacheManagerImpl
         _policy = conf.getCacheDistributionPolicyInstance();
 
         _cache.initialize(this);
-        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
-        if (_queryCache != null)
-            _queryCache.initialize(this);
+
     }
 
     public DataCache getSystemDataCache() {
@@ -155,6 +157,7 @@ public class DataCacheManagerImpl
         _includedTypes = includedTypes;
         _excludedTypes = excludedTypes;
     }
+    
     /**
      * Affirms the given class is eligible to be cached according to the cache mode
      * and the cache enable flag on the given metadata.

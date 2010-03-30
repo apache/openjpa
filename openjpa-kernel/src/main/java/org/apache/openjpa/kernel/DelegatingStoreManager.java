@@ -20,6 +20,7 @@ package org.apache.openjpa.kernel;
 
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -199,4 +200,9 @@ public abstract class DelegatingStoreManager
     public boolean cancelAll() {
         return _store.cancelAll();
 	}
+	
+    public boolean isCached(List<Object> oids, BitSet edata) {
+        return _store.isCached(oids, edata);
+    }
+    
 }

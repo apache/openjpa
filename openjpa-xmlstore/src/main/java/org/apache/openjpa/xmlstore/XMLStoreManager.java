@@ -283,4 +283,8 @@ public class XMLStoreManager
         }
         return new ListResultObjectProvider(pcs);
     }
+    public boolean isCached(List<Object> oids, BitSet edata) {
+        // XMLStoreManager does not cache oids. 
+        return false;
+    }
 }

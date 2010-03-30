@@ -30,12 +30,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.datacache.QueryCacheStoreQuery;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -295,6 +298,11 @@ public class JDBCStoreManager
         return exists(mapping, sm.getObjectId(), context);
     }
 
+    public boolean isCached(List<Object> oids, BitSet edata) {
+        // JDBCStoreManager doesn't store oids in memory.
+        return false;
+    }
+    
     private boolean exists(ClassMapping mapping, Object oid, Object context) {
         // add where conditions on base class to avoid joins if subclass
         // doesn't use oid as identifier
@@ -455,8 +463,9 @@ public class JDBCStoreManager
         // Check if the owner has eagerly loaded ToMany relations.
         for (int i = 0; i < fms.length; i++) {
             if (res.getEager(fms[i]) != null) {
-                if (!fms[i].getElement().isTypePC())
+                if (!fms[i].getElement().isTypePC()) {
                     continue;
+                }
                 Object coll =  owner.fetchObject(fms[i].getIndex());
                 if (coll instanceof Map)
                     coll = ((Map)coll).values();
@@ -471,24 +480,23 @@ public class JDBCStoreManager
                     for (Iterator<?> itr = ((Collection<?>) coll).iterator();
                         itr.hasNext();) {
                         PersistenceCapable pc = (PersistenceCapable) itr.next();
-
-                        if (pc == null)
+                        if (pc == null) {
                             continue;
-
-                        OpenJPAStateManager sm = (OpenJPAStateManager) pc.
-                            pcGetStateManager();
-                        FieldMapping[] fmd = ((ClassMapping) sm.getMetaData()).
-                            getFieldMappings();
+                        }
+                        OpenJPAStateManager sm = (OpenJPAStateManager) pc.pcGetStateManager();
+                        ClassMapping cm =
+                            (ClassMapping) _conf.getMetaDataRepositoryInstance().getCachedMetaData(pc.getClass());
+                        FieldMapping[] fmd = cm.getFieldMappings();
                         for (int j = 0; j < fmd.length; j++) {
-                            Object oid = sm.getIntermediate(fmd[j].getIndex());
-                            // if oid was setIntermediate() previously
-                            // and it is the same as the owner,
-                            // then set the inverse relation
-                            if (oid != null &&
-                                oid.equals(owner.getObjectId())) {
-                                sm.storeObject(fmd[j].getIndex(),
-                                    owner.getPersistenceCapable());
-                                break;
+                            // don't check the oids for basic fields.
+                            if (fmd[j].isTypePC()) {
+                                Object oid = sm.getIntermediate(fmd[j].getIndex());
+                                // if oid was setIntermediate() previously and it is the same as the owner,generate
+                                // then set the inverse relation
+                                if (oid != null && oid.equals(owner.getObjectId())) {
+                                    sm.storeObject(fmd[j].getIndex(), owner.getPersistenceCapable());
+                                    break;
+                                }
                             }
                         }
                     }
@@ -911,15 +919,32 @@ public class JDBCStoreManager
         return paged;
     }
 
-    public StoreQuery newQuery(String language) {
+    private StoreQuery newStoreQuery(String language) {
         ExpressionParser ep = QueryLanguages.parserForLanguage(language);
-        if (ep != null)
+        if (ep != null) { 
             return new JDBCStoreQuery(this, ep);
-        if (QueryLanguages.LANG_SQL.equals(language))
+        }
+        if (QueryLanguages.LANG_SQL.equals(language)) {
             return new SQLStoreQuery(this);
-        if (QueryLanguages.LANG_PREPARED_SQL.equals(language))
+        }
+        if (QueryLanguages.LANG_PREPARED_SQL.equals(language)) {
             return new PreparedSQLStoreQuery(this);
+        }
         return null;
+    }
+    
+    public StoreQuery newQuery(String language) {
+        StoreQuery sq = newStoreQuery(language); 
+        if (sq == null || QueryLanguages.parserForLanguage(language) == null) {
+            return sq;
+        }
+
+        QueryCache queryCache = _ctx.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
+        if (queryCache == null) {
+            return sq;
+        }
+        
+        return new QueryCacheStoreQuery(sq, queryCache);
     }
 
     public FetchConfiguration newFetchConfiguration() {

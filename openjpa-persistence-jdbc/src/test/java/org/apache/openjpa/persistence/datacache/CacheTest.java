@@ -781,7 +781,8 @@ public abstract class CacheTest extends AbstractTestCase {
             Collection c = (Collection) q.execute();
             iterate(c);
 
-            assertInCache(q, Boolean.FALSE);
+            // Query results are no longer dependent on cacheability of an entity.
+            assertInCache(q, Boolean.TRUE);
         }
         finally {
             close(broker);
@@ -801,7 +802,8 @@ public abstract class CacheTest extends AbstractTestCase {
             Collection c = (Collection) q.execute();
             iterate(c);
 
-            assertInCache(q, Boolean.FALSE);
+         // Query results are no longer dependent on cacheability of an entity.
+            assertInCache(q, Boolean.TRUE);
         }
         finally {
             close(broker);
