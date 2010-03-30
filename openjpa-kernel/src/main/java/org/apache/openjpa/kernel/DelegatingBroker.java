@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -1462,5 +1463,9 @@ public class DelegatingBroker
 
     public Object getConnectionFactory2() {
         return _broker.getConnectionFactory2();
+    }
+    
+    public boolean isCached(List<Object> oid) {
+        return _broker.isCached(oid);
     }
 }

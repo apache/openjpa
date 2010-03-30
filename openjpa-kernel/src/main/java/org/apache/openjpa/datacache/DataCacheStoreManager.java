@@ -34,14 +34,11 @@ import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.FindCallbacks;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
-import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.OpenJPAId;
@@ -228,22 +225,6 @@ public class DataCacheStoreManager
                 evictTypes(_ctx.getUpdatedTypes());
             }
 
-            // and notify the query cache.  notify in one batch to reduce synch
-            QueryCache queryCache = _ctx.getConfiguration().
-            getDataCacheManagerInstance().getSystemQueryCache();
-            if (queryCache != null) {
-                Collection<Class<?>> pers = _ctx.getPersistedTypes();
-                Collection<Class<?>> del = _ctx.getDeletedTypes();
-                Collection<Class<?>> up = _ctx.getUpdatedTypes();
-                int size = pers.size() + del.size() + up.size();
-                if (size > 0) {
-                    Collection<Class<?>> types = new ArrayList<Class<?>>(size);
-                    types.addAll(pers);
-                    types.addAll(del);
-                    types.addAll(up);
-                    queryCache.onTypesChanged(new TypesChangedEvent(this, types));
-                }
-            } 
         }
     }
 
@@ -292,10 +273,29 @@ public class DataCacheStoreManager
 
     public boolean exists(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm); 
-        if (cache != null && !isLocking(null)
-            && cache.contains(sm.getObjectId()))
+        if (cache != null && !isLocking(null) && cache.contains(sm.getObjectId()))
             return true;
         return super.exists(sm, edata);
+    }
+
+    public boolean isCached(List<Object> oids, BitSet edata) {
+        // If using partitioned cache, we were and still are broke.
+        DataCache cache = _mgr.getSystemDataCache();
+        if (cache != null && !isLocking(null)) {
+            // BitSet size is not consistent.
+            for(int i = 0; i < oids.size(); i++) {
+                Object oid = oids.get(i);
+                // Only check the cache if we haven't found the current oid.
+                if (edata.get(i) == false && cache.contains(oid)) {
+                    edata.set(i);
+                }
+            }
+            if(edata.cardinality()==oids.size()){
+                return true;
+            }
+        }
+
+        return super.isCached(oids, edata);
     }
 
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
@@ -658,22 +658,6 @@ public class DataCacheStoreManager
         // fire off a remote commit stalenesss detection event.
         _ctx.getConfiguration().getRemoteCommitEventManager()
             .fireLocalStaleNotification(oid);
-    }
-
-    public StoreQuery newQuery(String language) {
-        StoreQuery q = super.newQuery(language);
-
-        // if the query can't be parsed or it's using a non-parsed language
-        // (one for which there is no ExpressionParser), we can't cache it.
-        if (q == null || QueryLanguages.parserForLanguage(language) == null)
-            return q;
-
-        QueryCache queryCache = _ctx.getConfiguration().
-            getDataCacheManagerInstance().getSystemQueryCache();
-        if (queryCache == null)
-            return q;
-
-        return new QueryCacheStoreQuery(q, queryCache);
     }
 
     /**

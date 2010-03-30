@@ -51,6 +51,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -70,7 +72,6 @@ import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -88,7 +89,6 @@ import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
-import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
@@ -1416,8 +1416,25 @@ public class BrokerImpl
                 releaseConn = _connRetainMode != CONN_RETAIN_ALWAYS;
                 if (rollback)
                     _store.rollback();
-                else
+                else {
+                    // and notify the query cache.  notify in one batch to reduce synch
+                    QueryCache queryCache = getConfiguration().
+                    getDataCacheManagerInstance().getSystemQueryCache();
+                    if (queryCache != null) {
+                        Collection<Class<?>> pers = getPersistedTypes();
+                        Collection<Class<?>> del = getDeletedTypes();
+                        Collection<Class<?>> up = getUpdatedTypes();
+                        int size = pers.size() + del.size() + up.size();
+                        if (size > 0) {
+                            Collection<Class<?>> types = new ArrayList<Class<?>>(size);
+                            types.addAll(pers);
+                            types.addAll(del);
+                            types.addAll(up);
+                            queryCache.onTypesChanged(new TypesChangedEvent(this, types));
+                        }
+                    } 
                     _store.commit();
+                }
             } else {
                 releaseConn = _connRetainMode == CONN_RETAIN_TRANS;
                 _store.rollbackOptimistic();
@@ -5039,4 +5056,19 @@ public class BrokerImpl
             return null;
         }
     }
+    
+    public boolean isCached(List<Object> oids) {
+        BitSet loaded = new BitSet(oids.size());
+        //check L1 cache first
+        for (int i = 0; i < oids.size(); i++) {
+            Object oid = oids.get(i);
+            if (_cache.getById(oid, false) != null) {
+                loaded.set(i);
+            }
+        }
+        if(loaded.cardinality()==oids.size()){
+            return true;
+        }
+        return _store.isCached(oids, loaded);
+    };
 }

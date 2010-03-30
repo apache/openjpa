@@ -200,14 +200,11 @@ public class QueryKey
             // since the class change framework deals with least-derived types,
             // record the least-derived access path types
             meta = metas[i];
-            if (meta.getDataCache() != null)
-                accessPathClassNames.add(meta.getDescribedType().getName());
-            while (meta.getPCSuperclass() != null)
-                meta = meta.getPCSuperclassMetaData();
+            accessPathClassNames.add(meta.getDescribedType().getName());
+            while (meta.getPCSuperclass() != null) {
+                meta = meta.getPCSuperclassMetaData(); 
+            }
 
-            // ensure that this metadata is cacheable
-            if (meta.getDataCache() == null)
-                return null;
             accessPathClassNames.add(meta.getDescribedType().getName());
         }
 
