@@ -110,4 +110,24 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="TestDetachMerge">
+        <class>org.apache.openjpa.persistence.proxy.entities.Address</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Annuity</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.AnnuityHolder</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.AnnuityPersistebleObject</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Contact</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.EquityAnnuity</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.FixedAnnuity</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Payor</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Payout</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Person</class>
+        <class>org.apache.openjpa.persistence.proxy.entities.Rider</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="openjpa.DetachState" value="fgs(DetachedStateField=true)" />
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

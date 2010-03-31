@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,23 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.test;
+package org.apache.openjpa.persistence.proxy.entities;
 
-import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.io.Serializable;
 
-/**
- * Signals to the harness to ignore if the annotated test case/method fail.
- * 
- * @author Pinaki Poddar
- *
- */
-@Target({TYPE, METHOD})
-@Retention(RUNTIME)
-public @interface AllowFailure {
-    boolean value() default true;
-    String message() default "";
+public interface IAddress extends Serializable {
+
+	public String getCity();
+
+	public void setCity(String city);
+
+	public String getCountry();
+
+	public void setCountry(String country);
+
+	public String getLine1();
+
+	public void setLine1(String line1);
+
+	public String getLine2();
+
+	public void setLine2(String line2);
+
+	public String getState();
+
+	public void setState(String state);
+
+	public String getZipCode();
+
+	public void setZipCode(String zipCode);
+
 }

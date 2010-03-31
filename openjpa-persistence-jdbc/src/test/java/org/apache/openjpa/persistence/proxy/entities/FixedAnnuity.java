@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,23 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.test;
+package org.apache.openjpa.persistence.proxy.entities;
 
-import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.text.DecimalFormat;
 
-/**
- * Signals to the harness to ignore if the annotated test case/method fail.
- * 
- * @author Pinaki Poddar
- *
- */
-@Target({TYPE, METHOD})
-@Retention(RUNTIME)
-public @interface AllowFailure {
-    boolean value() default true;
-    String message() default "";
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+@Entity
+@DiscriminatorValue(value = "FIXED")
+public class FixedAnnuity extends Annuity implements IFixedAnnuity {
+
+	private static final long serialVersionUID = 1527245835840605452L;
+
+	private Double rate;
+
+	@Column(name="FIXED_RATE")
+	public Double getRate() {
+		return rate;
+	}
+
+	public void setRate(Double rate) {
+		this.rate = rate;
+		if (this.rate != null) {
+			DecimalFormat df = new DecimalFormat("#.##");
+			this.rate= new Double(df.format(rate));
+		}
+	}
 }

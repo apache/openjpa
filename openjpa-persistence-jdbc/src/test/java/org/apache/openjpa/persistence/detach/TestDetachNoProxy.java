@@ -212,11 +212,11 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
             // entity should still have proxy classes and is detached,
-            // Old 1.2.x Behavior -
+            // Current Behavior -
             //   the $proxy classes are not removed during serialization
-            // verifySerializable(e20, true, true);
-            // OPENJPA-1097 New behavior - $proxy classes are removed
-            verifySerializable(e20, true, false);
+            verifySerializable(e20, true, true);
+            // Proposed OPENJPA-1097 new behavior - $proxy classes are removed
+            // verifySerializable(e20, true, false);
         }
 
         em.close();

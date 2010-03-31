@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,23 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.test;
+package org.apache.openjpa.persistence.proxy.entities;
 
-import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Date;
 
-/**
- * Signals to the harness to ignore if the annotated test case/method fail.
- * 
- * @author Pinaki Poddar
- *
- */
-@Target({TYPE, METHOD})
-@Retention(RUNTIME)
-public @interface AllowFailure {
-    boolean value() default true;
-    String message() default "";
+public interface IPerson extends IAnnuityObject {
+
+	public Date getDateOfBirth();
+
+	public void setDateOfBirth(Date dateOfBirth);
+
+	public String getFirstName();
+
+	public void setFirstName(String firstName);
+
+	public String getGovernmentId();
+
+	public void setGovernmentId(String governmentId);
+
+	public String getLastName();
+
+	public void setLastName(String lastName);
+
+	public Byte[] getPicture();
+
+	public void setPicture(Byte[] picture);
+
+	public Date getTimeOfBirth();
+
+	public void setTimeOfBirth(Date timeOfBirth);	
+	
+	public IContact getContact();
+	
+	public void setContact(IContact contact);
+	
 }

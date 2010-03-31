@@ -539,26 +539,28 @@ public class DetachManager
          * Unproxies second class object fields.
          */
         public void reproxy(DetachedStateManager dsm) {
-            for (FieldMetaData fmd : sm.getMetaData().getProxyFields()) {
-                switch (fmd.getDeclaredTypeCode()) {
+            FieldMetaData[] fmds = sm.getMetaData().getFields();
+            for (int i = 0; i < fmds.length; i++) {
+                switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.COLLECTION:
                 case JavaTypes.MAP:
                     // lrs proxies not detached
-                    if (fmd.isLRS()) {
+                    if (fmds[i].isLRS()) {
                         objval = null;
-                        sm.replaceField(getDetachedPersistenceCapable(), this, fmd.getIndex());
+                        sm.replaceField(getDetachedPersistenceCapable(), 
+                            this, i);
                         break;
                     }
                     // no break
                 case JavaTypes.CALENDAR:
                 case JavaTypes.DATE:
                 case JavaTypes.OBJECT:
-                    sm.provideField(getDetachedPersistenceCapable(), this, fmd.getIndex());
+                    sm.provideField(getDetachedPersistenceCapable(), this, i);
                     if (objval instanceof Proxy) {
                         Proxy proxy = (Proxy) objval;
                         if (proxy.getChangeTracker() != null)
                             proxy.getChangeTracker().stopTracking();
-                        proxy.setOwner(dsm, (dsm == null) ? -1 : fmd.getIndex());
+                        proxy.setOwner(dsm, (dsm == null) ? -1 : i);
                     }
                 }
             }
@@ -700,10 +702,8 @@ public class DetachManager
          * Set the owner of the field's proxy to the detached state manager.
          */
         private Object reproxy(Object obj, int field) {
-            if (obj != null && _detSM != null && obj instanceof Proxy) {
+            if (obj != null && _detSM != null && obj instanceof Proxy)
                 ((Proxy) obj).setOwner(_detSM, field);
-                return ((Proxy) obj).copy(obj);
-            }
             return obj;
         }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,23 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.test;
+package org.apache.openjpa.persistence.proxy.entities;
 
-import java.lang.annotation.Target;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.ElementType.METHOD;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.math.BigDecimal;
+import java.util.Calendar;
 
-/**
- * Signals to the harness to ignore if the annotated test case/method fail.
- * 
- * @author Pinaki Poddar
- *
- */
-@Target({TYPE, METHOD})
-@Retention(RUNTIME)
-public @interface AllowFailure {
-    boolean value() default true;
-    String message() default "";
+public interface IPayout extends IAnnuityObject{
+
+	public void setTaxableAmount(BigDecimal taxableAmount);
+	public BigDecimal getTaxableAmount();
+	public void setStartDate(Calendar startDate);
+	public Calendar getStartDate();
+	public void setEndDate(Calendar payoutEndDate);
+	public Calendar getEndDate();
+	public IAnnuity getAnnuity();
+	public void setAnnuity(IAnnuity annuity);
+
 }
