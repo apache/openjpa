@@ -41,8 +41,8 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public int compId = 1;
     public int divId = 1;
     public int vpId = 1;
-    public List rsAllCompny1 = null;
-    public List rsAllCompny2 = null;
+    public List<Compny1> rsAllCompny1 = null;
+    public List<Compny2> rsAllCompny2 = null;
 
     public void setUp() {
         super.setUp(CLEAR_TABLES,
@@ -63,10 +63,10 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         queryQualifiedId(false);
     }
 
-    public void setCandidate(Query q, Class clz) 
+    public void setCandidate(Query q, Class<?> clz) 
         throws Exception {
-        org.apache.openjpa.persistence.QueryImpl q1 = 
-            (org.apache.openjpa.persistence.QueryImpl) q;
+        org.apache.openjpa.persistence.QueryImpl<?> q1 = 
+            (org.apache.openjpa.persistence.QueryImpl<?>) q;
         org.apache.openjpa.kernel.Query q2 = q1.getDelegate();
         org.apache.openjpa.kernel.QueryImpl qi = (QueryImpl) q2;
         if (clz == Compny1.class)
@@ -83,7 +83,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         Query q = em.createQuery(query);
         if (inMemory) 
             setCandidate(q, Compny1.class);
-        List rs = q.getResultList();
+        List<?> rs = q.getResultList();
         Division d = (Division) rs.get(0);
 
         em.clear();
@@ -115,6 +115,35 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         me = (Map.Entry) rs.get(0);
 
         assertTrue(d.equals(me.getKey()));
+        
+        // new tests for element collection
+        em.clear();
+        query = "select im from Item1 i, in (i.images) im " +
+            " order by VALUE(im)";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Item1.class);
+        rs = q.getResultList();
+        assertEquals(numItems * numImagesPerItem, rs.size());
+        
+        em.clear();
+        query = "select im from Item1 i, in (i.images) im " +
+            " where VALUE(im) = 'file11'";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Item1.class);
+        rs = q.getResultList();
+        assertEquals(1, rs.size());
+        
+        em.clear();
+        query = "select im from Item1 i, in (i.images) im " +
+            " group by im " +
+            " having VALUE(im) like 'file1%'";
+        q = em.createQuery(query);
+        if (inMemory) 
+            setCandidate(q, Item1.class);
+        rs = q.getResultList();
+        assertEquals(numImagesPerItem, rs.size());       
 
         em.close();
     }
@@ -222,25 +251,25 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
 
     public void assertItem1(Item1 item) {
         int id = item.getId();
-        Map images = item.getImages();
+        Map<String, String> images = item.getImages();
         Assert.assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertItem2(Item2 item) {
         int id = item.getId();
-        Map images = item.getImages();
+        Map<String, String> images = item.getImages();
         Assert.assertEquals(numImagesPerItem, images.size());
     }
 
     public void assertCompany1(Compny1 c) {
         int id = c.getId();
-        Map organization = c.getOrganization();
+        Map<Division, VicePresident> organization = c.getOrganization();
         Assert.assertEquals(2,organization.size());
     }
 
     public void assertCompany2(Compny2 c) {
         int id = c.getId();
-        Map organization = c.getOrganization();
+        Map<Division, VicePresident> organization = c.getOrganization();
         Assert.assertEquals(2,organization.size());
     }    
 
