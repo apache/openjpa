@@ -146,8 +146,8 @@ public class FetchConfigurationImpl
         public boolean fetchGroupContainsDefault = false;
         public boolean fetchGroupContainsAll = false;
         public boolean extendedPathLookup = false;
-        public DataCacheRetrieveMode cacheRetrieveMode;
-        public DataCacheStoreMode cacheStoreMode;        
+        public DataCacheRetrieveMode cacheRetrieveMode = DataCacheRetrieveMode.USE;
+        public DataCacheStoreMode cacheStoreMode = DataCacheStoreMode.USE;        
     }
 
     private final ConfigurationState _state;

@@ -152,4 +152,9 @@ public class ConcurrentDataCache
     protected boolean unpinInternal(Object key) {
         return _cache.unpin (key);
 	}
+    
+    protected boolean recacheUpdates() {
+        return true;
+    }
+
 }

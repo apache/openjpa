@@ -290,7 +290,7 @@ public class DataCacheStoreManager
                     edata.set(i);
                 }
             }
-            if(edata.cardinality()==oids.size()){
+            if (edata.cardinality() == oids.size()){
                 return true;
             }
         }
@@ -323,36 +323,33 @@ public class DataCacheStoreManager
     }
 
     public boolean initialize(OpenJPAStateManager sm, PCState state, FetchConfiguration fetch, Object edata) {
-        boolean fromDatabase; 
         DataCache cache = _mgr.selectCache(sm);
-        DataCachePCData data = null;
-        boolean updateCache = _ctx.getFetchConfiguration().getCacheRetrieveMode() != DataCacheRetrieveMode.BYPASS
-                            && _ctx.getPopulateDataCache();
-        if (cache == null || sm.isEmbedded() 
-            || _ctx.getFetchConfiguration().getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
-            || _ctx.getFetchConfiguration().getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
+        if (cache == null) {
+            return super.initialize(sm, state, fetch, edata);
+        }
+        DataCachePCData data = cache.get(sm.getObjectId());
+        boolean fromDatabase = false; 
+        boolean alreadyCached = data != null; 
+        if (sm.isEmbedded() 
+         || fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
+         || fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
             fromDatabase = super.initialize(sm, state, fetch, edata);
         } else {
-            data = cache.get(sm.getObjectId());
-            if (data != null && !isLocking(fetch)) {                
-                //### the 'data.type' access here probably needs to be
-                //### addressed for bug 511
+            if (alreadyCached && !isLocking(fetch)) {                
                 sm.initialize(data.getType(), state);
                 data.load(sm, fetch, edata);
-                // no need to update the cache. 
-                updateCache = false;
-                fromDatabase = true;
             } else {
-                // initialize from store manager
                 fromDatabase = super.initialize(sm, state, fetch, edata);
             }
         }
-
-        if (cache != null && (fromDatabase && updateCache)) {
-            // update cache if the result came from the database and configured to store or refresh the cache.
+        // update cache if the result came from the database and configured to use or refresh the cache.
+        boolean updateCache = fromDatabase && _ctx.getPopulateDataCache()
+                           && ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached)
+                            || (fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH));
+        if (updateCache) {
             cacheStateManager(cache, sm, data);
         }
-        return fromDatabase;
+        return fromDatabase || alreadyCached;
     }
     
     private void cacheStateManager(DataCache cache, OpenJPAStateManager sm, DataCachePCData data) {
@@ -387,7 +384,7 @@ public class DataCacheStoreManager
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        if (cache == null || sm.isEmbedded() || bypass(_ctx.getFetchConfiguration(), StoreManager.FORCE_LOAD_NONE))
+        if (cache == null || sm.isEmbedded() || bypass(fetch, StoreManager.FORCE_LOAD_NONE))
             return super.load(sm, fields, fetch, lockLevel, edata);
 
         DataCachePCData data = cache.get(sm.getObjectId());
