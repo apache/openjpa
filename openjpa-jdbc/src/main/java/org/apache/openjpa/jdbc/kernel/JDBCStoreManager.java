@@ -1000,7 +1000,7 @@ public class JDBCStoreManager
     
     public Connection getNewConnection() {
         try {
-            return connectInternal();
+            return _ds.getConnection();
         } catch (SQLException e) {
             throw SQLExceptions.getStore(e, _dict);
         }
