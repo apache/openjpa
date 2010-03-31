@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.proxy.entities;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="ADDRESS_ANNUITY")
 @Embeddable
 public class Address implements IAddress {	
 	private static final long serialVersionUID = -2017682230659955349L;
