@@ -87,15 +87,6 @@ public class Proxies {
          *   1) No Proxy, then return as-is
          *   2) Runtime created proxy (!detachable), then unproxy
          *   3) No StateManager (DetachedStateField==false), then return as-is
-         *   4) If detached, then unproxy
-         *   5) If ClassMetaData exists and DetachedStateField != TRUE
-         *      (default of DetachedStateField==transient), then unproxy
-         *   6) Else, return as-is
-         * 
-         * Original code -
-         *   1) Runtime created proxy (!detachable), then unproxy
-         *   2) No Proxy, then return as-is
-         *   3) No StateManager (DetachedStateField==false), then return as-is
          *   Get the new IgnoreDetachedStateFieldForProxySerialization
          *      Compatibility flag from either the metadata/configuration if
          *      this is a normal StateManager, otherwise use the new flag
@@ -108,6 +99,14 @@ public class Proxies {
          *   5) If 1.0 app or requested old 1.0 behavior
          *      5a) If detached, then do not unproxy and return as-is
          *      5b) Else, unproxy
+         * 
+         * Original code -
+         *   1) Runtime created proxy (!detachable), then unproxy
+         *   2) No Proxy, then return as-is
+         *   3) No StateManager (DetachedStateField==false), then return as-is
+         *   4) If detached, then return as-is <--- ERROR as EM.clear() marks
+         *      entity as detached but doesn't remove any $proxy usage
+         *   5) Else, unproxy
          * 
          *  if (detachable && (proxy == null || proxy.getOwner() == null 
          *      || proxy.getOwner().isDetached()))
