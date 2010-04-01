@@ -94,6 +94,7 @@ import org.apache.openjpa.event.BeanLifecycleCallbacks;
 import org.apache.openjpa.event.LifecycleCallbacks;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.MethodLifecycleCallbacks;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -1775,11 +1776,10 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().addQueryMetaData(_cls, query.name());
             meta.setQueryString(query.query());
             meta.setLanguage(JPQLParser.LANG_JPQL);
+            meta.setLockMode(MixedLockLevelsHelper.toLockLevel(query.lockMode()));
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
-            if (query.lockMode() != null) {
-                meta.addHint("openjpa.FetchPlan.ReadLockMode", query.lockMode());
-            }
+            
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 SourceTracker.SRC_ANNOTATIONS);
             if (isMetaDataMode())

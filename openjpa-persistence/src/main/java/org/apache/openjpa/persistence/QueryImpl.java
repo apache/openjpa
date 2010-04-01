@@ -50,6 +50,7 @@ import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryLanguages;
@@ -508,7 +509,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             return false;
         }
         FetchConfiguration fetch = _query.getFetchConfiguration();
-        if (fetch.getReadLockLevel() != 0)
+        if (fetch.getReadLockLevel() != LockLevels.LOCK_NONE)
             return false;
         Boolean registered = cache.register(_id, _query, fetch);
         boolean alreadyCached = (registered == null);
