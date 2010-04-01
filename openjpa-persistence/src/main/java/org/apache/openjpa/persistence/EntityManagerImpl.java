@@ -85,6 +85,7 @@ import org.apache.openjpa.persistence.validation.ValidationUtils;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.NoTransactionException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 
@@ -1023,7 +1024,13 @@ public class EntityManagerImpl
             if (pq != null) {
                 pq.setInto(del);
             } else {
-                meta.setInto(del);
+                try {
+                    meta.setInto(del);
+                } catch (NoTransactionException e) {
+                    throw new TransactionRequiredException(_loc.get("named-query-no-txn", name, 
+                           meta.getDefiningType(), MixedLockLevelsHelper.fromLockLevel(meta.getLockMode())), 
+                           new Throwable[]{e}, name, false);
+                }
                 del.compile();
             }
             
