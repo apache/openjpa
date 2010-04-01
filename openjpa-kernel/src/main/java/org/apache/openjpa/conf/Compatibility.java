@@ -57,6 +57,7 @@ public class Compatibility {
     private boolean _storeMapCollectionInEntityAsBlob = false;
     private boolean _flushBeforeDetach = true; 
     private boolean _reloadOnDetach = true;
+    private boolean _ignoreDetachedStateFieldForProxySerialization = true;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -252,6 +253,39 @@ public class Compatibility {
      */
     public boolean getFlushBeforeDetach() {
         return _flushBeforeDetach;
+    }
+
+    /**
+     * Whether OpenJPA should ignore the DetachedStateField value when
+     * determining if our Proxy classes should be removed during serialization.
+     * <P>Now, when the DetachedStateFiled==true, the
+     * build time $proxy classes will not be removed.
+     * <P>Prior behavior, was that the DetachedStateFiled was not used and
+     * the $proxy classes were not being removed during serialization after
+     * the Persistence context was cleared.
+     * 
+     * @param ignoreDSF if true the old Proxy serialization behavior will be used.
+     * 
+     * @since 1.3.0
+     */
+    public void setIgnoreDetachedStateFieldForProxySerialization(boolean ignoreDSF) {
+        _ignoreDetachedStateFieldForProxySerialization = ignoreDSF;
+    }
+    
+    /**
+     * Whether OpenJPA should ignore the DetachedStateField value when
+     * determining if our Proxy classes should be removed during serialization.
+     * <P>Now, when the DetachedStateFiled==true, the
+     * build time $proxy classes will not be removed.
+     * <P>Prior behavior, was that the DetachedStateFiled was not used and
+     * the $proxy classes were not being removed during serialization after
+     * the Persistence context was cleared.
+     * 
+     * @since 1.3.0
+     * @return true (default) if the old Proxy serialization will be used, otherwise false.
+     */
+    public boolean getIgnoreDetachedStateFieldForProxySerialization() {
+        return _ignoreDetachedStateFieldForProxySerialization;
     }
 
     /**

@@ -21,15 +21,17 @@ package org.apache.openjpa.persistence.proxy;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-//import org.apache.openjpa.conf.Compatibility;
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-//import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import org.apache.openjpa.persistence.proxy.entities.Address;
@@ -83,6 +85,15 @@ public class TestDetachMerge extends SingleEMFTestCase {
 
         Log log = emf1.getConfiguration().getLog("test");
 
+        if (log.isTraceEnabled()) {
+            Compatibility compat = emf1.getConfiguration().getCompatibilityInstance();
+            assertNotNull(compat);
+            log.trace("started testAnnuity1Compat()");
+            log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
+            log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
+                compat.getIgnoreDetachedStateFieldForProxySerialization());
+        }
+
         try {
             execute(emf1);
         } catch (RuntimeException e) {
@@ -93,12 +104,12 @@ public class TestDetachMerge extends SingleEMFTestCase {
     }
     
     /* 
-     * Test 2.0 behavior with Compatibility flag and DetachedStateField=true, which should FAIL
+     * Test default 2.0 compatibility behavior, which should PASS
      *
-    public void testAnnuity1Fail() throws Exception {
+    public void testAnnuity2Compat() throws Exception {
         OpenJPAEntityManagerFactorySPI emf2 = 
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(
-            "Annuity1Fail", "org/apache/openjpa/persistence/proxy/persistence1.xml");
+            "Annuity2Compat", "org/apache/openjpa/persistence/proxy/persistence2.xml");
         assertNotNull(emf2);
 
         Log log = emf2.getConfiguration().getLog("test");
@@ -106,26 +117,23 @@ public class TestDetachMerge extends SingleEMFTestCase {
         if (log.isTraceEnabled()) {
             Compatibility compat = emf2.getConfiguration().getCompatibilityInstance();
             assertNotNull(compat);
-            log.trace("started testAnnuity1Fail()");
+            log.trace("started testAnnuity2Compat()");
+            log.trace("FlushBeforeDetach=" + compat.getFlushBeforeDetach());
+            log.trace("CopyOnDetach=" + compat.getCopyOnDetach());
+            log.trace("CascadeWithDetach=" + compat.getCascadeWithDetach());
             log.trace("IgnoreDetachedStateFieldForProxySerialization=" +
                 compat.getIgnoreDetachedStateFieldForProxySerialization());
         }
 
         try {
             execute(emf2);
-            fail("testAnuity2Fail() should have caused an execption!");
         } catch (RuntimeException e) {
-            if (e.getMessage().startsWith("Annuity:")) {
-                // no-op caught our expected exception
-            } else {
-                fail("testAnuity2Fail() caught an unexpected execption!" + e);
-            }
+            fail("testAnuity2Compat() should not have caused an execption!" + e);
         } finally {
             emf2.close();
         }
     }
-     */
-    
+    */
     
     private void execute(OpenJPAEntityManagerFactorySPI myEMF) throws Exception {
         Log log = myEMF.getConfiguration().getLog("test");
@@ -545,7 +553,8 @@ public class TestDetachMerge extends SingleEMFTestCase {
         if (payors == null)
             throw new RuntimeException("Annuity: IPayor list not the same (payors was null)!");
         if (payors.size() != payors2.size())
-            throw new RuntimeException("Annuity: IPayor list not the same (payors size not the same)!");
+            throw new RuntimeException("Annuity: IPayor list not the same (payors size not the same)! payors=" +
+                payors.toArray().toString() + ", payors2=" + payors2.toString());
         for (int i = 0; i < payors.size(); i++) {
             IPayor payor = payors.get(i);
             boolean found = false;

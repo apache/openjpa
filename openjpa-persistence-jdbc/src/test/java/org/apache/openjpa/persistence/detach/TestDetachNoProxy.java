@@ -186,9 +186,9 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
     /*
      * Verify that after EM.clear() entities still contain proxy classes.
      */
-    public void testClear() {
+    public void testClear10() {
         if (log.isTraceEnabled())
-            log.trace("***** testClear() *****");
+            log.trace("***** testClear10() *****");
         OpenJPAEntityManager em = emf.createEntityManager();
         em.clear();
 
@@ -197,7 +197,49 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             Entity20 e20 = em.find(Entity20.class, new Integer(i));
             e20List.add(e20);
             if (log.isTraceEnabled())
-                log.trace("** after find Entity20(" + i + ")");
+                log.trace("** testClear10() - after find Entity20(" + i + ")");
+            assertTrue(em.contains(e20));
+            assertFalse(em.isDetached(e20));
+            verifySerializable(e20, true, false);            
+        }
+
+        em.clear();
+
+        for (int i=0; i<numEntities; i++) {
+            if (log.isTraceEnabled())
+                log.trace("** testClear10() - after EM.clear() verify Entity20(" + i + ")");
+            Entity20 e20 = e20List.get(i);
+            assertFalse(em.contains(e20));
+            assertTrue(em.isDetached(e20));
+            // entity should still have proxy classes and is detached,
+            // Current Behavior -
+            //   the $proxy classes are not removed during serialization
+            verifySerializable(e20, true, true);
+        }
+
+        em.close();
+    }
+
+    /*
+     * Verify that after EM.clear() entities do not contain proxy classes for 2.0 behavior.
+     */
+    public void testClear20() {
+        if (log.isTraceEnabled())
+            log.trace("***** testClear20() *****");
+        Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
+        assertNotNull(compat);
+        // use new 2.0 behavior
+        compat.setIgnoreDetachedStateFieldForProxySerialization(false);
+        
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.clear();
+
+        ArrayList<Entity20> e20List = new ArrayList<Entity20>(numEntities);
+        for (int i=0; i<numEntities; i++) {
+            Entity20 e20 = em.find(Entity20.class, new Integer(i));
+            e20List.add(e20);
+            if (log.isTraceEnabled())
+                log.trace("** testClear20() - after find Entity20(" + i + ")");
             assertTrue(em.contains(e20));
             assertFalse(em.isDetached(e20));
             verifySerializable(e20, true, false);            
@@ -211,12 +253,8 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
             Entity20 e20 = e20List.get(i);
             assertFalse(em.contains(e20));
             assertTrue(em.isDetached(e20));
-            // entity should still have proxy classes and is detached,
-            // Current Behavior -
-            //   the $proxy classes are not removed during serialization
-            verifySerializable(e20, true, true);
-            // Proposed OPENJPA-1097 new behavior - $proxy classes are removed
-            // verifySerializable(e20, true, false);
+            // Verify new OPENJPA-1097/1597 behavior - $proxy classes are removed
+            verifySerializable(e20, true, false);
         }
 
         em.close();
