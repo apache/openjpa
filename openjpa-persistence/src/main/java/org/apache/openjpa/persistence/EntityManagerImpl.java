@@ -748,7 +748,7 @@ public class EntityManagerImpl
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T detach(T entity) {
+    public <T> T detachCopy(T entity) {
         assertNotCloseInvoked();
         return (T) _broker.detach(entity, this);
     }

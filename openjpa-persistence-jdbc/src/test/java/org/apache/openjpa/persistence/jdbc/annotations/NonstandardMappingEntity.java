@@ -56,7 +56,7 @@ public class NonstandardMappingEntity
         joinColumns = @XJoinColumn(name = "OWNER"),
         joinIndex = @Index(enabled = false))
     @ElementColumn(name = "STR_ELEM", length = 127)
-    @OrderColumn(name = "ORDER_COL")
+    @org.apache.openjpa.persistence.jdbc.OrderColumn(name = "ORDER_COL")
     @ElementIndex
     private List stringCollection = new ArrayList();
 

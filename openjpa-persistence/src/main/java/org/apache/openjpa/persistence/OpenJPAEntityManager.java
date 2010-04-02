@@ -534,11 +534,13 @@ public interface OpenJPAEntityManager
 
     /**
      * Detach the specified object from the entity manager.
+     * 
+     * Note: renamed from detach to avoid conflict with JPA 2.0 EntityManager.detach method
      *
      * @param pc the instance to detach
      * @return the detached instance
      */
-    public <T> T detach(T pc);
+    public <T> T detachCopy(T pc);
 
     /**
      * Detach the specified objects from the entity manager.

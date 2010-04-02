@@ -1387,7 +1387,7 @@ public abstract class CacheTest extends AbstractTestCase {
             CacheObjectA a = (CacheObjectA) c.iterator().next();
             if (related)
                 a.getRelatedArray();
-            em.detach(a);
+            em.detachCopy(a);
             assertEquals(ORIG_NAME, a.getName());
             q.closeAll();
         }

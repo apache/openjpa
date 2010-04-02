@@ -73,7 +73,7 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
 
         i.setItemData("EFGH");
 
-        OpenJPAPersistence.cast(em).detach(i);
+        OpenJPAPersistence.cast(em).detachCopy(i);
         em.getTransaction().rollback();
         assertNotSQL("UPDATE ITEM SET.*");
         em.close();

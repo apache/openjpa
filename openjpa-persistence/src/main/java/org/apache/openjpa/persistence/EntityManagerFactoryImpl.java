@@ -97,8 +97,15 @@ public class EntityManagerFactoryImpl
         return _factory.getConfiguration();
     }
 
-    public Properties getProperties() {
+    public Properties getPropertiesAsProperties() {
         return _factory.getProperties();
+    }
+
+    public Map<String, Object> getProperties() {
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> retv = 
+                new HashMap<String, Object>((Map) getPropertiesAsProperties());
+        return retv;
     }
 
     public Object putUserObject(Object key, Object val) {
