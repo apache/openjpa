@@ -549,39 +549,39 @@
             <build>
                 <pluginManagement>
                     <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                        <excludes>
-                            <exclude>none</exclude>
-                        </excludes>
-                        <testExcludes>
-                            <exclude>**</exclude>
-                        </testExcludes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>compile-java5</id>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
                             <configuration>
-                                <fork>true</fork>
-                                <executable>${java5.home}/bin/javac</executable>
-                                <compilerVersion>1.5</compilerVersion>
-                                <maxmem>${test.jvm.maxheapsize}</maxmem>
+                                <source>1.5</source>
+                                <target>1.5</target>
                                 <excludes>
-                                    <exclude>**</exclude>
+                                    <exclude>none</exclude>
                                 </excludes>
                                 <testExcludes>
-                                    <exclude>none</exclude>
+                                    <exclude>**</exclude>
                                 </testExcludes>
                             </configuration>
-                            <goals>
-                                <goal>testCompile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                            <executions>
+                                <execution>
+                                    <id>compile-java5</id>
+                                    <configuration>
+                                        <fork>true</fork>
+                                        <executable>${java5.home}/bin/javac</executable>
+                                        <compilerVersion>1.5</compilerVersion>
+                                        <maxmem>${test.jvm.maxheapsize}</maxmem>
+                                        <excludes>
+                                            <exclude>**</exclude>
+                                        </excludes>
+                                        <testExcludes>
+                                            <exclude>none</exclude>
+                                        </testExcludes>
+                                    </configuration>
+                                    <goals>
+                                        <goal>testCompile</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
