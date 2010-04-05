@@ -58,8 +58,7 @@ public class QueryMetaData
     private String _resultSetMappingName;
     private int _lineNum;  
     private int _colNum;  
-    private int _lockMode;
-    
+
     /**
      * Construct with the given name.
      */
@@ -157,14 +156,6 @@ public class QueryMetaData
     public void setQueryString(String query) {
         _query = query;
     }
-    
-    public void setLockMode(int mode) {
-        _lockMode = mode;
-    }
-    
-    public int getLockMode() {
-        return _lockMode;
-    }
 
     /**
      * Query hints.
@@ -218,7 +209,6 @@ public class QueryMetaData
             query.setReadOnly(_readOnly.booleanValue());
         if (_resultSetMappingName != null)
             query.setResultMapping(null, _resultSetMappingName);
-        query.getFetchConfiguration().setReadLockLevel(_lockMode);
     }
 
     /**

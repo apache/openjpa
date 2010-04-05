@@ -1674,7 +1674,7 @@ public class XMLPersistenceMetaDataParser
         meta.setLanguage(JPQLParser.LANG_JPQL);
         String lockModeStr = attrs.getValue("lock-mode");
         if (lockModeStr != null) {
-            meta.setLockMode(MixedLockLevelsHelper.toLockLevel(LockModeType.valueOf(lockModeStr)));
+            meta.addHint("openjpa.FetchPlan.ReadLockMode", LockModeType.valueOf(lockModeStr));
         }
         Locator locator = getLocation().getLocator();
         if (locator != null) {
