@@ -52,21 +52,39 @@
                 Serialization of Entities
             </title>
             <para>
-                    In prior releases of OpenJPA, when an entity was serialized
+                    Currently, when an entity is serialized
                     after calling EntityManager.find(), detach() or detachAll()
                     then all <xref linkend="ref_guide_pc_scos_proxy"/>
-                    were removed as expected, but when the same entity instance
-                    was serialized after calling EntityManager.clear() the
-                    proxy classes were not removed.
+                    are removed as expected, but when the same entity instance
+                    is serialized after calling EntityManager.clear() the
+                    proxy classes are not removed.
             </para>
             <para>
-                    Starting with OpenJPA 1.3, this behavior has been
+                    This has two side-effects: 
+                    when entities are remoted across JVM boundaries (RPC)
+                    or deserialized the OpenJPA runtime must be available
+                    on the classpath (both client and server containers);
+                    when entities are deserialized the OpenJPA runtime must
+                    be the exact same revision as used to serialize the
+                    entities due to the $proxy classes using dynamically
+                    generated serialVersionUID values.
+            </para>
+            <para>
+                    Starting with OpenJPA 2.0, this behavior has been
                     modified, so that by default all proxies will be removed
-                    during serialization.  See
-                    <xref linkend="ref_guide_detach_state"/>
+                    during serialization.
+                    See <xref linkend="ref_guide_detach_state"/>
                     on how the behavior changes based on the
                     <literal>DetachedStateField</literal> setting along with
                     how to override the default behavior.
+            </para>
+            <para>
+                    For this release of OpenJPA, 
+                    you can manually enable this new behavior by setting
+                    the following openjpa.Compatibility property as follows:
+                    <simplelist>
+                        <member>IgnoreDetachedStateFieldForProxySerialization=false</member>
+                    </simplelist>
             </para>
         </section>
         <section id="prePostUpdate">
