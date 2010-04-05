@@ -27,7 +27,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
@@ -317,24 +316,15 @@ public class InformixDictionary
 
         // if we haven't already done so, initialize the lock mode of the
         // connection
-        if (lockModeEnabled && _seenConnections.add(conn)) {
-            String sql = "SET LOCK MODE TO WAIT";
-            if (lockWaitSeconds > 0)
-                sql = sql + " " + lockWaitSeconds;
-
-            Statement stmnt = null;
-            try {
-                stmnt = conn.createStatement();
-                stmnt.executeUpdate(sql);
-            } catch (SQLException se) {
-                throw SQLExceptions.getStore(se, this);
-            } finally {
-                if (stmnt != null)
-                    try {
-                        stmnt.close();
-                    } catch (SQLException se) {
-                    }
+        if (_seenConnections.add(conn)) {
+            if (lockModeEnabled) {
+                String sql = "SET LOCK MODE TO WAIT";
+                if (lockWaitSeconds > 0)
+                    sql = sql + " " + lockWaitSeconds;
+                execute(sql, conn);
             }
+            String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
+            execute(sql, conn);
         }
 
         // the datadirect driver requires that we issue a rollback before using
@@ -345,6 +335,22 @@ public class InformixDictionary
             } catch (SQLException se) {
             }
         return conn;
+    }
+    
+    private void execute(String sql, Connection conn) {
+        Statement stmnt = null;
+        try {
+            stmnt = conn.createStatement();
+            stmnt.executeUpdate(sql);
+        } catch (SQLException se) {
+            throw SQLExceptions.getStore(se, this);
+        } finally {
+            if (stmnt != null)
+                try {
+                    stmnt.close();
+                } catch (SQLException se) {
+                }
+        }
     }
 
     @Override
