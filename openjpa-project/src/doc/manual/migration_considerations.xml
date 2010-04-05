@@ -173,6 +173,16 @@
                     proxy classes were not removed.
                 </para>
                 <para>
+                    This has two side-effects:
+                    when entities are remoted across JVM boundaries (RPC)
+                    or deserialized the OpenJPA runtime must be available
+                    on the classpath (both client and server containers);
+                    when entities are deserialized the OpenJPA runtime must
+                    be the exact same revision as used to serialize the
+                    entities due to the $proxy classes using dynamically
+                    generated serialVersionUID values.
+                </para>
+                <para>
                     Starting with OpenJPA 2.0, this behavior has been
                     modified, so that by default all proxies will be removed
                     during serialization.  See 
