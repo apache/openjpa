@@ -13,6 +13,7 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,10 +45,13 @@ public class TestTimeoutException extends SingleEMFTestCase {
         setUnsupportedDatabases(OracleDictionary.class, DB2Dictionary.class);
         if (isTestsDisabled())
             return;
-        super.setUp(entityClass);
+        super.setUp(entityClass, CLEAR_TABLES);
     }
     
     public void testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities() {
+        if (getLog().isTraceEnabled())
+            getLog().trace("***** Entered TestTimeoutException." +
+                "testQueryTimeOutExceptionWhileQueryingWithLocksOnAlreadyLockedEntities()");
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
@@ -76,6 +80,9 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
     
     public void testLockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
+        if (getLog().isTraceEnabled())
+            getLog().trace("***** Entered TestTimeoutException." +
+                "testLockTimeOutExceptionWhileLockingAlreadyLockedEntities()");
         EntityManager em1 = emf.createEntityManager();
         final EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
@@ -104,6 +111,10 @@ public class TestTimeoutException extends SingleEMFTestCase {
     }
 
     public void testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
+        final int timeout = 1000;
+        if (getLog().isTraceEnabled())
+            getLog().trace("***** Entered TestTimeoutException." +
+                "testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities()");
         EntityManager em1 = emf.createEntityManager();
         EntityManager em2 = emf.createEntityManager();
         assertNotSame(em1, em2);
@@ -116,7 +127,11 @@ public class TestTimeoutException extends SingleEMFTestCase {
         
         em2.getTransaction().begin();
         try {
-            em2.find(entityClass, oid, LockModeType.PESSIMISTIC_WRITE);
+            Map<String,Object> hint = new HashMap<String, Object>();
+            hint.put("javax.persistence.lock.timeout", timeout);
+            //em2.setProperty("javax.persistence.lock.timeout", timeout);
+
+            em2.find(entityClass, oid, LockModeType.PESSIMISTIC_WRITE, hint);
             fail("Expected " + LockTimeoutException.class.getName());
         } catch (Throwable t) {
             assertError(t, LockTimeoutException.class);
@@ -146,9 +161,10 @@ public class TestTimeoutException extends SingleEMFTestCase {
      */
     void assertError(Throwable actual, Class<? extends Throwable> expected) {
         if (!expected.isAssignableFrom(actual.getClass())) {
-                actual.printStackTrace();
-                throw new AssertionFailedError(actual.getClass().getName() + " was raised but expected " + 
-                        expected.getName());
+            getLog().error("TestTimeoutException.assertError() - unexpected exception type", actual);
+            //actual.printStackTrace();
+            print(actual, 0);
+            fail(actual.getClass().getName() + " was raised but expected " + expected.getName());
         }
         Object failed = getFailedObject(actual);
         assertNotNull("Failed object is null", failed);
@@ -156,19 +172,36 @@ public class TestTimeoutException extends SingleEMFTestCase {
     } 
     
     Object getFailedObject(Throwable e) {
-        if (e instanceof LockTimeoutException) {
+        if (e == null) {
+            getLog().error("TestTimeoutException.getFailedObject() - Object e was null");
+            return null;
+        } else if (e instanceof LockTimeoutException) {
             return ((LockTimeoutException) e).getObject();
-        }
-        if (e instanceof PessimisticLockException) {
+        } else if (e instanceof PessimisticLockException) {
             return ((PessimisticLockException) e).getEntity();
-        }
-        if (e instanceof QueryTimeoutException) {
+        } else if (e instanceof QueryTimeoutException) {
             return ((QueryTimeoutException) e).getQuery();
-        }
-        if (e instanceof OpenJPAException) {
+        } else if (e instanceof OpenJPAException) {
             return ((OpenJPAException) e).getFailedObject();
+        } else {
+            getLog().error("TestTimeoutException.getFailedObject() - unexpected exception type", e);
+            return null;
         }
-        return null;
     }
-    
+
+    void print(Throwable t, int tab) {
+        if (t == null) return;
+        StringBuilder str = new StringBuilder(80);
+        for (int i=0; i<tab*4;i++)
+            str.append(" ");
+        String sqlState = (t instanceof SQLException) ? 
+            "(SQLState=" + ((SQLException)t).getSQLState() + ":" 
+                + t.getMessage() + ")" : "";
+        str.append(t.getClass().getName() + sqlState);
+        getLog().error(str);
+        if (t.getCause() == t) 
+            return;
+        print(t.getCause(), tab+1);
+    }
+
 }
