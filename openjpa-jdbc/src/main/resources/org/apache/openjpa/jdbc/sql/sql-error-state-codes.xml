@@ -49,7 +49,7 @@
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
 		<lock>1204,1205,1222</lock>
 		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
-		<object-exists></object-exists>
+		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>1205</optimistic>
 		<query>HY008</query>

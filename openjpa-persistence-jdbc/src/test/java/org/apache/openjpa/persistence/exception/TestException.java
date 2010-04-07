@@ -202,9 +202,15 @@ public class TestException extends SingleEMFTestCase {
 	 */
 	public void assertException(Throwable t, Class expectedType) {
 		if (!isExpectedException(t, expectedType)) {
-			t.printStackTrace();
+		    getLog().error("TestException.assertException() - unexpected exception type", t);
+			//t.printStackTrace();
 			print(t, 0);
             fail(t + " or its cause is not instanceof " + expectedType);
+		} else {
+		    if (getLog().isTraceEnabled()) {
+	            getLog().trace("TestException.assertException() - caught expected exception type=" +
+	                expectedType, t);
+		    }
 		}
 	}
 	
@@ -222,11 +228,14 @@ public class TestException extends SingleEMFTestCase {
 	
 	void print(Throwable t, int tab) {
 		if (t == null) return;
-		for (int i=0; i<tab*4;i++) System.out.print(" ");
+		StringBuilder str = new StringBuilder(80);
+		for (int i=0; i<tab*4;i++)
+		    str.append(" ");
 		String sqlState = (t instanceof SQLException) ? 
 			"(SQLState=" + ((SQLException)t).getSQLState() + ":" 
 				+ t.getMessage() + ")" : "";
-		System.out.println(t.getClass().getName() + sqlState);
+		str.append(t.getClass().getName() + sqlState);
+		getLog().error(str);
 		if (t.getCause() == t) 
 			return;
 		print(t.getCause(), tab+1);
