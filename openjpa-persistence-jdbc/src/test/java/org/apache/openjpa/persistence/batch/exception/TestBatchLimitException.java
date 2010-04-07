@@ -21,6 +21,10 @@ package org.apache.openjpa.persistence.batch.exception;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
 
@@ -33,11 +37,16 @@ import org.apache.openjpa.util.ExceptionInfo;
 public class TestBatchLimitException extends PersistenceTestCase {
 
     static Ent1 expectedFailedObject;
+    static Ent1 expectedFailedObjectOracle;
+    static boolean isOracle = false;
     final String expectedFailureMsg =
         "INSERT INTO Ent1 (pk, name) VALUES (?, ?) [params=(int) 200, (String) twohundred]";
+    final String expectedFailureMsg18 =
+        "INSERT INTO Ent1 (pk, name) VALUES (?, ?) [params=(int) 18, (String) name18]";
+    String expectedFailureMsgOracle = expectedFailureMsg18;
 
     public EntityManagerFactory newEmf(String batchLimit) {
-        EntityManagerFactory emf =
+        OpenJPAEntityManagerFactorySPI emf =
             createEMF(Ent1.class, 
                 "openjpa.jdbc.SynchronizeMappings", 
                 "buildSchema(ForeignKeys=true)",
@@ -45,11 +54,15 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 CLEAR_TABLES);
 
         assertNotNull("Unable to create EntityManagerFactory", emf);
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        isOracle = dict instanceof OracleDictionary;
         return emf;
     }
 
     public void setUp() {
         expectedFailedObject = null;
+        expectedFailedObjectOracle = null;
     }
 
     // Test that we get the correct 'failed object' when we have a batchLimt
@@ -71,7 +84,10 @@ public class TestBatchLimitException extends PersistenceTestCase {
         EntityManager em2 = emf.createEntityManager();
 
         em2.getTransaction().begin();
-        em2.persist(new Ent1(0, "zero"));
+        // special case, due to how Oracle returns all statements in the batch
+        expectedFailedObjectOracle = new Ent1(18, "name18");
+        expectedFailureMsgOracle = expectedFailureMsg18;
+        em2.persist(expectedFailedObjectOracle);
         em2.persist(new Ent1(2, "two"));
         em2.persist(new Ent1(200, "twohundred"));
         em2.persist(new Ent1(3, "three"));
@@ -101,6 +117,8 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
         em.getTransaction().begin();
         expectedFailedObject = new Ent1(200, "twohundred");
+        expectedFailedObjectOracle = expectedFailedObject;
+        expectedFailureMsgOracle = expectedFailureMsg;
         em.persist(expectedFailedObject);
         em.getTransaction().commit();
         em.close();
@@ -140,6 +158,8 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
         em.getTransaction().begin();
         expectedFailedObject = new Ent1(200, "twohundred");
+        expectedFailedObjectOracle = expectedFailedObject;
+        expectedFailureMsgOracle = expectedFailureMsg;
         em.persist(expectedFailedObject);
         em.getTransaction().commit();
         em.close();
@@ -176,7 +196,8 @@ public class TestBatchLimitException extends PersistenceTestCase {
     // it somewhere in the middle of the third batch. Again, we want to make sure our
     // indexing into the batch containing the 'failed object' is correct.
     public void testExceptionInThirdBatch() throws Throwable {
-        EntityManagerFactory emf = newEmf("batchLimit=9");
+        final int batchLimit=9;
+        EntityManagerFactory emf = newEmf("batchLimit="+batchLimit);
         EntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
@@ -191,15 +212,22 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
         // Persist 21 objects/rows....as such we will have two 'full'
         // batches (9*2=18) and 3 (21-18=3) objects/rows in the 3rd batch.
-        for (int i = 0; i < 22; i++) {
+        int i=0;
+        for (; i < 2*batchLimit; i++) {
             em2.persist(new Ent1(i, "name" + i));
         }
 
+        // manually create third batch, due to how Oracle returns all statements in the batch
+        expectedFailedObjectOracle = new Ent1(i, "name" + i++);
+        expectedFailureMsgOracle = expectedFailureMsg18;
+        em2.persist(expectedFailedObjectOracle);    // 18
+        em2.persist(new Ent1(i, "name" + i++));     // 19
+        em2.persist(new Ent1(i, "name" + i++));     // 20
+        em2.persist(new Ent1(i, "name" + i++));     // 21        
         // Put the duplicate row in the 3rd batch.
         em2.persist(new Ent1(200, "twohundred"));
-
         // Put a few more objects into the batch.
-        for (int i = 22; i < 40; i++) {
+        for (i = 22; i < 4*batchLimit; i++) {
             em2.persist(new Ent1(i, "name" + i));
         }
 
@@ -222,6 +250,8 @@ public class TestBatchLimitException extends PersistenceTestCase {
     // again with failures again.....just want to make sure things are not in
     // some way 're-used' between the two commits as far as the indexes go.
     public void testSecondExceptionHasRightIndex() throws Throwable {
+        final int batchLimit=9;
+
         testExceptionInThirdBatch();
 
         EntityManagerFactory emf = newEmf("batchLimit=9");
@@ -229,13 +259,16 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
         em.getTransaction().begin();
 
-        for (int i = 40; i < 55; i++) {
+        for (int i = 4*batchLimit; i < 5*batchLimit; i++) {
             em.persist(new Ent1(i, "name" + i));
         }
 
-        em.persist(new Ent1(200, "twohundred"));
+        // manually capture start of batch, due to how Oracle returns all statements in the batch
+        expectedFailedObjectOracle = new Ent1(200, "twohundred");
+        expectedFailureMsgOracle = expectedFailureMsg;
+        em.persist(expectedFailedObjectOracle);
 
-        for (int i = 55; i < 65; i++) {
+        for (int i = 5*batchLimit; i < 7*batchLimit; i++) {
             em.persist(new Ent1(i, "name" + i));
         }
 
@@ -267,12 +300,17 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
         EntityManager em2 = emf.createEntityManager();
         em2.getTransaction().begin();
+        em2.persist(new Ent1(4, "four"));
         em2.persist(new Ent1(0, "zero"));
         em2.persist(new Ent1(2, "two"));
         em2.persist(new Ent1(3, "three"));
         em2.getTransaction().commit();
 
         em2.getTransaction().begin();
+        // special case, due to how Oracle returns all statements in the batch
+        expectedFailedObjectOracle = new Ent1(18, "name18");
+        expectedFailureMsgOracle = expectedFailureMsg18;
+        em2.persist(expectedFailedObjectOracle);
         em2.persist(new Ent1(6, "six"));
         em2.persist(new Ent1(200, "twohundred"));
         em2.persist(new Ent1(7, "seven"));
@@ -308,7 +346,12 @@ public class TestBatchLimitException extends PersistenceTestCase {
             Ent1 failedObject = (Ent1) e.getFailedObject();
 
             assertNotNull("Failed object was null.", failedObject);
-            assertEquals(expectedFailedObject, failedObject);
+            if (!isOracle) {
+                assertEquals(expectedFailedObject, failedObject);
+            } else {
+                // special case, as Oracle returns all statements in the batch
+                assertEquals(expectedFailedObjectOracle, failedObject);                
+            }
         }
         else {
             throw excp;
@@ -317,8 +360,14 @@ public class TestBatchLimitException extends PersistenceTestCase {
 
     public void verifyExMsg(String msg) {
         assertNotNull("Exception message was null.", msg);
-        assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " + msg, msg
-            .contains(expectedFailureMsg));
+        if (!isOracle) {
+            assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsg + "> but was " +
+                msg, msg.contains(expectedFailureMsg));
+        } else {
+            // special case, as Oracle returns all statements in the batch
+            assertTrue("Did not see expected text in message. Expected <" + expectedFailureMsgOracle + "> but was " +
+                msg, msg.contains(expectedFailureMsgOracle));
+        }
     }
 }
 
