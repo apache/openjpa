@@ -1027,8 +1027,8 @@ public abstract class CacheTest extends AbstractTestCase {
                 DataCache.NAME_DEFAULT, false);
             checkCache(cache, ids, new boolean[]{ true, true, true, true });
 
-            // should cause h to be dropped.
-            Thread.currentThread().sleep(551);
+            // should cause h to be dropped (timeout=500)
+            Thread.currentThread().sleep(600);
             Thread.yield();
             checkCache(cache, ids, new boolean[]{ true, true, true, false });
 
@@ -1039,8 +1039,8 @@ public abstract class CacheTest extends AbstractTestCase {
             boolean eStatus = !((((OpenJPAEntityManagerFactorySPI) factory)
                     .getConfiguration()).getDataCacheTimeout() > 0);
 
-            // should cause f to be dropped.
-            Thread.currentThread().sleep(550);
+            // should cause f to be dropped (timeout=1000)
+            Thread.currentThread().sleep(500);
             Thread.yield();
             checkCache(cache, ids,
                 new boolean[]{ eStatus, false, true, false });
@@ -1051,8 +1051,8 @@ public abstract class CacheTest extends AbstractTestCase {
             assertInCache(q1, (eStatus) ? Boolean.TRUE : Boolean.FALSE);
             assertInCache(q2, Boolean.FALSE);
 
-            // should cause g to be dropped.
-            Thread.currentThread().sleep(4050);
+            // should cause g to be dropped (timeout=5000)
+            Thread.currentThread().sleep(4000);
             Thread.yield();
             checkCache(cache, ids,
                 new boolean[]{ eStatus, false, false, false });
