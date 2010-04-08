@@ -27,6 +27,8 @@ import javax.persistence.Query;
 
 import junit.framework.Assert;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -52,26 +54,46 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         em.flush();
         tran.commit();
         em.clear();
+
+        String[] jpql;
+        if (((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance() instanceof SQLServerDictionary){
+            jpql = new String[] {
+                // some changes to the jpql strings had to be made for MSSQL
+                "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
+                "select a from Employee a where a.hireDate >= {d '2009-08-05'}",    // requires yyyy-mm-dd
+                // "select a from Employee a where a.hireTime >= {t '00:00:00'}",   // fails ?
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123'}",
+                // "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1234'}", // more than 3
+                // "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}", // fails
+                // "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
+                "select {t '00:00:00'}, a.empId from Employee a",
+            };
+        } else {
+            jpql = new String[] {
+                "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
+                "select a from Employee a where a.hireDate >= {d '2009-8-5'}",
+                "select a from Employee a where a.hireTime >= {t '00:00:00'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1234'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}",
+                "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
+                "select {t '00:00:00'}, a.empId from Employee a",
+            };
+        }
         
-        String[] jpql = {
-            "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
-            "select a from Employee a where a.hireDate >= {d '2009-8-5'}",
-            "select a from Employee a where a.hireTime >= {t '00:00:00'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.1234'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.12345'}",
-            "select a from Employee a where a.hireTimestamp >= {ts '2009-08-25 00:00:00.123456'}",
-            "select {t '00:00:00'}, a.empId from Employee a",
-        };
 
         for (int i = 0; i < jpql.length; i++) {
             Query q = em.createQuery(jpql[i]);
             List results = q.getResultList();
-            Assert.assertEquals(1, results.size());
+            Assert.assertEquals("For jpql["+i+"]", 1, results.size());
         }
         
         // Test support in HAVING clause.
@@ -84,10 +106,16 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         for (int j = 0; j < havingJpql.length; j++) {
             Query q = em.createQuery(havingJpql[j]);
             List results = q.getResultList();
-            Assert.assertEquals(1, results.size());
+            Assert.assertEquals("For havingJpql["+j+"]", 1, results.size());
         }
         em.getTransaction().begin();
-        String update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123456'} where a.empId = 1";
+        String update;
+        if (((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance() instanceof SQLServerDictionary) {
+            // more than 3 digits after 00:00:00. fails on MSSQL
+            update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123'} where a.empId = 1";
+        } else {
+            update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123456'} where a.empId = 1";
+        }
         Query q = em.createQuery(update);
         int updateCnt = q.executeUpdate();
         em.getTransaction().commit();
