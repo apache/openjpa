@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -422,6 +423,23 @@ public class MySQLDictionary
         return result;
     }
     
+    @Override
+    protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
+        int state = super.matchErrorState(errorStates, ex);
+        if (state == StoreException.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
+            // look at the nested MySQL exception for more details
+            SQLException sqle = ex.getNextException();
+            if (sqle != null && sqle.toString().startsWith("com.mysql.jdbc.exceptions.MySQLTimeoutException")) {
+                if (conf != null && conf.getLockTimeout() != -1) {
+                    state = StoreException.LOCK;
+                } else {
+                    state = StoreException.QUERY;
+                }
+            }
+        }
+        return state;
+    }
+
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         if ((subtype == StoreException.LOCK  && ex.getErrorCode() == 1205)
