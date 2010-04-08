@@ -307,7 +307,7 @@ public class PersistenceUnitInfoImpl
             if (JPAProperties.PROVIDER.equals(key))
                 setPersistenceProviderClassName((String) val);
             else if (JPAProperties.TRANSACTION_TYPE.equals(key)) {
-                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, key));
+                setTransactionType(JPAProperties.getEnumValue(PersistenceUnitTransactionType.class, val));
             } else if (JPAProperties.DATASOURCE_JTA.equals(key)) {
                 if (val instanceof String) {
                     setJtaDataSourceName((String) val);
