@@ -47,7 +47,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         
         try {
             // delay to ensure the new timestamp exceeds the timer's resolution.
-            Thread.sleep(100);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
         }
 
@@ -63,7 +63,8 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.refresh(pc);
         Timestamp newVersion = pc.getVersion();
-        assertTrue(newVersion.after(oldVersion));
+        assertTrue("Expected newVersion=" + newVersion.toString() + " to be after oldVersion=" + oldVersion.toString(),
+            newVersion.after(oldVersion));
     }
     
     public void testBulkUpdateOnNumericVersion() {
