@@ -334,6 +334,31 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em2.close();
     }
 
+    /*
+     * Test multiple execution of the same query with pessimistic lock.
+     */
+    public void testRepeatedQueryWithPessimisticLocks() {
+        EntityManager em = emf.createEntityManager();
+        resetSQL();
+        em.getTransaction().begin();
+        String jpql = "select e.firstName from Employee e where e.id = 1";
+        Query q1 = em.createQuery(jpql);
+        q1.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+        String firstName1 = (String) q1.getSingleResult();
+        //Expected sql for Derby is:
+        //SELECT t0.firstName FROM Employee t0 WHERE (t0.id = CAST(? AS BIGINT)) FOR UPDATE WITH RR
+        String SQL1 = toString(sql);
+        
+        // run the second time
+        resetSQL();
+        Query q2 = em.createQuery(jpql);
+        q2.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+        String firstName2 = (String) q2.getSingleResult();
+        String SQL2 = toString(sql);
+        assertEquals(SQL1, SQL2);
+        em.getTransaction().commit();
+    }
+
     /**
      * Assert that an exception of proper type has been thrown. Also checks that
      * that the exception has populated the failed object.
