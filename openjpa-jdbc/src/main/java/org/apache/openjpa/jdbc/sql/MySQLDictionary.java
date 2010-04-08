@@ -426,6 +426,7 @@ public class MySQLDictionary
     @Override
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
         int state = super.matchErrorState(errorStates, ex);
+        // OPENJPA-1616 - Special case for MySQL not returning a SQLState for timeouts
         if (state == StoreException.GENERAL && ex.getErrorCode() == 0 && ex.getSQLState() == null) {
             // look at the nested MySQL exception for more details
             SQLException sqle = ex.getNextException();
