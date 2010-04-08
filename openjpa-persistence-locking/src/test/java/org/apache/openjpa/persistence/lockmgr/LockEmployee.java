@@ -25,14 +25,18 @@ import java.io.ObjectOutput;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.LockModeType;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Version;
 
-@NamedQuery(
-        name="findEmployeeById"
-        , query="SELECT c FROM LockEmployee c WHERE c.id = :id"
-        )
-
+@NamedQueries( {
+    @NamedQuery(name = "findEmployeeById", 
+        query = "SELECT c FROM LockEmployee c WHERE c.id = :id"),
+    @NamedQuery(name = "findEmployeeByIdWithLock", 
+        query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.PESSIMISTIC_READ),
+    @NamedQuery(name = "findEmployeeByIdWithNoLock", 
+        query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.NONE) })
 @Entity
 public class LockEmployee implements Externalizable {
 
