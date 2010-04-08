@@ -35,6 +35,7 @@ import java.util.Stack;
 import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
 import javax.persistence.LockModeType;
+import javax.persistence.NamedQuery;
 
 import static javax.persistence.CascadeType.*;
 
@@ -1673,8 +1674,9 @@ public class XMLPersistenceMetaDataParser
         meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
         String lockModeStr = attrs.getValue("lock-mode");
-        if (lockModeStr != null) {
-            meta.addHint("openjpa.FetchPlan.ReadLockMode", LockModeType.valueOf(lockModeStr));
+        LockModeType lmt = processNamedQueryLockModeType(log, lockModeStr, name);
+        if (lmt != null) {
+            meta.addHint("openjpa.FetchPlan.ReadLockMode", lmt);
         }
         Locator locator = getLocation().getLocator();
         if (locator != null) {
@@ -1693,6 +1695,33 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_QUERY);
         pushElement(meta);
         return true;
+    }
+    
+    /**
+     * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is 
+     * configured to use the NONE lock mode(explicit or implicit), this method will promote the lock to a READ
+     * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime. 
+     */
+    private LockModeType processNamedQueryLockModeType(Log log, String lockModeString, String queryName) {
+        if (lockModeString == null) {
+            return null;
+        }
+        LockModeType lmt = LockModeType.valueOf(lockModeString);
+        String lm = _conf.getLockManager();
+        if (lm != null) {
+            lm = lm.toLowerCase();
+            if (lm.contains("pessimistic")) {
+                if (lmt == LockModeType.NONE) {
+                    if (log != null && log.isWarnEnabled() == true) {
+                        log.warn(_loc.get("override-named-query-lock-mode", new String[] { "xml", queryName,
+                            _cls.getName() }));
+                    }
+                    lmt = LockModeType.READ;
+                }
+            }
+        }
+
+        return lmt;
     }
 
     protected void endNamedQuery()

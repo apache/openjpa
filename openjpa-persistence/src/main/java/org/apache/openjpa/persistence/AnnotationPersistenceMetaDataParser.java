@@ -19,7 +19,53 @@
 package org.apache.openjpa.persistence;
 
 import static javax.persistence.GenerationType.AUTO;
-import static org.apache.openjpa.persistence.MetaDataTag.*;
+import static org.apache.openjpa.persistence.MetaDataTag.ACCESS;
+import static org.apache.openjpa.persistence.MetaDataTag.CACHEABLE;
+import static org.apache.openjpa.persistence.MetaDataTag.DATASTORE_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.DATA_CACHE;
+import static org.apache.openjpa.persistence.MetaDataTag.DEPENDENT;
+import static org.apache.openjpa.persistence.MetaDataTag.DETACHED_STATE;
+import static org.apache.openjpa.persistence.MetaDataTag.ELEM_DEPENDENT;
+import static org.apache.openjpa.persistence.MetaDataTag.ELEM_TYPE;
+import static org.apache.openjpa.persistence.MetaDataTag.EMBEDDED_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.ENTITY_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_DEFAULT_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXCLUDE_SUPERCLASS_LISTENERS;
+import static org.apache.openjpa.persistence.MetaDataTag.EXTERNALIZER;
+import static org.apache.openjpa.persistence.MetaDataTag.EXTERNAL_VALS;
+import static org.apache.openjpa.persistence.MetaDataTag.FACTORY;
+import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUP;
+import static org.apache.openjpa.persistence.MetaDataTag.FETCH_GROUPS;
+import static org.apache.openjpa.persistence.MetaDataTag.FLUSH_MODE;
+import static org.apache.openjpa.persistence.MetaDataTag.GENERATED_VALUE;
+import static org.apache.openjpa.persistence.MetaDataTag.ID;
+import static org.apache.openjpa.persistence.MetaDataTag.ID_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.INVERSE_LOGICAL;
+import static org.apache.openjpa.persistence.MetaDataTag.KEY_DEPENDENT;
+import static org.apache.openjpa.persistence.MetaDataTag.KEY_TYPE;
+import static org.apache.openjpa.persistence.MetaDataTag.LOAD_FETCH_GROUP;
+import static org.apache.openjpa.persistence.MetaDataTag.LRS;
+import static org.apache.openjpa.persistence.MetaDataTag.MANAGED_INTERFACE;
+import static org.apache.openjpa.persistence.MetaDataTag.MAPPED_BY_ID;
+import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY;
+import static org.apache.openjpa.persistence.MetaDataTag.MAP_KEY_CLASS;
+import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERIES;
+import static org.apache.openjpa.persistence.MetaDataTag.NATIVE_QUERY;
+import static org.apache.openjpa.persistence.MetaDataTag.ORDER_BY;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_LOAD;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_PERSIST;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_REMOVE;
+import static org.apache.openjpa.persistence.MetaDataTag.POST_UPDATE;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_PERSIST;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_REMOVE;
+import static org.apache.openjpa.persistence.MetaDataTag.PRE_UPDATE;
+import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
+import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
+import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
+import static org.apache.openjpa.persistence.MetaDataTag.REPLICATED;
+import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
+import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
+import static org.apache.openjpa.persistence.MetaDataTag.VERSION;
 
 import java.io.File;
 import java.io.Serializable;
@@ -60,16 +106,16 @@ import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Lob;
+import javax.persistence.LockModeType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyClass;
-import javax.persistence.MapsId;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.MapsId;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
@@ -1777,9 +1823,11 @@ public class AnnotationPersistenceMetaDataParser
             meta.setLanguage(JPQLParser.LANG_JPQL);
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
-            if (query.lockMode() != null) {
-                meta.addHint("openjpa.FetchPlan.ReadLockMode", query.lockMode());
+            LockModeType lmt = processNamedQueryLockModeType(query);
+            if (lmt != null) {
+                meta.addHint("openjpa.FetchPlan.ReadLockMode", lmt);
             }
+
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
                 SourceTracker.SRC_ANNOTATIONS);
             if (isMetaDataMode())
@@ -1789,6 +1837,31 @@ public class AnnotationPersistenceMetaDataParser
             else
                 meta.setSourceMode(MODE_QUERY);
         }
+    }
+
+    /**
+     * A private worker method that calculates the lock mode for an individual NamedQuery. If the NamedQuery is 
+     * configured to use the NONE lock mode(explicit or implicit), this method will promote the lock to a READ
+     * level lock. This was done to allow for JPA1 apps to function properly under a 2.0 runtime. 
+     */
+    private LockModeType processNamedQueryLockModeType(NamedQuery query) {
+        LockModeType lmt = query.lockMode();
+        if (query.lockMode() != null) {
+            String lm = _conf.getLockManager();
+            if (lm != null) {
+                lm = lm.toLowerCase();
+                if (lm.contains("pessimistic")) {
+                    if (lmt == LockModeType.NONE) {
+                        if (_log.isWarnEnabled() == true) {
+                            _log.warn(_loc.get("override-named-query-lock-mode", new String[] { "annotation",
+                                query.name(), _cls.getName() }));
+                        }
+                        lmt = LockModeType.READ;
+                    }
+                }
+            }
+        }
+        return lmt;
     }
 
     /**
