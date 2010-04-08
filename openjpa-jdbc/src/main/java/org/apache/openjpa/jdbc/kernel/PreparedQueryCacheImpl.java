@@ -39,6 +39,7 @@ import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.CacheMap;
 
 /**
  * An implementation of the cache of {@link PreparedQuery prepared queries}. 
@@ -62,8 +63,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
     
 	public PreparedQueryCacheImpl() {
-		_delegate = new HashMap<String, PreparedQuery>();
-		_uncachables = new HashMap<String, Exclusion>();
+		_delegate = new CacheMap();
+		_uncachables = new CacheMap();
 		_stats = new QueryStatistics.Default<String>();
 		_exclusionPatterns = new ArrayList<Exclusion>();
 	}
