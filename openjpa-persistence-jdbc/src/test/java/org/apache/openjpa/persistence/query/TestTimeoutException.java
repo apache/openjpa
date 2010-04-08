@@ -24,10 +24,11 @@ import javax.persistence.PessimisticLockException;
 import javax.persistence.Query;
 import javax.persistence.QueryTimeoutException;
 
-import junit.framework.AssertionFailedError;
-
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.exception.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.OpenJPAException;
@@ -42,7 +43,23 @@ public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
 
     public void setUp() {
+        // TODO - Hack until OPENJPA-1594 is addressed
         setUnsupportedDatabases(OracleDictionary.class, DB2Dictionary.class);
+        
+        // Disable tests for any DB that has supportsSelectForUpdate==false, like HSQLDictionary
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        assertNotNull(tempEMF);
+        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
+        assertNotNull(dict);
+        if (!dict.supportsSelectForUpdate)
+            setTestsDisabled(true);
+        if (emf == null) {
+            closeEMF(tempEMF);
+        }
+
         if (isTestsDisabled())
             return;
         super.setUp(entityClass, CLEAR_TABLES);
