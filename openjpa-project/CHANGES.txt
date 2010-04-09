@@ -1,5 +1,5 @@
-                          Apache OpenJPA 2.0.0-beta3
-                          --------------------------
+                            Apache OpenJPA 2.0.0
+                            --------------------
 
 Content
 -------
@@ -19,8 +19,8 @@ Content
 
 Overview
 --------
-   The Apache OpenJPA community is proud to release a Beta 3 distribution of
-   OpenJPA 2.0.0. This distribution is based on the final JSR 317 Java 
+   The Apache OpenJPA community is proud to release a 2.0.0 distribution of
+   OpenJPA. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatiable with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
@@ -72,8 +72,8 @@ Overview
      Properties, LockModeType, and Detach
    * And many more...
 
-   This Beta 3 distribution is based upon the contributions provided in
-   development iterations after the Beta 2, as defined in the JPA 2.0 Roadmap:
+   This distribution is based upon the contributions provided in all of the
+   development iterations for 2.0, as defined in the JPA 2.0 Roadmap:
       http://openjpa.apache.org/jpa-20-roadmap.html
 
    The JPA 2.0 Roadmap contains a complete list of implemented features and
@@ -161,6 +161,12 @@ Getting Involved
         * Informal discussion also occurs on the #openjpa IRC channel on
           freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
+
+
+Included Changes in OpenJPA 2.0.0
+---------------------------------
+
+** TBD **
 
 
 Included Changes in OpenJPA 2.0.0 Beta 3
