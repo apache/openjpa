@@ -321,10 +321,10 @@ public class InformixDictionary
                 String sql = "SET LOCK MODE TO WAIT";
                 if (lockWaitSeconds > 0)
                     sql = sql + " " + lockWaitSeconds;
-                execute(sql, conn);
+                execute(sql, conn, true);
             }
             String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
-            execute(sql, conn);
+            execute(sql, conn, false);
         }
 
         // the datadirect driver requires that we issue a rollback before using
@@ -337,13 +337,18 @@ public class InformixDictionary
         return conn;
     }
     
-    private void execute(String sql, Connection conn) {
+    private void execute(String sql, Connection conn, boolean throwExc) {
         Statement stmnt = null;
         try {
             stmnt = conn.createStatement();
             stmnt.executeUpdate(sql);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, this);
+            if (throwExc)
+                throw SQLExceptions.getStore(se, this);
+            else {
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("can-not-execute", sql));
+            }
         } finally {
             if (stmnt != null)
                 try {
