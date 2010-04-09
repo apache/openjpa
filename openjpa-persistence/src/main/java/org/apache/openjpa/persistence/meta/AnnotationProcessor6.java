@@ -60,29 +60,31 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * Annotation processing tool generates source code for a meta-model class given 
  * the annotated source code of persistent entity.
  * <p>
- * This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
- * libraries are specified in the compiler <code>-processorpath</code> option.
+ * This tool is invoked during compilation for JDK6 compiler if 
+ * <UL>
+ * <LI>OpenJPA and JPA libraries are available in the compiler classpath
+ * and <LI>Annotation Processor option <code>-Aopenjpa.generated=true</code> is specified.
+ * </UL>
  * <br>
  * <B>Usage</B><br>
- * <code>$ javac -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java</code><br>
+ * <code>$ javac -classpath path/to/openjpa-all.jar -Aopenjpa.generated=true mypackage/MyEntity.java</code><br>
  * will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
  * <p>
- * The Annotation Processor recognizes the following options (none of them are mandatory):
- * <LI><code>-Alog=TRACE|INFO|WARN|ERROR</code><br>
- * The logging level. Default is <code>WARN</code>.
- * <LI>-Asource=&lt;n&gt;<br>
- * where &lt;n&gt; denotes the integral number for Java source version of the generated code. 
- * Default is <code>6</code>.
- * <LI>-Anaming=class name <br>
- * fully-qualified name of a class implementing <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
+ * The Annotation Processor also recognizes the following options (none of them are mandatory):<br>
+ * <TABLE border="1">
+ * <TR><TD>-Alog={log level}<TD>The logging level. Default is <code>WARN</code>. Permissible values are 
+ *     <code>TRACE</code>, <code>INFO</code>, <code>WARN</code> or <code> ERROR</code>.
+ * <TR><TD>-Asource={n}         <TD>Java source version of the generated code. Default is <code>6</code>.
+ * <TR><TD>-Anaming={class name}        <TD>fully-qualified name of a class implementing 
+ * <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
  * the name of a meta-class given the name of the original persistent Java entity class. Defaults to
  * <code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends a underscore character
  * (<code>_</code>) to the original Java class name. 
- * <LI>-Aheader=&lt;url&gt;<br>
+ * <TR><TD>-Aheader={url}           <TD>
  * A url whose content will appear as comment header to the generated file(s). Recognizes special value
  * <code>ASL</code> for Apache Source License header as comment. By default adds a OpenJPA proprietary   
  * text.
- * <LI>-Aout=dir<br>
+ * <TR><TD>-Aout={dir}                      <TD>
  * A directory in the local file system. The generated files will be written <em>relative</em> to this directory
  * according to the package structure i.e. if <code>dir</code> is specified as <code>/myproject/generated-src</code>
  * then the generated source code will be written to <code>/myproject/generated-src/mypackage/MyEntity_.java</code>.
@@ -92,6 +94,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * to the compiler classpath. If the source code location for the original class can not be determined, and the 
  * option is not specified, then the generated source code is written relative to the current directory according 
  * to the package structure.  
+ * </TABLE>
  * <br>
  * @author Pinaki Poddar
  * 
@@ -102,17 +105,18 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log", "out", "source", "naming", "header" })
+@SupportedOptions( { "log", "out", "source", "naming", "header", "openjpa.generate" })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
     private StandardJavaFileManager fileManager;
-    private boolean isUserSpecifiedOutputLocation = false;
+    private boolean isUserSpecifiedOutputLocation;
     private MetaDataFactory factory;
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
     private String header;
+    private boolean active;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
 
     /**
@@ -190,6 +194,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        active = "true".equalsIgnoreCase(processingEnv.getOptions().get("openjpa.generate"));
+        if (!active)
+            return;
         logger = new CompileTimeLogger(processingEnv);
         logger.info(_loc.get("mmg-tool-banner"));
         setSourceVersion();
@@ -203,8 +210,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * The entry point for java compiler.
      */
     @Override
-    public boolean process(Set<? extends TypeElement> annos,
-        RoundEnvironment roundEnv) {
+    public boolean process(Set<? extends TypeElement> annos, RoundEnvironment roundEnv) {
+        if (!active)
+            return false;
         if (!roundEnv.processingOver()) {
             Set<? extends Element> elements = roundEnv.getRootElements();
             for (Element e : elements) {
