@@ -30,7 +30,11 @@ import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Persistent Type according to JPA 2.0.
- * 
+ * <br>
+ * JPA 2.0 defines a type system for persistent objects to decorate a core Java type system
+ * with persistence-relevant properties such as persistent identity, independently persistence
+ * capable etc. 
+ * <br>
  * Implemented as a thin adapter to OpenJPA metadata system. Mostly immutable.
  * 
  * @author Pinaki Poddar
@@ -62,6 +66,14 @@ public class Types {
         }
     }
 
+    /**
+     * Basic non-relational types of a persistent attribute such as <code>long</code> or 
+     * <code>java.util.Date</code>.
+     * 
+     * @author Pinaki Poddar
+     *
+     * @param <X> represented Java type.
+     */
     public static class Basic<X> extends BaseType<X> implements Type<X> {
         public Basic(Class<X> cls) {
             super(cls);
@@ -73,45 +85,12 @@ public class Types {
     }
 
     /**
-     *  Instances of the type ManagedType represent entity, mapped 
-     *  superclass, and embeddable types.
+     * Represents an abstract persistent type that has a persistent identity.
      *
-     *  @param <X> The represented type.
+     * @author Pinaki Poddar
+     * 
+     * @param <X>
      */
-//    public static abstract class Managed<X> extends AbstractManagedType<X> implements
-//        ManagedType<X> {
-        /**
-         * Construct a managed type. The supplied metadata must be resolved i.e.
-         * all its fields populated. Because this receiver will populate its
-         * attributes corresponding to the available fields of the metadata.
-         * 
-         */
-//        public Managed(ClassMetaData meta, MetamodelImpl model) {
-//            super(meta, model);
-//        }
-        
-         /**
-         *  Return the bindable type of the represented object.
-         *  @return bindable type
-         */ 
-//        public BindableType getBindableType() {
-//            return BindableType.ENTITY_TYPE;
-//        }
-        
-        /**
-         * Return the Java type of the represented object.
-         * If the bindable type of the object is PLURAL_ATTRIBUTE,
-         * the Java element type is returned. If the bindable type is
-         * SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type of the
-         * represented entity or attribute is returned.
-         * @return Java type
-         */
-//        public Class<X> getBindableJavaType() {
-//            throw new AbstractMethodError();
-//        }
-//
-//    }
-
     public static abstract class Identifiable<X> extends AbstractManagedType<X> 
         implements IdentifiableType<X> {
 
@@ -147,11 +126,12 @@ public class Types {
         }
         
         /**
-         *  Whether or not the identifiable type has an id attribute.
-         *  Returns true for a simple id or embedded id; returns false
-         *  for an idclass.
+         *  Whether or not the identifiable type uses an attribute to represents its persistent identity.
+         *  Returns true for a simple or embedded identifier.
+         *  Returns false for an classes that use separate identifier class for its persistent identity.
+         *  
          *  @return boolean indicating whether or not the identifiable
-         *          type has a single id attribute
+         *          type represents its persistent identity via a single identifier attribute.
          */
         public boolean hasSingleIdAttribute() {
             return meta.getPrimaryKeyFields().length == 1;
@@ -159,7 +139,7 @@ public class Types {
 
         /**
          *  Return the type that represents the type of the id.
-         *  @return type of id
+         *  @return type of identifier
          */
         public Type<?> getIdType() {
             Class<?> idType = hasSingleIdAttribute() 
@@ -168,6 +148,13 @@ public class Types {
         }
     }
 
+    /**
+     * An embedded, not independently identifiable type.
+     * 
+     * @author Pinaki Poddar
+     *
+     * @param <X> the represented Java type. 
+     */
     public static class Embeddable<X> extends AbstractManagedType<X> 
         implements EmbeddableType<X> {
         public Embeddable(ClassMetaData meta, MetamodelImpl model) {
@@ -179,6 +166,13 @@ public class Types {
         }
     }
 
+    /**
+     * A abstract, independently identifiable persistent type.
+     *  
+     * @author Pinaki Poddar
+     *
+     * @param <X> the represented Java type. 
+     */
     public static class MappedSuper<X> extends Identifiable<X> implements
         MappedSuperclassType<X> {
 
@@ -192,6 +186,13 @@ public class Types {
 
     }
     
+    /**
+     * An entity type that is independently identifiable.
+     * 
+     * @author Pinaki Poddar
+     *
+     * @param <X> the represented Java type. 
+     */
     public static class Entity<X> extends Identifiable<X> 
         implements EntityType<X> {
 
