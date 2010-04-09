@@ -58,7 +58,6 @@ import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.persistence.util.SourceCode;
 
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType;
 
 /**
  * Annotation processing tool generates source code for a meta-model class given 
