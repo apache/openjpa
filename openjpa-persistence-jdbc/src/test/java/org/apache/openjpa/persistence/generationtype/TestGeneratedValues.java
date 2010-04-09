@@ -44,9 +44,17 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         em.refresh(gv);
         em.refresh(gv2);
 
+        // Note: UUID 'string' values are not compared (intermittent failures
+        // on DB2.) In an environment where data is converted to
+        // a considerably different character encoding of the database (ex.
+        // Unicode -> EBCDIC) upon persistence, the uuid string returned by the 
+        // database may not be equal to the original value.  This is a common 
+        // issue with string data, but even more likely for a uuids given that 
+        // uuid strings are produced from pseudo-random byte arrays, which yield
+        // all sorts of variant characters.
         assertFalse(gv.getId() == gv2.getId());
         assertFalse(gv.getField() == gv2.getField());
-        assertFalse(gv.getUuidstring().equals(gv2.getUuidstring()));
+        // assertFalse(gv.getUuidstring().equals(gv2.getUuidstring()));
         assertFalse(gv.getUuidhex().equals(gv2.getUuidhex()));
         assertFalse(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
         assertFalse(gv.getUuidT4string().equals(gv2.getUuidT4string()));
