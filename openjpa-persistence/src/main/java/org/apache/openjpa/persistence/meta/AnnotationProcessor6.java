@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -45,6 +46,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.persistence.metamodel.StaticMetamodel;
+import javax.tools.Diagnostic;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
@@ -55,6 +57,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
 import org.apache.openjpa.persistence.util.SourceCode;
+
+import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType;
 
 /**
  * Annotation processing tool generates source code for a meta-model class given 
@@ -70,7 +74,9 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * <code>$ javac -classpath path/to/openjpa-all.jar -Aopenjpa.generated=true mypackage/MyEntity.java</code><br>
  * will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
  * <p>
- * The Annotation Processor also recognizes the following options (none of them are mandatory):<br>
+ * The Annotation Processor also recognizes the following options (none of them are mandatory).
+ * Each of the following option key can also be prefixed with <code>openjpa.</code> to distinguish if multiple 
+ * annotation processors are active during compilation:<br>
  * <TABLE border="1">
  * <TR><TD>-Alog={log level}<TD>The logging level. Default is <code>WARN</code>. Permissible values are 
  *     <code>TRACE</code>, <code>INFO</code>, <code>WARN</code> or <code> ERROR</code>.
@@ -96,6 +102,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * to the package structure.  
  * </TABLE>
  * <br>
+ *
  * @author Pinaki Poddar
  * 
  * @since 2.0.0
@@ -105,7 +112,13 @@ import org.apache.openjpa.persistence.util.SourceCode;
     "javax.persistence.Entity",
     "javax.persistence.Embeddable", 
     "javax.persistence.MappedSuperclass" })
-@SupportedOptions( { "log", "out", "source", "naming", "header", "openjpa.generate" })
+@SupportedOptions({ "openjpa.log", "log", 
+                     "openjpa.out", "out", 
+                     "openjpa.source", "source",
+                     "openjpa.naming", "naming",
+                     "openjpa.header", "header",
+                     "openjpa.generate"
+                  })
 @SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
@@ -194,11 +207,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        active = "true".equalsIgnoreCase(processingEnv.getOptions().get("openjpa.generate"));
+        active = "true".equalsIgnoreCase(getOptionValue("openjpa.generate"));
         if (!active)
             return;
-        logger = new CompileTimeLogger(processingEnv);
-        logger.info(_loc.get("mmg-tool-banner"));
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, _loc.get("mmg-tool-banner").toString());
+        logger = new CompileTimeLogger(processingEnv, getOptionValue("openjpa.log", "log"));
         setSourceVersion();
         setFileManager();
         setNamingPolicy();
@@ -211,9 +224,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      */
     @Override
     public boolean process(Set<? extends TypeElement> annos, RoundEnvironment roundEnv) {
-        if (!active)
-            return false;
-        if (!roundEnv.processingOver()) {
+        if (active && !roundEnv.processingOver()) {
             Set<? extends Element> elements = roundEnv.getRootElements();
             for (Element e : elements) {
                 process((TypeElement) e);
@@ -322,7 +333,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      * n must be a integer. Default or wrong specification returns 6.
      */
     private void setSourceVersion() {
-        String version = processingEnv.getOptions().get("source");
+        String version = getOptionValue("openjpa.source", "source");
         if (version != null) {
             try {
                 generatedSourceVersion = Integer.parseInt(version);
@@ -336,7 +347,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
     
     private void setNamingPolicy() {
-        String policy = processingEnv.getOptions().get("naming");
+        String policy = getOptionValue("openjpa.naming","naming");
         if (policy != null) {
             try {
                 factory = (MetaDataFactory)Class.forName(policy).newInstance();
@@ -350,7 +361,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
     
     private void setHeader() {
-        String headerOption = processingEnv.getOptions().get("header");
+        String headerOption = getOptionValue("openjpa.header", "header");
         if (headerOption == null) {
             return;
         }
@@ -369,7 +380,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private void setFileManager() {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         fileManager = compiler.getStandardFileManager(null, null, null);
-        String outDir = processingEnv.getOptions().get("out");
+        String outDir = getOptionValue("openjpa.out", "out");
         if (outDir != null)
            isUserSpecifiedOutputLocation = setSourceOutputDirectory(new File(outDir));
     }
@@ -414,6 +425,18 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             logger.warn(_loc.get("mmg-bad-out", outDir, StandardLocation.SOURCE_OUTPUT));
             return false;
         }
+    }
+    
+    /**
+     * Get the value for the given keys, whoever matches first, in the current available options.
+     */
+    private String getOptionValue(String... keys) {
+        Map<String,String> options = processingEnv.getOptions();
+        for (String key : keys) {
+            if (options.containsKey(key))
+                return options.get(key);
+        }
+        return null;
     }
     
     /**
