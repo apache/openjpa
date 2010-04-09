@@ -28,6 +28,8 @@ import javax.persistence.Query;
 import junit.framework.Assert;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -56,9 +58,10 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         em.clear();
 
         String[] jpql;
-        if (((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance() instanceof SQLServerDictionary){
+        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        if ((dict instanceof SQLServerDictionary) || (dict instanceof HSQLDictionary)) {
             jpql = new String[] {
-                // some changes to the jpql strings had to be made for MSSQL
+                // some changes to the jpql strings had to be made for MSSQL and HSQLDB
                 "select a from Employee a where a.hireDate >= {d '2009-08-25'}",
                 "select a from Employee a where a.hireDate >= {d '2009-08-05'}",    // requires yyyy-mm-dd
                 // "select a from Employee a where a.hireTime >= {t '00:00:00'}",   // fails ?
@@ -110,8 +113,8 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         }
         em.getTransaction().begin();
         String update;
-        if (((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance() instanceof SQLServerDictionary) {
-            // more than 3 digits after 00:00:00. fails on MSSQL
+        if ((dict instanceof SQLServerDictionary) || (dict instanceof HSQLDictionary)) {
+            // more than 3 digits after 00:00:00. fails on MSSQL and HSQLDB
             update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123'} where a.empId = 1";
         } else {
             update = "update Employee a set a.hireTimestamp = {ts '2009-08-25 00:00:00.123456'} where a.empId = 1";
