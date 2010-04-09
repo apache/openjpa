@@ -167,9 +167,10 @@ List result = query.getResultList();
 Annotation processing tool generates source code for a metamodel class given 
 the annotated source code of persistent entity. 
 This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
-libraries are specified in the compiler <code>-processorpath</code> option.
+libraries are specified in the compiler <code>-classpath</code> option <emphasis>and</emphasis>
+Annotation processor option <code>-Aopenjpa.generate=true</code> is specified.
     <programlisting>
- $ javac -processor org.apache.openjpa.persistence.meta.AnnotationProcessor6 -processorpath path/to/openjpa-all.jar mypackage/MyEntity.java
+ $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.generate=true mypackage/MyEntity.java
     </programlisting>
 will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
       </para>

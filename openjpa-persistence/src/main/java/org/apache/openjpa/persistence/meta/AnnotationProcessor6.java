@@ -63,7 +63,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
  * This tool is invoked during compilation for JDK6 compiler if 
  * <UL>
  * <LI>OpenJPA and JPA libraries are available in the compiler classpath
- * and <LI>Annotation Processor option <code>-Aopenjpa.generated=true</code> is specified.
+ * and <LI>Annotation Processor option <code>-Aopenjpa.generate=true</code> is specified.
  * </UL>
  * <br>
  * <B>Usage</B><br>
