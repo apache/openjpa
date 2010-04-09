@@ -274,6 +274,7 @@
                                         javax.persistence.Persistence
                                     -->
                                     <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                    <exclude>**/javax.annotation.processing.Processor</exclude>
 
                                     <!--
                                         comments are usupported by our rsrc parser
@@ -441,6 +442,7 @@
                                     javax.persistence.Persistence
                                 -->
                                 <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                <exclude>**/javax.annotation.processing.Processor</exclude>
 
                                 <!--
                                     comments are usupported by our rsrc parser
@@ -854,6 +856,7 @@
                                 javax.persistence.Persistence
                             -->
                             <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                            <exclude>**/javax.annotation.processing.Processor</exclude>
 
                             <!--
                                 comments are usupported by our rsrc parser

@@ -34,16 +34,14 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 public class CompileTimeLogger {
     private static enum Level {TRACE, INFO, WARN, ERROR};
-    private static Localizer _loc = Localizer.forPackage(
-            CompileTimeLogger.class);
+    private static Localizer _loc = Localizer.forPackage(CompileTimeLogger.class);
     private static Level DEFAULT_LEVEL = Level.WARN;
     private int logLevel;
     private Messager messager;
     
-    public CompileTimeLogger(ProcessingEnvironment env) {
+    public CompileTimeLogger(ProcessingEnvironment env, String level) {
         messager = env.getMessager();
         
-        String level = env.getOptions().get("log");
         if (level == null) {
             logLevel = DEFAULT_LEVEL.ordinal();
             return;
