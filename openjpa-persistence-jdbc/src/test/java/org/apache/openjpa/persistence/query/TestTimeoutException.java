@@ -43,9 +43,6 @@ public class TestTimeoutException extends SingleEMFTestCase {
     private final Class<?> entityClass = PObject.class;
 
     public void setUp() {
-        // TODO - Hack until OPENJPA-1594 is addressed
-        setUnsupportedDatabases(OracleDictionary.class, DB2Dictionary.class);
-        
         // Disable tests for any DB that has supportsSelectForUpdate==false, like HSQLDictionary
         OpenJPAEntityManagerFactorySPI tempEMF = emf;
         if (tempEMF == null) {

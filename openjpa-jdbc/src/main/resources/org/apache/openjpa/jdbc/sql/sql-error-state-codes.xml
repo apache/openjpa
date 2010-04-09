@@ -164,7 +164,7 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.OracleDictionary">
-		<lock>42000,61000</lock>
+		<lock>42000,61000,72000</lock>
 		<referential-integrity>1,1400,1722,2291,2292</referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
