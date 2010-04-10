@@ -2588,7 +2588,7 @@ public class BrokerImpl
                 pc.pcReplaceStateManager(null);
 
             // create new sm
-            sm = new StateManagerImpl(id, meta, this);
+            sm = newStateManagerImpl(id, meta);
             if ((_flags & FLAG_ACTIVE) != 0) {
                 if (explicit)
                     sm.initialize(pc, PCState.PNEW);
@@ -2622,8 +2622,8 @@ public class BrokerImpl
 
         ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
             getMetaData(obj.getClass(), _loader, true);
-        StateManagerImpl sm = new StateManagerImpl(StateManagerId.
-            newInstance(this), meta, this);
+        StateManagerImpl sm = newStateManagerImpl(StateManagerId.
+            newInstance(this), meta);
         sm.initialize(pc, PCState.TLOADED);
         try {
             switch (op) {
@@ -2799,7 +2799,7 @@ public class BrokerImpl
             if (id == null)
                 id = StateManagerId.newInstance(this);
 
-            StateManagerImpl sm = new StateManagerImpl(id, meta, this);
+            StateManagerImpl sm = newStateManagerImpl(id, meta);
             sm.setOwner((StateManagerImpl) owner, ownerMeta);
 
             PersistenceCapable copy;
@@ -2876,7 +2876,7 @@ public class BrokerImpl
                     getMetaDataRepositoryInstance();
                 ClassMetaData meta = repos.getMetaData(type, _loader, true);
                 // construct a new state manager with all info known
-                sm = new StateManagerImpl(oid, meta, this);
+                sm = newStateManagerImpl(oid, meta);
                 sm.setObjectId(oid);
                 sm.initialize(sm.getMetaData().getDescribedType(), state);
             }
@@ -3515,8 +3515,8 @@ public class BrokerImpl
                         meta = _conf.getMetaDataRepositoryInstance().
                             getMetaData(obj.getClass(), _loader, true);
 
-                        sm = new StateManagerImpl
-                            (StateManagerId.newInstance(this), meta, this);
+                        sm = newStateManagerImpl
+                            (StateManagerId.newInstance(this), meta);
                         sm.initialize(assertPersistenceCapable(obj),
                             PCState.TCLEAN);
                     } else if (sm.isPersistent()) {
@@ -3587,7 +3587,7 @@ public class BrokerImpl
                 ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
                     getMetaData(obj.getClass(), _loader, true);
                 Object id = StateManagerId.newInstance(this);
-                sm = new StateManagerImpl(id, meta, this);
+                sm = newStateManagerImpl(id, meta);
                 sm.initialize(assertPersistenceCapable(obj),
                     PCState.TCLEAN);
             }
