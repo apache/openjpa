@@ -156,7 +156,8 @@ public class JavaTypes {
             return CALENDAR;
 
         if (type.isInterface()) {
-            if (type == Serializable.class)
+            //if (type == Serializable.class)
+            if (Serializable.class.isAssignableFrom(type))
                 return OBJECT;
             return PC_UNTYPED;
         }
