@@ -38,6 +38,8 @@ import javax.persistence.metamodel.PluralAttribute.CollectionType;
 import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.embed.Address;
+import org.apache.openjpa.persistence.embed.Geocode;
 import org.apache.openjpa.persistence.enhance.identity.Book;
 import org.apache.openjpa.persistence.enhance.identity.BookId;
 import org.apache.openjpa.persistence.enhance.identity.Library;
@@ -71,7 +73,9 @@ public class TestMetamodel extends SingleEMFTestCase {
     	        OneOneChild.class,
     	        Book.class,
     	        Library.class,
-    	        Page.class);
+    	        Page.class,
+    	        Address.class,
+    	        Geocode.class);
     	emf.createEntityManager();
         model = (MetamodelImpl)emf.getMetamodel();
         }
@@ -311,6 +315,12 @@ public class TestMetamodel extends SingleEMFTestCase {
         ManagedType<ImplicitFieldAccessBase> e0 = model.entity(ImplicitFieldAccessBase.class);
         SingularAttribute<ImplicitFieldAccessBase,?> pInt = e0.getDeclaredSingularAttribute("primitiveInt");
         assertEquals(PersistentAttributeType.BASIC, pInt.getPersistentAttributeType());
+    }
+    
+    public void testEmbeddedAttributeType() {
+        ManagedType<Address> type = model.entity(Address.class);
+        Attribute.PersistentAttributeType attr = type.getAttribute("geocode").getPersistentAttributeType();
+        assertEquals(PersistentAttributeType.EMBEDDED, attr);
     }
     
     public void testNotFoundErrorMessage() {

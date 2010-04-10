@@ -200,6 +200,10 @@ public class Members {
         public final PersistentAttributeType getPersistentAttributeType() {
             if (!fmd.isDeclaredTypePC())
                 return super.getPersistentAttributeType();
+            if (fmd.getValue().isEmbedded() && fmd.getAssociationType() == 0) {
+                return PersistentAttributeType.EMBEDDED;
+            }
+            
             return fmd.getMappedByMetaData() == null || !fmd.getType().isAssignableFrom(Collection.class)
                  ? PersistentAttributeType.ONE_TO_ONE
                  : PersistentAttributeType.ONE_TO_MANY;
