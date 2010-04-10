@@ -110,9 +110,6 @@
          persistence unit
      </li>
      <li>
-         Currently limited to persistent state and relationships
-     </li>
-     <li>
          Used with Criteria API to generate and execute type safe queries
      </li>
      <li>
@@ -142,6 +139,11 @@
      Properties, LockModeType, and Detach
 </li>
 <li>
+     OSGi - support for the Persistence Unit Service Specification 1.0 in 
+     the OSGi Service Platform Release 4 Enterprise Version 4.2 specifications
+     has been provided by integration with the Apache Aries JPA module
+</li>
+<li>
      And many more...
 </li>
 </ul>
@@ -151,14 +153,13 @@
 development iterations for 2.0, as defined in the JPA 2.0 Roadmap at:
 <a href="http://openjpa.apache.org/jpa-20-roadmap.html">http://openjpa.apache.org/jpa-20-roadmap.html</a></p>
 
-<p>The JPA 2.0 Roadmap contains a complete list of implemented features and
-feature summaries, including what is on deck for future iterations.</p>
-
 <p>Additional information on the OpenJPA project may be found at the project web site: <a href="http://openjpa.apache.org">http://openjpa.apache.org</a></p>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
 <P>In normal usage, OpenJPA requires Java 5 or higher and a relational 
-database of some sort.</p>
+database of some sort.  The metamodel generation and annotation processing
+features require Java SE 6 or higher.
+</p>
 
 <h2><a name="Documentation"></a>Documentation</h2>
 <p>If you have questions about OpenJPA, a good source of information is the 

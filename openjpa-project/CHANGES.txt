@@ -58,7 +58,6 @@ Overview
    * Metamodel API -
       ** Provides API to dynamically retrieve metamodel information for a
          persistence unit
-      ** Currently limited to persistent state and relationships
       ** Used with Criteria API to generate and execute type safe queries
       ** Supports dynamic or static generation of the metamodel
    * Criteria API -
@@ -70,14 +69,14 @@ Overview
      and Metamodel APIs
    * EntityManager API - updated for new Query and Query Result APIs, Hints,
      Properties, LockModeType, and Detach
+   * OSGi - support for the Persistence Unit Service Specification 1.0 in 
+     the OSGi Service Platform Release 4 Enterprise Version 4.2 specifications
+     has been provided by integration with the Apache Aries JPA module
    * And many more...
 
    This distribution is based upon the contributions provided in all of the
    development iterations for 2.0, as defined in the JPA 2.0 Roadmap:
       http://openjpa.apache.org/jpa-20-roadmap.html
-
-   The JPA 2.0 Roadmap contains a complete list of implemented features and
-   feature summaries, including what is on deck for future iterations.
 
    Additional information on the OpenJPA project may be found at the project
    web site:
@@ -128,7 +127,8 @@ Notices
 Prerequisites
 -------------
    In normal usage, OpenJPA requires Java SE 5 or higher and a relational 
-   database of some sort.
+   database of some sort.  The metamodel generation and annotation processing
+   features require Java SE 6 or higher.
 
 
 Documentation
