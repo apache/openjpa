@@ -159,3 +159,4 @@ $ ls openjpa-project/target/site/downloads/
 apache-openjpa-2.1.0-SNAPSHOT-binary.zip
 apache-openjpa-2.1.0-SNAPSHOT-source.zip
  
+
