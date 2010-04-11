@@ -1166,6 +1166,50 @@ property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
 with value of <literal>true</literal> or <literal>false</literal>. The default
 is <literal>true</literal>. 
 </para>
+        <table>
+            <title>
+                Pre-defined aliases
+            </title>
+            <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                <colspec colname="alias"/>
+                <colspec colname="value"/>
+                <colspec colname="notes"/>
+                <thead>
+                    <row>
+                        <entry colname="alias">Alias</entry>
+                        <entry colname="value">Value</entry>
+                        <entry colname="notes">Notes</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry colname="alias">
+<literal>true</literal>
+                        </entry>
+                        <entry colname="value">
+<literal>org.apache.openjpa.util.CacheMap</literal>
+                        </entry>
+                        <entry colname="notes">
+The default option.  Uses a
+<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html">
+<literal>CacheMap</literal></ulink> to store SQL string.
+<literal>CacheMap</literal> maintains a fixed number of cache entries, and an
+optional soft reference map for entries that are moved out of the LRU space.
+So, for applications that have a monotonically increasing number of distinct
+queries, this option can be used to ensure that a fixed amount of memory is
+used by the cache.
+                        </entry>
+                    </row>
+                    <row>
+                        <entry colname="alias"><literal>false</literal></entry>
+                        <entry colname="value"><emphasis>none</emphasis></entry>
+                        <entry colname="notes">
+Disables the SQL cache.
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
 <para>
 Following salient points to be noted regarding usage of Prepared Query Cache.
 <itemizedlist>

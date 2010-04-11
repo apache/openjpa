@@ -204,6 +204,22 @@
                     </simplelist>
                 </para>
             </section>
+            <section id="QuerySQLCache">
+                <title>
+                    openjpa.jdbc.QuerySQLCache
+                </title>
+                <!-- See OPENJPA-1179 for details. -->
+                <para>
+                    In prior 1.x.x releases, the openjpa.jdbc.QuerySQLCache
+                    configuration property for Prepared SQL Cache accepted
+                    value <literal>all</literal> to never drop items from the
+                    cache, but this option is no longer supported and will cause
+                    a PersistenceException with a root cause of a ParseException
+                    to be thrown.  See 
+                    <xref linkend="ref_guide_cache_querysql"/>
+                    for details on the available configuration values.
+                </para>
+            </section>
         </section>
         <section id="Disabling AutoOff Collection Tracking">
             <title>
