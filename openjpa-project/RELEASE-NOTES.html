@@ -232,6 +232,80 @@ in each release of OpenJPA.</P>
 
 <hr>
 <h3><a name="200">OpenJPA 2.0.0</h3>
+<h4>Sub-task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1179'>OPENJPA-1179</a>] -         openjpa.jdbc.QuerySQLCache plugin values
+</li>
+</ul>
+
+<h4>Bug</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1510'>OPENJPA-1510</a>] -         Documentation corrections
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1550'>OPENJPA-1550</a>] -         When batchLimit=-1 or &gt;1 and an exception is caused, the params and failedObject are missing from the resultant exception.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1559'>OPENJPA-1559</a>] -         DataCacheManager initialization isn't thread safe.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1569'>OPENJPA-1569</a>] -         @Strategy triggers an InvalidStateException for fields which are declared as Java interfaces
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1597'>OPENJPA-1597</a>] -         Need Compatibility setting for new OPENJPA-1097 Proxies and DetachedStateField behavior
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1599'>OPENJPA-1599</a>] -         Cache mode properties passes in to em.find and lock methods are not transient
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1602'>OPENJPA-1602</a>] -         Query with lock mode set to PESSIMISTIC_WRITE does not have for update clause attached to the sql when runs twice
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1604'>OPENJPA-1604</a>] -         Setting PessimisticLockManager fails to append &quot;for update clause&quot; to the select statement
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1608'>OPENJPA-1608</a>] -         PESSIMISTIC_WRITE is not working in Informix
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1609'>OPENJPA-1609</a>] -         PessimisticLockException instead of LockTimeoutException thrown on DB2V9 for ZOS
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1611'>OPENJPA-1611</a>] -         Wrong PersistentAttributeType returned for @Embedded types
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1618'>OPENJPA-1618</a>] -         Exception during factory creation due to javax.persistence.transactionType
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1625'>OPENJPA-1625</a>] -         Inconsistent creation of StateManagerImpl in BrokerImpl
+</li>
+</ul>
+
+<h4>Improvement</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1382'>OPENJPA-1382</a>] -         make org.apache.openjpa.persistence.meta.AnnotationProcessor6 as service
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1545'>OPENJPA-1545</a>] -         Add new Detach processing
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1603'>OPENJPA-1603</a>] -         Decouple the QueryCache from the DataCache
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1622'>OPENJPA-1622</a>] -         Invoking MetaModel generator
+</li>
+</ul>
+
+<h4>Task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1178'>OPENJPA-1178</a>] -         Backwards Compatibility Issues
+</li>
+</ul>
+
+<h4>Test</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1606'>OPENJPA-1606</a>] -         Add JPQL tests for element collection
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1614'>OPENJPA-1614</a>] -         Testcase failures in TextException on MSSQL
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1616'>OPENJPA-1616</a>] -         Fix TestTimeoutException test failures on MSSQL and MySQL
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1619'>OPENJPA-1619</a>] -         Fix TestTimestampVersion on various databases
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1620'>OPENJPA-1620</a>] -         Fix TestJDBCEscapeDate test for MSSQL
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1621'>OPENJPA-1621</a>] -         Fix TestGeneratedValues for DB2
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1623'>OPENJPA-1623</a>] -         New tests for query qualified paths
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1624'>OPENJPA-1624</a>] -         Fix intermittent datacache timeout failures in TestSJVMCache and CacheTest
+</li>
+</ul>
+
 
 <hr>
 <h3><a name="200beta3">OpenJPA 2.0.0-beta3</h3>
