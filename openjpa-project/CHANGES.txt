@@ -199,6 +199,7 @@ Task
 
 Test
 ----
+    * [OPENJPA-1336] - Intermittent test failure in org.apache.openjpa.persistence.generationtype.TestGeneratedValues when running on MySQL
     * [OPENJPA-1606] - Add JPQL tests for element collection
     * [OPENJPA-1614] - Testcase failures in TextException on MSSQL
     * [OPENJPA-1616] - Fix TestTimeoutException test failures on MSSQL, MySQL, HSQLDB, Oracle and re-enable for DB2
