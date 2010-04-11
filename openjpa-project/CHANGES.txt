@@ -58,7 +58,6 @@ Overview
    * Metamodel API -
       ** Provides API to dynamically retrieve metamodel information for a
          persistence unit
-      ** Currently limited to persistent state and relationships
       ** Used with Criteria API to generate and execute type safe queries
       ** Supports dynamic or static generation of the metamodel
    * Criteria API -
@@ -70,6 +69,9 @@ Overview
      and Metamodel APIs
    * EntityManager API - updated for new Query and Query Result APIs, Hints,
      Properties, LockModeType, and Detach
+   * OSGi - support for the Persistence Unit Service Specification 1.0 in 
+     the OSGi Service Platform Release 4 Enterprise Version 4.2 specifications
+     has been provided by integration with the Apache Aries JPA module
    * And many more...
 
    This SNAPSHOT distribution is based upon the contributions provided in
@@ -129,7 +131,8 @@ Notices
 Prerequisites
 -------------
    In normal usage, OpenJPA requires Java SE 5 or higher and a relational 
-   database of some sort.
+   database of some sort.  The metamodel generation and annotation processing
+   features require Java SE 6 or higher.
 
 
 Documentation
@@ -164,8 +167,57 @@ Getting Involved
         * Bugs and other issues can be posted on the project JIRA.
 
 
+Included Changes in OpenJPA 2.1.0-SNAPSHOT
+------------------------------------------
+
+    * TBD *
+
+
 Included Changes in OpenJPA 2.0.0
 ---------------------------------
+
+Sub-task
+--------
+    * [OPENJPA-1179] - openjpa.jdbc.QuerySQLCache plugin values
+
+Bug
+---
+    * [OPENJPA-1510] - Documentation corrections
+    * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
+    * [OPENJPA-1559] - DataCacheManager initialization isn't thread safe.
+    * [OPENJPA-1569] - @Strategy triggers an InvalidStateException for fields which are declared as Java interfaces
+    * [OPENJPA-1597] - Need Compatibility setting for new OPENJPA-1097 Proxies and DetachedStateField behavior
+    * [OPENJPA-1599] - Cache mode properties passes in to em.find and lock methods are not transient
+    * [OPENJPA-1602] - Query with lock mode set to PESSIMISTIC_WRITE does not have for update clause attached to the sql when runs twice
+    * [OPENJPA-1604] - Setting PessimisticLockManager fails to append "for update clause" to the select statement
+    * [OPENJPA-1608] - PESSIMISTIC_WRITE is not working in Informix
+    * [OPENJPA-1609] - PessimisticLockException instead of LockTimeoutException thrown on DB2V9 for ZOS
+    * [OPENJPA-1611] - Wrong PersistentAttributeType returned for @Embedded types
+    * [OPENJPA-1618] - Exception during factory creation due to javax.persistence.transactionType
+    * [OPENJPA-1625] - Inconsistent creation of StateManagerImpl in BrokerImpl
+
+Improvement
+-----------
+    * [OPENJPA-1382] - make org.apache.openjpa.persistence.meta.AnnotationProcessor6 as service
+    * [OPENJPA-1545] - Add new Detach processing
+    * [OPENJPA-1603] - Decouple the QueryCache from the DataCache
+    * [OPENJPA-1622] - Invoking MetaModel generator
+
+Task
+----
+    * [OPENJPA-1178] - Backwards Compatibility Issues
+
+Test
+----
+    * [OPENJPA-1336] - Intermittent test failure in org.apache.openjpa.persistence.generationtype.TestGeneratedValues when running on MySQL
+    * [OPENJPA-1606] - Add JPQL tests for element collection
+    * [OPENJPA-1614] - Testcase failures in TextException on MSSQL
+    * [OPENJPA-1616] - Fix TestTimeoutException test failures on MSSQL, MySQL, HSQLDB, Oracle and re-enable for DB2
+    * [OPENJPA-1619] - Fix intermittent TestTimestampVersion failures on various DBs when running on Windows
+    * [OPENJPA-1620] - Fix TestJDBCEscapeDate test for MSSQL and HSQLDB
+    * [OPENJPA-1621] - Fix TestGeneratedValues for DB2
+    * [OPENJPA-1623] - New tests for query qualified paths
+    * [OPENJPA-1624] - Fix intermittent datacache timeout failures in TestSJVMCache and CacheTest
 
 
 Included Changes in OpenJPA 2.0.0 Beta 3
@@ -324,6 +376,7 @@ Bug
     * [OPENJPA-1142] - OptimisticLockException thrown on Query.getResultList() when Pessimistic Lock is applied
     * [OPENJPA-1173] - Update PostgreSQL support for 8.4.x
     * [OPENJPA-1185] - Subquery overhaul
+    * [OPENJPA-1189] - Column names do not contain delimiters when obtained from DatabaseMetaData
     * [OPENJPA-1197] - NativeQueries fail with MySQL
     * [OPENJPA-1224] - OpenJPA MySQL BigDecimal ignoring Precision/Scale column Annotation when generating tables
     * [OPENJPA-1263] - TestReaderLob.testUpdateWithNull() fails on MySQL
@@ -398,6 +451,7 @@ Improvement
     * [OPENJPA-839] - change pom.xml to publish sources as well.
     * [OPENJPA-1085] - Add toString() method to PCState classes
     * [OPENJPA-1172] - Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
+    * [OPENJPA-1236] - Finish support of delimiters other than double-quotes
     * [OPENJPA-1258] - make warning message more friendly when other persistence provider configured by application
     * [OPENJPA-1356] - Use maven-enforcer-plugin to verify proper Java and Maven levels
     * [OPENJPA-1363] - Upgrade to latest commons-pool maintenance release
