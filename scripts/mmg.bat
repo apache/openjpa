@@ -35,7 +35,6 @@
 @rem ---------------------------------------------------------------------------
 @echo off
 setlocal
-set JAVA_HOME=c:\java\jdk1.6.0_10
 set JAVAC=%JAVA_HOME%\bin\javac
 
 set M_REPO="C:\Documents and Settings\Administrator\.m2\repository"
@@ -44,11 +43,11 @@ set VERSION=1.0-EA9-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
 set CLASSPATH=%JPA_LIB%
-set CLASSPATH=%CLASSPATH%;.\openjpa-lib\target\classes
-set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\src\main\resources
-set CLASSPATH=%CLASSPATH%;.\openjpa-persistence\target\classes
-set CLASSPATH=%CLASSPATH%;.\openjpa-kernel\target\classes
+set CLASSPATH=%CLASSPATH%;..\openjpa\src\main\resources
+set CLASSPATH=%CLASSPATH%;..\openjpa\target\classes
 
+echo Using Java Compiler %JAVAC%
+%JAVAC% -version
 %JAVAC% -cp %CLASSPATH% @%1 @%2
 
 endlocal

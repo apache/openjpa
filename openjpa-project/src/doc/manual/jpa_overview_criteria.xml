@@ -172,7 +172,9 @@ Annotation processor option <code>-Aopenjpa.generate=true</code> is specified.
     <programlisting>
  $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.generate=true mypackage/MyEntity.java
     </programlisting>
-will generate source code for canonical meta-model class <code>mypackage.MyEntity_.java</code>.
+will generate source code for canonical meta-model class <code>mypackage.MyEntity_</code>.
+The source code is generated relative to the directory specified in <code>-s</code> option
+of <code>javac</code> compiler and defaulted to the current directory.
       </para>
       
       <para>
@@ -205,20 +207,6 @@ the name of a meta-class given the name of the original persistent Java entity c
                -Aheader=&lt;url&gt; : A url whose content will appear as comment header to the generated file(s). 
                Recognizes special value <code>ASL</code> for Apache Source License header as comment. 
                By default, adds a OpenJPA proprietary text as comment block.
-             </para>
-        </listitem>
-        <listitem>
-			<para>
-              -Aout=dir : A directory in the local file system. The generated files will be written 
-              <emphasis>relative</emphasis> to this directory according to the package structure i.e. if <code>dir</code> 
-              is specified as <code>/myproject/generated-src</code> then the generated source code will be 
-              written to <code>/myproject/generated-src/mypackage/MyEntity_.java</code>.
-              If this option is not specified, then an attempt will be made to write the generated source file 
-              in the same directory of the source code of original class <code>mypackage.MyEntity</code>. 
-              The source code location for <code>mypackage.MyEntity</code> can only be determined for Sun JDK6 
-              and when <code>tools.jar</code> being available to the compiler classpath. If the source code 
-              location for the original class can not be determined, and the option is not specified, then the 
-              generated source code is written relative to the current directory according to the package structure.  
              </para>
         </listitem>
     </itemizedlist>
