@@ -57,13 +57,17 @@
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
+        <!--
         <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_patches.zip" />
         <available property="tck_patches.available" file="${tck_patches.zip}" />
         <fail unless="tck_patches.available">The TCK patches file specified in the "tck_patches.zip" system property (${tck_patches.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
+        -->
 
         <delete dir="${tck.dir}" />
         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
+        <!--
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
+        -->
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.dir}/bin/ts.jte.orig" />
         <copy overwrite="true"
