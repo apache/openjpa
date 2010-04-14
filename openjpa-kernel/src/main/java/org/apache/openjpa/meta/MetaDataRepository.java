@@ -1567,12 +1567,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public void register(Class<?> cls) {
         // buffer registered classes until an oid metadata request is made,
         // at which point we'll parse everything in the buffer
-        if (_locking) {
-            synchronized (_registered) {
-                _registered.add(cls);
-                registerAlias(cls);
-            }
-        } else {
+        synchronized (_registered) {
             _registered.add(cls);
             registerAlias(cls);
         }
@@ -1603,16 +1598,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
         Class<?>[] reg;
-        if (_locking) {
-            synchronized (_registered) {
-                reg = _registered.toArray(new Class[_registered.size()]);
-                _registered.clear();
-            }
-        } else {
+        synchronized (_registered) {
             reg = _registered.toArray(new Class[_registered.size()]);
             _registered.clear();
         }
-        
 
         Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;
