@@ -23,7 +23,7 @@
     the TCK and patches zip files located at:
 
         ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009_patches.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_20100414_patches.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" and "tck_patches.zip" system property.
@@ -57,17 +57,14 @@
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
-        <!--
-        <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_patches.zip" />
+        <property name="tck.patch.level" value="20100414" />
+        <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/jpatck-2.0_${tck.patch.level}_patches.zip" />
         <available property="tck_patches.available" file="${tck_patches.zip}" />
         <fail unless="tck_patches.available">The TCK patches file specified in the "tck_patches.zip" system property (${tck_patches.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
-        -->
 
         <delete dir="${tck.dir}" />
         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
-        <!--
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
-        -->
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.dir}/bin/ts.jte.orig" />
         <copy overwrite="true"
@@ -88,7 +85,7 @@
         <property name="db.username" value="nousername" />
         <property name="db.password" value="nopassword" />
 
-        <property name="openjpa.log.level" value="WARN" />
+        <property name="openjpa.Log" value="DefaultLevel=TRACE" />
 
         <property name="jpatck.test" value="" />
 
@@ -107,7 +104,7 @@ openjpa.ConnectionPassword: ${db.password}
 openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
-openjpa.Log: DefaultLevel=${openjpa.log.level}
+openjpa.Log: ${openjpa.Log}
 openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
