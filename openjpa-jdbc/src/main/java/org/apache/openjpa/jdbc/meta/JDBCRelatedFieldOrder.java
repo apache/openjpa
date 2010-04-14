@@ -76,8 +76,34 @@ class JDBCRelatedFieldOrder
 
     public void order(Select sel, ClassMapping elem, Joins joins) {
         FieldMapping fm = _fm;
-        if (elem != null)
-            fm = elem.getFieldMapping(_fm.getIndex());
+        if (elem != null) {
+            fm = getOrderByField(elem, fm);
+            if (fm == null)
+                fm = elem.getFieldMapping(_fm.getIndex());
+        }
         sel.orderBy(fm.getColumns(), _asc, joins, false);
+    }
+    
+    private FieldMapping getOrderByField(ClassMapping elem, FieldMapping fm) {
+        ClassMapping owner = (ClassMapping)_fm.getDefiningMetaData();
+        if (owner.getDescribedType() == elem.getDescribedType())
+            return elem.getFieldMapping(_fm.getIndex());
+        else {
+            FieldMapping fms[] = elem.getFieldMappings();
+            for (int i = 0; i < fms.length; i++) {
+                ValueMapping vm = (ValueMapping)fms[i].getValue();
+                ClassMapping clm = (ClassMapping)vm.getEmbeddedMetaData();
+                if (clm != null) {
+                    if (clm.getDescribedType() == owner.getDescribedType()) {
+                        return owner.getFieldMapping(_fm.getIndex());
+                    } else {
+                        FieldMapping fm1 = getOrderByField(clm, fm);
+                        if (fm1 != null)
+                            return fm1;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

@@ -200,7 +200,14 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    assertEquals(NUM_PAGES-1, count(Page1.class));
 	}
 
-	
+    public void testOrderBy() {
+        sql.clear();
+        EntityManager em = emf.createEntityManager();
+        Library1 lib = em.find(Library1.class, LIBRARY_NAME);
+        assertNotNull(lib);
+        assertSQLFragnments(sql, "ORDER BY t1.LIBRARY_NAME ASC, t1.BOOK_NAME ASC");
+    }
+    
 	/**
 	 * Create a Library with a Book and three Pages.
 	 */

@@ -24,8 +24,10 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.jdbc.VersionColumn;
@@ -49,7 +51,8 @@ public class Library1 implements Serializable {
     @Column(name="LIBRARY_NAME", nullable = false)
     private String name;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "library")
+    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "library")
+    @OrderBy(value = "bid.library ASC, bid.name ASC")
     private Set<Book1> books = new HashSet<Book1>();
     
     private String location;
