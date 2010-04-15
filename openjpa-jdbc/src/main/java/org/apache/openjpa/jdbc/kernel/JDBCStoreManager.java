@@ -497,13 +497,90 @@ public class JDBCStoreManager
     private Result getInitializeStateResult(OpenJPAStateManager sm,
         ClassMapping mapping, JDBCFetchConfiguration fetch, int subs)
         throws SQLException {
-        Select sel = _sql.newSelect();
-        if (!select(sel, mapping, subs, sm, null, fetch, JDBCFetchConfiguration.EAGER_JOIN, true, false)) {
-            return null;
+        List params = new ArrayList();
+        Select sel = newSelect(sm, mapping, fetch, subs, params);
+        if (sel == null) return null;
+        return sel.execute(this, fetch, params);
+    }
+    
+    Map<SelectKey, Select> selectImplCacheMap = null;
+    private Select newSelect(OpenJPAStateManager sm,
+        ClassMapping mapping, JDBCFetchConfiguration fetch, int subs,
+        List params) {
+        if (!_isQuerySQLCache) 
+            return newSelect(sm, mapping, fetch, subs);       
+           
+        if (selectImplCacheMap == null) {
+            selectImplCacheMap =
+                getCacheMapFromQuerySQLCache(JDBCStoreManager.class);
         }
+         
+        JDBCFetchConfiguration fetchClone = new JDBCFetchConfigurationImpl();
+        fetchClone.copy(fetch);
+        SelectKey selKey = new SelectKey(mapping, null, fetchClone);
+        Select sel = null;
+        boolean found = true;
+        Object obj = selectImplCacheMap.get(selKey);
+        if (obj == null) {
+            synchronized (selectImplCacheMap) {
+                obj = selectImplCacheMap.get(selKey);
+                if (obj == null) {
+                    // Not found in cache, create a new select
+                    obj = newSelect(sm, mapping, fetch, subs);
+                    found = false;
+                }
+                    
+                if (obj == null) {
+                    // If the generated SelectImpl is null, store a generic
+                    // known object in the cache as a placeholder. Some map 
+                    // implementations do not allow null values.
+                    obj = _nullCacheValue;
+                    found = false;
+                }
+                else if (obj != _nullCacheValue)
+                {
+                    sel = (Select)obj;
+                    if (sel.getSQL() == null) {
+                        sel.setSQL(this, fetch);
+                        found = false;
+                    }
+                }
+                if (!found) {
+                    addToSqlCache(selectImplCacheMap, selKey, obj);
+                }
+            }
+        }
+
+        if (obj != null && obj != _nullCacheValue)
+            sel = (Select) obj;
+
+        Log log = _conf.getLog(JDBCConfiguration.LOG_JDBC);
+        if (log.isTraceEnabled()) {
+            if (!found)
+                log.trace(_loc.get("cache-missed", mapping, this.getClass()));
+            else
+                log.trace(_loc.get("cache-hit", mapping, this.getClass()));
+        }
+
+        if (sel == null)
+            return null;
+        
+        Object oid = sm.getObjectId();
+        Column[] cols = mapping.getPrimaryKeyColumns();
+        sel.wherePrimaryKey(mapping, cols, cols, oid, this, 
+        	null, null, params);
+        return sel;
+    }
+
+    protected Select newSelect(OpenJPAStateManager sm,
+        ClassMapping mapping, JDBCFetchConfiguration fetch, int subs) {
+        Select sel = _sql.newSelect();
+        if (!select(sel, mapping, subs, sm, null, fetch,
+            JDBCFetchConfiguration.EAGER_JOIN, true, false))
+            return null;
         sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
         sel.setExpectedResultCount(1, false);
-        return sel.execute(this, fetch);
+        return sel;
     }
 
     /**
