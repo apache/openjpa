@@ -1414,8 +1414,10 @@ public class SelectImpl
                 val = pks[mapping.getField(join.getFieldIndex()).
                     getPrimaryKeyIndex()];
                 val = join.getJoinValue(val, toCols[i], store);
-                if (parmList != null)
+                if (parmList != null && val != null) {
+                    // if val is null we will have already appended an is NULL clause.
                 	parmList.add(val);
+                }
             }
             
             if (collectParmValueOnly) 
