@@ -33,7 +33,6 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.OptimisticException;
@@ -190,47 +189,15 @@ public class BatchingPreparedStatementManagerImpl extends
                     checkUpdateCount(rtn, batchedRowsBaseIndex, ps);
                 }
             } catch (SQLException se) {
-                //If we look at PreparedStatementManagerImpl.flushAndUpdate (which is the 'non-batch' code path
-                //similar to this path, or I should say, the path which is taken instead of this path when
-                //we aren't using batching), we see that the catch block doesn't do a 'se.getNextException'.
-                //When we do a 'getNextException', the 'next exception' doesn't contain the same message as se.
-                //That is, 'next exception' contains a subset msg which is contained in se.
                 SQLException sqex = se.getNextException();
-                if (sqex == null){
+                if (sqex == null)
                     sqex = se;
-                }
-                
-                if (se instanceof ReportingSQLException){
-                  int index = ((ReportingSQLException) se).getIndexOfFirstFailedObject();
-
-                  //if we have only batched one statement, the index should be 0.  As can be seen above,
-                  //if 'batchSize == 1' a different path is taken (the 'single row' path), and if that row
-                  //fails, we know that the index is 0 since there is only one row.
-                  if (batchSize == 1){
-                      index = 0;
-                  }
-                  
-                  //index should not be less than 0 in this path, but if for some reason it is, lets
-                  //resort to the 'old way' and simply pass the 'ps' as the failed object.
-                  if (index < 0){ 
-                      throw SQLExceptions.getStore(se, ps, _dict);
-                  }
-                  else{
-                      throw SQLExceptions.getStore(se, ((RowImpl)(_batchedRows.get(index))).getFailedObject(), _dict);                      
-                  }                    
-                }
-                else{
-                	//per comments above, use 'sqex' rather than 'se'. 
-                    throw SQLExceptions.getStore(sqex, ps, _dict);
-                }
+                throw SQLExceptions.getStore(sqex, ps, _dict);
             } finally {
                 _batchedSql = null;
                 batchedRows.clear();
-                
-                
                 if (ps != null) {
                     try {
-                        ps.clearParameters();
                         ps.close();
                     } catch (SQLException sqex) {
                         throw SQLExceptions.getStore(sqex, ps, _dict);

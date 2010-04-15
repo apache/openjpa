@@ -32,9 +32,6 @@ public class ReportingSQLException extends SQLException {
 
     private final transient Statement _stmnt;
     private final SQLException _sqle;
-    //When batching is used, and an object/row in the batch causes an exception, this
-    //variable will hold the index of the first failing object.
-    private int indexOfFirstFailedObject=-1;
 
     public ReportingSQLException(SQLException sqle, Statement stmnt,
         String sql) {
@@ -72,15 +69,7 @@ public class ReportingSQLException extends SQLException {
     public Statement getStatement() {
         return _stmnt;
     }
-    
-    public int getIndexOfFirstFailedObject(){
-        return indexOfFirstFailedObject;
-    }
 
-    public void setIndexOfFirstFailedObject(int index){    
-        indexOfFirstFailedObject=index;
-    }
-    
     private static String getExceptionMessage(SQLException sqle,
         Statement stmnt, String sql) {
         try {

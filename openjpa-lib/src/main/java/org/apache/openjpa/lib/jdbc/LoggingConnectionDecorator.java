@@ -66,7 +66,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private static final int WARN_THROW = 5;
     private static final int WARN_HANDLE = 6;
     private static final String[] WARNING_ACTIONS = new String[7];
-    
+
     static {
         WARNING_ACTIONS[WARN_IGNORE] = "ignore";
         WARNING_ACTIONS[WARN_LOG_TRACE] = "trace";
@@ -183,47 +183,23 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         return new LoggingConnection(conn);
     }
 
+    /**
+     * Include SQL in exception.
+     */
     private SQLException wrap(SQLException sqle, Statement stmnt) {
-        return wrap(sqle,stmnt,-1);        
-    }
-
-    /**
-     * Include SQL in exception.
-     */
-    private SQLException wrap(SQLException sqle, Statement stmnt, int indexOfFailedBatchObject) {
-        ReportingSQLException toReturn = null;
-        
         if (sqle instanceof ReportingSQLException)
-            toReturn =  (ReportingSQLException) sqle;
-        else        
-            toReturn = new ReportingSQLException(sqle, stmnt);
-        
-        toReturn.setIndexOfFirstFailedObject(indexOfFailedBatchObject);
-        return toReturn;
+            return (ReportingSQLException) sqle;
+        return new ReportingSQLException(sqle, stmnt);
     }
 
-    private SQLException wrap(SQLException sqle, String sql) {
-        return wrap(sqle, sql,-1);
-    }
-    
     /**
      * Include SQL in exception.
      */
-    private SQLException wrap(SQLException sqle, String sql, int indexOfFailedBatchObject) {
-        ReportingSQLException toReturn = null;
-        
-        if (sqle instanceof ReportingSQLException){
-            toReturn = (ReportingSQLException) sqle;
-        }
-        else{
-            toReturn = new ReportingSQLException(sqle, sql);
-        }
-        
-        toReturn.setIndexOfFirstFailedObject(indexOfFailedBatchObject);
-        
-        return toReturn;
+    private SQLException wrap(SQLException sqle, String sql) {
+        if (sqle instanceof ReportingSQLException)
+            return (ReportingSQLException) sqle;
+        return new ReportingSQLException(sqle, sql);
     }
-   
 
     /**
      * Interface that allows customization of what to do when
@@ -811,9 +787,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             private final String _sql;
             private List _params = null;
             private List _paramBatch = null;
-            //When batching is used, this variable contains the index into the last
-            //successfully executed batched statement.
-            int batchedRowsBaseIndex = 0;            
 
             public LoggingPreparedStatement(PreparedStatement stmnt, String sql)
                 throws SQLException {
@@ -899,45 +872,28 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             public int[] executeBatch() throws SQLException {
-                int indexOfFirstFailedObject = -1;
-
                 logBatchSQL(this);
                 long start = System.currentTimeMillis();
-                try {                    
-                    int[] toReturn = super.executeBatch();
-                    //executeBatch is called any time the number of batched statements
-                    //is equal to, or less than, batchLimit.  In the 'catch' block below, 
-                    //the logic seeks to find an index based on the current executeBatch 
-                    //results.  This is fine when executeBatch is only called once, but 
-                    //if executeBatch is called many times, the _paramsBatch will continue 
-                    //to grow, as such, to index into _paramsBatch, we need to take into 
-                    //account the number of times executeBatch is called in order to 
-                    //correctly index into _paramsBatch.  To that end, each time executeBatch 
-                    //is called, lets get the size of _paramBatch.  This will effectively 
-                    //tell us the index of the last successfully executed batch statement.  
-                    //If an exception is caused, then we know that _paramBatch.size was 
-                    //the index of the LAST row to successfully execute.
-                    if (_paramBatch != null){
-                        batchedRowsBaseIndex = _paramBatch.size();                        
-                    }
-                    return toReturn; 
+                try {
+                    return super.executeBatch();
                 } catch (SQLException se) {
                     // if the exception is a BatchUpdateException, and
                     // we are tracking parameters, then set the current
                     // parameter set to be the index of the failed
                     // statement so that the ReportingSQLException will
-                    // show the correct param(s)
+                    // show the correct param
                     if (se instanceof BatchUpdateException
                         && _paramBatch != null && shouldTrackParameters()) {
                         int[] count = ((BatchUpdateException) se).
                             getUpdateCounts();
                         if (count != null && count.length <= _paramBatch.size())
                         {
+                            int index = -1;
                             for (int i = 0; i < count.length; i++) {
                                 // -3 is Statement.STATEMENT_FAILED, but is
                                 // only available in JDK 1.4+
                                 if (count[i] == -3) {
-                                    indexOfFirstFailedObject = i;
+                                    index = i;
                                     break;
                                 }
                             }
@@ -945,34 +901,18 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                             // no -3 element: it may be that the server stopped
                             // processing, so the size of the count will be
                             // the index
-                            //See the Javadoc for 'getUpdateCounts'; a provider 
-                            //may stop processing when the first failure occurs, 
-                            //as such, it may only return 'UpdateCounts' for the 
-                            //first few which pass.  As such, the failed 
-                            //index is 'count.length', NOT count.length+1.  That
-                            //is, if the provider ONLY returns the first few that 
-                            //passes (i.e. say an array of [1,1] is returned) then
-                            //length is 2, and since _paramBatch starts at 0, we 
-                            //don't want to use length+1 as that will give us the 
-                            //wrong index.
-                            if (indexOfFirstFailedObject == -1){
-                                //   index = count.length + 1;
-                                indexOfFirstFailedObject = count.length;
-                            }
-                            
-                            //Finally, whatever the index is at this point, add batchedRowsBaseIndex
-                            //to it to get the final index.  Recall, we need to start our index from the
-                            //last batch which successfully executed.
-                            indexOfFirstFailedObject += batchedRowsBaseIndex;
+                            if (index == -1)
+                                index = count.length + 1;
 
                             // set the current params to the saved values
-                            if (indexOfFirstFailedObject < _paramBatch.size())
-                                _params = (List) _paramBatch.get(indexOfFirstFailedObject);
+                            if (index < _paramBatch.size())
+                                _params = (List) _paramBatch.get(index);
                         }
                     }
-                    throw wrap(se, LoggingPreparedStatement.this, indexOfFirstFailedObject);
+                    throw wrap(se, LoggingPreparedStatement.this);
                 } finally {
                     logTime(start);
+                    clearLogParameters(true);
                     handleSQLWarning(LoggingPreparedStatement.this);
                 }
             }
@@ -1213,13 +1153,10 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             private void clearLogParameters(boolean batch) {
-                if (_params != null) {
+                if (_params != null)
                     _params.clear();
-                }
-
-                if (batch && _paramBatch != null) {
+                if (batch && _paramBatch != null)
                     _paramBatch.clear();
-                }
             }
 
             private boolean shouldTrackParameters() {
