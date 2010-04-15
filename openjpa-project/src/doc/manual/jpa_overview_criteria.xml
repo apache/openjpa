@@ -168,9 +168,9 @@ Annotation processing tool generates source code for a metamodel class given
 the annotated source code of persistent entity. 
 This tool is invoked during compilation for JDK6 compiler if OpenJPA and JPA 
 libraries are specified in the compiler <code>-classpath</code> option <emphasis>and</emphasis>
-Annotation processor option <code>-Aopenjpa.generate=true</code> is specified.
+Annotation processor option <code>-Aopenjpa.metamodel=true</code> is specified.
     <programlisting>
- $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.generate=true mypackage/MyEntity.java
+ $ javac -classpath path/to/openjpa-all.jar -Aopenjpa.metamodel=true mypackage/MyEntity.java
     </programlisting>
 will generate source code for canonical meta-model class <code>mypackage.MyEntity_</code>.
 The source code is generated relative to the directory specified in <code>-s</code> option
@@ -179,23 +179,22 @@ of <code>javac</code> compiler and defaulted to the current directory.
       
       <para>
 The Annotation Processor recognizes the following options specified in the command-line with <code>-A</code> 
-(none of them are mandatory). Each of the following option key can also be prefixed with <code>openjpa.</code> 
-to distinguish if multiple annotation processors are active during compilation.
+(none of them are mandatory).
     <itemizedlist>
         <listitem>
 			<para>
-              -Alog=TRACE|INFO|WARN|ERROR : The logging level. Default is <code>WARN</code>.
+              -Aopenjpa.log=TRACE|INFO|WARN|ERROR : The logging level. Default is <code>WARN</code>.
             </para>
         </listitem>
         <listitem>
 			<para>
-             -Asource=&lt;n&gt; : where &lt;n&gt; denotes the integral number for Java source 
+             -Aopenjpa.source=&lt;n&gt; : where &lt;n&gt; denotes the integral number for Java source 
              version of the generated code. Default is <code>6</code>.
              </para>
         </listitem>
         <listitem>
 			<para>
-               -Anaming=class name : fully-qualified name of a class implementing 
+               -Aopenjpa.naming=class name : fully-qualified name of a class implementing 
                <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
 the name of a meta-class given the name of the original persistent Java entity class. Defaults to
 <code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends a underscore character
@@ -204,7 +203,7 @@ the name of a meta-class given the name of the original persistent Java entity c
         </listitem>
         <listitem>
 			<para>
-               -Aheader=&lt;url&gt; : A url whose content will appear as comment header to the generated file(s). 
+               -Aopenjpa.header=&lt;url&gt; : A url whose content will appear as comment header to the generated file(s). 
                Recognizes special value <code>ASL</code> for Apache Source License header as comment. 
                By default, adds a OpenJPA proprietary text as comment block.
              </para>
