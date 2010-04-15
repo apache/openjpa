@@ -572,9 +572,12 @@ public class SchemaGenerator {
         Schema schema;
         Table table;
         DBIdentifier tableSchema = DBIdentifier.NULL;
+        DBIdentifier baseTableName = (tableName == null) ? DBIdentifier.NULL : tableName.clone();
         for (int i = 0; cols != null && i < cols.length; i++) {
-            if (DBIdentifier.isNull(tableName) || tableName.equals("%")) {
+            if (DBIdentifier.isNull(baseTableName) || baseTableName.equals("%")) {
                 tableName = cols[i].getTableIdentifier();
+            } else {
+                tableName = baseTableName;
             }
             if (DBIdentifier.isNull(schemaName)) {
                 tableSchema = DBIdentifier.trimToNull(cols[i].getSchemaIdentifier());
