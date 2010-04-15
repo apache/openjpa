@@ -305,20 +305,6 @@ public class SelectImpl
     public boolean supportsLocking() {
         return _dict.supportsLocking(this);
     }
-    
-    public boolean hasMultipleSelects() {
-        if (_eager == null) {
-            return false;
-        }
-        Map.Entry entry;
-        for (Iterator itr = _eager.entrySet().iterator(); itr.hasNext();) {
-            entry = (Map.Entry) itr.next();
-            if (entry.getValue() != this) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public int getCount(JDBCStore store)
         throws SQLException {
@@ -331,7 +317,7 @@ public class SelectImpl
             stmnt = prepareStatement(conn, sql, null, 
                 ResultSet.TYPE_FORWARD_ONLY, 
                 ResultSet.CONCUR_READ_ONLY, false);
-            rs = executeQuery(conn, stmnt, sql, false, store);
+            rs = executeQuery(conn, stmnt, sql, false, store, null);
             return getCount(rs);
         } finally {
             if (rs != null)
@@ -343,21 +329,31 @@ public class SelectImpl
         }
     }
 
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)
-        throws SQLException {
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, 
+        List parms) throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
         return execute(store.getContext(), store, fetch,
-            fetch.getReadLockLevel());
+            fetch.getReadLockLevel(), parms);
+    }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch) 
+        throws SQLException {
+        return execute(store, fetch, null);
+     }
+
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
+        int lockLevel, List parms)
+        throws SQLException {
+            if (fetch == null)
+                fetch = store.getFetchConfiguration();
+            return execute(store.getContext(), store, fetch, lockLevel, parms);
     }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
         int lockLevel)
         throws SQLException {
-        if (fetch == null) {
-            fetch = store.getFetchConfiguration();
-        }
-        return execute(store.getContext(), store, fetch, lockLevel);
+        return execute(store, fetch, lockLevel, null);
     }
 
     /**
@@ -365,7 +361,7 @@ public class SelectImpl
      * context is passed in separately for profiling purposes.
      */
     protected Result execute(StoreContext ctx, JDBCStore store, 
-        JDBCFetchConfiguration fetch, int lockLevel)
+        JDBCFetchConfiguration fetch, int lockLevel, List params)
         throws SQLException {
         boolean forUpdate = isForUpdate(store, lockLevel);
         
@@ -388,13 +384,15 @@ public class SelectImpl
         ResultSet rs = null;
         try {
             if (isLRS) 
-                stmnt = prepareStatement(conn, _sql, fetch, rsType, -1, true); 
+                stmnt = prepareStatement(conn, _sql, fetch, rsType, -1, true, 
+                        params); 
             else
-                stmnt = prepareStatement(conn, _sql, null, rsType, -1, false);
+                stmnt = prepareStatement(conn, _sql, null, rsType, -1, false, 
+                        params);
             
             setTimeout(stmnt, forUpdate, fetch);
             
-            rs = executeQuery(conn, stmnt, _sql, isLRS, store);
+            rs = executeQuery(conn, stmnt, _sql, isLRS, store, params);
         } catch (SQLException se) {
             // clean up statement
             if (stmnt != null)
@@ -403,7 +401,8 @@ public class SelectImpl
             throw se;
         }
 
-        return getEagerResult(conn, stmnt, rs, store, fetch, forUpdate, _sql);
+        return getEagerResult(conn, stmnt, rs, store, fetch, forUpdate, 
+            _sql.getSQL(), params);
     }
     
     private boolean isForUpdate(JDBCStore store, int lockLevel) {
@@ -421,7 +420,7 @@ public class SelectImpl
      * to the given result.
      */
     private static void addEagerResults(SelectResult res, SelectImpl sel,
-        JDBCStore store, JDBCFetchConfiguration fetch)
+        JDBCStore store, JDBCFetchConfiguration fetch, List params)
         throws SQLException {
         if (sel._eager == null)
             return;
@@ -440,7 +439,7 @@ public class SelectImpl
                 eres = res;
             else
                 eres = ((SelectExecutor) entry.getValue()).execute(store,
-                    fetch);
+                    fetch, params);
 
             eager = res.getEagerMap(false);
             if (eager == null) {
@@ -451,11 +450,6 @@ public class SelectImpl
         }
     }
 
-    protected PreparedStatement prepareStatement(Connection conn, 
-        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
-        int rsConcur, boolean isLRS, List params) throws SQLException {
-        return prepareStatement(conn, sql, fetch, rsType, rsConcur, isLRS);
-    }
 
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
@@ -464,10 +458,22 @@ public class SelectImpl
     protected PreparedStatement prepareStatement(Connection conn, 
         SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
         int rsConcur, boolean isLRS) throws SQLException {
+        // add comments why we pass in null as the last parameter
+        return prepareStatement(conn, sql, fetch, rsType, rsConcur, isLRS, 
+                null);
+    }
+
+    /**
+     * This method is to provide override for non-JDBC or JDBC-like 
+     * implementation of preparing statement.
+     */
+    protected PreparedStatement prepareStatement(Connection conn, 
+        SQLBuffer sql, JDBCFetchConfiguration fetch, int rsType, 
+        int rsConcur, boolean isLRS, List params) throws SQLException {
         if (fetch == null)
-            return sql.prepareStatement(conn, rsType, rsConcur);
+            return sql.prepareStatement(conn, rsType, rsConcur, params);
         else
-            return sql.prepareStatement(conn, fetch, rsType, -1);
+            return sql.prepareStatement(conn, fetch, rsType, -1, params);
     }
     
     /**
@@ -509,7 +515,7 @@ public class SelectImpl
      * implementation of executing query.
      */
     protected ResultSet executeQuery(Connection conn, PreparedStatement stmnt, 
-        SQLBuffer sql, boolean isLRS, JDBCStore store) 
+        SQLBuffer sql, boolean isLRS, JDBCStore store, List params) 
         throws SQLException {
         return stmnt.executeQuery();
     }
@@ -529,14 +535,15 @@ public class SelectImpl
      */
     protected Result getEagerResult(Connection conn, 
         PreparedStatement stmnt, ResultSet rs, JDBCStore store, 
-        JDBCFetchConfiguration fetch, boolean forUpdate, SQLBuffer sql) 
+        JDBCFetchConfiguration fetch, boolean forUpdate, String sqlStr,
+        List params) 
         throws SQLException {
         SelectResult res = new SelectResult(conn, stmnt, rs, _dict);
         res.setSelect(this);
         res.setStore(store);
         res.setLocking(forUpdate);
         try {
-            addEagerResults(res, this, store, fetch);
+            addEagerResults(res, this, store, fetch, params);
         } catch (SQLException se) {
             res.close();
             throw se;
@@ -1407,11 +1414,10 @@ public class SelectImpl
                 val = pks[mapping.getField(join.getFieldIndex()).
                     getPrimaryKeyIndex()];
                 val = join.getJoinValue(val, toCols[i], store);
-                
-                if (parmList != null) {
+                if (parmList != null)
                 	parmList.add(val);
-                }
             }
+            
             if (collectParmValueOnly) 
             	continue;
             
@@ -3226,15 +3232,6 @@ public class SelectImpl
     }
 
     public void moveJoinsToParent() {
-    }
-
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, List params) throws SQLException {
-        return execute(store, fetch); 
-    }
-
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel, List params)
-        throws SQLException {
-        return execute(store, fetch, lockLevel);
     }
 }
 

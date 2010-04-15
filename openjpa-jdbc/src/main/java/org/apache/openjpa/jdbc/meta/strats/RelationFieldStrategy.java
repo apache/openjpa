@@ -620,6 +620,99 @@ public class RelationFieldStrategy
         final int subs = field.getSelectSubclasses();
         final Joins[] resJoins = new Joins[rels.length];
 
+        //cache union for field here
+        //select data for this sm
+        Union union = null;
+        SelectImpl sel = null;
+        List parmList = null;
+
+        if (!((JDBCStoreManager)store).isQuerySQLCacheOn())
+            union = newUnion(sm, store, fetch, rels, subs, resJoins);
+        else {
+            if (relationFieldUnionCache == null) {
+                relationFieldUnionCache =
+                    ((JDBCStoreManager) store)
+                        .getCacheMapFromQuerySQLCache(RelationFieldStrategy.class);
+            }
+            boolean found = true;
+            JDBCFetchConfiguration fetchClone = new JDBCFetchConfigurationImpl();
+            fetchClone.copy(fetch);
+            JDBCStoreManager.SelectKey selKey = 
+                new JDBCStoreManager.SelectKey(null, field, fetch);
+            Object[] obj = relationFieldUnionCache.get(selKey);
+            if (obj != null) {
+                union = (Union) obj[0];
+                resJoins[0] = (Joins)obj[1];
+            } else {
+                synchronized(relationFieldUnionCache) {
+                    obj = relationFieldUnionCache.get(selKey);
+                    if (obj != null) {
+                        union = (Union) obj[0];
+                        resJoins[0] = (Joins) obj[1];
+                    } else {
+                        // select related mapping columns; joining from the 
+                        // related type back to our fk table if not an inverse 
+                        // mapping (in which case we can just make sure the 
+                        // inverse cols == our pk values)
+                        union = newUnion(sm, store, fetch, rels, subs, 
+                                resJoins);
+                        found = false;                
+                    }
+                    sel = ((LogicalUnion.UnionSelect)union.getSelects()[0]).
+                        getDelegate();
+                    SQLBuffer buf = sel.getSQL();
+                    if (buf == null) {
+                    	((SelectImpl)sel).setSQL(store, fetch);
+                        found = false;
+                    }
+
+                    // only cache the union when elems length is 1 for now
+                    if (!found && rels.length == 1) {
+                        Object[] obj1 = new Object[2];
+                        obj1[0] = union;
+                        obj1[1] = resJoins[0];
+                        ((JDBCStoreManager)store).addToSqlCache(
+                            relationFieldUnionCache, selKey, obj1);
+                    }
+                }
+            }
+            Log log = store.getConfiguration().
+                getLog(JDBCConfiguration.LOG_JDBC);
+            if (log.isTraceEnabled()){
+                if (found) 
+                    log.trace(_loc.get("cache-hit", field, this.getClass()));                        
+                else
+                    log.trace(_loc.get("cache-missed", field, this.getClass()));
+            }
+
+            parmList = new ArrayList();
+            ClassMapping mapping = field.getDefiningMapping();
+            Object oid = sm.getObjectId();
+            Column[] cols = mapping.getPrimaryKeyColumns();
+            if (sel == null)
+                sel = ((LogicalUnion.UnionSelect)union.getSelects()[0]).
+                getDelegate();
+
+            sel.wherePrimaryKey(mapping, cols, cols, oid, store, 
+            	null, null, parmList);
+        }
+        
+        Result res = union.execute(store, fetch, parmList);
+        try {
+            Object val = null;
+            if (res.next())
+                val = res.load(rels[res.indexOf()], store, fetch,
+                    resJoins[res.indexOf()]);
+            sm.storeObject(field.getIndex(), val);
+        } finally {
+            res.close();
+        }
+    }
+    
+    protected Union newUnion(final OpenJPAStateManager sm, 
+        final JDBCStore store, final JDBCFetchConfiguration fetch, 
+        final ClassMapping[] rels, final int subs, 
+        final Joins[] resJoins) {
         Union union = store.getSQLFactory().newUnion(rels.length);
         union.setExpectedResultCount(1, false);
         if (fetch.getSubclassFetchMode(field.getTypeMapping())
@@ -627,29 +720,20 @@ public class RelationFieldStrategy
             union.abortUnion();
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
-                if (field.getJoinDirection() == field.JOIN_INVERSE) {
-                    sel.whereForeignKey(field.getForeignKey(rels[idx]), sm.getObjectId(), field.getDefiningMapping(),
-                        store);
-                }
+                if (field.getJoinDirection() == field.JOIN_INVERSE)
+                    sel.whereForeignKey(field.getForeignKey(rels[idx]),
+                        sm.getObjectId(), field.getDefiningMapping(), store);
                 else {
-                    resJoins[idx] =
-                        sel.newJoins().joinRelation(field.getName(), field.getForeignKey(rels[idx]), rels[idx],
-                            field.getSelectSubclasses(), false, false);
+                    resJoins[idx] = sel.newJoins().joinRelation(field.getName(),
+                        field.getForeignKey(rels[idx]), rels[idx],
+                        field.getSelectSubclasses(), false, false);
                     field.wherePrimaryKey(sel, sm, store);
                 }
-                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, resJoins[idx]);
+                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, 
+                    resJoins[idx]);
             }
         });
-        Result res = union.execute(store, fetch);
-        try {
-            Object val = null;
-            if (res.next()) {
-                val = res.load(rels[res.indexOf()], store, fetch, resJoins[res.indexOf()]);
-            }
-            sm.storeObject(field.getIndex(), val);
-        } finally {
-            res.close();
-        }
+        return union;
     }
 
     public Object toDataStoreValue(Object val, JDBCStore store) {
