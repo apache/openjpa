@@ -20,8 +20,8 @@ package org.apache.openjpa.kernel;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -268,4 +268,75 @@ public interface QueryStatistics<T> extends Serializable {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
 	}
+	
+	/**
+	 * A do-nothing implementation.
+	 * 
+	 * @author Pinaki Poddar
+	 *
+	 * @param <T>
+	 */
+	public static class None<T> implements QueryStatistics<T> {
+        private Date start = new Date();
+        private Date since = start;
+
+        public void clear() {
+        }
+
+        public void dump(PrintStream out) {
+        }
+
+        public long getExecutionCount() {
+            return 0;
+        }
+
+        public long getExecutionCount(T query) {
+            return 0;
+        }
+
+        public long getHitCount() {
+            return 0;
+        }
+
+        public long getHitCount(T query) {
+            return 0;
+        }
+
+        public long getTotalExecutionCount() {
+            return 0;
+        }
+
+        public long getTotalExecutionCount(T query) {
+            return 0;
+        }
+
+        public long getTotalHitCount() {
+            return 0;
+        }
+
+        public long getTotalHitCount(T query) {
+            return 0;
+        }
+
+        public Set<T> keys() {
+            return Collections.emptySet();
+        }
+
+        public void recordExecution(T query) {
+        }
+
+        public void reset() {
+            start  = new Date();
+            since  = start;
+        }
+
+        public Date since() {
+            return since;
+        }
+
+        public Date start() {
+            return start;
+        }
+	}
 }
+
