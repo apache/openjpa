@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
+
 /**
  * Records query execution statistics.
  * 
@@ -119,17 +121,23 @@ public interface QueryStatistics<T> extends Serializable {
 	
 	/**
 	 * A default implementation.
+	 * 
+	 * Maintains statistics for only a fixed number of queries.
 	 *
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
+	    private static final int FIXED_SIZE = 1000;
+	    private static final float LOAD_FACTOR = 0.75f;
+	    private static final int CONCURRENCY = 16;
+	    
 		private static final int ARRAY_SIZE = 2;
         private static final int READ  = 0;
         private static final int HIT   = 1;
         
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
-		private Map<T, long[]> stats  = new HashMap<T, long[]>();
-		private Map<T, long[]> astats = new HashMap<T, long[]>();
+		private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+		private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
 		private Date start = new Date();
 		private Date since = start;
 		
@@ -182,17 +190,17 @@ public interface QueryStatistics<T> extends Serializable {
 			return start;
 		}
 
-		public void reset() {
+		public synchronized void reset() {
 			stat = new long[ARRAY_SIZE];
 			stats.clear();
 			since = new Date();
 		}
 		
-	    public void clear() {
+	    public synchronized void clear() {
 	       astat = new long[ARRAY_SIZE];
 	       stat  = new long[ARRAY_SIZE];
-	       stats = new HashMap<T, long[]>();
-	       astats = new HashMap<T, long[]>();
+	       stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+	       astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
 	       start  = new Date();
 	       since  = start;
 	    }
@@ -214,10 +222,10 @@ public interface QueryStatistics<T> extends Serializable {
 			target.put(query, row);
 		}
 		
-		public void recordExecution(T query) {
+		public synchronized void recordExecution(T query) {
 		    if (query == null)
 		        return;
-		    boolean cached = (astats.containsKey(query));
+		    boolean cached = astats.containsKey(query);
 			addSample(query, READ);
 			if (cached)
 				addSample(query, HIT);
@@ -244,8 +252,7 @@ public interface QueryStatistics<T> extends Serializable {
                     out.println(i + ". \t" + toString(arow) + " \t" + key);
 				} else {
 					long[] row  = stats.get(key);
-                    out.println(i + ". \t" + toString(arow) + " \t"  
-					    + toString(row) + " \t\t" + key);
+                    out.println(i + ". \t" + toString(arow) + " \t"  + toString(row) + " \t\t" + key);
 				}
 			}
 		}
@@ -257,8 +264,7 @@ public interface QueryStatistics<T> extends Serializable {
 		}
 		
 		String toString(long[] row) {
-            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ])
-			+ "%)";
+            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
 	}
 }
