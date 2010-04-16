@@ -20,10 +20,11 @@
 
 <!--
     This ANT build file is used to run the JPA 2.0 TCK. It assumes that you have
-    the TCK and patches zip files located at:
+    the TCK, config  and patches zip files located at:
 
         ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_20100414_patches.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009_config.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009_patches.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" and "tck_patches.zip" system property.
@@ -57,13 +58,17 @@
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
-        <property name="tck.patch.level" value="20100414" />
-        <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/jpatck-2.0_${tck.patch.level}_patches.zip" />
+        <property name="tck_config.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_config.zip" />
+        <available property="tck_config.available" file="${tck_config.zip}" />
+        <fail unless="tck_config.available">The TCK config file specified in the "tck_config.zip" system property (${tck_config.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
+
+        <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_patches.zip" />
         <available property="tck_patches.available" file="${tck_patches.zip}" />
         <fail unless="tck_patches.available">The TCK patches file specified in the "tck_patches.zip" system property (${tck_patches.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
         <delete dir="${tck.dir}" />
         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
+        <unzip overwrite="true" src="${tck_config.zip}" dest="${tck.base}" />
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.dir}/bin/ts.jte.orig" />
@@ -71,6 +76,8 @@
             file="${tck.dir}/bin/ts.jtx" tofile="${tck.dir}/bin/ts.jtx.orig" />
         <!-- Pluggability tests using Toplink needs this dir created -->
         <mkdir dir="${tck.dir}/domains/domain1/logs" />
+        <!-- create other missing directory -->
+        <mkdir dir="${tck.dir}/weblib" />
     </target>
 
 
