@@ -182,6 +182,7 @@ Sub-task
 
 Bug
 ---
+    * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
     * [OPENJPA-1510] - Documentation corrections
     * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
     * [OPENJPA-1559] - DataCacheManager initialization isn't thread safe.
@@ -190,11 +191,14 @@ Bug
     * [OPENJPA-1599] - Cache mode properties passes in to em.find and lock methods are not transient
     * [OPENJPA-1602] - Query with lock mode set to PESSIMISTIC_WRITE does not have for update clause attached to the sql when runs twice
     * [OPENJPA-1604] - Setting PessimisticLockManager fails to append "for update clause" to the select statement
+    * [OPENJPA-1605] - ReverseMappingTool (SchemaGenerator) bug
     * [OPENJPA-1608] - PESSIMISTIC_WRITE is not working in Informix
     * [OPENJPA-1609] - PessimisticLockException instead of LockTimeoutException thrown on DB2V9 for ZOS
     * [OPENJPA-1611] - Wrong PersistentAttributeType returned for @Embedded types
     * [OPENJPA-1618] - Exception during factory creation due to javax.persistence.transactionType
     * [OPENJPA-1625] - Inconsistent creation of StateManagerImpl in BrokerImpl
+    * [OPENJPA-1630] - NPE in MetaDataRepository when preloading is enabled under heavy stress.
+    * [OPENJPA-1631] - MetaDataRepository preload doesn't load JAXB meta data
 
 Improvement
 -----------
@@ -202,6 +206,7 @@ Improvement
     * [OPENJPA-1545] - Add new Detach processing
     * [OPENJPA-1603] - Decouple the QueryCache from the DataCache
     * [OPENJPA-1622] - Invoking MetaModel generator
+    * [OPENJPA-1628] - Output control for generated canonical metamodel source code
 
 Task
 ----
