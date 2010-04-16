@@ -73,6 +73,10 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
+    </properties>
+
     <profiles>
       <profile>
         <!-- JPA 2.0 TCK Profile -->
