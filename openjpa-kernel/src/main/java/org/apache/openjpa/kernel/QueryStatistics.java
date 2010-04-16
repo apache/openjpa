@@ -123,7 +123,8 @@ public interface QueryStatistics<T> extends Serializable {
 	 * A default implementation.
 	 * 
 	 * Maintains statistics for only a fixed number of queries.
-	 *
+	 * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
+	 * 
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
 	    private static final int FIXED_SIZE = 1000;
@@ -222,7 +223,7 @@ public interface QueryStatistics<T> extends Serializable {
 			target.put(query, row);
 		}
 		
-		public synchronized void recordExecution(T query) {
+		public void recordExecution(T query) {
 		    if (query == null)
 		        return;
 		    boolean cached = astats.containsKey(query);
