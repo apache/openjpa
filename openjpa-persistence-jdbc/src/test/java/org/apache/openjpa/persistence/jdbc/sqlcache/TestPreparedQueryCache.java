@@ -109,7 +109,7 @@ public class TestPreparedQueryCache extends TestCase {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
             config.put("openjpa.jdbc.JDBCListeners", new JDBCListener[] { auditor = new SQLAuditor()});
-            config.put("openjpa.jdbc.QuerySQLCache", "true");
+            config.put("openjpa.jdbc.QuerySQLCache", "true(EnableStatistics=true)");
             config.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
             config.put("openjpa.DynamicEnhancementAgent", "false");
             emf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.createEntityManagerFactory(

@@ -57,7 +57,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	// Key: Query identifier Value: Reason why excluded
 	private final Map<String, Exclusion> _uncachables;
 	private final List<Exclusion> _exclusionPatterns;
-	private final QueryStatistics<String> _stats;
+	private QueryStatistics<String> _stats;
+	private boolean _statsEnabled;
 	private ReentrantLock _lock = new ReentrantLock();
 	private Log _log;
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
@@ -65,7 +66,6 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public PreparedQueryCacheImpl() {
 		_delegate = new CacheMap();
 		_uncachables = new CacheMap();
-		_stats = new QueryStatistics.Default<String>();
 		_exclusionPatterns = new ArrayList<Exclusion>();
 	}
 	
@@ -316,6 +316,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
         _delegate.clear();
         _stats.clear();
     }
+    
+    public void setEnableStatistics(boolean enable){
+        _statsEnabled = enable;
+    }
+    
+    public boolean getEnableStatistics(){
+        return _statsEnabled;
+    }
         
 	//-------------------------------------------------------
 	// Configurable contract
@@ -328,6 +336,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
     }
 
     public void endConfiguration() {
+        _stats = _statsEnabled ? new QueryStatistics.Default<String>() :
+                                 new QueryStatistics.None<String>();
     }
     
     /**
