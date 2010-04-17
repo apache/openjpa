@@ -508,8 +508,12 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             return false;
         }
         FetchConfiguration fetch = _query.getFetchConfiguration();
-        if (fetch.getReadLockLevel() != 0)
+        if (fetch.getReadLockLevel() != 0) {
+            if (cache.get(_id) != null) {
+                ignorePreparedQuery();
+            }
             return false;
+        }
         Boolean registered = cache.register(_id, _query, fetch);
         boolean alreadyCached = (registered == null);
         String lang = _query.getLanguage();
