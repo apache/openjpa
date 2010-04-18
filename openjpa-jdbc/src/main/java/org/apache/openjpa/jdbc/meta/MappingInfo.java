@@ -682,7 +682,7 @@ public abstract class MappingInfo
             }
             type =
                 dict.getJDBCType(tmplate.getJavaType(), size == -1, precis,
-                    scale);
+                    scale, tmplate.isXML());
         }
             
         boolean ttype = true;

@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -50,6 +51,7 @@ import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
@@ -154,7 +156,7 @@ public class OracleDictionary
         timeTypeName = "DATE";
         varcharTypeName = "VARCHAR2{0}";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "LONG RAW", "RAW", "LONG", "REF",
+            "LONG RAW", "RAW", "LONG", "REF", "XMLTYPE",
         }));
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "ACCESS", "AUDIT", "CLUSTER", "COMMENT", "COMPRESS", "EXCLUSIVE",
@@ -863,6 +865,16 @@ public class OracleDictionary
         for (int i = 0; i < seqs.size(); i++)
             sql[create.length + i] = (String) seqs.get(i);
         return sql;
+    }
+
+    /**
+     * Return the preferred {@link Types} constant for the given
+     * {@link JavaTypes} or {@link JavaSQLTypes} constant.
+     */
+    @Override
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+        int scale, boolean xml) {        
+        return getJDBCType(metaTypeCode, lob && !xml, precis, scale);        
     }
 
     public String[] getCreateSequenceSQL(Sequence seq) {

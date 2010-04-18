@@ -1466,6 +1466,15 @@ public class DBDictionary
      * {@link JavaTypes} or {@link JavaSQLTypes} constant.
      */
     public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+        int scale, boolean xml) {
+        return getJDBCType(metaTypeCode, lob, precis, scale);
+    }
+
+    /**
+     * Return the preferred {@link Types} constant for the given
+     * {@link JavaTypes} or {@link JavaSQLTypes} constant.
+     */
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
         int scale) {
         if (lob) {
             switch (metaTypeCode) {

@@ -30,19 +30,15 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
 import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
 import org.apache.openjpa.persistence.xmlmapping.entities.Order;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer.CreditRating;
 import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
-        CANAddress;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
-        ObjectFactory;
-import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.
-        USAAddress;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.CANAddress;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.ObjectFactory;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.USAAddress;
 
 /**
  * Test query with predicates on persistent field mapped to XML column.
@@ -74,7 +70,7 @@ public class TestXMLCustomerOrder
 
         enabled = true;
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
-            EAddress.class, CLEAR_TABLES);
+            EAddress.class, DROP_TABLES);  // test create table DDL for XML column
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         persistEntities(em);
