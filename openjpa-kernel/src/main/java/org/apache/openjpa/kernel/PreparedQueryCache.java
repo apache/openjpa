@@ -196,7 +196,20 @@ public interface PreparedQueryCache extends Configurable {
 	public void clear();
 	
 	/**
+	 * Enable/disable gathering of statistics.
+	 * 
+	 */
+    public void setEnableStatistics(boolean enable);
+    
+    /**
+     * Affirm if statistics is gathered.
+     * 
+     */
+    public boolean getEnableStatistics();
+    
+	/**
 	 * Gets the simple statistics for executed queries.
+	 * If the statistics gathering is disabled, an empty statistics is returned. 
 	 */
 	public QueryStatistics<String> getStatistics();
 	

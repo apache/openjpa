@@ -1,4 +1,0 @@
--processor org.apache.openjpa.persistence.meta.AnnotationProcessor6
--Alog=TRACE
--Aout=..\openjpa-persistence-jdbc\src\test\java\
--Asource=5

@@ -73,6 +73,10 @@
         <version>2.0.0</version>
     </parent>
 
+    <properties>
+        <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
+    </properties>
+
     <profiles>
       <profile>
         <!-- JPA 2.0 TCK Profile -->
@@ -234,7 +238,7 @@
                         <property name="db.username" value="nousername" />
                         <property name="db.password" value="nopassword" />
 
-                        <property name="openjpa.log.level" value="WARN" />
+                        <property name="openjpa.Log" value="${openjpa.Log}" />
 
                         <property name="jpatck.pkg.dir" value="com" />
                         <property name="jpatck.test" value="" />
@@ -255,7 +259,7 @@ openjpa.ConnectionPassword: ${db.password}
 openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
-openjpa.Log: DefaultLevel=${openjpa.log.level}
+openjpa.Log: ${openjpa.Log}
 openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=false
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
                         </echo>

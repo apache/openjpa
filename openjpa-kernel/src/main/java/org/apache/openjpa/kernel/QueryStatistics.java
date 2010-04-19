@@ -20,10 +20,12 @@ package org.apache.openjpa.kernel;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
 
 /**
  * Records query execution statistics.
@@ -119,17 +121,24 @@ public interface QueryStatistics<T> extends Serializable {
 	
 	/**
 	 * A default implementation.
-	 *
+	 * 
+	 * Maintains statistics for only a fixed number of queries.
+	 * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
+	 * 
 	 */
 	public static class Default<T> implements QueryStatistics<T> {
+	    private static final int FIXED_SIZE = 1000;
+	    private static final float LOAD_FACTOR = 0.75f;
+	    private static final int CONCURRENCY = 16;
+	    
 		private static final int ARRAY_SIZE = 2;
         private static final int READ  = 0;
         private static final int HIT   = 1;
         
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
-		private Map<T, long[]> stats  = new HashMap<T, long[]>();
-		private Map<T, long[]> astats = new HashMap<T, long[]>();
+		private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+		private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
 		private Date start = new Date();
 		private Date since = start;
 		
@@ -182,17 +191,17 @@ public interface QueryStatistics<T> extends Serializable {
 			return start;
 		}
 
-		public void reset() {
+		public synchronized void reset() {
 			stat = new long[ARRAY_SIZE];
 			stats.clear();
 			since = new Date();
 		}
 		
-	    public void clear() {
+	    public synchronized void clear() {
 	       astat = new long[ARRAY_SIZE];
 	       stat  = new long[ARRAY_SIZE];
-	       stats = new HashMap<T, long[]>();
-	       astats = new HashMap<T, long[]>();
+	       stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+	       astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
 	       start  = new Date();
 	       since  = start;
 	    }
@@ -217,7 +226,7 @@ public interface QueryStatistics<T> extends Serializable {
 		public void recordExecution(T query) {
 		    if (query == null)
 		        return;
-		    boolean cached = (astats.containsKey(query));
+		    boolean cached = astats.containsKey(query);
 			addSample(query, READ);
 			if (cached)
 				addSample(query, HIT);
@@ -244,8 +253,7 @@ public interface QueryStatistics<T> extends Serializable {
                     out.println(i + ". \t" + toString(arow) + " \t" + key);
 				} else {
 					long[] row  = stats.get(key);
-                    out.println(i + ". \t" + toString(arow) + " \t"  
-					    + toString(row) + " \t\t" + key);
+                    out.println(i + ". \t" + toString(arow) + " \t"  + toString(row) + " \t\t" + key);
 				}
 			}
 		}
@@ -257,8 +265,78 @@ public interface QueryStatistics<T> extends Serializable {
 		}
 		
 		String toString(long[] row) {
-            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ])
-			+ "%)";
+            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
 	}
+	
+	/**
+	 * A do-nothing implementation.
+	 * 
+	 * @author Pinaki Poddar
+	 *
+	 * @param <T>
+	 */
+	public static class None<T> implements QueryStatistics<T> {
+        private Date start = new Date();
+        private Date since = start;
+
+        public void clear() {
+        }
+
+        public void dump(PrintStream out) {
+        }
+
+        public long getExecutionCount() {
+            return 0;
+        }
+
+        public long getExecutionCount(T query) {
+            return 0;
+        }
+
+        public long getHitCount() {
+            return 0;
+        }
+
+        public long getHitCount(T query) {
+            return 0;
+        }
+
+        public long getTotalExecutionCount() {
+            return 0;
+        }
+
+        public long getTotalExecutionCount(T query) {
+            return 0;
+        }
+
+        public long getTotalHitCount() {
+            return 0;
+        }
+
+        public long getTotalHitCount(T query) {
+            return 0;
+        }
+
+        public Set<T> keys() {
+            return Collections.emptySet();
+        }
+
+        public void recordExecution(T query) {
+        }
+
+        public void reset() {
+            start  = new Date();
+            since  = start;
+        }
+
+        public Date since() {
+            return since;
+        }
+
+        public Date start() {
+            return start;
+        }
+	}
 }
+
