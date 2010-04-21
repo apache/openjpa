@@ -116,6 +116,9 @@ public class XMLFileHandler {
      * configuration property.
      */
     private File getFile(ClassMetaData meta) {
+        if (_conf.getConnectionURL() == null) {
+            throw new InternalException("Invalid ConnectionURL");
+        }
         File baseDir = new File(_conf.getConnectionURL());
         return new File(baseDir, meta.getDescribedType().getName());
     }
