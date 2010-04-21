@@ -936,6 +936,24 @@ state in question to circumvent the database limitations that prevent OpenJPA
 from issuing a locking SELECT in the first place.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+When using the pessimistic lock manager and named queries you will see the following
+<literal>WARNING</literal> message logged if you do not specify a lockMode on the named query
+or you explicitly set it to <literal>LockModeType.NONE</literal>. When using the pessimistic
+lock manager a <literal>LockModeType.NONE</literal> will always be promoted to <literal>LockModeType.READ</literal>.
+<programlisting>
+WARN   [main] openjpa.MetaData - Encountered a read lock level less than LockModeType.READ when processing the NamedQuery annotation "findEmployeeById" in class "org.apache.openjpa.persistence.lockmgr.LockEmployee". Setting query lock level to LockModeType.READ.
+</programlisting>
+If you are using the pessimistic lock manager and you truly do want to set the lock mode to NONE for a
+given query, you can use a fetch plan to do so.
+<programlisting>
+OpenJPAQuery q = em.createNamedQuery("findEmployeeById"); 
+FetchPlan fp = q.getFetchPlan();
+fp.setReadLockMode(LockModeType.NONE);
+</programlisting>
+                    </para>
+                </listitem>                
             </itemizedlist>
         </section>
     </section>
