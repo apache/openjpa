@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
 import org.apache.openjpa.jdbc.kernel.exps.Param;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
+import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Schema;
@@ -103,7 +104,7 @@ public class DB2Dictionary
         storeCharsAsNumbers = false;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC",
+            "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC", "XML",
         }));
         systemSchemas = new String(
                 "SYSCAT,SYSIBM,SYSSTAT,SYSIBMADM,SYSTOOLS");
@@ -204,6 +205,16 @@ public class DB2Dictionary
 
             selectSQL.append(")");
         }
+    }
+
+    /**
+     * Return the preferred {@link Types} constant for the given
+     * {@link JavaTypes} or {@link JavaSQLTypes} constant.
+     */
+    @Override
+    public int getJDBCType(int metaTypeCode, boolean lob, int precis, 
+        int scale, boolean xml) {        
+        return getJDBCType(metaTypeCode, lob && !xml, precis, scale);        
     }
 
     public String[] getCreateSequenceSQL(Sequence seq) {
