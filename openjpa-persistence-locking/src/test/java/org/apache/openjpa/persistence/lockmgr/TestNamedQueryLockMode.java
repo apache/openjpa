@@ -19,8 +19,13 @@
 package org.apache.openjpa.persistence.lockmgr;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.FetchPlan;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.TransactionRequiredException;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -57,8 +62,7 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         // execute without a transaction
          try {
-         em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id",
-         0).getResultList();
+         em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0).getResultList();
          fail("Expected " + TransactionRequiredException.class.getName());
          } catch (TransactionRequiredException e) {
          // Expected
@@ -69,7 +73,24 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeById").setParameter("id", 0));
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeById").setParameter("id", 0));
+        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeById").setParameter("id", 0));        
+        em.getTransaction().commit();
+    }
+    
+    public void testForUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        em.getTransaction().begin();
+        
+        OpenJPAQuery<?> q = em.createNamedQuery("findEmployeeById").setParameter("id", 0); 
+        FetchPlan fp = q.getFetchPlan();
+        fp.setReadLockMode(LockModeType.NONE);
+        assertClauseAbsentInSQL("FOR UPDATE", q);
+        
+        q = em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0); 
+        fp = q.getFetchPlan();
+        fp.setReadLockMode(LockModeType.NONE);
+        assertClauseAbsentInSQL("FOR UPDATE", q);
+        
         em.getTransaction().commit();
     }
 
