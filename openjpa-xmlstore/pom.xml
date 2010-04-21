@@ -69,7 +69,7 @@
                 </executions>
             </plugin>
 
-            <!-- new way of using openjpa-maven-plugin to enhance classes -->
+            <!-- new way of using openjpa-maven-plugin to enhance classes
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
@@ -92,8 +92,8 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
-                        <version>2.0.1-SNAPSHOT</version>
+                        <artifactId>openjpa-all</artifactId>
+                        <version>${pom.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -119,6 +119,7 @@
                     </systemProperties>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
 
