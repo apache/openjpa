@@ -28,7 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
+// import javax.persistence.Transient;
 
 /**
  * Domain classes used by meta-model testing.
@@ -139,8 +139,10 @@ public class ImplicitFieldAccessBase extends ImplicitFieldAccessMappedSuperclass
 	/** This method is annotated but transient to verify that placement of
 	 * annotation does not confuse the determination of implicit access
 	 * style of this class.
+	 * OPENJPA-1613 - per spec and OpenJPA 1.x behavior, the Transient annotation
+	 * is now taken into consideration when making a default access determination.
 	 * */
-	@Transient
+	//	@Transient
 	public int getTransient() {
 		return 42;
 	}

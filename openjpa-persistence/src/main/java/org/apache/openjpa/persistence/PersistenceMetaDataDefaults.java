@@ -127,7 +127,7 @@ public class PersistenceMetaDataDefaults
 
     protected MemberFilter fieldFilter = new MemberFilter(Field.class);
     protected MemberFilter methodFilter = new MemberFilter(Method.class);
-    protected TransientFilter nonTransientFilter = new TransientFilter();
+    protected TransientFilter nonTransientFilter = new TransientFilter(false);
     protected AnnotatedFilter annotatedFilter = new AnnotatedFilter();
     protected GetterFilter getterFilter = new GetterFilter();
     protected SetterFilter setterFilter = new SetterFilter();
@@ -344,7 +344,8 @@ public class PersistenceMetaDataDefaults
     	}
     	if (sup != null && !AccessCode.isUnknown(sup))
     		return sup.getAccessType();
-    	
+
+        trace(meta, _loc.get("access-default", meta, AccessCode.toClassString(getDefaultAccessType())));
         return getDefaultAccessType();
     }
     
@@ -364,7 +365,7 @@ public class PersistenceMetaDataDefaults
                 getDeclaredFieldsAction(cls));
 		Method[] methods = AccessController.doPrivileged(
 				J2DoPrivHelper.getDeclaredMethodsAction(cls));
-        List<Field> fields = filter(allFields, nonTransientFilter);
+        List<Field> fields = filter(allFields, new TransientFilter(true));
         /*
          * OpenJPA 1.x permitted private properties to be persistent.  This is
          * contrary to the JPA 1.0 specification, which states that persistent
@@ -374,15 +375,14 @@ public class PersistenceMetaDataDefaults
          */
         getterFilter.setIncludePrivate(
             conf.getCompatibilityInstance().getPrivatePersistentProperties());
-        List<Method> getters = filter(methods, getterFilter, 
-        		nonTransientFilter);
+        List<Method> getters = filter(methods, getterFilter);
         if (fields.isEmpty() && getters.isEmpty())
         	return AccessCode.EMPTY;
         
         fields = filter(fields, annotatedFilter);
         getters = filter(getters, annotatedFilter);
         
-		List<Method> setters = filter(methods, setterFilter);
+        List<Method> setters = filter(methods, setterFilter);
         getters =  matchGetterAndSetter(getters, setters);
         
         boolean mixed = !fields.isEmpty() && !getters.isEmpty();
@@ -477,13 +477,24 @@ public class PersistenceMetaDataDefaults
     		Method[] publicMethods = AccessController.doPrivileged(
               J2DoPrivHelper.getDeclaredMethodsAction(meta.getDescribedType()));
         
-    		List<Method> getters = filter(publicMethods, methodFilter, 
+            /*
+             * OpenJPA 1.x permitted private accessor properties to be persistent.  This is
+             * contrary to the JPA 1.0 specification, which states that persistent
+             * properties must be public or protected. OpenJPA 2.0+ will adhere
+             * to the specification by default, but provides a compatibility
+             * option to provide pre-2.0 behavior.
+             */
+            getterFilter.setIncludePrivate(
+                meta.getRepository().getConfiguration().getCompatibilityInstance().getPrivatePersistentProperties());
+
+            List<Method> getters = filter(publicMethods, methodFilter, 
                 getterFilter, 
                 ignoreTransient ? null : nonTransientFilter, 
         		unknown || isProperty ? null : annotatedFilter, 
                 explicit ? (isProperty ? null : propertyAccessFilter) : null);
-    		List<Method> setters = filter(publicMethods, setterFilter);
-    		return getters = matchGetterAndSetter(getters, setters);
+            
+            List<Method> setters = filter(publicMethods, setterFilter);
+            return getters = matchGetterAndSetter(getters, setters);
     	}
         
     	return Collections.EMPTY_LIST;
@@ -553,7 +564,13 @@ public class PersistenceMetaDataDefaults
 		.getLog(OpenJPAConfiguration.LOG_RUNTIME);
     	log.warn(message.toString());
     }
-    
+
+    void trace(ClassMetaData meta, Localizer.Message message) {
+        Log log = meta.getRepository().getConfiguration()
+        .getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        log.trace(message.toString());
+    }
+
     @Override
     protected List<String> getFieldAccessNames(ClassMetaData meta) {
     	return toNames(getPersistentFields(meta, false));
@@ -839,10 +856,20 @@ public class PersistenceMetaDataDefaults
     }
 
     /**
-     * Selects all non-transient element.
+     * Selects non-transient elements.  Selectively will examine only the 
+     * transient field modifier.
      */
     static class TransientFilter implements InclusiveFilter<AnnotatedElement> {
+        final boolean modifierOnly;
+        
+        public TransientFilter(boolean modOnly) {
+            modifierOnly = modOnly;
+        }
+        
         public boolean includes(AnnotatedElement obj) {
+            if (modifierOnly) {
+                return !Modifier.isTransient(((Member)obj).getModifiers());
+            }
         	return !obj.isAnnotationPresent(Transient.class) && 
         	       !Modifier.isTransient(((Member)obj).getModifiers());
         }

@@ -140,6 +140,14 @@ public class TestEnhancementWithMultiplePUs
         };
 
         opts = new Options();
+        // Use a restricted mdr.  This mdr will not hand out metadata for excluded
+        // types.  These are types that have known issues and should not be enhanced.
+        // This test tries to enhance all persistent types in the classpath and that
+        // can be problematic for tests which include entities that this test should
+        // not attempt to enhance.
+        opts.setProperty("MetaDataRepository", 
+            "org.apache.openjpa.enhance.RestrictedMetaDataRepository(excludedTypes=" +
+            "org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess)");
         opts.put(PCEnhancer.class.getName() + "#bytecodeWriter", writer);
         PCEnhancer.run(null, opts);
 
