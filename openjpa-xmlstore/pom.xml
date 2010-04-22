@@ -69,7 +69,7 @@
                 </executions>
             </plugin>
 
-            <!-- new way of using openjpa-maven-plugin to enhance classes
+            <!-- new way of using openjpa-maven-plugin to enhance classes -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
@@ -92,7 +92,8 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa-all</artifactId>
+                        <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
+                        <artifactId>openjpa-persistence-jdbc</artifactId>
                         <version>${pom.version}</version>
                     </dependency>
                 </dependencies>
@@ -119,7 +120,6 @@
                     </systemProperties>
                 </configuration>
             </plugin>
-            -->
         </plugins>
     </build>
 

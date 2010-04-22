@@ -728,7 +728,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-jpa_2.0_spec</artifactId>
-                <version>1.0</version>
+                <version>1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
@@ -743,7 +743,7 @@
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
                 <artifactId>geronimo-validation_1.0_spec</artifactId>
-                <version>1.0</version>
+                <version>1.1</version>
             </dependency>            
             <dependency>
                 <groupId>org.apache.derby</groupId>
@@ -1140,5 +1140,23 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <!-- added so the build can find stagged Geronimo Spec artifacts -->
+    <repositories>
+        <repository>
+            <id>apache.nexus.staging</id>
+            <name>Apache Staging Repository</name>
+            <layout>default</layout>
+            <url>https://repository.apache.org/content/repositories/staging/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
 
 </project>
