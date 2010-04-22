@@ -138,7 +138,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>1.1</version>
                 <configuration>
                     <includes>org/apache/openjpa/integration/daytrader/*Bean.class</includes>
                     <excludes>org/apache/openjpa/persistence/**/*.class</excludes>

@@ -73,7 +73,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
-                <version>1.1</version>
                 <configuration>
                     <excludes>org/apache/openjpa/xmlstore/**/Test*.class</excludes>
                     <excludes>org/apache/openjpa/persistence/**/*.class</excludes>
