@@ -21,23 +21,107 @@
     Maven release plugin requires the project tag to be on a single line. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.openjpa</groupId>
-    <artifactId>openjpa-xmlstore</artifactId>
-    <packaging>jar</packaging>
-    <name>OpenJPA XML Store</name>
-    <description>OpenJPA XML Store</description>
-    <url>http://openjpa.apache.org</url>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>2.0.1-SNAPSHOT</version>
     </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-xmlstore</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenJPA XML Store</name>
+    <description>OpenJPA XML Store</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
             <version>${pom.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
+            <version>${pom.version}</version>
+            <!-- <classifier>test-base</classifier> -->
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- create *-tests.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-tests</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- new way of using openjpa-maven-plugin to enhance classes -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <excludes>org/apache/openjpa/xmlstore/**/Test*.class</excludes>
+                    <excludes>org/apache/openjpa/persistence/**/*.class</excludes>
+                    <addDefaultConstructor>true</addDefaultConstructor>
+                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>enhancer</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>test-enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.openjpa</groupId>
+                        <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
+                        <artifactId>openjpa-persistence-jdbc</artifactId>
+                        <version>${pom.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${test.jvm.arguments}</argLine>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.DynamicEnhancementAgent</name>
+                            <value>false</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
+
