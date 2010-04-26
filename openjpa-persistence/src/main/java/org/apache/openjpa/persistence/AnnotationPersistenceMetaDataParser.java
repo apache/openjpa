@@ -1848,10 +1848,11 @@ public class AnnotationPersistenceMetaDataParser
         LockModeType lmt = query.lockMode();
         if (query.lockMode() != null) {
             String lm = _conf.getLockManager();
+            boolean optimistic = _conf.getOptimistic();
             if (lm != null) {
                 lm = lm.toLowerCase();
                 if (lm.contains("pessimistic")) {
-                    if (lmt == LockModeType.NONE) {
+                    if (lmt == LockModeType.NONE && !optimistic) {
                         if (_log.isWarnEnabled() == true) {
                             _log.warn(_loc.get("override-named-query-lock-mode", new String[] { "annotation",
                                 query.name(), _cls.getName() }));
