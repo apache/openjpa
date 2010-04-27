@@ -333,7 +333,7 @@ public class SybaseDictionary
         idx.setSchemaName(getStringFromResultSet(idxMeta, "TABLE_SCHEM", "table_owner"));
         idx.setTableName(getStringFromResultSet(idxMeta, "TABLE_NAME", "table_name"));
         idx.setColumnName(getStringFromResultSet(idxMeta, "COLUMN_NAME", "column_owner"));
-        idx.setName(getStringFromResultSet(idxMeta, "PK_NAME", "index_name"));
+        idx.setName(getStringFromResultSet(idxMeta, "INDEX_NAME", "index_name"));
         idx.setUnique(!getBooleanFromResultSet(idxMeta, "NON_UNIQUE", "non_unique"));
         return idx;
     }
