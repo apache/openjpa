@@ -302,15 +302,44 @@ public class SybaseDictionary
     }
 
     /**
+     * Helper method obtains a string value from a given column in a ResultSet. Strings provided are column names,
+     * jdbcName will be tried first if an SQLException occurs we'll try the sybase name.
+     */
+    protected String getStringFromResultSet(ResultSet rs, String jdbcName, String sybaseName) throws SQLException {
+        try { 
+            return rs.getString(jdbcName);
+        }
+        catch(SQLException sqle) { 
+            // if the generic JDBC identifier isn't found an SQLException will be thrown
+            // try the Sybase specific id
+            return rs.getString(sybaseName);
+        }
+    }
+    /**
+     * Helper method obtains a boolean value from a given column in a ResultSet. Strings provided are column names,
+     * jdbcName will be tried first if an SQLException occurs we'll try the sybase name.
+     */
+    protected boolean getBooleanFromResultSet(ResultSet rs, String jdbcName, String sybaseName) throws SQLException {
+        try { 
+            return rs.getBoolean(jdbcName);
+        }
+        catch(SQLException sqle) {
+            // if the generic JDBC identifier isn't found an SQLException will be thrown
+            // try the Sybase specific id
+            return rs.getBoolean(sybaseName);
+        }
+    }
+
+    /**
      * Create a new primary key from the information in the schema metadata.
      */
     protected PrimaryKey newPrimaryKey(ResultSet pkMeta)
         throws SQLException {
         PrimaryKey pk = new PrimaryKey();
-        pk.setSchemaName(pkMeta.getString("table_owner"));
-        pk.setTableName(pkMeta.getString("table_name"));
-        pk.setColumnName(pkMeta.getString("column_name"));
-        pk.setName(pkMeta.getString("index_name"));
+        pk.setSchemaName(getStringFromResultSet(pkMeta, "TABLE_SCHEM", "table_owner"));
+        pk.setTableName(getStringFromResultSet(pkMeta, "TABLE_NAME", "table_name"));
+        pk.setColumnName(getStringFromResultSet(pkMeta, "COLUMN_NAME", "column_owner"));
+        pk.setName(getStringFromResultSet(pkMeta, "PK_NAME", "index_name"));
         return pk;
     }
 
@@ -320,11 +349,11 @@ public class SybaseDictionary
     protected Index newIndex(ResultSet idxMeta)
         throws SQLException {
         Index idx = new Index();
-        idx.setSchemaName(idxMeta.getString("table_owner"));
-        idx.setTableName(idxMeta.getString("table_name"));
-        idx.setColumnName(idxMeta.getString("column_name"));
-        idx.setName(idxMeta.getString("index_name"));
-        idx.setUnique(!idxMeta.getBoolean("non_unique"));
+        idx.setSchemaName(getStringFromResultSet(idxMeta, "TABLE_SCHEM", "table_owner"));
+        idx.setTableName(getStringFromResultSet(idxMeta, "TABLE_NAME", "table_name"));
+        idx.setColumnName(getStringFromResultSet(idxMeta, "COLUMN_NAME", "column_owner"));
+        idx.setName(getStringFromResultSet(idxMeta, "PK_NAME", "index_name"));
+        idx.setUnique(!getBooleanFromResultSet(idxMeta, "NON_UNIQUE", "non_unique"));
         return idx;
     }
 
