@@ -84,6 +84,10 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     private static Localizer _loc =
             Localizer.forPackage(DistributedJDBCConfigurationImpl.class);
 
+    public DistributedJDBCConfigurationImpl() {
+        super();
+    }
+    
     /**
      * Configure itself as well as underlying slices.
      * 
@@ -283,15 +287,18 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     
     DataSource createDataSource(Slice slice) throws Exception {
         JDBCConfiguration conf = (JDBCConfiguration)slice.getConfiguration();
-        Log log = conf.getConfigurationLog();
-        String url = getConnectionInfo(conf);
-        if (log.isInfoEnabled())
-            log.info(_loc.get("slice-connect", slice, url));
-        DataSource ds = DataSourceFactory.newDataSource(conf, false);
-        DecoratingDataSource dds = DecoratingDataSource.
-                newDecoratingDataSource(ds);
-        ds = DataSourceFactory.installDBDictionary(
-                conf.getDBDictionaryInstance(), dds, conf, false);
+        DataSource ds = (DataSource)conf.getConnectionFactory();
+        if (ds == null) {
+            Log log = conf.getConfigurationLog();
+            String url = getConnectionInfo(conf);
+            if (log.isInfoEnabled())
+                log.info(_loc.get("slice-connect", slice, url));
+            ds = DataSourceFactory.newDataSource(conf, false);
+            DecoratingDataSource dds = DecoratingDataSource.
+                    newDecoratingDataSource(ds);
+            ds = DataSourceFactory.installDBDictionary(
+                    conf.getDBDictionaryInstance(), dds, conf, false);
+        }
         verifyDataSource(slice, ds, conf);
         
         return ds;

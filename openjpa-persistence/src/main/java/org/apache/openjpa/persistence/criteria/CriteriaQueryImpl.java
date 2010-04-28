@@ -494,7 +494,8 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      */
     public void registerVariable(Selection<?> node, Value var, Value path) {
         if (isRegistered(node)) {
-            throw new RuntimeException(node + " is already bound");
+            return;
+            //throw new RuntimeException(node + " is already bound");
         }
         if (!var.isVariable())
             throw new RuntimeException(var.getClass() + " is not a variable");

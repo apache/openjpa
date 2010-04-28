@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice;
 
+import java.io.Serializable;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
@@ -27,7 +29,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  * @author Pinaki Poddar 
  *
  */
-public class Slice implements Comparable<Slice> {
+public class Slice implements Comparable<Slice>,Serializable {
     public enum Status {
         NOT_INITIALIZED, 
         ACTIVE, 

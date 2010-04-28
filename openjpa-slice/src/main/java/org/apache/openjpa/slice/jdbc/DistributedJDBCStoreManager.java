@@ -430,10 +430,6 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         return _master.newDataStoreId(oidVal, meta);
     }
 
-    public FetchConfiguration newFetchConfiguration() {
-        return _master.newFetchConfiguration();
-    }
-
     /**
      * Construct a distributed query to be executed against all the slices.
      */

@@ -85,7 +85,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
     
     public Value[] eval(String[] vals, ExpressionStoreQuery query,
         ExpressionFactory factory, ClassMetaData candidate) {
-        throw new AbstractMethodError();
+        return null;
     }
 
     public String getLanguage() {
