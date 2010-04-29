@@ -99,6 +99,14 @@ JPA uses the defaults defined by the specification. As we present
 each mapping throughout this chapter, we also describe the defaults that apply
 when the mapping is absent.
     </para>
+    <note>
+        <para>
+Mapping metadata is used primarily with schema generation. This metadata should not
+be relied upon for validation prior to communicating with the database. 
+For example using the @Column(nullable=false) annotation does not do up front validation
+that the value in the entity is correct. 
+        </para>
+    </note>
     <section id="jpa_overview_mapping_table">
         <title>
             Table

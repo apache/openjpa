@@ -107,6 +107,15 @@ in the Reference Guide for details. There are currently no XML equivalents for
 these extension annotations.
         </para>
     </note>
+    <note>
+        <para>
+Persistence metadata may be used to validate the contents of your entities prior to communicating
+with the database. This differs from mapping meta data which is primarily used for schema generation.
+For example if you indicate that a relationship is not optional (e.g. @Basic(optional=false)) OpenJPA
+will validate that the variable in your entity is not null <emphasis>before</emphasis> inserting a row 
+in the database. 
+        </para>
+    </note>
     <mediaobject>
         <imageobject>
             <!-- PNG image data, 553 x 580 (see README) -->
