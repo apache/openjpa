@@ -1146,7 +1146,7 @@ Disables the compilation cache.
         </indexterm>
          <para>
 Prepared SQL Cache caches SQL statements corresponding to JPQL queries.
-If a JPQL query is executed more than once in the same or different persistence
+If a query is executed more than once in the same or different persistence
 contexts, the SQL statement generated during the first execution is cached and
 executed directly for subsequent execution. Direct execution of SQL offers
 significant performance gain as it saves the cost of parsing query string and,
@@ -1164,7 +1164,14 @@ Prepared SQL Cache is configured by the <link linkend="openjpa.jdbc.QuerySQLCach
 <literal>openjpa.jdbc.QuerySQLCache</literal></link> configuration property. This
 property accepts a plugin string (see <xref linkend="ref_guide_conf_plugins"/>)
 with value of <literal>true</literal> or <literal>false</literal>. The default
-is <literal>true</literal>. 
+is <literal>true</literal>. The execution statistics of the cached queries can be
+optionally collected as 
+<programlisting>
+  &lt;property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"&gt;
+</programlisting>
+The <ulink url="../javadoc/org/apache/openjpa/kerenl/QueryStatistics.html">
+<code>QueryStatistics</code></ulink> can be accessed via <code>PreparedQueryCache.getStatistics()</code>.
+
 </para>
         <table>
             <title>
@@ -1250,7 +1257,7 @@ Following salient points to be noted regarding usage of Prepared Query Cache.
 	<programlisting>
 	String jpql = "SELECT p FROM Person p WHERE p.name=:name";
 	List johns = em.createQuery(jpql).setParameter("name","John").getResultList();
-	List toms = em.createQuery(jpql).setParameter("name","John").getResultList();
+	List toms = em.createQuery(jpql).setParameter("name","Tom").getResultList();
 	</programlisting>
 	</example>
 	</para>
