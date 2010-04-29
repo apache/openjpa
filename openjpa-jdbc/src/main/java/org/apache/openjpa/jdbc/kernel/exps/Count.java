@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.jdbc.sql.SQLBuffer;
 
 /**
  * Count non-null values.
@@ -50,6 +51,21 @@ class Count
 
     public boolean isAggregate() {
         return true;
+    }
+    
+    /**
+     * Overrides SQL formation by replacing COUNT(column) by COUNT(*) when specific conditions are met and DBDictionary
+     * configuration <code>useWildCardForCount</code> is set.
+     */
+    @Override
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+        super.appendTo(sel, ctx, state, sql, index);
+        if (ctx.store.getDBDictionary().useWildCardForCount && state.joins.isEmpty()) {
+            String s = sql.getSQL();
+            if (s.startsWith("COUNT(") && s.endsWith(")")) {
+                sql.replaceSqlString("COUNT(".length(), s.length() - 1, "*");
+            }
+        }
     }
 }
 
