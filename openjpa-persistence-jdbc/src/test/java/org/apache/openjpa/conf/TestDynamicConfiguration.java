@@ -18,9 +18,13 @@
  */
 package org.apache.openjpa.conf;
 
+import javax.persistence.EntityManager;
+
 import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -31,6 +35,10 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestDynamicConfiguration extends SingleEMFTestCase {
 
+    public void setUp() throws Exception {
+        super.setUp(PObject.class); 	
+    }
+    
     public void testConfigurationIsEqualByValueAndHashCode() {
 		OpenJPAEntityManagerFactorySPI emf1 = createEMF();
 		assertNotNull(emf1);
@@ -102,4 +110,26 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		
 		assertEquals(oldHash, newHash);
 	}
+
+    public void testClassMetaDataRecognizesDataCacheTimeoutValueChange() {
+        OpenJPAConfiguration conf = emf.getConfiguration();
+        
+        // ensure that PObject is in metadata repository
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        PObject pc = new PObject();
+        em.persist(pc);
+
+        int oldValue = conf.getDataCacheTimeout();
+
+        ClassMetaData meta = conf.getMetaDataRepositoryInstance()
+                .getCachedMetaData(PObject.class);
+        assertNotNull(meta);
+        assertEquals(oldValue, meta.getDataCacheTimeout());
+	    
+        int newValue = oldValue + 10;
+        conf.setDataCacheTimeout(newValue);
+        assertEquals(newValue, conf.getDataCacheTimeout());
+        assertEquals(newValue, meta.getDataCacheTimeout());	
+    }
 }

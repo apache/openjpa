@@ -912,13 +912,13 @@ public class ConfigurationImpl
     public boolean removeValue(Value val) {
         if (!_vals.remove(val))
             return false;
-        val.setListener(null);
+        val.removeListener(this);
         return true;
     }
 
     public Value addValue(Value val) {
         _vals.add(val);
-        val.setListener(this);
+        val.addListener(this);
         return val;
     }
 

@@ -41,6 +41,8 @@ import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -79,7 +81,7 @@ import serp.util.Strings;
 public class ClassMetaData
     extends Extensions
     implements Comparable, SourceTracker, MetaDataContext, MetaDataModes,
-    Commentable {
+    Commentable, ValueListener {
 
     /**
      * Unkonwn identity type.
@@ -198,6 +200,7 @@ public class ClassMetaData
         _repos = repos;
         _owner = null;
         setDescribedType(type);
+        registerForValueUpdate("DataCacheTimeout");
     }
 
     /**
@@ -208,6 +211,7 @@ public class ClassMetaData
         _repos = owner.getRepository();
         setEnvClassLoader(owner.getFieldMetaData().getDefiningMetaData().
             getEnvClassLoader());
+        registerForValueUpdate("DataCacheTimeout");
     }
 
     /**
@@ -2356,6 +2360,26 @@ public class ClassMetaData
 			return f1.getListingIndex () - f2.getListingIndex ();
 		}
 	}
+    
+    public void registerForValueUpdate(String...values) {
+        if (values == null)
+            return;
+        for (String key : values) {
+            Value value = getRepository().getConfiguration()
+                    .getValue(key);
+            if (value != null)
+                value.addListener(this);
+        }
+    }
+        
+    public void valueChanged(Value val) {
+        if (val ==  null)
+            return;
+        String key = val.getProperty();
+        if ("DataCacheTimeout".equals(key)) {
+            _cacheTimeout = Integer.MIN_VALUE;
+        }
+    }
     
     /**
      * Returns true if the pcType modeled by this ClassMetaData

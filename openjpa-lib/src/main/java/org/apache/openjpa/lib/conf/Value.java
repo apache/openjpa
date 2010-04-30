@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +44,7 @@ public abstract class Value implements Cloneable {
     private String def = null;
     private String[] aliases = null;
     private String getter = null;
-    private ValueListener listen = null;
+    private List<ValueListener> listeners = null;
     private boolean aliasListComprehensive = false;
     private Class scope = null;
     private boolean isDynamic = false;
@@ -368,25 +371,37 @@ public abstract class Value implements Cloneable {
     protected abstract void setInternalObject(Object obj);
 
     /**
-     * Listener for value changes.
+     * Gets unmodifable list of listeners for value changes.
      */
-    public ValueListener getListener() {
-        return this.listen;
+    public List<ValueListener> getListeners() {
+    	return Collections.unmodifiableList(this.listeners);
     }
 
     /**
      * Listener for value changes.
      */
-    public void setListener(ValueListener listen) {
-        this.listen = listen;
+    public void addListener(ValueListener listener) {
+        if (listener == null)
+            return;
+        if (listeners == null)
+            listeners = new ArrayList<ValueListener>();
+        listeners.add(listener);
+    }
+    
+    public void removeListener(ValueListener listener) {
+        if (listener == null)
+            return;
+        listeners.remove(listener);
     }
 
     /**
      * Subclasses should call this method when their internal value changes.
      */
     public void valueChanged() {
-        if (listen != null) {
-        	listen.valueChanged(this);
+        if (listeners == null) 
+            return;
+        for (ValueListener listener : listeners) {
+            listener.valueChanged(this);
         }
     }
     
@@ -401,13 +416,23 @@ public abstract class Value implements Cloneable {
      * <LI>Configuration is read-only
      */
     protected void assertChangeable() {
-    	if (!isDynamic() && listen instanceof Configuration && 
-        	((Configuration)listen).isReadOnly()) {
+        if (!isDynamic() && containsReadOnlyConfigurationAsListener()) {
         	throw new RuntimeException(s_loc.get("veto-change",
         		this.getProperty()).toString());
        	}
     }
-    
+
+    boolean containsReadOnlyConfigurationAsListener() {
+        if (listeners == null)
+            return false;
+        for (ValueListener listener : listeners) {
+        if (listener instanceof Configuration
+        && ((Configuration)listener).isReadOnly())
+            return true;
+        }
+        return false;
+    }
+        
     /**
      * Sets if this receiver can be mutated even when the configuration it 
      * belongs to has been {@link Configuration#isReadOnly() frozen}.
