@@ -140,7 +140,7 @@ public class MetaDataRepository
         new InheritanceOrderedMetaDataList();
     private final InheritanceOrderedMetaDataList _mapping =
         new InheritanceOrderedMetaDataList();
-    private final List _errs = new LinkedList();
+    private final List<RuntimeException> _errs = new LinkedList<RuntimeException>();
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners =
@@ -555,14 +555,19 @@ public class MetaDataRepository
                 err &= resolveMapping((ClassMetaData) resolved.get(i));
 
         // throw errors encountered
+        // OPENJPA-1535 Always throw a MetaDataException because callers
+        // of loadRegisteredClassMetaData expect only MetaDataException
+        // to be thrown.
         if (err && !_errs.isEmpty()) {
             RuntimeException re;
-            if (_errs.size() == 1)
-                re = (RuntimeException) _errs.get(0);
-            else
-                re = new MetaDataException(_loc.get("resolve-errs")).
-                    setNestedThrowables((Throwable[]) _errs.toArray
-                        (new Exception[_errs.size()]));
+            if ((_errs.size() == 1) 
+            		&& (_errs.get(0) instanceof MetaDataException)) {
+                re = _errs.get(0);
+            } else {
+                re = new MetaDataException(_loc.get("resolve-errs"))
+                    .setNestedThrowables((Throwable[]) _errs
+                    .toArray(new Exception[_errs.size()]));
+            }
             _errs.clear();
             throw re;
         }
