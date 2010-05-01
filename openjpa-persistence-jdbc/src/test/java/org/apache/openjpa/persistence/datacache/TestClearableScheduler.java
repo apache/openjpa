@@ -91,7 +91,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
         assertEquals(2,cache2.getClearCount());
     }
     
-    public void atestMultithreadedInitialization() throws Exception {
+    public void testMultithreadedInitialization() throws Exception {
         final OpenJPAConfiguration conf =  emf.getConfiguration();
         final List<DataCacheManager> dcms = new ArrayList<DataCacheManager>();
         Runnable r = new Runnable(){
