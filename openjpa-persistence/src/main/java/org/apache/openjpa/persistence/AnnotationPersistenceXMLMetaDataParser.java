@@ -145,20 +145,19 @@ public class AnnotationPersistenceXMLMetaDataParser {
     }
 
     /**
-     * Parse persistence metadata for the given field metadata. If the MetaData(/Mapping)Repository
-     * is using locking, that lock MUST be held prior to calling this method.
+     * Parse persistence metadata for the given field metadata. This parser/class is NOT threadsafe! The caller of 
+     * this method needs to insure that the MetaData(/Mapping)Repository is locked prior to calling this method.
      */
-    public synchronized void parse(FieldMetaData fmd) {
-        Class<?> cls = fmd.getDeclaredType();
+    public synchronized void parse(Class<?> cls) {
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("parse-class", cls.getName()));
-        parseXMLClassAnnotations(cls, fmd);
+        parseXMLClassAnnotations(cls);
     }
 
     /**
      * Read annotations for the current type.
      */
-    private XMLMetaData parseXMLClassAnnotations(Class<?> cls, FieldMetaData fmd) {
+    private XMLMetaData parseXMLClassAnnotations(Class<?> cls) {
         // check immediately whether the class has JAXB XML annotations
         if (cls == null || xmlTypeClass == null
             || !((AccessController.doPrivileged(J2DoPrivHelper
@@ -169,7 +168,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
             return null;
 
         // find / create metadata
-        XMLMetaData meta = getXMLMetaData(cls, fmd);
+        XMLMetaData meta = getXMLMetaData(cls);
         
         return meta;
     }
@@ -177,11 +176,11 @@ public class AnnotationPersistenceXMLMetaDataParser {
     /**
      * Find or create xml metadata for the current type. 
      */
-    private XMLMetaData getXMLMetaData(Class<?> cls, FieldMetaData fmd) {
+    private XMLMetaData getXMLMetaData(Class<?> cls) {
         XMLMetaData meta = getRepository().getCachedXMLMetaData(cls);
         if (meta == null) {
             // if not in cache, create metadata
-            meta = getRepository().addXMLMetaData(cls, fmd.getName());
+            meta = getRepository().addXMLClassMetaData(cls);
             parseXmlRootElement(cls, meta);
             populateFromReflection(cls, meta);
         }
@@ -238,8 +237,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     if ((AccessController.doPrivileged(J2DoPrivHelper
                         .isAnnotationPresentAction(((Field) member).getType(),
                             xmlTypeClass))).booleanValue()) {
-                        field = _repos.addXMLMetaData(((Field) member).getType()
-                            , member.getName());
+                        field = _repos.addXMLClassMetaData(((Field) member).getType());
                         parseXmlRootElement(((Field) member).getType(), field);
                         populateFromReflection(((Field) member).getType()
                             , field);

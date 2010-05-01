@@ -332,7 +332,18 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         resolveAll(multi);
-
+        
+        // Preload XML MetaData
+        for (Class<?> cls : loaded) {
+            ClassMetaData cmd = getCachedMetaData(cls);
+            if (cmd != null) {
+                getXMLMetaData(cls);
+                for (FieldMetaData fmd : cmd.getFields()) {
+                    getXMLMetaData(fmd.getDeclaredType());
+                }
+            }
+        }
+        
         // Hook in this class as a listener and process registered classes list to populate _aliases
         // list.
         PCRegistry.addRegisterClassListener(this);
@@ -2344,25 +2355,27 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param fmd
      * @return XML metadata
      */
-    public XMLMetaData getXMLMetaData(FieldMetaData fmd) {
+    public XMLMetaData getXMLMetaData(Class<?> cls) {
         if (_locking) {
             synchronized (this) {
-                return getXMLMetaDataInternal(fmd);
+                return getXMLMetaDataInternal(cls);
             }
         } else {
-            return getXMLMetaDataInternal(fmd);
+            return getXMLMetaDataInternal(cls);
         }
     }
     
-    private XMLMetaData getXMLMetaDataInternal(FieldMetaData fmd) {
-        Class<?> cls = fmd.getDeclaredType();
+    private XMLMetaData getXMLMetaDataInternal(Class<?> cls) {
+        if (cls == null) {
+            return null;
+        }
         // check if cached before
         XMLMetaData xmlmeta = _xmlmetas.get(cls);
         if (xmlmeta != null)
             return xmlmeta;
 
         // load JAXB XML metadata
-        _factory.loadXMLMetaData(fmd);
+        _factory.loadXMLMetaData(cls);
 
         xmlmeta = (XMLClassMetaData) _xmlmetas.get(cls);
 
@@ -2376,8 +2389,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param access
      *            the access type to use in populating metadata
      */
-    public XMLClassMetaData addXMLMetaData(Class<?> type, String name) {
-        XMLClassMetaData meta = newXMLClassMetaData(type, name);
+    public XMLClassMetaData addXMLClassMetaData(Class<?> type) {
+        XMLClassMetaData meta = newXMLClassMetaData(type);
         if(_locking){
             synchronized(this){
                 _xmlmetas.put(type, meta);                
@@ -2402,8 +2415,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param name
      * @return a XMLClassMetaData
      */
-    protected XMLClassMetaData newXMLClassMetaData(Class<?> type, String name) {
-        return new XMLClassMetaData(type, name);
+    protected XMLClassMetaData newXMLClassMetaData(Class<?> type) {
+        return new XMLClassMetaData(type);
     }
 
     /**

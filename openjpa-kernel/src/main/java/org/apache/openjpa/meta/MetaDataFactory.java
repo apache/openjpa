@@ -151,7 +151,7 @@ public interface MetaDataFactory
      * Load XMLClassMetadata for the given class. Loaded
      * metadata should be added directly to the repository.
      */
-    public void loadXMLMetaData(FieldMetaData fmd);
+    public void loadXMLMetaData(Class<?> cls);
     
     /**
      * Gets the name of the meta-model class for the given fully-qualified

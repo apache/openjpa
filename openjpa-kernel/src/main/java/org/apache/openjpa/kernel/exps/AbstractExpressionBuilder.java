@@ -312,7 +312,7 @@ public abstract class AbstractExpressionBuilder {
         }
         else {
             // xmlsupport xpath
-            XMLMetaData xmlmeta = fmd.getRepository().getXMLMetaData(fmd);
+            XMLMetaData xmlmeta = fmd.getRepository().getXMLMetaData(fmd.getDeclaredType());
             if (xmlmeta != null) {
                 path.get(fmd, xmlmeta);
                 return path;

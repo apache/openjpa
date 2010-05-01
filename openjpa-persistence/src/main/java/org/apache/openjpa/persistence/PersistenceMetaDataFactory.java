@@ -573,10 +573,10 @@ public class PersistenceMetaDataFactory
             (repos.getConfiguration());
     }
 
-    public void loadXMLMetaData(FieldMetaData fmd) {
+    public void loadXMLMetaData(Class<?> cls) {
         AnnotationPersistenceXMLMetaDataParser parser
             = getXMLAnnotationParser();
-        parser.parse(fmd);
+        parser.parse(cls);
     }
     
     private static String UNDERSCORE = "_";

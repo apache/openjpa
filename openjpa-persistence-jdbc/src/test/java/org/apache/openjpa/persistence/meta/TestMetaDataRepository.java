@@ -18,50 +18,75 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import java.security.AccessController;
 import java.util.Collection;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
+import org.apache.openjpa.persistence.xmlmapping.entities.EAddress;
+import org.apache.openjpa.persistence.xmlmapping.entities.Order;
+import org.apache.openjpa.persistence.xmlmapping.xmlbindings.myaddress.Address;
 
 public class TestMetaDataRepository extends AbstractPersistenceTestCase {
-    private final String PU_NAME = "mdr-pu";
+	private final String PU_NAME = "mdr-pu";
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+	}
 
-    }
+	/**
+	 * This method ensures that some of the basic MetaData is properly
+	 * registered after creating an EMF.
+	 */
+	public void testPreloadBasic() {
+		OpenJPAEntityManagerFactorySPI emf = null;
+		try {
+			emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository",
+					"Preload=true");
+			MetaDataRepository mdr = emf.getConfiguration()
+					.getMetaDataRepositoryInstance();
 
-    /**
-     * This method ensures that some of the basic MetaData is properly registered after creating an
-     * EMF.
-     */
-    public void testPreloadBasic() {
+			// Check that there is cached metadata in the repo
+			ClassMetaData metadata = mdr.getCachedMetaData(MdrTestEntity.class);
+			assertNotNull(metadata);
+
+			// Make sure that there is an alias registered
+			// int numEntities =
+			// mdr.getPersistentTypeNames(false,
+			// AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())).size();
+			Collection<String> aliases = mdr.getAliasNames();
+			assertTrue(aliases.contains("MdrTestEntity"));
+
+			// assertTrue(aliases.size() == numEntities);
+
+			QueryMetaData query = mdr.getCachedQueryMetaData(
+					MdrTestEntity.class, "query");
+			assertNotNull(query);
+		} finally {
+			if (emf != null) {
+				emf.close();
+			}
+		}
+	}
+
+	public void testXmlMappingPreload() {
         OpenJPAEntityManagerFactorySPI emf = null;
         try {
-            emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
+            emf =
+                createNamedEMF("test", "openjpa.MetaDataRepository", "Preload=true", Customer.class,
+                    Customer.CustomerKey.class, Order.class, EAddress.class);
             MetaDataRepository mdr = emf.getConfiguration().getMetaDataRepositoryInstance();
 
-            // Check that there is cached metadata in the repo
-            ClassMetaData metadata = mdr.getCachedMetaData(MdrTestEntity.class);
-            assertNotNull(metadata);
+            assertNotNull(mdr.getCachedXMLMetaData(Address.class));
+            assertNull(mdr.getCachedXMLMetaData(Order.class));
+            
 
-            // Make sure that there is an alias registered
-//            int numEntities =
-//                mdr.getPersistentTypeNames(false,
-//                    AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())).size();
-            Collection<String> aliases = mdr.getAliasNames();
-            assertTrue(aliases.contains("MdrTestEntity"));
-
-//            assertTrue(aliases.size() == numEntities);
-
-            QueryMetaData query = mdr.getCachedQueryMetaData(MdrTestEntity.class, "query");
-            assertNotNull(query);
         } finally {
             if (emf != null) {
                 emf.close();

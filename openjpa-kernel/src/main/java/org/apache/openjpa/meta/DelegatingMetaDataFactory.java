@@ -123,8 +123,8 @@ public class DelegatingMetaDataFactory
         _delegate.addFieldExtensionKeys(exts);
     }
 
-    public void loadXMLMetaData(FieldMetaData fmd) {
-        _delegate.loadXMLMetaData(fmd);
+    public void loadXMLMetaData(Class<?> cls) {
+        _delegate.loadXMLMetaData(cls);
     }
     
     public String getMetaModelClassName(String managedClassName) {
