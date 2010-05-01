@@ -20,15 +20,17 @@ package org.apache.openjpa.persistence;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
@@ -43,7 +45,7 @@ import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
-import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Helper class for switching between OpenJPA's JPA facade and the underlying
@@ -209,37 +211,73 @@ public class JPAFacadeHelper {
     }
 
     /**
-     * Translate from a Persistence identity object to a OpenJPA one.
+     * Translate from a Persistence identity object to a OpenJPA one. If the provided oid isn't of the expected type
+     * a UserException will be thrown.
      */
     public static Object toOpenJPAObjectId(ClassMetaData meta, Object oid) {
         if (oid == null || meta == null)
             return null;
+        if (oid instanceof OpenJPAId) {
+            return oid;
+        }
+        Class<?> cls = meta.getDescribedType();
+        Class<?> oidType = meta.getObjectIdType();
+        FieldMetaData[] pks = meta.getPrimaryKeyFields();
 
-        Class cls = meta.getDescribedType();
-        if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
-            return new Id(cls, ((Number) oid).longValue());
+        Object expected = oidType;
+        Object actual = oid.getClass();
 
-        if (oid instanceof Byte)
-            return new ByteId(cls, (Byte) oid);
-        if (oid instanceof Character)
-            return new CharId(cls, (Character) oid);
-        if (oid instanceof Double)
-            return new DoubleId(cls, (Double) oid);
-        if (oid instanceof Float)
-            return new FloatId(cls, (Float) oid);
-        if (oid instanceof Integer)
-            return new IntId(cls, (Integer) oid);
-        if (oid instanceof Long)
-            return new LongId(cls, (Long) oid);
-        if (oid instanceof Short)
-            return new ShortId(cls, (Short) oid);
-        if (oid instanceof String)
-            return new StringId(cls, (String) oid);
-        if (oid instanceof BigDecimal)
-            return new BigDecimalId(cls, (BigDecimal) oid);
-        if (oid instanceof BigInteger)
-            return new BigIntegerId(cls, (BigInteger) oid);
-        return new ObjectId(cls, oid);
+        // embedded id and derived id
+        if (pks.length > 0 && (pks[0].isEmbedded() || pks[0].isTypePC())) {
+            if (pks[0].getDeclaredType().equals(oid.getClass())) {
+                return new ObjectId(cls, oid);
+            }
+            expected = pks[0].getDeclaredType();
+        }
+        if (oidType != null && oidType.equals(oid.getClass())) {
+            // Check for compound id class
+            return new ObjectId(cls, oid);
+        }
+        if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
+            // no id field
+            try {
+                return new Id(cls, ((Number) oid).longValue());
+            } catch (ClassCastException cce) {
+                // swallow, the proper exception will be thrown below
+                expected = Number.class;
+            }
+        }
+        if (pks.length > 0) {
+            Class<?> pkType = pks[0].getDeclaredType();
+            try {
+                // Check for basic types, cast provided object to expected type. Catch CCE for invalid input
+                if (pkType.equals(Byte.class) || pkType.equals(byte.class))
+                    return new ByteId(cls, (Byte) oid);
+                if (pkType.equals(Character.class) || pkType.equals(char.class))
+                    return new CharId(cls, (Character) oid);
+                if (pkType.equals(Double.class) || pkType.equals(double.class))
+                    return new DoubleId(cls, (Double) oid);
+                if (pkType.equals(Float.class) || pkType.equals(float.class))
+                    return new FloatId(cls, (Float) oid);
+                if (pkType.equals(Integer.class) || pkType.equals(int.class))
+                    return new IntId(cls, (Integer) oid);
+                if (pkType.equals(Long.class) || pkType.equals(long.class))
+                    return new LongId(cls, (Long) oid);
+                if (pkType.equals(Short.class) || pkType.equals(short.class))
+                    return new ShortId(cls, (Short) oid);
+                if (pkType.equals(String.class))
+                    return new StringId(cls, (String) oid);
+                if (pkType.equals(BigDecimal.class))
+                    return new BigDecimalId(cls, (BigDecimal) oid);
+                if (pkType.equals(BigInteger.class))
+                    return new BigIntegerId(cls, (BigInteger) oid);
+            } catch (ClassCastException cce) {
+                // swallow, the proper exception will be thrown below
+                expected = pkType;
+            }
+        }
+        // At this point we don't have a basic ID field, we don't have an embedded or composite id. fail.
+        throw new UserException(_loc.get("invalid-oid", new Object[] { expected, actual }));
     }
 
     /**
@@ -266,24 +304,8 @@ public class JPAFacadeHelper {
     /**
      * Return a collection of OpenJPA oids for the given native oid collection.
      */
-    public static Collection toOpenJPAObjectIds(ClassMetaData meta,
-        Collection oids) {
-        if (oids == null || oids.isEmpty())
-            return oids;
-
-        // since the class if fixed for all oids, we can tell if we have to
-        // translate the array based on whether the first oid needs translating
-        Iterator itr = oids.iterator();
-        Object orig = itr.next();
-        Object oid = toOpenJPAObjectId(meta, orig);
-        if (oid == orig)
-            return oids;
-
-        Collection copy = new ArrayList(oids.size());
-        copy.add(oid);
-        while (itr.hasNext())
-            copy.add(toOpenJPAObjectId(meta, itr.next()));
-        return copy;
+    public static Collection<Object> toOpenJPAObjectIds(ClassMetaData meta, Collection<Object> oids) {
+        return toOpenJPAObjectIds(meta, oids);
     }
 
     /**

@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.util.UserException;
 
 public class TestJPACache extends SingleEMFTestCase {
 
@@ -221,7 +222,12 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     public void testContainsInvalidPrimaryKeyType() {
-        assertFalse(emf.getCache().contains(CachedPerson.class, "abcd"));
+        try{
+            emf.getCache().contains(CachedPerson.class, "abcd");
+            fail();
+        }catch(UserException ue){
+            //expected
+        }
     }
 
     public void testEvictNullInstance() {
@@ -251,7 +257,12 @@ public class TestJPACache extends SingleEMFTestCase {
     }
 
     public void testEvictInvalidPrimaryKeyType() {
-        emf.getCache().evict(CachedPerson.class, "abcd");
+        try{
+            emf.getCache().evict(CachedPerson.class, "abcd");
+            fail();
+        }catch(UserException ue){
+            //expected
+        }
     }
 
     public void testEvictNullClass() {
