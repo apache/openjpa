@@ -36,6 +36,8 @@ import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Turns parsed queries into selects.
@@ -48,6 +50,7 @@ public class SelectConstructor
 
     private boolean _extent = false;
     private Select _subselect = null;
+    private static final Localizer _loc = Localizer.forPackage(SelectConstructor.class);
 
     /**
      * Return true if we know the select to have on criteria; to be an extent.
@@ -115,6 +118,18 @@ public class SelectConstructor
         }
         for (int i = 0; i < exps.grouping.length; i++)
             ((Val) exps.grouping[i]).groupBy(sel, ctx, state.grouping[i]);
+        
+        if (exps.projections.length == 1) {
+            Val val = (Val) exps.projections[0];
+            if (val instanceof Count && ((Count)val).isCountDistinctMultiCols()) {
+                Select newSel = ctx.store.getSQLFactory().newSelect();
+                newSel.select("COUNT(*)", val);
+                newSel.setExpectedResultCount(1, true);
+                newSel.setFromSelect(sel);
+                sel.setExpectedResultCount(0, true);
+                sel = newSel;
+            }
+        }        
         return sel;
     }
 
@@ -233,6 +248,10 @@ public class SelectConstructor
                 // projections; this ensures that we have all our joins cached
                 state.projections[i] = resultVal.initialize(sel, ctx, 
                     Val.JOIN_REL | Val.FORCE_OUTER);
+                if (exps.projections.length > 1 && resultVal instanceof Count) {
+                    if (((Count)resultVal).isCountDistinctMultiCols())
+                        throw new UnsupportedException(_loc.get("count-distinct-multi-col-only"));
+                }
                 joins = sel.and(joins, state.projections[i].joins);
             }
         }
@@ -288,6 +307,8 @@ public class SelectConstructor
         Select inner = sel.getFromSelect();
         Val val;
         Joins joins = null;
+        boolean isCountDistinctMultiCols = false;
+
         if (sel.getSubselectPath() != null)
             joins = sel.newJoins().setSubselect(sel.getSubselectPath());
 
@@ -305,9 +326,18 @@ public class SelectConstructor
             // subselect for objects; we really just need the primary key values
             sel.select(mapping.getPrimaryKeyColumns(), joins);
         } else {
+            if (exps.projections.length == 1) {
+                val = (Val) exps.projections[0];
+                if (val instanceof Count && ((Count)val).isCountDistinctMultiCols()) {
+                    isCountDistinctMultiCols = true;
+                    if (sel.getParent() != null)
+                        throw new UnsupportedException(_loc.get("count-distinct-multi-col-subselect-unsupported"));
+                }
+            }            
+
             // if we have an inner select, we need to select the candidate
             // class' pk columns to guarantee unique instances
-            if (inner != null)
+            if (inner != null && !isCountDistinctMultiCols)
                 inner.select(mapping.getPrimaryKeyColumns(), joins);
 
             // select each result value; no need to pass on the eager mode since
@@ -315,9 +345,13 @@ public class SelectConstructor
             boolean pks = sel.getParent() != null;
             for (int i = 0; i < exps.projections.length; i++) {
                 val = (Val) exps.projections[i];
-                if (inner != null)
-                    val.selectColumns(inner, ctx, state.projections[i], pks);
-                val.select(sel, ctx, state.projections[i], pks);
+                if (inner != null) {
+                    if (!isCountDistinctMultiCols)
+                        val.selectColumns(inner, ctx, state.projections[i], pks);
+                    else
+                        val.select(inner, ctx, state.projections[i], pks);
+                } else
+                    val.select(sel, ctx, state.projections[i], pks);
             }
 
             // make sure having columns are selected since it is required by 

@@ -3151,9 +3151,14 @@ public class SelectImpl
                         
                     String as = null;
                     if (inner)
-                        as = ((String) alias).replace('.', '_');
-                    else if (_selectAs != null)
-                        as = (String) _selectAs.get(id);
+						if (inner) {
+							if (alias instanceof String){
+								as = ((String) alias).replace('.', '_');
+							}
+						} 
+						else if (_selectAs != null){
+							as = (String) _selectAs.get(id);
+						}
 
                     if (as != null) {
                         if (ident && _idents != null)

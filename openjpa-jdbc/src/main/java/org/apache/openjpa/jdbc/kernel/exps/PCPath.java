@@ -892,8 +892,22 @@ public class PCPath
     }
 
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+        SQLBuffer sql) {
+        Column[] cols = getColumns(state);
+        for (int i = 0; i < cols.length; i++) {
+            appendTo(sel, state, sql, cols[i]);
+            if (i < cols.length -1)
+            sql.append(", ");
+        }
+    }
+    
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
         Column col = getColumns(state)[index];
+        appendTo(sel, state, sql, col);
+    }
+    
+    public void appendTo(Select sel, ExpState state, SQLBuffer sql, Column col) {
         if (sel != null)
             sel.setSchemaAlias(_schemaAlias);
 
