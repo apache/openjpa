@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 
@@ -29,16 +30,30 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 class Count
     extends UnaryOp {
 
+    private boolean isCountMultiColumns = false;
+    private boolean isCountDistinct = false;
+    
     /**
      * Constructor. Provide the value to operate on.
      */
     public Count(Val val) {
         super(val);
+        if (val instanceof Distinct)
+            isCountDistinct = true;
     }
 
     public ExpState initialize(Select sel, ExpContext ctx, int flags) {
         // join into related object if present
-        return initializeValue(sel, ctx, JOIN_REL);
+        ExpState expState = initializeValue(sel, ctx, JOIN_REL);
+        Val val = isCountDistinct ? ((Distinct)getValue()).getValue() : getValue();
+        if (val instanceof PCPath) {
+            Column[] cols = ((PCPath)val).getColumns(expState);
+            if (cols.length > 1) {
+                isCountMultiColumns = true;
+            }
+        }
+            
+        return expState;
     }
 
     protected Class getType(Class c) {
@@ -53,14 +68,24 @@ class Count
         return true;
     }
     
+    public boolean isCountDistinctMultiCols() {
+        return isCountDistinct && isCountMultiColumns;
+    }
+    
     /**
      * Overrides SQL formation by replacing COUNT(column) by COUNT(*) when specific conditions are met and DBDictionary
      * configuration <code>useWildCardForCount</code> is set.
      */
     @Override
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
-        super.appendTo(sel, ctx, state, sql, index);
-        if (ctx.store.getDBDictionary().useWildCardForCount && state.joins.isEmpty()) {
+        if (isCountDistinctMultiCols()) {
+            getValue().appendTo(sel, ctx, state, sql, 0);
+            sql.addCastForParam(getOperator(), getValue());
+        } else {
+            super.appendTo(sel, ctx, state, sql, index);
+        }
+        if ((ctx.store.getDBDictionary().useWildCardForCount && state.joins.isEmpty()) ||
+            !isCountDistinct && isCountMultiColumns){
             String s = sql.getSQL();
             if (s.startsWith("COUNT(") && s.endsWith(")")) {
                 sql.replaceSqlString("COUNT(".length(), s.length() - 1, "*");

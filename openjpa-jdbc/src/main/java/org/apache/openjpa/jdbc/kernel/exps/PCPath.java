@@ -716,20 +716,33 @@ public class PCPath
         return getColumns(state).length;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
-        SQLBuffer sql, int index) {
-        Column col = getColumns(state)[index];
+	public void appendTo(Select sel, ExpContext ctx, ExpState state,
+			SQLBuffer sql) {
+		Column[] cols = getColumns(state);
+		for (int i = 0; i < cols.length; i++) {
+			appendTo(sel, state, sql, cols[i]);
+			if (i < cols.length - 1)
+				sql.append(", ");
+		}
+	}
 
-        // if select is null, it means we are not aliasing columns
-        // (e.g., during a bulk update)
-        if (sel == null)
-            sql.append(col.getName());
-        else if (_type == XPATH)
-            // if this is an xpath, append xpath string
-            sql.append(getXPath());
-        else
-            sql.append(sel.getColumnAlias(col, state.joins));
-    }
+	public void appendTo(Select sel, ExpContext ctx, ExpState state,
+			SQLBuffer sql, int index) {
+		Column col = getColumns(state)[index];
+		appendTo(sel, state, sql, col);
+	}
+
+	public void appendTo(Select sel, ExpState state, SQLBuffer sql, Column col) {
+		// if select is null, it means we are not aliasing columns
+		// (e.g., during a bulk update)
+		if (sel == null)
+			sql.append(col.getName());
+		else if (_type == XPATH)
+			// if this is an xpath, append xpath string
+			sql.append(getXPath());
+		else
+			sql.append(sel.getColumnAlias(col, state.joins));
+	}
 
     public void appendIsEmpty(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql) {
