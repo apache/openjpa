@@ -2184,8 +2184,14 @@ public class BrokerImpl
         }
         if (opt)
             return new OptimisticException(t);
+        
+        Object failedObject = null;
+        if (t[0] instanceof OpenJPAException){
+        	failedObject = ((OpenJPAException)t[0]).getFailedObject();
+        }
+        
         return new StoreException(_loc.get("rolled-back")).
-            setNestedThrowables(t).setFatal(true);
+            setNestedThrowables(t).setFatal(true).setFailedObject(failedObject);
     }
 
     /**
