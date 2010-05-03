@@ -102,12 +102,8 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            // We need to wait to preload until after we get back a fully configured/instantiated
-            // BrokerFactory. This is because it is possible that someone has extended OpenJPA
-            // functions and they need to be allowed time to configure themselves before we go off and
-            // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
-            // any exceptions here because we want to fail-fast.
-            preloadMetaDataRepository(factory);
+            // Perform post BrokerFactory initialization.
+            postBrokerFactoryInitialization(factory);
             
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
@@ -203,12 +199,8 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            // We need to wait to preload until after we get back a fully configured/instantiated
-            // BrokerFactory. This is because it is possible that someone has extended OpenJPA
-            // functions and they need to be allowed time to configure themselves before we go off and
-            // start instanting configurable objects (ie:openjpa.MetaDataRepository). Don't catch
-            // any exceptions here because we want to fail-fast.
-            preloadMetaDataRepository(factory);
+            // Perform post BrokerFactory initialization.
+            postBrokerFactoryInitialization(factory);
             
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
@@ -258,10 +250,9 @@ public class PersistenceProviderImpl
     }
 
     /**
-     * Private worker method that will call to the MetaDataRepository to preload if the provided
-     * BrokerFactory is configured to do so.
+     * Private worker method that will perform initialization that needs to happen AFTER BrokerFactory creation.
      */
-    private void preloadMetaDataRepository(BrokerFactory factory){
+    private void postBrokerFactoryInitialization(BrokerFactory factory){
         // We need to wait to preload until after we get back a fully configured/instantiated
         // BrokerFactory. This is because it is possible that someone has extended OpenJPA
         // functions and they need to be allowed time to configure themselves before we go off and
@@ -279,6 +270,9 @@ public class PersistenceProviderImpl
                 .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
             mdr.preload();
         }
+        
+        // Get a DataCacheManager instance up front to avoid threading concerns on first call.
+        conf.getDataCacheManagerInstance();
     }
     
     /**
