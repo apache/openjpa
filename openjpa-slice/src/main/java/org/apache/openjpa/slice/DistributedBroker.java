@@ -18,29 +18,17 @@
  */
 package org.apache.openjpa.slice;
 
-import java.util.Map;
-
 import org.apache.openjpa.kernel.Broker;
 
 /**
- * Extension to Broker to allow dynamically add/remove slices.
+ * Extension to Broker to allow access to virtual data store.
  * 
  * @author Pinaki Poddar
  *
  */
 public interface DistributedBroker extends Broker {
     /**
-     * Adds the given slice with the given properties. This newly added slice
-     * will participate in the current and subsequent transaction.
-     * 
-     * @param name logical name of the to be added slice. Must be different from
-     * any currently available slices.
-     * @see DistributedConfiguration#getAvailableSliceNames()
-     * 
-     * @param properties key-value pair of configuration for the slice to be
-     * added. The keys must have openjpa.slice.&lt;name&gt;.* as prefix.
-     * 
-     * @see DistributedConfiguration#addSlice(String, Map)
+     * Gets the distributed store manager used by this receiver.
      */
-    Slice addSlice(String name, Map properties);
+    DistributedStoreManager getDistributedStoreManager();
 }

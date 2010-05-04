@@ -44,8 +44,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
 	private transient DistributedConfiguration _conf;
 	private final ReentrantSliceLock _lock;
 	
-	private static final Localizer _loc =
-			Localizer.forPackage(DistributedBrokerImpl.class);
+	private static final Localizer _loc = Localizer.forPackage(DistributedBrokerImpl.class);
 
 	public DistributedBrokerImpl() {
 	    super();
@@ -60,15 +59,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
     }
     
     public DistributedStoreManager getDistributedStoreManager() {
-        return (DistributedStoreManager)getStoreManager().
-                getInnermostDelegate();
-    }
-    
-    public Slice addSlice(String name, Map properties) {
-        Slice slice = ((DistributedBrokerFactory)getBrokerFactory()).addSlice(
-            name, properties);
-        getDistributedStoreManager().addSlice(slice);
-        return slice;
+        return (DistributedStoreManager)getStoreManager().getInnermostDelegate();
     }
     
 	/**
@@ -81,8 +72,7 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl
 	 * been assigned before.
 	 */
 	@Override
-    public OpenJPAStateManager persist(Object pc, Object id, boolean explicit,
-			OpCallbacks call) {
+    public OpenJPAStateManager persist(Object pc, Object id, boolean explicit, OpCallbacks call) {
 		OpenJPAStateManager sm = getStateManager(pc);
 		SliceInfo info = null;
         boolean replicated = SliceImplHelper.isReplicated(pc,

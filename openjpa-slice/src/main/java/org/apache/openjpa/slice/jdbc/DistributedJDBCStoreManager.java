@@ -80,8 +80,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     private final List<SliceStoreManager> _slices;
     private JDBCStoreManager _master;
     private final DistributedJDBCConfiguration _conf;
-    private static final Localizer _loc =
-            Localizer.forPackage(DistributedJDBCStoreManager.class);
+    private static final Localizer _loc = Localizer.forPackage(DistributedJDBCStoreManager.class);
 
     private static final Constructor<ClientConnection> clientConnectionImpl;
     private static final Constructor<RefCountConnection> refCountConnectionImpl;
@@ -108,13 +107,14 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         super();
         _conf = conf;
         _slices = new ArrayList<SliceStoreManager>();
-        List<String> sliceNames = conf.getActiveSliceNames();
-        for (String name : sliceNames) {
-            SliceStoreManager slice =
-                    new SliceStoreManager(conf.getSlice(name));
-            _slices.add(slice);
-            if (slice.getName().equals(_conf.getMaster().getName()))
-                _master = slice;
+        List<Slice> slices = conf.getSlices(Slice.Status.ACTIVE);
+        Slice masterSlice = conf.getMasterSlice();
+        for (Slice slice : slices) {
+            SliceStoreManager store = new SliceStoreManager(slice);
+            _slices.add(store);
+            if (slice == masterSlice) {
+                _master = store;
+            }
         }
     }
 
@@ -128,8 +128,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     
     public SliceStoreManager addSlice(Slice slice) {
         SliceStoreManager result = new SliceStoreManager(slice);
-        result.setContext(getContext(),
-                (JDBCConfiguration)slice.getConfiguration());
+        result.setContext(getContext(), (JDBCConfiguration)slice.getConfiguration());
         _slices.add(result);
         return result;
     }
@@ -274,7 +273,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         Map<String, StateManagerSet> subsets = bin(sms, null);
         Collection<StateManagerSet> remaining = 
             new ArrayList<StateManagerSet>(subsets.values());
-        ExecutorService threadPool = SliceThread.newPool(_slices.size());
+        ExecutorService threadPool = SliceThread.getPool();
         for (int i = 0; i < _slices.size(); i++) {
             SliceStoreManager slice = _slices.get(i);
             StateManagerSet subset = subsets.get(slice.getName());

@@ -34,6 +34,6 @@ public interface DistributedJDBCConfiguration extends JDBCConfiguration,
     /**
      * Gets the master slice.
      */
-    Slice getMaster();
+    Slice getMasterSlice();
 
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -28,10 +30,10 @@ public class PObject {
 	
 	private int value;
 	
-	private static long idCounter = System.currentTimeMillis();
+	private static AtomicLong idCounter = new AtomicLong(System.currentTimeMillis());
 	
 	public PObject() {
-		id = ++idCounter;
+		id = idCounter.addAndGet(1);
 	}
 	
 	public long getId() {

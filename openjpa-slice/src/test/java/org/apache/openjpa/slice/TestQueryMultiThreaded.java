@@ -213,6 +213,34 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         waitForTermination();
         em.getTransaction().rollback();
     }
+    
+    public void testHeavyLoad() {
+        Thread[] threads = new Thread[1000];
+        for (int i = 0; i < 1000; i++) {
+            Runnable r = new Runnable() {
+                public void run() {
+                    EntityManager em = emf.createEntityManager();
+                    em.getTransaction().begin();
+                    for (int j = 0; j < 10; j ++) {
+                        PObject pc = new PObject();
+                        pc.setValue((int)System.currentTimeMillis()%10);
+                        em.persist(pc);
+                    }
+                    em.getTransaction().commit();
+                }
+            };
+            threads[i] = new Thread(r);
+            threads[i].start();
+        }
+        for (Thread t : threads) {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                fail();
+            }
+        }
+    }
 
     public void testHint() {
         final List<String> targets = new ArrayList<String>();

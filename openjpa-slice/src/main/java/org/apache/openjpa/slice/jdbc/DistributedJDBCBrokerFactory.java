@@ -19,17 +19,21 @@
 package org.apache.openjpa.slice.jdbc;
 
 import java.security.AccessController;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
-import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.slice.DistributedBroker;
 import org.apache.openjpa.slice.DistributedBrokerFactory;
+import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.Slice;
 
 /**
@@ -41,16 +45,14 @@ import org.apache.openjpa.slice.Slice;
 @SuppressWarnings("serial")
 public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory 
     implements DistributedBrokerFactory {
-	private static final Localizer _loc = 
-	    Localizer.forPackage(DistributedJDBCBrokerFactory.class);
+	private static final Localizer _loc = Localizer.forPackage(DistributedJDBCBrokerFactory.class);
+	
 	/**
      * Factory method for constructing a factory from properties. Invoked from
 	 * {@link Bootstrap#newBrokerFactory}.
 	 */
-	public static DistributedJDBCBrokerFactory newInstance(
-			ConfigurationProvider cp) {
-		DistributedJDBCConfigurationImpl conf =
-				new DistributedJDBCConfigurationImpl(cp);
+	public static DistributedJDBCBrokerFactory newInstance(ConfigurationProvider cp) {
+		DistributedJDBCConfigurationImpl conf =	new DistributedJDBCConfigurationImpl();
 		cp.setInto(conf);
 		return new DistributedJDBCBrokerFactory(conf);
 	}
@@ -60,10 +62,9 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	 * Invoked from {@link Bootstrap#getBrokerFactory}.
 	 */
 	public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
-	    Map properties = cp.getProperties();
+	    Map<String,Object> properties = cp.getProperties();
 	    Object key = toPoolKey(properties);
-		DistributedJDBCBrokerFactory factory =
-                (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
+		DistributedJDBCBrokerFactory factory = (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
 		if (factory != null)
 			return factory;
 
@@ -75,17 +76,14 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	/**
 	 * Factory method for constructing a factory from a configuration.
 	 */
-	public static synchronized JDBCBrokerFactory getInstance(
-			JDBCConfiguration conf) {
-	    Map properties = conf.toProperties(false);
+	public static synchronized JDBCBrokerFactory getInstance(DistributedJDBCConfiguration conf) {
+	    Map<String,Object> properties = conf.toProperties(false);
 	    Object key = toPoolKey(properties);
-		DistributedJDBCBrokerFactory factory =
-                (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
+		DistributedJDBCBrokerFactory factory = (DistributedJDBCBrokerFactory) getPooledFactoryForKey(key);
 		if (factory != null)
 			return factory;
 
-		factory = new DistributedJDBCBrokerFactory(
-		        (DistributedJDBCConfiguration) conf);
+		factory = new DistributedJDBCBrokerFactory(conf);
 		pool(key, factory);
 		return factory;
 	}
@@ -100,11 +98,13 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	}
 	
 	public Slice addSlice(String name, Map properties) {
-	    Slice slice = getConfiguration().addSlice(name, properties);
-        ClassLoader loader = AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction());
-        synchronizeMappings(loader, (JDBCConfiguration)slice.
-                getConfiguration());
+	    Slice slice = ((DistributedJDBCConfigurationImpl)getConfiguration()).addSlice(name, properties);
+        ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        synchronizeMappings(loader, (JDBCConfiguration)slice.getConfiguration());
+        Collection<Broker> brokers = getOpenBrokers();
+        for (Broker broker : brokers) {
+            ((DistributedBroker)broker).getDistributedStoreManager().addSlice(slice);
+        }
 	    return slice;
 	}
 
@@ -112,7 +112,19 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	protected DistributedJDBCStoreManager newStoreManager() {
 		return new DistributedJDBCStoreManager(getConfiguration());
 	}
-	
+    
+    @Override
+    public DistributedBroker newBroker() {
+        return new DistributedBrokerImpl();
+    }
+    
+    protected void synchronizeMappings(ClassLoader loader) {
+        List<Slice> slices = getConfiguration().getSlices(Slice.Status.ACTIVE);
+        for (Slice slice : slices) {
+            synchronizeMappings(loader, (JDBCConfiguration) slice.getConfiguration());
+        }
+    }
+
     @Override
     protected Object getFactoryInitializationBanner() {
         return _loc.get("factory-init", OpenJPAVersion.VERSION_NUMBER);

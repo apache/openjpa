@@ -125,8 +125,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			List<SliceStoreManager> targets = findTargets();
 			QueryContext ctx = q.getContext();
 			boolean isReplicated = containsReplicated(ctx);
-            ExecutorService threadPool = SliceThread.newPool(
-                    owner._queries.size());
+            ExecutorService threadPool = SliceThread.getPool();
 			for (int i = 0; i < owner._queries.size(); i++) {
                 // if replicated, then execute only on single slice
 				if (isReplicated && !usedExecutors.isEmpty()) {
@@ -206,7 +205,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
-            ExecutorService threadPool = SliceThread.newPool(executors.size());
+            ExecutorService threadPool = SliceThread.getPool();
 			for (Executor ex : executors) {
 				if (futures == null)
                     futures = new ArrayList<Future<Number>>();
@@ -234,7 +233,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 			Iterator<StoreQuery> qs = owner._queries.iterator();
 			List<Future<Number>> futures = null;
 			int result = 0;
-            ExecutorService threadPool = SliceThread.newPool(executors.size());
+            ExecutorService threadPool = SliceThread.getPool();
 			for (Executor ex : executors) {
 				if (futures == null)
                     futures = new ArrayList<Future<Number>>();

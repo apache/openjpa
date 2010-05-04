@@ -24,11 +24,12 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
  * Represents a database slice of immutable logical name, a configuration and
- * status.
+ * status. A Slice is uniquely identified by its logical name.
  * 
  * @author Pinaki Poddar 
  *
  */
+@SuppressWarnings("serial")
 public class Slice implements Comparable<Slice>,Serializable {
     public enum Status {
         NOT_INITIALIZED, 

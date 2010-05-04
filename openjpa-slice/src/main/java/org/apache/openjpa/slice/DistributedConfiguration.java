@@ -19,7 +19,6 @@
 package org.apache.openjpa.slice;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
@@ -118,10 +117,4 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
      * replicated instances will be replicated across the available slices.
      */
     void setReplicationPolicy(String policy);
-	/**
-	 * Adds a new Slice of the given name and given properties.
-     * The given properties must have keys with prefix openjpa.slice.<name>.*
-     * where <name> is the new slice to be added.
-	 */
-    Slice addSlice(String name, Map properties);
 }
