@@ -143,13 +143,9 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
             // that does not support getConnection(user, password)
             // see http://commons.apache.org/dbcp/apidocs/org/apache/commons/dbcp/BasicDataSource.html
             // hence this workaround
-            try {
-                if (setBeanProperty(_ds, "setUsername", user)
-                 && setBeanProperty(_ds, "setPassword", pass))
-                    return _ds.getConnection();
-            } catch (Exception e) {
-                throw ex;
-            }
+            if (setBeanProperty(_ds, "setUsername", user)
+             && setBeanProperty(_ds, "setPassword", pass))
+                return _ds.getConnection();
         }
         return null;
     }
@@ -173,7 +169,7 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
     
     private boolean setBeanProperty(Object target, String method, Object val) {
         try {
-            Method setter = target.getClass().getMethod(method, new Class[]{});
+            Method setter = target.getClass().getMethod(method, new Class[]{String.class});
             setter.invoke(target, val);
             return true;
         } catch (Throwable t) {

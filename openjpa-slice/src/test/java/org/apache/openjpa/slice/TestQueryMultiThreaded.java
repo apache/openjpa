@@ -310,7 +310,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
      * OPENJPA-1044</A>
      * for details.
      */
-    public void xtestQueryParameterEntity() {
+    public void testQueryParameterEntity() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         final Query addressQ =

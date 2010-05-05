@@ -90,11 +90,13 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         distributionPolicyPlugin = addPlugin(PREFIX_SLICE + "DistributionPolicy", true);
         distributionPolicyPlugin.setAlias("random", DistributionPolicy.Default.class.getName());
         distributionPolicyPlugin.setDefault("random");
+        distributionPolicyPlugin.setString("random");
         distributionPolicyPlugin.setDynamic(true);
         
         replicationPolicyPlugin = addPlugin(PREFIX_SLICE + "ReplicationPolicy", true);
         replicationPolicyPlugin.setAlias("all", ReplicationPolicy.Default.class.getName());
         replicationPolicyPlugin.setDefault("all");
+        replicationPolicyPlugin.setString("all");
         replicationPolicyPlugin.setDynamic(true);
         
         lenientPlugin = addBoolean(PREFIX_SLICE + "Lenient");
@@ -382,11 +384,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
      * @param original a set of properties.
      * @return a newly configured slice
      */
-    protected Slice newSlice(String key, Map original) {
+    private Slice newSlice(String key, Map original) {
         JDBCConfiguration child = new JDBCConfigurationImpl();
         child.fromProperties(createSliceProperties(original, key));
         child.setId(getId()+DOT+key);
         setDiagnosticContext(child);
+        child.setMappingDefaults(this.getMappingDefaultsInstance());
+        child.setDataCacheManager(this.getDataCacheManagerInstance());
+        child.setMetaDataRepository(this.getMetaDataRepositoryInstance());
         Slice slice = new Slice(key, child);
         Log log = getConfigurationLog();
         if (log.isTraceEnabled())
