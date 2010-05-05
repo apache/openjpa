@@ -52,18 +52,7 @@ public class Unique
     public boolean isLogical() {
         return false;
     }
-    
-    /**
-     * Adds the given column. 
-     * The added column is set to non-nullable because a unique constraint
-     * on the database requires that its constituent columns are NOT NULL. 
-     * @see Column#setNotNull(boolean)
-     */
-    public void addColumn(Column col) {
-    	super.addColumn(col);
-    	col.setNotNull(true);
-    }
-    
+        
     /**
      * Set the name of the constraint. This method cannot be called if the
      * constraint already belongs to a table. 

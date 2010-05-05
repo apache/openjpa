@@ -18,10 +18,15 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
 
 /**
  * Test @Basic(optional=true|false) and @Column(nullable=true|false) 
@@ -34,7 +39,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
     public void setUp() {
-        setUp(CLEAR_TABLES, NullValues.class);
+        setUp(CLEAR_TABLES, RETAIN_DATA, NullValues.class);
     }
 
     public void testNullOnOptionalFieldIsAllowed() {
@@ -112,6 +117,45 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
     	
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, !NEW, RollbackException.class);
+    }
+    
+    
+    public void testUniqueStringColumnCanBeNull() {
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(null);
+        assertCommitSucceeds(pc, NEW);
+    }
+    
+    public void testUniqueStringColumnAsNull() {
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(null);
+        assertCommitSucceeds(pc, NEW);
+        
+        String jpql = "select n from NullValues n where n.uniqueNullable = :p";
+        EntityManager em = emf.createEntityManager();
+        List<NullValues> result = em.createQuery(jpql, NullValues.class)
+                                    .setParameter("p", null)
+                                    .getResultList();
+        assertFalse(result.isEmpty());
+        for (NullValues n : result)
+            assertNull(n.getUniqueNullable());
+    }
+    
+    public void testUniqueStringColumnAsEmpty() {
+        String EMPTY_STRING = "";
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(EMPTY_STRING);
+        assertCommitSucceeds(pc, NEW);
+        
+        String jpql = "select n from NullValues n where n.uniqueNullable = :p";
+        EntityManager em = emf.createEntityManager();
+        List<NullValues> result = em.createQuery(jpql, NullValues.class)
+                                    .setParameter("p", EMPTY_STRING)
+                                    .getResultList();
+        assertFalse(result.isEmpty());
+        for (NullValues n : result)
+            assertEquals(EMPTY_STRING, n.getUniqueNullable());
+        
     }
 }
 
