@@ -883,6 +883,13 @@ public class MappingRepository extends MetaDataRepository {
 
         // default to blob
         if (installHandlers) {
+            int type = field.getAssociationType();
+            // Having a ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, or MANY_TO_MANY relationship 
+            // type as a blob is incorrect
+            if (type >= FieldMetaData.ONE_TO_ONE && type <= FieldMetaData.MANY_TO_MANY) {
+                throw new UserException(_loc.get("invalid-mapping", field));
+            }
+
             if (getLog().isWarnEnabled())
                 getLog().warn(_loc.get("no-field-strategy", field));
             field.setSerialized(true);

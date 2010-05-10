@@ -16,41 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.persistence.kernel.common.apps;
+package org.apache.openjpa.persistence.meta;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-public class BlobTest {
+public class InvalidMappingFieldEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-
-    @Column(name = "blobtab")
-    private byte[] blob;
-
-    public BlobTest() {
-    }
-
-    public void setBlob(byte[] blob) {
-        this.blob = blob;
-    }
-
-    public byte[] getBlob() {
-        return (byte[]) this.blob;
-    }
-
-    public int getId() {
-        return this.id;
-    }
+    int id;
+    
+    @ManyToOne
+    Object o; 
+    
+    @OneToOne
+    InvalidMappingFieldEntity other;
 }
-
