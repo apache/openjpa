@@ -48,32 +48,24 @@
 
     <profiles>
         <!-- Profile for testing with Agimatec validation provider -->
+        <!-- See http://incubator.apache.org/projects/beanvalidation.html -->
         <profile>
-            <id>agimatec</id>
+            <id>bval</id>
             <activation>
                 <property>
-                    <name>agimatec</name>
+                    <name>bval</name>
                 </property>
             </activation>
             <dependencies>
-                <!-- See http://code.google.com/p/agimatec-validation/wiki/GettingStarted -->
-                <!-- Validation API RI, which we'll test with the RI
-                <dependency>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                    <version>1.0.0.GA</version>
-                    <scope>test</scope>
-                </dependency>
-                -->
                 <dependency>
                     <groupId>org.apache.geronimo.specs</groupId>
                     <artifactId>geronimo-validation_1.0_spec</artifactId>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.agimatec</groupId>
-                    <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.6</version>
+                    <groupId>org.apache.bval</groupId>
+                    <artifactId>bval-jsr303</artifactId>
+                    <version>0.1-incubating-SNAPSHOT</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -81,23 +73,12 @@
                             <groupId>javax.validation</groupId>
                             <artifactId>validation-api</artifactId>
                         </exclusion>
-                        <!-- use our level of the geronimo-jpa_2.0_spec -->
-                        <exclusion>
-                            <groupId>javax.validation</groupId>
-                            <artifactId>validation-api</artifactId>
-                        </exclusion>
                     </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.agimatec</groupId>
-                    <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.6</version>
-                    <scope>test</scope>
                 </dependency>
                 <dependency>
                     <groupId>commons-beanutils</groupId>
                     <artifactId>commons-beanutils</artifactId>
-                    <version>1.8.2</version>
+                    <version>1.8.3</version>
                     <scope>test</scope>
                 </dependency>
                 <dependency>
@@ -107,23 +88,6 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-            <repositories>
-                <repository>
-                    <id>agimatec.oss.sonatype.org</id>
-                    <name>Sonatype OSS Repository</name>
-                    <url>http://oss.sonatype.org/content/repositories/agimatec</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>true</enabled>
-                        <checksumPolicy>ignore</checksumPolicy>
-                        <updatePolicy>daily</updatePolicy>
-                    </snapshots>
-                    <releases>
-                        <enabled>true</enabled>
-                        <checksumPolicy>fail</checksumPolicy>
-                    </releases>
-                </repository>
-            </repositories>
         </profile>
 
         <!-- Default profile for testing with Hibernate Bean Validation RI -->
@@ -185,6 +149,77 @@
                     </snapshots>
                     <releases>
                         <enabled>true</enabled>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
+        <!-- OLD Profile for testing with Agimatec validation provider -->
+        <profile>
+            <id>agimatec</id>
+            <activation>
+                <property>
+                    <name>agimatec</name>
+                </property>
+            </activation>
+            <dependencies>
+                <!-- See http://code.google.com/p/agimatec-validation/wiki/GettingStarted -->
+                <dependency>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-validation_1.0_spec</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.agimatec</groupId>
+                    <artifactId>agimatec-jsr303</artifactId>
+                    <version>0.9.6</version>
+                    <scope>test</scope>
+                    <exclusions>
+                        <!-- force usage of the geronimo-validation_1.0_spec -->
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                        <!-- use our level of the geronimo-jpa_2.0_spec -->
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>com.agimatec</groupId>
+                    <artifactId>agimatec-validation</artifactId>
+                    <version>0.9.6</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                    <version>1.8.2</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                    <version>2.4</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <repositories>
+                <repository>
+                    <id>agimatec.oss.sonatype.org</id>
+                    <name>Sonatype OSS Repository</name>
+                    <url>http://oss.sonatype.org/content/repositories/agimatec</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                        <updatePolicy>daily</updatePolicy>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
                     </releases>
                 </repository>
             </repositories>

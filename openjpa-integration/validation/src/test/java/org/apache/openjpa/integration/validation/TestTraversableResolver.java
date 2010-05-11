@@ -238,13 +238,21 @@ public class TestTraversableResolver extends TestCase {
         }
         if (PathImpl == null) {
             try {
+                PathImpl = Class.forName("org.apache.bval.jsr303.util.PathImpl",
+                    true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+            } catch (ClassNotFoundException e) {
+                log.trace("getLeafNodeFromPath: Did not find org.apache.bval.jsr303.util.PathImpl");
+            }
+        }
+        if (PathImpl == null) {
+            try {
                 PathImpl = Class.forName("com.agimatec.validation.jsr303.util.PathImpl",
                     true, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
             } catch (ClassNotFoundException e) {
                 log.trace("getLeafNodeFromPath: Did not find com.agimatec.validation.jsr303.util.PathImpl");
             }
         }
-        assertNotNull(PathImpl);
+        assertNotNull("Could not load a Bean Validation provider specific PathImpl", PathImpl);
         try {
             Method createPathFromString = PathImpl.getMethod("createPathFromString", String.class);
             assertNotNull(createPathFromString);
