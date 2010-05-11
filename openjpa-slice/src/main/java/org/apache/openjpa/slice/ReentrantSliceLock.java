@@ -26,6 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Pinaki Poddar
  *
  */
+@SuppressWarnings("serial")
 public class ReentrantSliceLock extends ReentrantLock {
 
     public ReentrantSliceLock() {

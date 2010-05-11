@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.slice.DistributedConfiguration;
 import org.apache.openjpa.slice.SliceThread;
 import org.apache.openjpa.util.StoreException;
 
@@ -184,19 +185,17 @@ class DistributedStoreQuery extends JDBCStoreQuery {
          * Scans metadata to find out if a replicated class is the candidate.
 		 */
 		boolean containsReplicated(QueryContext query) {
-			Class candidate = query.getCandidateType();
+			Class<?> candidate = query.getCandidateType();
+			DistributedConfiguration conf = (DistributedConfiguration)query.getStoreContext()
+			    .getConfiguration();
 			if (candidate != null) {
-                ClassMetaData meta = query.getStoreContext().getConfiguration()
-                        .getMetaDataRepositoryInstance().getMetaData(candidate,
-								null, true);
-				if (meta != null && meta.isReplicated())
-					return true;
+			    return conf.isReplicated(candidate);
 			}
 			ClassMetaData[] metas = query.getAccessPathMetaDatas();
 			if (metas == null || metas.length < 1)
 				return false;
-			for (ClassMetaData type : metas)
-				if (type.isReplicated())
+			for (ClassMetaData meta : metas)
+				if (conf.isReplicated(meta.getDescribedType()))
 					return true;
 			return false;
 		}

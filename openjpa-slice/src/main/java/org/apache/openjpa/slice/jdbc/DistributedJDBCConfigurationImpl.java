@@ -21,10 +21,13 @@ package org.apache.openjpa.slice.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -44,6 +47,8 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
 import org.apache.openjpa.slice.ProductDerivation;
@@ -72,13 +77,16 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected StringListValue namesPlugin;
     public PluginValue distributionPolicyPlugin;
     public PluginValue replicationPolicyPlugin;
+    public StringListValue replicatedTypesPlugin;
+    
+    private ReplicatedTypeRepository _replicationRepos;
     
     public static final String DOT = ".";
     public static final String REGEX_DOT = "\\.";
     public static final String PREFIX_SLICE = ProductDerivation.PREFIX_SLICE + DOT;
     public static final String PREFIX_OPENJPA = "openjpa.";
     private static Localizer _loc = Localizer.forPackage(DistributedJDBCConfigurationImpl.class);
-
+    
     /**
      * Create a configuration and declare the plug-ins.
      */
@@ -98,6 +106,9 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         replicationPolicyPlugin.setDefault("all");
         replicationPolicyPlugin.setString("all");
         replicationPolicyPlugin.setDynamic(true);
+        
+        replicatedTypesPlugin = new StringListValue(PREFIX_SLICE + "ReplicatedTypes");
+        addValue(replicatedTypesPlugin);
         
         lenientPlugin = addBoolean(PREFIX_SLICE + "Lenient");
         lenientPlugin.setDefault("true");
@@ -551,5 +562,52 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
             virtualDataSource = createDistributedDataStore();
         }
         return virtualDataSource;
+    }
+    
+    public boolean isReplicated(Class<?> cls) {
+        if (_replicationRepos == null) {
+            _replicationRepos = new ReplicatedTypeRepository(getMetaDataRepositoryInstance(),
+                    Arrays.asList(replicatedTypesPlugin.get()));
+        }
+        return _replicationRepos.contains(cls);
+    }
+    
+    /**
+     * A private repository of replicated types.
+     * 
+     * @author Pinaki Poddar
+     *
+     */
+    private static class ReplicatedTypeRepository {
+        private Set<Class<?>> _replicatedTypes = new HashSet<Class<?>>();
+        private Set<Class<?>> _nonreplicatedTypes = new HashSet<Class<?>>();
+
+
+        List<String> names;
+        MetaDataRepository repos;
+        
+        ReplicatedTypeRepository(MetaDataRepository repos, List<String> given) {
+            names = given;
+            this.repos = repos;
+        }
+        
+        boolean contains(Class<?> cls) {
+            if (_replicatedTypes.contains(cls))
+                return true;
+            if (_nonreplicatedTypes.contains(cls)) 
+                return false;
+            ClassMetaData meta = repos.getMetaData(cls, null, false);
+            if (meta == null) {
+                _nonreplicatedTypes.add(cls);
+                return false;
+            }
+            boolean replicated = names.contains(meta.getDescribedType().getName());
+            if (replicated) {
+                _replicatedTypes.add(cls);
+            } else {
+                _nonreplicatedTypes.add(cls);
+            }
+            return replicated;
+        }
     }
 }

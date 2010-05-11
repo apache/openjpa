@@ -56,6 +56,7 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.slice.DistributedConfiguration;
 import org.apache.openjpa.slice.DistributedStoreManager;
 import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.Slice;
@@ -145,7 +146,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         SliceInfo result = null;
         PersistenceCapable pc = sm.getPersistenceCapable();
         Object ctx = getContext();
-        if (SliceImplHelper.isReplicated(sm)) {
+        if (_conf.isReplicated(sm.getMetaData().getDescribedType())) {
             result = SliceImplHelper.getSlicesByPolicy(pc, _conf, ctx);
         } else {
             String origin = estimateSlice(sm, edata);
@@ -159,7 +160,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     }
     
     private void assignSlice(OpenJPAStateManager sm, String hint) {
-        if (SliceImplHelper.isReplicated(sm)) {
+        if (_conf.isReplicated(sm.getMetaData().getDescribedType())) {
             SliceImplHelper.getSlicesByPolicy(sm, _conf, getContext())
                 .setInto(sm);
             return;
@@ -349,10 +350,10 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      * by the associated slice identifier of each StateManager.
      */
     private Map<String, StateManagerSet> bin(Collection sms, Object edata) {
-        Map<String, StateManagerSet> subsets =  
-            new HashMap<String, StateManagerSet>();
-        for (SliceStoreManager slice : _slices)
-            subsets.put(slice.getName(), new StateManagerSet());
+        Map<String, StateManagerSet> subsets =  new HashMap<String, StateManagerSet>();
+        for (SliceStoreManager slice : _slices) {
+            subsets.put(slice.getName(), new StateManagerSet(_conf));
+        }
         for (Object x : sms) {
             OpenJPAStateManager sm = (OpenJPAStateManager) x;
             String[] targets = findSliceNames(sm, edata).getSlices();
@@ -498,7 +499,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
            if (targetNames.contains(slice.getName()))
               targets.add(slice);
            }
-          if (targets.isEmpty())
+        if (targets.isEmpty())
             return _slices;
         return targets;
     }
@@ -523,11 +524,15 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      *  
      */
     private static class StateManagerSet extends HashSet<OpenJPAStateManager> {
+        private final DistributedConfiguration conf;
         List<OpenJPAStateManager> replicated;
         
+        StateManagerSet(DistributedConfiguration conf) {
+            this.conf = conf;
+        }
         @Override
         public boolean add(OpenJPAStateManager sm) {
-            boolean isReplicated = sm.getMetaData().isReplicated();
+            boolean isReplicated =  conf.isReplicated(sm.getMetaData().getDescribedType());
             if (isReplicated) {
                 if (replicated == null)
                     replicated = new ArrayList<OpenJPAStateManager>();

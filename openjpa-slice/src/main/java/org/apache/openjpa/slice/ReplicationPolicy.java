@@ -24,12 +24,11 @@ import java.util.List;
  * Policy to select one or more of the physical databases referred as 
  * <em>slice</em> in which a given persistent instance will be persisted.
  * 
- * This interface is invoked for entity types annotated as @Replicated
+ * This interface is invoked for entity types that are specified as ReplicatedTypes in the configuration.
  *  
  * @author Pinaki Poddar 
  * 
  * @see DistributionPolicy
- * @see Replicated
  *
  */
 public interface ReplicationPolicy {

@@ -23,10 +23,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
-import org.apache.openjpa.persistence.Replicated;
-
 @Entity
-@Replicated
 public class ReplicatedParent {
     @Id 
     private String name;

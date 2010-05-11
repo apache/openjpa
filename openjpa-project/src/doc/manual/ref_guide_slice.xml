@@ -217,9 +217,9 @@
 			same slice, there can be data elements that are commonly referred by
 			many instances such as Country or Currency code. Such quasi-static 
 			master data can be stored as identical copies in multiple slices. 
-			The user application needs to annotate such entity with
-			<classname>@Replicated</classname> annotation and implement 
-			a <classname>org.apache.openjpa.slice.ReplicationPolicy</classname> 
+			The user application must enumerate the replicated entity type names in
+			<classname>openjpa.slice.ReplicatedTypes</classname> as a comma-separated list
+			and implement a <classname>org.apache.openjpa.slice.ReplicationPolicy</classname> 
 			interface. The <classname>ReplicationPolicy</classname> interface 
 			is quite similar to <classname>DistributionPolicy</classname> 
 			interface except it returns an array of target slice names instead

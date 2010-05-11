@@ -235,7 +235,6 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(ManagedInterface.class, MANAGED_INTERFACE);
         _tags.put(ReadOnly.class, READ_ONLY);
         _tags.put(Type.class, TYPE);
-        _tags.put(Replicated.class, REPLICATED);
     }
 
     private final OpenJPAConfiguration _conf;
@@ -647,9 +646,6 @@ public class AnnotationPersistenceMetaDataParser
                     if (isMetaDataMode())
                         parseManagedInterface(meta, (ManagedInterface) anno);
                     break;
-                case REPLICATED:
-                	meta.setReplicated(true);
-                	break;
                 case ACCESS:
                     if (isMetaDataMode())
                         parseAccess(meta, (Access)anno);

@@ -28,10 +28,10 @@ import org.apache.openjpa.kernel.StoreQuery;
  * @author Pinaki Poddar
  *
  */
+@SuppressWarnings("serial")
 public class DistributedQueryImpl extends QueryImpl {
     private final ReentrantSliceLock _lock;
-    public DistributedQueryImpl(Broker broker, String language,
-            StoreQuery storeQuery) {
+    public DistributedQueryImpl(Broker broker, String language, StoreQuery storeQuery) {
         super(broker, language, storeQuery);
         _lock = new ReentrantSliceLock();
     }

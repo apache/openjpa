@@ -40,7 +40,7 @@ public class SliceImplHelper {
 	/**
 	 * Gets the target slices by calling user-specified 
 	 * {@link DistributionPolicy} or {@link ReplicationPolicy} 
-     * depending on whether the given instance is {@link Replicated replicated}.
+     * depending on whether the given instance is {@link DistributedConfiguration#isReplicated(Class) replicated}.
 	 */
 	public static SliceInfo getSlicesByPolicy(Object pc, 
 			DistributedConfiguration conf, Object ctx) {
@@ -84,22 +84,19 @@ public class SliceImplHelper {
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
-    public static boolean isReplicated(Object pc, OpenJPAConfiguration conf) {
-		if (pc == null)
-			return false;
-		ClassMetaData meta = conf.getMetaDataRepositoryInstance()
-			.getMetaData(pc.getClass(), null, false);
-		return (meta == null) ? false : meta.isReplicated();
+    public static boolean isReplicated(Object pc, DistributedConfiguration conf) {
+        return pc == null ? false : conf.isReplicated(pc.getClass());
 	}
 
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
-	public static boolean isReplicated(OpenJPAStateManager sm) {
-		if (sm == null)
-			return false;
-		return sm.getMetaData().isReplicated();
-	}
+//	public static boolean isReplicated(OpenJPAStateManager sm) {
+//	    return sm == null ? false : 
+//		if (sm == null)
+//			return false;
+//		return sm.getMetaData().isReplicated();
+//	}
 	
 	/**
 	 * Affirms if the given StateManager has an assigned slice.

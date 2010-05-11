@@ -23,14 +23,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +38,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -67,7 +65,6 @@ import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.Proxy;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
@@ -182,7 +179,6 @@ public class ClassMetaData
     private int _identity = ID_UNKNOWN;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = AccessCode.UNKNOWN;
-    private boolean _replicated = false;
     
     private String _seqName = DEFAULT_STRING;
     private SequenceMetaData _seqMeta = null;
@@ -2646,21 +2642,6 @@ public class ClassMetaData
     	return result.toArray(new String[result.size()]);
     }
     
-    /**
-     * Affirms the persistence instances of this receiver is replicated across
-     * multiple databases.
-     */
-    public boolean isReplicated() {
-    	return _replicated;
-    }
-    
-    /**
-     * Sets the persistence instances of this receiver to be replicated across
-     * multiple databases.
-     */
-    public void setReplicated(boolean flag) {
-    	_replicated = flag;
-    }
 
     public boolean isAbstract() {
         return _abstract;

@@ -22,8 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
 
-import org.apache.openjpa.persistence.Replicated;
-
 /**
  * A persistence entity to be replicated across multiple databases. A
  * non-replicated entity can refer to a replicated entity.
@@ -32,7 +30,6 @@ import org.apache.openjpa.persistence.Replicated;
  * 
  */
 @Entity
-@Replicated
 public class Country {
     @Id
     private String name;

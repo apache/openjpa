@@ -37,8 +37,7 @@ public class SliceInfo implements Serializable {
 	private final boolean  _isReplicated;
 	private String[] _slices;
 	
-	private static transient Localizer _loc = 
-		Localizer.forPackage(SliceInfo.class);
+	private static transient Localizer _loc = Localizer.forPackage(SliceInfo.class);
 	
     /**
      * Generic constructor given one or more slice names. 
@@ -105,8 +104,6 @@ public class SliceInfo implements Serializable {
 	public SliceInfo setInto(OpenJPAStateManager sm) {
 		if (sm == null)
 			throw new NullPointerException();
-		if (SliceImplHelper.isReplicated(sm) != isReplicated())
-		    throw new InternalException();
 		Object previous = sm.setImplData(this, true);
 		if (previous == null || previous instanceof SliceInfo)
 			return (SliceInfo)previous;

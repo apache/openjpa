@@ -23,7 +23,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 
 /**
- * Tests that parent-child relation both @Repliated are stored in all replicated
+ * Tests that parent-child relation both replicated are stored in all replicated
  * slices.
  * 
  * <A HREF="https://issues.apache.org/jira/browse/OPENJPA-981">OPENJPA-981</A>

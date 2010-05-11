@@ -117,4 +117,6 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
      * replicated instances will be replicated across the available slices.
      */
     void setReplicationPolicy(String policy);
+    
+    boolean isReplicated(Class<?> type);
 }

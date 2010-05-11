@@ -22,10 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import org.apache.openjpa.persistence.Replicated;
-
 @Entity
-@Replicated
 public class ReplicatedChild {
     @Id 
     private String name;
