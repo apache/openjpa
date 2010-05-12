@@ -35,7 +35,7 @@ public class TestSubquery
     public void setUp() {
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
             OrderItem.class, Employee.class, Dependent.class,
-            DependentId.class, CLEAR_TABLES);
+            DependentId.class, Magazine.class, Publisher.class, CLEAR_TABLES);
     }
 
     static String[]  querys = new String[] {
@@ -71,6 +71,16 @@ public class TestSubquery
             " (select sum(o2.amount) from c.orders o2)",
         "select o1.oid, c.name from Order o1, Customer c where o1.amount = " +
             " any(select o2.amount from in(c.orders) o2)",
+        "SELECT p, m "+
+            "FROM Publisher p "+
+            "LEFT OUTER JOIN p.magazineCollection m "+
+            "WHERE m.id = (SELECT MAX(m2.id) "+
+            "FROM Magazine m2 "+
+            "WHERE m2.idPublisher.id = p.id "+
+            "AND m2.datePublished = "+
+            "(SELECT MAX(m3.datePublished) "+
+            "FROM Magazine m3 "+
+            "WHERE m3.idPublisher.id = p.id)) ", 
     // outstanding problem subqueries:
     //"select o from Order o where o.amount > (select count(o) from Order o)",
     //"select o from Order o where o.amount > (select count(o2) from Order o2)",

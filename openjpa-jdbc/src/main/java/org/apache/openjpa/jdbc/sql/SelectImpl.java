@@ -487,8 +487,13 @@ public class SelectImpl
                 _joinSyntax = _parent._joinSyntax;
         }
         
-        if (_parent.getAliases() == null || _subPath == null)
+        if (_parent.getAliases() == null || _subPath == null) {
             return;
+        }
+        
+        if (_parent._aliases.size() <= 1) {
+            return;
+        }
 
         // Do not remove aliases for databases that use SYNTAX_DATABASE (oracle)
         if(_parent._joinSyntax != JoinSyntaxes.SYNTAX_DATABASE) {
