@@ -51,7 +51,9 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.slice.DistributedBrokerImpl;
 import org.apache.openjpa.slice.DistributionPolicy;
+import org.apache.openjpa.slice.FinderTargetPolicy;
 import org.apache.openjpa.slice.ProductDerivation;
+import org.apache.openjpa.slice.QueryTargetPolicy;
 import org.apache.openjpa.slice.ReplicationPolicy;
 import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.util.UserException;
@@ -77,6 +79,8 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected StringListValue namesPlugin;
     public PluginValue distributionPolicyPlugin;
     public PluginValue replicationPolicyPlugin;
+    public PluginValue queryTargetPolicyPlugin;
+    public PluginValue finderTargetPolicyPlugin;
     public StringListValue replicatedTypesPlugin;
     
     private ReplicatedTypeRepository _replicationRepos;
@@ -106,6 +110,12 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         replicationPolicyPlugin.setDefault("all");
         replicationPolicyPlugin.setString("all");
         replicationPolicyPlugin.setDynamic(true);
+        
+        queryTargetPolicyPlugin = addPlugin(PREFIX_SLICE + "QueryTargetPolicy", true);
+        queryTargetPolicyPlugin.setDynamic(true);
+        
+        finderTargetPolicyPlugin = addPlugin(PREFIX_SLICE + "FinderTargetPolicy", true);
+        finderTargetPolicyPlugin.setDynamic(true);
         
         replicatedTypesPlugin = new StringListValue(PREFIX_SLICE + "ReplicatedTypes");
         addValue(replicatedTypesPlugin);
@@ -240,6 +250,54 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     
     public void setReplicationPolicy(String policy) {
         replicationPolicyPlugin.setString(policy);
+    }
+
+    public QueryTargetPolicy getQueryTargetPolicyInstance() {
+        if (queryTargetPolicyPlugin.get() == null) {
+            queryTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
+                    this, true);
+        }
+        return (QueryTargetPolicy) queryTargetPolicyPlugin.get();
+    }
+    
+    public String getQueryTargetPolicy() {
+        if (queryTargetPolicyPlugin.get() == null) {
+            queryTargetPolicyPlugin.instantiate(QueryTargetPolicy.class,
+                    this, true);
+        }
+        return queryTargetPolicyPlugin.getString();
+    }
+
+    public void setQueryTargetPolicyInstance(QueryTargetPolicy policy) {
+        queryTargetPolicyPlugin.set(policy);
+    }
+    
+    public void setQueryTargetPolicy(String policy) {
+        queryTargetPolicyPlugin.setString(policy);
+    }
+    
+    public FinderTargetPolicy getFinderTargetPolicyInstance() {
+        if (finderTargetPolicyPlugin.get() == null) {
+            finderTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
+                    this, true);
+        }
+        return (FinderTargetPolicy) finderTargetPolicyPlugin.get();
+    }
+    
+    public String getFinderTargetPolicy() {
+        if (finderTargetPolicyPlugin.get() == null) {
+            finderTargetPolicyPlugin.instantiate(FinderTargetPolicy.class,
+                    this, true);
+        }
+        return finderTargetPolicyPlugin.getString();
+    }
+
+    public void setFinderTargetPolicyInstance(FinderTargetPolicy policy) {
+        finderTargetPolicyPlugin.set(policy);
+    }
+    
+    public void setFinderTargetPolicy(String policy) {
+        finderTargetPolicyPlugin.setString(policy);
     }
 
     public DistributedDataSource getConnectionFactory() {

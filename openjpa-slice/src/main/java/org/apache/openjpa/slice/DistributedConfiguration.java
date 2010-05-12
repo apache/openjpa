@@ -118,5 +118,54 @@ public interface DistributedConfiguration extends OpenJPAConfiguration {
      */
     void setReplicationPolicy(String policy);
     
+    /**
+     * Affirms if the given type is replicated.
+     */
     boolean isReplicated(Class<?> type);
+    
+    
+    /**
+     * Gets the policy that governs which slices will be targeted for a given query. 
+     */
+    QueryTargetPolicy getQueryTargetPolicyInstance();
+    
+    /**
+     * Gets the policy, as a plugin string, that governs which slices will be targeted 
+     * for a given query.
+     */
+    String getQueryTargetPolicy();
+    
+    /**
+     * Sets the policy that governs which slices will be targeted for a given query.
+     */
+    void setQueryTargetPolicyInstance(QueryTargetPolicy policy);
+    
+    /**
+     * Sets the policy, from the given plugin string, that governs which slices will 
+     * be targeted for a given query.
+     */
+    void setQueryTargetPolicy(String policy);
+
+    /**
+     * Gets the policy that governs which slices will be targeted for a given finder. 
+     */
+    FinderTargetPolicy getFinderTargetPolicyInstance();
+    
+    /**
+     * Gets the policy, as a plugin string, that governs which slices will be targeted 
+     * for a given finder.
+     */
+    String getFinderTargetPolicy();
+    
+    /**
+     * Sets the policy that governs which slices will be targeted for a given finder.
+     */
+    void setFinderTargetPolicyInstance(FinderTargetPolicy policy);
+    
+    /**
+     * Sets the policy, from the given plugin string, that governs which slices will 
+     * be targeted for a given finder.
+     */
+    void setFinderTargetPolicy(String policy);
+    
 }

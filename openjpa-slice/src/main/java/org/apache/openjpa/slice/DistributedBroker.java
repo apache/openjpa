@@ -19,6 +19,7 @@
 package org.apache.openjpa.slice;
 
 import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
 
 /**
  * Extension to Broker to allow access to virtual data store.
@@ -31,4 +32,9 @@ public interface DistributedBroker extends Broker {
      * Gets the distributed store manager used by this receiver.
      */
     DistributedStoreManager getDistributedStoreManager();
+   
+    /**
+     * Gets the covariant fetch configuration that is aware of targets.
+     */
+    TargetFetchConfiguration getFetchConfiguration();
 }

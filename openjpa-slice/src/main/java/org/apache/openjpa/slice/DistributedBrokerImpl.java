@@ -18,14 +18,18 @@
  */
 package org.apache.openjpa.slice;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
+import org.apache.openjpa.util.OpenJPAId;
 
 /**
  * A specialized Broker to associate slice identifiers with the StateManagers as
@@ -38,98 +42,116 @@ import org.apache.openjpa.lib.util.Localizer;
  * 
  */
 @SuppressWarnings("serial")
-public class DistributedBrokerImpl extends FinalizingBrokerImpl 
-    implements DistributedBroker {
-	private transient String _rootSlice;
-	private transient DistributedConfiguration _conf;
-	private final ReentrantSliceLock _lock;
-	
-	private static final Localizer _loc = Localizer.forPackage(DistributedBrokerImpl.class);
+public class DistributedBrokerImpl extends FinalizingBrokerImpl implements DistributedBroker {
+    private transient String _rootSlice;
+    private transient DistributedConfiguration _conf;
+    private final ReentrantSliceLock _lock;
 
-	public DistributedBrokerImpl() {
-	    super();
-	    _lock = new ReentrantSliceLock();
-	}
-	
+    private static final Localizer _loc = Localizer.forPackage(DistributedBrokerImpl.class);
+
+    public DistributedBrokerImpl() {
+        super();
+        _lock = new ReentrantSliceLock();
+    }
+
     public DistributedConfiguration getConfiguration() {
-    	if (_conf == null) {
-    		_conf = (DistributedConfiguration)super.getConfiguration();
-    	}
+        if (_conf == null) {
+            _conf = (DistributedConfiguration) super.getConfiguration();
+        }
         return _conf;
     }
-    
-    public DistributedStoreManager getDistributedStoreManager() {
-        return (DistributedStoreManager)getStoreManager().getInnermostDelegate();
-    }
-    
-	/**
-     * Assigns slice identifier to the resultant StateManager as initialized by
-	 * the super class implementation. The slice identifier is decided by
-	 * {@link DistributionPolicy} for given <code>pc</code> if it is a root
-     * instance i.e. the argument of the user application's persist() call. The
-	 * cascaded instances are detected by non-empty status of the current
-	 * operating set. The slice is assigned only if a StateManager has never
-	 * been assigned before.
-	 */
-	@Override
-    public OpenJPAStateManager persist(Object pc, Object id, boolean explicit, OpCallbacks call) {
-		OpenJPAStateManager sm = getStateManager(pc);
-		SliceInfo info = null;
-        boolean replicated = SliceImplHelper.isReplicated(pc,
-                getConfiguration());
-        if (getOperatingSet().isEmpty()	&& !SliceImplHelper.isSliceAssigned(sm))
-        {
-            info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(),
-				this);
-			_rootSlice = info.getSlices()[0]; 
-		}
-		sm = super.persist(pc, id, explicit, call);
-		if (!SliceImplHelper.isSliceAssigned(sm)) {
-			if (info == null) {
-			   info = replicated 
-               ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this)
-			   : new SliceInfo(_rootSlice); 
-			}
-			info.setInto(sm);
-		}
-		return sm;
-	}
 
-	
-	@Override
-	public boolean endOperation() {
-	    try {
-	        return super.endOperation();
-	    } catch (Exception ex) {
-	        
-	    }
-	    return true;
-	}
-	
+    public DistributedStoreManager getDistributedStoreManager() {
+        return (DistributedStoreManager) getStoreManager().getInnermostDelegate();
+    }
+
+    public TargetFetchConfiguration getFetchConfiguration() {
+        return (TargetFetchConfiguration) super.getFetchConfiguration();
+    }
+
+    /**
+     * Assigns slice identifier to the resultant StateManager as initialized by
+     * the super class implementation. The slice identifier is decided by
+     * {@link DistributionPolicy} for given <code>pc</code> if it is a root
+     * instance i.e. the argument of the user application's persist() call. The
+     * cascaded instances are detected by non-empty status of the current
+     * operating set. The slice is assigned only if a StateManager has never
+     * been assigned before.
+     */
+    @Override
+    public OpenJPAStateManager persist(Object pc, Object id, boolean explicit, OpCallbacks call) {
+        OpenJPAStateManager sm = getStateManager(pc);
+        SliceInfo info = null;
+        boolean replicated = SliceImplHelper.isReplicated(pc, getConfiguration());
+        if (getOperatingSet().isEmpty() && !SliceImplHelper.isSliceAssigned(sm)) {
+            info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this);
+            _rootSlice = info.getSlices()[0];
+        }
+        sm = super.persist(pc, id, explicit, call);
+        if (!SliceImplHelper.isSliceAssigned(sm)) {
+            if (info == null) {
+                info = replicated ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) : new SliceInfo(
+                        _rootSlice);
+            }
+            info.setInto(sm);
+        }
+        return sm;
+    }
+
+    @Override
+    public boolean endOperation() {
+        try {
+            return super.endOperation();
+        } catch (Exception ex) {
+
+        }
+        return true;
+    }
+
     /**
      * Create a new query.
      */
     protected QueryImpl newQueryImpl(String lang, StoreQuery sq) {
         return new DistributedQueryImpl(this, lang, sq);
     }
-    
-	/**
-	 * Always uses lock irrespective of super's multi-threaded settings.
-	 */
+
+    /**
+     * Always uses lock irrespective of super's multi-threaded settings.
+     */
     @Override
     public void lock() {
         _lock.lock();
     }
-    
+
     @Override
     public void unlock() {
         _lock.unlock();
     }
-	
-	/**
-	 * A virtual datastore need not be opened.
-	 */
-	@Override
-	public void beginStore() {
-	}
+
+    /**
+     * A virtual datastore need not be opened.
+     */
+    @Override
+    public void beginStore() {
+    }
+
+    /**
+     * Overrides to target specific slices for find() calls.
+     */
+    @Override
+    public Object processArgument(Object oid) {
+        TargetFetchConfiguration fetch = getFetchConfiguration();
+        if (!fetch.isExplicitTarget()) {
+            FinderTargetPolicy policy = _conf.getFinderTargetPolicyInstance();
+            if (policy != null) {
+                if (oid instanceof OpenJPAId) {
+                    String[] targets = policy.getTargets(((OpenJPAId) oid).getType(), 
+                            ((OpenJPAId) oid).getIdObject(),
+                            _conf.getActiveSliceNames(), this);
+                    fetch.setTargets(targets);
+                }
+            }
+        }
+        return super.processArgument(oid);
+    }
 }

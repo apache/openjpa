@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,6 +38,7 @@ import java.util.concurrent.Future;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.ConnectionInfo;
+import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
 import org.apache.openjpa.jdbc.sql.Result;
@@ -62,6 +64,7 @@ import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.slice.SliceInfo;
+import org.apache.openjpa.slice.SlicePersistence;
 import org.apache.openjpa.slice.SliceThread;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.StoreException;
@@ -441,6 +444,12 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         }
         return ret;
     }
+    
+    @Override
+    public FetchConfiguration newFetchConfiguration() {
+        return new TargetFetchConfiguration();
+    }
+
 
     /**
      * Sets the context for this receiver and all its underlying slices.
@@ -481,7 +490,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     
     /**
      * Gets the list of slices mentioned as  
-     * {@link ProductDerivation#HINT_TARGET hint} of the given
+     * {@link SlicePersistence#HINT_TARGET hint} of the given
      * {@link FetchConfiguration#getHint(String) fetch configuration}. 
      * 
      * @return all active slices if a) the hint is not specified or b) a null 
@@ -490,15 +499,19 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     List<SliceStoreManager> getTargets(FetchConfiguration fetch) {
         if (fetch == null)
             return _slices;
-        Object hint = fetch.getHint(ProductDerivation.HINT_TARGET);
-        if (hint == null || !(hint instanceof String)) 
+        Object hint = fetch.getHint(SlicePersistence.HINT_TARGET);
+        if (hint == null || !(hint instanceof String || hint instanceof String[])) 
             return _slices;
-        List<String> targetNames = Arrays.asList(hint.toString().split("\\,"));
+        String[] targetNames = hint instanceof String 
+                ? new String[]{hint.toString()} : (String[])hint;
         List<SliceStoreManager> targets = new ArrayList<SliceStoreManager>();
         for (SliceStoreManager slice : _slices) {
-           if (targetNames.contains(slice.getName()))
-              targets.add(slice);
-           }
+            for (String name : targetNames) {
+                if (slice.getName().equals(name)) {
+                    targets.add(slice);
+                }
+            }
+        }
         if (targets.isEmpty())
             return _slices;
         return targets;

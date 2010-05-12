@@ -284,7 +284,7 @@ public class TestBasic extends SliceTestCase {
         for (String hint : hints) {
             em.clear();
             Query query = em.createQuery(jpql).setParameter("name", "India");
-            query.setHint(ProductDerivation.HINT_TARGET, hint);
+            query.setHint(SlicePersistence.HINT_TARGET, hint);
             india = (Country)query.getSingleResult();
             assertEquals(india.getPopulation(), 1201);
             assertTrue(SlicePersistence.isReplicated(india));

@@ -34,6 +34,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  * Tests when multiple user threads enter the same EntityManager and executes 
@@ -252,7 +253,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
             futures[i] = group.submit(new Callable<Object>() {
 
                 public Object call() {
-                    query.setHint(ProductDerivation.HINT_TARGET, "Even");
+                    query.setHint(SlicePersistence.HINT_TARGET, "Even");
                     List result = query.getResultList();
                     for (Object pc : result) {
                         String slice = SlicePersistence.getSlice(pc);
@@ -303,30 +304,22 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         em.getTransaction().rollback();
     }
 
-    /**
-     * This test is currently retired.
-     * 
-     * @see <A HREF="https://issues.apache.org/jira/browse/OPENJPA-1044">
-     * OPENJPA-1044</A>
-     * for details.
-     */
     public void testQueryParameterEntity() {
         final EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        final Query addressQ =
-            em.createQuery("select a from Address a where a.city = :city");
+        final TypedQuery<Address> addressQ = em.createQuery(
+                "select a from Address a where a.city = :city", Address.class);
 
-        final Query personQ =
-            em.createQuery("SELECT p FROM Person p WHERE p.address = :a");
+        final TypedQuery<Person> personQ = em.createQuery(
+                "SELECT p FROM Person p WHERE p.address = :a", Person.class);
         for (int i = 0; i < THREADS; i++) {
             futures[i] = group.submit(new Callable<Object>() {
                 public Object call() {
-                    Address a = (Address) addressQ.setParameter("city", "Rome")
+                    Address a = addressQ.setParameter("city", "Rome")
                         .getSingleResult();
                     assertNotNull(a);
                     assertEquals("Odd", SlicePersistence.getSlice(a));
-                    List<Person> result =
-                        personQ.setParameter("a", a).getResultList();
+                    List<Person> result = personQ.setParameter("a", a).getResultList();
                     assertEquals(1, result.size());
                     Person p = result.get(0);
                     assertEquals("Odd", SlicePersistence.getSlice(p));

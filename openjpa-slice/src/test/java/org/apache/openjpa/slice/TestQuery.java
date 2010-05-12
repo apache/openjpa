@@ -196,7 +196,22 @@ public class TestQuery extends SliceTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery("SELECT p FROM PObject p");
-        query.setHint(ProductDerivation.HINT_TARGET, "Even");
+        query.setHint(SlicePersistence.HINT_TARGET, "Even");
+        List result = query.getResultList();
+        for (Object pc : result) {
+            String slice = SlicePersistence.getSlice(pc);
+            assertTrue("Expected original slice " + slice + " in " + targets, targets.contains(slice));
+        }
+        em.getTransaction().rollback();
+    }
+    
+    public void testQueryTargetPolicy() {
+        List<String> targets = new ArrayList<String>();
+        targets.add("Even");
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Query query = em.createQuery("SELECT p FROM PObject p");
+        query.setHint(SlicePersistence.HINT_TARGET, "Even");
         List result = query.getResultList();
         for (Object pc : result) {
             String slice = SlicePersistence.getSlice(pc);
