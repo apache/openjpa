@@ -19,7 +19,7 @@
 -->
 <chapter id="ref_guide_slice">
   <title>
-    Distributed Persistence
+    Slice: Distributed Persistence
   </title>
   <para>
   The standard JPA runtime environment works with a <emphasis>single</emphasis>
@@ -113,7 +113,7 @@
 			However, the application can target the query only to a subset of 
 			slices by setting <emphasis>hint</emphasis> on <classname>javax.persistence.Query</classname>. 
 			The hint key is  <classname>openjpa.hint.slice.Target</classname> and 
-            hint value is a comma-separated list of slice identifiers. The following 
+            hint value is an array of slice identifiers. The following 
             example shows how to target a query only to a pair of slices 
 			with logical identifier <classname>"One"</classname> and <classname>"Two"</classname>.
                           
@@ -122,7 +122,7 @@
               em.getTransaction().begin();
               String hint = "openjpa.hint.slice.Target";
               Query query = em.createQuery("SELECT p FROM PObject")
-				              .setHint(hint, "One, Two");
+				              .setHint(hint, new String[]{"One", "Two"});
               List result = query.getResultList();
               // verify that each instance is originating from the hinted slices
               for (Object pc : result) {
@@ -131,6 +131,28 @@
               }
               ]]>
             </programlisting> 
+            </para>
+            
+            <para>
+            To confine queries to a subset of slices via setting query hints can be considered
+            intrusive to existing application. The alternative means of targeting queries is to 
+            a configure a <<emphasis>Query Target Policy</emphasis>. This policy is configured 
+            via plug-in property <classname>openjpa.slice.QueryTargetPolicy</classname>. The
+            plug-in property is fully-qualified class name an implementation
+            for <classname>org.apache.openjpa.slice.QueryTargetPolicy</classname> interface.
+            This interface contract allows an user application to target a query select a subset 
+            of slices based on the query and its bound parameters. The query target policy is consulted
+            only when no explicit target hint is set on the query. By default, the policy 
+            executes a query on all available slices.  
+            </para>
+            
+            <para>
+            A similar policy interface <classname>org.apache.openjpa.slice.FinderTargetPolicy</classname>
+            is available to target queries that originate from <classname>find()</classname>
+            by primary key. This finder target policy is consulted
+            only when no explicit target hint is set on the current fetch plan. By default, the policy 
+            executes a query on all available slices to find an instance by its primary key.    
+            To confine queries to a subset of slices via setting query hints can be considered
             </para>
          </section>
 		
