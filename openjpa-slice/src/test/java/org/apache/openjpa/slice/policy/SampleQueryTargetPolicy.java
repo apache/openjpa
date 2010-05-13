@@ -24,8 +24,13 @@ import java.util.Map;
 import org.apache.openjpa.slice.QueryTargetPolicy;
 import org.apache.openjpa.slice.TestQueryTargetPolicy;
 
+/**
+ * A sample query target policy used to {@linkplain TestQueryTargetPolicy}.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 public class SampleQueryTargetPolicy implements QueryTargetPolicy {
-    @Override
     public String[] getTargets(String query, Map<Object, Object> params, 
             String language, List<String> slices,
             Object context) {

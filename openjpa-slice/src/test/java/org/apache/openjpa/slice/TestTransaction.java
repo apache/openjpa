@@ -140,7 +140,6 @@ public class TestTransaction extends SliceTestCase {
      *
      */
     public static class CarDistributorPolicy implements DistributionPolicy {
-        @Override
         public String distribute(Object pc, List<String> slices, Object context) {
             if (pc instanceof Manufacturer) {
                 return ((Manufacturer)pc).getName();
