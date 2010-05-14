@@ -76,14 +76,49 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>build</id>
+                                <id>genmodel</id>
+                                <phase>process-resources</phase>
                                 <configuration>
                                     <tasks>
-                                        <echo>Running OpenBooks Build</echo>
+                                        <echo>Running OpenBooks genmodel</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
                                         <ant antfile="${basedir}/build.xml">
-                                            <target name="package" />
+                                            <target name="genmodel" />
+                                        </ant>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>enhance</id>
+                                <phase>process-classes</phase>
+                                <configuration>
+                                    <tasks>
+                                        <echo>Running OpenBooks Enhance</echo>
+                                        <property name="openjpa.version" value="${project.version}" />
+                                        <property name="maven.repos" value="${settings.localRepository}" />
+                                        <ant antfile="${basedir}/build.xml">
+                                            <target name="enhance" />
+                                        </ant>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>generate-html-source</id>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <tasks>
+                                        <echo>Running OpenBooks Generate HTML Source</echo>
+                                        <property name="openjpa.version" value="${project.version}" />
+                                        <property name="maven.repos" value="${settings.localRepository}" />
+                                        <ant antfile="${basedir}/build.xml">
+                                            <target name="generate-html-source" />
                                         </ant>
                                     </tasks>
                                 </configuration>
