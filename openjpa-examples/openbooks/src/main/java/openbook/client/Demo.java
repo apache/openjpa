@@ -623,7 +623,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
             button.setEnabled(true);
             button.setBorderPainted(false);
             add(button, BorderLayout.CENTER);
-            add(new JLabel(Images.getIcon("images/websphere.png")), BorderLayout.SOUTH);
+            add(new JLabel(Images.getIcon("images/openjpa-log-small.png")), BorderLayout.SOUTH);
             setTitle("About OpenBooks");
             setAlwaysOnTop(true);
             setResizable(false);
