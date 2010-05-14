@@ -20,7 +20,8 @@ import java.util.jar.JarFile;
  *  Example
  *     $ java find.Finder org.eclipse.ui.plugin.AbstractUIPlugin c:\eclipse\plugins
  *  will print
- *      org.eclipse.ui.plugin.AbstractUIPlugin found in c:\eclipse\plugins\org.eclipse.ui.workbench_3.4.1.M20080827-0800a.jar
+ *      org.eclipse.ui.plugin.AbstractUIPlugin found in 
+ *      c:\eclipse\plugins\org.eclipse.ui.workbench_3.4.1.M20080827-0800a.jar
  *      
  * @author Pinaki Poddar
  *
@@ -109,3 +110,4 @@ public class Finder {
             System.err.println(s);
     }
 }
+

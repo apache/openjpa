@@ -9,7 +9,7 @@ import javax.persistence.metamodel.SingularAttribute;
 @javax.persistence.metamodel.StaticMetamodel
 (value=openbook.domain.Inventory.class)
 @javax.annotation.Generated
-(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Thu May 13 20:18:23 CDT 2010")
+(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Fri May 14 16:05:41 EDT 2010")
 public class Inventory_ {
     public static volatile SingularAttribute<Inventory,Book> book;
     public static volatile SingularAttribute<Inventory,Integer> sold;

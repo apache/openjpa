@@ -457,3 +457,4 @@ public final class BuyBookPage extends JPanel {
         }
     }
 }
+

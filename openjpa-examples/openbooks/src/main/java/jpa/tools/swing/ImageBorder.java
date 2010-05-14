@@ -131,4 +131,5 @@ public class ImageBorder extends AbstractBorder {
       gfx.dispose();
       return buff;
     }
-  }
+}
+

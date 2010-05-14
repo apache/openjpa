@@ -10,7 +10,7 @@ import javax.persistence.metamodel.SingularAttribute;
 @javax.persistence.metamodel.StaticMetamodel
 (value=openbook.domain.Book.class)
 @javax.annotation.Generated
-(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Thu May 13 20:18:23 CDT 2010")
+(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Fri May 14 16:05:41 EDT 2010")
 public class Book_ {
     public static volatile SingularAttribute<Book,String> ISBN;
     public static volatile ListAttribute<Book,Author> authors;

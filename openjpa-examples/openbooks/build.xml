@@ -25,13 +25,14 @@
                     
 <project name="OpenBooks" default="info">
 	
-	<property file="openbook.properties" />
+	<property file="build.properties" />
 	
 	<property name="jpa.provider" value="openjpa" />
 	<property name="src.dir"      value="${basedir}/src/main/java"/>
 	<property name="rsrc.dir"     value="${basedir}/src/main/resources"/>
 	<property name="classes.dir"  value="${basedir}/target/classes"/>
-	<property name="generated.src.dir"  value="${rsrc.dir}/source"/>
+	<property name="deploy.dir"   value="${basedir}/target/openbooks"/>
+	<property name="generated.html.dir"  value="${basedir}/target/site"/>
 
 	<property name="jpa.properties"  value="META-INF/persistence.xml#OpenBooks" />
 
@@ -58,7 +59,7 @@
 	</fileset>
 	
 	<target name="clean" description="Removes all *.class and generated metamodel source files">
-		<delete dir="${classes.dir}" failonerror="false"/>
+		<delete dir="${basedir}/target" failonerror="false"/>
 		<delete>
 			<fileset refid="canonical.metamodel"/>
 		</delete>
@@ -75,12 +76,12 @@
 		<available file="${openjpa.lib}" property="openjpa.exists"/>
 		<fail unless="openjpa.exists">*** Error:
 		   The directory for OpenJPA libraries can not be located at ${openjpa.lib}. 
-		   Make sure openjpa.lib property value is correct in openbooks.properties file.	
+		   Make sure openjpa.lib property value is correct in build.properties file.	
 		</fail>
 		<available file="${java2html.lib}" property="java2html.exists"/>
 		<fail unless="java2html.exists">*** Error:
 		   The directory for Java2HTML libraries can not be located at ${java2html.lib}. 
-		   Make sure java2html.lib property value is correct in openbooks.properties file.	
+		   Make sure java2html.lib property value is correct in build.properties file.	
 		</fail>
 	</target>
 	
@@ -107,26 +108,35 @@
 	
 	<target name="package" depends="clean,compile,generate-html-source"
 		description="Generates HTML version of source code and creates distribution layout">
-		<delete file="openbooks.jar" failonerror="false"/>
-		<delete file="openbooks.zip" failonerror="false"/>
+		<delete file="${basedir}/target/openbooks.jar" failonerror="false"/>
+		<delete file="${basedir}/target/openbooks.zip" failonerror="false"/>
 		
-		<jar destfile="openbooks.jar" basedir="${classes.dir}">
+		<jar destfile="${basedir}/target/openbooks.jar" basedir="${classes.dir}">
 			<exclude name="junit/**" />
 		</jar>
-		<jar destfile="openbooks.jar"
+		<jar destfile="${basedir}/target/openbooks.jar"
 		     basedir="${rsrc.dir}"
 		     update="true">
 			<include name="images/*" />
 		</jar>
-		<zip destfile="openbooks.zip" basedir="${basedir}">
-			<include name="openbooks.jar" />
-			<include name="openbooks.properties" />
+                <!-- ASF released jars must include License and Notice files -->
+		<jar destfile="${basedir}/target/openbooks.jar"
+		     basedir="${basedir}"
+		     update="true">
+			<include name="NOTICE.txt"/>
+			<include name="LICENSE.txt"/>
+		</jar>
+		<zip destfile="${basedir}/target/openbooks.zip" basedir="${basedir}">
+			<include name="run.properties" />
 			<include name="run.xml" />
 			<include name="index.html" />
 			<include name="NOTICE.txt"/>
 			<include name="LICENSE.txt"/>
 		</zip>
-		<zip destfile="openbooks.zip" basedir="${rsrc.dir}" update="true">
+		<zip destfile="${basedir}/target/openbooks.zip" basedir="${basedir}/target" update="true">
+			<include name="openbooks.jar" />
+		</zip>
+		<zip destfile="${basedir}/target/openbooks.zip" basedir="${rsrc.dir}" update="true">
 			<include name="load.properties" />
 			<include name="demo.properties" />
 			<include name="META-INF/persistence.xml" />
@@ -136,24 +146,26 @@
 	</target>
 	
 	<target name="deploy" description="Transfers the distribution packge to a deploy directory">
+		<delete dir="${deploy.dir}" failonerror="false"/>
 		<mkdir dir="${deploy.dir}"/>
-		<unzip dest="${deploy.dir}" src="openbooks.zip" overwrite="true">
+		<unzip dest="${deploy.dir}" src="${basedir}/target/openbooks.zip" overwrite="true">
 		</unzip>
 	</target>
 	
 	<target name="generate-html-source" 
 		description="Generates HTML Source Code using Java2HTML utility">
-		<mkdir dir="${generated.src.dir}"/>
+		<delete dir="${generated.html.dir}" failonerror="false"/>
+		<mkdir dir="${generated.html.dir}"/>
 		<java classname="de.java2html.Java2Html" fork="true">
 			<classpath refid="java2html.classpath"/>
 			<arg value="-srcdir"/>
 			<arg value="${src.dir}"/>
 			<arg value="-targetdir"/>
-			<arg value="${generated.src.dir}"/>
+			<arg value="${generated.html.dir}"/>
 			<arg value="-style"/>
 			<arg value="Eclipse"/>
 		</java>
-		<replace dir="${generated.src.dir}" token="10pt" value="14pt">
+		<replace dir="${generated.html.dir}" token="10pt" value="14pt">
 	    </replace>
     </target>
 	

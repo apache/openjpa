@@ -22,8 +22,8 @@
 <!--               Ant script for running OpenBooks                         -->
 <!--                                                                        -->
 <!-- ====================================================================== -->
-<project name="OpenBooks">
-	<property file="openbooks.properties"/>
+<project name="OpenBooks" default="info">
+	<property file="run.properties"/>
 	<property name="jpa.provider" value="openjpa" />
 	<property name="load.properties" value="load.properties" />
 	<property name="demo.properties" value="demo.properties" />
@@ -56,10 +56,18 @@
 	</target>
 	
 	<target name="run" depends="check-env"
-			description="Runs OpenBooks Demo">
-			<java classname="openbook.client.Demo" fork="true">
-				<classpath refid="run.classpath" />
-			</java>
+		description="Runs OpenBooks Demo">
+		<java classname="openbook.client.Demo" fork="true">
+			<classpath refid="run.classpath" />
+		</java>
 	</target>
+
+        <target name="info" depends="check-env">
+                <echo>
+                        Runs OpenBooks demo application.
+                        See index.html for instructions.
+                </echo>
+        </target>
+
 </project>	
-	
+
