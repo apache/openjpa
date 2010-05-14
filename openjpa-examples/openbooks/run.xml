@@ -23,7 +23,7 @@
 <!--                                                                        -->
 <!-- ====================================================================== -->
 <project name="OpenBooks">
-	<property file="run.properties"/>
+	<property file="openbooks.properties"/>
 	<property name="jpa.provider" value="openjpa" />
 	<property name="load.properties" value="load.properties" />
 	<property name="demo.properties" value="demo.properties" />

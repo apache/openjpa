@@ -25,7 +25,7 @@
                     
 <project name="OpenBooks" default="info">
 	
-	<property file="build.properties" />
+	<property file="openbook.properties" />
 	
 	<property name="jpa.provider" value="openjpa" />
 	<property name="src.dir"      value="${basedir}/src/main/java"/>
@@ -46,7 +46,9 @@
 	
 	<path id="java2html.classpath">
 		<pathelement location="${rsrc.dir}" />
-		<pathelement location="lib/java2html.jar" />
+		<fileset dir="${java2html.lib}">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 	
@@ -69,12 +71,17 @@
 		</echo>
 	</target>
 	
-	<target name="check-env" description="Checks if OpenJPA library exists">
+	<target name="check-env" description="Checks if required libraries exist">
 		<available file="${openjpa.lib}" property="openjpa.exists"/>
 		<fail unless="openjpa.exists">*** Error:
 		   The directory for OpenJPA libraries can not be located at ${openjpa.lib}. 
-		   Make sure openjpa.lib property value is correct in build.properties file.	
-	     </fail>
+		   Make sure openjpa.lib property value is correct in openbooks.properties file.	
+		</fail>
+		<available file="${java2html.lib}" property="java2html.exists"/>
+		<fail unless="java2html.exists">*** Error:
+		   The directory for Java2HTML libraries can not be located at ${java2html.lib}. 
+		   Make sure java2html.lib property value is correct in openbooks.properties file.	
+		</fail>
 	</target>
 	
 	<target name="compile" depends="check-env,clean"
@@ -113,7 +120,7 @@
 		</jar>
 		<zip destfile="openbooks.zip" basedir="${basedir}">
 			<include name="openbooks.jar" />
-			<include name="run.properties" />
+			<include name="openbooks.properties" />
 			<include name="run.xml" />
 			<include name="index.html" />
 			<include name="NOTICE.txt"/>
@@ -126,7 +133,6 @@
 			<include name="slides/**" />
 			<include name="source/**" />
 		</zip>
-		
 	</target>
 	
 	<target name="deploy" description="Transfers the distribution packge to a deploy directory">
