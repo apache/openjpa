@@ -1,0 +1,68 @@
+<html>
+<body>
+<h1>OpenBooks: A sample JPA 2.0 Application</h1>
+<hr>
+  OpenBooks is a sample (and perhaps simple) application to demonstrate some of the new features of 
+  version 2.0 of <A HREF="http://jcp.org/en/jsr/detail?id=317">Java Persistence API</A> (JPA) specification.
+  <br>
+  OpenBooks runs with <A HREF="http://openjpa.apache.org">OpenJPA</A> as its JPA provider.
+  <hr>
+<h1>Instructions to run OpenBooks Demo</h1>
+<OL>
+   <LI><A href="#Download">Download OpenBooks distribution</A>.
+   <LI><A href="#Install">Install OpenBooks distribution</A>
+   <LI><A href="#Configure">Edit for your local environment</A>
+   <LI><A href="#Load">Populate a Database</A>
+   <LI><A href="#Run">Run OpenBooks</A>
+</OL>
+   <hr>
+<h2 A name="Download">Download Instructions</A></h2>
+   OpenBooks is distributed under <A HREF="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</A>  
+   <br>
+   OpenBooks can be downloaded from <A HREF="openbooks.zip">here</A>.
+   <p>
+   OpenBooks require following software environment to run:
+  <OL>
+  <LI> Java Runtime version 6.0 or higher
+  <LI> OpenJPA Libraries version 2.0 or higher
+  <LI> Ant version 1.6 or higher
+  <LI> Any JDBC complaint database supported by OpenJPA. 
+       See <A href="http://openjpa.apache.org/builds/latest/docs/manual/manual.html#ref_guide_dbsetup_dbsupport">OpenJPA documentation</A> for a list of supported databases.
+  </OL>
+ 
+<h2><A name="Install">Install OpenBooks distribution</A></h2>
+   Unzip <code>openbooks.zip</code> to a directory. Following instructions assume this directory as
+   your current directory.<br>
+   The files included in this distribution are:
+   <LI>index.html : the file you are reading 
+   <LI>openbooks.jar : OpenBooks class library 
+   <LI>run.xml : Ant script to run OpenBooks 
+   <LI>run.properties : The configuration for your execution environment used by Ant script
+   <LI>load.properties : The configuration for loading initial data into OpenBooks.
+   <LI>demo.properties: Properties to configure the demonstation GUI.
+   <LI>META-INF/persistence.xml: The configuration for OpenJPA runtime 
+   <LI>slides/: Directory containing the default presentation accompanying this demonstration.
+   <LI>source/: Directory containing the source code for OpenBooks
+   <LI>LICENSE.txt: Apache License
+   <LI>NOTICE.txt: Copyright Notice
+   <br>
+   <p>
+  <hr>
+<h2><A name="Configure">Configure OpenBooks for your local environment</A></h2>
+    <OL>
+      <LI>Edit <code>run.properties</code> to specify location of OpenJPA class libraries and JDBC Driver
+      <LI>Edit <code>META-INF/persistence.xml</code> to specify database properties
+      <LI>Edit <code>load.properties</code> to specify load parameters such as number of Books etc.
+          This example file has some typical values. If you are satisfied with it, you can leave them as it is.
+    </OL>
+    <hr>
+<h2><A name="Load">Populate a Database</A></h2>
+  Invoke the Ant script to populate the database.<br>
+  <code>$ ant -f run.xml load</code>
+  <hr>
+<h2><A name="Run">Run OpenBooks</A></h2> 
+  Invoke the Ant script to run OpenBooks<br>
+  <code>$ ant -f run.xml run</code>
+ <hr>
+</body>
+</html>

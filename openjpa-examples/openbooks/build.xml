@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--               Ant build script for OpenBooks                           -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+                    
+<project name="OpenBooks" default="info">
+	
+	<property file="build.properties" />
+	
+	<property name="jpa.provider" value="openjpa" />
+	<property name="src.dir"      value="${basedir}/src/main/java"/>
+	<property name="rsrc.dir"     value="${basedir}/src/main/resources"/>
+	<property name="classes.dir"  value="${basedir}/target/classes"/>
+	<property name="generated.src.dir"  value="${rsrc.dir}/source"/>
+
+	<property name="jpa.properties"  value="META-INF/persistence.xml#OpenBooks" />
+
+	<path id="compile.classpath" description="compilation requires OpenJPA specific library">
+		<pathelement location="${src.dir}" />
+		<pathelement location="${classes.dir}" />
+		<pathelement location="${rsrc.dir}" />
+		<fileset dir="${openjpa.lib}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<path id="java2html.classpath">
+		<pathelement location="${rsrc.dir}" />
+		<pathelement location="lib/java2html.jar" />
+	</path>
+
+	
+	<fileset id="canonical.metamodel" dir="${src.dir}" 
+		description="Set of *.java files generated for static, cannonical domain model">
+		<include name="**/*_.java"/>
+	</fileset>
+	
+	<target name="clean" description="Removes all *.class and generated metamodel source files">
+		<delete dir="${classes.dir}" failonerror="false"/>
+		<delete>
+			<fileset refid="canonical.metamodel"/>
+		</delete>
+	</target>
+
+	<target name="info" depends="check-env">
+		<echo>
+			Builds OpenBooks demo application.
+			OpenJPA Library: ${openjpa.lib}
+		</echo>
+	</target>
+	
+	<target name="check-env" description="Checks if OpenJPA library exists">
+		<available file="${openjpa.lib}" property="openjpa.exists"/>
+		<fail unless="openjpa.exists">*** Error:
+		   The directory for OpenJPA libraries can not be located at ${openjpa.lib}. 
+		   Make sure openjpa.lib property value is correct in build.properties file.	
+	     </fail>
+	</target>
+	
+	<target name="compile" depends="check-env,clean"
+		description="Compilation will also generate canonical meta-model classes.">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+			<classpath refid="compile.classpath" />
+			<include name="openbook/domain/*.java"/>
+			<compilerarg value="-Aopenjpa.metamodel=true" />
+			<compilerarg value="-Aopenjpa.log=TRACE" />
+			<compilerarg value="-s"/>
+			<compilerarg value="${src.dir}" />
+		</javac>
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+			<classpath refid="compile.classpath" />
+		</javac>
+		<java classname="org.apache.openjpa.enhance.PCEnhancer" fork="true">
+			<arg value="-properties" />
+			<arg value="${jpa.properties}" />
+			<classpath refid="compile.classpath" />
+		</java>
+	</target>
+	
+	<target name="package" depends="clean,compile,generate-html-source"
+		description="Generates HTML version of source code and creates distribution layout">
+		<delete file="openbooks.jar" failonerror="false"/>
+		<delete file="openbooks.zip" failonerror="false"/>
+		
+		<jar destfile="openbooks.jar" basedir="${classes.dir}">
+			<exclude name="junit/**" />
+		</jar>
+		<jar destfile="openbooks.jar"
+		     basedir="${rsrc.dir}"
+		     update="true">
+			<include name="images/*" />
+		</jar>
+		<zip destfile="openbooks.zip" basedir="${basedir}">
+			<include name="openbooks.jar" />
+			<include name="run.properties" />
+			<include name="run.xml" />
+			<include name="index.html" />
+			<include name="NOTICE.txt"/>
+			<include name="LICENSE.txt"/>
+		</zip>
+		<zip destfile="openbooks.zip" basedir="${rsrc.dir}" update="true">
+			<include name="load.properties" />
+			<include name="demo.properties" />
+			<include name="META-INF/persistence.xml" />
+			<include name="slides/**" />
+			<include name="source/**" />
+		</zip>
+		
+	</target>
+	
+	<target name="deploy" description="Transfers the distribution packge to a deploy directory">
+		<mkdir dir="${deploy.dir}"/>
+		<unzip dest="${deploy.dir}" src="openbooks.zip" overwrite="true">
+		</unzip>
+	</target>
+	
+	<target name="generate-html-source" 
+		description="Generates HTML Source Code using Java2HTML utility">
+		<mkdir dir="${generated.src.dir}"/>
+		<java classname="de.java2html.Java2Html" fork="true">
+			<classpath refid="java2html.classpath"/>
+			<arg value="-srcdir"/>
+			<arg value="${src.dir}"/>
+			<arg value="-targetdir"/>
+			<arg value="${generated.src.dir}"/>
+			<arg value="-style"/>
+			<arg value="Eclipse"/>
+		</java>
+		<replace dir="${generated.src.dir}" token="10pt" value="14pt">
+	    </replace>
+    </target>
+	
+</project>
