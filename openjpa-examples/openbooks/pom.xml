@@ -120,6 +120,47 @@
                                         <ant antfile="${basedir}/build.xml">
                                             <target name="generate-html-source" />
                                         </ant>
+                                        <copy todir="${basedir}/target">
+                                            <fileset dir="${basedir}"
+                                                includes="index.html"/>
+                                            <fileset dir="${basedir}"
+                                                includes="*.txt"/>
+                                            <fileset dir="${basedir}"
+                                                includes="run.*"/>
+                                        </copy>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile to launch OpenBooks via "mvn test -Prun" -->
+        <profile>
+            <id>run</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run</id>
+                                <phase>test</phase>
+                                <configuration>
+                                    <tasks>
+                                        <echo>Launching OpenBooks</echo>
+                                        <property name="openjpa.version" value="${project.version}" />
+                                        <property name="maven.repos" value="${settings.localRepository}" />
+                                        <ant antfile="run.xml"
+                                            dir="${basedir}/target">
+                                            <target name="run" />
+                                        </ant>
                                     </tasks>
                                 </configuration>
                                 <goals>

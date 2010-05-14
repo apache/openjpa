@@ -31,7 +31,9 @@
 	<path id="run.classpath"
 	      description="Runs on OpenBooks packaged library and database driver">
 		<pathelement location="${basedir}" />
-		<pathelement location="${basedir}/openbooks.jar" />
+		<fileset dir="${basedir}">
+			<include name="*.jar" />
+		</fileset>
 		<fileset dir="${openjpa.lib}">
 			<include name="*.jar" />
 		</fileset>
