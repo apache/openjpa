@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -305,9 +306,13 @@ public class JPAFacadeHelper {
      * Return a collection of OpenJPA oids for the given native oid collection.
      */
     public static Collection<Object> toOpenJPAObjectIds(ClassMetaData meta, Collection<Object> oids) {
-        return toOpenJPAObjectIds(meta, oids);
+        if (oids == null || oids.size() == 0) {
+            return oids;
+        }
+        return Arrays.asList(toOpenJPAObjectIds(meta, oids.toArray()));
     }
 
+    
     /**
      * Translate from a OpenJPA identity class to a native one.
      */
