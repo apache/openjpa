@@ -26,8 +26,6 @@ import javax.persistence.RollbackException;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
 /**
  * Test @Basic(optional=true|false) and @Column(nullable=true|false) 
  * specification is honored. 
