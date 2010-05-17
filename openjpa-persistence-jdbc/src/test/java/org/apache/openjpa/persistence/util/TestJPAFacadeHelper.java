@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -115,7 +118,11 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     public void testNoId() throws Exception {
         ClassMetaData cmd = repo.getMetaData(AllFieldTypes.class, null, true);
         try {
-            JPAFacadeHelper.toOpenJPAObjectId(cmd, new AllFieldTypes());
+            // Don't parameterize this collection to force the JVM to use the 
+            // ...(ClassMetaData meta, Collection<Object> oids) method sig.
+            Collection ids = new ArrayList<AllFieldTypes>();
+            ids.add(new AllFieldTypes());
+            JPAFacadeHelper.toOpenJPAObjectIds(cmd, ids);
             fail("Didn't fail!");
         } catch (UserException re) {
             // expected
