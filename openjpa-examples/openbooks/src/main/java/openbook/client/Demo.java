@@ -76,9 +76,9 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 @SuppressWarnings("serial")
 public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
-    private static final Dimension TAB_VIEW = new Dimension(1400,800);
-    private static final Dimension OUT_VIEW = new Dimension(1400,200);
-    private static final Dimension NAV_VIEW = new Dimension(400,1000);
+    private static final Dimension TAB_VIEW = new Dimension(800,600);
+    private static final Dimension OUT_VIEW = new Dimension(800,200);
+    private static final Dimension NAV_VIEW = new Dimension(400,800);
 
     /**
      * The actions invoked by this sample demonstration.
@@ -159,7 +159,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         
         JSplitPane horizontalSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         horizontalSplitPane.setContinuousLayout(true);
-        horizontalSplitPane.setDividerSize(1);
+        horizontalSplitPane.setDividerSize(5);
         JScrollPane scrollPane = new JScrollPane(_navigator);
         scrollPane.setMinimumSize(new Dimension(NAV_VIEW.width/4, NAV_VIEW.height));
         scrollPane.setPreferredSize(NAV_VIEW);
@@ -167,7 +167,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         
         JSplitPane verticalSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         verticalSplitPane.setContinuousLayout(true);
-        verticalSplitPane.setDividerSize(1);
+        verticalSplitPane.setDividerSize(5);
         verticalSplitPane.add(_tabbedPane);
         verticalSplitPane.add(_outputPane);
         horizontalSplitPane.add(verticalSplitPane);
