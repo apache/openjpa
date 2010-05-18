@@ -19,7 +19,7 @@
 -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="1.0">
+    version="2.0">
     <persistence-unit name="OpenBooks">
     	<class>openbook.domain.Book</class>
     	<class>openbook.domain.Inventory</class>
