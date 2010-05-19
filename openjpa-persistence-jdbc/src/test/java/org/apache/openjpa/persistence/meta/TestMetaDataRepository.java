@@ -20,11 +20,11 @@ package org.apache.openjpa.persistence.meta;
 
 import java.util.Collection;
 
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
-import org.apache.openjpa.meta.XMLMetaData;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.persistence.xmlmapping.entities.Customer;
@@ -74,6 +74,16 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 			}
 		}
 	}
+	
+	public void testPreloadCleanUp() {
+        OpenJPAEntityManagerFactorySPI emf = null;
+        emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
+        MetaDataRepository repo = emf.getConfiguration().getMetaDataRepositoryInstance();
+        emf.createEntityManager();
+        emf.close();
+        assertFalse("The PCRegistry should no longer reference the MetaDataRepository.", PCRegistry
+            .removeRegisterClassListener(repo));
+    }
 
 	public void testXmlMappingPreload() {
         OpenJPAEntityManagerFactorySPI emf = null;

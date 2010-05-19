@@ -20,6 +20,7 @@ package org.apache.openjpa.enhance;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class PCRegistry {
             ReferenceMap.HARD);
 
     // register class listeners
-    private static final Collection<RegisterClassListener> _listeners = new LinkedList<RegisterClassListener>();
+    private static final Collection<RegisterClassListener> _listeners = new LinkedHashSet<RegisterClassListener>();
 
     /**
      * Register a {@link RegisterClassListener}.
@@ -67,9 +68,9 @@ public class PCRegistry {
     /**
      * Removes a {@link RegisterClassListener}.
      */
-    public static void removeRegisterClassListener(RegisterClassListener rcl) {
+    public static boolean removeRegisterClassListener(RegisterClassListener rcl) {
         synchronized (_listeners) {
-            _listeners.remove(rcl);
+            return _listeners.remove(rcl);
         }
     }
 
