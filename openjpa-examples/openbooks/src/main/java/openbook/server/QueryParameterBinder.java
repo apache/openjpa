@@ -17,7 +17,6 @@
 package openbook.server;
 
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 /**
  * Decorates a query by binding parameters.

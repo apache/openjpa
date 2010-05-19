@@ -17,10 +17,12 @@
 package openbook.client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -76,9 +79,9 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 @SuppressWarnings("serial")
 public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
-    private static final Dimension TAB_VIEW = new Dimension(800,600);
-    private static final Dimension OUT_VIEW = new Dimension(800,200);
-    private static final Dimension NAV_VIEW = new Dimension(400,800);
+    private static Dimension TAB_VIEW = new Dimension(800,600);
+    private static Dimension OUT_VIEW = new Dimension(800,200);
+    private static Dimension NAV_VIEW = new Dimension(400,800);
 
     /**
      * The actions invoked by this sample demonstration.
@@ -121,6 +124,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
      */
     public static void main(String[] args) throws Exception {
         SwingHelper.setLookAndFeel(14);
+        adjustWidgetSize();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 Demo demo = new Demo();
@@ -132,12 +136,21 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
             }
         });
     }
+    
+    static void adjustWidgetSize() {
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        int sw = (int)(95*screen.getWidth()/100);
+        int sh = (int)(80*screen.getHeight()/100);
+        NAV_VIEW = new Dimension(25*sw/100, sh);
+        TAB_VIEW = new Dimension(75*sw/100, 75*sh/100);
+        OUT_VIEW = new Dimension(75*sw/100, 25*sh/100);
+    }
 
     
     private Demo() {
         Thread.currentThread().setUncaughtExceptionHandler(this);
         _config = PropertyHelper.load(System.getProperty("openbook.client.config", "demo.properties"));
-        
+        setIconImage(((ImageIcon)LOGO).getImage());
         setTitle("OpenBooks: A Sample JPA 2.0 Application");
         
         _root         = new WelcomeAction("OpenBooks", "images/OpenBooks.jpg", "OpenBooks");
@@ -622,8 +635,12 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
             button.setHorizontalTextPosition(SwingConstants.RIGHT);
             button.setEnabled(true);
             button.setBorderPainted(false);
+            JLabel openJPALogo = new JLabel(Images.getIcon("images/openjpa-logo-small.png"));
+            openJPALogo.setBackground(Color.BLACK);
+
             add(button, BorderLayout.CENTER);
-            add(new JLabel(Images.getIcon("images/openjpa-log-small.png")), BorderLayout.SOUTH);
+            add(openJPALogo, BorderLayout.SOUTH);
+
             setTitle("About OpenBooks");
             setAlwaysOnTop(true);
             setResizable(false);
