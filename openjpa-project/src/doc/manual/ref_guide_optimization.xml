@@ -606,6 +606,21 @@ scalability problems. You can disable this protective behavior by setting the
 linkend="ref_guide_runtime_broker_finalization"/> for details.
                     </entry>
                 </row>
+                <row>
+                    <entry colname="name">
+                        <emphasis role="bold">
+                            Preload MetaDataRepository
+                        </emphasis>
+                        <para>
+<emphasis>scalability</emphasis>
+                        </para>
+                    </entry>
+                    <entry colname="desc">
+By default, the MetaDataRepository is lazily loaded which means that fair amounts of locking
+is used to ensure that metadata is processed properly. Enabling preloading allows OpenJPA to
+load metadata upfront and remove locking. See <xref linkend="ref_guide_meta_repository"/> for details.
+                    </entry>
+                </row>                
             </tbody>
         </tgroup>
     </table>

@@ -119,6 +119,29 @@ scanned for annotated JPA entities.
 </programlisting>
         </example>
     </section>
+    <!-- start added -->
+	<section id="ref_guide_meta_repository">
+		<para>The openjpa.MetaDataRepository configuration property controls the configuration of 
+			the MetaDataRepository. The following are valid properties:</para>
+		<itemizedlist>
+		<listitem><para>
+			<literal>Preload</literal>: A boolean property. If true, OpenJPA will eagerly load the repository on 
+			EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM. 
+                        Once MetaData preloading completes, all locking is removed from the MetaDataRepository and this will 
+                        result in a much more scalable repository. If false, the repository will be lazily loaded as Entity 
+                        classes are loaded by the JVM. The default value is false.
+			</para>
+            	</listitem>           	
+            	</itemizedlist>
+        	
+	        <title>Metadata Repository</title>
+	        <example id="ref_guide_meta_repo">
+<programlisting>
+&lt;property name="openjpa.MetaDataRepository" value="Preload=true"/&gt;
+</programlisting>
+	        </example>
+	</section>
+    <!-- end added -->
     <section id="ref_guide_meta_jpa">
         <title>
             Additional JPA Metadata

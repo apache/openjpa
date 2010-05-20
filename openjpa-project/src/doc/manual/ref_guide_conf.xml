@@ -2231,6 +2231,53 @@ retrieve metadata for your persistent classes. See
 <xref linkend="ref_guide_meta_factory"/> for details.
             </para>
         </section>
+        <!-- start -->
+        <section id="openjpa.MetaDataRepository">
+            <title>
+                openjpa.MetaDataRepository
+            </title>
+            <indexterm zone="openjpa.MetaDataRepository">
+                <primary>
+                    MetaDataRepository
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.MetaDataRepository">
+                <primary>
+                    metadata
+                </primary>
+                <secondary>
+                    MetaDataRepository
+                </secondary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.MetaDataRepository
+</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getMetaDataRepository()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getMetaDataRepository
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+MetaDataRepository</literal>
+            </para>
+            <para>
+		<emphasis role="bold">Default:</emphasis>none<literal></literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> A plugin string (see
+<xref linkend="ref_guide_conf_plugins"/>) describing the
+<ulink url="../javadoc/org/apache/openjpa/meta/MetaDataRepository.html">
+<classname>openjpa.meta.MetaDataRepository</classname></ulink> to use to store and
+retrieve metadata for your persistent classes. See
+<xref linkend="ref_guide_meta_repository"/> for details.
+            </para>
+        </section>
+        
+        <!-- end -->
+        
         <section id="openjpa.Multithreaded">
             <title>
                 openjpa.Multithreaded
