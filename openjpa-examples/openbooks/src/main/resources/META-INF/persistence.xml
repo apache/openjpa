@@ -19,8 +19,10 @@
 -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    version="2.0">
+    version="1.0">
     <persistence-unit name="OpenBooks">
+    	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    	
     	<class>openbook.domain.Book</class>
     	<class>openbook.domain.Inventory</class>
     	<class>openbook.domain.PurchaseOrder</class>
@@ -43,7 +45,6 @@
     		<property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
     		
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
-    		<property name="openjpa.jdbc.JDBCListeners"       value="openbook.client.SQLLogger"/>
     		<property name="openjpa.jdbc.QuerySQLCache"       value="true(EnableStatistics=true)"/>
     		
     	</properties>
