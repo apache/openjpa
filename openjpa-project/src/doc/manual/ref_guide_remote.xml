@@ -354,7 +354,7 @@ use detached state managers, as determined by the settings above.
 DetachState setting.</emphasis> Detach all fields and relations as described by the loaded 
 property when an explicit detach is requested or when a 
 single Entity is being detached as part of serialization. When the entire 
-persistence context is being auto-detached(@See openjpa.AutoDetach), 
+persistence context is being auto-detached ( <literal>openjpa.AutoDetach</literal> ), 
 the minimal amount of work will be completed to disassociate all Entities from 
 the persistence context. <emphasis role="bold">It is highly recommended that all Entities have a 
 @Version field when using this property</emphasis>. In addition, care needs to be taken 

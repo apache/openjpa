@@ -126,23 +126,18 @@ scanned for annotated JPA entities.
 		<itemizedlist>
 		<listitem><para>
 			<literal>Preload</literal>: A boolean property. If true, OpenJPA will eagerly load the repository on 
-			EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM. If 
-			false, the repository will be lazily loaded as Entity classes are loaded by the JVM. The default value 
-			is false.
+			EntityManagerFactory creation. As a result, all Entity classes will be eagerly loaded by the JVM. 
+                        Once MetaData preloading completes, all locking is removed from the MetaDataRepository and this will 
+                        result in a much more scalable repository. If false, the repository will be lazily loaded as Entity 
+                        classes are loaded by the JVM. The default value is false.
 			</para>
-            	</listitem>
-		<listitem><para>
-			<literal>NoLock</literal>: If true, the repository will be treated as a read only data structure and 
-			minimal locking will be imposed on users. Preload must be set to true for OpenJPA to honor setting 
-			NoLock to true. The default value is false.
-			</para>
-            	</listitem>            	
+            	</listitem>           	
             	</itemizedlist>
         	
 	        <title>Metadata Repository</title>
 	        <example id="ref_guide_meta_repo">
 <programlisting>
-&lt;property name="openjpa.MetaDataRepository" value="Preload=true,NoLock=true"/&gt;
+&lt;property name="openjpa.MetaDataRepository" value="Preload=true"/&gt;
 </programlisting>
 	        </example>
 	</section>
