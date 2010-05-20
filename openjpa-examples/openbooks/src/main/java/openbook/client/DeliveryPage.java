@@ -107,7 +107,7 @@ public class DeliveryPage extends JPanel {
         _showDelivered.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                List<PurchaseOrder> selected = getOrders(PurchaseOrder.Status.DELEVERED);
+                List<PurchaseOrder> selected = getOrders(PurchaseOrder.Status.DELIVERED);
                 _orders.getDataModel().updateData(selected);
                 _title.setText(selected.size() + " Delivered PurchaseOrder");
             }
