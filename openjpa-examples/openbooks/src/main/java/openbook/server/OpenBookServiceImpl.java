@@ -269,23 +269,29 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     public PurchaseOrder deliver(PurchaseOrder o) {
         EntityManager em = begin();
         o = em.merge(o);
-        o.setDelivered();
         for (LineItem item : o.getItems()) {
             item.getBook().getInventory().decrement(item.getQuantity());
         }
+        o.setDelivered();
         commit();
         return o;
     }
     
-    public List<PurchaseOrder> getOrders(PurchaseOrder.Status status) {
+    public List<PurchaseOrder> getOrders(PurchaseOrder.Status status, Customer customer) {
         EntityManager em = begin();
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<PurchaseOrder> q = cb.createQuery(PurchaseOrder.class);
         Root<PurchaseOrder> order = q.from(PurchaseOrder.class);
         q.select(order);
+        List<Predicate> predicates = new ArrayList<Predicate>();
         if (status != null) {
-            q.where(cb.equal(order.get(PurchaseOrder_.status), status));
+            predicates.add(cb.equal(order.get(PurchaseOrder_.status), status));
         }
+        if (customer != null) {
+            predicates.add(cb.equal(order.get(PurchaseOrder_.customer), customer));
+        }
+        if (!predicates.isEmpty())
+            q.where(predicates.toArray(new Predicate[predicates.size()]));
         q.orderBy(cb.desc(order.get(PurchaseOrder_.placedOn)));
         
         TypedQuery<PurchaseOrder> query = em.createQuery(q);
@@ -296,6 +302,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     
     /**
      * Creates a new {@linkplain PurchaseOrder} from the content of the given {@linkplain ShoppingCart}.
+     * The content of the cart is cleared as a result.
      * <br>
      * The transaction is not expected to fail because the inventory is
      * not modified by placing an order.
@@ -307,6 +314,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         PurchaseOrder order = new PurchaseOrder(cart);
         em.persist(order);
         commit();
+        cart.clear();
         return order;
     }
     

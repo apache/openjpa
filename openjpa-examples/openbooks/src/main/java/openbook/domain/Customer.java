@@ -74,6 +74,10 @@ public class Customer implements Serializable {
         return new ShoppingCart(this);
     }
     
+    public String toString() {
+        return name;
+    }
+    
     @Version
     private int version;
     

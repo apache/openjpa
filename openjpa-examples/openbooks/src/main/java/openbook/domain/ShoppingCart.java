@@ -116,5 +116,16 @@ public class ShoppingCart implements Serializable {
     public void clear() {
         items.clear();
     }
+    
+    public boolean isEmpty() {
+        return items.isEmpty();
+    }
+    
+    public int getTotalCount() {
+        int sum = 0;
+        for (Integer q : items.values())
+            sum += q.intValue();
+        return sum;
+    }
 
 }

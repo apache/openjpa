@@ -1,7 +1,4 @@
 /*
- * Copyright 2010-2012 Pinaki Poddar
- *
- *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -39,7 +36,7 @@ import org.apache.openjpa.lib.jdbc.JDBCEvent;
  *
  */
 public class SQLLogger extends AbstractJDBCListener {
-    private static PrintStream out = null;
+    private PrintStream out = null;
     private static AttributeSet red, green, blue, magenta;
     static {
         StyleContext ctx = StyleContext.getDefaultStyleContext();
@@ -49,7 +46,7 @@ public class SQLLogger extends AbstractJDBCListener {
         magenta = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.MAGENTA);
     }
     
-    public static void setOutput(GraphicOutputStream o) {
+    public void setOutput(GraphicOutputStream o) {
         out = new PrintStream(o, true);
         o.registerStyle("INSERT", green);
         o.registerStyle("SELECT", blue);

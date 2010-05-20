@@ -125,7 +125,7 @@ public interface OpenBookService {
      * 
      * @return list of orders sorted by their placement dates.
      */
-    public List<PurchaseOrder> getOrders(PurchaseOrder.Status status);
+    public List<PurchaseOrder> getOrders(PurchaseOrder.Status status, Customer customer);
     
     
     /**
@@ -155,7 +155,13 @@ public interface OpenBookService {
      * @return true if the repository is initialized by this invocation.
      */
     public boolean initialize(Map<String,Object> loadParameters);
+    
+    /**
+     * Cleans everything. Be careful.
+     */
     public void clean();
+    
+    
     /**
      * Gets the underlying persistence unit.
      * 

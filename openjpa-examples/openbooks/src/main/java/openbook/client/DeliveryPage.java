@@ -1,7 +1,4 @@
 /*
- * Copyright 2010-2012 Pinaki Poddar
- *
- *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -156,7 +153,7 @@ public class DeliveryPage extends JPanel {
         SwingWorker<List<PurchaseOrder>, Void> worker = new SwingWorker<List<PurchaseOrder>, Void>() {
             @Override
             protected List<PurchaseOrder> doInBackground() throws Exception {
-                return _service.getOrders(status);
+                return _service.getOrders(status, null);
             }
         };
         worker.execute();

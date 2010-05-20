@@ -1,6 +1,4 @@
 /*
- * Copyright 2010-2012 Pinaki Poddar
- *
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,16 +14,12 @@
 */
 package jpa.tools.swing;
 
-import java.awt.BorderLayout;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
 /**

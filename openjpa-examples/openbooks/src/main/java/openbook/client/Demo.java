@@ -1,7 +1,4 @@
 /*
- * Copyright 2010-2012 Pinaki Poddar
- *
- *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -26,6 +23,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +67,7 @@ import openbook.server.ServiceFactory;
 import openbook.util.PropertyHelper;
 
 import org.apache.openjpa.conf.OpenJPAVersion;
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
@@ -106,6 +105,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     private JTabbedPane _outputPane;
     private StatusBar   _statusBar;
     private ScrollingTextPane   _sqlLog;
+    private SQLLogger _sqlListener;
     public static final Icon    LOGO = Images.getIcon("images/OpenBooks.jpg");
     
     private boolean _debug = Boolean.getBoolean("openbook.debug");
@@ -204,7 +204,11 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
             SwingWorker<OpenBookService, Void> getService = new SwingWorker<OpenBookService, Void> () {
                 @Override
                 protected OpenBookService doInBackground() throws Exception {
-                    return ServiceFactory.getService(unitName);
+                    Map<String, Object> runtimeConfig = new HashMap<String, Object>();
+                    runtimeConfig.put("openjpa.jdbc.JDBCListeners", new JDBCListener[]{_sqlListener});
+                    OpenBookService service = ServiceFactory.getService(unitName, runtimeConfig);
+                    service.initialize(null);
+                    return service;
                 }
                 
             };
@@ -543,15 +547,20 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     private JTabbedPane createOutputView() {
         JTabbedPane pane = new JTabbedPane();
         pane.setPreferredSize(OUT_VIEW);
+        
+        _sqlListener = new SQLLogger();
         _sqlLog = new ScrollingTextPane();
+        
         GraphicOutputStream stream = new GraphicOutputStream(_sqlLog);
         _sqlLog.setPreferredSize(TAB_VIEW);
-        SQLLogger.setOutput(stream);
+        _sqlListener.setOutput(stream);
         pane.addTab("SQL Log", new JScrollPane(_sqlLog));
+        
         ScrollingTextPane consoleLog = new ScrollingTextPane();
         GraphicOutputStream console = new GraphicOutputStream(consoleLog);
         System.setErr(new PrintStream(console, true));
         pane.addTab("Console", new JScrollPane(consoleLog));
+        
         return pane;
     }
     
