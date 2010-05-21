@@ -48,6 +48,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public abstract class AbstractLobTest extends SingleEMFTestCase {
 
+    protected static boolean firstTestExecuted;
+
     protected List<Class<? extends DBDictionary>> supportedDatabases =
         new ArrayList<Class<? extends DBDictionary>>
             (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class));
@@ -58,7 +60,10 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
             return;
         }
 
-        super.setUp(getLobEntityClass(), CLEAR_TABLES,
+        // Test CREATE TABLE but only once to save time.
+        Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
+        firstTestExecuted = true;
+        super.setUp(getLobEntityClass(), clearOrDropTables,
             "openjpa.DataCache", "true",
             "openjpa.RemoteCommitProvider", "sjvm",
             "openjpa.ConnectionRetainMode", "transaction");
