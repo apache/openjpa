@@ -74,15 +74,6 @@
 		</fileset>
 	</path>
 	
-	<path id="java2html.classpath"
-		description="Classpath for generating HTML version of source code using Java2HTML library">
-		<pathelement location="${rsrc.dir}" />
-		<fileset dir="${java2html.lib}">
-			<include name="*.jar" />
-		</fileset>
-	</path>
-
-	
 	<fileset id="canonical.metamodel" dir="${src.dir}" 
 		description="Set of *.java files generated for static, cannonical domain model">
 		<include name="**/*_.java"/>
@@ -112,11 +103,6 @@
 		<fail unless="openjpa.exists">*** Error:
 		   The directory for OpenJPA libraries can not be located at ${openjpa.lib}. 
 		   Make sure openjpa.lib property value is correct in build.properties file.	
-		</fail>
-		<available file="${java2html.lib}" property="java2html.exists"/>
-		<fail unless="java2html.exists">*** Error:
-		   The directory for Java2HTML libraries can not be located at ${java2html.lib}. 
-		   Make sure java2html.lib property value is correct in build.properties file.	
 		</fail>
 		<condition property="build.mode.is.valid">
 			<or>
@@ -171,8 +157,7 @@
 	             clean,
 				 generate-canonical-model,
 				 compile,
-				 enhance,
-				 generate-html-source">
+				 enhance">
 		<subant antfile="build.${build.mode}.xml" 
 			target="package" 
 			inheritrefs="true" 
@@ -180,29 +165,4 @@
 			buildpath="${basedir}"/>
 	</target>
 	
-	<target name="generate-html-source" if="java2html.exists"
-		description="Generates HTML Source Code using Java2HTML utility">
-		<delete dir="${generated.html.dir}" failonerror="false"/>
-		<mkdir dir="${generated.html.dir}"/>
-		<java classname="de.java2html.Java2Html" fork="true">
-			<classpath refid="java2html.classpath"/>
-			<arg value="-srcdir"/>
-			<arg value="${src.dir}"/>
-			<arg value="-targetdir"/>
-			<arg value="${generated.html.dir}"/>
-			<arg value="-style"/>
-			<arg value="Eclipse"/>
-		</java>
-		<java classname="de.java2html.Java2Html" fork="true">
-			<classpath refid="java2html.classpath"/>
-			<arg value="-srcdir"/>
-			<arg value="${generated.src.dir}"/>
-			<arg value="-targetdir"/>
-			<arg value="${generated.html.dir}"/>
-			<arg value="-style"/>
-			<arg value="Eclipse"/>
-		</java>
-		<replace dir="${generated.html.dir}" token="10pt" value="14pt">
-	    </replace>
-    </target>	
 </project>

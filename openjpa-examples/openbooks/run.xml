@@ -22,7 +22,7 @@
 <!--               Ant script for running OpenBooks                         -->
 <!--                                                                        -->
 <!-- ====================================================================== -->
-<project name="OpenBooks" default="info">
+<project name="OpenBooks" default="run">
 	<property file="run.properties"/>
 	<property name="jpa.provider" value="openjpa" />
 	<property name="load.properties" value="load.properties" />
@@ -63,13 +63,5 @@
 			<classpath refid="run.classpath" />
 		</java>
 	</target>
-
-        <target name="info" depends="check-env">
-                <echo>
-                        Runs OpenBooks demo application.
-                        See index.html for instructions.
-                </echo>
-        </target>
-
 </project>	
 

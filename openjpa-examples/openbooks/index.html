@@ -131,9 +131,6 @@ font-size:16px;
       <br>
       In JEE mode, OpenJPA library and JDBC drivers are configured in JEE server and hence variables in
       this file are irrelevant.  
-      <LI>Edit <A HREF="load.properties"><code>load.properties</code></A> to specify load parameters such as number of 
-      Books etc. OpenBooks uses this data to populate a database with some sample data.
-      This example file has some typical values. If you are satisfied with it, you can leave them as it is.
     </OL> 
     
     
@@ -159,11 +156,9 @@ font-size:16px;
 <h2><A name="Run">Run OpenBooks</A></h2> 
     If you have built OpenBooks for JSE, then go to the <code>target/openbooks</code> directory. 
     <br>
-    Invoke the Ant script to populate the database.<br>
-    &nbsp;&nbsp;<code>$ ant -f run.xml load</code>
-    <br>
-    Then invoke the Ant script to run OpenBooks<br>
-    &nbsp;<code>$ ant -f run.xml run</code>
+    Invoke the Ant script to run OpenBooks<br>
+    &nbsp;&nbsp;<code>$ ant -f run.xml</code>
+    
  <hr>
     If you have build OpenBooks for JEE, a Web Application Archive <code>openbooks.war</code> will be
     created in <code>target/openbooks</code> directory. You need to deploy <code>openbooks.war</code>
@@ -172,5 +167,17 @@ font-size:16px;
     &nbsp;&nbsp;<code>http://&lt;app server host&gt;:&lt;port&gt;/openbooks/</code>
     <br>
     to access OpenBooks as an web application.
+<hr>
+    
+<h2><A name="Seed">Populate OpenBooks Database</A></h2> 
+    OpenBooks checks for existing data at first connection to the database.
+    If the database is empty, the schema is defined and populated with initial data.
+    However, you can explicitly populate the database in JSE build. 
+    Edit <A HREF="load.properties"><code>load.properties</code></A> 
+    to specify load parameters such as number of Books etc. OpenBooks uses this data to populate a database 
+    with some sample data. This example file has some typical values. If you are satisfied with it, 
+    you can leave them as it is. Then invoke the Ant script<br>
+    &nbsp;&nbsp;<code>$ ant -f run.xml load</code>
+    
 </body>
 </html>

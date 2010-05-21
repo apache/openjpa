@@ -21,11 +21,14 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
@@ -35,6 +38,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -47,6 +51,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
@@ -61,7 +66,12 @@ import jpa.tools.swing.ScrollingTextPane;
 import jpa.tools.swing.SourceCodeViewer;
 import jpa.tools.swing.StatusBar;
 import jpa.tools.swing.SwingHelper;
+import openbook.domain.Author;
+import openbook.domain.Book;
 import openbook.domain.Customer;
+import openbook.domain.Inventory;
+import openbook.domain.LineItem;
+import openbook.domain.PurchaseOrder;
 import openbook.server.OpenBookService;
 import openbook.server.ServiceFactory;
 import openbook.util.PropertyHelper;
@@ -414,7 +424,9 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     }
     
     public class ViewSourceAction extends OpenBookAction {
-        SourceCodeViewer _sourceViewer;
+        private SourceCodeViewer _sourceViewer;
+        private static final String SRC_ROOT = "http://fisheye6.atlassian.com/browse/~raw,r=HEAD/openjpa/" +
+                                               "trunk/openjpa-examples/openbooks/src/main/java/";
         
         public ViewSourceAction(String name, String iconLocation, String tooltip) {
             super(name, iconLocation, tooltip);
@@ -422,9 +434,32 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         
         public void actionPerformed(ActionEvent e) {
             if (_sourceViewer == null) {
-                _sourceViewer = new SourceCodeViewer("source");
+                String root = PropertyHelper.getString(_config, "openbook.source.url",  SRC_ROOT);
+                _sourceViewer = new SourceCodeViewer(root, getAnchors());
             }
             showTab(_tabbedPane, "Source Code", _sourceViewer);
+        }
+        
+        Map<String, String> getAnchors() {
+            Map<String,String> anchors = new TreeMap<String, String>();
+            anchors.put("domain.Book",      toJavaFilePath(Book.class));
+            anchors.put("domain.Author",    toJavaFilePath(Author.class));
+            anchors.put("domain.Customer",  toJavaFilePath(Customer.class));
+            anchors.put("domain.Inventory", toJavaFilePath(Inventory.class));
+            anchors.put("domain.PurchaseOrder", toJavaFilePath(PurchaseOrder.class));
+            anchors.put("domain.LineItem", toJavaFilePath(LineItem.class));
+            
+            anchors.put("OpenBooks Service", toJavaFilePath(OpenBookService.class));
+            anchors.put("Generic Persistence Service", "openbook/server/PersistenceService.java");
+            anchors.put("OpenBooks Service Implementation", "openbook/server/OpenBookServiceImpl.java");
+            
+            anchors.put("clinet.Buy Book", toJavaFilePath(BuyBookPage.class));
+            
+            return anchors;
+        }
+        
+        private String toJavaFilePath(Class<?> cls) {
+            return cls.getName().replace('.', '/') + ".java";
         }
         
     }
