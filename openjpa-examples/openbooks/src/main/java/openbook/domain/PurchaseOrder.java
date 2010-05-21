@@ -59,15 +59,11 @@ import javax.persistence.TemporalType;
 @SuppressWarnings("serial")
 @Entity
 public class PurchaseOrder implements Serializable {
-<<<<<<< .mine
     /**
      * Enumerates the status of a Purchase Order.
      *
      */
     public enum Status {PENDING, DELIVERED};
-=======
-    public enum Status {PENDING, DELIVERED};
->>>>>>> .r946807
     
     @Id
     @GeneratedValue
@@ -156,14 +152,9 @@ public class PurchaseOrder implements Serializable {
     public void setDelivered() {
         if (this.status == Status.DELIVERED)
             throw new IllegalStateException(this + " has been delivered");
-<<<<<<< .mine
         this.status = Status.DELIVERED;
         this.deliveredOn = new Timestamp(System.currentTimeMillis());
         this.items = null;
-=======
-        this.status = Status.DELIVERED;
-        this.deliveredOn = new Time(System.currentTimeMillis());
->>>>>>> .r946807
     }
     
     /**
