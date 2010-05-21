@@ -152,8 +152,8 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         int sw = (int)(95*screen.getWidth()/100);
         int sh = (int)(80*screen.getHeight()/100);
         NAV_VIEW = new Dimension(25*sw/100, sh);
-        TAB_VIEW = new Dimension(75*sw/100, 75*sh/100);
-        OUT_VIEW = new Dimension(75*sw/100, 25*sh/100);
+        TAB_VIEW = new Dimension(75*sw/100, 65*sh/100);
+        OUT_VIEW = new Dimension(75*sw/100, 35*sh/100);
     }
 
     
