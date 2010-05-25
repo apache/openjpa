@@ -29,7 +29,7 @@ import org.antlr.runtime.Token;
 public class PlainTokenRenderer implements TokenRenderer {
     private static final String EMPTY = "";
     private boolean showLineNumber;
-    private String lineNumberFormat  = "%%0%4d :";
+    private String lineNumberFormat  = "%04d :";
     
     public String endLine(int line) {
         return EMPTY;

@@ -43,7 +43,7 @@ public class Java2HTMLConverterTask extends MatchingTask {
     private boolean anchorLineNumber = false;
     private boolean addLineBreak     = true;
     private boolean addExplicitSpace = true;
-    private String lineNumberFormat  = "%%0%4d";
+    private String lineNumberFormat  = "%04d";
     private boolean verbose          = false;
     
     private List<Arg> _args = new ArrayList<Arg>();

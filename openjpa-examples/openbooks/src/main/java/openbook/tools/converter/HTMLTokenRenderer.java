@@ -67,7 +67,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     private boolean anchorLineNumber = false;
     private boolean addLineBreak     = true;
     private boolean addExplicitSpace = true;
-    private String lineNumberFormat  = "%%0%4d    ";
+    private String lineNumberFormat  = "%04d";
     
     /**
      * The CSS named styles.
@@ -100,7 +100,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
     public String newLine(int line) {
         String result = "";
         if (showLineNumber) {
-            result = span(CSS_LINE_NO, fillWhiteSpace(String.format(lineNumberFormat, line)));
+            result = span(CSS_LINE_NO, String.format(lineNumberFormat, line) + fillWhiteSpace("    "));
         }
         if (anchorLineNumber) {
             result = "<A name=" + quote("line."+line) + ">" + result + "</A>";
