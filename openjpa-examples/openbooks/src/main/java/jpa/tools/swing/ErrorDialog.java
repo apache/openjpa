@@ -14,7 +14,6 @@
 package jpa.tools.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,119 +21,197 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 
+/**
+ * A dialog to display runtime error.
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 @SuppressWarnings("serial")
 public class ErrorDialog extends JDialog {
-    private static List<String> filters = Arrays.asList("java.awt.", "javax.swing.", "sun.reflect.");
-    private static AttributeSet red, black;
-    static {
-        StyleContext ctx = StyleContext.getDefaultStyleContext();
-        red = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.RED);
-        red = ctx.addAttribute(red, StyleConstants.Bold, true);
-        red = ctx.addAttribute(red, StyleConstants.FontSize, 12);
-        red = ctx.addAttribute(red, StyleConstants.FontFamily, "Courier");
-        black = ctx.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, Color.BLACK);
-        black = ctx.addAttribute(black, StyleConstants.Bold, false);
-        black = ctx.addAttribute(black, StyleConstants.FontFamily, "Courier");
+    private static List<String> filters = Arrays.asList(
+            "java.awt.", 
+            "javax.swing.", 
+            "sun.reflect.",
+            "java.util.concurrent.");
+    private static Dimension MESSAGE_SIZE    = new Dimension(600,200);
+    private static Dimension STACKTRACE_SIZE = new Dimension(600,300);
+    private static Dimension TOTAL_SIZE      = new Dimension(600,500);
+    
+    
+    static String NEWLINE = "\r\n";
+    static String INDENT  = "    ";
+    
+    private boolean      _showingDetails;
+    private boolean      _isFiltering = true;
+    private JComponent _message;
+    private JComponent   _main;
+    private JScrollPane  _details;
+    private JTextPane    _stacktrace;
+    private final Throwable _error;
+    
+    /**
+     * Creates a modal dialog to display the given exception message.
+     * 
+     * @param t the exception to display
+     */
+    public ErrorDialog(Throwable t) {
+        this(null, null, t);
     }
 
     public ErrorDialog(JComponent owner, Throwable t) {
+        this(owner, null, t);
+    }
+    
+    /**
+     * Creates a modal dialog to display the given exception message.
+     * 
+     * @param owner if non-null, then the dialog is positioned (centered) w.r.t. this component
+     * @param t the exception to display
+     */
+    public ErrorDialog(JComponent owner, Icon icon, Throwable t) {
         super();
+        setTitle(t.getClass().getName());
         setModal(true);
+        if (icon != null && icon instanceof ImageIcon) 
+            setIconImage(((ImageIcon)icon).getImage());
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//        Icon icon = Images.ERROR;
-//        setIconImage(((ImageIcon)icon).getImage());
-        addException(t);
+        _error = t;
+        _message = createErrorMessage(_error);
+        _main    = createContent();
+        getContentPane().add(_main);
+
         pack();
         SwingHelper.position(this, owner);
     }
     
-    public ErrorDialog(Throwable t) {
-        this(null, t);
-    }
-    
-    void addException(Throwable t) {
-        setTitle("Error");
-        String txt = t.getClass().getName() + ":" + t.getLocalizedMessage();
-        JTextArea message = new JTextArea(txt);
-        message.setLineWrap(true);
-        message.setWrapStyleWord(true);
-        message.setForeground(Color.RED);
-        message.setText(txt);
-        message.setEditable(false);
-        
-        JTextPane window = new JTextPane();
-        printStackTrace(t, window);
-        window.setEditable(false);
-        JScrollPane pane = new JScrollPane(window, 
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pane.setPreferredSize(new Dimension(400, 200));
-        pane.setBorder(BorderFactory.createTitledBorder("Stacktrace"));
-        pane.setPreferredSize(new Dimension(400, 200));
-        JPanel main = new JPanel();
-        main.setLayout(new BorderLayout());
-        main.add(message, BorderLayout.NORTH);
-        main.add(pane, BorderLayout.CENTER);
-        JPanel buttonPanel = new JPanel();
-        JButton ok = new JButton("OK");
-        ok.addActionListener(new ActionListener() {
+    /**
+     * Creates the display with the top-level exception message 
+     * followed by a pane (that toggles) for detailed stack traces.
+     *  
+     * @param t a non-null exception
+     */
+    JComponent createContent() {
+        final JButton showDetails = new JButton("Show Details >>");
+        showDetails.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ErrorDialog.this.dispose();
+                if (_showingDetails) {
+                     _main.remove(_details);
+                     _main.validate();
+                     _main.setPreferredSize(MESSAGE_SIZE);
+                } else {
+                    if (_details == null) {
+                        _details = createDetailedMessage(_error);
+                        StringBuilder buffer = new StringBuilder();
+                        _stacktrace.setText(generateStackTrace(_error, buffer).toString());
+                        _stacktrace.setBackground(_main.getBackground());
+                        _stacktrace.setPreferredSize(STACKTRACE_SIZE);
+                    }
+                    _main.add(_details, BorderLayout.CENTER);
+                    _main.validate();
+                    _main.setPreferredSize(TOTAL_SIZE);
+                }
+                _showingDetails = !_showingDetails;
+                showDetails.setText(_showingDetails ? "<< Hide Details" : "Show Details >>");
+                ErrorDialog.this.pack();
             }
         });
-        buttonPanel.add(ok);
-        main.add(buttonPanel, BorderLayout.SOUTH);
-        getContentPane().add(main);
-    }
-    static String NEWLINE = "\r\n";
-    StringBuilder printStackTrace(Throwable t, JTextPane text) {
-        String message = t.getClass().getName() + ": " + t.getMessage() + NEWLINE;
-        text.setCaretPosition(text.getDocument().getLength());
-        text.setCharacterAttributes(red, false);
-        text.replaceSelection(message);
-        StackTraceElement[] traces = t.getStackTrace();
-        text.setCharacterAttributes(black, false);
-        for (StackTraceElement e : traces) {
-            if (!isFiltered(e.getClassName())) {
-                String str = "   " + e.toString() + NEWLINE;
-                text.setCaretPosition(text.getDocument().getLength());
-                text.replaceSelection(str);
+        JPanel messagePanel = new JPanel();
+      
+        final JCheckBox filter = new JCheckBox("Filter stack traces");
+        filter.setSelected(_isFiltering);
+        filter.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                _isFiltering = filter.isSelected();
+                StringBuilder buffer = new StringBuilder();
+                _stacktrace.setText(generateStackTrace(_error, buffer).toString());
+                _stacktrace.repaint();
             }
-        }
+        });
+        _message.setBackground(messagePanel.getBackground());
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(Box.createHorizontalStrut(20));
+        buttonPanel.add(showDetails);
+        buttonPanel.add(filter);
+        buttonPanel.add(Box.createHorizontalGlue());
+        messagePanel.setLayout(new BorderLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        messagePanel.add(_message, BorderLayout.CENTER);
+        messagePanel.add(buttonPanel, BorderLayout.SOUTH);
+        messagePanel.setPreferredSize(MESSAGE_SIZE);
         
+        JPanel main = new JPanel();
+        main.setLayout(new BorderLayout());
+        main.add(messagePanel, BorderLayout.NORTH);
+        return main;
+    }
+    
+    /**
+     * Creates a non-editable widget to display the error message.
+     * 
+     */
+    JComponent createErrorMessage(Throwable t) {
+        String txt = t.getLocalizedMessage();
+        JEditorPane message = new JEditorPane();
+        message.setContentType("text/plain");
+        message.setEditable(false);
+        message.setText(txt);
+        return message;
+    }
+    
+    /**
+     * Creates a non-editable widget to display the detailed stack trace.
+     */
+    JScrollPane createDetailedMessage(Throwable t) {
+        _stacktrace = new JTextPane();
+        _stacktrace.setEditable(false);
+        JScrollPane pane = new JScrollPane(_stacktrace, 
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        return pane;
+    }
+    
+    /**
+     * Recursively print the stack trace on the given buffer.
+     */    
+    StringBuilder generateStackTrace(Throwable t, StringBuilder buffer) {
+        buffer.append(t.getClass().getName() + ": " + t.getMessage() + NEWLINE);
+        buffer.append(toString(t.getStackTrace()));
         Throwable cause = t.getCause();
         if (cause !=null && cause != t) {
-            printStackTrace(cause, text);
+            generateStackTrace(cause, buffer);
         }
-        return null;
+        return buffer;
     }
     
     StringBuilder toString(StackTraceElement[] traces) {
         StringBuilder error = new StringBuilder();
         for (StackTraceElement e : traces) {
-            if (!isFiltered(e.getClassName())) {
+            if (!_isFiltering || !isSuppressed(e.getClassName())) {
                 String str = e.toString();
-                error.append(str).append("\r\n");
+                error.append(INDENT).append(str).append(NEWLINE);
             }
         }
         return error;
     }
     
-    private boolean isFiltered(String className) {
+    /**
+     * Affirms if the error messages from the given class name is to be suppressed.
+     */
+    private boolean isSuppressed(String className) {
         for (String s : filters) {
             if (className.startsWith(s))
                 return true;
@@ -146,9 +223,14 @@ public class ErrorDialog extends JDialog {
      * @param args
      */
     public static void main(String[] args) {
-        new ErrorDialog(new IllegalArgumentException(
-                "This is test error with very long line of error message that should not be in a single line"))
-        .setVisible(true);
+        String m1 = "This is test error with very very very very very long line of error message that " 
+            + " should not be in a single line. Another message string that shoul dbe split across word." +
+            "The quick brown fox jumpled over the lazy dog";
+        String m2 = "This is another test error with very long line of error message that " 
+            + " should not be in a single line";
+        Throwable nested = new NumberFormatException(m2);
+        Throwable top = new IllegalArgumentException(m1, nested);
+        new ErrorDialog(top).setVisible(true);
     }
 
 }
