@@ -38,6 +38,10 @@ import javax.persistence.OrderColumn;
 @Entity
 @IdClass(LineItem.LineItemId.class)
 public class LineItem implements Serializable {
+    /**
+     * <A name="example.compound-derived-identity">
+     * An example of a compound derived identity.
+     */
     @Id
     @OneToOne
     private PurchaseOrder order;
