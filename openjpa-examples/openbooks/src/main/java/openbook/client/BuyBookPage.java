@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -41,9 +42,11 @@ import jpa.tools.swing.EntityDataModel;
 import jpa.tools.swing.EntityTable;
 import jpa.tools.swing.EntityTableView;
 import jpa.tools.swing.ErrorDialog;
+import openbook.client.Demo.ShowCodeAction;
 import openbook.domain.Author;
 import openbook.domain.Book;
 import openbook.domain.Customer;
+import openbook.domain.LineItem;
 import openbook.domain.PurchaseOrder;
 import openbook.domain.ShoppingCart;
 import openbook.server.OpenBookService;
@@ -134,9 +137,6 @@ public final class BuyBookPage extends JPanel {
             super(true);
             setBorder(BorderFactory.createTitledBorder(title));
 
-            JButton searchButton = new JButton("Search", Images.START);
-            searchButton.setHorizontalTextPosition(SwingConstants.LEADING);
-
             JLabel titleLabel  = new JLabel("Title :", SwingConstants.RIGHT);
             JLabel authorLabel = new JLabel("Author:", SwingConstants.RIGHT);
             JLabel priceLabel  = new JLabel("Price :", SwingConstants.RIGHT);
@@ -179,11 +179,18 @@ public final class BuyBookPage extends JPanel {
             layout.setHorizontalGroup(hGroup);
             layout.setVerticalGroup(vGroup);
 
+            JButton searchButton = new JButton("Search", Images.START);
+            searchButton.setHorizontalTextPosition(SwingConstants.LEADING);
+            ShowCodeAction showCode = Demo.getInstance().new ShowCodeAction();
+            showCode.setPage("Derived identity", "openbook/domain/LineItem.java.html#example.compound-derived-identity");
+            JButton viewCodeButton = new JButton(showCode);
+            
             JPanel buttonPanel = new JPanel();
             buttonPanel.add(Box.createHorizontalGlue());
             buttonPanel.add(searchButton);
             buttonPanel.add(Box.createHorizontalGlue());
-
+            buttonPanel.add(viewCodeButton);
+            
             BoxLayout box = new BoxLayout(this, BoxLayout.Y_AXIS);
             setLayout(box);
             add(panel);

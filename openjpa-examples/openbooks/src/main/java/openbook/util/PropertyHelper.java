@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -202,6 +203,26 @@ public class PropertyHelper {
         return def;
     }
     
+    public static Map<String,String> getMap(Map<String,Object> props, String key) {
+        return getMap(props, key, Collections.EMPTY_MAP);
+    }
+    
+    public static Map<String,String> getMap(Map<String,Object> props, String key, Map<String,String> def) {
+        List<String> pairs = getStringList(props, key);
+        if (pairs == null || pairs.isEmpty())
+            return def;
+        Map<String,String> result = new LinkedHashMap<String, String>();
+        for (String pair : pairs) {
+            int index = pair.indexOf("->");
+            if (index != -1) {
+                String name  = pair.substring(0, index).trim();
+                String value = pair.substring(index + 2).trim();
+                result.put(name, value);
+            }
+        }
+        return result;
+    }
+
     /**
      * Affirms if the given string using array [] symbol at the end.
      * 

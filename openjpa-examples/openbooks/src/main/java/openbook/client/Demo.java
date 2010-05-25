@@ -18,11 +18,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -87,7 +92,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  *
  */
 @SuppressWarnings("serial")
-public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
+public class Demo extends JFrame {
     private static Dimension TAB_VIEW = new Dimension(800,600);
     private static Dimension OUT_VIEW = new Dimension(800,200);
     private static Dimension NAV_VIEW = new Dimension(400,800);
@@ -116,8 +121,10 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     private StatusBar   _statusBar;
     private ScrollingTextPane   _sqlLog;
     private SQLLogger _sqlListener;
+    private SourceCodeBrowser _sourceBrowser;
+    private static Demo _instance;
     public static final Icon    LOGO = Images.getIcon("images/OpenBooks.jpg");
-    
+    private static final String SRC_ROOT = "source/";
     private boolean _debug = Boolean.getBoolean("openbook.debug");
     
     /**
@@ -137,7 +144,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         adjustWidgetSize();
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                Demo demo = new Demo();
+                Demo demo = Demo.getInstance();
                 demo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 demo.pack();
@@ -145,6 +152,13 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
                 demo.setVisible(true);
             }
         });
+    }
+    
+    public synchronized static Demo getInstance() {
+        if (_instance == null) {
+            _instance = new Demo();
+        }
+        return _instance;
     }
     
     static void adjustWidgetSize() {
@@ -158,7 +172,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
 
     
     private Demo() {
-        Thread.currentThread().setUncaughtExceptionHandler(this);
+        Thread.currentThread().setUncaughtExceptionHandler(new ErrorHandler());
         _config = PropertyHelper.load(System.getProperty("openbook.client.config", "demo.properties"));
         setIconImage(((ImageIcon)LOGO).getImage());
         setTitle("OpenBooks: A Sample JPA 2.0 Application");
@@ -208,8 +222,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
      */
     public OpenBookService getService() {
         if (_service == null) {
-            final String unitName = PropertyHelper.getString(_config, "openbook.unit", 
-                    OpenBookService.DEFAULT_UNIT_NAME);
+            final String unitName = getConfiguration("openbook.unit", OpenBookService.DEFAULT_UNIT_NAME);
             
             SwingWorker<OpenBookService, Void> getService = new SwingWorker<OpenBookService, Void> () {
                 @Override
@@ -254,16 +267,6 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         return _customer;
     }
     
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        if (SwingUtilities.isEventDispatchThread()) {
-            new ErrorDialog(e);
-        } else {
-            e.printStackTrace();
-        }
-    }
-    
-    
     private JToolBar  createToolBar() {
         JToolBar toolBar = new JToolBar();
         toolBar.add(_buyBook);
@@ -289,7 +292,28 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     private StatusBar createStatusBar() {
         return new StatusBar();
     }
-
+    
+    public String getConfiguration(String key, String def) {
+        return PropertyHelper.getString(_config, key, def);
+    }
+    
+    private SourceCodeBrowser getSourceCodeBrowser() {
+        if (_sourceBrowser == null) {
+            String root = getConfiguration("openbook.source.root",  SRC_ROOT);
+            boolean external = "true".equalsIgnoreCase(
+                    getConfiguration("openbook.source.browser.external", "false"))
+                    && Desktop.isDesktopSupported();
+            _sourceBrowser = new SourceCodeBrowser(root, false);
+            if (!external) {
+                Map<String,String> initialPages = PropertyHelper.getMap(_config, "openbook.source.list");
+                for (Map.Entry<String, String> entry : initialPages.entrySet()) {
+                    _sourceBrowser.addPage(entry.getKey(), entry.getValue());
+                }
+                showTab(_tabbedPane, "Source Code", _sourceBrowser.getViewer());
+            }
+        }
+        return _sourceBrowser;
+    }
 
     /**
      * Abstract root of all Action objects helps to locate/configure visual action parameters such as
@@ -299,23 +323,13 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
      *
      */
     public abstract class OpenBookAction extends AbstractAction {
-        public OpenBookAction(Map<String,Object> props, String key) {
-            this(PropertyHelper.getString(props, key + "name",    ""),
-                 PropertyHelper.getString(props, key + "icon",    null),
-                 PropertyHelper.getString(props, key + "tooltip", ""),
-                 PropertyHelper.getString(props, key + "help",    ""));
-        }
-        
         public OpenBookAction(String name, String iconLocation, String tooltip) {
-            this(name, iconLocation, tooltip, tooltip);
+            this(name, Images.getIcon(iconLocation, true), tooltip);
         }
         
-        public OpenBookAction(String name, String iconLocation, String tooltip, String helpText) {
+        public OpenBookAction(String name, Icon icon, String tooltip) {
             putValue(Action.NAME, name);
             putValue(Action.SHORT_DESCRIPTION, tooltip);
-            putValue(Action.LONG_DESCRIPTION,  helpText);
-            
-            Icon icon = Images.getIcon(iconLocation, true);
             putValue(Action.SMALL_ICON, icon);
         }
     }
@@ -424,44 +438,34 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
     }
     
     public class ViewSourceAction extends OpenBookAction {
-        private SourceCodeViewer _sourceViewer;
-        private static final String SRC_ROOT = "http://fisheye6.atlassian.com/browse/~raw,r=HEAD/openjpa/" +
-                                               "trunk/openjpa-examples/openbooks/src/main/java/";
-        
         public ViewSourceAction(String name, String iconLocation, String tooltip) {
             super(name, iconLocation, tooltip);
         }
         
         public void actionPerformed(ActionEvent e) {
-            if (_sourceViewer == null) {
-                String root = PropertyHelper.getString(_config, "openbook.source.url",  SRC_ROOT);
-                _sourceViewer = new SourceCodeViewer(root, getAnchors());
-            }
-            showTab(_tabbedPane, "Source Code", _sourceViewer);
+            getSourceCodeBrowser();
+        }
+    }
+    
+    /**
+     * An action to show a piece of code in an internal or external browser.
+     *
+     */
+    public class ShowCodeAction extends AbstractAction {
+        private String _key;
+        private String _page;
+        public ShowCodeAction() {
+            super("Show Code", Images.JAVA);
         }
         
-        Map<String, String> getAnchors() {
-            Map<String,String> anchors = new TreeMap<String, String>();
-            anchors.put("domain.Book",      toJavaFilePath(Book.class));
-            anchors.put("domain.Author",    toJavaFilePath(Author.class));
-            anchors.put("domain.Customer",  toJavaFilePath(Customer.class));
-            anchors.put("domain.Inventory", toJavaFilePath(Inventory.class));
-            anchors.put("domain.PurchaseOrder", toJavaFilePath(PurchaseOrder.class));
-            anchors.put("domain.LineItem", toJavaFilePath(LineItem.class));
-            
-            anchors.put("OpenBooks Service", toJavaFilePath(OpenBookService.class));
-            anchors.put("Generic Persistence Service", "openbook/server/PersistenceService.java");
-            anchors.put("OpenBooks Service Implementation", "openbook/server/OpenBookServiceImpl.java");
-            
-            anchors.put("clinet.Buy Book", toJavaFilePath(BuyBookPage.class));
-            
-            return anchors;
+        public void setPage(String key, String page) {
+            _key  = key;
+            _page = page;
         }
         
-        private String toJavaFilePath(Class<?> cls) {
-            return cls.getName().replace('.', '/') + ".java";
+        public void actionPerformed(ActionEvent e) {
+           getSourceCodeBrowser().showPage(_key, _page);
         }
-        
     }
     
     /**
@@ -481,7 +485,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         
         public void actionPerformed(ActionEvent e) {
             if (_powerpoint == null && _showPresentation) {
-                String dir = PropertyHelper.getString(_config, "openbook.slides.dir", "slides/");
+                String dir = getConfiguration("openbook.slides.dir", "slides/");
                 String[] defaultSlides = { 
                                     "Slide1.JPG",
                                     "Slide2.JPG",
@@ -511,6 +515,7 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
         }
         
     }
+    
     public class AboutAction extends OpenBookAction {
         AboutDialog _dialog;
         
@@ -525,7 +530,6 @@ public class Demo extends JFrame implements Thread.UncaughtExceptionHandler {
             }
             _dialog.setVisible(true);
         }
-        
     }
     
     /**

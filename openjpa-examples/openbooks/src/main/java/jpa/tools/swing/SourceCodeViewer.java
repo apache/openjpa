@@ -15,23 +15,26 @@ package jpa.tools.swing;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
+import java.net.URI;
+import java.net.URL;
+import java.util.LinkedList;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
 
 /**
- * A viewer for source code.
- * The input to this viewer is a root URL and set of anchors.
+ * An internal viewer for HTML formatted source code.
+ * The input to this viewer is a root URL.
  * The viewer shows the anchors in a combo-box and displays the
  * corresponding HTML in the main editor. 
  * 
@@ -39,62 +42,87 @@ import javax.swing.JScrollPane;
  *
  */
 @SuppressWarnings("serial")
-public class SourceCodeViewer extends JPanel implements ActionListener {
+public class SourceCodeViewer extends JPanel {
     private final JEditorPane _editor;
     private final JComboBox   _bookmarks;
-    private Map<String, String> _anchors;
-    private String _root;
+    private IndexedMap<String, URI> _anchors = new IndexedMap<String, URI>();
+    private LinkedList<String> _visited = new LinkedList<String>();
     
     /**
-     * Create a Source Code Viewer for a set of anchors.
-     * @param root the root url 
-     * @param anchors the key is a visible text and value is the URL
-     * relative to the root.
+     * Create a Source Code Browser.
      */
-    public SourceCodeViewer(String root, Map<String,String> anchors) {
+    public SourceCodeViewer() {
         super(true);
         setLayout(new BorderLayout());
         
-        _anchors = anchors;
-        _root = root;
         _editor = new JEditorPane();
         _editor.setContentType("text/html");
-        _editor.setFont(new Font("Courier New", Font.PLAIN, 16));
         _editor.setEditable(false);
         
         DefaultComboBoxModel model = new DefaultComboBoxModel();
-        for (String key : anchors.keySet()) {
-            model.addElement(key);
-        }
         _bookmarks = new JComboBox(model);
-        _editor.setEditable(false);
         _bookmarks.setEditable(false);
         
-        _bookmarks.addActionListener(this);
+        _bookmarks.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                showAnchor((String)_bookmarks.getSelectedItem());
+            }
+        });
         
-        add(new JScrollPane(_editor), BorderLayout.CENTER);
         JPanel topPanel = new JPanel();
         ((FlowLayout)topPanel.getLayout()).setAlignment(FlowLayout.LEADING);
         topPanel.add(new JLabel("Go to "));
         topPanel.add(_bookmarks);
         topPanel.add(Box.createHorizontalGlue());
-        add(topPanel, BorderLayout.NORTH);
         
-        if (_anchors != null && !_anchors.isEmpty())
-           showPage(_anchors.keySet().iterator().next());
-    }
-   
-    public void actionPerformed(ActionEvent e) {
-        String anchor = (String)_bookmarks.getSelectedItem();
-        showPage(anchor);
+        
+        add(new JScrollPane(_editor,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), 
+                BorderLayout.CENTER);
+        add(topPanel, BorderLayout.NORTH);
     }
     
-    private void showPage(String anchor) {
+    /**
+     * Add a page to this browser.
+     * 
+     * @param anchor a user visible description to identify the page
+     * @param uri the unique resource location
+     */
+    public void addPage(String anchor, URI url) {
+        _anchors.put(anchor, url);
+        ((DefaultComboBoxModel)_bookmarks.getModel()).addElement(anchor);
+    }
+    
+    /**
+     * Shows the page identified by the given anchor.
+     * 
+     * @param anchor an anchor added a priori.
+     */
+    public void showAnchor(String anchor) {
+        int i = _anchors.indexOf(anchor);
+        if (i == -1)
+            return;
+        showPage(anchor, _anchors.get(anchor));
+    }
+   
+    /**
+     * Shows the given URI.
+     * @param anchor an anchor added a priori or a new one.
+     * @param uri the URI of the anchor
+     */
+    public void showPage(String anchor, URI uri) {
+        if (anchor == null || uri == null) 
+            return;
         try {
-            _editor.setPage(_root + _anchors.get(anchor));
+            URL url = uri.toURL();
+            _editor.setPage(url);
+            repaint();
+            _visited.add(anchor);
+            _anchors.put(anchor, uri);
         } catch (Exception ex) {
+            System.err.println("Anchor = " + anchor + " URI " + uri);
             ex.printStackTrace();
         }
-        
     }
 }

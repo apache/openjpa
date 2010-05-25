@@ -134,9 +134,6 @@ public class ParseTokenListener extends BlankDebugEventListener {
             return;
         _stream.print(_renderer.endLine(currentLine));
         _stream.print(_renderer.newLine(newline));
-        if (newline != currentLine+1) {
-            System.err.println("Error is line number processing.  Line " + currentLine + " jumps to " + newline);
-        }
         currentLine = newline;
     }
 }

@@ -38,6 +38,7 @@ public class Images {
     public static Icon BROWSE  = getIcon("images/browse.png");
     public static Icon START   = getIcon("images/start_task.gif");
     public static Icon MONITOR = getIcon("images/console_view.gif");
+    public static Icon JAVA    = getIcon("images/SourceCode.jpg", true);
     
     public static Icon getIcon(String name) {
         Icon icon = images.get(name);
