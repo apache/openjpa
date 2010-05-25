@@ -19,7 +19,6 @@
 package openbook.util;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
