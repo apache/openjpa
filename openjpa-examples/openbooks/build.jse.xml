@@ -46,36 +46,64 @@
 			<include name="LICENSE.txt"/>
 		</jar>
 
-		<zip destfile="${target.dir}/openbooks.zip" basedir="${basedir}">
-			<include name="run.properties" />
-			<include name="run.xml" />
-			<include name="index.html" />
-			<include name="NOTICE.txt"/>
-			<include name="LICENSE.txt"/>
-		</zip>
-		<zip destfile="${target.dir}/openbooks.zip" basedir="${target.dir}" update="true">
-			<include name="openbooks.jar" />
-		</zip>
-		<zip destfile="${target.dir}/openbooks.zip" basedir="${rsrc.dir}" update="true">
-			<include name="load.properties" />
-			<include name="demo.properties" />
-			<include name="META-INF/persistence.xml" />
-			<include name="slides/**" />
-		</zip>
-		<zip destfile="${target.dir}/openbooks.zip" basedir="${target.dir}" update="true">
-			<include name="source/**" />
-		</zip>
-		
 		<delete dir="${deploy.dir}" failonerror="false"/>
 		<mkdir dir="${deploy.dir}"/>
-		<unzip dest="${deploy.dir}" src="${target.dir}/openbooks.zip" overwrite="true"/>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${basedir}">
+				<include name="run.properties" />
+				<include name="run.xml" />
+				<include name="index.html" />
+				<include name="NOTICE.txt"/>
+				<include name="LICENSE.txt"/>
+			</fileset>
+			<fileset dir="${target.dir}">
+				<include name="openbooks.jar"/>
+			</fileset>
+			<fileset dir="${rsrc.dir}">
+				<include name="load.properties" />
+				<include name="demo.properties" />
+				<include name="META-INF/persistence.xml" />
+				<include name="slides/**" />
+			</fileset>
+		</copy>
+		<mkdir dir="${deploy.dir}/source"/>
+		<copy todir="${deploy.dir}/source">
+			<fileset dir="${generated.html.dir}">
+				<include name="**/*.css"/>
+				<include name="**/*.html"/>
+			</fileset>
+		</copy>
+
 	</target>
 	
 	<target name="compile" 
 		description="Compile classes.">
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
 			<classpath refid="compile.classpath" />
+			<exclude name="openbook/tools/**/*.java"/>
 		</javac>
+	</target>
+	
+	<target name="generate-source-with-options">
+		<java2html 
+			sourcepath="${src.dir}" 
+			destDir="${generated.html.dir}" 
+			extension=".html"
+			addLineBreak="true"
+			addExplicitSpace="true"
+			verbose="false">
+			<exclude name="openbook/tools/**/*.java"/>
+			<exclude name="jpa/**/*.java"/>
+			<exclude name="openbook/util/*.java"/>
+		</java2html>
+		<java2html 
+			sourcepath="${generated.src.dir}" 
+			destDir="${generated.html.dir}" 
+			extension=".html"
+			addLineBreak="true"
+			addExplicitSpace="true"
+			verbose="false">
+		</java2html>
 	</target>
 
 </project>

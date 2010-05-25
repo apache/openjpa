@@ -55,10 +55,10 @@
 	<property name="classes.dir"  value="${target.dir}/classes"/>
 	<!-- ================================================================== -->
 	<!-- root directory of generated canonical meta-model source files       -->
-	<property name="generated.src.dir"  value="${target.dir}/generated-sources/java"/>
+	<property name="generated.src.dir"  value="${target.dir}/generated-metamodel/java"/>
 	<!-- ================================================================== -->
 	<!-- root directory of generated html for Java source files             -->
-	<property name="generated.html.dir"  value="${target.dir}/source"/>
+	<property name="generated.html.dir"  value="${target.dir}/generated-html"/>
 	<!-- ================================================================== -->
 	<!-- directory for deployable artifacts                                 -->
 	<property name="deploy.dir"   value="${target.dir}/openbooks"/>          
@@ -73,6 +73,14 @@
 			<include name="*.jar" />
 		</fileset>
 	</path>
+	
+	<path id="code.generation.classpath" 
+		description="">
+		<pathelement location="${ant.home}/ant.jar" />
+		<pathelement location="${antlr.lib}" />
+		<pathelement location="${classes.dir}" />
+	</path>
+	
 	
 	<fileset id="canonical.metamodel" dir="${src.dir}" 
 		description="Set of *.java files generated for static, cannonical domain model">
@@ -100,6 +108,7 @@
 		    description="Checks if required libraries exist"
 		    depends="info">
 		<available file="${openjpa.lib}"   property="openjpa.exists"/>
+		
 		<fail unless="openjpa.exists">*** Error:
 		   The directory for OpenJPA libraries can not be located at ${openjpa.lib}. 
 		   Make sure openjpa.lib property value is correct in build.properties file.	
@@ -118,6 +127,8 @@
 			<equals arg1="${build.mode}" arg2="jee" casesensitive="true" trim="true"/>
 		</condition>
 		<mkdir dir="${deploy.dir}"/>
+		
+		<available file="${antlr.lib}"     property="antlr.exists" />
 	</target>
 	
 	<target name="generate-canonical-model" depends="check-env"
@@ -157,12 +168,40 @@
 	             clean,
 				 generate-canonical-model,
 				 compile,
-				 enhance">
+				 enhance,
+				 generate-source">
 		<subant antfile="build.${build.mode}.xml" 
 			target="package" 
 			inheritrefs="true" 
 			inheritall="true"
 			buildpath="${basedir}"/>
+	</target>
+	
+	<!-- Generating viewable syntax colored Java code as html is to be split -->
+	<!-- for JSE and JEE mode for some differences in Swing based browser    -->
+	<!-- versus general purpose web browsers. Swing based browser treats     -->
+	<!-- line breaks, white spaces differently becuase it does not recognize -->
+	<!-- some critical CSS directives in this regard. This anamoly is        -->
+	<!-- accounted for by customizing Java2HTMLConverter accordingly         -->
+	<!-- see the respective target's options to notice the difference        -->
+	<target name="generate-source" depends="check-env" if="antlr.exists">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<include name="openbook/tools/**/*.java"/>
+			<exclude name="openbook/tools/**/Test*.java"/>
+			<classpath refid="code.generation.classpath"/>
+		</javac>
+		<taskdef name="java2html" classname="openbook.tools.ant.Java2HTMLConverterTask">
+			<classpath refid="code.generation.classpath"/>
+		</taskdef>
+		<delete dir="${generated.html.dir}"></delete>
+		<mkdir dir="${generated.html.dir}"/>
+		<copy file="${rsrc.dir}/java.css" todir="${generated.html.dir}"/>
+		<subant antfile="build.${build.mode}.xml" 
+			target="generate-source-with-options" 
+			inheritrefs="true" 
+			inheritall="true"
+			buildpath="${basedir}"/>
+
 	</target>
 	
 </project>

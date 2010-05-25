@@ -32,10 +32,17 @@
 		<copy file="${rsrc.dir}/META-INF/persistence.xml" todir="${classes.dir}/META-INF"/>
 		<war destfile="openbooks.war" webxml="${rsrc.dir}/META-INF/web.xml" filesonly="true">
 			<fileset dir="${web.dir}"/>
-			<classes dir="${classes.dir}" />
+			<classes dir="${classes.dir}">
+				<include name="openbook/domain/**"/>
+				<include name="openbook/server/**"/>
+				<include name="openbook/util/**"/>
+			</classes>
 			<fileset dir="${rsrc.dir}">
 				<include name="images/Add2Cart.jpg"/>
 				<include name="images/OpenBooks.jpg"/>
+			</fileset>
+			<fileset dir="${target.dir}">
+				<include name="generated-html/**"/>
 			</fileset>
 		</war>
 		<move file="openbooks.war" todir="${deploy.dir}" overwrite="true"/>
@@ -46,8 +53,32 @@
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
 			<classpath refid="compile.classpath" />
 			<exclude name="jpa/tools/**/*.java"/>
+			<exclude name="openbook/tools/**/*.java"/>
 			<exclude name="openbook/client/**/*.java"/>
 		</javac>
+	</target>
+	
+	<target name="generate-source-with-options">
+		<java2html 
+			sourcepath="${src.dir}" 
+			destDir="${generated.html.dir}" 
+			extension=".html"
+			addLineBreak="false"
+			addExplicitSpace="false"
+			verbose="false">
+			<exclude name="openbook/tools/**/*.java"/>
+			<exclude name="jpa/**/*.java"/>
+			<exclude name="openbook/util/*.java"/>
+		</java2html>
+		<java2html 
+			sourcepath="${generated.src.dir}" 
+			destDir="${generated.html.dir}" 
+			extension=".html"
+			addLineBreak="false"
+			addExplicitSpace="false"
+			verbose="false">
+		</java2html>
+
 	</target>
 	
 </project>
