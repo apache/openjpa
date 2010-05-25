@@ -27,15 +27,20 @@
 	
 	<target name="package"
 		description="Build, package and deploy OpenBooks as a WAR application in an Application Server">
-		<delete file="${deploy.dir}/openbook.war" failonerror="false"/>
+
+	   <condition property="app.server" value="" else=".${appserver}">		 
+			<equals arg1="${appserver}" arg2="" casesensitive="true" trim="true"/>			
+		</condition>
+		<antcall target="jee.uninstall"/>
 		<mkdir dir="${classes.dir}/META-INF"/>
-		<copy file="${rsrc.dir}/META-INF/persistence.xml" todir="${classes.dir}/META-INF"/>
+		<antcall target="jee.pre-package"/>
 		<war destfile="openbooks.war" webxml="${rsrc.dir}/META-INF/web.xml" filesonly="true">
 			<fileset dir="${web.dir}"/>
 			<classes dir="${classes.dir}">
 				<include name="openbook/domain/**"/>
 				<include name="openbook/server/**"/>
 				<include name="openbook/util/**"/>
+				<include name="META-INF/persistence.xml"/>
 			</classes>
 			<fileset dir="${rsrc.dir}">
 				<include name="images/Add2Cart.jpg"/>
@@ -45,6 +50,48 @@
 				<include name="generated-html/**"/>
 			</fileset>
 		</war>
+		<antcall target="jee.install"/>
+	</target>
+
+   <target name="jee.uninstall"
+      description="AppServer specific installation">
+   		<subant antfile="build.${build.mode}${app.server}.xml" 
+			    target="uninstall" 
+			    inheritrefs="true" 
+			    inheritall="true"
+			    buildpath="${basedir}"/>
+   </target>
+
+   <target name="uninstall"
+      description="Default app uninstall">
+		<delete file="${deploy.dir}/openbook.war" failonerror="false"/>
+   </target>
+
+   <target name="jee.pre-package"
+      description="AppServer specific pre-packaging.  Occurs before war packaging.">
+   		<subant antfile="build.${build.mode}${app.server}.xml" 
+			    target="pre-package" 
+			    inheritrefs="true" 
+			    inheritall="true"
+			    buildpath="${basedir}"/>
+   </target>
+
+   <target name="pre-package"
+      description="Default application pre-packaging">
+		<copy file="${rsrc.dir}/META-INF/persistence.xml" todir="${classes.dir}/META-INF"/>   
+   </target>
+
+   <target name="jee.install"
+      description="AppServer selective installation.">
+   		<subant antfile="build.${build.mode}${app.server}.xml" 
+			    target="install" 
+			    inheritrefs="true" 
+			    inheritall="true"
+			    buildpath="${basedir}"/>
+   </target>
+   
+   <target name="install"
+      description="Default application installation">
 		<move file="openbooks.war" todir="${deploy.dir}" overwrite="true"/>
 	</target>
 

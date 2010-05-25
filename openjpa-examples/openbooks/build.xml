@@ -44,9 +44,9 @@
 	<!-- JPA configuration file anchored by the persistence unit name       -->
 	<property name="jpa.properties"  value="META-INF/persistence.xml#OpenBooks"/>
 	<!-- ================================================================== -->	
-	
-	
-	
+	<!-- Application/Web Server type:                                       -->
+	<!-- geronimo, was, tomcat, glassfish, or empty string for default      -->
+	<property name="appserver" value=""/>
 	<!-- ================================================================== -->	
 	<!-- Root directory of all derived artifacts                            -->
 	<property name="target.dir" value="${basedir}/target"/>
