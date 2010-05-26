@@ -158,10 +158,13 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     }
     
     /**
-     * Provide a name and email to login a Customer.
+     * <A name="login">
+     * Provide a name to login a Customer.
      * If such a customer exists, return it. Otherwise creates a new one.
-     * @param name
-     * @return
+     * 
+     * @param name name of an existing or a new Customer
+     * 
+     * @return a Customer
      */
     public Customer login(String name) {
         EntityManager em = begin();
@@ -206,12 +209,20 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
         return result;
     }
     
+    /**
+     * <A name="getQuery">
+     * Gets the string representation of a Criteria Query.
+     * The string form of a Criteria Query is not specified in JPA specification.
+     * But OpenJPA produces a readable form that is quite <em>similar</em> to 
+     * equivalent JPQL.
+     */
     public String getQuery(String title, Double minPrice, Double maxPrice, String author) {
         CriteriaQuery<Book> q = buildQuery(title, minPrice, maxPrice, author);
         return q.toString();
     }
    
     /**
+     * <A name="buildQuery">
      * Creates a Query based on the values of the user input form. 
      * The user may or may not have filled a value for each form field
      * and accordingly the query will be different.<br>
@@ -222,21 +233,31 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      * introduced in JPA version 2.0.
      * <br>
      * 
-     * 
      * @return a typed query
      */
 
-    private CriteriaQuery<Book> buildQuery(String title, 
-            Double minPrice, Double maxPrice, 
-            String author) {
+    private CriteriaQuery<Book> buildQuery(String title, Double minPrice, Double maxPrice, String author) {
+        // builder generates the Criteria Query as well as all the expressions
         CriteriaBuilder cb = getUnit().getCriteriaBuilder();
+        // The query declares what type of result it will produce 
         CriteriaQuery<Book> q = cb.createQuery(Book.class);
+        // Which type will be searched
         Root<Book> book = q.from(Book.class);
+        // of course, the projection term must match the result type declared earlier
+        q.select(book);
+        
+        // Builds the predicates conditionally for the filled-in input fields 
         List<Predicate> predicates = new ArrayList<Predicate>();
-        if (title != null && title.trim().length() > 0) {
+        if (!isEmpty(title)) {
             Predicate matchTitle = cb.like(book.get(Book_.title), title);
             predicates.add(matchTitle);
         }
+        if (!isEmpty(author)) {
+            Predicate matchAuthor = cb.like(book.join(Book_.authors).get(Author_.name), "%"+author+"%");
+            predicates.add(matchAuthor);
+        }
+        // for price fields, also the comparison operation changes based on whether
+        // minimum or maximum price or both have been filled. 
         if (minPrice != null && maxPrice != null) {
             Predicate matchPrice = cb.between(book.get(Book_.price), minPrice, maxPrice);
             predicates.add(matchPrice);
@@ -247,26 +268,30 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
             Predicate matchPrice = cb.le(book.get(Book_.price), maxPrice);
             predicates.add(matchPrice);
         }
-        if (author != null && author.trim().length() > 0) {
-            Predicate matchAuthor = cb.like(book.join(Book_.authors).get(Author_.name), "%"+author+"%");
-            predicates.add(matchAuthor);
-        }
-            
-        q.select(book);
+        // Sets the evaluation criteria     
         if (!predicates.isEmpty())
             q.where(predicates.toArray(new Predicate[predicates.size()]));
         
         return q;
     }
+    
+    boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty(); 
+    }
 
     
     /**
-     * Deliver pending orders.
-     * Queries for pending PurchaseOrders and attempts to deliver each in a separate
-     * transaction. Some of the transactions may fail because of concurrent modification
-     * on the inventory by the supplier.
+     * <A name="deliver"/>
+     * Delivers the given order, if it is pending.
+     * Delivery of an order amounts to decrementing inventory for each line item
+     * and eventually nullify the line items to demonstrate orphan delete feature.
+     * <br>
+     * The transactions may fail because of either insufficient inventory or
+     * concurrent modification of the same inventory by {@link #supply(Book, int) the supplier}.
      */
     public PurchaseOrder deliver(PurchaseOrder o) {
+        if (o.isDelivered())
+            return o;
         EntityManager em = begin();
         o = em.merge(o);
         for (LineItem item : o.getItems()) {
@@ -301,6 +326,7 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     }
     
     /**
+     * <A name="placeOrder"/>
      * Creates a new {@linkplain PurchaseOrder} from the content of the given {@linkplain ShoppingCart}.
      * The content of the cart is cleared as a result.
      * <br>

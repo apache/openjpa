@@ -91,7 +91,7 @@ public class HTMLTokenRenderer implements TokenRenderer {
      * Gets a end-of-line string: a HTML &lt;br&gt; tag followed by carriage return and line feed.
      */
     public String endLine(int line) {
-        return addLineBreak ? HTML_BR_TAG : HTML_BR_TAG + NEW_LINE;
+        return  addLineBreak ?  HTML_BR_TAG + NEW_LINE : NEW_LINE;
     }
 
     /**

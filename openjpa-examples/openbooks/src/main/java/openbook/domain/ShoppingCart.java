@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * <A name="non-persistent"/>
  * A non-persistent entity holds the content of a shopping session for a {@linkplain Customer}.
  * Used to create a persistent PurchaseOrder.
  * Books can be added or removed from this cart.
@@ -30,7 +31,15 @@ import java.util.Map;
  */
 @SuppressWarnings("serial")
 public class ShoppingCart implements Serializable {
+    /**
+     * The owner of this cart.
+     */
     private Customer customer;
+    
+    /**
+     * <A name="items"/>
+     * The items in the cart and their respective quantity.
+     */
     private Map<Book, Integer> items;
     
     /**

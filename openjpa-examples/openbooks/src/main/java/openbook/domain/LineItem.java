@@ -39,7 +39,7 @@ import javax.persistence.OrderColumn;
 @IdClass(LineItem.LineItemId.class)
 public class LineItem implements Serializable {
     /**
-     * <A name="example.compound-derived-identity">
+     * <A name="order">
      * An example of a compound derived identity.
      */
     @Id

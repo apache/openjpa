@@ -33,11 +33,12 @@ import java.util.Date;
  *
  */
 public class JSPUtility {
+    
     /**
      * Converts the given number in currency format.
      */
      public static final DecimalFormat currencyFormatter = new DecimalFormat("###.##");
-     public static final DateFormat dateFormatter = new SimpleDateFormat("MMM dd yyyy HH:mm");
+     public static final DateFormat dateFormatter = new SimpleDateFormat("MMM dd, HH:mm");
      
      public static String format(Number price) {
         return currencyFormatter.format(price);
@@ -58,15 +59,6 @@ public class JSPUtility {
            return null;
        }
      }
-    
-    /**
-     * Background color of table rows.
-     */
-    public static String EVEN_ROW_COLOR = "#E3E4FA";
-    public static String ODD_ROW_COLOR  = "#E0FFFF";
-    public static String getRowStyle(int row) {
-        return "background-color:" + ((row % 2 == 0) ? EVEN_ROW_COLOR : ODD_ROW_COLOR);
-    }
     
     /**
      * Encodes parameter key-values in a URL.
@@ -103,5 +95,10 @@ public class JSPUtility {
         } catch (UnsupportedEncodingException e) {
             return s;
         }
+    }
+    
+    public static final String SRC_ROOT = "generated-html";
+    public static String getURL(String className, String anchor) {
+        return SRC_ROOT + "/" + className.replace('.', '/') + (anchor != null ? "#"+anchor : "");
     }
 }

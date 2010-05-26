@@ -105,13 +105,10 @@ public class ParseTokenListener extends BlankDebugEventListener {
     public void consumeHiddenToken(Token token) {
         if (this.backtracking > 0 && currentLine != 0) return;
         int type = token.getType();
-        if (type == JavaParser.COMMENT) {
-//            LineBreakIterator lines = new LineBreakIterator(token.getText());
+        if (type == JavaParser.COMMENT || type == JavaParser.LINE_COMMENT) {
             StringTokenizer linebreaker = new StringTokenizer(token.getText(), "\r\n", false);
             int i = 0;
-//            for (String line : lines) {
             while (linebreaker.hasMoreTokens()) {
-//                Token dummy = new CommonToken(JavaParser.COMMENT, line);
                 Token dummy = new CommonToken(JavaParser.COMMENT, linebreaker.nextToken());
                 changeLine(token.getLine() + i);
                 _stream.print(_renderer.render(decision, dummy));

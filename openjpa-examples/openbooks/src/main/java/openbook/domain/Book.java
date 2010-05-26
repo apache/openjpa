@@ -29,6 +29,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
 /**
+ * <A name="class"/>
  * An immutable persistent entity represents a Book.
  * <br>
  * The mutable properties of the book such as number of items in stock etc.
@@ -62,6 +63,11 @@ public class Book implements Serializable {
               orphanRemoval=true)
     private Inventory inventory;
     
+    /**
+     * <A name="authors">
+     * A many-to-many <em>eager</em> relation. 
+     * By default, many-to-many relations are lazily fetched.
+     */
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Author> authors;
     
