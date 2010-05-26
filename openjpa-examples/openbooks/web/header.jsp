@@ -61,56 +61,46 @@
     public static String PAGE_CHECKOUT  = "checkout.jsp";
     
     public static String FORM_TITLE     = "title";
-    public static String FORM_AUTHOR    = "title";
+    public static String FORM_AUTHOR    = "author";
     public static String FORM_PRICE_MAX = "maxPrice";
     public static String FORM_PRICE_MIN = "minPrice";
+    
+    
+    public static String ROW_STYLE_EVEN = "even";
+    public static String ROW_STYLE_ODD  = "odd";
 %>
 
 <!-- Header division displays the title and right-justified current user name -->
 <!-- and a Shopping Cart icon for active sessions                             -->
 <div id="header">
-<table>
-  <colgroup>
-    <col align="left"  width="75%">
-    <col align="right" width="25%">
-  </colgroup>
-  <TBODY>
-  <TR>
-   <TD><img src="images/OpenBooks.jpg" width="25px" height="25px" border="0"> OpenBooks</TD>
-   <TD>
+    <img alt="OpenBooks Logo" src="images/OpenBooks.jpg" border="0" width="25px" height="25px" />
+    &nbsp;&nbsp;<A HREF=".">OpenBooks</A>: JPA 2.0 Application 
 <% 
   Object currentUser = session.getAttribute("user");
   boolean activeSession = currentUser != null;
   if (activeSession) {
 %>
-   <A HREF="cart.jsp"><img src="images/Add2Cart.jpg" border="0" width="25px" height="25px"></A>
-   &nbsp;&nbsp; <%= currentUser.toString() %> 
+     <div style="float:right;text-align: right;margin-right:1em">
+           <%= currentUser.toString() %>&nbsp;&nbsp;
+           <A HREF="cart.jsp"><img src="images/Add2Cart.jpg" border="0" width="25px" height="25px"></A>
+     </div>
 <%
   }
 %>
-  </TD>
-  </TR>
-  </TBODY>
-</table>
 </div>
 
 <!-- Left menu navigation displays the items based on current session status  -->
-<!-- and a Shopping Cart icon for active sessions                             -->
 
 <div id="left">
 
-<ul>
-  <li><a href="intro.jsp">Login</a></li>
 <%
   if (activeSession) {
 %>
-  <li><a href="search.jsp">Search/Buy Books</a></li>
+<ul>
+  <li><a href="search.jsp">Search Books</a></li>
   <li><a href="orders.jsp">View Orders</a></li>
-<%
-  }
-%>
-  <li><a href="http://fisheye6.atlassian.com/browse/openjpa/trunk/openjpa-examples/openbooks/src/main/java/openbook/server/OpenBookService.java?r=HEAD"
-  target="_blank">
-  View Code</a></li>
 </ul>
 </div>
+<% 
+  }
+%>

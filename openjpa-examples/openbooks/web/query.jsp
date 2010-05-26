@@ -29,6 +29,27 @@
 <%@page import="openbook.util.JSPUtility"%>
 <%@page import="java.util.List"%>
 
+<div id="help">
+   <h3>Query Result</h3>
+   
+   This page is displaying the result of the query specified in the previous Search page.
+   <ul>
+   <li><B>Readability</B>: Criteria query is more powerful than JPQL but hardly as readable.
+   JPA specification says nothing about how a Criteria Query should be displayed.
+   OpenJPA implementation provides a simple 
+   <a HREF="generated-html/openbook/server/OpenBookServiceImpl.java.html#getQuery" type="popup">
+   <code>toString()</code></a> method to display a query string that is quite <em>similar</em> to 
+   an equivalent JPQL string.
+   </li>
+   <li><B>Eager Fetching</B>: The query result displays the Author names as well, though the query 
+   had only selected the Books. But the Authors have also been fetched because
+   many-to-many <a href="generated-html/openbook/domain/Book.java.html#authors" type="popup">
+   Book-Author relationship</a> is annotated to be <em>eagerly fetched</em>.
+   </li>
+   </ul>
+</div>
+
+
 <div id="content" style="display: block">
 <%!
      /**
@@ -66,15 +87,25 @@
   List<Book> books = service.select(title, minPrice, maxPrice, author);
   String query = service.getQuery(title, minPrice, maxPrice, author);
 %>
-The query executed on the server was <br>
-<pre><%= query %></pre>
+Query : <code><%= query %></code>
 <br>
-This query selected <%= books.size() %> books.<br>
-<table border="0">
+<%
+   if (books.isEmpty()) {
+%>
+    This query did not select any Book.
+    <br>
+    <p align="right"><A HREF="<%= PAGE_SEARCH %>">Search again</A></p>
+<%       
+    return;
+   }
+%>
+<br>
+<table>
+  <caption><%= books.size() %> Books selected</caption>
   <thead>
     <tr>
       <th>ISBN</th> <th>Title</th> <th>Price</th> <th>Authors</th> 
-      <th><img src="images/Add2Cart.jpg" border="0" width="20px" height="20px"></th>
+      <th>Add to Cart</th>
     </tr>
   </thead>
   <tfoot>
@@ -88,7 +119,7 @@ This query selected <%= books.size() %> books.<br>
   for (Book book : books) {
       session.setAttribute(book.getISBN(), book);
 %>
-   <TR style="<%= JSPUtility.getRowStyle(i++) %>">
+   <TR class="<%= i++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
       <TD> <%= book.getISBN() %> </TD>
       <TD> <%= book.getTitle() %> </TD>
       <TD> <%= JSPUtility.format(book.getPrice()) %> </TD>

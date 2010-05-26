@@ -30,24 +30,65 @@
 
 <%@include file="header.jsp"%>
 
+<div id="help">
+<h3>Composite Pattern and Derived Identity</h3>
 
+  You have just created a  
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#init" type="popup">new Purchase Order 
+  </a>.  Each Book in 
+  the Shopping Cart is turned into separate line item for the order and the Purchase
+  Order and all its line items are inserted as new database records. All this happened with
+  this <a href="generated-html/openbook/server/OpenBookServiceImpl.java.html#placeOrder" type="popup">
+  few lines of Java Code</a> 
+  <br>
+  <ul>
+  <li><b>Transitive Persistence</b>:
+  The line items are persisted without any <em>explicit</em> call to persist because persist operation 
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#items" type="popup"> cascades 
+  via the order-line item relation</a>. During persist, the JPA provider generated a new
+  <a href="generated-html/openbook/domain/PurchaseOrder.java.html#id" type="popup"> identity of 
+  the Purchase Order</a> automatically. 
+  </li>
+  <li><b>Compound, Derived identity</b>:
+  The identity generation, in this case, is more interesting if you look at the 
+  <a href="generated-html/openbook/domain/LineItem.java.html#id" type="popup">
+  identity used by the line items</a>. Line Item uses <em>compound, derived</em>
+  identity. It is <em>compound</em> because more than one field make up the identity.
+  It is <em>derived</em> because one of the identity field borrows its value
+  from the owning Purchase Order's identity. Because of such dependency, the persistent
+  identity of a Line Item can only be assigned only after a new 
+  identity value for a Purchase Order gets generated during transaction commit.    
+  </li>
+  <li><b>Composite Relation</b>: Purchase Order - Line Item relationship is by semantics,
+  a composite relation. Simply stated, life time of a Line Item is completely controlled
+  by the owning Purchase Order. It is noteworthy that the Line Item constructor is
+  package protected to ensure that only Purchase Order can create them.
+  <br>
+  The Java language provides no support for composite
+  relationship -- but it is a common pattern for persistent objects. The new JPA features
+  of derived identity combined with orphan delete (another new feature) and cascaded 
+  persistent operations provides an application to reliably express a classic Master-Details
+  pattern in their application.     
+  </li>
+  </ul>
+  
+</div>
 
 <div id="content" style="display: block">
-<h2>Thank you for buying books from OpenBooks!</h2>
 <% 
    OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 
    ShoppingCart cart = (ShoppingCart)session.getAttribute(KEY_CART);
    PurchaseOrder order = service.placeOrder(cart);
    
 %>
-Order : <%= order.getId() %> <br>
-Placed on <%= JSPUtility.format(order.getPlacedOn()) %>
+Purchase Order ID : <%= order.getId() %> <br>
+Placed on : <%= JSPUtility.format(order.getPlacedOn()) %><br>
 
-<table border="0">
+<table>
   <caption><%= order.getItems().size() %> items</caption>
   <thead>
     <tr>
-      <th>Title</th> <th>Price</th> <th>Quantity</th>
+      <th>Title</th> <th>Quantity</th><th>Price</th> 
     </tr>
   </thead>
   <tfoot>
@@ -61,7 +102,7 @@ Placed on <%= JSPUtility.format(order.getPlacedOn()) %>
   List<LineItem> items = order.getItems();
   for (LineItem item : items) {
 %>
-   <TR style="<%= JSPUtility.getRowStyle(i++) %>">
+   <TR class="<%= i++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
       <TD> <%= item.getBook().getTitle() %> </TD>
       <TD> <%= item.getQuantity() %> </TD>
       <TD> <%= JSPUtility.format(item.getBook().getPrice() * item.getQuantity()) %> </TD>
@@ -70,7 +111,7 @@ Placed on <%= JSPUtility.format(order.getPlacedOn()) %>
   }
 %>
   <TR>
-  <TD>Total</TD><TD><%= JSPUtility.format(order.getTotal()) %></TD>
+  <TD>Total</TD><TD> </TD><TD><%= JSPUtility.format(order.getTotal()) %></TD>
   </TR>
   </tbody>
 </table>

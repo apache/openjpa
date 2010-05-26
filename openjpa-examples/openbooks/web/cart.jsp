@@ -28,6 +28,23 @@
 
 <%@include file="header.jsp"%>
 
+<div id="help">
+  <h3>Shopping Cart</h3>
+<% if (ACTION_ADD.equals(request.getParameter(KEY_ACTION))) {
+%>
+   You have just added a Book to the cart. 
+   <br>
+<% 
+  }  
+%>
+  A <a HREF="generated-html/openbook/domain/ShoppingCart.java.html#items" type="popup">Shopping Cart</a> contains 
+  <a HREF="generated-html/openbook/domain/Book.java.html#class" type="popup">Books</a> that are persistent objects. 
+  <a HREF="generated-html/openbook/domain/ShoppingCart.java.html#non-persistent" type="popup">
+  Shopping Cart</a>  itself, however, is <em>not</em> a persistent object.
+  Shopping Cart is an in-memory data structure to hold the Books in the current web session and transfer 
+   it to the server when a Purchase Order is to be placed. 
+
+</div>
 <div id="content" style="display: block">
 
 <% 
@@ -41,15 +58,17 @@
    }
    if (cart.isEmpty()) {
 %>
-   <h3><%= customer.getName() %>, your Shopping Cart is empty.</h3><br>
-   <A HREF="<%= PAGE_SEARCH %>">Continue Shopping</A>
+      <%= customer.getName() %>, your Shopping Cart is empty.<br>
+      <A HREF="<%= PAGE_SEARCH %>">Continue Shopping</A>
 <%    
-   } else {
+      return;
+   } 
 %>
 
 
-<table border="0">
-  <caption><%= customer.getName() %>, your Shopping Cart has <%= cart.getTotalCount() %> books</caption>
+<table>
+  <caption><%= cart.getTotalCount() %> book <%= cart.getTotalCount() == 1 ? "" : "s" %> in 
+         <%= customer.getName() %>'s Shopping Cart</caption>
   <thead>
     <tr>
       <th>Title</th> <th>Price</th> <th>Quantity</th>
@@ -63,12 +82,12 @@
   </tfoot>
   <tbody>
 <%
-   }
+   
    Map<Book,Integer> books = cart.getItems();
    int i = 0;
    for (Book b : books.keySet()) {
 %>
-   <TR style="<%= JSPUtility.getRowStyle(i++) %>">
+   <TR class="<%= i++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
       <TD> <%= b.getTitle() %> </TD>
       <TD> <%= JSPUtility.format(b.getPrice()) %> </TD>
       <TD> <%= books.get(b) %> </TD>

@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.    
 --%>
-<!-- ===============================================================================================      -->
-<!--      This JSP page demonstrates usage of OpenBookService to browse, select and purchase Books.       -->
-<!-- ===============================================================================================      -->
+<!-- ===========================================================================      -->
+<!--      This JSP page demonstrates changing status of a Purchase Order.             -->
+<!-- ===========================================================================      -->
 <%@page import="openbook.server.OpenBookService"%>
 <%@page import="openbook.domain.Book"%>
 <%@page import="openbook.domain.Customer"%>
@@ -31,6 +31,31 @@
 
 <%@include file="header.jsp"%>
 
+<div id="help">
+<h3>Optimistic semantics and Orphan Delete</h3>
+
+This page displays all the orders placed by the current users. 
+This page also allows to 
+<A HREF="generated-html/openbook/server/OpenBookServiceImpl.java.html#deliver" type="popup">
+<em>deliver</em></A> an order. Delivering an order essentially amounts to
+decrementing the inventory for each line item, 
+<A href="generated-html/openbook/domain/PurchaseOrder.java.html#setDelivered" type="popup">changing the status</A>
+which, as an interesting side-effect, nullifies the Line Items.
+<ul>
+<li><b>Optimistic Semantics</b>: Delivery is one of the operations that may fail due to
+optimistic transaction model used by OpenBooks and which is also the default transaction model
+proposed in JPA. The optimistic transaction model promoted that an Order can <em>always</em>
+be placed, even if the inventory is inadequate. Only while fulfilling the order in a separate
+transaction, the insufficient inventory may fail to deliver an order. 
+</li>
+<li><b>Orphan Delete</b>: JPA 2.0 had added support for composite relation via new orphan delete
+functionality. To demonstrate its effect, on delivery an Order nullifies its Line Items. As a 
+result, the Line Items gets deleted from the database as they are no more referred. That is why,
+for pending orders, you can see their line items -- but once an order is delivered its line items
+are no more available.  
+</li>
+</ul>
+</div>
 <div id="content" style="display: block">
 
 <% 
@@ -48,30 +73,22 @@
    
    Customer customer = (Customer)session.getAttribute(KEY_USER);
    List<PurchaseOrder> orders = service.getOrders(null, customer);
+   if (orders.isEmpty()) {
 %>
-All <%= orders.size() %> Purchase Order placed by <%= customer.getName() %> is shown.
-The <code>Deliver</code> button will deliver the pending order. Delivery of a pending
-order <br>
-<OL>
-<LI>decrements inventory of all associated LineItems</LI>
-<LI>changes status to ORDERED and finally </LI>
-<LI>nullifies the association between Purchase Order and Line Items. Nullifying the
-association has the important side-effect of deleting the line items from the database
-because Purchase Order and Line Items relation is annotated as orphan delete.</LI>
-</OL>
-<br>
+       <%= customer.getName() %>, you have not placed any order yet.<br>
+<%
+       return;
+   }
+%>
   
-<table border="0">
-  <caption><%= customer.getName() %> placed <%= orders.size() %> orders</caption>
+<table>
+  <caption><%= customer.getName() %>, you have placed <%= orders.size() %> orders</caption>
   <thead>
     <tr>
-      <th>ID</th> <th>Total</th> <th>Placed On</th> <th>Status</th> <th>Delivered On</th> 
+      <th>ID</th> <th>Total</th> <th>Placed On</th> <th>Status</th> <th>Delivered On</th> <th></th>
     </tr>
   </thead>
   <tfoot>
-    <tr>
-      <td><A HREF="<%= PAGE_SEARCH %>">Continue Shopping</A></td>
-    </tr>
   </tfoot>
   <tbody>
 <%
@@ -79,7 +96,7 @@ because Purchase Order and Line Items relation is annotated as orphan delete.</L
   for (PurchaseOrder order : orders) {
       session.setAttribute(""+order.getId(), order);
 %>
-   <TR style="<%= JSPUtility.getRowStyle(i++) %>">
+   <TR class="<%= i++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
       <TD> <A HREF="<%= 
           JSPUtility.encodeURL(PAGE_ORDERS, 
               KEY_ACTION, ACTION_DETAILS, 
@@ -88,17 +105,16 @@ because Purchase Order and Line Items relation is annotated as orphan delete.</L
       <TD> <%= JSPUtility.format(order.getPlacedOn()) %> </TD>
       <TD> <%= order.getStatus() %> </TD>
 <% 
-    if (order.getStatus().equals(PurchaseOrder.Status.PENDING)) {
+    if (order.isDelivered()) {
 %>        
-      <TD>  </TD>
-      <TD> <A HREF="<%= 
-          JSPUtility.encodeURL(PAGE_ORDERS, KEY_ACTION, ACTION_DELIVER, 
-                  KEY_OID, order.getId()) %>">Deliver</A></TD>
+      <TD> <%= JSPUtility.format(order.getDeliveredOn()) %> </TD>
+      <TD> </TD>
 <%
     } else {
 %>
-      <TD> <%= JSPUtility.format(order.getDeliveredOn()) %> </TD>
-      <TD> </TD>
+      <TD>  </TD>
+      <TD> <A HREF="<%= JSPUtility.encodeURL(PAGE_ORDERS, KEY_ACTION, ACTION_DELIVER, 
+                  KEY_OID, order.getId()) %>">Deliver</A></TD>
 <%        
     }
 %>
@@ -115,34 +131,45 @@ because Purchase Order and Line Items relation is annotated as orphan delete.</L
       String oid = request.getParameter(KEY_OID);
       PurchaseOrder order = (PurchaseOrder)session.getAttribute(oid);
       List<LineItem> items = order.getItems();
-      if (items != null && order.getStatus().equals(PurchaseOrder.Status.PENDING)) {
+      if (items == null) {
+          if (order.isDelivered()) {
 %>
-<table border="0">
-  <caption><%= items.size() %> line items of Order <%= order.getId() %></caption>
-  <thead>
-    <tr>
-      <th>Title</th> <th>Price</th> <th>Quantity</th> <th>Cost</th>
-    </tr>
-  </thead>
-  <tbody>
+             Order <%= order.getId() %> has been delivered. Line items of delivered orders are automatically
+             deleted due to orphan delete nature of Master-Details relationship. 
+<%        } else {
+%>
+             Order <%= order.getId() %> has no line items. This is an implementation error because 
+             pending orders must have at least one line item by design.
 <%
-  int j = 0;
-  for (LineItem item : items) {
-%>
-   <TR style="<%= JSPUtility.getRowStyle(j++) %>">
-      <TD> <%= item.getBook().getTitle() %> </TD>
-      <TD> <%= JSPUtility.format(item.getBook().getPrice()) %> </TD>
-      <TD> <%= item.getQuantity() %> </TD>
-      <TD> <%= JSPUtility.format(item.getBook().getPrice() * item.getQuantity()) %> </TD>
-   </TR>
+          }
+      } else {
+%>               
+        <table>
+          <caption><%= items.size() %> line items of Order <%= order.getId() %></caption>
+          <thead>
+            <tr>
+              <th>Title</th> <th>Price</th> <th>Quantity</th> <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
 <%
-  }
+          int j = 0;
+          for (LineItem item : items) {
 %>
-  <TR>
-  <TD>Total</TD><TD><%= JSPUtility.format(order.getTotal()) %></TD>
-  </TR>
-  </tbody>
-</table>
+            <TR class="<%= j++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
+              <TD> <%= item.getBook().getTitle() %> </TD>
+              <TD> <%= JSPUtility.format(item.getBook().getPrice()) %> </TD>
+              <TD> <%= item.getQuantity() %> </TD>
+              <TD> <%= JSPUtility.format(item.getBook().getPrice() * item.getQuantity()) %> </TD>
+            </TR>
+<%
+           }
+%>
+          <TR>
+            <TD>Total</TD><TD><%= JSPUtility.format(order.getTotal()) %></TD>
+          </TR>
+          </tbody>
+        </table>
 <%
       }
   }
