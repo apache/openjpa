@@ -177,6 +177,15 @@
 			buildpath="${basedir}"/>
 	</target>
 	
+	<target name="build-parser" depends="check-env" if="antlr.exists">
+		<java classname="org.antlr.Tool">
+			<classpath refid="code.generation.classpath"/>
+			<arg value="-o"/>
+			<arg value="${generated.src.dir}/openbook/tools/parser"/>
+			<arg value="-debug"/>
+			<arg value="${rsrc.dir}/META-INF/Java.g"/>
+		</java>
+	</target>
 	<!-- Generating viewable syntax colored Java code as html is to be split -->
 	<!-- for JSE and JEE mode for some differences in Swing based browser    -->
 	<!-- versus general purpose web browsers. Swing based browser treats     -->

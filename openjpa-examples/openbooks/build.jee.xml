@@ -37,6 +37,7 @@
 		<war destfile="openbooks.war" webxml="${rsrc.dir}/META-INF/web.xml" filesonly="true">
 			<fileset dir="${web.dir}"/>
 			<classes dir="${classes.dir}">
+				<include name="META-INF/persistence.xml"/>
 				<include name="openbook/domain/**"/>
 				<include name="openbook/server/**"/>
 				<include name="openbook/util/**"/>
@@ -45,6 +46,8 @@
 			<fileset dir="${rsrc.dir}">
 				<include name="images/Add2Cart.jpg"/>
 				<include name="images/OpenBooks.jpg"/>
+				<include name="images/openjpa-logo-small.png"/>
+				<include name="images/java_link.png"/>
 			</fileset>
 			<fileset dir="${target.dir}">
 				<include name="generated-html/**"/>
