@@ -32,14 +32,15 @@
 <div id="help">
    <h3>Query Result</h3>
    
-   This page is displaying the result of the query specified in the previous Search page.
+   This page is displaying the result of the Criteria query specified in the previous Search page.
    <ul>
    <li><B>Readability</B>: Criteria query is more powerful than JPQL but hardly as readable.
    JPA specification says nothing about how a Criteria Query should be displayed.
    OpenJPA implementation provides a simple 
    <a HREF="generated-html/openbook/server/OpenBookServiceImpl.java.html#getQuery" type="popup">
-   <code>toString()</code></a> method to display a query string that is quite <em>similar</em> to 
-   an equivalent JPQL string.
+   <code>toString()</code></a> method to display a Criteria query as a string that is quite  
+   <em>similar</em> to an equivalent JPQL string. <em>Similar</em> because Criteria query can
+   express certain queries that has no equivalent JPQL counterpart. 
    </li>
    <li><B>Eager Fetching</B>: The query result displays the Author names as well, though the query 
    had only selected the Books. But the Authors have also been fetched because
@@ -88,30 +89,29 @@
   String query = service.getQuery(title, minPrice, maxPrice, author);
 %>
 Query : <code><%= query %></code>
-<br>
+<p></p>
 <%
    if (books.isEmpty()) {
 %>
-    This query did not select any Book.
-    <br>
-    <p align="right"><A HREF="<%= PAGE_SEARCH %>">Search again</A></p>
+    did not select any book. 
+    <p><A HREF="<%= PAGE_SEARCH %>">Search again</A></p>
 <%       
     return;
    }
 %>
 <br>
 <table>
-  <caption><%= books.size() %> Books selected</caption>
+  <caption>Selected <%= books.size() %> Book<%= books.size() == 1 ? "" : "s" %></caption>
   <thead>
     <tr>
-      <th>ISBN</th> <th>Title</th> <th>Price</th> <th>Authors</th> 
-      <th>Add to Cart</th>
+      <th width="08em">ISBN</th> 
+      <th width="10em">Title</th> 
+      <th width="06em">Price</th> 
+      <th width="20em">Authors</th> 
+      <th width="16em">Add to Cart</th>
     </tr>
   </thead>
   <tfoot>
-    <tr>
-      <td><A HREF="<%= PAGE_SEARCH %>">Search again</A></td>
-    </tr>
   </tfoot>
   <tbody>
 <%
@@ -126,13 +126,14 @@ Query : <code><%= query %></code>
       <TD> <%= namesOf(book.getAuthors()) %> </TD>
       <TD> <A HREF="<%= JSPUtility.encodeURL(PAGE_CART, 
              KEY_ACTION, ACTION_ADD, KEY_ISBN, book.getISBN()) %>">
-             Add to Cart</A></TD>
+             <img src="images/add-to-cart.gif" width="106px" height="22px" border="0"></A></TD>
    </TR>
 <%
   }
 %>
   </tbody>
 </table>
+<p>
 
 </div>
 <%@include file="footer.jsp"%>

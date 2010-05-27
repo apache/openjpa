@@ -31,7 +31,7 @@
 <%@include file="header.jsp"%>
 
 <div id="help">
-<h3>Composite Pattern and Derived Identity</h3>
+<h3>Composite Relation and Derived Identity</h3>
 
   You have just created a  
   <a href="generated-html/openbook/domain/PurchaseOrder.java.html#init" type="popup">new Purchase Order 
@@ -78,17 +78,26 @@
 <% 
    OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 
    ShoppingCart cart = (ShoppingCart)session.getAttribute(KEY_CART);
-   PurchaseOrder order = service.placeOrder(cart);
-   
+   PurchaseOrder order = null;
+   if (cart.isEmpty()) {
 %>
-Purchase Order ID : <%= order.getId() %> <br>
-Placed on : <%= JSPUtility.format(order.getPlacedOn()) %><br>
-
+        <jsp:forward page="<%=PAGE_SEARCH%>"/>
+<% 
+   } else {
+         order = service.placeOrder(cart);
+   }
+%>
+<h3>Thank you for ordering from OpenBooks</h3>
+<p>
 <table>
-  <caption><%= order.getItems().size() %> items</caption>
+  <caption>Order : <%= order.getId() %> on <%= JSPUtility.format(order.getPlacedOn()) %> 
+     for <%= order.getItems().size() %> Book<%= order.getItems().size() == 0 ? "" : "s" %>
+  </caption>
   <thead>
     <tr>
-      <th>Title</th> <th>Quantity</th><th>Price</th> 
+      <th width="10em">Title</th> 
+      <th width="04em">Quantity</th>
+      <th width="06em">Price</th> 
     </tr>
   </thead>
   <tfoot>

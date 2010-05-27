@@ -21,7 +21,7 @@
 <!-- ===========================================================      -->
 <%@page import="openbook.server.OpenBookService"%>
 <%@page import="openbook.domain.Book"%>
-
+<%@page import="javax.servlet.http.HttpServletRequest"%>
 <%@include file="header.jsp"%>
 
 <div id="help">
@@ -60,6 +60,15 @@
 </div>
 
 <div id="content" style="display: block">
+<%!
+     public static String getParameter(HttpServletRequest request, String param) {
+          return getParameter(request, param, true);
+     }
+     public static String getParameter(HttpServletRequest request, String param, boolean replaceNull) {
+       String value = request.getParameter(param);
+       return replaceNull ? (value == null ? "" : value) : value;
+   }
+%>
 
 <% 
    OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 
@@ -74,24 +83,27 @@
 Fill in the details for a book you are searching for. 
 <br>
 <form method="GET" action="<%= PAGE_BOOKS %>">
-  Title : <br> <input type="text" name="<%= FORM_TITLE %>"><br>
-  Author: <br> <input type="text" name="<%= FORM_AUTHOR %>"><br>
-  Price : <br> from <input type="text" name="<%= FORM_PRICE_MIN %>"> to 
-  <input type="text" name="<%= FORM_PRICE_MAX %>"><br>
+  Title : <br> <input type="text" name="<%= FORM_TITLE %>" value="<%= getParameter(request, FORM_TITLE) %>" 
+                      style="width:20em"><br>
+  Author: <br> <input type="text" name="<%= FORM_AUTHOR %>" value="<%= getParameter(request, FORM_AUTHOR) %>" 
+                      style="width:20em"><br>
+  Price from : <input type="text" name="<%= FORM_PRICE_MIN %>" value="<%= getParameter(request, FORM_PRICE_MIN) %>" 
+                      style="width:6em"> to 
+               <input type="text" name="<%= FORM_PRICE_MAX %>" value="<%= getParameter(request, FORM_PRICE_MIN) %>" 
+                      style="width:6em"><br>
   <br>
-<input type="submit" value="Search">
+  <input type="image" src="images/search.gif" width="60px" height="22px" border="0">
 </form>
-<p>
+<p></p>
 <b>Search Tips</b>: 
    <ol>
    <li>You can leave one, more or all fields empty.</li>
    <li>OpenBooks database currently contains <%= service.count(Book.class) %> books.</li>
    <li>Book titles are <code>Book-1</code>, <code>Book-2</code>, <code>Book-3</code>,...</li>
    <li>Author names are <code>Author-1</code>, <code>Author-2</code>, <code>Author-3</code>,...</li>
-   <li>Both Book and Author names accept wildcard characters. For example, <code>Book-3_</code>
-   will return <code>Book-31</code>, <code>Book-32</code>, <code>Book-33</code> ...
-   <li>A Book is written by one or more Author(s).
-   <li>An Author may have written zero or more Book(s).
+   <li>Both Book and Author names accept wildcard characters. <br>
+   For example, an underscore like <code>Book-3_</code> will match any single character to return 
+   <code>Book-31</code>, <code>Book-32</code>, <code>Book-33</code> ...
     
    </ol>
   

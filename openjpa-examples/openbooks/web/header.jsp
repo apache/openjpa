@@ -68,13 +68,19 @@
     
     public static String ROW_STYLE_EVEN = "even";
     public static String ROW_STYLE_ODD  = "odd";
+    
+%>
+
 %>
 
 <!-- Header division displays the title and right-justified current user name -->
 <!-- and a Shopping Cart icon for active sessions                             -->
 <div id="header">
-    <img alt="OpenBooks Logo" src="images/OpenBooks.jpg" border="0" width="25px" height="25px" />
-    &nbsp;&nbsp;<A HREF=".">OpenBooks</A>: JPA 2.0 Application 
+    <img alt="OpenBooks Logo" src="images/OpenBooks.jpg" 
+         border="0" width="25px" height="25px" 
+         align="bottom"
+         hspace="2em"/>
+         &nbsp;&nbsp;<A HREF="."><span style="font-size: 24pt">OpenBooks</span></A>
 <% 
   Object currentUser = session.getAttribute("user");
   boolean activeSession = currentUser != null;
@@ -82,7 +88,8 @@
 %>
      <div style="float:right;text-align: right;margin-right:1em">
            <%= currentUser.toString() %>&nbsp;&nbsp;
-           <A HREF="cart.jsp"><img src="images/Add2Cart.jpg" border="0" width="25px" height="25px"></A>
+           <A HREF="cart.jsp"><img src="images/Add2Cart.jpg" 
+              border="0" width="25px" height="25px"></A>
      </div>
 <%
   }
@@ -92,15 +99,15 @@
 <!-- Left menu navigation displays the items based on current session status  -->
 
 <div id="left">
-
+<ul>
+  <li><a href="intro.jsp">Welcome</a></li>
 <%
   if (activeSession) {
 %>
-<ul>
   <li><a href="search.jsp">Search Books</a></li>
   <li><a href="orders.jsp">View Orders</a></li>
-</ul>
-</div>
 <% 
   }
 %>
+</ul>
+</div>

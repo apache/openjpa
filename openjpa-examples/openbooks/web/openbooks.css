@@ -34,13 +34,16 @@ body {
 
 #header {
   position:fixed;
+  
   top:0;
+  
   width: 100%;
   height: 1.5em;
   margin: 0.0em;
   padding: 0.0em;
 
-  background: #fff;
+  background: #FFFFFF;
+  
   z-index: 100;
 
   border-bottom: 1px solid #999;
@@ -52,18 +55,20 @@ body {
 #left {
 	position: fixed;
 	
-	width: 10em;
 	top: 5em;
+	
+	width: 10em;
 	margin-left:0.5em;
     text-align: left;
     float:left;
 }
 
 #content {
-/*  top: 0; */
+  top: 5em; 
   
-  width:30em;
+  width:60em;
   height:20em;
+  
   margin-left: 10em;
   margin-right: 15em;
   margin-top:1.5em;
@@ -101,12 +106,21 @@ body {
 
 table {
   border-spacing:0;
+  font-size:14pt;
+}
+
+caption {
+	background-color:#006295;
+	color:#FFFFFF;
+	font-weight:bold;
 }
 
 th {
 	background-color:#BD2031;
 	text-align:center;
+	color:#FFFFFF;
 }
+
 
 tr.even {
 	background-color:#9BE1FB;

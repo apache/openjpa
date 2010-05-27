@@ -28,8 +28,10 @@
 <%@page import="openbook.util.JSPUtility"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.List"%>
+<%@page import="java.util.ArrayList"%>
 
 <%@include file="header.jsp"%>
+
 
 <div id="help">
 <h3>Optimistic semantics and Orphan Delete</h3>
@@ -56,6 +58,7 @@ are no more available.
 </li>
 </ul>
 </div>
+
 <div id="content" style="display: block">
 
 <% 
@@ -72,7 +75,10 @@ are no more available.
    }
    
    Customer customer = (Customer)session.getAttribute(KEY_USER);
-   List<PurchaseOrder> orders = service.getOrders(null, customer);
+   List<PurchaseOrder> pendingOrders   = service.getOrders(PurchaseOrder.Status.DELIVERED, customer);
+   List<PurchaseOrder> deliveredOrders = service.getOrders(PurchaseOrder.Status.PENDING, customer);
+   List<PurchaseOrder> orders = new ArrayList<PurchaseOrder>(pendingOrders);
+   orders.addAll(deliveredOrders);
    if (orders.isEmpty()) {
 %>
        <%= customer.getName() %>, you have not placed any order yet.<br>
@@ -80,12 +86,22 @@ are no more available.
        return;
    }
 %>
+
+
   
 <table>
-  <caption><%= customer.getName() %>, you have placed <%= orders.size() %> orders</caption>
+  <caption><%= customer.getName() %>, you have placed <%= orders.size() %> (
+  <%= pendingOrders.size() == 0 ? "none" : "" + pendingOrders.size()%> pending,
+  <%= deliveredOrders.size() == 0 ? " none" : " " + deliveredOrders.size()%> delivered) orders 
+  </caption>
   <thead>
     <tr>
-      <th>ID</th> <th>Total</th> <th>Placed On</th> <th>Status</th> <th>Delivered On</th> <th></th>
+      <th width="06em">ID</th> 
+      <th width="04em">Total</th> 
+      <th width="10em">Placed On</th> 
+      <th width="08em">Status</th> 
+      <th width="10em">Delivered On</th> 
+      <th width="08em">Deliver</th>
     </tr>
   </thead>
   <tfoot>
@@ -97,10 +113,10 @@ are no more available.
       session.setAttribute(""+order.getId(), order);
 %>
    <TR class="<%= i++%2 == 0 ? ROW_STYLE_EVEN : ROW_STYLE_ODD %>">
-      <TD> <A HREF="<%= 
-          JSPUtility.encodeURL(PAGE_ORDERS, 
+      <TD> <A HREF="<%= JSPUtility.encodeURL(PAGE_ORDERS, 
               KEY_ACTION, ACTION_DETAILS, 
-              KEY_OID, order.getId()) %>"> <%= order.getId() %></A></TD>
+              KEY_OID, 
+              order.getId()) %>"> <%= order.getId() %></A></TD>
       <TD> <%= order.getTotal() %> </TD>
       <TD> <%= JSPUtility.format(order.getPlacedOn()) %> </TD>
       <TD> <%= order.getStatus() %> </TD>
@@ -114,7 +130,8 @@ are no more available.
 %>
       <TD>  </TD>
       <TD> <A HREF="<%= JSPUtility.encodeURL(PAGE_ORDERS, KEY_ACTION, ACTION_DELIVER, 
-                  KEY_OID, order.getId()) %>">Deliver</A></TD>
+                  KEY_OID, order.getId()) %>">
+                  <img src="images/orders.gif" width="156px" height="27px" border="0"></A></TD>
 <%        
     }
 %>
@@ -124,31 +141,36 @@ are no more available.
 %>
   </tbody>
 </table>
-
+<p></p>
 
 <%
   if (ACTION_DETAILS.equals(request.getParameter(KEY_ACTION))) {
       String oid = request.getParameter(KEY_OID);
       PurchaseOrder order = (PurchaseOrder)session.getAttribute(oid);
       List<LineItem> items = order.getItems();
-      if (items == null) {
-          if (order.isDelivered()) {
+      if (order.isDelivered()) {
+         if (items != null && items.isEmpty()) {
 %>
              Order <%= order.getId() %> has been delivered. Line items of delivered orders are automatically
              deleted due to orphan delete nature of Master-Details relationship. 
 <%        } else {
 %>
-             Order <%= order.getId() %> has no line items. This is an implementation error because 
-             pending orders must have at least one line item by design.
+             Order <%= order.getId() %> has been delivered but still contains line items. 
+             This is an implementation error because delivered orders must have at least one line item by design.
 <%
           }
       } else {
 %>               
         <table>
-          <caption><%= items.size() %> line items of Order <%= order.getId() %></caption>
+          <caption>Total of <%= items.size() %> Book<%= items.size() == 0 ? "" : "s" %> 
+                   in Order <%= order.getId() %>
+          </caption>
           <thead>
             <tr>
-              <th>Title</th> <th>Price</th> <th>Quantity</th> <th>Cost</th>
+              <th width="10em">Title</th> 
+              <th width="06em">Price</th> 
+              <th width="04em">Quantity</th>
+              <th width="06em">Cost</th> 
             </tr>
           </thead>
           <tbody>
@@ -166,7 +188,8 @@ are no more available.
            }
 %>
           <TR>
-            <TD>Total</TD><TD><%= JSPUtility.format(order.getTotal()) %></TD>
+            <TD>Total</TD><TD></TD><TD></TD>
+            <TD><%= JSPUtility.format(order.getTotal()) %></TD>
           </TR>
           </tbody>
         </table>

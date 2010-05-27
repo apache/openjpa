@@ -22,11 +22,12 @@
 <!-- ========================================================================= -->
 <%@page import="org.apache.openjpa.conf.OpenJPAVersion"%>
 <div id="footer">
-   Running on <img src="images/openjpa-logo-small.png" height="40px"> &nbsp; version 
-    <%= OpenJPAVersion.MAJOR_RELEASE + "." +  OpenJPAVersion.MINOR_RELEASE %>
-    <div style="float:right;text-align: right;margin-right:1em">
-         <img alt="" src="images/java_link.png" border="0"> links to Java Source Code
-    </div>
+   Running on <img src="images/openjpa-logo-small.png" 
+                   width="100px" height="40px" border="0"> 
+   version <%= OpenJPAVersion.MAJOR_RELEASE + "." +  OpenJPAVersion.MINOR_RELEASE %>
+         <div style="float:right;text-align: right;margin-right:1em">
+             <img alt="" src="images/java_link.png" border="0"> links to Java Source Code
+         </div>
 </div>
 </BODY>
 </HTML>

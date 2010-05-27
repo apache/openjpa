@@ -67,17 +67,22 @@
 
 
 <table>
-  <caption><%= cart.getTotalCount() %> book <%= cart.getTotalCount() == 1 ? "" : "s" %> in 
+  <caption><%= cart.getTotalCount() %> Book<%= cart.getTotalCount() == 1 ? "" : "s" %> in 
          <%= customer.getName() %>'s Shopping Cart</caption>
   <thead>
     <tr>
-      <th>Title</th> <th>Price</th> <th>Quantity</th>
+      <th width="10em">Title</th> 
+      <th width="6em">Price</th> 
+      <th width="4em">Quantity</th>
     </tr>
   </thead>
   <tfoot>
     <tr>
       <td><A HREF="<%= PAGE_SEARCH %>">Continue Shopping</A></td>
-      <td><A HREF="<%= PAGE_CHECKOUT %>">Proceed to CheckOut</A></td>
+      <td><A HREF="<%= PAGE_CHECKOUT %>">
+          <img src="images/checkout.gif" 
+               width="156px" height="27px" border="0">
+          </A></td>
     </tr>
   </tfoot>
   <tbody>

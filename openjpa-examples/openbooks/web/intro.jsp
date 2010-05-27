@@ -54,8 +54,14 @@ corresponding Java code</a> executed on the server side.
 %>
 <A name="login"></A>
       <form method="get" action="<%= PAGE_LOGIN %>">
-        Your Name :<br> <input type="text" name="<%= KEY_USER %>" size="40">  <br>
-        <input type="SUBMIT" value="Enter">
+        Your Name :<br> 
+        <input type="text" 
+               name="<%= KEY_USER %>" 
+               size="40"> 
+        <p> 
+        <input type="image" 
+               src="images/login.gif" 
+               width="111px" height="22px" border="0">
       </form>
 <%
     } 
