@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -1141,18 +1142,14 @@ public class OracleDictionary
         buf.append("')");
     }
     
-    public void insertBlobForStreamingLoad(Row row, Column col, Object ob)
-        throws SQLException {
-        if (ob == null)
-            col.setType(Types.OTHER);
-        row.setNull(col);
-    }
-    
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
         throws SQLException {
-        if (ob == null)
+        if (ob == null) {
             col.setType(Types.OTHER);
-        row.setNull(col);
+            row.setNull(col);
+        } else {
+            row.setClob(col, getEmptyClob());
+        }
     }
 
     public int getBatchUpdateCount(PreparedStatement ps) throws SQLException {
@@ -1164,5 +1161,16 @@ public class OracleDictionary
                     updateSuccessCnt));
         }
         return updateSuccessCnt;
+    }
+
+    @Override
+    public void insertBlobForStreamingLoad(Row row, Column col, 
+        JDBCStore store, Object ob, Select sel) throws SQLException {
+        if (ob == null) {
+            col.setType(Types.OTHER);
+            row.setNull(col);
+        } else {
+            row.setBlob(col, getEmptyBlob());
+        }
     }
 }

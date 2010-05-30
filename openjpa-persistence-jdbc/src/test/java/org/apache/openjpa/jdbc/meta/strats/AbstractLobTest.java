@@ -20,17 +20,20 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
@@ -38,7 +41,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
- * This abstract class defines all the tests for LOBS.
+ * This abstract class defines all the tests for LOB streaming.
  *
  * @author Ignacio Andreu
  * @since 1.1.0
@@ -46,22 +49,26 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public abstract class AbstractLobTest extends SingleEMFTestCase {
 
+    protected static boolean firstTestExecuted;
+
+    protected List<Class<? extends DBDictionary>> supportedDatabases =
+        new ArrayList<Class<? extends DBDictionary>>
+            (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class));
+        
     public void setUp() throws Exception {
-        super.setUp(getLobEntityClass(), CLEAR_TABLES,
+        // Test CREATE TABLE but only once to save time.
+        Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
+        firstTestExecuted = true;
+        super.setUp(getLobEntityClass(), clearOrDropTables,
             "openjpa.DataCache", "true",
-            "openjpa.RemoteCommitProvider", "sjvm");
+            "openjpa.RemoteCommitProvider", "sjvm",
+            "openjpa.ConnectionRetainMode", "transaction");
     }
 
     public boolean isDatabaseSupported() {
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
             .getDBDictionaryInstance();
-        if (dict instanceof MySQLDictionary ||
-            dict instanceof SQLServerDictionary ||
-            dict instanceof OracleDictionary ||
-            dict instanceof PostgresDictionary) {
-            return true;
-        }
-        return false;
+        return supportedDatabases.contains(dict.getClass());
     }
 
     public void insert(LobEntity le) {
@@ -74,12 +81,12 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     public void testInsert() {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
     }
 
     public void testInsertAndSelect() throws IOException {
         if (!isDatabaseSupported()) return;
-        String s = "oooOOOooo";
+        String s = createLobData();
         insert(newLobEntity(s, 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -105,11 +112,11 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     public void testUpdate() throws IOException {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
-        String string = "iIIIIIi";
+        String string = createLobData2();
         changeStream(entity, string);
         em.getTransaction().commit();
         em.close();
@@ -123,7 +130,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     public void testUpdateWithNull() {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -144,7 +151,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
-        String string = "iIIIIIi";
+        String string = createLobData2();
         changeStream(entity, string);
         em.getTransaction().commit();
         em.close();
@@ -158,7 +165,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     
     public void testDelete() {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
@@ -177,22 +184,22 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        LobEntity le = newLobEntity("oOOOOOo", 1);
+        LobEntity le = newLobEntity(createLobData(), 1);
         em.persist(le);
         em.flush();
-        changeStream(le, "iIIIIIi");
+        changeStream(le, createLobData2());
         em.getTransaction().commit();
         em.close();
     }
 
     public void testLifeCycleLoadFlushModifyFlush() {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
         em.flush();
-        changeStream(entity, "iIIIIIi");
+        changeStream(entity, createLobData2());
         em.flush();
         em.getTransaction().commit();
         em.close();
@@ -201,11 +208,11 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     public void testReadingMultipleTimesWithASingleConnection()
         throws IOException {
         if (!isDatabaseSupported()) return;
-        insert(newLobEntity("oOOOOOo", 1));
+        insert(newLobEntity(createLobData(), 1));
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity le = (LobEntity) em.find(getLobEntityClass(), 1);
-        String string = "iIIIIIi";
+        String string = createLobData2();
         changeStream(le, string);
         em.getTransaction().commit();
         em.close();
@@ -213,7 +220,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         em.getTransaction().begin();
         le = (LobEntity) em.find(getLobEntityClass(), 1);
         assertNotNull(le.getStream());
-        LobEntity entity = newLobEntity("oOOOOOo", 2);
+        LobEntity entity = newLobEntity(createLobData(), 2);
         em.persist(entity);
         assertEquals(string, getStreamContentAsString(le.getStream()));
         em.getTransaction().commit();
@@ -225,7 +232,7 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         OpenJPAEntityManager em = emf.createEntityManager();
 
         em.getTransaction().begin();
-        LobEntity le = newLobEntity("oOOOOOo", 1);
+        LobEntity le = newLobEntity(createLobData(), 1);
         em.persist(le);
         em.getTransaction().commit();
         OpenJPAConfiguration conf = emf.getConfiguration();
@@ -243,16 +250,17 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        LobEntity le = newLobEntity("oOOOOOo", 1);
+        LobEntity le = newLobEntity(createLobData(), 1);
         em.persist(le);
-        changeStream(le, "iIIIIIi");
+        String string = createLobData2();
+        changeStream(le, string);
         em.flush();
         em.getTransaction().commit();
         em.close();
         em = emf.createEntityManager();
         em.getTransaction().begin();
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
-        assertEquals("iIIIIIi", getStreamContentAsString(entity.getStream()));
+        assertEquals(string, getStreamContentAsString(entity.getStream()));
         em.getTransaction().commit();
         em.close();
     }
@@ -261,14 +269,23 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         if (!isDatabaseSupported()) return;
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        LobEntity le = newLobEntity("oOOOOOo", 1);
+        LobEntity le = newLobEntity(createLobData(), 1);
         em.persist(le);
         em.flush();
-        changeStream(le, "iIIIIIi");
+        String string = createLobData2();
+        changeStream(le, string);
         LobEntity entity = (LobEntity) em.find(getLobEntityClass(), 1);
-        assertEquals("iIIIIIi", getStreamContentAsString(entity.getStream()));
+        assertEquals(string, getStreamContentAsString(entity.getStream()));
         em.getTransaction().commit();
         em.close();
+    }
+
+    protected String createLobData() {
+        return StringUtils.repeat("ooOOOOoo, ", 3000);
+    }
+
+    protected String createLobData2() {
+        return StringUtils.repeat("iiIIIIii, ", 1000);
     }
 
     protected abstract Class getLobEntityClass();
