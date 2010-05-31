@@ -2490,7 +2490,7 @@ version is 8.3-603)
                   </listitem>
                   <listitem>
                       <para>
-SQLServer 2005
+SQL Server 2005
                       </para>
                   </listitem>
               </itemizedlist>
@@ -2781,33 +2781,59 @@ em.persist(o1);
         </section>
         <section id="ref_guide_streamsupport">
             <title>
-              Stream LOB Support
+                LOB Streaming
             </title>
-              <indexterm zone="ref_guide_streamsupport">
-                  <primary>
-                      stream support
-                  </primary>
-              </indexterm>
-              <indexterm zone="ref_guide_streamsupport">
-                  <primary>
-                      stream lob support
-                  </primary>
-              </indexterm>
-              <para>
-Since the 1.1.0 release Apache OpenJPA added support for Streams. This feature
-makes it possible to stream large amounts of data into and out of fields in
-objects managed by OpenJPA without ever holding all the data in memory at the
-same time.
-              </para>
-              <para>
-To persist a stream, use the 
+            <indexterm zone="ref_guide_streamsupport">
+                <primary>
+                    lob streaming
+                </primary>
+            </indexterm>
+            <para>
+In addition to handling LOBs in a standard JPA manner
+(<classname>LOB</classname> annotation and <literal>lob</literal> XML element),
+OpenJPA supports LOB streaming. This feature
+makes it possible to stream large amounts of data into and out of persistent
+field without ever holding all the data in memory at the same time.
+            </para>
+            <para>
+LOB streaming is supported on the following databases.
+            </para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+MySQL
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Oracle
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+PostgreSQL
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+SQL Server
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <para>
+See <xref linkend="supported_databases"/> for possible database-specific
+restrictions.
+            </para>
+            <para>
+To persist a stream, apply the 
 <ulink url="../javadoc/org/apache/openjpa/persistence/Persistent.html">
 <classname>org.apache.openjpa.persistence.Persistent</classname></ulink> 
-annotation.
-              </para>
+annotation to either <classname>java.io.InputStream</classname> or
+<classname>java.io.Reader</classname> field.
+            </para>
             <example id="ref_guide_streamsupport_example">
                 <title>
-                    Showing annotated InputStream
+                    Annotated InputStream and Reader
                 </title>
 <programlisting>
 @Entity
@@ -2815,6 +2841,9 @@ public class Employee {
     ...
     @Persistent
     private InputStream photoStream;
+
+    @Persistent
+    private Reader photoDescription;
     ...
 } 
 </programlisting>

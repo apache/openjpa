@@ -708,7 +708,7 @@ Using the Sun JDBC-ODBC bridge to connect is not supported.
         </title>
         <example id="example_props_sqlserver">
             <title>
-                Example properties for Microsoft SQLServer
+                Example properties for Microsoft SQL Server
             </title>
 <programlisting>
 openjpa.ConnectionDriverName: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -770,6 +770,13 @@ SQL Server 2005 does not support native sequences. If you would like to use
 generated values with SQL Server you should use GenerationType.IDENTITY, 
 GenerationType.TABLE, or GenerationType.AUTO.
                     </para> 
+                </listitem>
+                <listitem>
+                    <para>
+The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
+When reading LOB data from the database, the Microsoft SQL Server driver will
+actually load all the data into memory at the same time.
+                    </para>
                 </listitem>
             </itemizedlist>
         </section>
@@ -892,6 +899,13 @@ the connection, or an exception will be thrown. Setting openjpa.FetchBatchSize
 to any value greater than zero will enable streaming result sets. 
                     </para>
                 </listitem>                
+                <listitem>
+                    <para>
+The use of <link linkend="ref_guide_streamsupport">LOB streaming</link> is limited.
+When reading LOB data from the database, the MySQL JDBC driver will actually
+load all the data into memory at the same time.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -976,6 +990,26 @@ Floats and doubles may lose precision when stored.
 CLOB columns cannot be used in queries.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+The use of LOBs with persistent attributes of a streaming data type (e.g.
+<literal>java.io.InputStream</literal> or <literal>java.io.Reader</literal>) may 
+require the same connection to be used over the life of the transaction or 
+entity manager.  If the same connection is not used for persistent operations
+a <literal>java.io.IOException</literal> with message <literal>Closed Connection
+</literal> may result.  The OpenJPA property <literal>openjpa.ConnectionRetainMode</literal>
+can be used to control how OpenJPA uses datastore connections.  See 
+<xref linkend="ref_guide_dbsetup_retain"/> for details.
+            <example id="dbsupport_oracle_retain_connection">
+                <title>
+                    Property to retain connection over the lifetime of the entity manager
+                </title>
+<programlisting>
+openjpa.ConnectionRetainMode: always
+</programlisting> 
+            </example>
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -1039,6 +1073,13 @@ PostgreSQL cannot store very low and very high dates.
                 <listitem>
                     <para>
 Empty string/char values are stored as NULL.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Persistent fields of type <classname>java.io.Reader</classname> are not
+supported when using
+<link linkend="ref_guide_streamsupport">LOB streaming</link>.
                     </para>
                 </listitem>
             </itemizedlist>

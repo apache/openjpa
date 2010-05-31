@@ -2809,6 +2809,12 @@ The implementation will serialize the Java value if needed.
 The equivalent XML element is <literal>lob</literal>, which has no children or
 attributes.
                 </para>
+                <note>
+                    <para>
+OpenJPA also supports LOB streaming. See <xref linkend="ref_guide_streamsupport"/> in
+the Reference Guide for details.
+                    </para>
+                </note>
             </section>
             <section id="jpa_overview_mapping_enum">
                 <title>
