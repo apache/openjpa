@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
@@ -912,8 +913,10 @@ public class DB2Dictionary
             // build the index for the sequence tables
             // the index name will be the fully qualified table name + _IDX
             Table tab = schema.getTable(table);
-            DBIdentifier idxName = DBIdentifier.append(tab.getFullIdentifier(), "IDX");
-            Index idx = tab.addIndex(getValidIndexName(idxName, tab));
+            DBIdentifier fullIdxId = tab.getFullIdentifier().clone();
+            DBIdentifier unQualifiedName = DBIdentifier.append(fullIdxId.getUnqualifiedName(), "IDX");
+            fullIdxId.setName(getValidIndexName(unQualifiedName, tab));
+            Index idx = tab.addIndex(fullIdxId);
             idx.setUnique(true);
             idx.addColumn(pkColumn);
         }

@@ -3408,8 +3408,13 @@ public class DBDictionary
         buf.append("CREATE ");
         if (index.isUnique())
             buf.append("UNIQUE ");
-        String indexName = checkNameLength(toDBName(index.getIdentifier()), maxIndexNameLength, 
+        
+        DBIdentifier fullIdxName = index.getIdentifier();
+        DBIdentifier unQualifiedName = fullIdxName.getUnqualifiedName();
+        checkNameLength(toDBName(unQualifiedName), maxIndexNameLength, 
                 "long-index-name");
+        String indexName = toDBName(fullIdxName);
+         
         buf.append("INDEX ").append(indexName);
         buf.append(" ON ").append(getFullName(index.getTable(), false));
         buf.append(" (").append(namingUtil.appendColumns(index.getColumns())).
