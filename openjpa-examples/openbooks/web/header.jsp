@@ -71,8 +71,6 @@
     
 %>
 
-%>
-
 <!-- Header division displays the title and right-justified current user name -->
 <!-- and a Shopping Cart icon for active sessions                             -->
 <div id="header">
@@ -82,7 +80,7 @@
          hspace="2em"/>
          &nbsp;&nbsp;<A HREF="."><span style="font-size: 24pt">OpenBooks</span></A>
 <% 
-  Object currentUser = session.getAttribute("user");
+  Object currentUser = session.getAttribute(KEY_USER);
   boolean activeSession = currentUser != null;
   if (activeSession) {
 %>

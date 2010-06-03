@@ -50,6 +50,7 @@ corresponding Java code</a> executed on the server side.
 <div id="content" style="display: block">
 <% 
     Object service = session.getAttribute(KEY_SERVICE);
+    
     if (service == null) {
 %>
 <A name="login"></A>
@@ -64,7 +65,11 @@ corresponding Java code</a> executed on the server side.
                width="111px" height="22px" border="0">
       </form>
 <%
-    } 
+    } else { 
+%>
+     You have already signed in, <%= session.getAttribute(KEY_USER) %>.
+<%
+    }
 %>
 </div>
 
