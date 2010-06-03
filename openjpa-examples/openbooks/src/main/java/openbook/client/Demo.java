@@ -22,18 +22,11 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
@@ -43,7 +36,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -56,7 +48,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
@@ -68,15 +59,9 @@ import jpa.tools.swing.MetamodelView;
 import jpa.tools.swing.PowerPointViewer;
 import jpa.tools.swing.PreparedQueryViewer;
 import jpa.tools.swing.ScrollingTextPane;
-import jpa.tools.swing.SourceCodeViewer;
 import jpa.tools.swing.StatusBar;
 import jpa.tools.swing.SwingHelper;
-import openbook.domain.Author;
-import openbook.domain.Book;
 import openbook.domain.Customer;
-import openbook.domain.Inventory;
-import openbook.domain.LineItem;
-import openbook.domain.PurchaseOrder;
 import openbook.server.OpenBookService;
 import openbook.server.ServiceFactory;
 import openbook.util.PropertyHelper;
@@ -107,7 +92,6 @@ public class Demo extends JFrame {
     private Action _supply;       
     private Action _viewConfig;  
     private Action _viewDomain; 
-    private Action _viewData;  
     private Action _viewSource;
     private Action _viewQuery;
     
@@ -125,7 +109,6 @@ public class Demo extends JFrame {
     private static Demo _instance;
     public static final Icon    LOGO = Images.getIcon("images/OpenBooks.jpg");
     private static final String SRC_ROOT = "source/";
-    private boolean _debug = Boolean.getBoolean("openbook.debug");
     
     /**
      * The handle to the service.
@@ -184,7 +167,6 @@ public class Demo extends JFrame {
         _supply       = new SupplyAction("Supply", "images/Supply.jpg", "Supply Books");
         _viewConfig   = new ViewConfigAction("Configuration", "images/browse.png", "View Configuration");
         _viewDomain   = new ViewDomainAction("Domain", "images/DomainModel.jpg", "View Domain Model");
-        _viewData     = new ViewDataAction("Data", "images/DataModel.jpg", "View Instances");
         _viewSource   = new ViewSourceAction("Source", "images/SourceCode.jpg", "View Source Code");
         _viewQuery    = new ViewQueryCacheAction("Query", "images/DataModel.jpg", "View Queries");
         
@@ -277,7 +259,6 @@ public class Demo extends JFrame {
         
         toolBar.add(_viewConfig);
         toolBar.add(_viewDomain);
-        toolBar.add(_viewData);
         toolBar.add(_viewSource);
         toolBar.add(_viewQuery);
         
@@ -451,11 +432,12 @@ public class Demo extends JFrame {
      * An action to show a piece of code in an internal or external browser.
      *
      */
-    public class ShowCodeAction extends AbstractAction {
+    public class ShowCodeAction extends OpenBookAction {
         private String _key;
         private String _page;
+        
         public ShowCodeAction() {
-            super("Show Code", Images.JAVA);
+            super("Show Code", Images.JAVA, "View Java Source Code");
         }
         
         public void setPage(String key, String page) {
@@ -622,7 +604,6 @@ public class Demo extends JFrame {
         views.add(new ActionTreeNode(_viewConfig));
         views.add(new ActionTreeNode(_viewDomain));
         views.add(new ActionTreeNode(_viewQuery));
-        views.add(new ActionTreeNode(_viewData));
         views.add(new ActionTreeNode(_viewSource));
         
         
