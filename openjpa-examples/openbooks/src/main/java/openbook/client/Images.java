@@ -58,7 +58,7 @@ public class Images {
         if (icon == null) {
             return null;
         }
-        icon = new ImageIcon(((ImageIcon)icon).getImage().getScaledInstance(32, -1, Image.SCALE_SMOOTH));
+        icon = new ImageIcon(((ImageIcon)icon).getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH));
         return icon;
     }
     
