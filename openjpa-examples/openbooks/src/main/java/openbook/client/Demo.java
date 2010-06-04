@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -107,7 +108,6 @@ public class Demo extends JFrame {
     private SQLLogger _sqlListener;
     private SourceCodeBrowser _sourceBrowser;
     private static Demo _instance;
-    public static final Icon    LOGO = Images.getIcon("images/OpenBooks.jpg");
     private static final String SRC_ROOT = "source/";
     
     /**
@@ -157,18 +157,18 @@ public class Demo extends JFrame {
     private Demo() {
         Thread.currentThread().setUncaughtExceptionHandler(new ErrorHandler());
         _config = PropertyHelper.load(System.getProperty("openbook.client.config", "demo.properties"));
-        setIconImage(((ImageIcon)LOGO).getImage());
+        setIconImage(((ImageIcon)Images.LOGO_OPENBOOKS).getImage());
         setTitle("OpenBooks: A Sample JPA 2.0 Application");
         
-        _root         = new WelcomeAction("OpenBooks", "images/OpenBooks.jpg", "OpenBooks");
-        _about        = new AboutAction("About OpenBooks", "images/OpenBooks.jpg", "About OpenBooks");
-        _buyBook      = new BuyBookAction("Buy", "images/Add2Cart.jpg", "Browse and Buy Books");
-        _deliver      = new DeliveryAction("Deliver", "images/Deliver.jpg", "Deliver Pending Orders");
-        _supply       = new SupplyAction("Supply", "images/Supply.jpg", "Supply Books");
-        _viewConfig   = new ViewConfigAction("Configuration", "images/browse.png", "View Configuration");
-        _viewDomain   = new ViewDomainAction("Domain", "images/DomainModel.jpg", "View Domain Model");
-        _viewSource   = new ViewSourceAction("Source", "images/SourceCode.jpg", "View Source Code");
-        _viewQuery    = new ViewQueryCacheAction("Query", "images/DataModel.jpg", "View Queries");
+        _root         = new WelcomeAction("OpenBooks", Images.LOGO_OPENBOOKS, "OpenBooks");
+        _about        = new AboutAction("About OpenBooks", Images.LOGO_OPENBOOKS, "About OpenBooks");
+        _buyBook      = new BuyBookAction("Buy", Images.BUY, "Browse and Buy Books");
+        _deliver      = new DeliveryAction("Deliver", Images.DELIVERY, "Deliver Pending Orders");
+        _supply       = new SupplyAction("Supply", Images.SUPPLY, "Supply Books");
+        _viewConfig   = new ViewConfigAction("Unit", Images.VIEW_UNIT, "View Configuration");
+        _viewDomain   = new ViewDomainAction("Domain", Images.VIEW_DOMAIN, "View Domain Model");
+        _viewSource   = new ViewSourceAction("Source", Images.VIEW_CODE, "View Source Code");
+        _viewQuery    = new ViewQueryCacheAction("Query", Images.VIEW_QUERY, "View Queries");
         
         _toolBar    = createToolBar();
         _navigator  = createNavigator();
@@ -304,10 +304,6 @@ public class Demo extends JFrame {
      *
      */
     public abstract class OpenBookAction extends AbstractAction {
-        public OpenBookAction(String name, String iconLocation, String tooltip) {
-            this(name, Images.getIcon(iconLocation, true), tooltip);
-        }
-        
         public OpenBookAction(String name, Icon icon, String tooltip) {
             putValue(Action.NAME, name);
             putValue(Action.SHORT_DESCRIPTION, tooltip);
@@ -317,8 +313,8 @@ public class Demo extends JFrame {
     
     public class BuyBookAction extends OpenBookAction {
         BuyBookPage         _buyBookPage;
-        public BuyBookAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public BuyBookAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         
         public void actionPerformed(ActionEvent e) {
@@ -332,8 +328,8 @@ public class Demo extends JFrame {
     }
     public class DeliveryAction extends OpenBookAction {
         DeliveryPage        _deliveryPage;
-        public DeliveryAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public DeliveryAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             if (_deliveryPage == null) {
@@ -347,8 +343,8 @@ public class Demo extends JFrame {
     
     public class SupplyAction extends OpenBookAction {
         SupplyPage          _supplyPage;
-        public SupplyAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public SupplyAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             if (_supplyPage == null) {
@@ -362,8 +358,8 @@ public class Demo extends JFrame {
     
     public class ViewConfigAction extends OpenBookAction {
         ConfigurationViewer _configView;
-        public ViewConfigAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public ViewConfigAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             if (_configView == null) {
@@ -379,8 +375,8 @@ public class Demo extends JFrame {
     public class ViewDomainAction extends OpenBookAction {
         MetamodelView       _domainView;
         AttributeLegendView _legends;
-        public ViewDomainAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public ViewDomainAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             if (_domainView == null) {
@@ -394,8 +390,8 @@ public class Demo extends JFrame {
     }
 
     public class ViewDataAction extends OpenBookAction {
-        public ViewDataAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public ViewDataAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             showTab(_tabbedPane, "Buy Books", null);
@@ -405,8 +401,8 @@ public class Demo extends JFrame {
     
     public class ViewQueryCacheAction extends OpenBookAction {
         PreparedQueryViewer _queryView;
-        public ViewQueryCacheAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public ViewQueryCacheAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         public void actionPerformed(ActionEvent e) {
             if (_queryView == null) {
@@ -419,8 +415,8 @@ public class Demo extends JFrame {
     }
     
     public class ViewSourceAction extends OpenBookAction {
-        public ViewSourceAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public ViewSourceAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         
         public void actionPerformed(ActionEvent e) {
@@ -437,7 +433,7 @@ public class Demo extends JFrame {
         private String _page;
         
         public ShowCodeAction() {
-            super("Show Code", Images.JAVA, "View Java Source Code");
+            super("View Code", Images.VIEW_CODE, "View Java Source Code");
         }
         
         public void setPage(String key, String page) {
@@ -458,11 +454,11 @@ public class Demo extends JFrame {
      */
     public class WelcomeAction extends OpenBookAction {
         PowerPointViewer    _powerpoint;
-        JLabel              _logoLabel = new JLabel(LOGO);
+        JLabel              _logoLabel = new JLabel(Images.LOGO_OPENBOOKS);
         boolean _showPresentation = true;
         
-        public WelcomeAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public WelcomeAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         
         public void actionPerformed(ActionEvent e) {
@@ -501,13 +497,13 @@ public class Demo extends JFrame {
     public class AboutAction extends OpenBookAction {
         AboutDialog _dialog;
         
-        public AboutAction(String name, String iconLocation, String tooltip) {
-            super(name, iconLocation, tooltip);
+        public AboutAction(String name, Icon icon, String tooltip) {
+            super(name, icon, tooltip);
         }
         
         public void actionPerformed(ActionEvent e) {
             if (_dialog == null) {
-                _dialog = new AboutDialog(LOGO);
+                _dialog = new AboutDialog(Images.LOGO_OPENBOOKS);
                 SwingHelper.position(_dialog, Demo.this);
             }
             _dialog.setVisible(true);
@@ -591,7 +587,7 @@ public class Demo extends JFrame {
      */
     private JTree createNavigator() {
         ActionTreeNode root = new ActionTreeNode(_root);
-        DefaultMutableTreeNode app   = new DefaultMutableTreeNode("Application WorkFlows");
+        DefaultMutableTreeNode app   = new DefaultMutableTreeNode("WorkFlows");
         DefaultMutableTreeNode views = new DefaultMutableTreeNode("Views");
         root.add(app);
         root.add(views);
@@ -619,6 +615,10 @@ public class Demo extends JFrame {
             }
         });
         tree.setCellRenderer(new TypedTreeCellRenderer());
+        
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            tree.expandRow(i);
+        }
         
         return tree;
     }
@@ -655,16 +655,19 @@ public class Demo extends JFrame {
             setLayout(new BorderLayout());
             JButton button = new JButton("<html>" 
                     + "<b>OpenBooks</b> " 
-                    + "<br> using OpenJPA version " + OpenJPAVersion.MAJOR_RELEASE + "." + OpenJPAVersion.MINOR_RELEASE
+                    + "<p>"
                     + "<br> by JPA Team, SWG" 
-                    + "<br>IBM Corporation" 
+                    + "<br> IBM Corporation" 
                     + "<p>"
                     + "</html>");
             button.setIcon(logo);
             button.setHorizontalTextPosition(SwingConstants.RIGHT);
+            button.setIconTextGap(4);
             button.setEnabled(true);
             button.setBorderPainted(false);
-            JLabel openJPALogo = new JLabel(Images.getIcon("images/openjpa-logo-small.png"));
+            JLabel openJPALogo = new JLabel(Images.LOGO_OPENJPA);
+            String version = "Version " + OpenJPAVersion.MAJOR_RELEASE + "." + OpenJPAVersion.MINOR_RELEASE;
+            openJPALogo.setBorder(BorderFactory.createTitledBorder(version));
             openJPALogo.setBackground(Color.BLACK);
 
             add(button, BorderLayout.CENTER);

@@ -88,7 +88,7 @@ public class PowerPointViewer extends JPanel {
     private JPanel createNavigationButtons() {
         JPanel buttons = new JPanel();
         _navButtons = new JButton[Math.min(MAX_BUTTONS, _total)]; 
-        _prev = new JButton(Images.BACK);
+        _prev = new RoundButton(Images.BACK);
         buttons.add(_prev);
         _prev.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -110,7 +110,7 @@ public class PowerPointViewer extends JPanel {
                 });
             }
             int slideIndex = i + 2;
-            _navButtons[i] = new JButton(""+slideIndex);
+            _navButtons[i] = new JButton(String.format("%02d", slideIndex));
             buttons.add(_navButtons[i]);
             _navButtons[i].putClientProperty(SLIDE_INDEX, i+1);
             _navButtons[i].addActionListener(new ActionListener() {
@@ -121,7 +121,7 @@ public class PowerPointViewer extends JPanel {
                 }
             });
         }
-        _next = new JButton(Images.NEXT);
+        _next = new RoundButton(Images.NEXT);
         buttons.add(Box.createHorizontalGlue());
         buttons.add(_next);
         _next.addActionListener(new ActionListener() {
@@ -180,7 +180,7 @@ public class PowerPointViewer extends JPanel {
         
         for (int i = 0; i < _navButtons.length; i++) {
             int slideIndex = index+i+2;
-            _navButtons[i].setText(""+ slideIndex);
+            _navButtons[i].setText(String.format("%02d", slideIndex));
             _navButtons[i].putClientProperty(SLIDE_INDEX, (index+i+1));
         }
     }
@@ -228,23 +228,5 @@ public class PowerPointViewer extends JPanel {
         }
         return imgURL;
     }
-    
-//    private ImageIcon createImageIcon(String path) {
-//        if (path == null)
-//            return null;
-//        URL imgURL = Thread.currentThread().getContextClassLoader().getResource(path);
-//        if (imgURL != null) {
-//            return new ImageIcon(imgURL);
-//        } else {
-//            imgURL = Images.class.getResource(path);
-//            if (imgURL != null) {
-//                return new ImageIcon(imgURL);
-//            } else {
-//                System.err.println("Couldn't find file: " + path);
-//                return null;
-//            }
-//        }
-//    }
-
     
 }

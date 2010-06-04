@@ -42,6 +42,7 @@ import jpa.tools.swing.EntityDataModel;
 import jpa.tools.swing.EntityTable;
 import jpa.tools.swing.EntityTableView;
 import jpa.tools.swing.ErrorDialog;
+import jpa.tools.swing.RoundButton;
 import openbook.client.Demo.ShowCodeAction;
 import openbook.domain.Author;
 import openbook.domain.Book;
@@ -179,7 +180,7 @@ public final class BuyBookPage extends JPanel {
             layout.setHorizontalGroup(hGroup);
             layout.setVerticalGroup(vGroup);
 
-            JButton searchButton = new JButton("Search", Images.START);
+            JButton searchButton = new JButton("Search", Images.SEARCH);
             searchButton.setHorizontalTextPosition(SwingConstants.LEADING);
             ShowCodeAction showCode = Demo.getInstance().new ShowCodeAction();
             showCode.setPage("Dynamic Query", "openbook/server/OpenBookServiceImpl.java.html#buildQuery");
@@ -331,7 +332,7 @@ public final class BuyBookPage extends JPanel {
             
             JPanel buttonPanel = new JPanel();
             buttonPanel.add(Box.createHorizontalGlue());
-            _addToCart = new JButton("Add to Cart", Images.getIcon("images/Add2Cart.jpg", true));
+            _addToCart = new JButton("Add to Cart", Images.CART);
             _addToCart.setEnabled(false);
             buttonPanel.add(_addToCart);
             buttonPanel.add(Box.createHorizontalGlue());
