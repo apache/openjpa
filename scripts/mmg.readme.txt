@@ -1,4 +1,6 @@
-Metamodel generator (mmg)
+Apache OpenJPA - Metamodel generator (mmg) readme
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
 JPA 2.0 provides an utility to generate canonical metamodel for each persistent domain entity.
 This brief note describes how to generate these canonical metamodel classes.
