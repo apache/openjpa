@@ -1,5 +1,6 @@
-                         Apache OpenJPA 2.1.0-SNAPSHOT
-                         -----------------------------
+Apache OpenJPA 2.1.0-SNAPSHOT
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
 Content
 -------
