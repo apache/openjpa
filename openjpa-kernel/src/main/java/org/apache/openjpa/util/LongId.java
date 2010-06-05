@@ -53,6 +53,10 @@ public final class LongId extends OpenJPAId {
     public Object getIdObject() {
         return key;
     }
+    
+    public String toString() {
+        return String.valueOf(key);
+    }
 
     protected int idHash() {
         return (int) (key ^ (key >>> 32));
