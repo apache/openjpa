@@ -18,14 +18,12 @@
  */
 package org.apache.openjpa.persistence.kernel.common.apps;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -36,12 +34,13 @@ public class BlobTest {
     private int id;
 
     @Column(name = "blobtab")
-    private byte[] blob;
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
+    private Object blob;
 
     public BlobTest() {
     }
 
-    public void setBlob(byte[] blob) {
+    public void setBlob(Object blob) {
         this.blob = blob;
     }
 

@@ -34,7 +34,7 @@ public class ConstantJoinPC4
 
 	@OneToOne(cascade={CascadeType.PERSIST, CascadeType.REMOVE})
 	private ConstantJoinPC5 oneToOne1;
-	
+	@ManyToMany
 	private Set manyToMany = new HashSet ();
 
 	public ConstantJoinPC4()
