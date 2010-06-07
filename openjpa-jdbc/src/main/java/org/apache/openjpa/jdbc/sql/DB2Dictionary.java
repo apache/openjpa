@@ -77,12 +77,9 @@ public class DB2Dictionary
     protected static final String withCSClause = "WITH CS";
     protected static final String withRSClause = "WITH RS";
     protected static final String withRRClause = "WITH RR";
-    protected static final String useKeepShareLockClause
-        = "USE AND KEEP SHARE LOCKS";
-    protected static final String useKeepUpdateLockClause
-        = "USE AND KEEP UPDATE LOCKS";
-    protected static final String useKeepExclusiveLockClause
-        = "USE AND KEEP EXCLUSIVE LOCKS";
+    protected static final String useKeepShareLockClause     = "USE AND KEEP SHARE LOCKS";
+    protected static final String useKeepUpdateLockClause    = "USE AND KEEP UPDATE LOCKS";
+    protected static final String useKeepExclusiveLockClause = "USE AND KEEP EXCLUSIVE LOCKS";
     protected static final String forReadOnlyClause = "FOR READ ONLY";
     protected String databaseProductName = "";
     protected String databaseProductVersion = "";
@@ -93,14 +90,12 @@ public class DB2Dictionary
     
     public DB2Dictionary() {
         platform = "DB2";
-        validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
-            + "SYSIBM.SYSTABLES";
+        validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM SYSIBM.SYSTABLES";
         supportsSelectEndIndex = true;
 
         nextSequenceQuery = "VALUES NEXTVAL FOR {0}";
 
-        sequenceSQL = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, "
-            + "SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
+        sequenceSQL = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
         sequenceSchemaSQL = "SEQSCHEMA = ?";
         sequenceNameSQL = "SEQNAME = ?";
         characterColumnSize = 254;
@@ -125,6 +120,7 @@ public class DB2Dictionary
         supportsDefaultDeleteAction = false;
         supportsAlterTableWithDropColumn = false;
         supportsLockingWithOrderClause = true;
+        supportsNullUniqueColumn = false;
 
         supportsNullTableForGetColumns = false;
         requiresCastForMathFunctions = true;

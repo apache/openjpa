@@ -66,7 +66,8 @@ public class DerbyDictionary
         requiresCastForMathFunctions = true;
         requiresCastForComparisons = true;
         supportsSimpleCaseExpression = false;
-
+        supportsNullUniqueColumn = false;
+        
         supportsComments = true;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{

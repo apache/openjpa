@@ -25,6 +25,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -78,6 +80,7 @@ public class Column
     private String _comment = null;
     private boolean _XML = false;
     private boolean _isUni1MFK = false;
+    private Set<Constraint> _constraints = new HashSet<Constraint>();
     
     /**
      * Default constructor.
@@ -802,6 +805,9 @@ public class Column
             setXML(from.isXML());
         if (!isUni1MFK())
             setUni1MFK(from.isUni1MFK());
+        for (Constraint c : _constraints) {
+            addConstraint(c);
+        }
     }
     
     /**
@@ -883,4 +889,66 @@ public class Column
     public void setUni1MFK(boolean isUni1MFK) {
         _isUni1MFK = isUni1MFK;
     }
+    
+    /**
+     * Adds the given constraint to this column.
+     */
+    public void addConstraint(Constraint c) {
+        _constraints.add(c);
+    }
+    
+    /**
+     * Removes the given constraint from this column.
+     */
+    public void removeConstraint(Constraint c) {
+        _constraints.remove(c);
+    }
+    
+    /**
+     * Affirms if this column has any constraint of given type.
+     */
+    public boolean hasConstraint(Class<? extends Constraint> type) {
+        return !getConstraints(type).isEmpty();
+    }
+    
+    /**
+     * Gets all constrains attached this column.
+     */
+    public Set<Constraint> getConstraints() {
+        return _constraints;
+    }
+    
+    /**
+     * Gets all constrains of the given type attached to this column.
+     */
+    public <T extends Constraint> Set<T> getConstraints(Class<T> type) {
+        Set<T> result = new HashSet<T>();
+        for (Constraint c : _constraints) {
+            if (c.getClass() == type) {
+                result.add((T)c);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Affirms if any unique constraint is attached to this column.
+     */
+    public boolean isUniqueConstraint() {
+        return hasConstraint(Unique.class);
+    }
+    
+    /**
+     * Affirms if any index constraint is attached to this column.
+     */
+    public boolean isIndex() {
+        return hasConstraint(Index.class);
+    }
+    
+    /**
+     * Affirms if any foreign key constraint is attached to this column.
+     */
+    public boolean isForeignKey() {
+        return hasConstraint(ForeignKey.class);
+    }  
 }

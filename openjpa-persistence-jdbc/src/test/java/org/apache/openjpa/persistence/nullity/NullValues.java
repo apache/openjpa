@@ -84,6 +84,7 @@ public class NullValues {
 		setNotNullableBlob(new BlobValue());
 		setOptionalBlob(new BlobValue());
 		setNotOptionalBlob(new BlobValue());
+		setUniqueNullable("");
 	}
 	
 	public long getId() {

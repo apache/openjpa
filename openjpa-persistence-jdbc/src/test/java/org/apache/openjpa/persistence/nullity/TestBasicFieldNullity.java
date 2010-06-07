@@ -21,8 +21,10 @@ package org.apache.openjpa.persistence.nullity;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -119,12 +121,18 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
     
     
     public void testUniqueStringColumnCanBeNull() {
+        if (!isUniqueColumnNullable()) {
+            return;
+        }
         NullValues pc = new NullValues();
         pc.setUniqueNullable(null);
         assertCommitSucceeds(pc, NEW);
     }
     
     public void testUniqueStringColumnAsNull() {
+        if (!isUniqueColumnNullable()) {
+            return;
+        }
         NullValues pc = new NullValues();
         pc.setUniqueNullable(null);
         assertCommitSucceeds(pc, NEW);
@@ -154,6 +162,10 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         for (NullValues n : result)
             assertEquals(EMPTY_STRING, n.getUniqueNullable());
         
+    }
+    
+    boolean isUniqueColumnNullable() {
+        return ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance().supportsNullUniqueColumn;
     }
 }
 
