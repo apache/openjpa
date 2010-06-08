@@ -122,7 +122,20 @@ public class TestValidationGroups extends PersistenceTestCase {
     }
     
     /**
-     * 2b) verify multiple/mixed validation groups
+     * 2b1) verify multiple/mixed validation groups via persistence.xml
+     * @param flush
+     */
+    public void testPesistenceXMLMultipleValidationGroups() {
+
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "multi-validation-group-xml",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+        assertNotNull(emf);
+        verifyMultipleValidationGroups(emf);
+    }
+    /**
+     * 2b2) verify multiple/mixed validation groups via properties
      * @param flush
      */
     public void testMultipleValidationGroups() {
@@ -145,10 +158,14 @@ public class TestValidationGroups extends PersistenceTestCase {
                 "org/apache/openjpa/integration/validation/persistence.xml",
                 propMap);
         assertNotNull(emf);
+        verifyMultipleValidationGroups(emf);
+    }
+        
+    private void verifyMultipleValidationGroups(OpenJPAEntityManagerFactorySPI emf) {
         // create EM
         OpenJPAEntityManager em = emf.createEntityManager();
         assertNotNull(em);
-
+        
         try {
             MixedGrpEntity mge = new MixedGrpEntity();
             

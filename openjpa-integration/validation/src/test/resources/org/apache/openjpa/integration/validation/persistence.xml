@@ -125,6 +125,23 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="multi-validation-group-xml">
+        <class>org.apache.openjpa.integration.validation.MixedGrpEntity</class>
+        <validation-mode>CALLBACK</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/>
+            <!--  OPENJPA-1685 Filter whitespace from group list -->
+            <property name="javax.persistence.validation.group.pre-persist"
+                value="org.apache.openjpa.integration.validation.ValGroup1,
+                       org.apache.openjpa.integration.validation.ValGroup2"/>
+            <property name="javax.persistence.validation.group.pre-update"
+                value=""/>
+            <property name="javax.persistence.validation.group.pre-remove"
+                value="org.apache.openjpa.integration.validation.ValGroup2  "/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="ConstraintPU">
         <class>org.apache.openjpa.integration.validation.ConstraintNull</class>
         <class>org.apache.openjpa.integration.validation.ConstraintBoolean</class>

@@ -30,6 +30,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -219,10 +220,10 @@ public class ValidatorImpl extends AbstractValidator {
             vgGrp = new Class<?>[strClasses.length];
             for (int i = 0; i < strClasses.length; i++) {
                 try {
-                    vgGrp[i] =  Class.forName(strClasses[i]);
+                    vgGrp[i] =  Class.forName(StringUtils.trim(strClasses[i]));
                 } catch (Throwable t) {
                     throw new IllegalArgumentException(
-                        _loc.get("invalid-validation-group", strClasses[i], 
+                        _loc.get("invalid-validation-group", StringUtils.trim(strClasses[i]),
                             vgName).getMessage(), t);
                 }
             }            
