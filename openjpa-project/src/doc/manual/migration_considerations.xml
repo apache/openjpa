@@ -255,18 +255,7 @@
                 applications that did not use or depend upon OpenJPA specific
                 APIs or behavior.
             </para>
-            <section id="getStrategy">
-                <title>
-                    FieldMapping.getStrategy()
-                </title>
-                <!-- See OPENJPA-1214 for details. -->
-                <para>
-                    The FieldMapping.getStrategy() in OpenJPA 1.x
-                    returned an instance of RelationFieldStrategy
-                    for embded super classes, but will now return an
-                    EmbedFieldStrategy.
-                </para>
-            </section>
+            
             <section id="prePostUpdate">
                 <title>
                     PreUpdate/PostUpdate Life Cycle Callbacks
