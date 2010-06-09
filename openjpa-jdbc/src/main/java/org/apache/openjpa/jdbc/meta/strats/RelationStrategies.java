@@ -26,9 +26,11 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.kernel.DetachedValueStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
@@ -225,4 +227,25 @@ public class RelationStrategies {
             return new DetachedValueStateManager(obj, ctx);
         return sm;
     }
+    
+    /**
+     * Affirms if all of the given columns represent a {@linkplain RelationId relationship identifier}. 
+     */
+    public static boolean isRelationId(Column[] cols) {
+        if (cols == null || cols.length == 0)
+            return false;
+        for (int i = 0; i < cols.length; i++) {
+            if (!cols[i].isRelationId())
+                return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Affirms if all of the foreign key columns represent a {@linkplain RelationId relationship identifier}.
+     */
+    public static boolean isRelationId(ForeignKey fk) {
+        return fk != null && isRelationId(fk.getColumns());
+    }
+
 }

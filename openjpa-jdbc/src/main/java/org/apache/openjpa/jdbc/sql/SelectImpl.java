@@ -50,6 +50,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
+import org.apache.openjpa.jdbc.meta.strats.RelationStrategies;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -1343,7 +1344,6 @@ public class SelectImpl
     private void where(Object oid, ClassMapping mapping, Column[] toCols,
         Column[] fromCols, Object[] vals, Column[] constCols, PathJoins pj,
         JDBCStore store) {
-        boolean relationId = fromCols[0].isRelationId(); 
         ValueMapping embed = mapping.getEmbeddingMapping();
         if (embed != null) {
             where(oid, embed.getFieldMapping().getDefiningMapping(),
@@ -1353,6 +1353,7 @@ public class SelectImpl
 
         // only bother to pack pk values into array if app id
         Object[] pks = null;
+        boolean relationId = RelationStrategies.isRelationId(fromCols); 
         if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
 

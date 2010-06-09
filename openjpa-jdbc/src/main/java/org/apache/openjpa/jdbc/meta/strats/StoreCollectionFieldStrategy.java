@@ -611,10 +611,8 @@ public abstract class StoreCollectionFieldStrategy
      */
     Object getObjectIdForJoin(ForeignKey fk, OpenJPAStateManager sm) {
         Object oid = sm.getObjectId();
-        for (Column col : fk.getColumns()) {
-            if (!col.isRelationId()) {
-                return oid;
-            }
+        if (!RelationStrategies.isRelationId(fk)) {
+            return oid;
         }
         
         FieldMapping owningField = field.getMappedByMapping();
