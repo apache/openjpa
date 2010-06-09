@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
+import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -46,6 +47,7 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Id;
+import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.Proxy;
 
 /**
@@ -576,8 +578,9 @@ public abstract class StoreCollectionFieldStrategy
     protected Joins selectAll(Select sel, ClassMapping elem,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         int eagerMode) {
-        sel.whereForeignKey(getJoinForeignKey(elem), sm.getObjectId(),
-            field.getDefiningMapping(), store);
+        ForeignKey fk = getJoinForeignKey(elem);
+        Object oid = getObjectIdForJoin(fk, sm);
+        sel.whereForeignKey(fk, oid, field.getDefiningMapping(), store);
 
         // order first, then select so that if the projection introduces
         // additional ordering, it will be after our required ordering
@@ -600,5 +603,27 @@ public abstract class StoreCollectionFieldStrategy
     
     boolean requiresOrderBy() {
     	return List.class.isAssignableFrom(field.getProxyType());
+    }
+    
+    /**
+     * Gets the identity value of the given instance that is suitable to join to the given foreign key.
+     * The special case of the foreign key being a relation identifier will encode the value. 
+     */
+    Object getObjectIdForJoin(ForeignKey fk, OpenJPAStateManager sm) {
+        Object oid = sm.getObjectId();
+        for (Column col : fk.getColumns()) {
+            if (!col.isRelationId()) {
+                return oid;
+            }
+        }
+        
+        FieldMapping owningField = field.getMappedByMapping();
+        if (owningField != null && owningField.getHandler() instanceof RelationId) {
+            return ((RelationId)owningField.getHandler()).toRelationDataStoreValue(sm, null);
+        } 
+        if (oid instanceof OpenJPAId) {
+            return ((OpenJPAId)oid).getIdObject();
+        }
+        return oid;
     }
 }

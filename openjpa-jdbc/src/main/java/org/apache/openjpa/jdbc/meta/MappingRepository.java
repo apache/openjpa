@@ -1026,7 +1026,7 @@ public class MappingRepository extends MetaDataRepository {
             //bi-/M-1/JoinTable ==> join table strategy
             if (isBiMTo1JT(field)) 
                 return false;
-            if (mapped.getTypeCode() == JavaTypes.PC)
+            if (mapped.getTypeCode() == JavaTypes.PC || mapped.getTypeCode() == JavaTypes.PC_UNTYPED)
                 return true;
             if (mapped.getElement().getTypeCode() == JavaTypes.PC)
                 return false;

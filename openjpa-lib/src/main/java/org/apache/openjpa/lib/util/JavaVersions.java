@@ -164,7 +164,7 @@ public class JavaVersions {
         try {
             Object type = Field.class.getMethod("getGenericType",
                 (Class[]) null).invoke(f, (Object[]) null);
-            return collectParameterizedTypes(type);
+            return collectParameterizedTypes(type, f.getType());
         } catch (Exception e) {
             return EMPTY_CLASSES;
         }
@@ -182,7 +182,7 @@ public class JavaVersions {
         try {
             Object type = Method.class.getMethod("getGenericReturnType",
                 (Class[]) null).invoke(meth, (Object[]) null);
-            return collectParameterizedTypes(type);
+            return collectParameterizedTypes(type, meth.getReturnType());
         } catch (Exception e) {
             return EMPTY_CLASSES;
         }
@@ -191,10 +191,14 @@ public class JavaVersions {
     /**
      * Return all parameterized classes for the given type.
      */
-    private static Class[] collectParameterizedTypes(Object type)
+    private static Class[] collectParameterizedTypes(Object type, Class<?> cls)
         throws Exception {
-        if (PARAM_TYPE == null || !PARAM_TYPE.isInstance(type))
+        if (PARAM_TYPE == null || !PARAM_TYPE.isInstance(type)) {
+            if (cls.getSuperclass() != Object.class) {
+                return collectParameterizedTypes(cls.getGenericSuperclass(), cls.getSuperclass());
+            }
             return EMPTY_CLASSES;
+        }
 
         Object[] args = (Object[]) PARAM_TYPE.getMethod
             ("getActualTypeArguments", (Class[]) null).invoke(type,

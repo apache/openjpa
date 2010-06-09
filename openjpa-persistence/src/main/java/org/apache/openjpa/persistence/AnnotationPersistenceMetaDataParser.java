@@ -85,6 +85,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -1285,7 +1286,7 @@ public class AnnotationPersistenceMetaDataParser
     /**
      * Convert the given class to its OpenJPA type override equivalent.
      */
-    private static Class<?> toOverrideType(Class<?> cls) {
+    public static Class<?> toOverrideType(Class<?> cls) {
         return (cls == Entity.class)
             ? org.apache.openjpa.enhance.PersistenceCapable.class : cls;
     }
@@ -1506,12 +1507,12 @@ public class AnnotationPersistenceMetaDataParser
             case JavaTypes.ARRAY:
             case JavaTypes.COLLECTION:
             case JavaTypes.MAP:
-                if (JavaTypes.maybePC(fmd.getElement()))
+                if (fmd.getDeclaredType() == Properties.class || JavaTypes.maybePC(fmd.getElement()))
                     break;
                 // no break
             default:
                 throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
-                    "OneToMany"));
+                    "ManyToMany"));
         }
 
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);

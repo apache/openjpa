@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.GenerationType;
 import javax.persistence.LockModeType;
 import javax.persistence.NamedQuery;
@@ -1467,7 +1468,7 @@ public class XMLPersistenceMetaDataParser
         }
         val = attrs.getValue("target-entity");
         if (val != null)
-            fmd.setTypeOverride(classForName(val));
+            fmd.setTypeOverride(AnnotationPersistenceMetaDataParser.toOverrideType(classForName(val)));
         assertPC(fmd, "OneToOne");
         fmd.setSerialized(false); // override any Lob annotation
         boolean orphanRemoval = Boolean.valueOf(attrs.getValue(
@@ -1489,7 +1490,7 @@ public class XMLPersistenceMetaDataParser
         }
         val = attrs.getValue("target-entity");
         if (val != null)
-            fmd.setTypeOverride(classForName(val));
+            fmd.setTypeOverride(AnnotationPersistenceMetaDataParser.toOverrideType(classForName(val)));
         assertPC(fmd, "ManyToOne");
         fmd.setSerialized(false); // override any Lob annotation
         String mapsId = attrs.getValue("maps-id");

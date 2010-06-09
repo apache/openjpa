@@ -107,7 +107,7 @@ public class TestEmbeddableSuperclass
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
 
         fm = cls.getFieldMapping("sup");
-        assertTrue(fm.getStrategy() instanceof EmbedFieldStrategy);
+        assertEquals(RelationFieldStrategy.class, fm.getStrategy().getClass());
     }
 
     public void testPersistAndFind() {

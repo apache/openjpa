@@ -451,7 +451,7 @@ public class ValueMetaDataImpl
         if (meta != null)
             _decCode = JavaTypes.PC;
         
-        if (meta != null && meta.isEmbeddedOnly())
+        if (meta != null && meta.isEmbeddedOnly() && !meta.isAbstract())
             setEmbedded(true);
                 
         if (!isEmbedded()) 

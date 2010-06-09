@@ -24,21 +24,23 @@ import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
- * Identity class extended by builtin OpenJPA identity objects.
+ * Identity class extended by built-in OpenJPA identity objects.
  *
  * @author Steve Kim
  */
+@SuppressWarnings("serial")
 public abstract class OpenJPAId
     implements Comparable, Serializable {
-
-    // cache the types' generated hashcodes
+    public static final char TYPE_VALUE_SEP = '-';
+    
+    // cache the types' generated hash codes
     private static ConcurrentReferenceHashMap _typeCache =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
     protected Class type;
     protected boolean subs = true;
 
-    // type has his based on the least-derived non-object class so that
+    // type hash is based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
     private transient int _typeHash = 0;
 
@@ -100,7 +102,7 @@ public abstract class OpenJPAId
     protected abstract boolean idEquals(OpenJPAId other);
 
     /**
-     * Generate the hashcode for this Id.  Cache the type's generated hashcode
+     * Generate the hash code for this Id.  Cache the type's generated hash code
      * so that it doesn't have to be generated each time.
      */
     public int hashCode() {
@@ -134,7 +136,7 @@ public abstract class OpenJPAId
     }
 
     public String toString() {
-        return type.getName() + "-" + getIdObject();
+        return type.getName() + TYPE_VALUE_SEP + getIdObject();
     }
 
     public int compareTo(Object other) {
@@ -142,7 +144,6 @@ public abstract class OpenJPAId
             return 0;
         if (other == null)
             return 1;
-        return ((Comparable) getIdObject()).compareTo(((OpenJPAId) other).
-            getIdObject ());
+        return ((Comparable) getIdObject()).compareTo(((OpenJPAId) other).getIdObject ());
 	}
 }

@@ -1343,6 +1343,7 @@ public class SelectImpl
     private void where(Object oid, ClassMapping mapping, Column[] toCols,
         Column[] fromCols, Object[] vals, Column[] constCols, PathJoins pj,
         JDBCStore store) {
+        boolean relationId = fromCols[0].isRelationId(); 
         ValueMapping embed = mapping.getEmbeddingMapping();
         if (embed != null) {
             where(oid, embed.getFieldMapping().getDefiningMapping(),
@@ -1352,7 +1353,7 @@ public class SelectImpl
 
         // only bother to pack pk values into array if app id
         Object[] pks = null;
-        if (mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
+        if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
 
         SQLBuffer buf = new SQLBuffer(_dict);
@@ -1360,10 +1361,9 @@ public class SelectImpl
         Object val;
         int count = 0;
         for (int i = 0; i < toCols.length; i++, count++) {
-            if (pks == null)
-                val = (oid == null) ? null :
-                        ((Id) oid).getId();
-            else {
+            if (pks == null) {
+                val = (oid == null) ? null : relationId ? oid : ((Id) oid).getId();
+            } else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);
                 val = pks[mapping.getField(join.getFieldIndex()).

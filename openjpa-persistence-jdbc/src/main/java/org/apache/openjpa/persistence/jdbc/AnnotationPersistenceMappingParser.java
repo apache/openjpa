@@ -1052,12 +1052,10 @@ public class AnnotationPersistenceMappingParser
                     parseEnumerated(fm, (Enumerated) anno);
                     break;
                 case JOIN_COL:
-                    parseJoinColumns(fm, fm.getValueInfo(), true,
-                        (JoinColumn) anno);
+                    parseJoinColumns(fm, fm.getValueInfo(), true, (JoinColumn) anno);
                     break;
                 case JOIN_COLS:
-                    parseJoinColumns(fm, fm.getValueInfo(), true,
-                        ((JoinColumns) anno).value());
+                    parseJoinColumns(fm, fm.getValueInfo(), true, ((JoinColumns) anno).value());
                     break;
                 case JOIN_TABLE:
                     parseJoinTable(fm, (JoinTable) anno);
@@ -1670,12 +1668,19 @@ public class AnnotationPersistenceMappingParser
         List<Column> cols = new ArrayList<Column>(joins.length);
         int unique = 0;
         DBIdentifier sSecondary = DBIdentifier.NULL;
+        
         for (int i = 0; i < joins.length; i++) {
-            cols.add(newColumn(joins[i]));
+            Column col = newColumn(joins[i]);
+            cols.add(col);
             unique |= (joins[i].unique()) ? TRUE : FALSE;
-            DBIdentifier sTable = DBIdentifier.newTable(joins[i].table(), delimit());
-            sSecondary = trackSecondaryTable(fm, sSecondary,
-                sTable, i);
+            DBIdentifier sTable = DBIdentifier.NULL;
+            if (info instanceof FieldMappingInfo && secondaryAllowed) {
+                sTable = ((FieldMappingInfo)info).getTableIdentifier();
+            }
+            if (sTable.isNull()) {
+                sTable = DBIdentifier.newTable(joins[i].table(), delimit());
+            }
+            sSecondary = trackSecondaryTable(fm, sSecondary, sTable, i);
             if (!secondaryAllowed && !DBIdentifier.isNull(sSecondary))
                 throw new MetaDataException(_loc.get("bad-second", fm));
         }
