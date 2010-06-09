@@ -973,6 +973,7 @@ Improvement
     * [OPENJPA-841] - Create structures to hold Slice information with StateManangers
     * [OPENJPA-858] - Allow postPersist be invoked immediately after persist()
     * [OPENJPA-968] - Change in default detach() behavior for JPA 2.0
+    * [OPENJPA-620] - An eagerly initialized configuration with fail-fast behavior on persistent class resolution
 
 New Feature
 -----------
