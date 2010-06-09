@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +40,7 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @param <E>
  *            element type
  */
-public class DistinctResultList<E> implements List<E> {
+public class DistinctResultList<E> implements List<E>, Serializable {
     private final ArrayList<E> _del;
     private final RuntimeExceptionTranslator _trans;
 
