@@ -42,6 +42,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 "openjpa.jdbc.SynchronizeMappings", 
                 "buildSchema(ForeignKeys=true)",
                 "openjpa.jdbc.DBDictionary", batchLimit, 
+                "openjpa.ConnectionFactoryProperties", "PrintParameters=true",
                 CLEAR_TABLES);
 
         assertNotNull("Unable to create EntityManagerFactory", emf);
