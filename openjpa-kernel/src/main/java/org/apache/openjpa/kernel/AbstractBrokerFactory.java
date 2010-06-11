@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +56,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -151,12 +153,6 @@ public abstract class AbstractBrokerFactory
         _conf = config;
         _brokers = newBrokerSet();
         getPcClassLoaders();
-        if (config.isInitializeEagerly()) {
-            newBroker(_conf.getConnectionUserName(), 
-            	_conf.getConnectionPassword(), 
-            	_conf.isConnectionFactoryModeManaged(),
-                _conf.getConnectionRetainModeConstant(), false).close(); 
-        }
     }
 
     /**
@@ -834,6 +830,31 @@ public abstract class AbstractBrokerFactory
         dsm = new ROPStoreManager((dsm == null) ? sm : dsm);
         
         return dsm;
+    }
+    
+    /**
+     * This method is invoked AFTER a BrokerFactory has been instantiated. 
+     */
+    public void postCreationCallback() {
+        if (_conf.isInitializeEagerly()) {
+            newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword(),
+                _conf.isConnectionFactoryModeManaged(), _conf.getConnectionRetainModeConstant(), false).close();
+        }
+        // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're preloading.
+        Options o = Configurations.parseProperties(Configurations.getProperties(_conf.getMetaDataRepository()));
+        if (MetaDataRepository.needsPreload(o) == true) {
+            MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
+            mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
+            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
+
+            // Load persistent classes and hook in subclasser
+            loadPersistentTypes((ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                .getContextClassLoaderAction()));
+            mdr.preload();
+        }
+
+        // Get a DataCacheManager instance up front to avoid threading concerns on first call.
+        _conf.getDataCacheManagerInstance();
     }
 }
 

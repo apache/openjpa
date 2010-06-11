@@ -156,4 +156,9 @@ public interface BrokerFactory
      * with information on when the broker was closed. 
      */
     public void assertOpen(); 
+    
+    /**
+     * This method is invoked AFTER a BrokerFactory has been instantiated. 
+     */
+    public void postCreationCallback();
 }

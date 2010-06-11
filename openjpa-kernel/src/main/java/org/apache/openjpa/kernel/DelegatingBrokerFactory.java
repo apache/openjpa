@@ -231,4 +231,12 @@ public class DelegatingBrokerFactory
             throw translate(re);
         }
     }
+    
+    public void postCreationCallback() {
+        try {
+            _factory.postCreationCallback();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

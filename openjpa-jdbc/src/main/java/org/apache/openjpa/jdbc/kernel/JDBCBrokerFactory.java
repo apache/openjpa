@@ -66,14 +66,14 @@ public class JDBCBrokerFactory
      * Invoked from {@link Bootstrap#getBrokerFactory}.
      */
     public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
-        Map<String,Object> props = cp.getProperties();
+        Map<String, Object> props = cp.getProperties();
         Object key = toPoolKey(props);
-        JDBCBrokerFactory factory = (JDBCBrokerFactory)
-            getPooledFactoryForKey(key);
+        JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactoryForKey(key);
         if (factory != null)
             return factory;
-
-        factory = newInstance(cp);
+        
+        // The creation of all BrokerFactories should be driven through Bootstrap.
+        factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp, null);
         pool(key, factory);
         return factory;
     }
@@ -98,6 +98,11 @@ public class JDBCBrokerFactory
         props.put("Platform", "OpenJPA JDBC Edition: " + db + " Database");
 
         return props;
+    }
+    
+    @Override
+    public void postCreationCallback() {
+        super.postCreationCallback();
     }
 
     protected StoreManager newStoreManager() {

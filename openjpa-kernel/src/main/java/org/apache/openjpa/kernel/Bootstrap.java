@@ -59,7 +59,9 @@ public class Bootstrap {
     public static BrokerFactory newBrokerFactory(ConfigurationProvider conf,
         ClassLoader loader) {
         try {
-            return invokeFactory(conf, loader, "newInstance");
+            BrokerFactory factory = invokeFactory(conf, loader, "newInstance");
+            factory.postCreationCallback();
+            return factory;
         } catch (InvocationTargetException ite) {
             Throwable cause = ite.getTargetException();
             if (cause instanceof OpenJPAException)
