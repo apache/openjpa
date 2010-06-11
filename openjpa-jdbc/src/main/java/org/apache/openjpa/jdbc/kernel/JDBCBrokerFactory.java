@@ -65,7 +65,7 @@ public class JDBCBrokerFactory
      * Factory method for obtaining a possibly-pooled factory from properties.
      * Invoked from {@link Bootstrap#getBrokerFactory}.
      */
-    public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
+    public static JDBCBrokerFactory getInstance(ConfigurationProvider cp, ClassLoader loader) {
         Map<String, Object> props = cp.getProperties();
         Object key = toPoolKey(props);
         JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactoryForKey(key);
@@ -73,7 +73,7 @@ public class JDBCBrokerFactory
             return factory;
         
         // The creation of all BrokerFactories should be driven through Bootstrap.
-        factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp, null);
+        factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp, loader);
         pool(key, factory);
         return factory;
     }
