@@ -23,9 +23,11 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 
 /**
- * Utilities for dealing with different Java spec versions.
+ * Utilities for dealing with different Java specification versions.
  *
  * @author Abe White
+ * @author Pinaki Poddar
+ * 
  * @nojavadoc
  */
 public class JavaVersions {
@@ -35,15 +37,17 @@ public class JavaVersions {
      */
     public static final int VERSION;
 
-    private static final Class[] EMPTY_CLASSES = new Class[0];
+    private static final Class<?>[] EMPTY_CLASSES = new Class[0];
 
-    private static Class PARAM_TYPE = null;
-    private static Class ENUM_TYPE = null;
-    private static Class ANNO_TYPE = null;
+    private static Class<?> PARAM_TYPE = null;
+    private static Class<?> ENUM_TYPE  = null;
+    private static Class<?> ANNO_TYPE  = null;
     private static Method GET_STACK = null;
     private static Method SET_STACK = null;
     private static Method GET_CAUSE = null;
     private static Method INIT_CAUSE = null;
+    private static Object[] NO_ARGS  = null;
+    private static Class<?>[] NO_CLASS_ARGS = null;
 
     static {
         String specVersion = AccessController.doPrivileged(
@@ -63,8 +67,7 @@ public class JavaVersions {
 
         if (VERSION >= 5) {
             try {
-                PARAM_TYPE = Class.forName
-                    ("java.lang.reflect.ParameterizedType");
+                PARAM_TYPE = Class.forName("java.lang.reflect.ParameterizedType");
                 ENUM_TYPE = Class.forName("java.lang.Enum");
                 ANNO_TYPE = Class.forName("java.lang.annotation.Annotation");
             } catch (Throwable t) {
@@ -73,15 +76,11 @@ public class JavaVersions {
 
         if (VERSION >= 4) {
             try {
-                Class stack = Class.forName("[Ljava.lang.StackTraceElement;");
-                GET_STACK = Throwable.class.getMethod("getStackTrace",
-                    (Class[]) null);
-                SET_STACK = Throwable.class.getMethod("setStackTrace",
-                    new Class[]{ stack });
-                GET_CAUSE = Throwable.class.getMethod("getCause",
-                    (Class[]) null);
-                INIT_CAUSE = Throwable.class.getMethod("initCause",
-                    new Class[]{ Throwable.class });
+                Class<?> stack = Class.forName("[Ljava.lang.StackTraceElement;");
+                GET_STACK = Throwable.class.getMethod("getStackTrace", NO_CLASS_ARGS);
+                SET_STACK = Throwable.class.getMethod("setStackTrace", new Class[]{ stack });
+                GET_CAUSE = Throwable.class.getMethod("getCause", NO_CLASS_ARGS);
+                INIT_CAUSE = Throwable.class.getMethod("initCause", new Class[]{ Throwable.class });
             } catch (Throwable t) {
             }
         }
@@ -94,7 +93,7 @@ public class JavaVersions {
      * @return the JDK-version-specific version of the class
      * @see #getVersionSpecificClass(String)
      */
-    public static Class getVersionSpecificClass(Class base) {
+    public static Class<?> getVersionSpecificClass(Class<?> base) {
         try {
             return getVersionSpecificClass(base.getName());
         } catch (ClassNotFoundException e) {
@@ -125,14 +124,13 @@ public class JavaVersions {
      * @param base the base name of the class to load
      * @return the subclass appropriate for the current Java version
      */
-    public static Class getVersionSpecificClass(String base)
+    public static Class<?> getVersionSpecificClass(String base)
         throws ClassNotFoundException {
         for (int i = VERSION; i >= 1; i--) {
             try {
                 return Class.forName(base + i);
             } catch (Throwable e) {
-                // throwables might occur with bytecode that we
-                // cannot understand
+                // throwables might occur with bytecode that we cannot understand
             }
         }
         return Class.forName(base);
@@ -141,29 +139,28 @@ public class JavaVersions {
     /**
      * Return true if the given type is an annotation.
      */
-    public static boolean isAnnotation(Class cls) {
+    public static boolean isAnnotation(Class<?> cls) {
         return ANNO_TYPE != null && ANNO_TYPE.isAssignableFrom(cls);
     }
 
     /**
      * Return true if the given type is an enumeration.
      */
-    public static boolean isEnumeration(Class cls) {
+    public static boolean isEnumeration(Class<?> cls) {
         return ENUM_TYPE != null && ENUM_TYPE.isAssignableFrom(cls);
     }
 
     /**
      * Collects the parameterized type declarations for a given field.
      */
-    public static Class[] getParameterizedTypes(Field f) {
+    public static Class<?>[] getParameterizedTypes(Field f) {
         if (f == null)
             return null;
         if (VERSION < 5)
             return EMPTY_CLASSES;
 
         try {
-            Object type = Field.class.getMethod("getGenericType",
-                (Class[]) null).invoke(f, (Object[]) null);
+            Object type = invokeGetter(f, "getGenericType");
             return collectParameterizedTypes(type, f.getType());
         } catch (Exception e) {
             return EMPTY_CLASSES;
@@ -173,15 +170,14 @@ public class JavaVersions {
     /**
      * Collects the parameterized return type declarations for a given method.
      */
-    public static Class[] getParameterizedTypes(Method meth) {
+    public static Class<?>[] getParameterizedTypes(Method meth) {
         if (meth == null)
             return null;
         if (VERSION < 5)
             return EMPTY_CLASSES;
 
         try {
-            Object type = Method.class.getMethod("getGenericReturnType",
-                (Class[]) null).invoke(meth, (Object[]) null);
+            Object type = invokeGetter(meth, "getGenericReturnType");
             return collectParameterizedTypes(type, meth.getReturnType());
         } catch (Exception e) {
             return EMPTY_CLASSES;
@@ -191,28 +187,46 @@ public class JavaVersions {
     /**
      * Return all parameterized classes for the given type.
      */
-    private static Class[] collectParameterizedTypes(Object type, Class<?> cls)
-        throws Exception {
-        if (PARAM_TYPE == null || !PARAM_TYPE.isInstance(type)) {
-            if (cls.getSuperclass() != Object.class) {
-                return collectParameterizedTypes(cls.getGenericSuperclass(), cls.getSuperclass());
+    private static Class<?>[] collectParameterizedTypes(Object type, Class<?> cls) throws Exception {
+        if (isParameterizedType(type)) {
+            Object[] args = (Object[]) invokeGetter(type, "getActualTypeArguments");
+            Class<?>[] clss = new Class[args.length];
+            for (int i = 0; i < args.length; i++) {
+                Class<?> c = extractClass(args[i]);
+                if (c == null) {
+                    return EMPTY_CLASSES;
+                }
+                clss[i] = c;
             }
+            return clss;
+        } else if (cls.getSuperclass() != Object.class) {
+            return collectParameterizedTypes(cls.getGenericSuperclass(), cls.getSuperclass());
+        } else {
             return EMPTY_CLASSES;
         }
-
-        Object[] args = (Object[]) PARAM_TYPE.getMethod
-            ("getActualTypeArguments", (Class[]) null).invoke(type,
-            (Object[]) null);
-        if (args.length == 0)
-            return EMPTY_CLASSES;
-
-        Class[] clss = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            if (!(args[i] instanceof Class))
-                return EMPTY_CLASSES;
-            clss[i] = (Class) args[i];
+    }
+    
+    /**
+     * Extracts the class from the given argument, if possible. Null otherwise.
+     */
+    static Class<?> extractClass(Object o) throws Exception {
+        if (o == null)
+            return null;
+        if (o instanceof Class)
+            return (Class<?>)o;
+        
+        if (isParameterizedType(o)) {
+            return extractClass(invokeGetter(o, "getRawType"));
         }
-        return clss;
+        return null;
+    }
+    
+    static Object invokeGetter(Object target, String method) throws Exception {
+        return target.getClass().getMethod(method, NO_CLASS_ARGS).invoke(target, NO_ARGS);
+    }
+    
+    static boolean isParameterizedType(Object cls) {
+        return PARAM_TYPE != null && PARAM_TYPE.isInstance(cls);
     }
 
     /**
@@ -220,12 +234,11 @@ public class JavaVersions {
      * false if it cannot be done, possibly due to an unsupported Java version.
      */
     public static boolean transferStackTrace(Throwable from, Throwable to) {
-        if (GET_STACK == null || SET_STACK == null || from == null
-            || to == null)
+        if (GET_STACK == null || SET_STACK == null || from == null || to == null)
             return false;
 
         try {
-            Object stack = GET_STACK.invoke(from, (Object[]) null);
+            Object stack = GET_STACK.invoke(from, NO_ARGS);
             SET_STACK.invoke(to, new Object[]{ stack });
             return true;
         } catch (Throwable t) {
@@ -241,7 +254,7 @@ public class JavaVersions {
             return null;
 
         try {
-            return (Throwable) GET_CAUSE.invoke(ex, (Object[]) null);
+            return (Throwable) GET_CAUSE.invoke(ex, NO_ARGS);
         } catch (Throwable t) {
             return null;
         }
