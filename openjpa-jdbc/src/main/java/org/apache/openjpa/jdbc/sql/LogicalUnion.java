@@ -905,6 +905,12 @@ public class LogicalUnion
         public void logEagerRelations() {
             sel.logEagerRelations();            
         }
+        public void setTablePerClassMeta(ClassMapping meta) {            
+        }
+
+        public ClassMapping getTablePerClassMeta() {
+            return sel.getTablePerClassMeta();
+        }
     }
 
     /**

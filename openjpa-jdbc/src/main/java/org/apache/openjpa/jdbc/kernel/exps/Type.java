@@ -25,6 +25,7 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -93,5 +94,13 @@ class Type
     protected String getOperator() {
         // since we override appendTo(), this method should never be called
         throw new InternalException();
+    }
+
+    public Path getPath() {
+        return getValue() instanceof Path ? (Path) getValue() : null;
+    }
+
+    public Discriminator getDiscriminator() {
+        return _disc;
     }
 }

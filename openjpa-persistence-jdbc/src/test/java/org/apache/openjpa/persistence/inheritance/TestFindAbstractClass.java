@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.persistence.inheritance;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.InheritanceType;
 
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -33,7 +36,7 @@ public class TestFindAbstractClass
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(AbstractBase.class, ConcreteSubclass.class);
+        setUp(AbstractBase.class, ConcreteSubclass.class, CLEAR_TABLES);
 
         ConcreteSubclass e = new ConcreteSubclass();
         e.setId("id");
@@ -44,6 +47,16 @@ public class TestFindAbstractClass
         em.persist(e);
         em.getTransaction().commit();
         em.close();
+    }
+
+    public void testEntityTypeInheritanceTypeJoined() {
+        EntityManager em = emf.createEntityManager();
+        String query = "select c from AbstractBase c where TYPE(c) = ConcreteSubclass";
+        List rs = em.createQuery(query).getResultList();
+        assertTrue(rs.get(0) instanceof ConcreteSubclass);
+        query = "select c from AbstractBase c";
+        rs = em.createQuery(query).getResultList();
+        assertTrue(rs.get(0) instanceof ConcreteSubclass);
     }
 
     public void testFind() {

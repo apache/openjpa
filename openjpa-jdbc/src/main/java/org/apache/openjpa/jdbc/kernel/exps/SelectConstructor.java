@@ -85,6 +85,7 @@ public class SelectConstructor
         // create a new select and initialize it with the joins needed for
         // the criteria of this query
         sel = newSelect(ctx, parent, alias, exps, state);
+        sel.setTablePerClassMeta(ctx.tpcMeta);
 
         // create where clause; if there are no where conditions and
         // no ordering or projections, we return null to signify that this

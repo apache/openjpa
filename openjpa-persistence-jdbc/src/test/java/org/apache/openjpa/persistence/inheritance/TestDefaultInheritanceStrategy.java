@@ -120,6 +120,15 @@ public class TestDefaultInheritanceStrategy
         em.persist(b);
         em.getTransaction().commit();
 
+        // test entity type discriminator queries for polymorphic results
+        em.clear();
+        String query = "select a from BaseClass a where TYPE(a) = BaseClass";
+        List rs = em.createQuery(query).getResultList();
+        assertTrue(rs.get(0) instanceof BaseClass);
+        query = "select a from BaseClass a where TYPE(a) = SubclassA";
+        rs = em.createQuery(query).getResultList();
+        assertTrue(rs.get(0) instanceof SubclassA);
+
         em.clear();
         
         verifyDtypeColumnEntriesAndMapping(em, "BaseClass", 4, BaseClass.class);
@@ -132,7 +141,7 @@ public class TestDefaultInheritanceStrategy
 
         verifyInheritanceQueryResult(em, "BaseClass", 
             classArray(BaseClass.class), 0, 1, 2, 3);
-        
+
         em.close();
     }
 
@@ -207,7 +216,24 @@ public class TestDefaultInheritanceStrategy
         em.persist(mc);
         em.persist(b2);
         em.getTransaction().commit();
-        
+
+        // test entity type discriminator queries for polymorphic results
+        em.clear();
+        String query = "select a from BaseClass2 a where TYPE(a) = MidClass";
+        List rs = em.createQuery(query).getResultList();
+        for (int i = 0; i < rs.size(); i++)
+        assertTrue(rs.get(i) instanceof MidClass);
+
+        query = "select a from BaseClass2 a where TYPE(a) = SubclassE";
+        rs = em.createQuery(query).getResultList();
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof SubclassE);   
+
+        query = "select a from BaseClass2 a where TYPE(a) = BaseClass2";
+        rs = em.createQuery(query).getResultList();
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof BaseClass2);
+
         em.clear();
 
         // Verify that baseclass2 contains a discriminator column

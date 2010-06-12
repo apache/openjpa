@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.inheritance.polymorphic;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -60,51 +63,56 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         		EnglishParagraph.class, FrenchParagraph.class, 
         		GermanParagraph.class, Translatable.class);
     }
-    
+
+    public void populate() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        /**
+         * Aggregate query operations can not be performed on unjoined 
+         * subclasses. Hence all concrete subclasses of abstract base
+         * class is counted separately to count all Translatable instances.
+         */
+        
+        EnglishParagraph english = new EnglishParagraph();
+        FrenchParagraph french   = new FrenchParagraph();
+        GermanParagraph german   = new GermanParagraph();
+        
+        Translation translation1 = new Translation(); 
+        Translation translation2 = new Translation(); 
+        Translation translation3 = new Translation(); 
+        Translation translation4 = new Translation(); 
+        
+        english.setContent("Hello");
+        french.setContent("Bon jour");
+        german.setContent("Guten Tag");
+
+        
+        translation1.setTranslatable(english);
+        translation2.setTranslatable(english);
+        translation3.setTranslatable(french);
+        translation4.setTranslatable(german);
+        
+        english.addTranslation(translation1);
+        english.addTranslation(translation2);
+        french.addTranslation(translation3);
+        german.addTranslation(translation4);
+        
+        em.persist(translation1);
+        em.persist(translation2);
+        em.persist(translation3);
+        em.persist(translation4);
+        em.getTransaction().commit();
+        em.close();
+    }
+
 	@SuppressWarnings("unchecked")
     public void testConsistency() {
-		OpenJPAEntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-		/**
-		 * Aggregate query operations can not be performed on unjoined 
-		 * subclasses. Hence all concrete subclasses of abstract base
-         * class is counted separately to count all Translatable instances.
-		 */
-		int nTranslatableBefore = count(UNJOINED_SUBCLASSES);
-		int nTranslationBefore = count(Translation.class);
-		
-		EnglishParagraph english = new EnglishParagraph();
-		FrenchParagraph french   = new FrenchParagraph();
-		GermanParagraph german   = new GermanParagraph();
-		
-		Translation translation1 = new Translation(); 
-		Translation translation2 = new Translation(); 
-		Translation translation3 = new Translation(); 
-		Translation translation4 = new Translation(); 
-		
-		english.setContent("Hello");
-		french.setContent("Bon jour");
-		german.setContent("Guten Tag");
+        OpenJPAEntityManager em = emf.createEntityManager();
 
-		
-		translation1.setTranslatable(english);
-		translation2.setTranslatable(english);
-		translation3.setTranslatable(french);
-		translation4.setTranslatable(german);
-		
-		english.addTranslation(translation1);
-		english.addTranslation(translation2);
-		french.addTranslation(translation3);
-		german.addTranslation(translation4);
-		
-		em.persist(translation1);
-		em.persist(translation2);
-		em.persist(translation3);
-		em.persist(translation4);
-		em.getTransaction().commit();
-		
-		em.clear();
+        int nTranslatableBefore = count(UNJOINED_SUBCLASSES);
+        int nTranslationBefore = count(Translation.class);
 
+        populate();
 		int nTranslatableAfter = count(UNJOINED_SUBCLASSES);
 		int nTranslationAfter  = count(Translation.class);
 		
@@ -152,5 +160,61 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 		}
 		return total;
 	}
-	
+
+    public void testEntityTypeForTablePerClassInheritance() {
+        populate();
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String query = "select tr from Translatable tr join tr.translations t where " +
+                "TYPE(tr) = EnglishParagraph";
+        List rs = em.createQuery(query).getResultList();
+        assertEquals(2, rs.size());
+        for (int i=0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof EnglishParagraph);
+        
+        query = "select distinct tr from Translatable tr join tr.translations t where " +
+            "TYPE(tr) = EnglishParagraph or TYPE(tr) = FrenchParagraph";
+        rs = em.createQuery(query).getResultList();
+        assertEquals(2, rs.size());
+        for (int i=0; i < rs.size(); i++)
+            assertTrue(!(rs.get(i) instanceof GermanParagraph));
+        
+        query = "select distinct tr from Translatable tr join tr.translations t where " +
+            "TYPE(tr) in (?1, ?2)";
+        try {
+            rs = em.createQuery(query).setParameter(1, EnglishParagraph.class).
+            setParameter(2, FrenchParagraph.class).getResultList();
+        } catch(ArgumentException e) {
+            // as expected
+            //System.out.println(e.getMessage());
+        }
+        
+        query = "select tr from Translatable tr join tr.translations t where " +
+            "TYPE(tr) <> EnglishParagraph";
+        try {
+            rs = em.createQuery(query).getResultList();
+        } catch(ArgumentException e) {
+            // as expected
+            //System.out.println(e.getMessage());
+        }
+
+        String query1 = "select t from Translation t where TYPE(t.translatable) = EnglishParagraph";
+        try {
+            rs = em.createQuery(query1).getResultList();
+        } catch(ArgumentException e) {
+            // as expected
+            //System.out.println(e.getMessage());
+        }
+
+        query1 = "select tr from Translatable tr join tr.translations t where " +
+                "TYPE(tr) in ?1";
+        Collection<Class <?>> params = new ArrayList(2);
+        params.add(EnglishParagraph.class);
+        params.add(FrenchParagraph.class);
+        try {
+            rs = em.createQuery(query).setParameter(1, params).getResultList();
+        } catch(ArgumentException e) {
+            // as expected
+            //System.out.println("e.getMessages()");
+        }
+    }
 }

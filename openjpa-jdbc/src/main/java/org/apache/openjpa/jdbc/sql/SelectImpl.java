@@ -169,6 +169,13 @@ public class SelectImpl
 
     // A path navigation is begin with this schema alias
     private String _schemaAlias = null;
+    private ClassMapping _tpcMeta = null;
+    public ClassMapping getTablePerClassMeta() {
+        return _tpcMeta;
+    }
+    public void setTablePerClassMeta(ClassMapping meta) {
+        _tpcMeta = meta;
+    }
      
     /**
      * Helper method to return the proper table alias for the given alias index.

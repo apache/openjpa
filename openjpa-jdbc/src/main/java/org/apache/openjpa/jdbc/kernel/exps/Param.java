@@ -119,8 +119,7 @@ public class Param
                     getMappingRepositoryInstance().getMapping((Class) val,
                         ctx.store.getContext().getClassLoader(), true);
                 pstate.disc = pstate.mapping.getDiscriminator();
-                pstate.discValue = pstate.disc != null ? pstate.disc.getValue()
-                    : null;
+                pstate.discValue = pstate.disc.getValue() != null ? pstate.disc.getValue() : "1";
             }
         } else if (ImplHelper.isManageable(val)) {
             ClassMapping mapping = ctx.store.getConfiguration().

@@ -71,6 +71,19 @@ public class TestEntityTypeExpression extends AbstractTestCase {
         endEm(em);
     }
 
+    public void testTypeOnNonPolymorphicEntity() {
+        EntityManager em = currentEntityManager();
+        String query = "select a from Address a where type(a) = ?1";
+        List rs = null;
+        try {
+            rs =  em.createQuery(query).setParameter(1, Address.class).getResultList();
+            System.out.println("rs size="+rs.size());
+        } catch(Exception e) {
+            // as expected
+            //System.out.println(e.getMessage());
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public void testTypeExpression() {
         EntityManager em = currentEntityManager();

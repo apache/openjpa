@@ -22,7 +22,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.meta.Discriminator;
+import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -87,10 +88,52 @@ public class JDBCExpressionFactory
             return contains(v1, v2);
         if (v2 instanceof PCPath && ((PCPath) v2).isUnaccessedVariable())
             return contains(v2, v1);
+        if (v1 instanceof Type || v2 instanceof Type) {
+            Value val = v1 instanceof Type ? v1 : v2;
+            verifyTypeOperation(val, null, false);
+            return new EqualTypeExpression((Val) v1, (Val) v2);
+        }
         return new EqualExpression((Val) v1, (Val) v2);
     }
 
+    private void verifyTypeOperation(Value val, Value param, boolean isNotEqual) {
+        if (val.getPath() == null)
+            return;
+        PCPath path = (PCPath) val.getPath();
+        Discriminator disc = ((Type) val).getDiscriminator();
+        if (disc == null || !(val.getMetaData().getPCSuperclass() != null ||
+            val.getMetaData().getPCSubclasses().length > 0))
+            throw new UserException(_loc.
+                get("invalid-type-argument", path.last() != null ? path.getPCPathString() : path.getSchemaAlias()));
+        
+        if (disc.getColumns().length == 0) {
+            if (disc.getStrategy() instanceof NoneDiscriminatorStrategy) {
+                // limited support for table per class inheritance hierarchy
+                if (path.last() != null)
+                    throw new UserException(_loc.
+                        get("type-argument-unsupported", path.last().getName())); 
+                if (isNotEqual) {
+                    if (param != null && param instanceof Null)
+                        throw new UserException(_loc.
+                            get("type-in-expression-unsupported", path.getSchemaAlias()));
+                    else
+                        throw new UserException(_loc.
+                            get("type-not-equal-unsupported", path.getSchemaAlias()));
+                }
+            }
+            if (param != null && param instanceof CollectionParam)
+                throw new UserException(_loc.
+                    get("collection-param-unsupported")); 
+        }
+    }
+
     public Expression notEqual(Value v1, Value v2) {
+        if (v1 instanceof Type || v2 instanceof Type) {
+            Value val = v1 instanceof Type ? v1 : v2;
+            Value param = val == v1 ? (v2 instanceof Null ? v2 : null) : (v1 instanceof Null ? v1 : null);
+            verifyTypeOperation(val, param, true);
+            return new NotEqualTypeExpression((Val) v1, (Val) v2);
+        }
         return new NotEqualExpression((Val) v1, (Val) v2);
     }
 
@@ -123,8 +166,16 @@ public class JDBCExpressionFactory
     }
 
     public Expression contains(Value map, Value arg) {
-        if (map instanceof Const)
+        if (map instanceof Const) {
+            if (arg instanceof Type) {
+                // limited support for table per class inheritance
+                verifyTypeOperation(arg, map, false);
+                if (((ClassMapping) arg.getMetaData()).getDiscriminator().getColumns().length == 0)
+                    return new EqualTypeExpression((Val) arg, (Val) map);
+            }
+
             return new InExpression((Val) arg, (Const) map);
+        }
         if (map instanceof SubQ)
             return new InSubQExpression((Val) arg, (SubQ) map);
         return new ContainsExpression((Val) map, (Val) arg);

@@ -20,6 +20,8 @@ package org.apache.openjpa.persistence.inheritance.abstractjoinedappid;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
@@ -50,6 +52,20 @@ public class TestAbstractJoinedAppId
         em.persist(ro);
         em.getTransaction().commit();
         em.close();
+    }
+
+    public void testEntityTypeForAbstractJoined() {
+        EntityManager em = emf.createEntityManager();
+        String query = "select s from RelationOwner r join r.supers s where TYPE(s) = Subclass";
+        List rs = em.createQuery(query).getResultList();
+        assertTrue(rs.size() > 0);
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof Subclass);
+        query = "select s from Superclass s where TYPE(s) = Subclass";
+        rs = em.createQuery(query).getResultList();
+        assertTrue(rs.size() > 0);
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof Subclass);
     }
 
     public void testTraverseRelation() {

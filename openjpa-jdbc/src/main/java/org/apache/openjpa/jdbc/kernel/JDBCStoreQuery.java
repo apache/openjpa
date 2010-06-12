@@ -42,7 +42,9 @@ import org.apache.openjpa.jdbc.kernel.exps.SQLExpression;
 import org.apache.openjpa.jdbc.kernel.exps.SQLValue;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -344,6 +346,11 @@ public class JDBCStoreQuery
                 subclassMode);
             if (verts.length == 1 && subclasses)
                 subclassBits.set(sels.size());
+
+            Discriminator disc = mappings[i].getDiscriminator();
+            if (mappings.length > 1 && disc != null && disc.getColumns().length == 0 &&
+                disc.getStrategy() instanceof NoneDiscriminatorStrategy)
+                ctx.tpcMeta = mappings[i];
 
             // create criteria select and clone for each vert mapping
             sel = ((JDBCExpressionFactory) facts[i]).getSelectConstructor().

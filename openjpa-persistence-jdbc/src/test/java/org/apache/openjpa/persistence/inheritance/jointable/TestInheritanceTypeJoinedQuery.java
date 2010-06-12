@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.inheritance.jointable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 
@@ -48,6 +51,37 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
         em.getTransaction().begin();
         em.getTransaction().commit();
         em.close();
+    }
+
+    public void testInheritanceJoinedTypeOperator() {
+        EntityManager em = emf.createEntityManager();
+        Query q = null;
+        String qS = null;
+        qS = "SELECT p FROM Person p where TYPE(p) = Contractor";
+        q = em.createQuery(qS); 
+        List rs = q.getResultList();
+        assertEquals(3, rs.size());
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof Contractor);
+        qS = "select p from Person p where TYPE(p) in (?1) order by p.name";
+        q = em.createQuery(qS).setParameter(1, Contractor.class);
+        rs = q.getResultList();
+        assertEquals(3, rs.size());
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof Contractor);
+
+        qS = "select p from Person p where TYPE(p) in ?1 order by p.name";
+        Collection<Class<?>> params = new ArrayList<Class<?>>(2);
+        params.add(Contractor.class);
+        params.add(Employee.class);
+        try {
+            q = em.createQuery(qS).setParameter(1, params);
+            rs = q.getResultList();
+        } catch (ArgumentException e) {
+            // as expected
+            //System.out.println(e.getMessage());
+        }
+        
     }
 
     public void testInheritanceTypeJoinedQuery() {

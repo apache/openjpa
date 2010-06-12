@@ -1049,7 +1049,7 @@ public class PCPath
         else
             cols = getColumns(state);
 
-        if (cols == null) {
+        if (cols == null || cols.length == 0) {
             sql.append("1");
             return;
         }

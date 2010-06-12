@@ -737,4 +737,14 @@ public interface Select
      * Extended trace that logs eager relations
      */
     public void logEagerRelations();
+
+    /**
+     * Set table-per-class metadata for polymorphic queries
+     */
+    public void setTablePerClassMeta(ClassMapping meta);
+
+    /**
+     * get table-per-class metadata for polymorphic queries
+     */
+    public ClassMapping getTablePerClassMeta();
 }

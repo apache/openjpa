@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.meta.ClassMapping;
 
 /**
  * Expression tree context.
@@ -43,6 +44,8 @@ public class ExpContext {
      * Fetch configuration.
      */
     public JDBCFetchConfiguration fetch; 
+
+    public ClassMapping tpcMeta = null;
 
     public ExpContext() {
     }

@@ -18,8 +18,11 @@
  */
 package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -34,16 +37,38 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(CashBaseEntity.class, 
-              SituationDA.class, ValuableItemDA.class);
+              SituationDA.class, ValuableItemDA.class, CLEAR_TABLES);
     }
 
     public void testMappedSuperClass() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        SituationDA s = new SituationDA();
-        s.setCashBoxPeriodSerial("test");
-        s.setType((short)1);
-        em.persist(s);
+        for (int i = 0; i < 3; i++) {
+            SituationDA s = new SituationDA();
+            s.setCashBoxPeriodSerial("test");
+            s.setType((short) (i+1));
+            em.persist(s);
+        }
+        for (int i = 0; i < 3; i++) {
+            ValuableItemDA v = new ValuableItemDA();
+            v.setCode((short)(10+i));
+            em.persist(v);
+        }
         em.getTransaction().commit();
+        
+        em.clear();
+
+        // test polymorphic queries
+        String query = "select s from CashBaseEntity s where TYPE(s) = SituationDA";
+        List rs = em.createQuery(query).getResultList();
+        for (int i = 0; i < rs.size(); i++)
+            assertTrue(rs.get(i) instanceof SituationDA);
+        
+        query = "select s from CashBaseEntity s where TYPE(s) <> ValuableItemDA";
+        try {
+            rs = em.createQuery(query).getResultList();
+        } catch (ArgumentException e) {
+            // as expected
+        }
     }
 }
