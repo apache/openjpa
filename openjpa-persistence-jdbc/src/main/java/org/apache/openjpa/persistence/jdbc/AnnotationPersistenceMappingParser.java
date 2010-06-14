@@ -1537,11 +1537,13 @@ public class AnnotationPersistenceMappingParser
         // cache the JAXB XmlType class if it is present so we do not
         // have a hard-wired dependency on JAXB here
         Class xmlTypeClass = null;
-        try {
-            xmlTypeClass = Class.forName("javax.xml.bind.annotation.XmlType");
-        } catch (Exception e) {
+        if (fm.getValueInfo().getStrategy() != null &&
+            fm.getValueInfo().getStrategy().equals("org.apache.openjpa.jdbc.meta.strats.XMLValueHandler")) {
+            try {
+                xmlTypeClass = Class.forName("javax.xml.bind.annotation.XmlType");
+            } catch (Exception e) {
+            }
         }
-
         int unique = 0;
         DBIdentifier sSecondary = DBIdentifier.NULL;
         for (int i = 0; i < pcols.length; i++) {
