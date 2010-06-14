@@ -222,7 +222,9 @@ public class JavaVersions {
     }
     
     static Object invokeGetter(Object target, String method) throws Exception {
-        return target.getClass().getMethod(method, NO_CLASS_ARGS).invoke(target, NO_ARGS);
+        return AccessController.doPrivileged(
+                J2DoPrivHelper.getDeclaredMethodAction(target.getClass(), method, NO_CLASS_ARGS))
+                     .invoke(target, NO_ARGS);
     }
     
     static boolean isParameterizedType(Object cls) {
