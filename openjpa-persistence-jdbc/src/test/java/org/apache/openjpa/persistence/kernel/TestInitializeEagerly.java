@@ -26,7 +26,7 @@ public class TestInitializeEagerly extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, 
             "openjpa.InitializeEagerly", "true", 
-            "openjpa.BrokerFactory", TestBrokerFactory.class.getName()
+            "openjpa.BrokerFactory", DummyBrokerFactory.class.getName()
             );
     }
     

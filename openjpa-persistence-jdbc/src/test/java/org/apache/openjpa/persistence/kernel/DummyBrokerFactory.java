@@ -25,17 +25,17 @@ import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 
 @SuppressWarnings("serial")
-public class TestBrokerFactory extends JDBCBrokerFactory {
+public class DummyBrokerFactory extends JDBCBrokerFactory {
     JDBCConfiguration _conf;
-    public TestBrokerFactory(JDBCConfiguration conf) {
+    public DummyBrokerFactory(JDBCConfiguration conf) {
         super(conf);
         _conf = conf;
     }
     
-    public static TestBrokerFactory newInstance(ConfigurationProvider cp) {
+    public static DummyBrokerFactory newInstance(ConfigurationProvider cp) {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         cp.setInto(conf);
-        return new TestBrokerFactory(conf);
+        return new DummyBrokerFactory(conf);
     }   
     
     @Override
