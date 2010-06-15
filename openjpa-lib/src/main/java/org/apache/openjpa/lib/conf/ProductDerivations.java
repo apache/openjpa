@@ -451,7 +451,7 @@ public class ProductDerivations {
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             Set<String> members = _derivations[i].getSupportedQueryHints();
-            if (members != null || !members.isEmpty())
+            if (members != null && !members.isEmpty())
                 result.addAll(members);
         }
         return result;
