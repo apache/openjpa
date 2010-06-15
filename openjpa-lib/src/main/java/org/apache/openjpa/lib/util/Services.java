@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -101,10 +102,12 @@ public class Services {
 
             return (String[]) resourceList.toArray(new String[resourceList
                 .size()]);
-        } catch (Exception e) {
+        } catch (PrivilegedActionException pae) {
             // silently swallow all exceptions.
-            return new String[0];
+        } catch (IOException ioe) {
+            // silently swallow all exceptions.
         }
+        return new String[0];
     }
 
     /**
