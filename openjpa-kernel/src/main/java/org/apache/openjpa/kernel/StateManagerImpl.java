@@ -848,9 +848,9 @@ public class StateManagerImpl
                 return (fetchBooleanField(field)) ? Boolean.TRUE
                     : Boolean.FALSE;
             case JavaTypes.BYTE:
-                return new Byte(fetchByteField(field));
+                return Byte.valueOf(fetchByteField(field));
             case JavaTypes.CHAR:
-                return new Character(fetchCharField(field));
+                return Character.valueOf(fetchCharField(field));
             case JavaTypes.DOUBLE:
                 return new Double(fetchDoubleField(field));
             case JavaTypes.FLOAT:
@@ -860,7 +860,7 @@ public class StateManagerImpl
             case JavaTypes.LONG:
                 return fetchLongField(field);
             case JavaTypes.SHORT:
-                return new Short(fetchShortField(field));
+                return Short.valueOf(fetchShortField(field));
             default:
                 return fetchObjectField(field);
         }
@@ -979,9 +979,9 @@ public class StateManagerImpl
                 return (fm.fetchBooleanField(field)) ? Boolean.TRUE
                     : Boolean.FALSE;
             case JavaTypes.BYTE:
-                return new Byte(fm.fetchByteField(field));
+                return Byte.valueOf(fm.fetchByteField(field));
             case JavaTypes.CHAR:
-                return new Character(fm.fetchCharField(field));
+                return Character.valueOf(fm.fetchCharField(field));
             case JavaTypes.DOUBLE:
                 return new Double(fm.fetchDoubleField(field));
             case JavaTypes.FLOAT:
@@ -991,7 +991,7 @@ public class StateManagerImpl
             case JavaTypes.LONG:
                 return fm.fetchLongField(field);
             case JavaTypes.SHORT:
-                return new Short(fm.fetchShortField(field));
+                return Short.valueOf(fm.fetchShortField(field));
             case JavaTypes.STRING:
                 return fm.fetchStringField(field);
             default:
@@ -2444,7 +2444,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeByteField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(new Byte(externalVal),
+            storeField(field, fmd.getFieldValue(Byte.valueOf(externalVal),
                 _broker));
     }
 
@@ -2465,7 +2465,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeCharField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(new Character(externalVal),
+            storeField(field, fmd.getFieldValue(Character.valueOf(externalVal),
                 _broker));
     }
 
@@ -2592,7 +2592,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeShortField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(new Short(externalVal),
+            storeField(field, fmd.getFieldValue(Short.valueOf(externalVal),
                 _broker));
     }
 

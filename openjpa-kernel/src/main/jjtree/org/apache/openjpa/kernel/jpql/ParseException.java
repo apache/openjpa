@@ -121,7 +121,7 @@ public class ParseException
         String curtok = curtokBuf.toString();
 
         return _loc.get("bad-parse", new Object[]{ curtok,
-            new Integer(currentToken.next.beginColumn), expected });
+            Integer.valueOf(currentToken.next.beginColumn), expected });
     }
 
     /**

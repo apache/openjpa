@@ -779,14 +779,14 @@ public class Reflection {
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, byte value) {
-        set(target, setter, new Byte(value));
+        set(target, setter, Byte.valueOf(value));
     }
 
     /**
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, char value) {
-        set(target, setter, new Character(value));
+        set(target, setter, Character.valueOf(value));
     }
 
     /**
@@ -807,21 +807,21 @@ public class Reflection {
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, int value) {
-        set(target, setter, new Integer(value));
+        set(target, setter, Integer.valueOf(value));
     }
 
     /**
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, long value) {
-        set(target, setter, new Long(value));
+        set(target, setter, Long.valueOf(value));
     }
 
     /**
      * Invoke the given setter on the given object.
      */
     public static void set(Object target, Method setter, short value) {
-        set(target, setter, new Short(value));
+        set(target, setter, Short.valueOf(value));
     }
     
     /**

@@ -50,7 +50,7 @@ public final class CharId extends OpenJPAId {
     }
 
     public Object getIdObject() {
-        return new Character(key);
+        return Character.valueOf(key);
     }
 
     public String toString() {

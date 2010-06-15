@@ -50,7 +50,7 @@ public final class ByteId extends OpenJPAId {
     }
 
     public Object getIdObject() {
-        return new Byte(key);
+        return Byte.valueOf(key);
     }
 
     public String toString() {

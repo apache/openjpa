@@ -307,7 +307,7 @@ public class FetchConfigurationImpl
             && flush != QueryFlushModes.FLUSH_FALSE
             && flush != QueryFlushModes.FLUSH_WITH_CONNECTION)
             throw new IllegalArgumentException(_loc.get(
-                "bad-flush-before-queries", new Integer(flush)).getMessage());
+                "bad-flush-before-queries", Integer.valueOf(flush)).getMessage());
 
         if (flush == DEFAULT && _state.ctx != null)
             _state.flushQuery = _state.ctx.getConfiguration().
@@ -549,7 +549,7 @@ public class FetchConfigurationImpl
                 && scope != LockScopes.LOCKSCOPE_NORMAL
                 && scope != LockScopes.LOCKSCOPE_EXTENDED)
                 throw new IllegalArgumentException(_loc.get(
-                    "bad-lock-scope", new Integer(scope)).getMessage());
+                    "bad-lock-scope", Integer.valueOf(scope)).getMessage());
         if (scope == DEFAULT )
             _state.lockScope = LOCKSCOPE_NORMAL;
         else
@@ -575,7 +575,7 @@ public class FetchConfigurationImpl
             && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
             && level != MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
             throw new IllegalArgumentException(_loc.get(
-                "bad-lock-level", new Integer(level)).getMessage());
+                "bad-lock-level", Integer.valueOf(level)).getMessage());
 
         lock();
         try {
@@ -610,7 +610,7 @@ public class FetchConfigurationImpl
             && level != MixedLockLevels.LOCK_PESSIMISTIC_WRITE
             && level != MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT)
             throw new IllegalArgumentException(_loc.get(
-                "bad-lock-level", new Integer(level)).getMessage());
+                "bad-lock-level", Integer.valueOf(level)).getMessage());
 
         lock();
         try {

@@ -596,15 +596,15 @@ public class ApplicationIds {
         }
 
         public void storeByteField(int field, byte val) {
-            store(new Byte(val));
+            store(Byte.valueOf(val));
         }
 
         public void storeCharField(int field, char val) {
-            store(new Character(val));
+            store(Character.valueOf(val));
         }
 
         public void storeShortField(int field, short val) {
-            store(new Short(val));
+            store(Short.valueOf(val));
         }
 
         public void storeIntField(int field, int val) {

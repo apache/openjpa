@@ -298,7 +298,7 @@ public class Filters {
             else if (type == Character.class) {
                 String str = o.toString();
                 if (str != null && str.length() == 1)
-                    return new Character(str.charAt(0));
+                    return Character.valueOf(str.charAt(0));
             } else if (Calendar.class.isAssignableFrom(type) &&
                 o instanceof Date) {
                 Calendar cal = Calendar.getInstance();
@@ -359,9 +359,9 @@ public class Filters {
         } else if (type == BigInteger.class) {
             return new BigInteger(o.toString());
         } else if (type == Short.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return new Short(((Number) o).shortValue());
+            return Short.valueOf(((Number) o).shortValue());
         } else if (type == Byte.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return new Byte(((Number) o).byteValue());
+            return Byte.valueOf(((Number) o).byteValue());
         } else if (!strictNumericConversion) {
             return ((Number) o).intValue();
         } else {
@@ -1017,15 +1017,15 @@ public class Filters {
     
     public static Object getDefaultForNull(Class<?> nType) {
         if (nType == Long.class) 
-            return new Long(0);
+            return Long.valueOf(0);
         if (nType == Integer.class)
-            return new Integer(0);
+            return Integer.valueOf(0);
         if (nType == Double.class) 
             return new Double(0.0);
         if (nType == Float.class) 
             return new Float(0.0);
         if (nType == Short.class) 
-            return new Short((short)0);
+            return Short.valueOf((short)0);
         return null;
     }
 

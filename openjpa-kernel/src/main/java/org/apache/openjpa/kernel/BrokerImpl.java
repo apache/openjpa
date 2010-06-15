@@ -1624,7 +1624,7 @@ public class BrokerImpl
                     && (tranStatus != Status.STATUS_COMMITTED))
                 _runtime.setRollbackOnly(cause);
             else if (_log.isTraceEnabled())
-                _log.trace(_loc.get("invalid-tran-status", new Integer(
+                _log.trace(_loc.get("invalid-tran-status", Integer.valueOf(
                         tranStatus), "setRollbackOnly"));
         } catch (OpenJPAException ke) {
             throw ke;

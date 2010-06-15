@@ -144,10 +144,10 @@ public class ReflectingPersistenceCapable
                     sm.replaceBooleanField(this, i)));
                 break;
             case JavaTypes.BYTE:
-                setValue(i, o, new Byte(sm.replaceByteField(this, i)));
+                setValue(i, o, Byte.valueOf(sm.replaceByteField(this, i)));
                 break;
             case JavaTypes.CHAR:
-                setValue(i, o, new Character(sm.replaceCharField(this, i)));
+                setValue(i, o, Character.valueOf(sm.replaceCharField(this, i)));
                 break;
             case JavaTypes.DOUBLE:
                 setValue(i, o, new Double(sm.replaceDoubleField(this, i)));
@@ -156,13 +156,13 @@ public class ReflectingPersistenceCapable
                 setValue(i, o, new Float(sm.replaceFloatField(this, i)));
                 break;
             case JavaTypes.INT:
-                setValue(i, o, new Integer(sm.replaceIntField(this, i)));
+                setValue(i, o, Integer.valueOf(sm.replaceIntField(this, i)));
                 break;
             case JavaTypes.LONG:
-                setValue(i, o, new Long(sm.replaceLongField(this, i)));
+                setValue(i, o, Long.valueOf(sm.replaceLongField(this, i)));
                 break;
             case JavaTypes.SHORT:
-                setValue(i, o, new Short(sm.replaceShortField(this, i)));
+                setValue(i, o, Short.valueOf(sm.replaceShortField(this, i)));
                 break;
             case JavaTypes.STRING:
                 setValue(i, o, sm.replaceStringField(this, i));

@@ -1529,7 +1529,7 @@ public class FieldMetaData
                 return Float.valueOf(val);
             case JavaTypes.CHAR:
             case JavaTypes.CHAR_OBJ:
-                return new Character(val.charAt(0));
+                return Character.valueOf(val.charAt(0));
             case JavaTypes.STRING:
                 return val;
             case JavaTypes.ENUM:

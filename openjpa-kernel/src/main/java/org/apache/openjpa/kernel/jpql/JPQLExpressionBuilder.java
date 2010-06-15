@@ -1008,7 +1008,7 @@ public class JPQLExpressionBuilder
                         ? node.text.substring(0, node.text.length() - 1)
                         : node.text).
                     multiply(new BigDecimal(negative(node)));
-                return factory.newLiteral(new Long(intlit.longValue()),
+                return factory.newLiteral(Long.valueOf(intlit.longValue()),
                     Literal.TYPE_NUMBER);
 
             case JJTDECIMALLITERAL:
@@ -1431,13 +1431,13 @@ public class JPQLExpressionBuilder
             // optimize SQL for the common case of two literals
             long jpqlStart = ((Number) ((Literal) val2).getValue())
                 .longValue();
-            start = factory.newLiteral(new Long(jpqlStart - 1),
+            start = factory.newLiteral(Long.valueOf(jpqlStart - 1),
                 Literal.TYPE_NUMBER);
             if (val3 != null) {
             	long length = ((Number) ((Literal) val3).getValue())
                     .longValue();
             long endIndex = length + (jpqlStart - 1);
-            end = factory.newLiteral(new Long(endIndex),
+            end = factory.newLiteral(Long.valueOf(endIndex),
                 Literal.TYPE_NUMBER);
             }
         } else {
@@ -2140,7 +2140,7 @@ public class JPQLExpressionBuilder
     private JPQLNode child(JPQLNode node, int childNum, int assertCount) {
         if (node.children.length != assertCount)
             throw parseException(EX_USER, "wrong-child-count",
-                new Object[]{ new Integer(assertCount), node,
+                new Object[]{ Integer.valueOf(assertCount), node,
                     Arrays.asList(node.children) }, null);
 
         return node.children[childNum];

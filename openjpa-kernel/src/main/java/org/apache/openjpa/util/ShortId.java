@@ -50,7 +50,7 @@ public final class ShortId extends OpenJPAId {
     }
 
     public Object getIdObject() {
-        return new Short(key);
+        return Short.valueOf(key);
     }
 
     public String toString() {

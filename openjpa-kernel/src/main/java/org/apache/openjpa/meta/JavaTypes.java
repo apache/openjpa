@@ -272,20 +272,20 @@ public class JavaTypes {
                 if (val instanceof Byte)
                     return val;
                 if (val instanceof Number)
-                    return new Byte(((Number) val).byteValue());
+                    return Byte.valueOf(((Number) val).byteValue());
                 // no break
             case BYTE:
                 if (val instanceof String)
-                    return new Byte(val.toString());
+                    return Byte.valueOf((String)val);
                 return val;
             case CHAR:
             case CHAR_OBJ:
                 if (val instanceof Character)
                     return val;
                 if (val instanceof String)
-                    return new Character(val.toString().charAt(0));
+                    return Character.valueOf(val.toString().charAt(0));
                 if (val instanceof Number)
-                    return new Character((char) ((Number) val).intValue());
+                    return Character.valueOf((char) ((Number) val).intValue());
                 return val;
             case DATE:
                 if (val instanceof String)
@@ -319,7 +319,7 @@ public class JavaTypes {
                 // no break
             case INT:
                 if (val instanceof String)
-                    return new Integer(val.toString());
+                    return Integer.valueOf(val.toString());
                 return val;
             case LONG_OBJ:
                 if (val instanceof Long)
@@ -329,7 +329,7 @@ public class JavaTypes {
                 // no break
             case LONG:
                 if (val instanceof String)
-                    return new Long(val.toString());
+                    return Long.valueOf(val.toString());
                 return val;
             case NUMBER:
                 if (val instanceof Number)
@@ -341,11 +341,11 @@ public class JavaTypes {
                 if (val instanceof Short)
                     return val;
                 if (val instanceof Number)
-                    return new Short(((Number) val).shortValue());
+                    return Short.valueOf(((Number) val).shortValue());
                 // no break
             case SHORT:
                 if (val instanceof String)
-                    return new Short(val.toString());
+                    return Short.valueOf(val.toString());
                 return val;
             case STRING:
                 return val.toString();

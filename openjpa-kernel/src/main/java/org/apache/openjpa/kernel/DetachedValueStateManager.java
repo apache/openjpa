@@ -309,9 +309,9 @@ public class DetachedValueStateManager
                 return (fm.fetchBooleanField(field)) ? Boolean.TRUE
                     : Boolean.FALSE;
             case JavaTypes.BYTE:
-                return new Byte(fm.fetchByteField(field));
+                return Byte.valueOf(fm.fetchByteField(field));
             case JavaTypes.CHAR:
-                return new Character(fm.fetchCharField(field));
+                return Character.valueOf(fm.fetchCharField(field));
             case JavaTypes.DOUBLE:
                 return new Double(fm.fetchDoubleField(field));
             case JavaTypes.FLOAT:
@@ -321,7 +321,7 @@ public class DetachedValueStateManager
             case JavaTypes.LONG:
                 return fm.fetchLongField(field);
             case JavaTypes.SHORT:
-                return new Short(fm.fetchShortField(field));
+                return Short.valueOf(fm.fetchShortField(field));
             default:
                 return fm.fetchObjectField(field);
         }

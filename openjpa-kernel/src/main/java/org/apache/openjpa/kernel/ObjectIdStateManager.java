@@ -47,11 +47,11 @@ import org.apache.openjpa.util.ImplHelper;
 public class ObjectIdStateManager
     implements OpenJPAStateManager {
 
-    private static final Byte ZERO_BYTE = new Byte((byte) 0);
-    private static final Character ZERO_CHAR = new Character((char) 0);
+    private static final Byte ZERO_BYTE = Byte.valueOf((byte)0);
+    private static final Character ZERO_CHAR = Character.valueOf((char)0);
     private static final Double ZERO_DOUBLE = new Double(0);
     private static final Float ZERO_FLOAT = new Float(0);
-    private static final Short ZERO_SHORT = new Short((short) 0);
+    private static final Short ZERO_SHORT = Short.valueOf((short)0);
 
     private Object _oid;
     private final OpenJPAStateManager _owner;
@@ -463,11 +463,11 @@ public class ObjectIdStateManager
     }
 
     public void storeByte(int field, byte extVal) {
-        setValue(field, new Byte(extVal), true);
+        setValue(field, Byte.valueOf(extVal), true);
     }
 
     public void storeChar(int field, char extVal) {
-        setValue(field, new Character(extVal), true);
+        setValue(field, Character.valueOf(extVal), true);
     }
 
     public void storeInt(int field, int extVal) {
@@ -475,7 +475,7 @@ public class ObjectIdStateManager
     }
 
     public void storeShort(int field, short extVal) {
-        setValue(field, new Short(extVal), true);
+        setValue(field, Short.valueOf(extVal), true);
     }
 
     public void storeLong(int field, long extVal) {
