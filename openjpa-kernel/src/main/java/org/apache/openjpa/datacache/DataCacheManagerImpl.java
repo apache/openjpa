@@ -57,17 +57,14 @@ public class DataCacheManagerImpl
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
-        try {
-            _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
-            if (_queryCache != null)
-                _queryCache.initialize(this);
-            _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
+        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
+        if (_queryCache != null)
+            _queryCache.initialize(this);
+        _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
 
-            if (_cache == null)
-                return;
-        } catch (Exception cnfe) {
-            System.err.println("Caught a cnfe upon creation of the " + DataCacheManagerImpl.class.getName());
-        }
+        if (_cache == null)
+            return;
+         
         // create helpers before initializing caches
         if (conf.getDynamicDataStructs())
             _pcGenerator = new DataCachePCDataGenerator(conf);

@@ -30,8 +30,6 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.LockModeType;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -46,7 +44,6 @@ import javax.persistence.Version;
  * @author Abe White
  */
 @Entity
-@NamedQuery(name="asdf",query="select c from RuntimeTest1 c where 1=1")
 @Table(name = "rtest1")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class RuntimeTest1 implements Serializable {
