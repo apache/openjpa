@@ -106,18 +106,19 @@ public class ParseException
 
         Token tok = currentToken.next;
 
-        String curtok = "";
+        StringBuffer curtokBuf = new StringBuffer();
         for (int i = 0; i < maxSize; i++) {
             if (i != 0)
-                curtok += " ";
+                curtokBuf.append(" ");
             if (tok.kind == 0) {
-                curtok += tokenImage[0];
+                curtokBuf.append(tokenImage[0]);
                 break;
             }
 
-            curtok += escape(tok.image);
+            curtokBuf.append(escape(tok.image));
             tok = tok.next;
         }
+        String curtok = curtokBuf.toString();
 
         return _loc.get("bad-parse", new Object[]{ curtok,
             new Integer(currentToken.next.beginColumn), expected });
