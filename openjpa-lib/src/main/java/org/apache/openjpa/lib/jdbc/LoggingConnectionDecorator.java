@@ -125,6 +125,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private int _warningAction = WARN_IGNORE;
     private SQLWarningHandler _warningHandler;
     private boolean _trackParameters = true;
+    private boolean _printParameters = false;
 
     /**
      * If set to <code>true</code>, pretty-print SQL by running it
@@ -180,6 +181,21 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
      */
     public boolean getTrackParameters() {
         return _trackParameters;
+    }
+
+    /**
+     * <p>
+     * Whether parameter values will be printed in exception messages or in trace. This is different from
+     * trackParameters which controls whether OpenJPA will track parameters internally (visible while debugging and used
+     * in batching).
+     * </p>
+     */
+    public boolean getPrintParameters() {
+        return _printParameters;
+    }
+
+    public void setPrintParameters(boolean printParameters) {
+        _printParameters = printParameters;
     }
 
     /**
@@ -1392,7 +1408,12 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     paramBuf = new StringBuilder();
                     for (Iterator<String> itr = _params.iterator(); itr
                         .hasNext();) {
-                        paramBuf.append(itr.next());
+                        if(_printParameters) { 
+                            paramBuf.append(itr.next());
+                        } else { 
+                            paramBuf.append("?");
+                            itr.next();
+                        }
                         if (itr.hasNext())
                             paramBuf.append(", ");
                     }
