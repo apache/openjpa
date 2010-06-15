@@ -46,7 +46,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
      * Close the underlying result object provider.
      */
     public void close() {
-        if (_open == Boolean.TRUE) {
+        if (Boolean.TRUE.equals(_open)) {
             try {
                 _rop.close();
             } catch (Exception e) {
@@ -60,7 +60,7 @@ public class ResultObjectProviderIterator implements Iterator, Closeable {
     }
 
     public boolean hasNext() {
-        if (_open == Boolean.FALSE)
+        if (Boolean.FALSE.equals(_open))
             return false;
 
         if (_hasNext == null) {
