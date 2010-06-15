@@ -626,8 +626,13 @@ public class Configurations {
             throw new NestableRuntimeException(
                 _loc.get("naming-err", name).getMessage(), ne);
         } finally {
-            if (ctx != null)
-                try { ctx.close(); } catch (Exception e) {}
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (NamingException ne) {
+                    // ignore
+                }
+            }
         }
     }
 
