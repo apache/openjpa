@@ -102,9 +102,6 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            // Perform post BrokerFactory initialization.
-            postBrokerFactoryInitialization(factory);
-            
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             if (_log != null) {
@@ -199,9 +196,6 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            // Perform post BrokerFactory initialization.
-            postBrokerFactoryInitialization(factory);
-            
             return JPAFacadeHelper.toEntityManagerFactory(factory);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
@@ -248,33 +242,7 @@ public class PersistenceProviderImpl
     protected OpenJPAConfiguration newConfigurationImpl() {
         return new OpenJPAConfigurationImpl();
     }
-
-    /**
-     * Private worker method that will perform initialization that needs to happen AFTER BrokerFactory creation.
-     */
-    private void postBrokerFactoryInitialization(BrokerFactory factory){
-        // We need to wait to preload until after we get back a fully configured/instantiated
-        // BrokerFactory. This is because it is possible that someone has extended OpenJPA
-        // functions and they need to be allowed time to configure themselves before we go off and
-        // start instantiating configurable objects (ie:openjpa.MetaDataRepository). Don't catch
-        // any exceptions here because we want to fail-fast.
-        OpenJPAConfiguration conf = factory.getConfiguration();
-        Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
-        if (MetaDataRepository.needsPreload(o) == true) {
-            MetaDataRepository mdr = conf.getMetaDataRepositoryInstance(); 
-            mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
-            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
-            
-            // Load persistent classes and hook in subclasser
-            ((AbstractBrokerFactory) factory).loadPersistentTypes((ClassLoader) AccessController
-                .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
-            mdr.preload();
-        }
-        
-        // Get a DataCacheManager instance up front to avoid threading concerns on first call.
-        conf.getDataCacheManagerInstance();
-    }
-    
+   
     /**
      * Java EE 5 class transformer.
      */

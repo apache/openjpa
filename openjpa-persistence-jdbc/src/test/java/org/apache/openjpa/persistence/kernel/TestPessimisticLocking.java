@@ -39,6 +39,9 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import java.util.concurrent.locks.ReentrantLock;
+
+import javax.persistence.LockModeType;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.jdbc.FetchMode;
@@ -86,8 +89,10 @@ public class TestPessimisticLocking extends BaseKernelTest {
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
-        Map propsMap = new HashMap();
-        propsMap.put("openjpa.LockManager", "pessimistic");
+        Map<String,String> propsMap = new HashMap<String,String>();
+//        propsMap.put("openjpa.LockManager", "pessimistic");//<property name="openjpa.jdbc.TransactionIsolation" value="read-committed" />
+        propsMap.put("openjpa.jdbc.TransactionIsolation", "read-committed");
+//        propsMap.put("openjpa.Log", "DefaultLevel=trace");
         _factory = getEmf(propsMap);
 
         OpenJPAEntityManager pm = getLockingPM();
@@ -109,10 +114,15 @@ public class TestPessimisticLocking extends BaseKernelTest {
         }
     }
 
+    public void test() throws Exception {
+        OpenJPAEntityManager em = getLockingPM();
+//        em.createQuery("select c from RuntimeTest1 c where 1=1").getResultList();
+        em.createNamedQuery("asdf").getResultList();
+    }
     /**
      * Test that pessimistic locking is working in the data store.
      */
-    public void testPessimisticLocking() throws Throwable {
+    public void atestPessimisticLocking() throws Throwable {
         pessimisticLockingTest(false);
     }
 
@@ -121,7 +131,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
      * test will validate that the test case itself is working correctly, not
      * that the datastore's pessimistic locking is working.
      */
-    public void testPessimisticLockingInternal() throws Throwable {
+    public void atestPessimisticLockingInternal() throws Throwable {
         pessimisticLockingTest(true);
     }
 
@@ -274,3 +284,4 @@ public class TestPessimisticLocking extends BaseKernelTest {
 	}
 
 }
+
