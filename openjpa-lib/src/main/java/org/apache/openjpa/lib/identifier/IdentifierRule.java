@@ -144,7 +144,7 @@ public class IdentifierRule {
     }
 
     public void setDelimitReservedWords(boolean delimitReservedWords) {
-        delimitReservedWords = _delimitReservedWords;
+        _delimitReservedWords = delimitReservedWords;
     }
 
     public boolean getDelimitReservedWords() {
