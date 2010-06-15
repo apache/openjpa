@@ -394,7 +394,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             finish();
         } catch (SAXException se) {
             IOException ioe = new IOException(se.toString());
-            JavaVersions.initCause(ioe, se);
+            ioe.initCause(se);
             throw ioe;
         } finally {
             reset();

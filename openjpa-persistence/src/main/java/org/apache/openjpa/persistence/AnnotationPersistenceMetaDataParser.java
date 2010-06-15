@@ -62,7 +62,6 @@ import static org.apache.openjpa.persistence.MetaDataTag.PRE_UPDATE;
 import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
-import static org.apache.openjpa.persistence.MetaDataTag.REPLICATED;
 import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
 import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
 import static org.apache.openjpa.persistence.MetaDataTag.VERSION;

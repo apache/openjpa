@@ -274,7 +274,7 @@ public class ManagedClassSubclasser {
             // but do set the metadata accordingly.
             if (enhancer.isAlreadyRedefined())
                 ints.add(bc.getType());
-            else if (JavaVersions.VERSION >= 5) {
+            else {
                 map.put(bc.getType(), bc.toByteArray());
                 debugBytecodes(bc);
             }

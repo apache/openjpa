@@ -380,15 +380,12 @@ public class ApplicationIdTool {
         // static block to register class
         code.tab().append("static").openBrace(2).endl();
         code.tab(2).append("// register persistent class in JVM").endl();
-        if (JavaVersions.VERSION >= 5) {
-            code.tab(2).append("try { Class.forName").openParen(true).
+        code.tab(2).append("try { Class.forName").openParen(true).
                 append("\"").append(_type.getName()).append("\"").
                 closeParen().append(";").append(" }").endl();
-            code.tab(2).append("catch").openParen(true).
+        code.tab(2).append("catch").openParen(true).
                 append("Exception e").closeParen().append(" {}").endl();
-        } else
-            code.tab(2).append("Class c = ").append(_type.getName()).
-                append(".class;").endl();
+        
         code.closeBrace(2);
 
         // field declarations

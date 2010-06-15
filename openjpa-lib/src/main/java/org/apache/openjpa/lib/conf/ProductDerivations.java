@@ -282,9 +282,10 @@ public class ProductDerivations {
         }
         reportErrors(errs, resource, err);
         String rsrc = resource + "#" + anchor;
-        throw (MissingResourceException) JavaVersions.initCause
-            (new MissingResourceException(rsrc,
-                ProductDerivations.class.getName(), rsrc), err);
+        MissingResourceException ex = new MissingResourceException(rsrc,
+                ProductDerivations.class.getName(), rsrc);
+        ex.initCause(err);
+        throw ex;
     }
 
     /**
@@ -319,9 +320,10 @@ public class ProductDerivations {
             J2DoPrivHelper.getAbsolutePathAction(file));
         reportErrors(errs, aPath, err);
         String rsrc = aPath + "#" + anchor;
-        throw (MissingResourceException) JavaVersions.initCause
-            (new MissingResourceException(rsrc,
-                ProductDerivations.class.getName(), rsrc), err);
+        MissingResourceException ex = new MissingResourceException(rsrc,
+                ProductDerivations.class.getName(), rsrc);
+        ex.initCause(err);
+        throw ex;
     }
    
     /**
@@ -375,9 +377,10 @@ public class ProductDerivations {
         Throwable nested) {
         if (errs == null)
             return;
-        throw (MissingResourceException) JavaVersions.initCause
-            (new MissingResourceException(errs.toString(),
-                ProductDerivations.class.getName(), resource), nested);
+        MissingResourceException ex = new MissingResourceException(errs.toString(),
+                ProductDerivations.class.getName(), resource);
+        ex.initCause(nested);
+        throw ex;
     }
 
     /**

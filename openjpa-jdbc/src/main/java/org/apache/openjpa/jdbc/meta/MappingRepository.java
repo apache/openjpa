@@ -1463,9 +1463,7 @@ public class MappingRepository extends MetaDataRepository {
         switch (vfield.getTypeCode()) {
             case JavaTypes.DATE:
             case JavaTypes.CALENDAR:
-                return (JavaVersions.VERSION >= 5) 
-                    ? new NanoPrecisionTimestampVersionStrategy()
-                    : new TimestampVersionStrategy();
+                return new NanoPrecisionTimestampVersionStrategy();
             case JavaTypes.BYTE:
             case JavaTypes.INT:
             case JavaTypes.LONG:
@@ -1478,7 +1476,6 @@ public class MappingRepository extends MetaDataRepository {
                 return new NumberVersionStrategy();
             default:
                 throw new UserException(_loc.get("version-type-unsupported", vfield, vfield.getDeclaredType()));
-//                return NoneVersionStrategy.getInstance();
         }
     }
     
