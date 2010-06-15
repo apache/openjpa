@@ -223,7 +223,7 @@ public class CacheMarshallerImpl
             List list = new ArrayList();
             for (Enumeration e = cl.getResources(_inputResourceLocation);
                 e.hasMoreElements(); )
-                list.add(e);
+                list.add(e.nextElement());
 
             if (list.size() > 1) {
                 if (_consumeErrors) {
