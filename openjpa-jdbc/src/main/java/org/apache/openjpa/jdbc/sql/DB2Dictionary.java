@@ -1036,39 +1036,34 @@ public class DB2Dictionary
             }
         }
     }
-    
+
+    @Override
     public void insertBlobForStreamingLoad(Row row, Column col, 
             JDBCStore store, Object ob, Select sel) throws SQLException {
         if (ob != null) {
-            if (ob instanceof InputStream) {
-                InputStream is = (InputStream)ob;
-                row.setBinaryStream(col, is, -1);
-            } else
-                row.setBinaryStream(col, 
-                        new ByteArrayInputStream(new byte[0]), 0);
+            row.setBinaryStream(col, (InputStream)ob, -1);
         } else {
             row.setNull(col);
         }
     }
 
+    @Override
     public void insertClobForStreamingLoad(Row row, Column col, Object ob)
     throws SQLException {
         if (ob != null) {
-            if (ob instanceof Reader) {
-                row.setCharacterStream(col, (Reader)ob, -1);
-            } else
-                row.setCharacterStream(col,
-                        new CharArrayReader(new char[0]), 0);
+            row.setCharacterStream(col, (Reader)ob, -1);
         } else {
             row.setNull(col);
         }
     }
 
+    @Override
     public void updateBlob(Select sel, JDBCStore store, InputStream is)
         throws SQLException {
         //NO-OP
     }
 
+    @Override
     public void updateClob(Select sel, JDBCStore store, Reader reader)
         throws SQLException {
         //NO-OP
