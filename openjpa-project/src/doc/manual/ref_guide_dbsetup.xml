@@ -180,6 +180,22 @@ logged SQL statements.
 each pretty-printed SQL line.
                         </para>
                     </listitem>
+                    <listitem>
+                        <para>
+                        <indexterm>
+                            <primary>
+                                SQL
+                            </primary>
+                            <secondary>
+                                PrintParameters
+                            </secondary>
+                        </indexterm>
+<literal>PrintParameters</literal>: A boolean indicating whether SQL parameter 
+values will be included in exception text and when logging is enabled. Since 
+the parameter values may contain sensitive information the default value is 
+false. 
+                        </para>
+                    </listitem>
                 </itemizedlist>
             </listitem>
         </itemizedlist>
@@ -193,7 +209,7 @@ each pretty-printed SQL line.
 &lt;property name="openjpa.ConnectionURL" value="jdbc:hsqldb:db-hypersonic"/&gt;
 &lt;property name="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" 
-    value="PrettyPrint=true, PrettyPrintLineLength=80"/&gt;
+    value="PrettyPrint=true, PrettyPrintLineLength=80, PrintParameters=true"/&gt;
 </programlisting>
         </example>
     </section>
