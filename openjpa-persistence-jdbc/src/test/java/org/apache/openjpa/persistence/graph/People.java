@@ -18,23 +18,24 @@
  */
 package org.apache.openjpa.persistence.graph;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
  * A simple persistent entity to become member of a graph.
- * In this style, a type has to extend {@linkplain Vertex} - an abstract persistent type.
- * This persistent type has its own identity.
  * 
  * @author Pinaki Poddar
  *
  */
 @SuppressWarnings("serial")
 @Entity
-public class People extends Vertex<People>{
+public class People implements Serializable {
     @Id
     private long ssn;
     private String name;
+    
     public long getSsn() {
         return ssn;
     }

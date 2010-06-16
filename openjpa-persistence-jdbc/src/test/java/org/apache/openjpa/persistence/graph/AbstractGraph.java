@@ -18,29 +18,30 @@
  */
 package org.apache.openjpa.persistence.graph;
 
-import java.io.Serializable;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.util.AbstractSet;
+import java.util.Set;
 
 /**
- * A simple persistent entity to become member of a graph.
+ * Abstract implementation of a {@linkplain Graph} borrows from {@link AbstractSet abstract} implementation of 
+ * {@link Set}. The extended {@link Set#remove(Object) remove()} semantics accounts for 
+ * {@link Graph#delink(Object, Object) removal} of all relationship to the removed element.
  * 
  * @author Pinaki Poddar
  *
+ * @param <E> type of element of the graph.
  */
-@SuppressWarnings("serial")
-@Entity
-public class City implements Serializable {
-    @Id
-    private String name;
-
-    public String getName() {
-        return name;
+public abstract class AbstractGraph<E> extends AbstractSet<E> implements Graph<E> {
+    /**
+     * Removing an element from this graph has the side effect of removing all 
+     * relations directed to the removed element.
+     */
+    @Override
+    public boolean remove(Object e) {
+        E node = (E)e;
+        Set<Relation<E, E>> rs = getRelationsTo(node);
+        for (Relation<E,E> r : rs) {
+            delink(r.getSource(), node);
+        }
+        return super.remove(e);
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }
