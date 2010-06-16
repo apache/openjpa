@@ -320,7 +320,7 @@ public class RelationRelationMapTableFieldStrategy
         if (canChange && !change.isEmpty()) {
             Row changeRow = null;
             if (!field.isUni1ToMFK()) {
-                rm.getSecondaryRow(field.getTable(),
+                changeRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_UPDATE);
                 changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
             }
