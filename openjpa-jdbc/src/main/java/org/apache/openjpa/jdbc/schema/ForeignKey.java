@@ -826,7 +826,7 @@ public class ForeignKey
                     Column[] locCols = fks[i].getColumns();
                     Column[] pkCols = fks[i].getPrimaryKeyColumns();
                     // Column counts must match
-                    if (locCols != null && pkCols != null & 
+                    if (locCols != null && pkCols != null &&
                         locCols.length != pkCols.length) {
                         Log log = dbdict.getLog();
                         if (log.isTraceEnabled()) {
