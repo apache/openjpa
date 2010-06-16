@@ -383,8 +383,8 @@ public class PostgresDictionary
 
         // filter out generated sequences used for bigserial cols, which are
         // of the form <table>_<col>_seq
-        String strName = DBIdentifier.isNull(name) ? null : name.getName();
-        int idx = strName.indexOf('_');
+        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
+        int idx = (strName == null) ? -1 : strName.indexOf('_');
         return idx != -1 && idx != strName.length() - 4
             && strName.toUpperCase().endsWith("_SEQ");
     }
