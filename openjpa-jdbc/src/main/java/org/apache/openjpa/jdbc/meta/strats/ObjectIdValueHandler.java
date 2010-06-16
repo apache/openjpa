@@ -138,7 +138,7 @@ public class ObjectIdValueHandler
     private boolean isReferenceField(FieldMapping fm, DBIdentifier refColName) {
         List cols = fm.getValueInfo().getColumns();
         if (cols.size() == 0) {
-            if (fm.getName().equals(refColName))
+            if (fm.getName().equals(refColName.getName()))
                 return true;                
         } else {
             if (((Column)cols.get(0)).getIdentifier().equals(refColName))
