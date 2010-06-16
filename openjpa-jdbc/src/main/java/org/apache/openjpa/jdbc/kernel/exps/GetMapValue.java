@@ -176,7 +176,7 @@ class GetMapValue
         if (clss != null && clss.length > 1)
             throw RelationStrategies.unjoinable(field);
 
-        ClassMapping cls = (clss.length == 0) ? null : clss[0];
+        ClassMapping cls = (clss == null || clss.length == 0) ? null : clss[0];
         ForeignKey fk = strat.getJoinForeignKey(cls);
 
         // manually create a subselect for the Map's value
