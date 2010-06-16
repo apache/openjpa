@@ -240,7 +240,11 @@ public abstract class EmbedValueHandler
                     idx = toObjectValue1(em1, vm1, val, store, null,
                             getColumns(fms[i]), idx);
                 }
-                cval = em1.getManagedInstance();
+                if (em1 != null) {
+                    cval = em1.getManagedInstance();
+                } else {
+                    cval = null;
+                }
             } else {
                 ecols = embed.getColumns();
                 if (ecols.length == 0)
