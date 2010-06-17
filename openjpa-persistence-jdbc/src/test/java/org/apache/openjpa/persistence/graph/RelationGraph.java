@@ -103,7 +103,6 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return 0;
     }
 
-    @Override
     public <V extends E> Set<Relation<V, E>> getRelationsFrom(V source) {
         Set<Relation<V,E>> rs = new HashSet<Relation<V,E>>();
         for (Relation<E,E> r : relations) {
@@ -113,7 +112,6 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return rs;
     }
 
-    @Override
     public <V extends E> Set<Relation<E, V>> getRelationsTo(V target) {
         Set<Relation<E, V>> rs = new HashSet<Relation<E, V>>();
         for (Relation<?,?> r : relations) {
@@ -123,7 +121,6 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return rs;
     }
 
-    @Override
     public Set<E> getSources(Object target) {
         Set<E> sources = new HashSet<E>();
         for (Relation<E,E> r : relations) {
@@ -133,7 +130,6 @@ public class RelationGraph<E> extends PersistentGraph<E>  {
         return sources;
     }
 
-    @Override
     public Set<E> getTargets(Object source) {
         Set<E> targets = new HashSet<E>();
         for (Relation<E,E> r : relations) {
