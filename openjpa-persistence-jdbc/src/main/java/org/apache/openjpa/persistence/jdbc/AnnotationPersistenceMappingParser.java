@@ -1534,11 +1534,11 @@ public class AnnotationPersistenceMappingParser
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), String.valueOf(pcols.length)));
 
-        // cache the JAXB XmlType class if it is present so we do not
+        // cache the JAXB XmlRootElement class if it is present so we do not
         // have a hard-wired dependency on JAXB here
-        Class xmlTypeClass = null;
+        Class xmlRootElementClass = null;
         try {
-            xmlTypeClass = Class.forName("javax.xml.bind.annotation.XmlType");
+            xmlRootElementClass = Class.forName("javax.xml.bind.annotation.XmlRootElement");
         } catch (Exception e) {
         }
 
@@ -1552,12 +1552,11 @@ public class AnnotationPersistenceMappingParser
                     cols = new ArrayList<Column>(pcols.length);
                 cols.add(newColumn(pcols[i], delimit()));
             }
-            
-            if (xmlTypeClass != null
+            if (xmlRootElementClass != null
                 && StringUtils.isEmpty(pcols[i].columnDefinition())
                 && (AccessController.doPrivileged(J2DoPrivHelper
                     .isAnnotationPresentAction(fm.getDeclaredType(),
-                        xmlTypeClass))).booleanValue()) {
+                        xmlRootElementClass))).booleanValue()) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)
