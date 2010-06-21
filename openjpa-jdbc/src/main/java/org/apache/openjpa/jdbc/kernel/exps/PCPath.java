@@ -1147,6 +1147,8 @@ public class PCPath
         }
 
         public boolean equals(Object other) {
+            if (other == null)
+                return false;
             if (other == this)
                 return true;
             Action a = (Action) other;

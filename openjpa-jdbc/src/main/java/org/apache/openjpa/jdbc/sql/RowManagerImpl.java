@@ -284,6 +284,8 @@ public class RowManagerImpl
         }
 
         public boolean equals(Object other) {
+            if (other == null)
+                return false;
             if (other == this)
                 return true;
 
