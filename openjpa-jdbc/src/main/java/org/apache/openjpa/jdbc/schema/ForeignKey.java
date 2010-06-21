@@ -581,7 +581,7 @@ public class ForeignKey
         // force re-cache
         _locals = null;
         _pks = null;
-        if (_autoAssign == Boolean.FALSE)
+        if (Boolean.FALSE.equals(_autoAssign))
             _autoAssign = null;
     }
 
@@ -669,7 +669,7 @@ public class ForeignKey
         if ((_joins == null || _joins.isEmpty())
             && (_constsPK == null || _constsPK.isEmpty()))
             _pkTable = null;
-        if (remd && _autoAssign == Boolean.TRUE)
+        if (remd && Boolean.TRUE.equals(_autoAssign))
             _autoAssign = null;
         return remd;
     }

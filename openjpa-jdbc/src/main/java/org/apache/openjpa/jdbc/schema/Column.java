@@ -474,7 +474,7 @@ public class Column
      * Return true if this is a NOT NULL column.
      */
     public boolean isNotNull() {
-        return _notNull == Boolean.TRUE;
+        return Boolean.TRUE.equals(_notNull);
     }
 
     /**

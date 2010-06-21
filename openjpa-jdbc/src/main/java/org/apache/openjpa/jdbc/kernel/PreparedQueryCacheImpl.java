@@ -77,7 +77,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
             || isHinted(hints, QueryHints.HINT_IGNORE_PREPARED_QUERY)
             || isHinted(hints, QueryHints.HINT_INVALIDATE_PREPARED_QUERY))
             return Boolean.FALSE;
-        if (isCachable(id) == Boolean.FALSE)
+        if (Boolean.FALSE.equals(isCachable(id)))
             return Boolean.FALSE;
         PreparedQuery cached = get(id);
         if (cached != null)
@@ -109,7 +109,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		lock();
 		try {
 			String id = q.getIdentifier();
-			if (isCachable(id) == Boolean.FALSE) {
+			if (Boolean.FALSE.equals(isCachable(id))) {
 				if (_log != null && _log.isTraceEnabled())
                     _log.trace(_loc.get("prepared-query-not-cachable", id));
 				return false;
