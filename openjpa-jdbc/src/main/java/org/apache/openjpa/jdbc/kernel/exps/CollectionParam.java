@@ -157,7 +157,7 @@ public class CollectionParam
                     getMappingRepositoryInstance().getMapping((Class) val,
                         ctx.store.getContext().getClassLoader(), true);
                     pstate.disc[i] = pstate.mapping[i].getDiscriminator();
-                    pstate.discValue[i] = pstate.disc != null ?
+                    pstate.discValue[i] = pstate.disc[i] != null ?
                         pstate.disc[i].getValue() : null;
                 }
             } else if (ImplHelper.isManageable(val)) {
