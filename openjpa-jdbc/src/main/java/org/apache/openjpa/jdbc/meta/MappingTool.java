@@ -1019,7 +1019,7 @@ public class MappingTool
                 getMetaDataFactory().newClassArgParser();
             classParser.setClassLoader(loader);
             Class<?>[] parsed;
-            for (int i = 0; args != null && i < args.length; i++) {
+            for (int i = 0; i < args.length; i++) {
                 parsed = classParser.parseTypes(args[i]);
                 classes.addAll(Arrays.asList(parsed));
             }

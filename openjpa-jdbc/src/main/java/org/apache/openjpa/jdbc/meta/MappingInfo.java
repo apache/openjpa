@@ -1349,8 +1349,7 @@ public abstract class MappingInfo
         boolean adapt, boolean fill) {
         // default to the primary key column name if this is a pk join
         DBIdentifier name = given.getIdentifier();
-        if (DBIdentifier.isNull(name) && given != null
-            && given.getFlag(Column.FLAG_PK_JOIN) && cls != null) {
+        if (DBIdentifier.isNull(name) && given.getFlag(Column.FLAG_PK_JOIN) && cls != null) {
             Column[] pks = cls.getPrimaryKeyColumns();
             if (pks.length == 1)
                 name = pks[0].getIdentifier();
