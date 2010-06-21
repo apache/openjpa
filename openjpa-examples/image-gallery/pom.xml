@@ -48,47 +48,39 @@
   </properties>
 
   <dependencies>
-    <!-- When using OpenJPA 2.0.0 with bval, commons-lang must be in the dependency -->
-    <!-- tree before openjpa-all-2.0.0 since openjpa-all bundles commons-lang 2.1   -->
-    <!-- and bval requires version 2.4                                              -->
+    <!-- When using bval, commons-lang must be in the dependency list -->
     <dependency>
        <groupId>commons-lang</groupId>
        <artifactId>commons-lang</artifactId>
-       <version>2.4</version>
        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
-      <version>1.8.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-validation_1.0_spec</artifactId>
-      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.bval</groupId>
       <artifactId>org.apache.bval.bundle</artifactId>
-      <version>0.1-incubating-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.openjpa</groupId>
       <artifactId>openjpa-all</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.5.3.0_1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
