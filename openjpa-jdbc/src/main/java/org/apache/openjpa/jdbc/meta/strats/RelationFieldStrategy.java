@@ -337,11 +337,7 @@ public class RelationFieldStrategy
     private Object getMapKeyObj(Map mapObj, Object value) {
         if (value instanceof ReflectingPersistenceCapable)
             value = ((ReflectingPersistenceCapable)value).getManagedInstance(); 
-        Set keySet = mapObj.keySet();
-        for (Object key : keySet) {
-            if (mapObj.get(key) == value)
-                return key;
-        }
+
         Set<Map.Entry> entries = mapObj.entrySet();
         for (Map.Entry entry : entries) {
             if (entry.getValue() == value)
