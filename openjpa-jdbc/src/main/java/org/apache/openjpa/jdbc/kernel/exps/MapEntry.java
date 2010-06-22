@@ -128,7 +128,7 @@ public class MapEntry
         _meta = meta;        
     }
 
-    private class Entry<K,V> implements Map.Entry<K, V> {
+    private static class Entry<K,V> implements Map.Entry<K, V> {
         private final K key;
         private final V value;
 

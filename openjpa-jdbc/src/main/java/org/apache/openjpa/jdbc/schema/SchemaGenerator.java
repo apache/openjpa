@@ -1062,7 +1062,7 @@ public class SchemaGenerator {
      * An event corresponding to the generation of a schema object.
      */
     @SuppressWarnings("serial")
-    public class Event
+    public static class Event
         extends EventObject {
 
         private final int _total;
