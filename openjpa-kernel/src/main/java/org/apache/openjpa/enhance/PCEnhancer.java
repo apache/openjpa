@@ -117,7 +117,7 @@ public class PCEnhancer {
     // public int getEnhancementContractVersion()
     public static final int ENHANCER_VERSION = 2;
     
-    boolean _addVersionInitFlag = true;
+    boolean _addVersionInitFlag = true; 
 
     public static final int ENHANCE_NONE = 0;
     public static final int ENHANCE_AWARE = 2 << 0;
@@ -2772,7 +2772,7 @@ public class PCEnhancer {
         _pc.declareField(PRE + "FieldTypes", Class[].class).setStatic(true);
         _pc.declareField(PRE + "FieldFlags", byte[].class).setStatic(true);
         _pc.declareField(SUPER, Class.class).setStatic(true);
-        if(_addVersionInitFlag && _meta.getVersionField()!=null){
+        if (_addVersionInitFlag && _meta.getVersionField() != null) {
             // protected transient boolean pcVersionInit;
             BCField field = _pc.declareField(VERSION_INIT_STR, boolean.class);
             field.makeProtected();
@@ -3229,17 +3229,15 @@ public class PCEnhancer {
             if (!_addVersionInitFlag){
                 // else return false;
                 ifins.setTarget(code.getstatic().setField(Boolean.class, "FALSE", Boolean.class));
-            }else{
-                FieldMetaData versionInit = _meta.getDeclaredField(VERSION_INIT_STR);
-                
+            }else{              
                 // noop
                 ifins.setTarget(code.nop());
                 // if (pcVersionInit != false)
                 // return true
                 // else return false;
                 loadManagedInstance(code, false);
-                getfield(code, null, versionInit.getName());
-                ifins = ifDefaultValue(code, versionInit);
+                getfield(code, null, VERSION_INIT_STR);
+                ifins = code.ifeq();
                 code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
                 code.areturn();
                 ifins.setTarget(code.nop());
@@ -3709,12 +3707,10 @@ public class PCEnhancer {
         addSetManagedValueCode(code, fmd);
         if(fmd.isVersion()==true && _addVersionInitFlag){
             // if we are setting the version, flip the versionInit flag to true
-            FieldMetaData v = _meta.addDeclaredField(VERSION_INIT_STR, boolean.class);
-            v.setTransient(true);
             loadManagedInstance(code, true);
             code.constant().setValue(1);
             // pcVersionInit = true;
-            putfield(code, null, v.getName(), v.getDeclaredType());   
+            putfield(code, null, VERSION_INIT_STR, boolean.class);   
         }
         code.vreturn();
 
