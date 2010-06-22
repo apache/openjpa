@@ -91,10 +91,13 @@ public class VersionMappingInfo
     	}
     	MappingDefaults def = vers.getMappingRepository().getMappingDefaults();
     	List<Column> result = new ArrayList<Column>();
-    	for (Table table : assign.keySet()) {
-    		List<Column> cols = assign.get(table);
-    		Column[] partTemplates = cols.toArray(new Column[cols.size()]);
-    		def.populateColumns(vers, table, partTemplates);
+
+        Set<Map.Entry<Table,List<Column>>> assignSet = assign.entrySet();
+        for (Map.Entry<Table,List<Column>> assignEntry : assignSet) {
+            Table table = assignEntry.getKey();
+            List<Column> cols = assignEntry.getValue();
+            Column[] partTemplates = cols.toArray(new Column[cols.size()]);
+            def.populateColumns(vers, table, partTemplates);
             result.addAll(Arrays.asList(createColumns(vers, null, partTemplates,
     				table, adapt)));
     	}

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -318,11 +319,13 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
         Map<Integer, Object> result = new HashMap<Integer, Object>(_template);
         
-        for (Object key : user.keySet()) {
+        Set<Map.Entry<Object,Object>> userSet = user.entrySet();
+        for (Map.Entry<Object,Object> userEntry : userSet) {
+            Object key = userEntry.getKey();
             int[] indices = _userParamPositions.get(key);
             if (indices == null || indices.length == 0)
                 throw new UserException(_loc.get("uparam-no-pos", key, this));
-            Object val = user.get(key);
+            Object val = userEntry.getValue();
             if (ImplHelper.isManageable(val)) {
                 setPersistenceCapableParameter(result, val, indices, broker);
             } else if (val instanceof Collection) {

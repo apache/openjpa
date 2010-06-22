@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.kernel.exps.ExpContext;
 import org.apache.openjpa.jdbc.kernel.exps.QueryExpressionsState;
@@ -153,9 +154,11 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
          */
         public Object[] toParameterArray(StoreQuery q, Map userParams) {
             Object[] array = new Object[userParams.size()];
-            for (Object key : userParams.keySet()) {
-                int idx = ((Integer)key).intValue();
-                array[idx] = userParams.get(key);
+
+            Set<Map.Entry<Object,Object>> userSet = userParams.entrySet();
+            for (Map.Entry<Object,Object> userEntry : userSet) {
+                int idx = ((Integer)userEntry.getKey()).intValue();
+                array[idx] = userEntry.getValue();
             }
             return array;
         }
