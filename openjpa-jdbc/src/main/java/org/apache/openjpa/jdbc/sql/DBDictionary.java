@@ -4621,7 +4621,7 @@ public class DBDictionary
         SQLErrorCodeReader codeReader = new SQLErrorCodeReader();
         String rsrc = "sql-error-state-codes.xml";
         // We'll allow sub-classes to override the stream for custom err codes
-        // @edu.umd.cs.findbugs.annotations.SuppressWarnings(value={"UI"})
+        // @edu.umd.cs.findbugs.annotations.SuppressWarnings(value="UI_INHERITANCE_UNSAFE_GETRESOURCE")
         InputStream stream = getClass().getResourceAsStream(rsrc);
         String dictionaryClassName = getClass().getName();
         if (stream == null) { // User supplied dictionary but no error codes xml
