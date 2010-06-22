@@ -273,20 +273,25 @@ public class DB2Dictionary
         super.connectedConfiguration(conn);
 
         DatabaseMetaData metaData = conn.getMetaData();
+        Statement stmnt = null;	
+        ResultSet rs =null;
         try {
             String str = "SELECT CURRENT SCHEMA FROM SYSIBM.SYSDUMMY1";
-            Statement stmnt = conn.createStatement();
-            ResultSet rs = stmnt.executeQuery(str);
+            stmnt = conn.createStatement();
+            rs = stmnt.executeQuery(str);
             if (rs.next()) {
                 String currSchema = rs.getString(1);
                 if (currSchema != null)
                     setDefaultSchemaName(currSchema.trim());
             }
-            rs.close();
-            stmnt.close();
         } catch (SQLException e) {
             if (log.isTraceEnabled())
                 log.trace(_loc.get("can_not_get_current_schema", e.getMessage()));
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (stmnt != null)
+                stmnt.close();
         }
 
         String driverName = metaData.getDriverName();

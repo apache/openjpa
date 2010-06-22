@@ -4581,7 +4581,6 @@ public class DBDictionary
         try {
             String keywords = new BufferedReader(new InputStreamReader(in)).
                 readLine();
-            in.close();
             reservedWordSet.addAll(Arrays.asList(Strings.split
                 (keywords, ",", 0)));
         } catch (IOException ioe) {
