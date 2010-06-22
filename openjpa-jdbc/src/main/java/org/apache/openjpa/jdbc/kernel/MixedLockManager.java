@@ -88,21 +88,16 @@ public class MixedLockManager extends PessimisticLockManager {
         // 
         if(!dict.supportsLockingWithMultipleTables) {
             // look for columns mapped to secondary tables which need to be locked
-            Map<DBIdentifier,FieldMapping> colsMappedToSecTable = new HashMap<DBIdentifier,FieldMapping>();
             FieldMapping fms[] = mapping.getFieldMappings();
             for( FieldMapping fm : fms) {
                 DBIdentifier secTableName = fm.getMappingInfo().getTableIdentifier();
-                if(!DBIdentifier.isNull(secTableName)) {
-                    colsMappedToSecTable.put(secTableName, fm);
+                if (!DBIdentifier.isNull(secTableName)) {
+                    // select only the PK columns, since we just want to lock
+                    Select select = factory.newSelect();
+                    select.select(fm.getColumns());
+                    select.whereForeignKey(fm.getJoinForeignKey(), id, mapping, _store);
+                    sqls.add(select.toSelect(true, fetch));
                 }
-            }
-            for( DBIdentifier secTableName : colsMappedToSecTable.keySet()) {
-                FieldMapping fm = colsMappedToSecTable.get(secTableName);
-                // select only the PK columns, since we just want to lock
-                Select select = factory.newSelect();
-                select.select(fm.getColumns());
-                select.whereForeignKey(fm.getJoinForeignKey(), id, mapping, _store);
-                sqls.add(select.toSelect(true, fetch));
             }
         }
         return sqls;
