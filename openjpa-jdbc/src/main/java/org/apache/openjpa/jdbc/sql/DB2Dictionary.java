@@ -113,8 +113,7 @@ public class DB2Dictionary
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "LONG VARCHAR FOR BIT DATA", "LONG VARCHAR", "LONG VARGRAPHIC",
         }));
-        systemSchemas = new String(
-                "SYSCAT,SYSIBM,SYSSTAT,SYSIBMADM,SYSTOOLS");
+        systemSchemas = "SYSCAT,SYSIBM,SYSSTAT,SYSIBMADM,SYSTOOLS";
         maxConstraintNameLength = 18;
         maxIndexNameLength = 18;
         maxColumnNameLength = 30;
@@ -573,7 +572,6 @@ public class DB2Dictionary
      */
     private String appendExtendedExceptionMsg(String msg, SQLException sqle){
        final String GETSQLCA ="getSqlca";
-       String exceptionMsg = new String();
        try {
             Method sqlcaM2 = sqle.getNextException().getClass()
                              .getMethod(GETSQLCA,null);
@@ -591,17 +589,23 @@ public class DB2Dictionary
             for (int i = 0; i < errds.length; i++)
                 errdStr.append(errdStr.length() > 0 ? ", " : "").
                     append(errds[i]);
-            exceptionMsg = exceptionMsg.concat( "SQLCA OUTPUT" +
-                    "[Errp=" + getSqlErrpMethd.invoke(sqlca, new Object[]{})
-                    + ", Errd=" + errdStr);
+            StringBuilder exceptionMsg = new StringBuilder();
+            exceptionMsg.append("SQLCA OUTPUT");
+            exceptionMsg.append("[Errp=");
+            exceptionMsg.append(getSqlErrpMethd.invoke(sqlca, new Object[]{}));
+            exceptionMsg.append(", Errd=");
+            exceptionMsg.append(errdStr);
 
             String Warn = new String((char[]) getSqlWarnMethd.
                     invoke(sqlca, new Object[]{}));
-            if (Warn.trim().length() != 0)
-                exceptionMsg = exceptionMsg.concat(", Warn=" +Warn + "]" );
-            else
-                exceptionMsg = exceptionMsg.concat( "]" );
-            msg = msg.concat(exceptionMsg);
+            if (Warn.trim().length() != 0) {
+                exceptionMsg.append(", Warn=");
+                exceptionMsg.append(Warn);
+                exceptionMsg.append("]");
+            } else {
+                exceptionMsg.append("]");
+            }
+            msg = msg.concat(exceptionMsg.toString());
             
             // for batched execution failures, SQLExceptions are nested
             SQLException sqle2 = sqle.getNextException();
