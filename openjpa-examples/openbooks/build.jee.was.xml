@@ -170,7 +170,7 @@
    	              port="${was.port}"
    	              user="${was.user}" 
    	              password="${was.password}"
-   	              options="-usedefaultbindings -appname OpenBooks"/> 
+   	              options="-usedefaultbindings -contextroot OpenBooks -appname OpenBooks"/> 
    	<echo>
          -------------------------------------
          Starting OpenBooks demo application
