@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.XMLMetaDataParser;
+import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
@@ -192,6 +193,8 @@ public class PersistenceProductDerivation
         throws IOException {
         if (!file.getName().endsWith(".xml"))
             return null;
+        if (!isVersionOnePersistenceDoc(file))
+            return null;
 
         ConfigurationParser parser = new ConfigurationParser(null);
         parser.parse(file);
@@ -206,6 +209,9 @@ public class PersistenceProductDerivation
 
     @Override
     public List getAnchorsInFile(File file) throws IOException {
+        if (!isVersionOnePersistenceDoc(file))
+          return null;
+        
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
             parser.parse(file);
@@ -233,7 +239,8 @@ public class PersistenceProductDerivation
             List<URL> urls = getResourceURLs(resource, loader);
             if (urls != null) {
                 for (URL url : urls) {
-                    parser.parse(url);
+                    if (isVersionOnePersistenceDoc(url))
+                        parser.parse(url);
                 }
             }
             return getUnitNames(parser);
@@ -356,8 +363,10 @@ public class PersistenceProductDerivation
         List<PersistenceUnitInfoImpl> pinfos = 
             new ArrayList<PersistenceUnitInfoImpl>();
         for (URL url : urls) {
-            parser.parse(url);
-            pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
+            if (isVersionOnePersistenceDoc(url)) {
+                parser.parse(url);
+                pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
+            }
         }
         return findUnit(pinfos, name, loader);
     }
@@ -429,6 +438,78 @@ public class PersistenceProductDerivation
     private static void log(String msg) {
         // at this point logging isn't configured yet
         System.err.println(msg);
+    }
+
+    /**
+     * Return true if the version is specified as version "1.0".
+     * Return false if it is specified as anything else
+     *
+     * By calling this method, the caller can avoid parsing
+     * persistence.xml documents that are some other version.
+     */
+    public boolean isVersionOnePersistenceDoc(URL url) {
+      
+        // default return value
+        boolean retv = true;
+        
+        // peek at the doc to determine the version
+        XMLVersionParser vp = new XMLVersionParser("persistence");
+        try {
+            vp.parse(url);
+            String versionStr = vp.getVersion();
+            
+            // if the versionStr is not equal to "1.0" return false
+            if (!XMLVersionParser.VERSION_1_0.equals(versionStr)) {
+              retv = false;
+              log(_loc.get("version-limitation", (versionStr == null ? "" : versionStr),
+                      url.toString()).getMessage());
+            }
+        } catch (Exception t) {
+            String msg = "Exception: " + t.getClass().getName() + ": ";
+            String m = t.getLocalizedMessage();
+            msg += (StringUtils.isEmpty(m) ? "" : (": " + m));
+            log(_loc.get("version-check-error", msg, url.toString()).getMessage());
+            // return true and allow processing to continue
+            // additional processing will likely lead to a more informative error message
+        }
+        
+        return retv;
+    }
+
+    /**
+     * Return true if the version is specified as version "1.0".
+     * Return false if it is specified as anything else
+     *
+     * By calling this method, the caller can avoid parsing
+     * persistence.xml documents that are some other version.
+     */
+    public boolean isVersionOnePersistenceDoc(File file) {
+      
+        // default return value
+        boolean retv = true;
+        
+        // peek at the doc to determine the version
+        XMLVersionParser vp = new XMLVersionParser("persistence");
+        try {
+            vp.parse(file);
+            String versionStr = vp.getVersion();
+            
+            // if the versionStr is not equal to "1.0" return false
+            if (!XMLVersionParser.VERSION_1_0.equals(versionStr)) {
+              retv = false;
+              log(_loc.get("version-limitation", (versionStr == null ? "" : versionStr),
+                      file.toString()).getMessage());
+            }
+        } catch (Exception t) {
+            String msg = "Exception: " + t.getClass().getName() + ": ";
+            String m = t.getLocalizedMessage();
+            msg += (StringUtils.isEmpty(m) ? "" : (": " + m));
+            log(_loc.get("version-check-error", msg, file.toString()).getMessage());
+            // return true and allow processing to continue
+            // additional processing will likely lead to a more informative error message
+        }
+        
+        return retv;
     }
 
     /**
@@ -604,6 +685,6 @@ public class PersistenceProductDerivation
 
             if (_source != null)
                 _info.setPersistenceXmlFileUrl(_source);
-		}
-	}
+        }
+    }
 }
