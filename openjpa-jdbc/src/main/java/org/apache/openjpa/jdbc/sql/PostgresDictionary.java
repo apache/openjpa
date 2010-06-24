@@ -36,9 +36,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -48,6 +52,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
+import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -124,6 +129,15 @@ public class PostgresDictionary
      * method.
      */
     public boolean supportsSetFetchSize = true;
+    
+    /**
+     * Statement used to determine whether a sequence is owned.  Owned 
+     * sequences are managed by the database and are considered system 
+     * sequences.
+     * parm 1: '<table_name.schema_name>'
+     * parm 2: '<column_name>'
+     */
+    public String isOwnedSequenceSQL = "SELECT pg_get_serial_sequence(?, ?)";
 
     public PostgresDictionary() {
         platform = "PostgreSQL";
@@ -378,12 +392,165 @@ public class PostgresDictionary
 
     public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
         boolean targetSchema) {
+        return isSystemSequence(name, schema, targetSchema, null);
+    }
+    
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema, Connection conn) {
         if (super.isSystemSequence(name, schema, targetSchema))
             return true;
+        
+        if (isOwnedSequence(name, schema, conn)) {
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * Uses the native Postgres function pg_get_serial_sequence to determine whether
+     * a sequence is owned by the database.  Column types such as bigserial use a 
+     * system assigned sequence generator of the format: table_column_seq
+     * 
+     * @see http://www.postgresql.org/docs/current/static/functions-info.html
+     */
+    public boolean isOwnedSequence(DBIdentifier name, DBIdentifier schema, Connection conn) {
+        
+        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
+        // basic check for SEQ suffix.  not SEQ, not an owned sequence
+        if (strName == null || !strName.toUpperCase().endsWith("_SEQ"))
+            return false;
+
+        // If no connection, use secondary method to determine ownership
+        if (conn == null) {
+            return isOwnedSequence(strName);
+        }
+        
+        // Build permutations of table, column pairs from the provided 
+        // sequence name.  If any of them are determined owned, assume the 
+        // sequence is owned.  This is not perfect, but considerably better than
+        // considering all sequences suffixed with _seq are db owned.
+        String[][] namePairs = buildNames(strName);
+        try {
+            for (int i = 0; i < namePairs.length; i++) {
+                if (queryOwnership(conn, namePairs[i], schema)) {
+                    return true;
+                }
+            }
+        } catch (Throwable t) {
+            if (log.isWarnEnabled())
+                log.warn(_loc.get("psql-owned-seq-warning"), t);
+            return isOwnedSequence(strName);
+        }
+        return false;
+    }
+    
+    private boolean queryOwnership(Connection conn, String[] namePair,
+        DBIdentifier schema) throws Throwable {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = prepareStatement(conn, isOwnedSequenceSQL);
+            String tblName = "";
+            if (!DBIdentifier.isEmpty(schema)) {
+                tblName = schema.getName() + getIdentifierDelimiter();  
+            }
+            tblName += namePair[0];
+            ps.setString(1, tblName);
+            String colName = toDBName(DBIdentifier.newColumn(namePair[1]));
+            ps.setString(2, colName);
+            ps.execute();
+            rs = ps.getResultSet();
+            if (rs == null || !rs.next()) {
+                return false;
+            }
+            String val = getString(rs, 1);
+            if (val == null || val.length() == 0) {
+                return false;
+            }
+            return true;
+        } catch (Throwable t) {
+            if (t instanceof ReportingSQLException) {
+                // Handle known/acceptable exceptions
+                // 42P01 - table does not exist
+                // 42703 - column does not exist within table
+                ReportingSQLException rse = (ReportingSQLException)t;
+                if ("42P01".equals(rse.getSQLState()) ||
+                    "42703".equals(rse.getSQLState())) {
+                    return false;
+                }
+            }
+            throw t;
+        }
+        finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (Throwable t) {}
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (Throwable t) {}
+            }
+        }
+    }
+
+    /**
+     * Owned sequences are of the form <table>_<col>_seq. Table and column 
+     * names can contain underscores so permutations of these names must be 
+     * produced for ownership verification.
+     * @param strName
+     * @return
+     */
+    private String[][] buildNames(String strName) {
+        // split the sequence name into components
+        // owned sequences are of the form <table>_<col>_seq
+        String[] parts = Normalizer.splitName(strName, "_");
+        
+        if (parts == null || parts.length < 3) {
+            return null;
+        }
+        // Simple and most common case
+        if (parts.length == 3) {
+            return new String[][] { {parts[0], parts[1]} };
+        }
+        // If table or column names contain underscores, build a list
+        // of possibilities
+        String[][] names = new String[(parts.length - 2)][2];
+        for (int i = 0; i < parts.length - 2; i++) {
+            String[] namePair = new String[2];
+            StringBuilder name0 = new StringBuilder();
+            StringBuilder name1 = new StringBuilder();
+            for (int j = 0; j < parts.length - 1; j++) {
+                if (j <= i) {
+                    name0.append(parts[j]);
+                    if (j < i) {
+                        name0.append("_");
+                    }
+                } else {
+                    name1.append(parts[j]);
+                    if (j < parts.length - 2) {
+                        name1.append("_");
+                    }
+                }
+            }
+            namePair[0] = name0.toString();
+            namePair[1] = name1.toString();
+            names[i] = namePair;
+        }
+        return names;
+    }
+
+    /**
+     * Secondary logic if owned sequences cannot be determined by calling the
+     * db.  This logic assumes that any sequence prefixed with _SEQ is an
+     * owned sequence (identical to the behavior of prior versions of OpenJPA).
+     * @param strName
+     * @return
+     */
+    private boolean isOwnedSequence(String strName) {
         // filter out generated sequences used for bigserial cols, which are
         // of the form <table>_<col>_seq
-        String strName = DBIdentifier.isNull(name) ? "" : name.getName();
         int idx = (strName == null) ? -1 : strName.indexOf('_');
         return idx != -1 && idx != strName.length() - 4
             && strName.toUpperCase().endsWith("_SEQ");

@@ -365,4 +365,12 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="TestDropAddSequence">
+        <class>org.apache.openjpa.persistence.sequence.SequencedEntity</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema"/>
+        </properties>
+    </persistence-unit>
 </persistence>

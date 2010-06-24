@@ -3866,6 +3866,23 @@ public class DBDictionary
     }
 
     /**
+     * This method is used to filter system sequences from database metadata.
+     * Return true if the given sequence represents a system sequence that
+     * should not appear in the schema definition. Returns true if system
+     * schema by default.
+     *
+     * @param name the table name
+     * @param schema the table schema; may be null
+     * @param targetSchema if true, then the given schema was listed by
+     * the user as one of his schemas
+     * @param conn connection to the database
+     */
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+        boolean targetSchema, Connection conn) {
+        return isSystemSequence(name, schema, targetSchema);
+    }
+
+    /**
      * Reflect on the schema to find tables matching the given name pattern.
      * @deprecated
      */

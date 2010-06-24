@@ -974,7 +974,7 @@ public class SchemaGenerator {
                     || seqUpper.startsWith("JDO_"))) // legacy
                 continue;
             if (_dict.isSystemSequence(sequenceName, sequenceSchema,
-                schemaName != null))
+                schemaName != null, conn))
                 continue;
             if (!isAllowedTable(sequenceSchema, null))
                 continue;
