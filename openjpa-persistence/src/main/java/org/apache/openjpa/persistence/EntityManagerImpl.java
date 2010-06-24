@@ -763,10 +763,6 @@ public class EntityManagerImpl
         DataCacheRetrieveMode rmode = getFetchPlan().getCacheRetrieveMode();
         if (DataCacheRetrieveMode.USE.equals(rmode) || rmode == null) {
             getFetchPlan().setCacheRetrieveMode(DataCacheRetrieveMode.BYPASS);
-            if (rmode != null) {
-                Log log = _broker.getConfiguration().getConfigurationLog();
-                log.warn(_loc.get("cache-retrieve-override", Exceptions.toString(entity)));
-            }
         }
         try {
             _broker.refresh(entity, this);
