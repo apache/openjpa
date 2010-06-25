@@ -36,10 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Map.Entry;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
@@ -543,7 +540,7 @@ public class PostgresDictionary
 
     /**
      * Secondary logic if owned sequences cannot be determined by calling the
-     * db.  This logic assumes that any sequence prefixed with _SEQ is an
+     * db.  This logic assumes that any sequence suffixed with _SEQ is an
      * owned sequence (identical to the behavior of prior versions of OpenJPA).
      * @param strName
      * @return
