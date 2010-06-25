@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.ClearableScheduler;
@@ -29,7 +30,6 @@ import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.datacache.common.apps.ScheduledEviction;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestClearableScheduler extends SingleEMFTestCase {
@@ -93,7 +93,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
     
     public void testMultithreadedInitialization() throws Exception {
         final OpenJPAConfiguration conf =  emf.getConfiguration();
-        final List<DataCacheManager> dcms = new ArrayList<DataCacheManager>();
+        final List<DataCacheManager> dcms = new Vector<DataCacheManager>();
         Runnable r = new Runnable(){
             public void run() {
                 dcms.add(conf.getDataCacheManagerInstance());
