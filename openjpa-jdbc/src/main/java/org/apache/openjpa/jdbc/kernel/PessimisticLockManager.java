@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
-import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.MixedLockLevels;
@@ -36,7 +35,6 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.VersionLockManager;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.LockException;
 import org.apache.openjpa.util.StoreException;
 
@@ -175,8 +173,8 @@ public class PessimisticLockManager
     private void ensureStoreManagerTransaction() {
         if (!_store.getContext().isStoreActive()) {
             _store.getContext().beginStore();
-            if (log.isInfoEnabled())
-                log.info(_loc.get("start-trans-for-lock"));
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("start-trans-for-lock"));
         }
     }
     

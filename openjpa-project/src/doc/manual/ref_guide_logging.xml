@@ -294,8 +294,8 @@ error.
             <listitem>
                 <para>
 <literal>DefaultLevel</literal>: The default logging level of unconfigured
-channels. Recognized values are <literal> TRACE, DEBUG, INFO, WARN,</literal>
-and <literal>ERROR</literal>. Defaults to <literal>INFO</literal>.
+channels. Recognized values are <literal>TRACE, INFO, WARN, ERROR </literal> 
+and <literal>FATAL</literal>. Defaults to <literal>INFO</literal>.
                 </para>
             </listitem>
             <listitem>
