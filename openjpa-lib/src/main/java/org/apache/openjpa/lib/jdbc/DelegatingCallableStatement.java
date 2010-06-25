@@ -436,51 +436,50 @@ public abstract class DelegatingCallableStatement
         _stmnt.setNull(i1, i2, s);
     }
 
-    // JDBC 3.0 (unsupported) methods follow; these are required to be able
-    // to compile against JDK 1.4
+    // JDBC 3 methods follow.
 
     public boolean getMoreResults(int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getMoreResults(i);
     }
 
     public ResultSet getGeneratedKeys() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getGeneratedKeys();
     }
 
     public int executeUpdate(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, i);
     }
 
     public int executeUpdate(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, ia);
     }
 
     public int executeUpdate(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, sa);
     }
 
     public boolean execute(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, i);
     }
 
     public boolean execute(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, ia);
     }
 
     public boolean execute(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, sa);
     }
 
     public int getResultSetHoldability() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getResultSetHoldability();
     }
 
     public void setURL(int i, URL url) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setURL(i, url);
     }
 
     public ParameterMetaData getParameterMetaData() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getParameterMetaData();
     }
 
     /////////////////////////////
@@ -601,223 +600,222 @@ public abstract class DelegatingCallableStatement
         _stmnt.registerOutParameter(i1, i2, s);
     }
 
-    // JDBC 3.0 (unsupported) methods follow; these are required to be able
-    // to compile against JDK 1.4
+    // JDBC 3 methods follow.
 
     public void registerOutParameter(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.registerOutParameter(s, i);
     }
 
     public void registerOutParameter(String s, int i1, int i2)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.registerOutParameter(s, i1, i2);
     }
 
     public void registerOutParameter(String s1, int i, String s2)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.registerOutParameter(s1, i, s2);
     }
 
     public URL getURL(int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getURL(i);
     }
 
     public void setURL(String a, URL b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setURL(a, b);
     }
 
     public URL getURL(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getURL(a);
     }
 
     public void setNull(String a, int b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setNull(a, b);
     }
 
     public void setBoolean(String a, boolean b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setBoolean(a, b);
     }
 
     public void setByte(String a, byte b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setByte(a, b);
     }
 
     public void setShort(String a, short b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setShort(a, b);
     }
 
     public void setInt(String a, int b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setInt(a, b);
     }
 
     public void setLong(String a, long b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setLong(a, b);
     }
 
     public void setFloat(String a, float b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setFloat(a, b);
     }
 
     public void setDouble(String a, double b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setDouble(a, b);
     }
 
     public void setBigDecimal(String a, BigDecimal b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setBigDecimal(a, b);
     }
 
     public void setString(String a, String b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setString(a, b);
     }
 
     public void setBytes(String a, byte[] b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setBytes(a, b);
     }
 
     public void setDate(String a, Date b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setDate(a, b);
     }
 
     public void setTime(String a, Time b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setTime(a, b);
     }
 
     public void setTimestamp(String a, Timestamp b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setTimestamp(a, b);
     }
 
     public void setAsciiStream(String a, InputStream b, int c)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setAsciiStream(a, b, c);
     }
 
     public void setBinaryStream(String a, InputStream b, int c)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setBinaryStream(a, b, c);
     }
 
     public void setObject(String a, Object b, int c, int d)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setObject(a, b, c, d);
     }
 
     public void setObject(String a, Object b, int c) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setObject(a, b, c);
     }
 
     public void setObject(String a, Object b) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setObject(a, b);
     }
 
     public void setCharacterStream(String a, Reader b, int c)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setCharacterStream(a, b, c);
     }
 
     public void setDate(String a, Date b, Calendar c) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setDate(a, b, c);
     }
 
     public void setTime(String a, Time b, Calendar c) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setTime(a, b, c);
     }
 
     public void setTimestamp(String a, Timestamp b, Calendar c)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setTimestamp(a, b, c);
     }
 
     public void setNull(String a, int b, String c) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setNull(a, b, c);
     }
 
     public String getString(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getString(a);
     }
 
     public boolean getBoolean(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getBoolean(a);
     }
 
     public byte getByte(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getByte(a);
     }
 
     public short getShort(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getShort(a);
     }
 
     public int getInt(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getInt(a);
     }
 
     public long getLong(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getLong(a);
     }
 
     public float getFloat(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getFloat(a);
     }
 
     public double getDouble(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getDouble(a);
     }
 
     public byte[] getBytes(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getBytes(a);
     }
 
     public Date getDate(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getDate(a);
     }
 
     public Time getTime(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getTime(a);
     }
 
     public Timestamp getTimestamp(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getTimestamp(a);
     }
 
     public Object getObject(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getObject(a);
     }
 
     public BigDecimal getBigDecimal(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getBigDecimal(a);
     }
 
     public Object getObject(String a, Map<String, Class<?>>b) throws
             SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getObject(a, b);
     }
 
     public Ref getRef(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getRef(a);
     }
 
     public Blob getBlob(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getBlob(a);
     }
 
     public Clob getClob(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getClob(a);
     }
 
     public Array getArray(String a) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getArray(a);
     }
 
     public Date getDate(String a, Calendar b) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getDate(a, b);
     }
 
     public Time getTime(String a, Calendar b) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getTime(a, b);
     }
 
     public Timestamp getTimestamp(String a, Calendar b) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getTimestamp(a, b);
     }
 
     // java.sql.Wrapper implementation (JDBC 4)

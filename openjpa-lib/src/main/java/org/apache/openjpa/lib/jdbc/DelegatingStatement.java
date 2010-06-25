@@ -253,43 +253,42 @@ public abstract class DelegatingStatement implements Statement, Closeable {
         return _conn;
     }
 
-    // JDBC 3.0 (unsupported) method follow; these are required to be able
-    // to compile against JDK 1.4
+    // JDBC 3 methods follow.
 
     public boolean getMoreResults(int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getMoreResults(i);
     }
 
     public ResultSet getGeneratedKeys() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getGeneratedKeys();
     }
 
     public int executeUpdate(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, i);
     }
 
     public int executeUpdate(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, ia);
     }
 
     public int executeUpdate(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, sa);
     }
 
     public boolean execute(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, i);
     }
 
     public boolean execute(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, ia);
     }
 
     public boolean execute(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, sa);
     }
 
     public int getResultSetHoldability() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getResultSetHoldability();
     }
 
     // java.sql.Wrapper implementation (JDBC 4)

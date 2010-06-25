@@ -288,6 +288,114 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                     getDelegate(), _sql);
             }
         }
+
+        public boolean execute() throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), _sql);
+            try {
+                return super.execute();
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), _sql);
+            }
+        }
+
+        public int executeUpdate(String sql) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, int i) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, i);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, int[] ia) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, ia);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, String[] sa) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, sa);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, int i) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, i);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, int[] ia) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, ia);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, String[] sa) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, sa);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
     }
 
     /**
@@ -320,6 +428,90 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
                 JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
             try {
                 return super.executeQuery(sql, wrap);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, int i) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, i);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, int[] ia) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, ia);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public int executeUpdate(String sql, String[] sa) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.executeUpdate(sql, sa);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, int i) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, i);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, int[] ia) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, ia);
+            } finally {
+                fireEvent(_conn.getDelegate(),
+                    JDBCEvent.AFTER_EXECUTE_STATEMENT, before,
+                    getDelegate(), sql);
+            }
+        }
+
+        public boolean execute(String sql, String[] sa) throws SQLException {
+            JDBCEvent before = fireEvent(_conn.getDelegate(),
+                JDBCEvent.BEFORE_EXECUTE_STATEMENT, null, getDelegate(), sql);
+            try {
+                return super.execute(sql, sa);
             } finally {
                 fireEvent(_conn.getDelegate(),
                     JDBCEvent.AFTER_EXECUTE_STATEMENT, before,

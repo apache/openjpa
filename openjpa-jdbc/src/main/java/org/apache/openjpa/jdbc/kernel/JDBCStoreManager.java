@@ -73,7 +73,6 @@ import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.DelegatingStatement;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.log.LogFactoryImpl.LogImpl;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
@@ -1702,6 +1701,69 @@ public class JDBCStoreManager
                 afterExecuteStatement(this);
             }
         }
+
+        public boolean execute(String sql) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(sql);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String sql, int i) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(sql, i);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String sql, int[] ia) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(sql, ia);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String sql, String[] sa) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(sql, sa);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String sql, int i) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(sql, i);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String sql, int[] ia) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(sql, ia);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String sql, String[] sa) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(sql, sa);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
     }
 
     /**
@@ -1738,6 +1800,87 @@ public class JDBCStoreManager
             beforeExecuteStatement(this);
             try {
                 return super.executeBatch();
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute() throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute();
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String s) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(s);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String s) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(s);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String s, int i) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(s, i);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String s, int[] ia) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(s, ia);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public int executeUpdate(String s, String[] sa) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.executeUpdate(s, sa);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String s, int i) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(s, i);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String s, int[] ia) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(s, ia);
+            } finally {
+                afterExecuteStatement(this);
+            }
+        }
+
+        public boolean execute(String s, String[] sa) throws SQLException {
+            beforeExecuteStatement(this);
+            try {
+                return super.execute(s, sa);
             } finally {
                 afterExecuteStatement(this);
             }

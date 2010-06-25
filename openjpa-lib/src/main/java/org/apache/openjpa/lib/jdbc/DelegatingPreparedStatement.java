@@ -426,11 +426,10 @@ public abstract class DelegatingPreparedStatement
         _stmnt.setNull(i1, i2, s);
     }
 
-    // JDBC 3.0 (unsupported) method follow; these are required to be able
-    // to compile against JDK 1.4
+    // JDBC 3 methods follow.
 
     public boolean getMoreResults(int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getMoreResults(i);
     }
 
     public ResultSet getGeneratedKeys() throws SQLException {
@@ -438,39 +437,39 @@ public abstract class DelegatingPreparedStatement
     }
 
     public int executeUpdate(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, i);
     }
 
     public int executeUpdate(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, ia);
     }
 
     public int executeUpdate(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.executeUpdate(s, sa);
     }
 
     public boolean execute(String s, int i) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, i);
     }
 
     public boolean execute(String s, int[] ia) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, ia);
     }
 
     public boolean execute(String s, String[] sa) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.execute(s, sa);
     }
 
     public int getResultSetHoldability() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getResultSetHoldability();
     }
 
     public void setURL(int i, URL url) throws SQLException {
-        throw new UnsupportedOperationException();
+        _stmnt.setURL(i, url);
     }
 
     public ParameterMetaData getParameterMetaData() throws SQLException {
-        throw new UnsupportedOperationException();
+        return _stmnt.getParameterMetaData();
     }
     
     // java.sql.Wrapper implementation (JDBC 4)
