@@ -21,28 +21,19 @@
     Maven release plugin requires the project tag to be on a single line.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <!--
-        To build the distribution files from project root:
 
-        mvn clean compile package -Dtest=false -DfailIfNoTests=false
-
-        To build and deploy a full digned release with docs, run:
-
-            mvn clean deploy -Pjavadoc-profile,docbook-profile,sign-release
-
-        Note that to sign the release, you need to have "gpg" installed and
-        create a key. See http://apache.org/dev/release-signing.html
-    -->
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>apache-openjpa</artifactId>
-    <packaging>pom</packaging>
-    <name>OpenJPA Project Docs and Assemblies</name>
-    <description>OpenJPA Project Docs and Assemblies</description>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
+
+    <artifactId>apache-openjpa</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA Project Docs and Assemblies</name>
+    <description>OpenJPA Project Docs and Assemblies</description>
 
     <properties>
         <openjpa.release.keyAlias>
