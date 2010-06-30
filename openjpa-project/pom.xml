@@ -334,12 +334,6 @@
                     </plugin>
                 </plugins>
             </build>
-            <activation>
-                <property>
-                    <name>builddocs</name>
-                    <value>true</value>
-                </property>
-            </activation>
             <pluginRepositories>
                 <pluginRepository>
                     <id>agilejava</id>
@@ -355,6 +349,7 @@
                 </repository>
             </repositories>
         </profile>
+
         <!-- 
           Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}. 
           This profile is designed to be run nightly by a continuous build server, but can

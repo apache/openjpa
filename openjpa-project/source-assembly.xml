@@ -35,6 +35,8 @@
             <outputDirectory>${artifactId}-${version}-source</outputDirectory>
             <excludes>
                 <exclude>**/target/**</exclude>
+                <exclude>**/*.log</exclude>
+                <exclude>**/.*/**</exclude>
             </excludes>
         </fileSet>
 
