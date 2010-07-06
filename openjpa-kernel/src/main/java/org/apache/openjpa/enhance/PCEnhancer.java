@@ -21,6 +21,7 @@ package org.apache.openjpa.enhance;
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
@@ -45,11 +46,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
@@ -60,6 +63,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.svn.SVNUtils;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -110,13 +114,13 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-public class PCEnhancer {
+public class PCEnhancer { 
     // Designates a version for maintaining compatbility when PCEnhancer
     // modifies enhancement that can break serialization or other contracts
     // Each enhanced class will return the value of this field via
     // public int getEnhancementContractVersion()
-    public static final int ENHANCER_VERSION = 2;
-    
+    public static final int ENHANCER_VERSION;
+
     boolean _addVersionInitFlag = true; 
 
     public static final int ENHANCE_NONE = 0;
@@ -164,6 +168,29 @@ public class PCEnhancer {
         }
         _auxEnhancers = (AuxiliaryEnhancer[]) auxEnhancers.toArray
         (new AuxiliaryEnhancer[auxEnhancers.size()]);
+        
+        int rev = 0;
+        Properties revisionProps = new Properties();
+        try {
+            InputStream in = PCEnhancer.class.getResourceAsStream("/META-INF/org.apache.openjpa.revision.properties");
+            if (in != null) {
+                try {
+                    revisionProps.load(in);
+                } finally {
+                    in.close();
+                }
+            }
+            String prop = revisionProps.getProperty("openjpa.enhancer.revision");
+            rev = SVNUtils.svnInfoToInteger(prop);
+        } catch (Exception e) {
+        }
+        if (rev > 0) {
+            ENHANCER_VERSION = rev;
+        } else {
+            // Something bad happened and we couldn't load from the properties file. We need to default to using the
+            // value of 2 because that is the value that was the value as of rev.511998.
+            ENHANCER_VERSION = 2;
+        }
     }
 
     private BCClass _pc;
@@ -4699,5 +4726,35 @@ public class PCEnhancer {
         
         code.calculateMaxStack();
         code.calculateMaxLocals();
+    }
+    
+    /**
+     * This static public worker method detects and logs any Entities that may have been enhanced at build time by
+     * a version of the enhancer that is older than the current version.
+     * 
+     * @param cls
+     *            - A non-null Class implementing org.apache.openjpa.enhance.PersistenceCapable.
+     * @param log
+     *            - A non-null org.apache.openjpa.lib.log.Log.
+     * 
+     * @throws - IllegalStateException if cls doesn't implement org.apache.openjpa.enhance.PersistenceCapable.
+     * 
+     * @return true if the provided Class is down level from the current PCEnhancer.ENHANCER_VERSION. False
+     *         otherwise.
+     */
+    public static boolean checkEnhancementLevel(Class<?> cls, Log log) {
+        if (cls == null || log == null) {
+            return false;
+        }
+        PersistenceCapable pc = PCRegistry.newInstance(cls, null, true);
+        if (pc == null) {
+            return false;
+        }
+        if (pc.pcGetEnhancementContractVersion() < PCEnhancer.ENHANCER_VERSION) {
+            log.info(_loc.get("down-level-enhanced-entity", new Object[] { cls.getName(),
+                pc.pcGetEnhancementContractVersion(), PCEnhancer.ENHANCER_VERSION }));
+            return true;
+        }
+        return false;
     }
 }

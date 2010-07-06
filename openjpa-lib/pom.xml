@@ -99,13 +99,18 @@
                                 <exec outputproperty="subversion.revision" failonerror="false" failifexecutionfails="false" executable="${svnversion.executable}">
                                     <arg line="-c ${basedir}/.." />
                                 </exec>
+                                <exec outputproperty="pcenhancer.revision" failonerror="false" failifexecutionfails="false" executable="${svnversion.executable}">
+                                    <arg line=". ../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
+                                </exec>                                
                                 <property name="subversion.revision" value="unknown" />
                                 <echo>Revision: ${subversion.revision}</echo>
                                 <echo>OpenJPA version: ${project.version}</echo>
                                     
                                 <mkdir dir="${outdir}/META-INF" />
                                 <echo file="${outdir}/META-INF/org.apache.openjpa.revision.properties">revision.number=${subversion.revision}
-openjpa.version=${project.version}</echo>
+openjpa.version=${project.version}
+openjpa.enhancer.revision=${pcenhancer.revision}
+</echo>
                                 <delete dir="${tmpdir}" />
                             </tasks>
                         </configuration>

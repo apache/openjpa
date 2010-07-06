@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
+import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
@@ -154,6 +155,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private static final String PRELOAD_STR = "Preload";
     
     private boolean _reorderMetaDataResolution = false;
+    
+    // A boolean used to decide whether or not we need to call to PCEnhancer to check whether we have any down level
+    // Entities.
+    private boolean _logEnhancementLevel = true;
 
     /**
      * Default constructor. Configure via {@link Configurable}.
@@ -1622,6 +1627,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (pcNames != null && !pcNames.isEmpty() && !pcNames.contains(reg[i].getName()))
                 continue;
 
+            checkEnhancementLevel(reg[i]);
             try {
                 processRegisteredClass(reg[i]);
             } catch (Throwable t) {
@@ -2628,4 +2634,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return false;
     }
 
+    /**
+     * This private worker ensures that a message is logged when an Entity is enhanced by a version of the enhancer that
+     * is older than the current version.
+     */
+    private void checkEnhancementLevel(Class<?> cls) {
+        if (_logEnhancementLevel == false) {
+            return;
+        }
+        Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        boolean res = PCEnhancer.checkEnhancementLevel(cls, _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME));
+        if (log.isTraceEnabled() == false && res == true) {
+            // Since trace isn't enabled flip the flag so we only log this once.
+            _logEnhancementLevel = false;
+            log.info(_loc.get("down-level-entity"));
+        }
+    }
 }
