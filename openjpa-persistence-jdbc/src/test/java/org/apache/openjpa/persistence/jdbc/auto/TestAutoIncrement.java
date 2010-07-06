@@ -19,18 +19,31 @@
 package org.apache.openjpa.persistence.jdbc.auto;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestAutoIncrement extends SingleEMTestCase {
+    boolean disabled = false;
     public void setUp() {
         super.setUp(DROP_TABLES, AutoIncrementEntity.class);
-        if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
+        DBDictionary dic = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        if (!dic.supportsAutoAssign) {
+            disabled = true;
+            return;
+        }
+        if (dic instanceof SQLServerDictionary || dic instanceof OracleDictionary) {
+            disabled = true;
             return;
         }
         createZeroIdEntity();
     }
 
     public void test() {
+        if (disabled) {
+            return;
+        }
         em.getTransaction().begin();
         AutoIncrementEntity e1 = em.find(AutoIncrementEntity.class, 0);
         assertNotNull(e1);
