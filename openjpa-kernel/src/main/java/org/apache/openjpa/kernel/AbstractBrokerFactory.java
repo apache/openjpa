@@ -854,7 +854,7 @@ public abstract class AbstractBrokerFactory
         }
 
         // Get a DataCacheManager instance up front to avoid threading concerns on first call.
-        _conf.getDataCacheManagerInstance();
+        // _conf.getDataCacheManagerInstance();
     }
 }
 
