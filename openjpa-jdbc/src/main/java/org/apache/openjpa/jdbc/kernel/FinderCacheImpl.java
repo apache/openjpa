@@ -58,11 +58,12 @@ public class FinderCacheImpl
     private List<String> _exclusionPatterns;
     private QueryStatistics<ClassMapping> _stats;
     private ReentrantLock _lock = new ReentrantLock();
+    private boolean _enableStats = false;
     
     public FinderCacheImpl() {
         _delegate = new HashMap<ClassMapping, FinderQuery<ClassMapping, SelectExecutor, Result>>();
         _uncachables = new HashMap<String, String>();
-        _stats = new QueryStatistics.Default<ClassMapping>();
+        _stats = new QueryStatistics.None<ClassMapping>();
     }
     
     /**
@@ -364,6 +365,16 @@ public class FinderCacheImpl
             _lock.unlock();
     }
      
+    public void setEnableStats(boolean b) { 
+        _enableStats = b;
+        if (_enableStats) {
+            _stats = new QueryStatistics.Default<ClassMapping>();
+        }
+    }
+
+    public boolean getEnableStats() {
+        return _enableStats;
+    }
     // ----------------------------------------------------
     //  Configuration contract
     // ----------------------------------------------------
