@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.jpql.expressions;
 
 import java.util.List;
+
+import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.common.apps.*;
@@ -70,9 +72,26 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     }
 
     @SuppressWarnings("unchecked")
+    public void testAggregateResultVariable() {
+        EntityManager em = currentEntityManager();
+        String querys[] = {
+            "SELECT c.name as name, SUM(c.age) as sage FROM CompUser c group by c.name order by sage desc, name",
+            "SELECT c.name, AVG(c.age) as age FROM CompUser c group by c.name order by age desc, c.name",
+        };
+        for (int i = 0; i < querys.length; i++) {
+            Query query = em.createQuery(querys[i]);
+            query.setFirstResult(1);
+            query.setMaxResults(4);
+            List<Object[]> rs = query.getResultList();
+            assertTrue((Long)((Object[]) rs.get(0))[1] > 0);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public void testMathAndAggregate() {
         EntityManager em = currentEntityManager();
         String query[] = {
+            "SELECT SUM(c.age) as age FROM CompUser c",
             "SELECT SUM(c.age) + SUM(c.userid) FROM CompUser c",
             "SELECT SUM(c.age) * SUM(c.userid) FROM CompUser c",
             "SELECT SUM(c.age) - MIN(c.userid) + MAX(c.userid) FROM CompUser c",
