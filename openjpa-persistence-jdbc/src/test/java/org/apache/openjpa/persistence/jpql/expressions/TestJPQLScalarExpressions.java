@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.jpql.expressions;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
@@ -67,6 +68,22 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         endTx(em);
         endEm(em);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void testAggregateResultVariable() {
+        EntityManager em = currentEntityManager();
+        String querys[] = {
+            "SELECT c.name as name, SUM(c.age) as sage FROM CompUser c group by c.name order by sage desc, name",
+            "SELECT c.name, AVG(c.age) as age FROM CompUser c group by c.name order by age desc, c.name",
+        };
+        for (int i = 0; i < querys.length; i++) {
+            Query query = em.createQuery(querys[i]);
+            query.setFirstResult(1);
+            query.setMaxResults(4);
+            List<Object[]> rs = query.getResultList();
+            assertTrue((Long)((Object[]) rs.get(0))[1] > 0);
+        }
     }
 
     @SuppressWarnings("unchecked")
