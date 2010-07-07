@@ -176,6 +176,7 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         _broker.lock();
         try {
+            _plans.remove(_broker.getFetchConfiguration());
             _broker.popFetchConfiguration();
         } finally {
             _broker.unlock();
