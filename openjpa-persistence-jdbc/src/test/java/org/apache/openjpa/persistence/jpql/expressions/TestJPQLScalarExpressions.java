@@ -83,7 +83,11 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
             query.setFirstResult(1);
             query.setMaxResults(4);
             List<Object[]> rs = query.getResultList();
-            assertTrue((Long)((Object[]) rs.get(0))[1] > 0);
+            Object val = ((Object[]) rs.get(0))[1];
+            if (val instanceof Integer)
+                assertTrue((Integer) val > 0);
+            else if (val instanceof Long)
+                assertTrue((Long) val > 0);
         }
     }
 
