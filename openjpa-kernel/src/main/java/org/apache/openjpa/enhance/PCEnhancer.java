@@ -4746,7 +4746,7 @@ public class PCEnhancer {
         if (cls == null || log == null) {
             return false;
         }
-        PersistenceCapable pc = PCRegistry.newInstance(cls, null, true);
+        PersistenceCapable pc = PCRegistry.newInstance(cls, null, false);
         if (pc == null) {
             return false;
         }
