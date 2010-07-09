@@ -75,6 +75,8 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
     public void testAggregateResultVariable() {
         EntityManager em = currentEntityManager();
         String querys[] = {
+            "SELECT c.name, AVG(c.age) as age, a.city FROM CompUser c left join c.address a " +
+            " group by c.name, a.city order by age desc, c.name",
             "SELECT c.name as name, SUM(c.age) as sage FROM CompUser c group by c.name order by sage desc, name",
             "SELECT c.name, AVG(c.age) as age FROM CompUser c group by c.name order by age desc, c.name",
         };

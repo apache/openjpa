@@ -330,11 +330,14 @@ public class OracleDictionary
         int i = 0;
         for (Iterator itr = aliases.iterator(); itr.hasNext(); i++) {
             alias = itr.next();
+            String asString = null;
             if (alias instanceof SQLBuffer)
-                selectSQL.append((SQLBuffer) alias);
+                asString = ((SQLBuffer) alias).getSQL();
             else
-                selectSQL.append(alias.toString());
-            selectSQL.append(" AS c").append(String.valueOf(i));
+                asString = alias.toString();
+            selectSQL.append(asString);
+            if (asString.indexOf(" AS ") == -1)
+                selectSQL.append(" AS c").append(String.valueOf(i));
             if (itr.hasNext())
                 selectSQL.append(", ");
         }
