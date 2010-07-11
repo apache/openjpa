@@ -213,7 +213,38 @@ public class TestPreparedQueryCache extends TestCase {
 	        em.close();
 		super.tearDown();
 	}
-	
+    
+    public void testRepeatedParameterInSubqueryInDifferentOrderSubQLast() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+       
+        String jpql = "SELECT o from OrderJPA o " +
+                "WHERE (o.CustomerId = :customerId) " +
+                "AND (o.WarehouseId = :warehouseId) " +
+                "AND (o.DistrictId = :districtId) " +
+                "AND o.OrderId IN (SELECT MAX (o1.OrderId) from OrderJPA o1 " +
+                    "WHERE ((o1.CustomerId = :customerId) " +
+                    "AND    (o1.DistrictId = :districtId) " +
+                    "AND    (o1.WarehouseId = :warehouseId)))";
+        
+        em.getTransaction().begin();
+        TypedQuery<OrderJPA> q1 = em.createQuery(jpql, OrderJPA.class);
+        q1.setParameter("customerId", 339)
+          .setParameter("districtId", 3)
+          .setParameter("warehouseId", 23);
+                  
+        assertEquals(JPQLParser.LANG_JPQL, OpenJPAPersistence.cast(q1).getLanguage());
+        assertFalse(q1.getResultList().isEmpty());        
+        
+        TypedQuery<OrderJPA> q2 = em.createQuery(jpql, OrderJPA.class);
+        assertEquals(QueryLanguages.LANG_PREPARED_SQL, OpenJPAPersistence.cast(q2).getLanguage());
+        q2.setParameter("customerId", 2967)
+          .setParameter("districtId", 5)
+          .setParameter("warehouseId", 22);
+        
+        assertFalse(q2.getResultList().isEmpty());
+        em.getTransaction().rollback();
+        
+    }
 
 	public void testPreparedQueryCacheIsActiveByDefault() {
 		assertNotNull(getPreparedQueryCache());

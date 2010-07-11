@@ -56,6 +56,13 @@ public class CollectionParam
         setImplicitType(type);
     }
 
+    public CollectionParam clone() {
+        CollectionParam c = new CollectionParam(this._key, this._type);
+        c._idx = this._idx;
+        c._container = this._container;
+        return c;
+    }
+
     public Object getParameterKey() {
         return _key;
     }
