@@ -21,11 +21,11 @@ package org.apache.openjpa.jdbc.kernel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -59,7 +59,9 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private final List<Exclusion> _exclusionPatterns;
 	private QueryStatistics<String> _stats;
 	private boolean _statsEnabled;
-	private ReentrantLock _lock = new ReentrantLock();
+
+	private Lock _writeLock;
+	private Lock _readLock;
 	private Log _log;
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheImpl.class);
     
@@ -67,6 +69,10 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		_delegate = new CacheMap();
 		_uncachables = new CacheMap();
 		_exclusionPatterns = new ArrayList<Exclusion>();
+		
+		ReentrantReadWriteLock _rwl = new ReentrantReadWriteLock();
+        _writeLock = _rwl.writeLock();
+        _readLock = _rwl.readLock();
 	}
 	
     public Boolean register(String id, Query query, FetchConfiguration hints) {
@@ -88,14 +94,14 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	}
 	
 	public Map<String,String> getMapView() {
-		lock();
+		lock(false);
 		try {
             Map<String, String> view = new TreeMap<String, String>();
             for (Map.Entry<String, PreparedQuery> entry : _delegate.entrySet())
                 view.put(entry.getKey(), entry.getValue().getTargetQuery());
 			return view;
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
@@ -106,7 +112,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * the matched exclusion pattern.
 	 */
 	public boolean cache(PreparedQuery q) {
-		lock();
+		lock(false);
 		try {
 			String id = q.getIdentifier();
 			if (Boolean.FALSE.equals(isCachable(id))) {
@@ -124,7 +130,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
                 _log.trace(_loc.get("prepared-query-cached", id));
 			return true;
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
@@ -142,27 +148,27 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
     }
 	
 	public boolean invalidate(String id) {
-		lock();
+		lock(false);
 		try {
 			if (_log != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("prepared-query-invalidate", id));
 			return _delegate.remove(id) != null;
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
     public PreparedQuery get(String id) {
-        lock();
+        lock(true);
         try {
             return _delegate.get(id);
         } finally {
-            unlock();
+            unlock(true);
         }
     }
     
 	public Boolean isCachable(String id) {
-		lock();
+		lock(true);
 		try {
 			if (_uncachables.containsKey(id))
 				return Boolean.FALSE;
@@ -170,12 +176,12 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 				return Boolean.TRUE;
 			return null;
 		} finally {
-			unlock();
+			unlock(true);
 		}
 	}
 	
 	public PreparedQuery markUncachable(String id, Exclusion exclusion) {
-		lock();
+		lock(false);
 		try {
 			if (_uncachables.put(id, exclusion) == null) {
 			    if (_log != null && _log.isTraceEnabled()) 
@@ -183,7 +189,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			}
 			return _delegate.remove(id);
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
@@ -192,7 +198,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	}
 	
 	public void setExcludes(String excludes) {
-		lock();
+		lock(false);
 		try {
 			if (StringUtils.isEmpty(excludes))
 				return;
@@ -200,7 +206,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			for (String pattern : patterns)
 				addExclusionPattern(pattern);
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 
@@ -213,7 +219,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
      * matches the given pattern will be marked invalidated as a side-effect.
 	 */
 	public void addExclusionPattern(String pattern) {
-		lock();
+		lock(false);
 		try {
 		    String reason = _loc.get("prepared-query-excluded-by-user", pattern).getMessage();
 			Exclusion exclusion = new WeakExclusion(pattern, reason);
@@ -224,7 +230,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 				markUncachable(invalidKey, invalid);
 			}
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
@@ -234,7 +240,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	 * uncachables as a side-effect.
 	 */
 	public void removeExclusionPattern(String pattern) {
-		lock();
+		lock(false);
 		try {
             Exclusion exclusion = new WeakExclusion(pattern, null);
 			_exclusionPatterns.remove(exclusion);
@@ -245,7 +251,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	                _log.trace(_loc.get("prepared-query-remove-pattern", pattern, rebornKey));
 			}
 		} finally {
-			unlock();
+			unlock(false);
 		}
 	}
 	
@@ -290,14 +296,31 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		return result;
 	}
 
-    void lock() {
-        if (_lock != null)
-            _lock.lock();
+	/**
+     * Note: Care needs to be taken so that a read lock is <b>never</b> held while requesting a write lock. This will
+     * result in a deadlock.
+     * 
+     * @param readOnly
+     *            - If true, a read lock will be acquired. Else a write lock will be acquired.
+     */
+    protected void lock(boolean readOnly) {
+        if (readOnly == true) {
+            _readLock.lock();
+        } else {
+            _writeLock.lock();
+        }
     }
 
-    void unlock() {
-        if (_lock != null && _lock.isLocked())
-            _lock.unlock();
+    /**
+     * @param readOnly
+     *            - If true, the read lock will be released. Else a write lock will be released.
+     */
+    protected void unlock(boolean readOnly) {
+        if (readOnly == true) {
+            _readLock.unlock();
+        } else {
+            _writeLock.unlock();
+        }
     }
     
     boolean matches(String pattern, String target) {
