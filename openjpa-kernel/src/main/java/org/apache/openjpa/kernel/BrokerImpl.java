@@ -3986,8 +3986,10 @@ public class BrokerImpl
      * Return a copy of all transactional state managers.
      */
     protected Collection<StateManagerImpl> getTransactionalStates() {
-        if (!hasTransactionalObjects())
-            return Collections.EMPTY_SET;
+        if (!hasTransactionalObjects()) {
+            // return a new empty set. Entities may be added by TransactionListeners 
+            return new LinkedHashSet<StateManagerImpl>();
+        }
         return _transCache.copy();
     }
 
@@ -4707,8 +4709,10 @@ public class BrokerImpl
          * Return a copy of all transactional state managers.
          */
         public Collection copy() {
-            if (isEmpty())
-                return Collections.EMPTY_SET;
+            if (isEmpty()) {
+                // Transaction Listeners may add entities to the transaction. 
+                return new LinkedHashSet();
+            }
 
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
