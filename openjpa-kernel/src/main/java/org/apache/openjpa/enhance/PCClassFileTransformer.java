@@ -109,6 +109,10 @@ public class PCClassFileTransformer
         if (loader == _tmpLoader)
             return null;
 
+        // JDK bug -- OPENJPA-1676
+        if (className == null) {
+            return null;
+        }
         // prevent re-entrant calls, which can occur if the enhanceing
         // loader is used to also load OpenJPA libraries; this is to prevent 
         // recursive enhancement attempts for internal openjpa libraries
