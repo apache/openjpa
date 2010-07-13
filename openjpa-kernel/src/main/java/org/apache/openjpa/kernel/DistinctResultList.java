@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -203,6 +204,11 @@ public class DistinctResultList<E> implements List<E>, Serializable {
 
     protected RuntimeException translate(RuntimeException re) {
         return (_trans == null) ? re : _trans.translate(re);
+    }
+
+    public Object writeReplace()
+        throws ObjectStreamException {
+        return _del;
     }
 
 }
