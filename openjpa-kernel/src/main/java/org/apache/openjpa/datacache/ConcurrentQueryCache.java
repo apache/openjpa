@@ -36,8 +36,11 @@ public class ConcurrentQueryCache
     extends AbstractQueryCache
     implements RemoteCommitListener {
 
-    private CacheMap _cache = newCacheMap();
-
+    private CacheMap _cache;
+    protected boolean _lru = false;
+    private int _cacheSize = Integer.MIN_VALUE;
+    private int _softRefs = Integer.MIN_VALUE;
+    
     /**
      * Returns the underlying {@link CacheMap} that this cache is using.
      * This is not an unmodifiable view on the map, so care should be taken
@@ -67,7 +70,7 @@ public class ConcurrentQueryCache
      * flushing old values.
      */
     public void setCacheSize(int size) {
-        _cache.setCacheSize(size);
+        _cacheSize = size;
     }
 
     /**
@@ -85,12 +88,13 @@ public class ConcurrentQueryCache
      * flushing values.
      */
     public void setSoftReferenceSize(int size) {
-        _cache.setSoftReferenceSize(size);
+        _softRefs = size;
     }
 
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
+        _cache = newCacheMap();
     }
 
     public void writeLock() {
@@ -107,7 +111,14 @@ public class ConcurrentQueryCache
      * Return the map to use as an internal cache.
      */
     protected CacheMap newCacheMap() {
-        return new CacheMap();
+        CacheMap res = new CacheMap(_lru);
+        if (_cacheSize != Integer.MIN_VALUE) {
+            res.setCacheSize(_cacheSize);
+        }
+        if (_softRefs != Integer.MIN_VALUE) {
+            res.setSoftReferenceSize(_softRefs);
+        }
+        return res;
     }
 
     protected QueryResult getInternal(QueryKey qk) {
@@ -143,5 +154,13 @@ public class ConcurrentQueryCache
      */
     public EvictPolicy getEvictPolicy() {
         return super.evictPolicy;
+    }
+    
+    public void setLru(boolean l) {
+        _lru = l;
+    }
+
+    public boolean getLru() {
+        return _lru;
     }
 }

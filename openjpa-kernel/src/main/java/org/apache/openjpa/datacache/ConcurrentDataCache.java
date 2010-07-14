@@ -40,8 +40,11 @@ public class ConcurrentDataCache
     private static final Localizer _loc = Localizer.forPackage
         (ConcurrentDataCache.class);
 
-    private CacheMap _cache = newCacheMap();
-
+    private CacheMap _cache;
+    private int _cacheSize = Integer.MIN_VALUE;
+    private int _softRefs = Integer.MIN_VALUE;
+    protected boolean _lru = false;
+    
     /**
      * Returns the underlying {@link CacheMap} that this cache is using.
      * This is not an unmodifiable view on the map, so care should be taken
@@ -60,7 +63,7 @@ public class ConcurrentDataCache
      * flushing old values.
      */
     public void setCacheSize(int size) {
-        _cache.setCacheSize(size);
+        _cacheSize = size;
     }
 
     /**
@@ -78,7 +81,7 @@ public class ConcurrentDataCache
      * flushing values.
      */
     public void setSoftReferenceSize(int size) {
-        _cache.setSoftReferenceSize(size);
+        _softRefs = size;
     }
 
     /**
@@ -92,6 +95,7 @@ public class ConcurrentDataCache
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
+        _cache = newCacheMap();
     }
 
     public void unpinAll(Class<?> cls, boolean subs) {
@@ -113,12 +117,18 @@ public class ConcurrentDataCache
      * invoke {@link AbstractDataCache#keyRemoved}.
      */
     protected CacheMap newCacheMap() {
-        return new CacheMap() {
-            protected void entryRemoved(Object key, Object value,
-                boolean expired) {
+        CacheMap res = new CacheMap(_lru) {
+            protected void entryRemoved(Object key, Object value, boolean expired) {
                 keyRemoved(key, expired);
             }
         };
+        if (_cacheSize != Integer.MIN_VALUE) {
+            res.setCacheSize(_cacheSize);
+        }
+        if (_softRefs != Integer.MIN_VALUE) {
+            res.setSoftReferenceSize(_softRefs);
+        }
+        return res;
     }
 
     protected DataCachePCData getInternal(Object key) {
@@ -157,4 +167,11 @@ public class ConcurrentDataCache
         return true;
     }
 
+    public void setLru(boolean l) {
+        _lru = l;
+    }
+
+    public boolean getLru() {
+        return _lru;
+    }
 }

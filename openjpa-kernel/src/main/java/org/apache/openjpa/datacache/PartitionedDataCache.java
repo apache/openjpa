@@ -68,6 +68,13 @@ public class PartitionedDataCache extends ConcurrentDataCache {
     private final List<String> _partProperties = new ArrayList<String>();
     private final Map<String, DataCache> _partitions = new HashMap<String, DataCache>();
     
+    @Override
+    public void initialize(DataCacheManager mgr) {
+        super.initialize(mgr);
+        for(DataCache part : _partitions.values()){
+            part.initialize(mgr);
+        }
+    }
     /**
      * Sets the type of the partitions. 
      * Each partition is a DataCache itself.

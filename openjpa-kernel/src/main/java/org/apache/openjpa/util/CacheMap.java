@@ -75,6 +75,15 @@ public class CacheMap
     public CacheMap() {
         this(false, 1000);
     }
+    
+    /**
+     * Create a cache map with a size of 1000.
+     * 
+     * @param lru if true, create a LRU cache map otherwise a non-LRU map will be created.
+     */
+    public CacheMap(boolean lru) {
+        this(lru, 1000);
+    }
 
     /**
      * Create a cache map with the given properties.

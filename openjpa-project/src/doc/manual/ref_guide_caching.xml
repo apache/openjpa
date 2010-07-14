@@ -179,6 +179,20 @@ a little while longer. You can control the number of soft references OpenJPA
 keeps with the <literal>SoftReferenceSize</literal> property. Soft references
 are unlimited by default. Set to 0 to disable soft references completely.
             </para>
+            <para>
+Both the QueryCache and DataCache can be configured to use a backing <literal>Lru</literal> map rather than the default
+concurrent HashMap. Note that enabling the <literal>Lru</literal> cache can hurt performance as this map in not as 
+scalable as the default map. 
+            </para>
+            <example id="ref_guide_cache_conf_lru">
+                <title>
+                    Data Cache Size
+                </title>
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true(Lru=true)"/&gt;
+&lt;property name="openjpa.QueryCache" value="true(Lru=true)"/&gt;
+</programlisting>
+            </example>            
             <example id="ref_guide_cache_conf_size">
                 <title>
                     Data Cache Size
