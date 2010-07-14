@@ -72,6 +72,9 @@ public abstract class AbstractQueryCache
 
     protected ConcurrentHashMap<String,Long> entityTimestampMap = null;
     private boolean _closed = false;
+    
+    private String _name = null;
+    
     // default evict policy
     public EvictPolicy evictPolicy = EvictPolicy.DEFAULT;
 
@@ -406,5 +409,13 @@ public abstract class AbstractQueryCache
             }
         }
         return tmval;
+    }
+    
+    public void setName(String n) {
+        _name = n;
+    }
+
+    public String getName() {
+        return _name;
     }
 }

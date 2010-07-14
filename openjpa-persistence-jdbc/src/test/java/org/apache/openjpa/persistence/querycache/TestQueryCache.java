@@ -23,6 +23,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NamedQuery;
 
+import org.apache.openjpa.datacache.ConcurrentQueryCache;
+import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity1;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity2;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -32,11 +34,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestQueryCache extends SQLListenerTestCase {
 
     EntityManager em;
-
+    private static final String CACHE_NAME = "QueryCacheName";
     public void setUp() {
         super.setUp(
             DROP_TABLES,
-            "openjpa.QueryCache", "true", 
+            "openjpa.QueryCache", "true(name="+CACHE_NAME+")", 
             "openjpa.RemoteCommitProvider","sjvm",
             Entity1.class,Entity2.class
         // ,"openjpa.Log","SQL=trace"
@@ -146,6 +148,13 @@ public class TestQueryCache extends SQLListenerTestCase {
         assertEquals(5, ent.getIntField());
 
 
+    }
+
+    public void testName() {
+        ConcurrentQueryCache qCache =
+            (ConcurrentQueryCache) emf.getConfiguration().getDataCacheManagerInstance().getSystemQueryCache();
+        assertNotNull(qCache);
+        assertEquals(CACHE_NAME, qCache.getName());
     }
 
     protected void startTx(EntityManager em) {
