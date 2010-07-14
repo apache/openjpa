@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -906,6 +907,19 @@ public class PostgresDictionary
                 Class<?> dbcpConnectionClass =
                     Class.forName("org.apache.commons.dbcp.DelegatingConnection", true, AccessController
                         .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+                Class<?> poolingDataSource = Class.forName(
+                        "org.apache.commons.dbcp.PoolingDataSource", true,
+                        AccessController.doPrivileged(J2DoPrivHelper
+                                .getContextClassLoaderAction()));
+                Method setAccessToUnderlyingConnectionAllowed = poolingDataSource
+                        .getMethod("setAccessToUnderlyingConnectionAllowed",
+                                boolean.class);
+                
+                Field this$0 = conn.getClass().getDeclaredField("this$0");
+                this$0.setAccessible(true);
+                Object poolingDataSourceObj = this$0.get(conn);
+                setAccessToUnderlyingConnectionAllowed.invoke(poolingDataSourceObj,
+                        true);
                 
                 dbcpGetDelegate = dbcpConnectionClass.getMethod("getInnermostDelegate");
             }
