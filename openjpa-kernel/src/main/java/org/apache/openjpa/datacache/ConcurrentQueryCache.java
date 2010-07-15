@@ -95,6 +95,12 @@ public class ConcurrentQueryCache
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
         _cache = newCacheMap();
+        if (_cacheSize != Integer.MIN_VALUE) {
+            _cache.setCacheSize(_cacheSize);
+        }
+        if (_softRefs != Integer.MIN_VALUE) {
+            _cache.setSoftReferenceSize(_softRefs);
+        }
     }
 
     public void writeLock() {
@@ -112,12 +118,7 @@ public class ConcurrentQueryCache
      */
     protected CacheMap newCacheMap() {
         CacheMap res = new CacheMap(_lru);
-        if (_cacheSize != Integer.MIN_VALUE) {
-            res.setCacheSize(_cacheSize);
-        }
-        if (_softRefs != Integer.MIN_VALUE) {
-            res.setSoftReferenceSize(_softRefs);
-        }
+        
         return res;
     }
 

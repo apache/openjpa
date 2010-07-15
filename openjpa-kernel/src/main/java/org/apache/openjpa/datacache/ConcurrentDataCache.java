@@ -95,7 +95,14 @@ public class ConcurrentDataCache
     public void initialize(DataCacheManager mgr) {
         super.initialize(mgr);
         conf.getRemoteCommitEventManager().addInternalListener(this);
+        // Wait to instantiate _cache so that we know the proper value of _cache
         _cache = newCacheMap();
+        if (_cacheSize != Integer.MIN_VALUE) {
+            _cache.setCacheSize(_cacheSize);
+        }
+        if (_softRefs != Integer.MIN_VALUE) {
+            _cache.setSoftReferenceSize(_softRefs);
+        }
     }
 
     public void unpinAll(Class<?> cls, boolean subs) {
@@ -122,12 +129,7 @@ public class ConcurrentDataCache
                 keyRemoved(key, expired);
             }
         };
-        if (_cacheSize != Integer.MIN_VALUE) {
-            res.setCacheSize(_cacheSize);
-        }
-        if (_softRefs != Integer.MIN_VALUE) {
-            res.setSoftReferenceSize(_softRefs);
-        }
+        
         return res;
     }
 
