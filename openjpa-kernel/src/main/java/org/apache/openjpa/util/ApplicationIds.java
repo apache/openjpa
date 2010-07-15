@@ -203,6 +203,12 @@ public class ApplicationIds {
                             "!(x instanceof BigInteger)");
                     return new BigIntegerId(meta.getDescribedType(), 
                         (BigInteger)val);
+                case JavaTypes.BOOLEAN:
+                case JavaTypes.BOOLEAN_OBJ:
+                    if (!convert && !(val instanceof Boolean))
+                        throw new ClassCastException("!(x instanceof Boolean)");
+                    return new BooleanId(meta.getDescribedType(), 
+                        val == null ? false : (Boolean)val);
                 default:
                     throw new InternalException();
             }

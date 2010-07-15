@@ -52,6 +52,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
+import org.apache.openjpa.util.BooleanId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DateId;
@@ -530,6 +531,10 @@ public class ClassMetaData
                 break;
             case JavaTypes.BIGINTEGER:
                 _objectId = BigIntegerId.class;
+                break;
+            case JavaTypes.BOOLEAN:
+            case JavaTypes.BOOLEAN_OBJ:
+                _objectId = BooleanId.class;
                 break;
         }
         return _objectId;
