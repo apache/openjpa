@@ -214,12 +214,10 @@ public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager
             try {
                 stmnt = ConcreteClassGenerator.
                     newInstance(eventPreparedStatementImpl,
-                        JDBCEventConnectionDecorator.class, 
                         JDBCEventConnectionDecorator.this,
-                        PreparedStatement.class,
                         super.prepareStatement(sql, rsType, rsConcur, false),
-                        EventConnection.class, EventConnection.this,
-                        String.class, sql);
+                        EventConnection.this,
+                        sql);
             } finally {
                 fireEvent(getDelegate(), JDBCEvent.AFTER_PREPARE_STATEMENT,
                     before, stmnt, sql);
