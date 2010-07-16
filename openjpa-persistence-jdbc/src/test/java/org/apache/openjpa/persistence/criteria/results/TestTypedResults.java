@@ -35,6 +35,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestTypedResults extends SingleEMFTestCase {
@@ -121,7 +124,12 @@ public class TestTypedResults extends SingleEMFTestCase {
         List<Order> typedCriteriaResults = typedCriteriaQuery.getResultList();
         assertEquals(N_ORDERS / 2, typedCriteriaResults.size());
 
-        Query nativeQ = em.createNativeQuery("SELECT * FROM CRIT_RES_ORD o WHERE (o.filled = 1)", Order.class);
+        
+        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        String sql = "SELECT * FROM CRIT_RES_ORD o WHERE (o.filled = 1)";
+        if (dict instanceof PostgresDictionary)
+            sql = "SELECT * FROM CRIT_RES_ORD o WHERE (o.filled = true)";
+        Query nativeQ = em.createNativeQuery(sql, Order.class);
         // Don't suppress warnings.
         List<Order> typedNativeResults = nativeQ.getResultList();
         assertEquals(N_ORDERS / 2, typedNativeResults.size());

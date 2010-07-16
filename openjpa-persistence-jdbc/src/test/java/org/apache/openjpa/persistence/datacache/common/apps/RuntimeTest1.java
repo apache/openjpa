@@ -31,6 +31,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -38,6 +39,7 @@ import javax.persistence.TemporalType;
  * Used in testing; should be enhanced.
  */
 @Entity
+@Table(name="DATART1")
 @DiscriminatorValue("dataRt1")
 public class RuntimeTest1
     implements Serializable {
