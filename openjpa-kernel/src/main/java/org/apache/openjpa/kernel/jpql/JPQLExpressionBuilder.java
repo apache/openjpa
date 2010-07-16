@@ -1287,7 +1287,12 @@ public class JPQLExpressionBuilder
                 if (node.children.length == 3) {
                     val1 = getValue(child(node, 0, 3));
                     val2 = getValue(child(node, 1, 3));
-                    val3 = getValue(child(node, 2, 3));
+                    JPQLNode child3 = child(node, 2, 3);
+                    if (child3.id == JJTINTEGERLITERAL)
+                        val3 = getIntegerValue(child3);
+                    else
+                        val3 = getValue(child3);
+                    
                 } else if (node.children.length == 2) {
                     val1 = getValue(child(node, 0, 2));
                     val2 = getValue(child(node, 1, 2));
@@ -1306,9 +1311,13 @@ public class JPQLExpressionBuilder
                 Value locatePath = getValue(firstChild(node));
                 Value locateSearch = getValue(secondChild(node));
                 Value locateFromIndex = null;
-                if (node.getChildCount() > 2) // optional start index arg
-                    locateFromIndex = getValue(thirdChild(node));
-
+                if (node.getChildCount() > 2) { // optional start index arg
+                    JPQLNode child3 = thirdChild(node);
+                    if (child3.id == JJTINTEGERLITERAL) {
+                        locateFromIndex = getIntegerValue(child3);
+                    } else
+                        locateFromIndex = getValue(child3);
+                }
                 setImplicitType(locatePath, TYPE_STRING);
                 setImplicitType(locateSearch, TYPE_STRING);
 
@@ -1403,6 +1412,16 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);
         }
+    }
+    
+    private Value getIntegerValue(JPQLNode node) {
+        BigDecimal bigdec = new BigDecimal
+        (node.text.endsWith("l") || node.text.endsWith("L")
+            ? node.text.substring(0, node.text.length() - 1)
+            : node.text).
+        multiply(new BigDecimal(negative(node)));
+        return factory.newLiteral(Integer.valueOf(bigdec.intValue()),
+                Literal.TYPE_NUMBER);        
     }
     
     /**
