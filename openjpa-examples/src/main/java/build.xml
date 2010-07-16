@@ -54,6 +54,7 @@ Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
         <exec dir="${basedir}/hellojpa" executable="ant${platform.script.ext}"/>
         <exec dir="${basedir}/embeddables" executable="ant${platform.script.ext}"/>
         <exec dir="${basedir}/relations" executable="ant${platform.script.ext}"/>
+        <exec dir="${basedir}/mapping" executable="ant${platform.script.ext}"/>
         <exec dir="${basedir}/reversemapping" executable="ant${platform.script.ext}"/>
     </target>
 

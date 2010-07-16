@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +28,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -234,6 +237,33 @@ public class Files {
             return new PrintWriter(System.err);
         try {
             return new FileWriter(getFile(file, loader));
+        } catch (IOException ioe) {
+            throw new NestableRuntimeException(ioe);
+        }
+    }
+
+    /**
+     * Return a writer to the stream(stdout or stderr) or file named by the
+     * given string set to the provided charset encoding.
+     *
+     * @see #getOutputStream
+     */
+    public static Writer getWriter(String file, ClassLoader loader, String enc)
+        throws IOException {
+        if (file == null)
+            return null;
+        if (enc == null) {
+            // call the non-encoded version of the method
+            return getWriter(file, loader);
+        }
+
+        try {
+            if ("stdout".equals(file))
+                return new PrintWriter(new OutputStreamWriter(System.out, enc));
+            else if ("stderr".equals(file))
+                return new PrintWriter(new OutputStreamWriter(System.err, enc));
+            else
+                return new BufferedWriter(new OutputStreamWriter(getOutputStream(file, loader), enc));
         } catch (IOException ioe) {
             throw new NestableRuntimeException(ioe);
         }

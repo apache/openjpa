@@ -25,6 +25,12 @@
         We need to enumerate each persistent class first in the persistence.xml
         See: http://issues.apache.org/jira/browse/OPENJPA-78
     -->
+    <persistence-unit name="mapping" transaction-type="RESOURCE_LOCAL">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>mapping.BuildSchemaPC</class>
+        <class>mapping.BuildUTF8SchemaPC</class>
+    </persistence-unit>
+    
     <persistence-unit name="none" transaction-type="RESOURCE_LOCAL">
         <mapping-file>reversemapping/orm.xml</mapping-file>
         <class>hellojpa.Message</class>

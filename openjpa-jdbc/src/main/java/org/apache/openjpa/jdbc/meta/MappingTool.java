@@ -456,10 +456,11 @@ public class MappingTool
         record(null);
     }
     
-    private void record(MappingTool.Flags flags) {
+    public void record(MappingTool.Flags flags) {
         MappingRepository repos = getRepository();
         MetaDataFactory io = repos.getMetaDataFactory();
         ClassMapping[] mappings;
+        
         if (!ACTION_DROP.equals(_action))
             mappings = repos.getMappings();
         else if (_dropMap != null)
@@ -837,6 +838,10 @@ public class MappingTool
      * <li><i>-sqlFile/-sql &lt;stdout | output file or resource&gt;</i>: Use
      * this option to write the planned schema changes as a SQL
      * script rather than modifying the data store.</li>
+     * <li><i>-sqlEncode/-se &lt;encoding&gt;</i>: Use
+     * this option with the <code>-sqlFile</code> flag to write the SQL script
+     * in a different Java character set encoding than the default JVM locale,
+     * such as <code>UTF-8</code>.</li>
      * <li><i>-dropTables/-dt &lt;true/t | false/f&gt;</i>: Corresponds to the
      * same-named option in the {@link SchemaTool}.</li>
      * <li><i>-dropSequences/-dsq &lt;true/t | false/f&gt;</i>: Corresponds
@@ -972,6 +977,7 @@ public class MappingTool
         String fileName = opts.removeProperty("file", "f", null);
         String schemaFileName = opts.removeProperty("schemaFile", "sf", null);
         String sqlFileName = opts.removeProperty("sqlFile", "sql", null);
+        String sqlEncoding = opts.removeProperty("sqlEncode", "se", null);
         String schemas = opts.removeProperty("s");
         if (schemas != null)
             opts.setProperty("schemas", schemas);
@@ -984,7 +990,10 @@ public class MappingTool
         else
             flags.mappingWriter = Files.getWriter(fileName, loader);
         flags.schemaWriter = Files.getWriter(schemaFileName, loader);
-        flags.sqlWriter = Files.getWriter(sqlFileName, loader);
+        if (sqlEncoding != null)
+            flags.sqlWriter = Files.getWriter(sqlFileName, loader, sqlEncoding);
+        else
+            flags.sqlWriter = Files.getWriter(sqlFileName, loader);
 
         return run(conf, args, flags, loader);
     }

@@ -49,6 +49,7 @@ import org.apache.openjpa.util.MultiLoaderClassResolver;
  * <li><code>file</code></li>
  * <li><code>schemaFile</code></li>
  * <li><code>sqlFile</code></li>
+ * <li><code>sqlEncode</code></li>
  * <li><code>tmpClassLoader</code></li>
  * </ul> Of these arguments, only <code>action</code> is required.
  */
@@ -62,6 +63,7 @@ public class MappingToolTask
     protected String file = null;
     protected String schemaFile = null;
     protected String sqlFile = null;
+    protected String sqlEncode = null;
     protected boolean tmpClassLoader = true;
 
     /**
@@ -163,6 +165,13 @@ public class MappingToolTask
     }
 
     /**
+     * Set the output file charset encoding we want the MappingTool to use.
+     */
+    public void setSQLEncode(String sqlEncode) {
+        this.sqlEncode = sqlEncode;
+    }
+
+    /**
      * Set whether this action applies to metadata as well as mappings.
      */
     public void setMeta(boolean meta) {
@@ -197,7 +206,7 @@ public class MappingToolTask
             flags.mappingWriter = Files.getWriter(file, loader);
 
         flags.schemaWriter = Files.getWriter(schemaFile, loader);
-        flags.sqlWriter = Files.getWriter(sqlFile, loader);
+        flags.sqlWriter = Files.getWriter(sqlFile, loader, sqlEncode);
 
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         conf.setClassResolver(resolver);
