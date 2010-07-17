@@ -25,6 +25,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Arguments;
@@ -57,6 +58,8 @@ public class JDBCExpressionFactory
     private final ClassMapping _type;
     private final SelectConstructor _cons = new SelectConstructor();
     private int _getMapValueAlias = 0;
+    
+    private boolean _isBooleanLiteralAsNumeric = true;
 
     /**
      * Constructor. Supply the type we're querying against.
@@ -65,6 +68,10 @@ public class JDBCExpressionFactory
         _type = type;
     }
 
+    public void setBooleanLiteralAsNumeric(boolean isBooleanLiteralAsNumeric) {
+        _isBooleanLiteralAsNumeric = isBooleanLiteralAsNumeric;
+    }
+    
     /**
      * Use to create SQL select.
      */
@@ -504,10 +511,11 @@ public class JDBCExpressionFactory
                 pType == Literal.TYPE_STRING)
                 value.append("'").append(lit.getValue().toString()).append("'");
             else if (pType == Literal.TYPE_BOOLEAN) {
-                if ((Boolean) lit.getValue())
-                    value.append("1");
+                Boolean boolVal = (Boolean)lit.getValue();
+                if (_isBooleanLiteralAsNumeric)
+                    value.append(boolVal ? "1" : "0");
                 else
-                    value.append("0");
+                    value.append(boolVal ? "true" : "false");
             } else if (pType == Literal.TYPE_ENUM) {
                 lit.setRaw(true);
                 return val;

@@ -49,6 +49,7 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -142,7 +143,10 @@ public class JDBCStoreQuery
     }
 
     protected ExpressionFactory getExpressionFactory(ClassMetaData meta) {
-        return new JDBCExpressionFactory((ClassMapping) meta);
+        JDBCExpressionFactory factory = new JDBCExpressionFactory((ClassMapping) meta);
+        if (_store.getDBDictionary() instanceof PostgresDictionary)
+            factory.setBooleanLiteralAsNumeric(false);
+        return factory;
     }
     
     protected ResultObjectProvider executeQuery(Executor ex,
