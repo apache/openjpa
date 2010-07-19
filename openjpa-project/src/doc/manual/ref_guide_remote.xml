@@ -97,7 +97,7 @@ The extended
 explicitly detach objects at any time.
             </para>
 <programlisting>
-public Object detachCopy(Object pc):
+public Object detach(Object pc):
 public Object[] detachAll(Object... pcs):
 public Collection detachAll(Collection pcs):
 </programlisting>

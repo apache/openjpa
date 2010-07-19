@@ -224,7 +224,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         throws Exception {
         OpenJPAEntityManager pm1 = getPM(false, false);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
-        Object detached = pm1.detachCopy(pc1);
+        Object detached = pm1.detach(pc1);
         startTx(pm1);
         pc1.setLockGroup0IntField(1);
         pc1.setUnlockedStringField("pm1 changed value");
@@ -259,7 +259,7 @@ public class TestOptimisticLockGroups extends BaseKernelTest {
         throws Exception {
         OpenJPAEntityManager pm1 = getPM(false, false);
         LockGroupPC pc1 = (LockGroupPC) pm1.find(LockGroupPC.class, oid);
-        Object detached = pm1.detachCopy(pc1);
+        Object detached = pm1.detach(pc1);
         startTx(pm1);
         pc1.setLockGroup0IntField(1);
         endTx(pm1);

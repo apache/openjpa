@@ -104,7 +104,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         assertNotNull("b is null in testDetach", b);
 
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         assertTrue(pm.isDetached(b));
@@ -147,7 +147,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         assertNotNull("b is null in testDetachWithGroups", b);
 
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         assertTrue(pm.isDetached(b));
@@ -186,7 +186,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
     public void testDetachNoOverwrite() {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         b.setBstr("12");
@@ -216,7 +216,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         assertNotNull("b is null in testOptimisticLock", b);
 
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         b.setAint(12);
@@ -251,7 +251,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertNotNull("d is null in testEmbedded", d);
 
         d.getEmbeddedE().getEstr();
-        d = (AttachD) pm.detachCopy(d);
+        d = (AttachD) pm.detach(d);
         endEm(pm);
 
         d.getEmbeddedE().setEstr("E12");
@@ -280,7 +280,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         assertNotNull("d is null in testNullEmbedded", d);
         d.getEmbeddedE().getEstr();
-        d = (AttachD) pm.detachCopy(d);
+        d = (AttachD) pm.detach(d);
         endEm(pm);
 
         d.setEmbeddedE(null);
@@ -310,7 +310,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         assertNotNull("d is null in testNullEmbeddedRelated", d);
 
         d.getEmbeddedE().getEstr();
-        d = (AttachD) pm.detachCopy(d);
+        d = (AttachD) pm.detach(d);
         endEm(pm);
 
         d.getEmbeddedE().setEstr(null);
@@ -337,7 +337,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         OpenJPAEntityManager pm = getPM();
         AttachB b = (AttachB) pm.find(AttachB.class, oid);
         b.getDs();
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         assertEquals(1, b.getDs().size());
@@ -370,7 +370,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         assertNotNull("b is null in doCollectionTest", b);
         b.getDs();
-        b = (AttachB) pm.detachCopy(b);
+        b = (AttachB) pm.detach(b);
         endEm(pm);
 
         assertEquals("b is null in doCollectionTest", 1, b.getDs().size());
@@ -465,7 +465,7 @@ public class TestDetachedStateManager extends BaseKernelTest {
         pc.getRelSet();
         pc.getStringIntMap();
         if (!auto) {
-            pc = (DetachSMPC) pm.detachCopy(pc);
+            pc = (DetachSMPC) pm.detach(pc);
             assertDetachedSM(pc);
         }
         pc = (DetachSMPC) roundtrip(pc, false);

@@ -431,7 +431,7 @@ public class TestFetchPlan extends BaseKernelTest {
         PCCompany company1 =
             (PCCompany) pm.find(PCCompany.class, _rootCompanyId);
 
-        PCCompany company = (PCCompany) pm.detachCopy(company1);
+        PCCompany company = (PCCompany) pm.detach(company1);
         assertTrue("company is equal company1", company != company1);
         Set departments = (Set) PCCompany.reflect(company, "departments");
         assertNotNull("department is null", departments);

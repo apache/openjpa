@@ -437,7 +437,7 @@ public class TestManagedInterfaces extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         ManagedIface pcx = em.find(ManagedIface.class, oid);
-        pc = em.detachCopy(pcx);
+        pc = em.detach(pcx);
         em.close();
 
         assertTrue(em.isDetached(pc));

@@ -531,7 +531,7 @@ public class TestDependentFields2 extends BaseKernelTest {
             assertEquals(2, owner.getDependentMappedList().size());
         else
             assertEquals(2, owner.getDependentInverseKeyList().size());
-        DependentFieldsPC detached = (DependentFieldsPC) pm.detachCopy(owner);
+        DependentFieldsPC detached = (DependentFieldsPC) pm.detach(owner);
         endEm(pm);
 
         if (mapped) {

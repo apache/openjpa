@@ -34,17 +34,9 @@ public interface OpenJPAEntityManagerFactory
     extends EntityManagerFactory, Serializable {
 
     /**
-     * Return properties describing this runtime.
-     * Although the name has changed, this method
-     * returns the same type as the old getProperties method.
-     */
-    public Properties getPropertiesAsProperties();
-
-    /**
      * Returns properties describing this runtime
-     * using new signature to avoid conflict with JPA 2.0 API
     */
-    public Map<String, Object> getProperties();
+    public Properties getProperties();
 
     /**
      * Put the specified key-value pair into the map of user objects.

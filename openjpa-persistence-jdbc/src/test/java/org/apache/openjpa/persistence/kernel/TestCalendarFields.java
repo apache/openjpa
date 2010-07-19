@@ -92,7 +92,7 @@ public class TestCalendarFields extends BaseKernelTest {
         pm = getPM();
         c2 = (CalendarFields) pm.find(CalendarFields.class, id2);
         assertTimeZonesEquals(c1, c2);
-        assertTimeZonesEquals(c1, (CalendarFields) pm.detachCopy(c2));
+        assertTimeZonesEquals(c1, (CalendarFields) pm.detach(c2));
         endEm(pm);
     }
 

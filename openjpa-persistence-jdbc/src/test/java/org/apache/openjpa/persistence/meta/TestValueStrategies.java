@@ -301,8 +301,8 @@ public class TestValueStrategies
         endTx(pm);
         assertEquals(2, pc.getVersion());
         assertEquals(2, pc2.getVersion());
-        ValueStrategyPC detached = (ValueStrategyPC) pm.detachCopy(pc);
-        ValueStrategyPC detached2 = (ValueStrategyPC) pm.detachCopy(pc2);
+        ValueStrategyPC detached = (ValueStrategyPC) pm.detach(pc);
+        ValueStrategyPC detached2 = (ValueStrategyPC) pm.detach(pc2);
         endEm(pm);
 
         // clean attach
