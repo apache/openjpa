@@ -183,8 +183,8 @@
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.PostgresDictionary">
 		<lock>55P03,40P01</lock>
-		<referential-integrity>23000,23502,23503,23505,23514</referential-integrity>
-		<object-exists></object-exists>
+		<referential-integrity>23000,23502,23503,23514</referential-integrity>
+		<object-exists>23505</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>55P03</optimistic>
 		<query>57014</query>
