@@ -117,7 +117,8 @@ public class ValidationUtils {
                 } else {
                     // unexpected, but validation is optional,
                     // so just log it as a warning
-                    log.warn(_loc.get("vlem-creation-warn", e.getMessage()));
+                    String msg = e.getMessage();
+                    log.warn(_loc.get("vlem-creation-warn", msg == null ? e : msg ));
                     return brc;
                 }
             }
