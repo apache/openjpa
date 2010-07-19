@@ -629,6 +629,8 @@ class Expressions {
                 case BOTH     : spec = null;  break;
                 }
             }
+            Character t = (Character)((Constant<Character>)e2).arg;
+            Constant<String> e2 = new Constant<String>(String.class, t.toString());
             return factory.trim(
                 Expressions.toValue(e1, factory, q), 
                 Expressions.toValue(e2, factory, q), spec);
