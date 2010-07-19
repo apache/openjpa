@@ -38,6 +38,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.JavaVendors;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 
@@ -54,7 +56,9 @@ public class InstrumentationFactory {
     private static final String _name = InstrumentationFactory.class.getName();
     private static final Localizer _loc = Localizer.forPackage(
         InstrumentationFactory.class);
-    
+    private static final String IBM_VM_CLASS = "com.ibm.tools.attach.VirtualMachine";
+    private static final String SUN_VM_CLASS = "com.sun.tools.attach.VirtualMachine";
+
     /**
      * This method is not synchronized because when the agent is loaded from
      * getInstrumentation() that method will cause agentmain(..) to be called.
@@ -80,7 +84,11 @@ public class InstrumentationFactory {
      * Exceptions are encountered.
      */
     public static synchronized Instrumentation getInstrumentation(final Log log) {
-        if (_inst != null || !_dynamicallyInstall)
+        if (log.isTraceEnabled() == true) {
+            log.trace(InstrumentationFactory.class.getName() + "getInstrumentation() _disabled:" + " _inst:" + _inst
+                + "_dynamicallyInstall:" + _dynamicallyInstall);
+        }
+        if ( _inst != null || !_dynamicallyInstall)
             return _inst;
 
         // dynamic loading of the agent is only available in JDK 1.6+
@@ -100,14 +108,19 @@ public class InstrumentationFactory {
                 } catch (Throwable t) {
                     return null;
                 }
-                
-                // If we can't find the tools.jar, we can't load the agent.
-                File toolsJar = findToolsJar(log);
-                if (toolsJar == null) {
-                    return null;
+                boolean ibm = JavaVendors.isIBM();
+                File toolsJar = null;
+                // When running on IBM, the attach api classes are packaged in vm.jar which is a part
+                // of the default vm classpath.
+                if (ibm == false) {
+                    // If we can't find the tools.jar and we're not on IBM we can't load the agent. 
+                    toolsJar = findToolsJar(log);
+                    if (toolsJar == null) {
+                        return null;
+                    }
                 }
 
-                Class<?> vmClass = loadVMClass(toolsJar, log);
+                Class<?> vmClass = loadVMClass(toolsJar, log, ibm);
                 if (vmClass == null) {
                     return null;
                 }
@@ -305,19 +318,25 @@ public class InstrumentationFactory {
     }
 
     /**
-     * This private method will create a new classloader and attempt to load the
-     * com.sun.tools.attach.VirtualMachine class from the provided toolsJar
-     * file.
+     * If <b>ibm</b> is false, this private method will create a new URLClassLoader and attempt to load the
+     * com.sun.tools.attach.VirtualMachine class from the provided toolsJar file. 
      * 
-     * @return com.sun.tools.attach.VirtualMachine class <br>
+     * <p>
+     * If <b>ibm</b> is true, this private method will ignore the toolsJar parameter and load the 
+     * com.ibm.tools.attach.VirtualMachine class. 
+     * 
+     * 
+     * @return The AttachAPI VirtualMachine class <br>
      *         or null if something unexpected happened.
      */
-    private static Class<?> loadVMClass(File toolsJar, Log log) {
+    private static Class<?> loadVMClass(File toolsJar, Log log, boolean ibm) {
         try {
-            URLClassLoader loader =
-                new URLClassLoader(new URL[] { toolsJar.toURI().toURL() },
-                    Thread.currentThread().getContextClassLoader());
-            return loader.loadClass("com.sun.tools.attach.VirtualMachine");
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            String cls = (ibm == true) ? IBM_VM_CLASS : SUN_VM_CLASS;
+            if (ibm == false) {
+                loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
+            }
+            return loader.loadClass(cls);
         } catch (Exception e) {
             if (log.isTraceEnabled()) {
                 log.trace(_name
