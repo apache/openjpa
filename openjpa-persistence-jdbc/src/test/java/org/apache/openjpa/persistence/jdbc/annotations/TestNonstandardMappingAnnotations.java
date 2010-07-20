@@ -31,6 +31,7 @@ import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.ClassNameDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -211,6 +212,9 @@ public class TestNonstandardMappingAnnotations
     }
 
     public void testInsertAndRetrieve() {
+        if (_dict instanceof PostgresDictionary) 
+            return;
+        
         NonstandardMappingEntity pc = new NonstandardMappingEntity();
         pc.getSuperCollection().add("super");
         pc.setCustom(new Point(1, 2));

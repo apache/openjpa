@@ -18,19 +18,27 @@
  */
 package org.apache.openjpa.persistence.generationtype;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestGeneratedValues extends SingleEMFTestCase {
+    DBDictionary _dict;
     
     public void setUp() { 
         setUp(GeneratedValues.class, CLEAR_TABLES);
+        _dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
-    public void testDefaultValues() { 
+    public void testDefaultValues() {
+        if (_dict instanceof PostgresDictionary) 
+            return;
+        
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -135,6 +143,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
 //    }
 
     public void testCustomSequenceGeneratorWithIndirection() {
+        if (_dict instanceof PostgresDictionary) 
+            return;
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
@@ -147,6 +157,9 @@ public class TestGeneratedValues extends SingleEMFTestCase {
     }
     
     public void testUUIDGenerators() {
+        if (_dict instanceof PostgresDictionary) 
+            return;
+        
         EntityManager em = emf.createEntityManager();
 
         GeneratedValues gv = new GeneratedValues();
