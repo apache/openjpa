@@ -833,6 +833,23 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
+    
+    /**
+     * Return a PrivilegeAction object for System.getProperty().
+     * 
+     * Requires security policy:
+     *   'permission java.util.PropertyPermission "read";'
+     *   
+     * @return String
+     */
+    public static final PrivilegedAction<String> getPropertyAction(
+        final String name, final String def) {
+        return new PrivilegedAction<String>() {
+            public String run() {
+                return System.getProperty(name, def);
+            }
+        };
+    }
 
     /**
      * Return a PrivilegeAction object for Thread.currentThread

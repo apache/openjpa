@@ -56,8 +56,6 @@ public class InstrumentationFactory {
     private static final String _name = InstrumentationFactory.class.getName();
     private static final Localizer _loc = Localizer.forPackage(
         InstrumentationFactory.class);
-    private static final String IBM_VM_CLASS = "com.ibm.tools.attach.VirtualMachine";
-    private static final String SUN_VM_CLASS = "com.sun.tools.attach.VirtualMachine";
 
     /**
      * This method is not synchronized because when the agent is loaded from
@@ -108,11 +106,11 @@ public class InstrumentationFactory {
                 } catch (Throwable t) {
                     return null;
                 }
-                boolean ibm = JavaVendors.isIBM();
+                JavaVendors vendor = JavaVendors.getCurrentVendor();                
                 File toolsJar = null;
                 // When running on IBM, the attach api classes are packaged in vm.jar which is a part
                 // of the default vm classpath.
-                if (ibm == false) {
+                if (vendor.isIBM() == false) {
                     // If we can't find the tools.jar and we're not on IBM we can't load the agent. 
                     toolsJar = findToolsJar(log);
                     if (toolsJar == null) {
@@ -120,7 +118,7 @@ public class InstrumentationFactory {
                     }
                 }
 
-                Class<?> vmClass = loadVMClass(toolsJar, log, ibm);
+                Class<?> vmClass = loadVMClass(toolsJar, log, vendor);
                 if (vmClass == null) {
                     return null;
                 }
@@ -165,7 +163,8 @@ public class InstrumentationFactory {
         writer
             .println("Agent-Class: " + InstrumentationFactory.class.getName());
         writer.println("Can-Redefine-Classes: true");
-        writer.println("Can-Retransform-Classes: true");
+        // IBM doesn't support retransform
+        writer.println("Can-Retransform-Classes: " + Boolean.toString(JavaVendors.getCurrentVendor().isIBM() == false));
 
         writer.close();
 
@@ -230,7 +229,7 @@ public class InstrumentationFactory {
         // jar *should* be the same location as our agent.
         CodeSource cs =
             InstrumentationFactory.class.getProtectionDomain().getCodeSource();
-        if (cs != null) {
+        if (cs != null) {   
             URL loc = cs.getLocation();
             if(loc!=null){
                 agentJarFile = new File(loc.getFile());
@@ -298,8 +297,7 @@ public class InstrumentationFactory {
             // ### this feature, but in an implementation-dependent way
             Object vm =
                 vmClass.getMethod("attach", new Class<?>[] { String.class })
-                    .invoke(null, new String[] { pid });
-
+                    .invoke(null, new Object[] { pid });
             // now deploy the actual agent, which will wind up calling
             // agentmain()
             vmClass.getMethod("loadAgent", new Class[] { String.class })
@@ -329,11 +327,11 @@ public class InstrumentationFactory {
      * @return The AttachAPI VirtualMachine class <br>
      *         or null if something unexpected happened.
      */
-    private static Class<?> loadVMClass(File toolsJar, Log log, boolean ibm) {
+    private static Class<?> loadVMClass(File toolsJar, Log log, JavaVendors vendor) {
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            String cls = (ibm == true) ? IBM_VM_CLASS : SUN_VM_CLASS;
-            if (ibm == false) {
+            String cls = vendor.getVirtualMachineClassName();
+            if (vendor.isIBM() == false) {
                 loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
             }
             return loader.loadClass(cls);

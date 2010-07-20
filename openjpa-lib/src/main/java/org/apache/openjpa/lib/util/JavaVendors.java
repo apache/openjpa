@@ -22,39 +22,53 @@ import java.security.AccessController;
 
 /**
  * Utilities for dealing with different Java vendors.
- * 
  */
-public class JavaVendors {
-
-    static public final int VENDOR;
-
-    static public final int OTHER = 0;
-    static public final int SUN = 1;
-    static public final int IBM = 2;
+public enum JavaVendors {
+    IBM("com.ibm.tools.attach.VirtualMachine"), SUN("com.sun.tools.attach.VirtualMachine"),
+    // When in doubt, try the Sun implementation.
+    OTHER("com.sun.tools.attach.VirtualMachine");
 
     static {
-        String vendor = AccessController.doPrivileged(J2DoPrivHelper.getPropertyAction("java.vendor"));
-
-        if (vendor.toUpperCase().contains("SUN MICROSYSTEMS")) {
-            VENDOR = SUN;
-        } else if (vendor.toUpperCase().contains("IBM")) {
-            VENDOR = IBM;
+        String vendor =
+            AccessController.doPrivileged(J2DoPrivHelper.getPropertyAction("java.vendor", "")).toUpperCase();
+        if (vendor.contains("SUN MICROSYSTEMS")) {
+            _vendor = SUN;
+        } else if (vendor.contains("IBM")) {
+            _vendor = IBM;
         } else {
-            VENDOR = OTHER;
+            _vendor = OTHER;
         }
+    }
+    
+    private static final JavaVendors _vendor;
+    private String _virtualMachineClass = null;
+    
+    private JavaVendors(String vmClass) {
+        _virtualMachineClass = vmClass;
     }
 
     /**
+     * This static worker method returns the current Vendor.
+     */
+    public static JavaVendors getCurrentVendor() {
+        return _vendor;
+    }
+    
+    /**
      * This static worker method returns <b>true</b> if the current implementation is IBM.
      */
-    public static boolean isIBM() {
-        return VENDOR == IBM;
+    public boolean isIBM() {
+        return _vendor == IBM;
     }
 
     /**
      * This static worker method returns <b>true</b> if the current implementation is Sun.
      */
-    public static boolean isSun() {
-        return VENDOR == SUN;
+    public boolean isSun() {
+        return _vendor == SUN;
+    }
+    
+    public String getVirtualMachineClassName() {
+        return _virtualMachineClass;
     }
 }
