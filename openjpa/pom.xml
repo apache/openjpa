@@ -137,7 +137,7 @@
                         <Bundle-Activator>org.apache.openjpa.persistence.osgi.PersistenceActivator</Bundle-Activator>
                         <Private-Package />
                         <Export-Package>org.apache.openjpa.*;version=${project.version}</Export-Package>
-                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;version="[1.1.0,1.2)";resolution:=optional,javax.transaction.*;version="[1.1.0,1.2)";resolution:=optional,javax.validation.*;version="[1.0.0,1.1)";resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,javax.persistence.*;version="[2.0.0,2.1)",*</Import-Package>
+                        <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,org.slf4j.*;resolution:=optional,org.apache.commons.logging.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;version="[1.1.0,1.2)";resolution:=optional,javax.transaction.*;version="[1.1.0,1.2)";resolution:=optional,javax.validation.*;version="[1.0.0,1.1)";resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,javax.persistence.*;version="[1.1.0,2.1)",*</Import-Package>
                         <!-- Eclipse metadata -->
                         <Eclipse-Autostart>false</Eclipse-Autostart>
                         <Bundle-ClassPath>.</Bundle-ClassPath>

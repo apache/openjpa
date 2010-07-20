@@ -55,13 +55,6 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <!-- remove commons-logging depend during SLF4J testing -->
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
