@@ -160,6 +160,10 @@
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
                 <connection.password>${openjpa.postgresql.password}</connection.password>
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxActive>20</dbcp.maxActive>
             </properties>
         </profile>
 
