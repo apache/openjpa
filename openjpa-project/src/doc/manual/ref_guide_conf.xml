@@ -2296,7 +2296,8 @@ for an object lock before throwing an exception, or -1 for no limit. See
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>openjpa</literal>,
-<literal>commons</literal>, <literal>log4j</literal>, <literal>none</literal>
+<literal>commons</literal>, <literal>log4j</literal>, <literal>slf4j</literal>,
+<literal>none</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see

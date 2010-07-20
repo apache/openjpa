@@ -38,6 +38,7 @@
     <modules>
         <module>daytrader</module>
         <module>examples</module>
+        <module>slf4j</module>
         <module>tck</module>
         <module>validation</module>
     </modules>

@@ -37,9 +37,10 @@ behavior. OpenJPA provides a flexible logging system that integrates with many
 existing runtime systems, such as application servers and servlet runners.
     </para>
     <para>
-There are four built-in logging plugins: a
+There are five built-in logging plugins: a
 <link linkend="ref_guide_logging_openjpa">default logging framework</link> that
 covers most needs, a <link linkend="ref_guide_logging_log4j"> Log4J</link>
+delegate, a <link linkend="ref_guide_logging_slf4j"> SLF4J</link>
 delegate, an <link linkend="ref_guide_logging_commons"> Apache Commons Logging
 </link> delegate, and a <link linkend="ref_guide_logging_noop">no-op</link>
 implementation for disabling logging.
@@ -502,6 +503,31 @@ openjpa.jdbc.Schema.level=INFO
 </programlisting>
             </example>
         </section>
+    </section>
+    <section id="ref_guide_logging_slf4j">
+        <title>
+            SLF4J
+        </title>
+        <indexterm zone="ref_guide_logging_slf4j">
+            <primary>
+                logging
+            </primary>
+            <secondary>
+                SLF4j
+            </secondary>
+        </indexterm>
+        <para>
+When <literal>openjpa.Log</literal> is set to <literal>slf4j</literal>, OpenJPA
+will delegate to SLF4J API for logging, which provides several adapters or
+a simple logging mechanism. For further details on logging adapters and
+configuring SLF4J, please see the
+<ulink url="http://www.slf4j.org/manual.html">SLF4J website</ulink>.
+        </para>
+        <para>
+Note, as SLF4J does not provide a <literal>FATAL</literal> log level the
+<literal>SLF4JLogFactory</literal> will map it to the <literal>ERROR</literal>
+log level.
+        </para>
     </section>
     <section id="ref_guide_logging_custom">
         <title>
