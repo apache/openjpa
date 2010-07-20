@@ -52,7 +52,7 @@ public class TimestampVersionStrategy
     public Map getBulkUpdateValues() {
         Column[] cols = vers.getColumns();
         Map map = new HashMap(cols.length);
-        Date d = new Date();
+        Object d = nextVersion(null);
         for (int i = 0; i < cols.length; i++)
             map.put(cols[i], d);
         return map;
