@@ -94,6 +94,7 @@
                 <include>commons-lang:commons-lang</include>
                 <include>commons-collections:commons-collections</include>
                 <include>commons-pool:commons-pool</include>
+                <include>commons-logging:commons-logging</include>
 
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jpa_2.0_spec</include>
