@@ -1708,10 +1708,11 @@ public class XMLPersistenceMetaDataParser
         }
         LockModeType lmt = LockModeType.valueOf(lockModeString);
         String lm = _conf.getLockManager();
+        boolean optimistic = _conf.getOptimistic();
         if (lm != null) {
             lm = lm.toLowerCase();
             if (lm.contains("pessimistic")) {
-                if (lmt == LockModeType.NONE) {
+                if (lmt == LockModeType.NONE && !optimistic) {
                     if (log != null && log.isWarnEnabled() == true) {
                         log.warn(_loc.get("override-named-query-lock-mode", new String[] { "xml", queryName,
                             _cls.getName() }));
@@ -1723,6 +1724,7 @@ public class XMLPersistenceMetaDataParser
 
         return lmt;
     }
+
 
     protected void endNamedQuery()
         throws SAXException {
