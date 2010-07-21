@@ -16,46 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.util;
+package org.apache.openjpa.persistence.identity;
 
-import org.apache.commons.lang.StringUtils;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-/**
- * {@link OpenJPAId} subclass appropriate for String fields.
- *
- * @author Steve Kim
- */
-public final class StringId extends OpenJPAId {
-
-    private final String key;
-
-    public StringId(Class<?> cls, String key) {
-        super(cls);
-        this.key = (key == null) ? "" : StringUtils.stripEnd(key, null);
-    }
-
-    public StringId(Class<?> cls, String key, boolean subs) {
-        super(cls, subs);
-        this.key = (key == null) ? "" : StringUtils.stripEnd(key, null);
-    }
+@Entity
+public class StringIdEntity {
+    @Id
+    @Column(length = 12)
+    private String id;
+    private int data;
 
     public String getId() {
-        return key;
+        return id;
     }
 
-    public Object getIdObject() {
-        return key;
+    public void setId(String id) {
+        this.id = id;
     }
 
+    public int getData() {
+        return data;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    @Override
     public String toString() {
-        return key;
-    }
-
-    protected int idHash() {
-        return key.hashCode();
-    }
-
-    protected boolean idEquals(OpenJPAId o) {
-        return key.equals(((StringId) o).key);
+        return "StringIdEntity [data=" + data + ", id='" + id + "']";
     }
 }
