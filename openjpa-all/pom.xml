@@ -98,13 +98,18 @@
 
     <dependencies>
         <!--
-            Only include openjpa.jar here, as the maven-shade-plugin will
+            Start with openjpa.jar and let the maven-shade-plugin
             determine the transitive dependencies to include from it.
         -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>${pom.version}</version>
+        </dependency>
+        <!-- include commons-logging -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
         </dependency>
     </dependencies>
 </project>
