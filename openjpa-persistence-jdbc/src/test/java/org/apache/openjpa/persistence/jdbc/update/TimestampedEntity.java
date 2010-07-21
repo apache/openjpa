@@ -34,7 +34,7 @@ import javax.persistence.Version;
  *
  */
 @Entity
-@Table(name="TSENTITY")
+@Table(name="TSENTITY1")
 public class TimestampedEntity {
 	@Id
 	@GeneratedValue
