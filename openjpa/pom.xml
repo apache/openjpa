@@ -22,15 +22,18 @@
     the release plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjpa</artifactId>
-    <packaging>bundle</packaging>
-    <name>OpenJPA Aggregate Jar</name>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
     </parent>
+
+    <artifactId>openjpa</artifactId>
+    <packaging>bundle</packaging>
+    <name>OpenJPA Aggregate Jar</name>
 
     <build>
         <plugins>
@@ -48,6 +51,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Create our aggregate JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -86,40 +90,7 @@
                                  org.apache.openjpa.kernel.exps.ExpressionParser
                                 -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                                <!-- Need to add some MANIFEST.MF metadata -->
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
-                                        <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
-                                        <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
-                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                                        <Implementation-Title>Apache OpenJPA Aggregate JAR</Implementation-Title>
-                                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
-                                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                                        <Specification-Version>2.0</Specification-Version>
-                                    </manifestEntries>
-                                </transformer>
                             </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- extract the shaded jar so a bundle can be created -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <unzip src="${project.build.directory}/${pom.artifactId}-${pom.version}.jar" dest="${project.build.directory}/classes" />
-                            </tasks>
                         </configuration>
                     </execution>
                 </executions>
@@ -132,15 +103,21 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <!-- OpenJPA metadata -->
+                        <Main-Class>org.apache.openjpa.conf.OpenJPAVersion</Main-Class>
+                        <Premain-Class>org.apache.openjpa.enhance.PCEnhancerAgent</Premain-Class>
+                        <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
+                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                        <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                        <Specification-Title>JSR-317 Java Persistence</Specification-Title>
+                        <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                        <Specification-Version>2.0</Specification-Version>
                         <!-- OSGi Bundle Metadata -->
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         <Bundle-Activator>org.apache.openjpa.persistence.osgi.PersistenceActivator</Bundle-Activator>
                         <Private-Package />
                         <Export-Package>org.apache.openjpa.*;version=${project.version}</Export-Package>
                         <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,org.slf4j.*;resolution:=optional,org.apache.commons.logging.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;version="[1.1.0,1.2)";resolution:=optional,javax.transaction.*;version="[1.1.0,1.2)";resolution:=optional,javax.validation.*;version="[1.0.0,1.1)";resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,javax.persistence.*;version="[1.1.0,2.1)",*</Import-Package>
-                        <!-- Eclipse metadata -->
-                        <Eclipse-Autostart>false</Eclipse-Autostart>
-                        <Bundle-ClassPath>.</Bundle-ClassPath>
                     </instructions>
                 </configuration>
             </plugin>
