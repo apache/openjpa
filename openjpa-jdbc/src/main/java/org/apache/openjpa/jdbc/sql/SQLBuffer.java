@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.exps.CollectionParam;
 import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Sequence;
@@ -64,8 +65,9 @@ public final class SQLBuffer
     private List _cols = null;
     
     // Even element refers to an index of the _params list
-    // Odd element refers to the user parameter key
+    // Odd element refers to the user parameter
     private List _userIndex = null;
+    private List _userParams = null;
     
     /**
      * Default constructor.
@@ -142,6 +144,16 @@ public final class SQLBuffer
 
             if (paramIndex == _params.size()) {
                 _params.addAll(buf._params);
+                if (buf._userParams != null) {
+                    if (_userParams == null)
+                        _userParams = new ArrayList();
+                   _userParams.addAll(paramIndex, buf._userParams);
+                }
+                if (buf._userIndex != null) {
+                    if (_userIndex == null)
+                        _userIndex = new ArrayList();
+                    _userIndex.addAll(buf._userIndex);
+                }
                 if (buf._cols != null)
                     _cols.addAll(buf._cols);
                 else if (_cols != null)
@@ -149,6 +161,18 @@ public final class SQLBuffer
                         _cols.add(null);
             } else {
                 _params.addAll(paramIndex, buf._params);
+                if ( buf._userParams != null) {
+                    if (_userParams == null)
+                        _userParams = new ArrayList();
+                    _userParams.addAll(paramIndex, buf._userParams);
+                }
+                 if (buf._userIndex != null) {
+                     if (_userIndex == null) {
+                         _userIndex = new ArrayList();
+                         _userIndex.addAll(buf._userIndex);
+                     } else
+                         _userIndex.addAll(paramIndex*2, buf._userIndex);
+                 }
                 if (buf._cols != null)
                     _cols.addAll(paramIndex, buf._cols);
                 else if (_cols != null)
@@ -156,30 +180,12 @@ public final class SQLBuffer
                         _cols.add(paramIndex, null);
             }
         }
-        
-        // adding user parameters from another buffer to this buffer
-        // this buffer's user parameter index gets modified
-        if (buf._userIndex == null && this._userIndex == null) {
-            // do nothing
-        } else if (buf._userIndex != null && this._userIndex == null) {
-            // copy the other buffers data
-            this._userIndex = new ArrayList(buf._userIndex);
-        } else if (buf._userIndex == null && this._userIndex != null) {
-            // nothing to add from the other buffer
-        } else { // both has data. 
-            // modify this buffer's user parameter index
-            int otherSize = buf._userIndex.size()/2;
+
+        if (_userIndex != null) {
+            // fix up user parameter index
             for (int i = 0; i < _userIndex.size(); i+=2) {
-                int newIndex = ((Integer)_userIndex.get(i)).intValue() + otherSize;
-                _userIndex.set(i, newIndex);
+                _userIndex.set(i, _userParams.indexOf(_userIndex.get(i+1)));
             }
-            // append the other buffer's user parameters to this one
-            for (int i = 0; i < buf._userIndex.size(); i+=2) {
-                Object otherIndex = buf._userIndex.get(i);
-                Object otherParam = buf._userIndex.get(i+1);
-                _userIndex.add(otherIndex);
-                _userIndex.add(otherParam);
-            }            
         }
     }
     
@@ -293,6 +299,8 @@ public final class SQLBuffer
             // we get the first non-null col
             if (_params == null)
                 _params = new ArrayList();
+            if (_userParams == null)
+                _userParams = new ArrayList();
             if (col != null && _cols == null) {
                 _cols = new ArrayList();
                 while (_cols.size() < _params.size())
@@ -301,12 +309,18 @@ public final class SQLBuffer
 
             _params.add(o);
             if (userParam != null) {
+                Object param = userParam;
+                if (userParam instanceof CollectionParam)
+                    param = ((CollectionParam) userParam).clone();
+                _userParams.add(param);
                 if (_userIndex == null)
                     _userIndex = new ArrayList();
                 int index = _params.size()-1;
                 _userIndex.add(index);
-                _userIndex.add(userParam.getParameterKey());
+                _userIndex.add(param);
             }
+            else
+                _userParams.add(o);
             if (_cols != null)
                 _cols.add(col);
         }

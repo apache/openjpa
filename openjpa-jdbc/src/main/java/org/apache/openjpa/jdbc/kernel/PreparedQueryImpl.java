@@ -42,6 +42,7 @@ import org.apache.openjpa.kernel.QueryImpl;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache.Exclusion;
+import org.apache.openjpa.kernel.exps.Parameter;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
@@ -406,7 +407,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     void setUserParameterPositions(List list) {
         _userParamPositions = new HashMap<Object, int[]>();
         for (int i = 1; list != null && i < list.size(); i += 2) {
-            Object key = list.get(i);
+            Object key = ((Parameter)list.get(i)).getParameterKey();
             int p = (Integer)list.get(i-1);
             int[] positions = _userParamPositions.get(key);
             if (positions == null) {
