@@ -180,7 +180,7 @@ public class PostgresDictionary
         clobTypeName = "TEXT";
         longVarcharTypeName = "TEXT";
         doubleTypeName = "DOUBLE PRECISION";
-        timestampTypeName = "ABSTIME";
+        timestampTypeName = "TIMESTAMP";
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BOOL", "BYTEA", "NAME", "INT8", "INT2", "INT2VECTOR", "INT4",
             "REGPROC", "TEXT", "OID", "TID", "XID", "CID", "OIDVECTOR",
