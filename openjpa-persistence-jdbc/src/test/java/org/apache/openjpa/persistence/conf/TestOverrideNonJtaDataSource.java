@@ -29,7 +29,7 @@ import javax.persistence.RollbackException;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestSwitchConnection extends AbstractPersistenceTestCase {
+public class TestOverrideNonJtaDataSource extends AbstractPersistenceTestCase {
     private String defaultJndiName = "jdbc/mocked";
     private String[] jndiNames = { "jdbc/mocked1" };
 
@@ -48,23 +48,28 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
         init(defaultJndiName);
         init(jndiNames[0]);
     }
-
+    
     protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue) {
         return getEmf(cfPropertyName, cfPropertyValue, false);
     }
-    
+
     protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue, boolean syncMappings) {
         // null out the driver to prevent system properties from taking effect.
-        // do not set connectionFactoryModeManaged - or connectionFactory2 will be used.
-        if(syncMappings) { 
-            return createEMF( 
+        if (syncMappings) {
+            return createEMF(
                 "openjpa.jdbc.SynchronizeMappings", "buildSchema",
                 "openjpa.ConnectionDriverName", "",
-                cfPropertyName,cfPropertyValue);
+                "openjpa.ConnectionFactoryMode", "managed",
+                "openjpa.ConnectionFactoryName", defaultJndiName,  // must have a cf1, to initialize configuration
+                cfPropertyName,cfPropertyValue, 
+                Person.class);
         }
         return createEMF(
-            "openjpa.ConnectionDriverName", "",
-            cfPropertyName,cfPropertyValue);
+            "openjpa.ConnectionDriverName", "", 
+            "openjpa.ConnectionFactoryMode", "managed",
+            "openjpa.ConnectionFactoryName", defaultJndiName, // must have a cf1, to initialize configuration
+            cfPropertyName,cfPropertyValue, 
+            Person.class);
     }
 
     protected EntityManager getEm(EntityManagerFactory emf, String name, String value) {
@@ -80,13 +85,13 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
     public void testConnectionFactoryName() {
         // TODO Disable for non derby.
         // split out so that we can try javax.persistence.jtaDataSource in the future.
-        overridePropertyOnEM("openjpa.ConnectionFactoryName", jndiNames[0]);
+        overridePropertyOnEM("openjpa.ConnectionFactory2Name", jndiNames[0]);
     }
-    
+
     public void testJtaDataSource() {
         // TODO Disable for non derby.
         // split out so that we can try javax.persistence.jtaDataSource in the future.
-        overridePropertyOnEM("javax.persistence.jtaDataSource", jndiNames[0]);
+        overridePropertyOnEM("javax.persistence.nonJtaDataSource", jndiNames[0]);
     }
 
     public void overridePropertyOnEM(String name, String value) {
@@ -150,13 +155,15 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
         // ensure EM creation fails - when provided an invalid JNDI name
         EntityManagerFactory emf = null;
         try {
-            emf = getEmf("openjpa.ConnectionFactoryName", defaultJndiName); 
-            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            emf = getEmf("openjpa.ConnectionFactory2Name", defaultJndiName);
+            getEm(emf, "openjpa.ConnectionFactory2Name", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
+            System.out.println(e);
             assertTrue(e.getMessage().contains("jdbc/NotReal")); // ensure failing JNDI name is in the message
             assertTrue(e.getMessage().contains("EntityManager")); // ensure where the JNDI name came from is in message
         }
     }
 }
+

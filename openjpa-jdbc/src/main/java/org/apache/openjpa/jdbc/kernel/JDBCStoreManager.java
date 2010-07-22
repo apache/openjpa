@@ -169,33 +169,13 @@ public class JDBCStoreManager
     private final DataSource getDataSource(StoreContext ctx) {
         DataSource ds;
 
-        if (useConnectionFactory2(ctx)) {
-            ds = (DataSource) ctx.getConnectionFactory2();
-            if (ds != null) {
-                ds = DataSourceFactory.decorateDataSource(ds, _conf, false);
-            }
-            else {
-                ds = _conf.getDataSource2(ctx);
-            }
-        } else {
-            ds = (DataSource) ctx.getConnectionFactory();
-            if (ds != null) {
-                ds = DataSourceFactory.decorateDataSource(ds, _conf, false);   
-            }
-            else {
-                ds = _conf.getDataSource(ctx);
-            }
+        if(useConnectionFactory2(ctx)) { 
+            ds = _conf.getDataSource2(ctx); 
         }
-        return ds;
-    }
-    
-    private boolean useContextToGetDataSource(StoreContext ctx) { 
-        // configuration check to enable goes here. 
-        if (StringUtils.isBlank(ctx.getConnectionFactoryName()) 
-                && StringUtils.isBlank(ctx.getConnectionFactory2Name())) {
-            return false;
+        else {
+            ds = _conf.getDataSource(ctx);
         }
-        return true;
+        return ds; 
     }
 
     public JDBCConfiguration getConfiguration() {

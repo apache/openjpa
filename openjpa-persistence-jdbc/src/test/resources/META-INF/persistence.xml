@@ -363,6 +363,10 @@
             <property name="openjpa.jdbc.Schema" value="EJB30" />
             -->
         </properties>
+    </persistence-unit>    
+    
+    <persistence-unit name="TestCfSwitching">
+        <class>org.apache.openjpa.persistence.conf.Person</class>
     </persistence-unit>
 
 </persistence>
