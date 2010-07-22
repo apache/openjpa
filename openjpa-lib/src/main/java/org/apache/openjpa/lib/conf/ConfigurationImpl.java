@@ -840,14 +840,7 @@ public class ConfigurationImpl
      * <code>properties</code> value with the name of a resource.
      */
     public void setProperties(String resourceName) throws IOException {
-        String anchor = null;
-        if (resourceName.indexOf("#") != -1)
-        {
-            anchor = resourceName.substring(resourceName.lastIndexOf("#") + 1);
-            resourceName = resourceName.substring(0,
-                resourceName.length() - anchor.length() - 1);
-        }
-        ProductDerivations.load(resourceName, anchor,
+        ProductDerivations.load(resourceName, null, 
             getClass().getClassLoader()).setInto(this);
         _auto = resourceName;
     }
