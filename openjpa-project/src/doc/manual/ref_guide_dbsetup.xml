@@ -370,6 +370,111 @@ properties are outlined in <xref linkend="ref_guide_conf"/>.
 </programlisting>
             </example>
         </section>
+        <section id="ref_guide_dbsetup_setDSatRuntime">
+            <title>Setting the DataSource at runtime</title>
+            <indexterm zone="ref_guide_dbsetup_setDSatRuntime">
+                <primary>connections</primary>
+                <secondary>override configuration</secondary>
+            </indexterm>
+            <para> 
+As mentioned above, the JTA and Non-JTA DataSources may be passed in as configuration properties
+at EntityManagerFactory creation. Either the JPA standard properties (
+<literal>javax.persistence.jtaDataSource</literal>, <literal>java.persistence.nonJtaDataSource</literal>) 
+or their OpenJPA specific equivalents (<literal>openjpa.ConnectionFactoryName</literal>, 
+<literal>openjpa.ConnectionFactory2Name</literal>) may be used. One usecase for this function is to 
+store production connection information in configuration files but override the value when testing. 
+            </para>
+            <para>
+            <example>
+                <programlisting>Map&lt;Object,Object&gt; props = new HashMap&lt;Object,Object&gt;();
+props.put("javax.persistence.jtaDataSource", "jdbc/myDataSource");
+props.put("javax.persistence.nonJtaDataSource", "jdbc/myNonJTADataSource");
+emf = Persistence.createEntityManagerFactory("example", props);</programlisting>
+            </example>
+            </para>
+                <section id="ref_guide_dbsetup_setDSPerEM">
+                <title>Using different datasources for each EntityManager</title> 
+                <para>
+The JPA specification allows the DataSource (ConnectionFactory) to be specified on the 
+EntityManagerFactory.OpenJPA extends this support and allows each EntityManager to override the 
+DataSource from the EntityManagerFactory. It's expected that the EntityManagerFactory will also be 
+configured with a valid jta / nonJta DataSource. The DataSource configured on the 
+EntityManagerFactory will be used to obtain a DBDictionary and (rarely) to gather some information
+about the database in use (e.g. version, JDBC driver version). 
+                </para>
+                <para>
+                    If the EntityManagerFactory is not configured with a valid DataSource there are
+                    a few additional caveats. 
+                    <itemizedlist>
+                        <listitem><para>The <literal>openjpa.DBDictionary</literal> property must be
+                        used to ensure the correct DBDictionary is used.</para></listitem>
+                        <listitem><para>OpenJPA will always attempt to obtain a datasource from JNDI
+                        based on the configuration for the EntityManagerFactory. When a JNDI name is
+                        specified on the EntityManager this lookup happens slightly earlier than 
+                        normal. If the lookup fails the JNDI name provided at EntityManager creation
+                        will be set into the EntityManagerFactory's configuration and used in
+                        subsequent attempts. </para></listitem>
+                    </itemizedlist>
+                </para>
+                <section id="ref_guide_dbsetup_setDSBenefits">
+                    <title>Benefits</title>
+                    <para>
+                    In effect this option allows a single set of entity definitions to be shared 
+                    between multiple database instances or schemas within an instance. This can be
+                    highly beneficial when there are a large number of entity definitions (e.g. >
+                    200), or a large number of databases / schemas in use.
+                    </para> 
+                </section>
+                <section id="ref_guide_dbsetup_setDSLimitations">
+                    <title>Limitations</title>
+                    <para>
+                        <itemizedlist>
+                            <listitem>
+                                <para>The same database type and version must be used by each 
+                                EntityManager. OpenJPA will use the same DBDictionary for each
+                                EntityManager and will make no attempt to alter SQL syntax 
+                                between EntityManager instances. 
+                            </para>
+                            </listitem>
+                            <listitem><para>It is the application's responsibility to ensure 
+                            that the schema is identical on each database.</para></listitem>
+                            <listitem><para>The application may not specify schema names for 
+                            individual entities.</para></listitem>
+                            <listitem>
+                                <para>The DataSource (ConnectionFactory) name may only be 
+                                specified when the EntityManager is created. The datasource 
+                                may not be switched while an EntityManager is in use.
+                                </para>
+                            </listitem>
+                            <listitem><para>The L2 cache (DataCache) should not be used if 
+                            different DataSources are specified for each EntityManager</para>
+                            </listitem>
+                            <listitem><para>SynchronizeMappings should not be used with this 
+                            feature.</para></listitem>
+                            <listitem><para>Table and Sequence generators should not be used 
+                            with this feature.</para></listitem>
+                            <listitem><para>It is not required, but is recommended that the 
+                            <literal>openjpa.DBDictionary</literal> property be specified when 
+                            using this feature</para></listitem> 
+                        </itemizedlist>
+                    </para> 
+                </section>
+                <section id="ref_guide_dbsetup_setDSError">
+                    <title>Error handling</title>
+                    <para>
+                    If a JTA DataSource is not available when the EntityManager is created an 
+                    <link linkend=""><literal>ArgumentException</literal></link> will be thrown.
+                    The EntityManager will not fall back on the JTA DataSource defined in the 
+                    configuration. 
+                    </para> 
+                    <para>
+                    The same logic applies if a Non-JTA DataSource is not available when the 
+                    EntityManager is created. OpenJPA will not fall back to the configured 
+                    non-JTA DataSource.
+                    </para>
+                </section>
+            </section>
+        </section>
     </section>
     <section id="ref_guide_dbsetup_sqlconn">
         <title>
