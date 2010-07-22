@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -39,6 +40,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.MetaDataRepositoryValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -186,6 +188,17 @@ public abstract class AbstractBrokerFactory
         String cf1Name, String cf2Name) {
         try {
             assertOpen();
+            
+            if(StringUtils.isNotEmpty(cf1Name)) {
+                // If the cfName has been set on the broker try looking up now.
+                try { 
+                    _conf.getConnectionFactory();
+                }
+                catch(UserException ue) { 
+                     // try setting the broker's CF into the configuration. 
+                    _conf.setConnectionFactoryName(cf1Name); 
+                }
+            }
             makeReadOnly();
 
             Broker broker = null;

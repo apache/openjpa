@@ -47,6 +47,12 @@ public class Person {
         setId(id);
     }
 
+    public Person(int id, String name) {
+        super();
+        setId(id);
+        setName(name);
+    }
+
     public int getId() {
         return id;
     }

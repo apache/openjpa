@@ -30,6 +30,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.spi.LoadState;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -39,6 +40,7 @@ import org.apache.openjpa.kernel.DelegatingFetchConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.Value;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
@@ -165,6 +167,7 @@ public class EntityManagerFactoryImpl
             props = new HashMap(props);
 
         OpenJPAConfiguration conf = getConfiguration();
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         String user = (String) Configurations.removeProperty("ConnectionUserName", props);
         if (user == null)
             user = conf.getConnectionUserName();
@@ -210,6 +213,10 @@ public class EntityManagerFactoryImpl
             cf2Name = (String) Configurations.removeProperty("ConnectionFactory2Name", props);
         }
         
+        if (log != null && log.isTraceEnabled()) {
+            log.trace("Found ConnectionFactoryName from props: " + cfName);
+        }
+
         Broker broker = _factory.newBroker(user, pass, managed, retainMode, false, cfName, cf2Name);
             
         // add autodetach for close and rollback conditions to the configuration

@@ -55,6 +55,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Default implementation of the {@link JDBCConfiguration} interface.
@@ -91,6 +92,8 @@ public class JDBCConfigurationImpl
     private String firstPass = null;
     private DecoratingDataSource dataSource = null;
     private DecoratingDataSource dataSource2 = null;
+    
+    private static final Localizer _loc = Localizer.forPackage(JDBCConfigurationImpl.class);
 
     /**
      * Default constructor. Attempts to load default properties.
@@ -826,7 +829,7 @@ public class JDBCConfigurationImpl
         Log log = getLog(LOG_JDBC);
         if (ds != null) {
             if (log.isTraceEnabled())
-                log.trace("createConnectionFactory: DataSource:"+ds);
+                log.trace("createConnectionFactory: DataSource:" + ds);
 
             return setupConnectionFactory(ds, false);
         }
@@ -841,15 +844,70 @@ public class JDBCConfigurationImpl
         return setupConnectionFactory(ds, false);
     }
 
-    public DataSource getDataSource(StoreContext ctx) {
-        return getDataSource(ctx, (DataSource) getConnectionFactory());
+    public DataSource getDataSource(StoreContext ctx) {       
+        Log log = getLog(LOG_RUNTIME);
+        DataSource ds = null;
+        
+        if(ctx != null && StringUtils.isNotEmpty(ctx.getConnectionFactoryName())) {
+            ds =  getDataSource(ctx, (DataSource) ctx.getConnectionFactory()); 
+            // fail fast if a cfName has been provided, but was not available in JNDI
+            if (ds == null) {
+                throw new UserException(_loc.get("invalid-datasource", ctx.getConnectionFactoryName())).setFatal(true);
+            }
+            if(! (ds instanceof DecoratingDataSource)) { 
+                ds = DataSourceFactory.decorateDataSource(ds, this, false);
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("Found datasource1: " + ds + " from StoreContext using jndiName: "
+                    + ctx.getConnectionFactory2Name());
+            }
+            return ds; 
+        }
+        else {
+            ds = getDataSource(ctx, (DataSource) getConnectionFactory());
+            if (log.isTraceEnabled()) {
+                log.trace("Found datasource1: " + ds + " from configuration. StoreContext: " + ctx );
+            }
+            return ds; 
+        }
     }
 
     public DataSource getDataSource2(StoreContext ctx) {
-        // if there is no connection factory 2, use the primary factory
-        DataSource ds = (DataSource) getConnectionFactory2();
-        if (ds == null)
+        Log log = getLog(LOG_RUNTIME);
+        DataSource ds = null;
+
+        // Try to obtain from the StoreContext first.
+        if (ctx != null && StringUtils.isNotEmpty(ctx.getConnectionFactory2Name())) {
+            ds = (DataSource) ctx.getConnectionFactory2();
+            if (ds == null) {
+                // fail fast. If the non-jta-data-source is configured on the context we want an immediate error. 
+                throw new UserException(_loc.get("invalid-datasource", ctx.getConnectionFactory2Name())).setFatal(true);
+            }
+            if(! (ds instanceof DecoratingDataSource)) { 
+                ds = DataSourceFactory.decorateDataSource(ds, this, false);
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("Found datasource2: " + ds + " from StoreContext using jndiName: "
+                    + ctx.getConnectionFactory2Name());
+            }
+            return ds;
+        }
+
+        // If not set on context or value from context is not available try cf2 from config
+        else{ 
+            ds = (DataSource) getConnectionFactory2();
+            if (log.isTraceEnabled()) {
+                log.trace("Found datasource 2: "+ ds + " from config. StoreContext: " + ctx);
+            }
+        }
+        
+        // fallback to cf1 / datasource1
+        if (ds == null) {
+            if(log.isTraceEnabled()) { 
+                log.trace("Trying datasource1");
+            }
             return getDataSource(ctx);
+        }
 
         // prefer the global connection 2 auth info if given
         String user = getConnection2UserName();
