@@ -796,4 +796,8 @@ public class InMemoryExpressionFactory
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         throw new AbstractMethodError();
     }
+    
+    public boolean isVerticalType(Value val) {
+        return false;
+    }
 }

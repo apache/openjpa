@@ -496,4 +496,9 @@ public interface ExpressionFactory {
      * Return a value representing the given datastore function with the given arguments.
      */
     public Value newFunction(String functionName, Class<?> resultType, Value... args);
+    
+    /**
+     * Return true if the Value is a Type expression and the Type uses joined table strategy.
+     */
+    public boolean isVerticalType(Value val);
 }

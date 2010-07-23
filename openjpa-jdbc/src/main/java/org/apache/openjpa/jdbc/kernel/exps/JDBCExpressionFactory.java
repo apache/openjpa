@@ -24,8 +24,8 @@ import java.util.Date;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
+import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Arguments;
@@ -573,5 +573,15 @@ public class JDBCExpressionFactory
     
     public Value newFunction(String functionName, Class<?> resultType, Value... args) {
         return new DatastoreFunction(functionName, resultType, newArgumentList(args));
+    }
+    
+    public boolean isVerticalType(Value val) {
+        if (!(val instanceof Type))
+            return false;
+        ClassMapping cm = (ClassMapping)((Type)val).getMetaData();
+        String strat = cm.getMappingInfo().getHierarchyStrategy(); 
+        if (strat != null && strat.equals(VerticalClassStrategy.ALIAS)) 
+            return true;
+        return false;
     }
 }

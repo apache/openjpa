@@ -75,6 +75,14 @@ public class Param
         _idx = idx;
     }
 
+    public ClassMapping getValueMetaData(ExpContext ctx) {
+        Object[] params = ctx.params;
+        if (params[_idx] != null && params[_idx] instanceof Class)
+            return (ClassMapping) ctx.store.getConfiguration().getMetaDataRepositoryInstance().
+                getMetaData((Class) params[_idx], getClass().getClassLoader(), true);
+        return null;
+    }
+
     public Object getValue(Object[] params) {
         return Filters.convert(params[_idx], getType());
     }

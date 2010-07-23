@@ -46,6 +46,8 @@ public class ExpContext {
     public JDBCFetchConfiguration fetch; 
 
     public ClassMapping tpcMeta = null;
+    
+    public boolean isVerticalStrat = false;
 
     public ExpContext() {
     }

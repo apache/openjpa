@@ -18,9 +18,14 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.meta.ClassMetaData;
 
 /**
  * Compares two entity types.
@@ -37,6 +42,31 @@ class NotEqualTypeExpression
         super(val1, val2);
     }
 
+    private ClassMapping getSubClassMapping(Val val1, Val val2, ExpContext ctx) {
+        ClassMapping sub = null;
+        Val val = val1 instanceof Type ? val2 : val1;
+        if (val instanceof TypeLit)
+            sub = (ClassMapping) val.getMetaData();
+        else if (val instanceof Param)
+            sub = ((Param) val).getValueMetaData(ctx);
+        if (sub != null)
+            ctx.isVerticalStrat = sub.isVerticalStrategy();
+        return sub;
+    }
+
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
+            SQLBuffer buf) {
+        Val val1 = getValue1();
+        Val val2 = getValue2();
+        ClassMapping sub = getSubClassMapping(val1, val2, ctx);
+        if (ctx.isVerticalStrat) {
+            appendTo(sel, ctx, (BinaryOpExpState)state, buf, false, false);
+            return;
+        }
+        
+        super.appendTo(sel, ctx, state, buf);
+    }
+    
     public void appendTo(Select sel, ExpContext ctx, BinaryOpExpState bstate, 
         SQLBuffer buf, boolean val1Null, boolean val2Null) {
         if (val1Null && val2Null)
@@ -59,14 +89,19 @@ class NotEqualTypeExpression
             Val val2 = getValue2();
             if (val1.length(sel, ctx, bstate.state1) == 1 
                 && val2.length(sel, ctx, bstate.state2) == 1) {
-                String op = "<>";
-                if (val1 instanceof Type)
-                    if ((ClassMapping) val2.getMetaData() != sel.getTablePerClassMeta())
-                        op = "=";
+                ClassMapping sub = getSubClassMapping(val1, val2, ctx);
+                if (ctx.isVerticalStrat) {
+                    processVerticalTypeAppend(sel, val1, val2, ctx, buf);
+                    return;
+                }
+                    
+                String op;
+                if (sub != sel.getTablePerClassMeta())
+                    op = "=";
                 else
-                    if ((ClassMapping) val1.getMetaData() != sel.getTablePerClassMeta())
-                        op = "=";
-                ctx.store.getDBDictionary().comparison(buf, op,
+                    op = "<>";
+                
+               ctx.store.getDBDictionary().comparison(buf, op,
                     new FilterValueImpl(sel, ctx, bstate.state1, val1),
                     new FilterValueImpl(sel, ctx, bstate.state2, val2));
             } else {
@@ -84,4 +119,33 @@ class NotEqualTypeExpression
             }
         }
     }
+    
+    void processVerticalTypeAppend(Select sel, Val val1, Val val2, ExpContext ctx,  
+            SQLBuffer buf) {
+        ClassMapping sub = getSubClassMapping(val1, val2, ctx);
+        ClassMapping cm1 = (ClassMapping)((val1 instanceof Type) ? val1.getMetaData() :
+            val1.getMetaData());
+        if (sub != null && sub.isVerticalStrategy()) {
+            ClassMetaData[] subs = cm1.getPCSubclassMetaDatas();
+            List exSelectFrom = sel.getExcludedJoinedTableClassMeta();
+            if (exSelectFrom == null) {
+                exSelectFrom = new ArrayList();
+                sel.setExcludedJoinedTableClassMeta(exSelectFrom);
+            }
+            List selectFrom = sel.getJoinedTableClassMeta();
+            exSelectFrom.add(sub);
+            if (selectFrom == null) {
+                selectFrom = new ArrayList();
+                sel.setJoinedTableClassMeta(selectFrom);
+            }
+            
+            for (int i = 0; i < subs.length; i++) {
+                if (!Modifier.isAbstract(subs[i].getDescribedType().getModifiers()) && 
+                    !selectFrom.contains(subs[i]))
+                    selectFrom.add(subs[i]);
+            }
+            buf.append("1=1");
+            return;
+        }
+    }    
 }

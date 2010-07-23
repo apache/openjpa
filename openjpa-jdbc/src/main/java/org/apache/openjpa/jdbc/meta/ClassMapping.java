@@ -34,6 +34,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
+import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -1100,5 +1101,12 @@ public class ClassMapping
     		result[i++] = Reflection.getValue(obj, fm.getName(), true);
     	}
     	return result;
+    }
+
+    public boolean isVerticalStrategy() {
+        String strat = getMappingInfo().getHierarchyStrategy();
+        if (strat != null && strat.equals(VerticalClassStrategy.ALIAS))
+            return true;
+        return false;
     }
 }

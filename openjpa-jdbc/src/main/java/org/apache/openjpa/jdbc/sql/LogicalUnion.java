@@ -911,6 +911,22 @@ public class LogicalUnion
         public ClassMapping getTablePerClassMeta() {
             return sel.getTablePerClassMeta();
         }
+        
+        public void setJoinedTableClassMeta(List meta) {
+            sel.setJoinedTableClassMeta(meta);
+        }
+
+        public List getJoinedTableClassMeta() {
+            return sel.getJoinedTableClassMeta();
+        }
+        
+        public void setExcludedJoinedTableClassMeta(List meta) {
+            sel.setExcludedJoinedTableClassMeta(meta);
+        }
+
+        public List getExcludedJoinedTableClassMeta() {
+            return sel.getExcludedJoinedTableClassMeta();
+        }
     }
 
     /**

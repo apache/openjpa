@@ -363,21 +363,58 @@ public class JDBCStoreQuery
                sel.setExpectedResultCount(optHint.intValue(), true);
             else if (this.ctx.isUnique())
                 sel.setExpectedResultCount(1, false);
-            for (int j = 0; j < verts.length; j++) {
-                selMappings.add(verts[j]);
-                if (j == verts.length - 1) {
-                    nextBits.set(sels.size());
-                    sels.add(sel);
-                } else
-                    sels.add(sel.fullClone(1));
+            
+            List selectFrom = getJoinedTableMeta(sel);
+            int size = 0;
+            if (selectFrom != null) {
+                size = selectFrom.size();
+                for (int j = 0; j < size; j++) {
+                    ClassMapping vert = (ClassMapping)selectFrom.get(j); 
+                    selMappings.add(vert);
+                    if (j == size - 1) {
+                        nextBits.set(sels.size());
+                        sel.select(vert.getPrimaryKeyColumns(), null);
+                        sels.add(sel);
+                    } else {
+                        SelectImpl selClone = (SelectImpl)sel.fullClone(1);
+                        selClone.select(vert.getPrimaryKeyColumns(), null);
+                        sels.add(selClone);
+                    }
+                }
+            } else {
+                for (int j = 0; j < verts.length; j++) {
+                    selMappings.add(verts[j]);
+                    if (j == verts.length - 1) {
+                        nextBits.set(sels.size());
+                        sels.add(sel);
+                    } else
+                        sels.add(sel.fullClone(1));
+                }
             }
-
+            
             // turn off unioning if a given independent mapping requires
             // multiple selects, or if we're using FROM selects
-            if (verts.length > 1 || sel.getFromSelect() != null)
+            if (verts.length > 1 || size > 1 || sel.getFromSelect() != null)
                 unionable = false;
         }
         return unionable;
+    }
+    
+    private List getJoinedTableMeta(Select sel) {
+        List selectFrom = sel.getJoinedTableClassMeta();
+        List exSelectFrom = sel.getExcludedJoinedTableClassMeta();
+        if (exSelectFrom == null)
+            return selectFrom;
+        if (selectFrom == null)
+            return null;
+        int size = selectFrom.size();
+        List retList = new ArrayList(size);
+        for (int i = 0; i < size; i++) {
+            Object obj = selectFrom.get(i);
+            if (!exSelectFrom.contains(obj))
+                retList.add(obj);
+        }
+        return retList;
     }
 
     /**

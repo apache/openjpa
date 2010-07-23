@@ -747,4 +747,24 @@ public interface Select
      * get table-per-class metadata for polymorphic queries
      */
     public ClassMapping getTablePerClassMeta();
+
+    /**
+     * Set joined table metadatas for polymorphic queries
+     */
+    public void setJoinedTableClassMeta(List meta);
+
+    /**
+     * get joined table metadatas for polymorphic queries
+     */
+    public List getJoinedTableClassMeta();
+
+    /**
+     * Set joined table metadatas excluded for polymorphic queries
+     */
+    public void setExcludedJoinedTableClassMeta(List meta);
+
+    /**
+     * get joined table metadatas excluded for polymorphic queries
+     */
+    public List getExcludedJoinedTableClassMeta();
 }

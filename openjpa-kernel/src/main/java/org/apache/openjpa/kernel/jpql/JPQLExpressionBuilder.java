@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -1137,23 +1136,33 @@ public class JPQLExpressionBuilder
 
                     // special case for <value> IN (<subquery>) or
                     // <value> IN (<single value>)
-                    if (!(val2 instanceof Literal) && node.getChildCount() == 2)
+                    if (useContains(not, val1, val2, node))    
                         return evalNot(not, factory.contains(val2, val1)); 
 
                     // this is currently a sequence of OR expressions, since we
                     // do not have support for IN expressions
                     setImplicitTypes(val1, val2, null);
-                    if (inExp == null)
-                        inExp = factory.equal(val1, val2);
-                    else
-                        inExp = factory.or(inExp, factory.equal(val1, val2));
+                    if (isVerticalTypeInExpr(val1, node) && not) {
+                        if (inExp == null)
+                            inExp = factory.notEqual(val1, val2);
+                        else
+                            inExp = factory.and(inExp, factory.notEqual(val1, val2));
+                    } else {
+                        if (inExp == null)
+                            inExp = factory.equal(val1, val2);
+                        else
+                            inExp = factory.or(inExp, factory.equal(val1, val2));
+                    }
                 }
 
                 // we additionally need to add in a "NOT NULL" clause, since
                 // the IN behavior that is expected by the CTS also expects
                 // to filter our NULLs
-                return and(evalNot(not, inExp),
-                    factory.notEqual(val1, factory.getNull()));
+                if (isVerticalTypeInExpr(val1, node)) 
+                    return inExp;
+                else    
+                    return and(evalNot(not, inExp),
+                            factory.notEqual(val1, factory.getNull()));
 
             case JJTISNULL: // x.field IS [NOT] NULL
                 val1 = getValue(onlyChild(node));
@@ -1412,6 +1421,19 @@ public class JPQLExpressionBuilder
                 throw parseException(EX_FATAL, "bad-tree",
                     new Object[]{ node }, null);
         }
+    }
+    
+    private boolean useContains(boolean not, Value val1, Value val2, JPQLNode node) {
+        if (isVerticalTypeInExpr(val1, node) && not)
+            return false;
+        else
+            return (!(val2 instanceof Literal) && node.getChildCount() == 2);
+    }
+    
+    private boolean isVerticalTypeInExpr(Value val, JPQLNode node) {
+        if (node.id != JJTIN)
+            return false;
+        return factory.isVerticalType(val);
     }
     
     private Value getIntegerValue(JPQLNode node) {

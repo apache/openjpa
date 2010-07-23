@@ -170,12 +170,32 @@ public class SelectImpl
     // A path navigation is begin with this schema alias
     private String _schemaAlias = null;
     private ClassMapping _tpcMeta = null;
+    private List _joinedTables = null;
+    private List _exJoinedTables = null;
+    
     public ClassMapping getTablePerClassMeta() {
         return _tpcMeta;
     }
     public void setTablePerClassMeta(ClassMapping meta) {
         _tpcMeta = meta;
     }
+    
+    public void setJoinedTableClassMeta(List meta) {
+        _joinedTables = meta;
+    }
+
+    public List getJoinedTableClassMeta() {
+        return _joinedTables;
+    }
+    
+    public void setExcludedJoinedTableClassMeta(List meta) {
+        _exJoinedTables = meta;
+    }
+
+    public List getExcludedJoinedTableClassMeta() {
+        return _exJoinedTables;
+    }
+    
      
     /**
      * Helper method to return the proper table alias for the given alias index.
