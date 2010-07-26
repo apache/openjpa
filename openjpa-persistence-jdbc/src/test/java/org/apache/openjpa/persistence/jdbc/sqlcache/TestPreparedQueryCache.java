@@ -47,7 +47,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.sqlcache.Employee.Category;
-import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
  * Tests correctness and performance of queries with and without Prepared Query Cacheing.
@@ -756,8 +755,7 @@ public class TestPreparedQueryCache extends TestCase {
         assertFalse(book2.getAuthors().isEmpty());
     }
 
-    @AllowFailure(message="We have problems with reparametrization of subquery + constant literals")
-    public void xtestQueryWithUserDefinedAndInternalParamtersInSubquery() {
+    public void testQueryWithUserDefinedAndInternalParamtersInSubquery() {
         String jpql = "Select a From Address a Where Not Exists ("
             + "     Select s.id From Singer As s Where "
             + "        s.address = a  And "
@@ -887,6 +885,34 @@ public class TestPreparedQueryCache extends TestCase {
        assertFalse(q2.getResultList().isEmpty());
     }
     
+    public void testSubqueryParameters() {
+        EntityManager em = emf.createEntityManager();
+        String query = "select e from Employee e "
+            + "inner join e.department d "
+            + "inner join d.company c "
+            + "where mod(c.startYear, 100) = 0 "
+            + "and exists (select e2 from Employee e2 "
+                + "inner join e2.department d2 "
+                + "inner join d2.company c2 "
+                + "where e2.address.city = e.address.city "
+                + "and e2.isManager = false "
+                + "and d2.name = d.name "
+                + "and c2.name = :companyName) "
+            + "and d.name = :departmentName";
+
+        em.getTransaction().begin();
+        TypedQuery<Employee> q1 = em.createQuery(query, Employee.class);
+        q1.setParameter("companyName", "acme.org");
+        q1.setParameter("departmentName", "Engineering");
+        assertEquals(q1.getResultList().size(), 6);
+
+        TypedQuery<Employee> q2 = em.createQuery(query, Employee.class);
+        q2.setParameter("companyName", "acme.org");
+        q2.setParameter("departmentName", "Engineering");
+        assertEquals(q2.getResultList().size(), 6);
+        em.getTransaction().rollback();
+    }
+
     public void testRepeatedParameterInSubqueryInDifferentOrder() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql =  "select o from OrderJPA o " 
