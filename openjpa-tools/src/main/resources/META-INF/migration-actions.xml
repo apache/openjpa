@@ -24,7 +24,8 @@
 	  changed to an equivalent element in JPA Mapping file.
 	 ====================================================================== -->
 	 
-<migration-actions>	
+<migration-actions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                   xsi:noNamespaceSchemaLocation='META-INF/migration-actions.xsd'>	
  
 <actions for="hibernate-mapping">
 	<rename-node to="entity-mappings"/>

@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.   
+-->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping 
+    default-cascade="none"
+	default-access="property" 
+	default-lazy="true" 
+	auto-import="true">
+	
+	<class name="com.approuter.deploy.Project" table="PROJECTS"
+		mutable="true" polymorphism="implicit" dynamic-update="false"
+		dynamic-insert="false" select-before-update="false" optimistic-lock="version">
+		<cache usage="read-write" />
+		<id name="id" type="java.lang.Long" column="ID">
+			<generator class="native" />
+		</id>
+		<property name="envId" type="com.approuter.common.hibernate.GuidUserType"
+			length="64" unique-key="env_name_version">
+			<column name="ENV_ID" index="IDX_PROJECT_ENV" />
+		</property>
+		<property name="data" type="binary" column="DATA" length="20000000"
+			unique="false" optimistic-lock="true" lazy="true" generated="never" />
+		<property name="name" type="java.lang.String" column="NAME"
+			not-null="true" length="80" unique-key="env_name_version" unique="false"
+			optimistic-lock="true" lazy="false" generated="never" />
+		<property name="description" type="java.lang.String" column="DESCRIPTION"
+			length="2000" unique="false" optimistic-lock="true" lazy="false"
+			generated="never" />
+		<property name="version" type="java.lang.String" column="VERSION"
+			not-null="true" length="80" unique-key="env_name_version" unique="false"
+			optimistic-lock="true" lazy="false" generated="never" />
+		<property name="lastpublished"
+			type="com.approuter.common.hibernate.NumericTimestampType" column="LASTPUBLISHED"
+			not-null="false" length="26" unique="false" optimistic-lock="true"
+			lazy="false" generated="never" />
+		<property name="authToolVersion" type="java.lang.String"
+			column="AUTH_TOOL_VERSION" not-null="false" length="80" unique="false"
+			optimistic-lock="true" lazy="false" generated="never" />
+		<property name="depth" type="java.lang.Short">
+			<column name="DEPTH" default="0" />
+		</property>
+		<!--  Associations -->
+		<!--  bi-directional one-to-many association to Asset -->
+		<set name="assets" lazy="true" outer-join="true" inverse="true"
+			cascade="merge,all-delete-orphan" sort="unsorted" mutable="true"
+			optimistic-lock="true" embed-xml="true">
+			<cache usage="read-write" />
+			<key column="PROJECT_ID" on-delete="cascade" />
+			<one-to-many class="com.approuter.deploy.Asset"
+				not-found="exception" embed-xml="true" />
+		</set>
+		<!--  bi-directional one-to-many association to Orchestration -->
+		<set name="orchestrations" lazy="true" outer-join="true" inverse="true"
+			cascade="merge,all-delete-orphan" sort="unsorted" mutable="true"
+			optimistic-lock="true" embed-xml="true">
+			<cache usage="read-write" />
+			<key column="PROJECT_ID" on-delete="cascade" />
+			<one-to-many class="com.approuter.deploy.Orchestration"
+				not-found="exception" embed-xml="true" />
+		</set>
+		<!--  bi-directional one-to-many association to Property -->
+		<set name="properties" lazy="true" outer-join="true" inverse="true"
+			cascade="merge,all-delete-orphan" sort="unsorted" mutable="true"
+			optimistic-lock="true" embed-xml="true">
+			<cache usage="read-write" />
+			<key column="PROJECT_ID" on-delete="cascade" />
+			<one-to-many class="com.approuter.deploy.Property"
+				not-found="exception" embed-xml="true" />
+		</set>
+		<!--  bi-directional one-to-many association to Configuration -->
+		<set name="configurations" lazy="true" outer-join="true" inverse="true"
+			cascade="merge,all-delete-orphan" sort="unsorted" mutable="true"
+			optimistic-lock="true" embed-xml="true">
+			<cache usage="read-write" />
+			<key column="PROJECT_ID" on-delete="cascade" />
+			<one-to-many class="com.approuter.deploy.Configuration"
+				not-found="exception" embed-xml="true" />
+		</set>
+
+		<set name="subprojects" lazy="true" table="SUBPROJECTS">
+			<cache usage="read-write" />
+			<key column="PROJECT_ID" />
+			<many-to-many class="com.approuter.deploy.Project"
+				column="SUBPROJECT_ID" />
+		</set>
+	</class>
+	
+	    <class
+            name="com.approuter.deploy.Asset"
+            table="ASSETS"
+            >
+        <id
+                name="id"
+                type="java.lang.Long"
+                column="ID"
+                >
+            <generator class="native"/>
+        </id>
+        <property
+                name="baseobject"
+                type="java.lang.String"
+                column="BASEOBJECT"
+                not-null="true"
+                length="80"
+                />
+ 	<property
+                name="moduleid"
+                type="java.lang.String"
+                column="MODULEID"
+                not-null="true"
+                length="80"
+                />
+	<property
+                name="orchestration"
+                type="java.lang.String"
+                column="ORCHESTRATION"
+                length="80"
+                />
+
+        <!-- Associations -->
+
+        <!-- bi-directional many-to-one association to Project -->
+        <many-to-one
+                name="project"
+                class="com.approuter.deploy.Project"
+                not-null="true"
+                >
+            <column name="PROJECT_ID"/>
+        </many-to-one>
+
+        <!-- bi-directional one-to-many association to Property -->
+        <!--
+        <set
+                name="properties"
+                lazy="true"
+                outer-join="true"
+                inverse="true"
+                cascade="merge,all-delete-orphan"
+                >
+            <key column="ASSET_ID" on-delete="cascade"/>
+            <one-to-many class="com.approuter.deploy.Property"/>
+        </set>
+        -->
+    </class>
+    
+        <class name="com.approuter.logging.Log" table="LOG">
+        <id name="id" column="ID" type="long"/>
+        <property name="host" type="string" length="64"/>
+        <property name="envId" type="com.approuter.common.hibernate.GuidUserType" length="64">
+            <column name="ENV_ID" index="IDX_LOG_ENV"/>
+        </property>
+        <property name="loggerName" column="LOGGER_NAME" type="string" length="255" not-null="true"/>
+        <property name="message" column="MESSAGE_KEY" type="string" length="1024" not-null="true"/>
+        <property name="jobId" column="JOB_ID" type="string" length="80"/>
+        <property name="notifiedValue" column="NOTIFIED" type="short"/>
+        <property name="timestamp" type="com.approuter.common.hibernate.NumericTimestampType">
+            <column name="TIME_STAMP" index="IDX_LOG_TIME_STAMP" not-null="true"/>
+        </property>
+        <property name="levelValue" type="short">
+            <column name="LEVEL" index="IDX_LOG_LEVEL" not-null="true"/>
+        </property>
+        <property name="orchestrationId" column="ORCH_ID" type="long"/>
+        <property name="resolvedOn" column="RESOLVED_ON" type="com.approuter.common.hibernate.NumericTimestampType"/>
+        <property name="resolvedBy" column="RESOLVED_BY" type="string" length="80"/>
+        <property name="parameters" column="PARAMS" type="binary" length="2048"/>
+    </class>
+    
+</hibernate-mapping>
+
