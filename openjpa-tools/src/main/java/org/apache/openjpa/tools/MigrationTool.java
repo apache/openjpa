@@ -313,7 +313,8 @@ public class MigrationTool  {
         
         for (int i = 1; i < actions.size(); i++) {
             action = actions.get(i);
-            _logger.info("Processing source [" + source.getNodeName() + "] " + i + "-th Action " + action.getClass().getSimpleName()); 
+            _logger.info("Processing source [" + source.getNodeName() + "] "
+                + i + "-th Action " + action.getClass().getSimpleName()); 
             Node newNode = action.run(target, source, root, consumedAttrs, consumedElements);
             
             if (newNode != null) {
