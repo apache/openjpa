@@ -241,7 +241,6 @@ public interface Actions {//extends Comparable<Actions> {
             targetName  = getAttribute("to", "from");
         }
 
-        @Override
         public Node run(Document targetDoc, Element source, Element current,
                 Collection<String> consumedAttrs, Collection<String> consumedElements) {
             Element sourceNode = getElementByName(source, sourcetName, false);
@@ -373,7 +372,6 @@ public interface Actions {//extends Comparable<Actions> {
             super(Code.IGNORE_ATTR, e);
         }
 
-        @Override
         public Node run(Document targetDoc, Element source, Element current,
                 Collection<String> consumedAttrs, Collection<String> consumedElements) {
             consumedAttrs.add(original.getAttribute("name"));
@@ -386,7 +384,6 @@ public interface Actions {//extends Comparable<Actions> {
             super(Code.IGNORE_NODE, e);
         }
 
-        @Override
         public Node run(Document targetDoc, Element source, Element current,
                 Collection<String> consumedAttrs, Collection<String> consumedElements) {
             consumedElements.add(original.getAttribute("name"));
@@ -410,7 +407,6 @@ public interface Actions {//extends Comparable<Actions> {
             sourceAttrName = e.getAttribute("on");
         }
 
-        @Override
         public Node run(Document targetDoc, Element source, Element current,
                 Collection<String> consumedAttrs, Collection<String> consumedElements) {
             Element forParent  = targetDoc.createElement(targetName);
@@ -435,7 +431,6 @@ public interface Actions {//extends Comparable<Actions> {
             super(Code.CUSTOM_NODE, e);
         }
 
-        @Override
         public Node run(Document targetDoc, Element source, Element current,
                 Collection<String> consumedAttrs, Collection<String> consumedElements) {
             consumedAttrs.add("embed-xml");

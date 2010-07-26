@@ -206,7 +206,6 @@ public class Option<T> implements Comparable<Option<T>> {
         return v;
     }
 
-    @Override
     public int compareTo(Option<T> o) {
         if (isMandatory() && !o.isMandatory()) {
             return -1;
