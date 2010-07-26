@@ -42,6 +42,8 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  *            element type
  */
 public class DistinctResultList<E> implements List<E>, Serializable {
+    private static final long serialVersionUID = -6140119764940777922L;
+
     private final ArrayList<E> _del;
     private final RuntimeExceptionTranslator _trans;
 
