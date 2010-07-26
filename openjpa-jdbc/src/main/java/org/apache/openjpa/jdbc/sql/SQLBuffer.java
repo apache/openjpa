@@ -166,13 +166,11 @@ public final class SQLBuffer
                         _userParams = new ArrayList();
                     _userParams.addAll(paramIndex, buf._userParams);
                 }
-                 if (buf._userIndex != null) {
-                     if (_userIndex == null) {
+                if (buf._userIndex != null) {
+                     if (_userIndex == null)
                          _userIndex = new ArrayList();
-                         _userIndex.addAll(buf._userIndex);
-                     } else
-                         _userIndex.addAll(paramIndex*2, buf._userIndex);
-                 }
+                     _userIndex.addAll(buf._userIndex);
+                }
                 if (buf._cols != null)
                     _cols.addAll(paramIndex, buf._cols);
                 else if (_cols != null)
