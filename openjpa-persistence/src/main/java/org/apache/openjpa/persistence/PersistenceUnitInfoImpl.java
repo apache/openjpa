@@ -62,18 +62,12 @@ public class PersistenceUnitInfoImpl
 
     public static final String PERSISTENCE_VERSION = "PersistenceVersion";
     
-    /**
-     * Properties key for the SHARED_CACHE_MODE. The JPA 2.0 spec
-     * SharedCacheMode maps to OpenJPA's DataCacheMode so we're using that
-     * class' simple name as the property key.
-     */
-//    public static final String SHARED_CACHE_MODE=DataCacheMode.class.getSimpleName();  
 
     private static final Localizer s_loc = Localizer.forPackage
         (PersistenceUnitInfoImpl.class);
 
     private String _name;
-    private final Properties _props = new Properties();
+    private final HashMap<Object,Object> _props = new HashMap<Object, Object>();
     private PersistenceUnitTransactionType _transType =
         PersistenceUnitTransactionType.RESOURCE_LOCAL;
 
@@ -266,11 +260,13 @@ public class PersistenceUnitInfoImpl
     }
 
     public Properties getProperties() {
-        return _props;
+        Properties copy = new Properties();
+        copy.putAll(_props);
+        return copy;
     }
 
     public void setProperty(String key, String value) {
-        _props.setProperty(key, value);
+        _props.put(key, value);
     }
 
     public void addTransformer(ClassTransformer transformer) {
