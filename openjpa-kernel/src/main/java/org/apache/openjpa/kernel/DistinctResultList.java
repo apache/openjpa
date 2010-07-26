@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,7 +41,9 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * @param <E>
  *            element type
  */
-public class DistinctResultList<E> implements List<E> {
+public class DistinctResultList<E> implements List<E>, Serializable {
+    private static final long serialVersionUID = -6140119764940777922L;
+
     private final ArrayList<E> _del;
     private final RuntimeExceptionTranslator _trans;
 
@@ -202,6 +206,11 @@ public class DistinctResultList<E> implements List<E> {
 
     protected RuntimeException translate(RuntimeException re) {
         return (_trans == null) ? re : _trans.translate(re);
+    }
+
+    public Object writeReplace()
+        throws ObjectStreamException {
+        return _del;
     }
 
 }
