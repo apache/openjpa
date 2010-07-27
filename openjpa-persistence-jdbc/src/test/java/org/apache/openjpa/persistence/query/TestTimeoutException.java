@@ -51,7 +51,7 @@ public class TestTimeoutException extends SingleEMFTestCase {
         assertNotNull(tempEMF);
         DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
         assertNotNull(dict);
-        if (!dict.supportsSelectForUpdate)
+        if (!dict.supportsSelectForUpdate || !dict.supportsQueryTimeout)
             setTestsDisabled(true);
         if (emf == null) {
             closeEMF(tempEMF);
