@@ -47,7 +47,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         
         try {
             // delay to ensure the new timestamp exceeds the timer's resolution.
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
         }
 
