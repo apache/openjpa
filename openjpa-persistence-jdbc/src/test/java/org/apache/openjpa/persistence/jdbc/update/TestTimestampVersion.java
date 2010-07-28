@@ -89,6 +89,4 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         int newVersion = pc.getVersion();
         assertEquals(newVersion, oldVersion+1);
     }
-
-	
 }

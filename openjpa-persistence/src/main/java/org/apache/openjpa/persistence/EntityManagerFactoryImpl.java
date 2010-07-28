@@ -48,6 +48,7 @@ import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a
@@ -214,8 +215,14 @@ public class EntityManagerFactoryImpl
         }
         
         if (log != null && log.isTraceEnabled()) {
-            log.trace("Found ConnectionFactoryName from props: " + cfName);
+            if(StringUtils.isNotEmpty(cfName)) {
+                log.trace("Found ConnectionFactoryName from props: " + cfName);
+            }
+            if(StringUtils.isNotEmpty(cf2Name)) { 
+                log.trace("Found ConnectionFactory2Name from props: " + cf2Name);
+            }
         }
+        validateCfNameProps(conf, cfName, cf2Name);
 
         Broker broker = _factory.newBroker(user, pass, managed, retainMode, false, cfName, cf2Name);
             
@@ -356,5 +363,30 @@ public class EntityManagerFactoryImpl
         }
         return (OpenJPAPersistenceUtil.isManagedBy(this, entity) &&
                 (OpenJPAPersistenceUtil.isLoaded(entity, attribute) == LoadState.LOADED));
+    }
+    
+    private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {
+        if (StringUtils.isNotEmpty(cfName) || StringUtils.isNotEmpty(cf2Name)) {
+            if (conf.getDataCache() != "false" && conf.getDataCache() != null) {
+                throw new ArgumentException(_loc.get("invalid-cfname-prop", new Object[] {
+                    "openjpa.DataCache (L2 Cache)",
+                    cfName,
+                    cf2Name }), null, null, true);
+
+            }
+            if (conf.getQueryCache() != "false" && conf.getQueryCache() != null) {
+                throw new ArgumentException(_loc.get("invalid-cfname-prop", new Object[] {
+                    "openjpa.QueryCache",
+                    cfName,
+                    cf2Name }), null, null, true);
+            }
+            Object syncMap = conf.toProperties(false).get("openjpa.jdbc.SynchronizeMappings");
+            if(syncMap != null) { 
+                throw new ArgumentException(_loc.get("invalid-cfname-prop", new Object[] {
+                    "openjpa.jdbc.SynchronizeMappings",
+                    cfName,
+                    cf2Name }), null, null, true);
+            }
+        }
     }
 }
