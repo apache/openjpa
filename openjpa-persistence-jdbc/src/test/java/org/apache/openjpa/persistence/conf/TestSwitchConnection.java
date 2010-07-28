@@ -28,6 +28,7 @@ import javax.persistence.RollbackException;
 
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.apache.openjpa.util.UserException;
 
 public class TestSwitchConnection extends AbstractPersistenceTestCase {
     private String defaultJndiName = "jdbc/mocked";
@@ -157,6 +158,48 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); // ensure failing JNDI name is in the message
             assertTrue(e.getMessage().contains("EntityManager")); // ensure where the JNDI name came from is in message
+        }
+    }
+    
+    public void testDataCache() { 
+        EntityManagerFactory emf = null;
+    
+        emf = getEmf("openjpa.DataCache", "true");
+        try {
+            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            fail("Expected an excepton when creating an EM with a bogus JNDI name");
+        } catch (ArgumentException e) {
+            assertTrue(e.isFatal());
+            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
+            assertTrue(e.getMessage().contains("L2 Cache")); 
+        }
+    }
+    
+    public void testQueryCache() { 
+        EntityManagerFactory emf = null;
+    
+        emf = getEmf("openjpa.QueryCache", "true");
+        try {
+            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            fail("Expected an excepton when creating an EM with a bogus JNDI name");
+        } catch (ArgumentException e) {
+            assertTrue(e.isFatal());
+            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
+            assertTrue(e.getMessage().contains("openjpa.QueryCache")); 
+        }
+    }
+    
+    public void testSyncMappings() { 
+        EntityManagerFactory emf = null;
+    
+        emf = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+        try {
+            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            fail("Expected an excepton when creating an EM with a bogus JNDI name");
+        } catch (ArgumentException e) {
+            assertTrue(e.isFatal());
+            assertTrue(e.getMessage().contains("jdbc/NotReal")); 
+            assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings")); 
         }
     }
 }
