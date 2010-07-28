@@ -35,6 +35,7 @@
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of JSR-317 JPA 2.0</description>
+
     <!--
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
@@ -42,10 +43,11 @@
     <version>2.1.0-SNAPSHOT</version>
 
     <properties>
-        <openjpa.version>${pom.version}</openjpa.version>
+        <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <site.deploy.url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
@@ -73,19 +75,6 @@
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
     </properties>
-
-    <licenses>
-        <license>
-            <name>Apache Software License 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <organization>
-        <name>Apache Software Foundation</name>
-        <url>http://www.apache.org</url>
-    </organization>
 
     <url>http://openjpa.apache.org</url>
 
@@ -121,18 +110,9 @@
     </mailingLists>
 
     <distributionManagement>
-      <repository>
-        <id>local-repository</id>
-        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
-      </repository>
-      <snapshotRepository>
-        <id>local-repository</id>
-        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-repo</url>
-        <uniqueVersion>false</uniqueVersion>
-      </snapshotRepository>
       <site>
         <id>people.apache.org</id>
-        <url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${pom.version}/staging-site</url>
+            <url>${site.deploy.url}</url>
       </site>
     </distributionManagement>
 
@@ -163,15 +143,7 @@
         <!--  Build Profiles  -->
         <!-- ================ -->
         <profile>
-            <id>release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
-            <modules>
-                <module>openjpa-project</module>
-            </modules>
+            <id>apache-release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -255,7 +227,7 @@
                         <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
                             <goals>deploy site site-deploy</goals>
-                            <arguments>-Prelease,docbook-profile,test-derby -DskipTests=true</arguments>
+                            <arguments>-Papache-release,docbook-profile,test-derby -DskipTests=true</arguments>
                             <autoVersionSubmodules>true</autoVersionSubmodules>
                         </configuration>
                     </plugin>
@@ -356,7 +328,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.2</version>
                         <executions>
                             <execution>
                                 <phase>process-classes</phase>
@@ -747,35 +718,104 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.1</version>
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.3</version>
                     <configuration>
                         <archive>
                             <manifest>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             </manifest>
+                            <manifestEntries>
+                                <Implementation-Build>${buildNumber}</Implementation-Build>
+                                <Specification-Title>JSR-330 Java Persistence API</Specification-Title>
+                                <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
+                                <Specification-Version>2.0</Specification-Version>
+                            </manifestEntries>
                         </archive>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>javadoc</goal>
+                            </goals>
+                            <configuration>
+                                <additionalparam>
+                                    ${javadoc.additionalparam}
+                                </additionalparam>
+                                <aggregate>true</aggregate>
+                                <subpackages>org.apache.openjpa</subpackages>
+                                <!-- <linksource>true</linksource> -->
+                                <verbose>false</verbose>
+                                <maxmemory>512m</maxmemory>
+                                <links>
+                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                    <link>http://java.sun.com/javaee/6/docs/api</link>
+                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                                </links>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.3</version>
+                    <version>2.5</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>2.3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.0-beta-4</version>
+                    <configuration>
+                        <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                        <revisionOnScmFailure>offline</revisionOnScmFailure>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.rat</groupId>
@@ -789,6 +829,40 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <excludeSubProjects>false</excludeSubProjects>
+                        <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                        <excludes>
+                            <!-- generated content -->
+                            <exclude>**/.*/**</exclude>
+                            <exclude>**/target/**/*</exclude>
+                        </excludes>
+                        <includes>
+                            <!-- only check common source files -->
+                            <include>**/src/**/*.bat</include>
+                            <include>**/src/**/*.css</include>
+                            <include>**/src/**/*.html</include>
+                            <include>**/src/**/*.java</include>
+                            <include>**/src/**/*.js</include>
+                            <include>**/src/**/*.jsp</include>
+                            <include>**/src/**/*.properties</include>
+                            <include>**/src/**/*.sh</include>
+                            <include>**/src/**/*.txt</include>
+                            <include>**/src/**/*.vm</include>
+                            <include>**/src/**/*.xml</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+                <!-- inherited from apache-7.pom, but need config updates -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <configuration>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <goals>deploy site site-deploy</goals>
+                        <arguments>-Papache-release,docbook-profile,test-derby -DskipTests=true</arguments>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -868,6 +942,17 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>ianal-maven-plugin</artifactId>
                     <version>1.0-alpha-1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>verify-legal-files</goal>
+                            </goals>
+                            <configuration>
+                                <!-- Fail the build if any artifacts are missing legal files -->
+                                <strict>true</strict>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -943,17 +1028,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ianal-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>verify-legal-files</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Fail the build if any artifacts are missing legal files -->
-                            <strict>true</strict>
-                        </configuration>
-                    </execution>
-                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -999,24 +1077,6 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <configuration>
-                    <excludeSubProjects>false</excludeSubProjects>
-                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                    <includes>
-                        <!-- only check common source files -->
-                        <include>**/src/**/*.bat</include>
-                        <include>**/src/**/*.css</include>
-                        <include>**/src/**/*.html</include>
-                        <include>**/src/**/*.java</include>
-                        <include>**/src/**/*.js</include>
-                        <include>**/src/**/*.jsp</include>
-                        <include>**/src/**/*.properties</include>
-                        <include>**/src/**/*.sh</include>
-                        <include>**/src/**/*.txt</include>
-                        <include>**/src/**/*.vm</include>
-                        <include>**/src/**/*.xml</include>
-                    </includes>
-                </configuration>
             </plugin>
             <!-- this has to be done in each module so we don't generate
                  tests.jar artifacts that fail the IANAL check

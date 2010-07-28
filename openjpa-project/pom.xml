@@ -386,7 +386,7 @@
                                             <property name="nightly.user.name" value="${nightly.user.name}" />
                                             <property name="nightly.password" value="${nightly.password}" />
                                             <property name="nightly.version" value="${nightly.version}" />
-                                            <property name="pom.version" value="${pom.version}" />
+                                            <property name="project.version" value="${project.version}" />
                                         </ant>
                                     </tasks>
                                 </configuration>
@@ -406,12 +406,12 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- included so we can include it in the distribution -->
