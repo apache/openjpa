@@ -303,7 +303,9 @@ public class CommandProcessor {
          */
         public Option setDefault(String v) {
             if (!requiresInput)
-                throw new IllegalStateException(this + " does not require a value. Can not set default value [" + v + "]");
+                throw new IllegalStateException(this +
+                    " does not require a value. Can not set default value [" +
+                    v + "]");
             defValue = v;
             return this;
         }

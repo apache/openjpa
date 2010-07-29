@@ -51,7 +51,8 @@ public abstract class SourceRenderer {
      * <br>
      * <pre>  $ java SourceRenderer [options] files </pre>
      * For example,
-     * <pre> $ java SourceRenderer -stylesheet mystyle.css -sourcepath test -d generated/html acme/foo/SomeClass.java</pre>
+     * <pre> $ java SourceRenderer -stylesheet mystyle.css -sourcepath test
+     *  -d generated/html acme/foo/SomeClass.java</pre>
      * <p>
      * 
      * Recognized options are<br>

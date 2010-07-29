@@ -76,9 +76,13 @@
 	
 	<path id="code.generation.classpath" 
 		description="">
-		<pathelement location="${ant.home}/ant.jar" />
-		<pathelement location="${antlr.lib}" />
 		<pathelement location="${classes.dir}" />
+		<fileset dir="${antlr.lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${antlr-runtime.lib}">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 	
 	
@@ -128,7 +132,16 @@
 		</condition>
 		<mkdir dir="${deploy.dir}"/>
 		
-		<available file="${antlr.lib}"     property="antlr.exists" />
+		<available file="${antlr.lib}"     property="antlr.exists"/>
+<!--
+  <condition property="antlr.exists">
+    <and>
+      <isset property="antlr.lib.exists" />
+      <available classname="org.antlr.Tool" />
+    </and>
+  </condition>
+		<fail unless="antlr.exists" message="ANTLR is missing from classpath"/>
+-->
 	</target>
 	
 	<target name="generate-canonical-model" depends="check-env"
