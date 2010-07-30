@@ -123,7 +123,9 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
-                            <descriptor>assembly.xml</descriptor>
+                            <descriptors>
+                                <descriptor>assembly.xml</descriptor>
+                            </descriptors>
                             <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>

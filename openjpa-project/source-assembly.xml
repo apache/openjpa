@@ -36,6 +36,8 @@
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.log</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
             </excludes>
         </fileSet>
 
