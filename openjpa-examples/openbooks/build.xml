@@ -148,7 +148,11 @@
 		description="Generate canonical meta-model source">
 		<mkdir dir="${generated.src.dir}" />
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
+                <!--
+                    javac has to be forked for maven-antrun-plugin builds
+                    to work on Linux...
+                -->
+		<javac fork="true" srcdir="${src.dir}" destdir="${classes.dir}" debug="true">
 			<classpath refid="compile.classpath" />
 			<include name="openbook/domain/*.java"/>
 			<compilerarg value="-Aopenjpa.metamodel=true" />
