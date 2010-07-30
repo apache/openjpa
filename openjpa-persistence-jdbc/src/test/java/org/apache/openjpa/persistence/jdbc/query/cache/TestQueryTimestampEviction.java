@@ -18,22 +18,64 @@
  */
 package org.apache.openjpa.persistence.jdbc.query.cache;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Query;
 
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
-import org.apache.openjpa.datacache.TypesChangedEvent;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
+import org.apache.openjpa.lib.jdbc.JDBCEvent;
+import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.embed.attrOverrides.TestAssocOverridesXML.SQLListener;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
+    private List<String> _sql = new ArrayList<String>();
+    
     public void setUp() throws Exception {
         super.setUp(
                 "openjpa.DataCache", "true",
                 "openjpa.QueryCache", "true(CacheSize=1000, EvictPolicy='timestamp')",
-                "openjpa.RemoteCommitProvider", "sjvm");
+                "openjpa.RemoteCommitProvider", "sjvm",
+                "openjpa.jdbc.JDBCListeners",new JDBCListener[] { new SQLListener() });
     }
 
+    public void testEmptyResultTimeout() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        String query = "select p from PartBase p where p.cost > ?1";
+        // execute a query that needs to return zero results
+        Query q = em.createQuery(query);
+        q.setParameter(1, 100000);
+        List l = q.getResultList();
+        assertEquals(0, l.size());     
+
+        // Create a new Entity that has the PartBase accesspath. Has a newer timestamp than our query
+        em.getTransaction().begin();
+        em.persist(new PartBase());
+        em.getTransaction().commit();
+
+        // Make sure that our sql listener is working
+        assertTrue(_sql.size() > 0);
+        _sql.clear();
+        
+        q = em.createQuery(query);
+        q.setParameter(1, 100000);
+        q.getResultList();
+        
+        // Make sure that we execute sql. This means that the query was properly kicked out of the cache.
+        assertEquals(1, _sql.size());
+        em.close();
+
+    }
+    
     /**
      * Verify that the persistent unit property configuration is enabling
      * the TIMESTAMP Eviction Policy.
@@ -85,6 +127,16 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         
         if (t2.getState().equals(java.lang.Thread.State.WAITING)) {
             fail("The thread is still waiting on a writeLock()!");
+        }
+    }
+
+    public class SQLListener extends AbstractJDBCListener {
+
+        @Override
+        public void beforeExecuteStatement(JDBCEvent event) {
+            if (event.getSQL() != null && _sql != null) {
+                _sql.add(event.getSQL());
+            }
         }
     }
 }

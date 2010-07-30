@@ -124,11 +124,11 @@ public class QueryCacheStoreQuery
         // get the cached data
         QueryResult res = _cache.get(qk);
 
-        if (res == null)
-            return null;        
-        if (res.isEmpty())
-            return Collections.emptyList();
-
+        
+        if (res == null) {
+            return null;
+        }
+               
         // this if block is invoked if the evictOnTimestamp is set to true
         if (_cache instanceof AbstractQueryCache) {
             AbstractQueryCache qcache = (AbstractQueryCache) _cache;
@@ -151,6 +151,10 @@ public class QueryCacheStoreQuery
                     }
                 }
             }
+        }
+      
+        if (res.isEmpty()) {
+            return Collections.emptyList();
         }
 
         int projs = getContext().getProjectionAliases().length;
