@@ -735,7 +735,7 @@
                             </manifest>
                             <manifestEntries>
                                 <Implementation-Build>${buildNumber}</Implementation-Build>
-                                <Specification-Title>JSR-330 Java Persistence API</Specification-Title>
+                                <Specification-Title>JSR-317 Java Persistence API</Specification-Title>
                                 <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
                                 <Specification-Version>2.0</Specification-Version>
                             </manifestEntries>
