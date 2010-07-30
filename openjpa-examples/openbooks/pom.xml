@@ -35,11 +35,11 @@
     <groupId>org.apache.openjpa.openjpa-examples</groupId>
     <artifactId>openbooks</artifactId>
     <packaging>jar</packaging>
-    <name>Apache OpenJPA :: Examples - OpenBooks</name>
-    <description>OpenJPA Examples - OpenBooks</description>
+
+    <name>OpenJPA Examples - OpenBooks</name>
+    <description>Apache OpenJPA Examples - OpenBooks</description>
 
     <properties>
-        <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
         <checkstyle.config.location>../../openjpa-project/checkstyle.xml</checkstyle.config.location>
     </properties>
 

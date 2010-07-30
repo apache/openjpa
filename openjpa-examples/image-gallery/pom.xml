@@ -34,12 +34,10 @@
   <artifactId>image-gallery</artifactId>
   <packaging>jar</packaging>
 
-  <name>Apache OpenJPA :: Examples - image-gallery</name>
-  <url>http://openjpa.apache.org/samples.html</url>
+  <name>OpenJPA Examples - image-gallery</name>
+  <description>Apache OpenJPA Examples - image-gallery</description>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
     <checkstyle.config.location>../../openjpa-project/checkstyle.xml</checkstyle.config.location>
     <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
     <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
@@ -137,7 +135,7 @@
             <includes>org/apache/openjpa/examples/gallery/model/*.class</includes>
             <addDefaultConstructor>true</addDefaultConstructor>
             <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-            <persistenceXmlFile>src/test/resources/META-INF/persistence.xml</persistenceXmlFile>
+            <persistenceXmlFile>${project.basedir}/src/test/resources/META-INF/persistence.xml</persistenceXmlFile>
           </configuration>
           <executions>
             <execution>
@@ -152,7 +150,7 @@
             <dependency>
               <groupId>org.apache.openjpa</groupId>
               <artifactId>openjpa-all</artifactId>
-              <version>${pom.version}</version>
+              <version>${project.version}</version>
             </dependency>
           </dependencies>
       </plugin>
