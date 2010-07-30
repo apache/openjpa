@@ -23,9 +23,13 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.io.Serializable;
 
-public class InheritanceOrderedMetaDataList
-    implements Serializable {
+public class InheritanceOrderedMetaDataList implements Serializable, Iterable<ClassMetaData> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4821243307083324894L;
+    
     private MetaDataInheritanceComparator _comp
         = new MetaDataInheritanceComparator();
     private LinkedList<ClassMetaData> buffer = new LinkedList<ClassMetaData>();

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -506,10 +505,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     private final Collection<String> getAliasNamesInternal() {
         Collection<String> aliases = new HashSet<String>();
-            for (Iterator<Map.Entry<String, List<Class<?>>>> iter = _aliases.entrySet().iterator(); iter.hasNext();) {
-                Map.Entry<String, List<Class<?>>> e = iter.next();
-                if (e.getValue() != null)
-                    aliases.add(e.getKey());
+        for(Map.Entry<String, List<Class<?>>> e : _aliases.entrySet()){
+            if (e.getValue() != null) {
+                aliases.add(e.getKey());
+            }            
         }
         return aliases;
     }
@@ -813,11 +812,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 // resolve any of the related types, so clear buffer. this also
                 // ensures that if two types relate to each other and one
                 // dies, we don't get into infinite cycles
-                for (Iterator<ClassMetaData> itr = buffer.iterator(); itr.hasNext();) {
-                    meta = itr.next();
-                    removeMetaData(meta);
-                    if (meta != buffered) {
-                        _errs.add(new MetaDataException(_loc.get("prev-errs", meta, buffered)));
+                for (ClassMetaData cmd : buffer) {
+                    removeMetaData(cmd);
+                    if (cmd != buffered) {
+                        _errs.add(new MetaDataException(_loc.get("prev-errs", cmd, buffered)));
                     }
                 }
                 buffer.clear();
