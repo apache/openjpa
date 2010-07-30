@@ -20,7 +20,7 @@
 <project default="usagewarning">
 
     <property name="parent" value="${basedir}/.."/>
-    <property name="root" value="${parent}/.."/>
+    <property name="root" value="${parent}/../.."/>
 
     <!-- database connection properties -->
     <property name="dbdriver" value="org.apache.derby.jdbc.EmbeddedDriver"/>

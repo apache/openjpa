@@ -69,8 +69,28 @@
             <outputDirectory>docs/javadoc</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>../openjpa-examples</directory>
-            <outputDirectory>examples</outputDirectory>
+            <directory>../openjpa-examples/image-gallery</directory>
+            <outputDirectory>examples/image-gallery</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.log</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../openjpa-examples/openbooks</directory>
+            <outputDirectory>examples/openbooks</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.log</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>../openjpa-examples/simple/src/main/java</directory>
+            <outputDirectory>examples/simple</outputDirectory>
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.log</exclude>

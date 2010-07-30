@@ -65,7 +65,7 @@
                         <delete dir="${examples.base}" quiet="true" />
                         <mkdir dir="${examples.base}" />
 
-                        <unzip overwrite="false" dest="${examples.base}" src="../../openjpa-project/target/site/downloads/apache-openjpa-${pom.version}-binary.zip" />
+                        <unzip overwrite="false" dest="${examples.base}" src="${settings.localRepository}/org/apache/openjpa/apache-openjpa/${project.version}/apache-openjpa-${project.version}-binary.zip" />
 
                         <path id="assembly.classpath"> 
                             <fileset dir="${examples.base}">
@@ -77,8 +77,9 @@
                             Could not extract assembly.
                         </fail>
 
+                        <!-- FIXME: Only tests simple examples for now -->
                         <subant inheritAll="false" failonerror="true">
-                            <fileset dir="${examples.base}" includes="*/examples/*/build.xml" />
+                            <fileset dir="${examples.base}" includes="*/examples/simple/*/build.xml" />
                         </subant>
 
                         </tasks>
