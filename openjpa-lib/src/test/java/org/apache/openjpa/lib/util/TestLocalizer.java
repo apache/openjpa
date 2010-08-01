@@ -102,7 +102,8 @@ public class TestLocalizer extends TestCase {
      */
     public void testMissingBundle() {
         Localizer missing = Localizer.forPackage(String.class);
-        assertEquals("foo.bar", missing.get("foo.bar"));
+        assertEquals("localized message key: foo.bar", missing.get("foo.bar"));
+        assertEquals("localized message key: foo.bar; substitutions: [baz, 1]", missing.get("foo.bar", "baz", 1));
         try {
             missing.getFatal("foo.bar");
             fail("No exception for fatal get on missing bundle.");
@@ -114,7 +115,8 @@ public class TestLocalizer extends TestCase {
      * Test that a {@link MissingResourceException} is thrown for missing keys.
      */
     public void testMissingKey() {
-        assertEquals("foo.bar", _locals.get("foo.bar"));
+        assertEquals("localized message key: foo.bar", _locals.get("foo.bar"));
+        assertEquals("localized message key: foo.bar; substitutions: [baz, 1]", _locals.get("foo.bar", "baz", 1));
         try {
             _locals.getFatal("foo.bar");
             fail("No exception for fatal get on missing key.");

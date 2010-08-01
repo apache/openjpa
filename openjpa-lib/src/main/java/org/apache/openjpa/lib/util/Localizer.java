@@ -247,6 +247,7 @@ public class Localizer {
         private final String _key;
         private final Object[] _subs;
         private final String _localizedMessage;
+        private boolean _localizedMessageFound;
 
         private Message(String packageName, ResourceBundle bundle, String key,
             Object[] subs, boolean fatal) {
@@ -258,13 +259,16 @@ public class Localizer {
             _subs = subs;
             if (bundle == null) {
                 _localizedMessage = key;
+                _localizedMessageFound = false;
             } else {
                 String localized = null;
                 try {
                     localized = bundle.getString(key);
+                    _localizedMessageFound = true;
                 } catch (MissingResourceException mre) {
                     if (fatal)
                         throw mre;
+                    _localizedMessageFound = false;
                 }
                 _localizedMessage = (localized == null) ? key : localized;
             }
@@ -274,7 +278,13 @@ public class Localizer {
          * The localized message.
          */
         public String getMessage() {
-            return MessageFormat.format(_localizedMessage, _subs);
+            if (_localizedMessageFound)
+                return MessageFormat.format(_localizedMessage, _subs);
+            else if (_subs == null || _subs.length == 0)
+                return "localized message key: " + _localizedMessage;
+            else
+                return "localized message key: " + _localizedMessage 
+                    + "; substitutions: " + Arrays.asList(_subs).toString();
         }
 
         /**
