@@ -522,7 +522,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
     }
 
     public void testDeleteIsNotDetectedOnCleanRefreshWithoutLockWithDataCache() {
-        verifyDeleteDetectionOnRefresh(WITH_DATACACHE, !DIRTY, NOLOCK, NO_ERROR);
+        verifyDeleteDetectionOnRefresh(WITH_DATACACHE, !DIRTY, NOLOCK, ENTITY_NOT_FOUND_ERROR);
     }
     
     public void testDeleteIsDetectedOnCleanRefreshWithLockWithDataCache() {

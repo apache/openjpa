@@ -300,14 +300,16 @@ public class DataCacheStoreManager
 
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        if (cache == null || sm.isEmbedded())
+        FetchConfiguration fc = sm.getContext().getFetchConfiguration();
+        if (cache == null || sm.isEmbedded() || fc.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS) {
             return super.syncVersion(sm, edata);
-
+        }
+        
         DataCachePCData data;
         Object version = null;
         data = cache.get(sm.getObjectId());
         if (!isLocking(null) && data != null)
-            version = data.getVersion();
+            version = data.getVersion(); 
 
         // if we have a cached version update from there
         if (version != null) {

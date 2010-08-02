@@ -24,11 +24,13 @@ import javax.persistence.Cache;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.cache.jpa.model.CacheEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.CacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.NegatedCachableEntity;
@@ -345,6 +347,31 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     public void testStoreModeUseUse() {
         if (getCacheEnabled()) {
             entityManagerStoreModeTest(CacheStoreMode.USE, CacheStoreMode.USE, true, true, 1);
+        }
+    }
+    
+    public void testRefresh() {
+        if (getCacheEnabled()) {
+            OpenJPAEntityManagerSPI em = getEntityManagerFactory().createEntityManager();
+            CacheableEntity e1 = em.find(CacheableEntity.class, 1);
+            XmlCacheableEntity e2 = em.find(XmlCacheableEntity.class, 1);
+            assertNotNull(e1);
+            assertNotNull(e2);
+            int e1Version = e1.getVersion();
+            int e2Version = e2.getVersion();
+
+            String e1Sql = "UPDATE CacheableEntity SET VERSION=?1 WHERE ID=?2";
+            String e2Sql = "UPDATE XmlCacheableEntity SET VERSION=?1 WHERE ID=?2";
+            em.getTransaction().begin();
+            assertEquals(1, em.createNativeQuery(e1Sql).setParameter(1, e1Version + 1).setParameter(2, e1.getId())
+                .executeUpdate());
+            assertEquals(1, em.createNativeQuery(e2Sql).setParameter(1, e2Version + 1).setParameter(2, e2.getId())
+                .executeUpdate());
+            em.getTransaction().commit();
+            em.refresh(e1);
+            em.refresh(e2);
+            assertEquals(e1Version + 1, e1.getVersion());
+            assertEquals(e2Version + 1, e2.getVersion());
         }
     }
 
