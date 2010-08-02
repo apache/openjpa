@@ -144,7 +144,7 @@ public class QueryCacheStoreQuery
                     for (Long ts: timestamps) {
                         // if this is true we have to evict the query 
                         // from cache
-                        if (queryTS < ts) { 
+                        if (queryTS <= ts) { 
                             qcache.remove(qk);
                             return null;
                         }
