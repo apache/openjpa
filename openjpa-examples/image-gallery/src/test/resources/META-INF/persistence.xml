@@ -35,7 +35,7 @@
           <property name="openjpa.ConnectionDriverName" 
               value="org.apache.derby.jdbc.EmbeddedDriver" />
           <property name="openjpa.ConnectionURL"
-              value="jdbc:derby:database/ImageDB;create=true" />
+              value="jdbc:derby:target/database/ImageDB;create=true" />
           <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
           <property name="openjpa.DynamicEnhancementAgent" value="false"/>
                 
