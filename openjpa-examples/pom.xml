@@ -41,7 +41,7 @@
 
     <properties>
         <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
-        <checkstyle.config.location>../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <checkstyle.config.location>${project.basedir}/../openjpa-project/checkstyle.xml</checkstyle.config.location>
     </properties>
 
     <modules>
