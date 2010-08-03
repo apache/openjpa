@@ -281,6 +281,9 @@ public class DetachedValueStateManager
         if (sm != null) {
             if (sm instanceof DetachedStateManager)
                 return fetchFromDetachedSM((DetachedStateManager) sm, field);
+            if (_ctx.getAllowReferenceToSiblingContext() && sm instanceof StateManagerImpl) {
+                return ((StateManagerImpl) sm).fetch(field);
+            }
             throw new UnsupportedException(_loc.get("detach-val-badsm", _pc));
         }
         provideField(field);

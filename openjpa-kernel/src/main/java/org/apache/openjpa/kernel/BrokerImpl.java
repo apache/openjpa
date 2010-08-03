@@ -238,7 +238,8 @@ public class BrokerImpl
     private boolean _cachePreparedQuery = true;
     private boolean _cacheFinderQuery = true;
     private boolean _suppressBatchOLELogging = false;
-
+    private boolean _allowReferenceToSiblingContext = false;
+    
     // status
     private int _flags = 0;
 
@@ -4042,7 +4043,7 @@ public class BrokerImpl
      * @param status one of our STATUS constants describing why we're
      * setting the state manager
      */
-    void setStateManager(Object id, StateManagerImpl sm, int status) {
+    protected void setStateManager(Object id, StateManagerImpl sm, int status) {
         lock();
         try {
             switch (status) {
@@ -4490,6 +4491,8 @@ public class BrokerImpl
             return false;
 
         PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
+        if (pc.pcGetStateManager() instanceof DetachedStateManager)
+            return true;
         Boolean detached = pc.pcIsDetached();
         if (detached != null)
             return detached.booleanValue();
@@ -5090,4 +5093,12 @@ public class BrokerImpl
         }
         return _store.isCached(oids, loaded);
     };
+    
+    public boolean getAllowReferenceToSiblingContext() {
+        return _allowReferenceToSiblingContext;
+    }
+    
+    public void setAllowReferenceToSiblingContext(boolean allow) {
+        _allowReferenceToSiblingContext = allow;
+    }
 }

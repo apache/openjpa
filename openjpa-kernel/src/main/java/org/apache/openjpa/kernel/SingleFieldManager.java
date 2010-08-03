@@ -29,12 +29,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.MapChangeTracker;
 import org.apache.openjpa.util.ObjectId;
@@ -763,10 +765,18 @@ class SingleFieldManager
                 return; // allow but ignore
 
             sm = _broker.getStateManager(obj);
-            if (sm == null || !sm.isPersistent())
-                throw new InvalidStateException(
-                    _loc.get("cant-cascade-persist", vmd))
+            if (sm == null || !sm.isPersistent()) {
+                if (((StoreContext)_broker).getAllowReferenceToSiblingContext() 
+                 && ImplHelper.isManageable(obj) 
+                 && ((PersistenceCapable)obj).pcGetStateManager() != null) {
+                    return; 
+                } else {
+                    throw new InvalidStateException(_loc.get("cant-cascade-persist", 
+                            vmd.toString(), Exceptions.toString(obj),
+                            sm == null ? " unmanaged" : sm.getPCState().getClass().getSimpleName()))
                     .setFailedObject(obj);
+                }
+            }
         } else {
             if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
                 if (!_broker.isDetachedNew() && _broker.isDetached(obj))

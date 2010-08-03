@@ -500,4 +500,26 @@ public interface StoreContext {
      * @since 2.0.0. 
      */
     public boolean isCached(List<Object> oid);
+    
+    /**
+     * Affirms if this context will allow its managed instances to refer instances 
+     * that are managed by other contexts. 
+     * <B>Note</B>: Some specification (such as JPA) does not warranty predictable
+     * behavior when strict group-like property of a persistent context (where managed 
+     * instances can only refer to instances managed by the <em>same</em> context).
+     * Please be aware of consequences when the flag is set to true.
+     * 
+     * @since 2.1
+     */
+    public void setAllowReferenceToSiblingContext(boolean flag);
+    
+    /**
+     * Affirms if this context will allow its managed instances to refer instances 
+     * that are managed by other contexts. 
+     * 
+     * @return false by default.
+     * 
+     * @since 2.1
+     */
+    public boolean getAllowReferenceToSiblingContext();
 }

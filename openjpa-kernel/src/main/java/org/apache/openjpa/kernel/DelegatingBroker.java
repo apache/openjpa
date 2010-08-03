@@ -1468,4 +1468,13 @@ public class DelegatingBroker
     public boolean isCached(List<Object> oid) {
         return _broker.isCached(oid);
     }
+    
+    public boolean getAllowReferenceToSiblingContext() {
+        return _broker.getAllowReferenceToSiblingContext();
+    }
+    
+    public void setAllowReferenceToSiblingContext(boolean allow) {
+        _broker.setAllowReferenceToSiblingContext(allow);
+    }
+
 }

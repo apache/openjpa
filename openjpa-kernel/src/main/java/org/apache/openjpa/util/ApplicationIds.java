@@ -486,9 +486,9 @@ public class ApplicationIds {
                 // If a value already exists on this field, throw exception.
                 // This is considered an application coding error.
                 if (!sm.isDefaultValue(pks[i].getIndex()))
-                    throw new InvalidStateException(_loc2.get(
-                            "existing-value-override-excep", pks[i]
-                                    .getFullName(false)));
+                    throw new InvalidStateException(_loc2.get("existing-value-override-excep", 
+                            pks[i].getFullName(false), Exceptions.toString(sm.getPersistenceCapable()),
+                            sm.getPCState().getClass().getSimpleName()));
                 // Assign the generated value
                 if (store.assignField(sm, pks[i].getIndex(), preFlush))
                     pks[i].setValueGenerated(true);

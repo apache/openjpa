@@ -62,8 +62,8 @@ public class AttachManager {
     private final Collection _visitedNodes = new ArrayList();
 
     // reusable strategies
-    private AttachStrategy _version = null;
-    private AttachStrategy _detach = null;
+    private AttachStrategy _version;
+    private AttachStrategy _detach;
 
     /**
      * Constructor. Supply broker attaching to.
