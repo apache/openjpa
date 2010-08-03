@@ -36,6 +36,8 @@ import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
+import org.apache.openjpa.instrumentation.InstrumentationManager;
+import org.apache.openjpa.instrumentation.InstrumentationManagerImpl;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
@@ -61,6 +63,8 @@ import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
 import org.apache.openjpa.lib.encryption.EncryptionProvider;
+import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
+import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -167,6 +171,8 @@ public class OpenJPAConfigurationImpl
     public StringValue validationGroupPreRemove;
     public StringValue dataCacheMode; 
     public BooleanValue dynamicEnhancementAgent;
+    public ObjectValue instrumentationManager;
+    public PluginListValue instrumentationProviders;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -568,6 +574,19 @@ public class OpenJPAConfigurationImpl
         dynamicEnhancementAgent  = addBoolean("DynamicEnhancementAgent");
         dynamicEnhancementAgent.setDefault("true");
         dynamicEnhancementAgent.set(true);
+        
+        instrumentationManager = addPlugin("InstrumentationManager", true);
+        aliases =
+            new String[] { "default", InstrumentationManagerImpl.class.getName(), };
+        instrumentationManager.setAliases(aliases);
+        instrumentationManager.setDefault(aliases[0]);
+        instrumentationManager.setString(aliases[0]);
+        instrumentationManager.setInstantiatingGetter("getInstrumentationManager");
+
+        instrumentationProviders = addPluginList("Instrumentation");
+        aliases = new String[] { "jmx", "org.apache.openjpa.instrumentation.jmx.JMXProvider" };
+        instrumentationProviders.setAliases(aliases);
+        instrumentationProviders.setInstantiatingGetter("getInstrumentationInstances");
         
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1589,6 +1608,46 @@ public class OpenJPAConfigurationImpl
         return vgPreRemove;
     }
 
+    public String getInstrumentation() {
+        return instrumentationProviders.getString();
+    }
+
+    public void setInstrumentation(String providers) {
+        instrumentationProviders.setString(providers);
+    }
+    
+    public InstrumentationProvider[] getInstrumentationInstances() {
+        if (instrumentationProviders.get() == null)
+            instrumentationProviders.instantiate(InstrumentationProvider.class, this);
+        return (InstrumentationProvider[]) instrumentationProviders.get();
+    }
+    
+    public void setInstrumentationManager(String mgr) {
+        instrumentationManager.setString(mgr);
+    }
+
+    public String getInstrumentationManager() {
+        return instrumentationManager.getString();
+    }
+
+    public void setInstrumentationManager(InstrumentationManager im) {
+        if (im != null)
+            im.initialize(this, instrumentationProviders);
+        instrumentationManager.set(im);
+    }
+    
+    public InstrumentationManager getInstrumentationManagerInstance() {
+        InstrumentationManager im = (InstrumentationManager) instrumentationManager.get();
+        if (im == null) {
+            im = (InstrumentationManager) instrumentationManager.instantiate(InstrumentationManager.class, this);
+            if (im != null) {
+                im.initialize(this, instrumentationProviders);
+                im.start(InstrumentationLevel.IMMEDIATE, this);
+            }
+        }
+        return im;
+    }
+
     public void instantiateAll() {
         super.instantiateAll();
         getMetaDataRepositoryInstance();
@@ -1603,6 +1662,7 @@ public class OpenJPAConfigurationImpl
     protected void preClose() {
         ImplHelper.close(metaRepository);
         ImplHelper.close(remoteEventManager);
+        ImplHelper.close(getInstrumentationManagerInstance());
         super.preClose();
     }
 

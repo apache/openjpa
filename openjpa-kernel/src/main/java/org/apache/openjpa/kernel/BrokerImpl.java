@@ -62,8 +62,10 @@ import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionEventManager;
+import org.apache.openjpa.instrumentation.InstrumentationManager;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -170,6 +172,7 @@ public class BrokerImpl
     private transient ReentrantLock _lock = null;
     private transient OpCallbacks _call = null;
     private transient RuntimeExceptionTranslator _extrans = null;
+    private transient InstrumentationManager _instm = null;
 
     // ref to producing factory and configuration
     private transient AbstractBrokerFactory _factory = null;
@@ -365,6 +368,11 @@ public class BrokerImpl
         if (!fromDeserialization) {
             _fc = _store.newFetchConfiguration();
             _fc.setContext(this);
+        }
+        
+        _instm = _conf.getInstrumentationManagerInstance();
+        if (_instm != null) {
+            _instm.start(InstrumentationLevel.BROKER, this);
         }
 
         // synch with the global transaction in progress, if any
@@ -4348,6 +4356,9 @@ public class BrokerImpl
 
         _lm.close();
         _store.close();
+        if (_instm != null) {
+            _instm.stop(InstrumentationLevel.BROKER, this);
+        }
         _flags = 0;
         _closed = true;
         if (_log.isTraceEnabled())

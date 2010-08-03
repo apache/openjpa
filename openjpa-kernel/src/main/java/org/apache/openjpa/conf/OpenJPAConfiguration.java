@@ -32,6 +32,7 @@ import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.event.OrphanedKeyAction;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
+import org.apache.openjpa.instrumentation.InstrumentationManager;
 import org.apache.openjpa.kernel.AutoClear;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.BrokerFactory;
@@ -1836,6 +1837,31 @@ public interface OpenJPAConfiguration
      * @since 2.0.0
      */
     public void setCacheDistributionPolicy(String policyPlugin);
-
+    
+    /**
+     * Gets the plug-in string that defines instrumentation providers and what
+     * they instrument.
+     * @return a plug-in string for the instrumentation configuration
+     * @since 2.1.0
+     */
+    public String getInstrumentation();
+    
+    /**
+     * Sets the plug-in string that defines instrumentation providers and what
+     * they instrument.
+     * @param providers a plug-in string for the instrumentation configuration
+     * @since 2.1.0
+     */
+    public void setInstrumentation(String providers);
+    
+    /**
+     * Gets an instance of the instrumentation manager.  The instrumentation
+     * provides access to configured instrumentation providers and can be used
+     * to manage them at runtime.
+     * @return an instance of the instrumentation manager
+     * @since 2.1.0
+     */
+    public InstrumentationManager getInstrumentationManagerInstance();
+    
 }
 

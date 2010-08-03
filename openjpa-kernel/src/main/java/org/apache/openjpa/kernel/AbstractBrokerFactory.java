@@ -53,8 +53,10 @@ import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.BrokerFactoryEvent;
 import org.apache.openjpa.event.RemoteCommitEventManager;
+import org.apache.openjpa.instrumentation.InstrumentationManager;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -868,6 +870,12 @@ public abstract class AbstractBrokerFactory
 
         // Get a DataCacheManager instance up front to avoid threading concerns on first call.
         // _conf.getDataCacheManagerInstance();
+
+        InstrumentationManager imgr = _conf.getInstrumentationManagerInstance();
+        if (imgr != null) {
+            // Start all factory level instrumentation
+            imgr.start(InstrumentationLevel.FACTORY, this);
+        }
     }
 }
 
