@@ -220,7 +220,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
     private long getReadCount(Class<?> c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
-            stats.getReadCount(c);
+            return stats.getReadCount(c);
         return NO_STATS;
     }
 
