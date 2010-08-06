@@ -41,5 +41,6 @@
         <module>slf4j</module>
         <module>tck</module>
         <module>validation</module>
+        <module>jmx</module>
     </modules>
 </project>
