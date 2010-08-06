@@ -33,16 +33,20 @@
         Note that to sign the release, you need to have "gpg" installed and
         create a key. See http://apache.org/dev/release-signing.html
     -->
+
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>apache-openjpa</artifactId>
-    <packaging>pom</packaging>
-    <name>OpenJPA Project Docs and Assemblies</name>
-    <description>OpenJPA Project Docs and Assemblies</description>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>2.0.1-SNAPSHOT</version>
     </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>apache-openjpa</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA Project Docs and Assemblies</name>
+    <description>OpenJPA Project Docs and Assemblies</description>
 
     <properties>
         <openjpa.release.keyAlias>
