@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -77,6 +78,10 @@ public class TestQueryEscapeCharacters
     }
 
     public void testEscapedQuery() {
+        if(getDBDictionary(emf) instanceof MySQLDictionary) { 
+            return;
+        }
+        
         performFind ("Employee.findByNameEscaped", 
                 "M\\%%", 1);
     }

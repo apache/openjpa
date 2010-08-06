@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -36,6 +38,11 @@ public class TestPersistentCollection extends SingleEMFTestCase {
     public void setUp() {
         setUp(PColl_EntityA.class, PColl_EmbedB.class, PColl_EntityC.class,
                 PColl_EntityA1.class, PColl_EntityB.class, CLEAR_TABLES);
+        
+        DBDictionary dict = getDBDictionary(emf);
+        if(dict instanceof MySQLDictionary) { 
+            ((MySQLDictionary) dict).driverDeserializesBlobs=false; 
+        }
     }
 
     @SuppressWarnings("unchecked")

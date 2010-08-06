@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -33,6 +34,10 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         setUp(Dog1.class, Dog2.class, DogTable.class, DogTable2.class,
                 DogTable3.class, DogTable4.class);
 
+        if(getDBDictionary(emf) instanceof MySQLDictionary) { 
+            return;
+        }
+        
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         // cleanup database first
@@ -105,6 +110,10 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedAUTO() {
+        if(getDBDictionary(emf) instanceof MySQLDictionary) { 
+            return;
+        }
+        
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
@@ -182,6 +191,10 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     public void testGeneratedTABLE() {
+        if(getDBDictionary(emf) instanceof MySQLDictionary) { 
+            return;
+        }
+        
         EntityManager em = emf.createEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
         em.getTransaction().begin();
