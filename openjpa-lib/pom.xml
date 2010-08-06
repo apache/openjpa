@@ -21,18 +21,21 @@
     Maven release plugin requires the project tag to be on a single line. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.openjpa</groupId>
-    <artifactId>openjpa-lib</artifactId>
-    <packaging>jar</packaging>
-    <name>OpenJPA Utilities Library</name>
-    <description>OpenJPA Utilities Library</description>
-    <url>http://openjpa.apache.org</url>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
     </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-lib</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenJPA Utilities Library</name>
+    <description>OpenJPA Utilities Library</description>
+
     <dependencies>
         <dependency>
             <groupId>jakarta-regexp</groupId>
@@ -77,6 +80,7 @@
             <scope>provided</scope>
         </dependency>        
     </dependencies>
+
     <build>
         <plugins>
             <!--
@@ -131,8 +135,23 @@ openjpa.enhancer.revision=${pcenhancer.revision}
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>

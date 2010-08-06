@@ -84,7 +84,6 @@
                 <executions>
                     <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
@@ -165,15 +164,19 @@
                         </property>
                         <property>
                             <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
+                            <value>${derby.locks.deadlockTimeout}</value>
                         </property>
                         <property>
                             <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
+                            <value>${derby.locks.waitTimeout}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
                         </property>
                     </systemProperties>
                 </configuration>

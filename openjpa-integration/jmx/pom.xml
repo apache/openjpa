@@ -22,7 +22,8 @@
     the release plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.apache.openjpa</groupId>
@@ -37,17 +38,6 @@
 
   <properties>
     <checkstyle.config.location>${project.basedir}/../../openjpa-project/checkstyle.xml</checkstyle.config.location>
-    <dbcp.maxActive>10</dbcp.maxActive>
-    <dbcp.maxIdle>5</dbcp.maxIdle>
-    <dbcp.minIdle>2</dbcp.minIdle>
-    <dbcp.maxWait>10000</dbcp.maxWait>
-    <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-    <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
-    <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-    <connection.username />
-    <connection.password />
-    <test.jvm.maxpermsize>256m</test.jvm.maxpermsize>
-    <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
     <!-- Enable the JMX platform MBean provider -->
     <test.jvm.jmxprovider>com.sun.management.jmxremote</test.jvm.jmxprovider>
     <!-- Disable JMX platform MBean authentication  -->
@@ -88,72 +78,11 @@
   </dependencies>
   
   <build>
-    <pluginManagement>
       <plugins>
         <plugin>
-          <!-- The jar plugin builds a jar containing the image gallery classes -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              </manifest>
-            </archive>
-          </configuration>
-        </plugin>
-        <plugin>
-          <!-- The surefire plugin is used to run the jUnit tests -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.4.3</version>
-          <configuration>
-            <argLine>${surefire.jvm.args}</argLine>
-            <useFile>false</useFile>
-            <trimStackTrace>false</trimStackTrace>
-            <useSystemClassLoader>true</useSystemClassLoader>
-            <systemProperties>
-               <property>
-                  <name>openjpa.Log</name>
-                  <value>${openjpa.Log}</value>
-               </property>
-               <property>
-                  <name>openjpa.DynamicEnhancementAgent</name>
-                  <value>false</value>
-               </property>
-               <property>
-                  <name>openjpa.ConnectionDriverName</name>
-                  <value>org.apache.commons.dbcp.BasicDataSource</value>
-               </property>
-               <property>
-                   <name>derby.stream.error.file</name>
-                   <value>target/derby.log</value>
-               </property>
-               <property>
-                   <name>derby.locks.deadlockTimeout</name>
-                   <value>5</value>
-               </property>
-               <property>
-                   <name>derby.locks.waitTimeout</name>
-                   <value>6</value>
-               </property>
-               <property>
-                    <name>openjpa.ConnectionProperties</name>
-                    <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
-               </property>
-            </systemProperties>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-    <plugins>
-      <plugin>
-          <!-- Use the openjpa maven plugin to enhance the domain model classes -->
+          <!-- Use openjpa maven plugin to enhance the domain model classes -->
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>openjpa-maven-plugin</artifactId>
-          <version>1.1</version>
           <configuration>
             <includes>org/apache/openjpa/integration/jmx/*.class</includes>
             <addDefaultConstructor>true</addDefaultConstructor>
@@ -176,7 +105,61 @@
               <version>${project.version}</version>
             </dependency>
           </dependencies>
-      </plugin>
-    </plugins>
+        </plugin>
+        <plugin>
+          <!-- The surefire plugin is used to run the jUnit tests -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <argLine>${surefire.jvm.args}</argLine>
+            <systemProperties>
+               <property>
+                  <name>openjpa.Log</name>
+                  <value>${openjpa.Log}</value>
+               </property>
+               <property>
+                  <name>openjpa.DynamicEnhancementAgent</name>
+                  <value>false</value>
+               </property>
+               <property>
+                  <name>openjpa.ConnectionDriverName</name>
+                  <value>org.apache.commons.dbcp.BasicDataSource</value>
+               </property>
+               <property>
+                   <name>derby.stream.error.file</name>
+                   <value>target/derby.log</value>
+               </property>
+               <property>
+                   <name>derby.locks.deadlockTimeout</name>
+                   <value>${derby.locks.deadlockTimeout}</value>
+               </property>
+               <property>
+                   <name>derby.locks.waitTimeout</name>
+                   <value>${derby.locks.waitTimeout}</value>
+               </property>
+               <property>
+                   <name>openjpa.ConnectionProperties</name>
+                   <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+               </property>
+               <property>
+                   <name>tests.openjpa.allowfailure</name>
+                   <value>${tests.openjpa.allowfailure}</value>
+               </property>
+            </systemProperties>
+          </configuration>
+        </plugin>
+        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-tests</id>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+        </plugin>
+      </plugins>
   </build>
 </project>

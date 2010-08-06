@@ -35,18 +35,6 @@
     <name>OpenJPA Integration Tests - Bean Validation</name>
     <description>OpenJPA Integration Tests - Bean Validation</description>
 
-    <properties>
-        <dbcp.maxActive>10</dbcp.maxActive>
-        <dbcp.maxIdle>5</dbcp.maxIdle>
-        <dbcp.minIdle>2</dbcp.minIdle>
-        <dbcp.maxWait>10000</dbcp.maxWait>
-        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-        <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
-        <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-        <connection.username />
-        <connection.password />
-    </properties>
-
     <profiles>
         <!-- Default profile for testing with Apache BVAL provider -->
         <!-- See http://incubator.apache.org/projects/beanvalidation.html -->
@@ -220,7 +208,6 @@
                 <executions>
                     <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
@@ -286,15 +273,19 @@
                         </property>
                         <property>
                             <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
+                            <value>${derby.locks.deadlockTimeout}</value>
                         </property>
                         <property>
                             <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
+                            <value>${derby.locks.waitTimeout}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
                         </property>
                     </systemProperties>
                 </configuration>
