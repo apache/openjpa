@@ -16,9 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.instrumentation;
+package org.apache.openjpa.instrumentation.jmx;
 
-public interface PreparedQueryCacheInstrumentationMBean 
+import org.apache.openjpa.instrumentation.PreparedQueryCacheInstrument;
+
+public interface PreparedQueryCacheJMXInstrumentMBean 
    extends PreparedQueryCacheInstrument {
 
 }

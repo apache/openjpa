@@ -31,7 +31,7 @@ import org.apache.openjpa.util.UserException;
  * A JMX-specific instrument for the query cache
  */
 public class PreparedQueryCacheJMXInstrument extends AbstractPreparedQueryCacheInstrument 
-    implements JMXInstrument {
+    implements JMXInstrument, PreparedQueryCacheJMXInstrumentMBean {
     
     private static Localizer _loc = Localizer.forPackage(PreparedQueryCacheJMXInstrument.class);
 

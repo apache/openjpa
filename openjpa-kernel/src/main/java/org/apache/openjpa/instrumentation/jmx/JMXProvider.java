@@ -45,7 +45,7 @@ public class JMXProvider
     /**
      * The standard mbean package for OpenJPA
      */
-    public static final String MBEAN_PACKAGE = "org.apache.openjpa";
+    public static final String MBEAN_DOMAIN = "org.apache.openjpa";
     
     private MBeanServer _mbs = null;
 
@@ -100,8 +100,8 @@ public class JMXProvider
     public static ObjectName createObjectName(JMXInstrument instrument, Map<String,String> props) 
         throws Exception {
         // Construct the base name
-        StringBuilder sbName = new StringBuilder(MBEAN_PACKAGE);
-        sbName.append("type=");
+        StringBuilder sbName = new StringBuilder(MBEAN_DOMAIN);
+        sbName.append(":type=");
         sbName.append(instrument.getName());
         sbName.append(",cfgid=");
         sbName.append(instrument.getConfigId());

@@ -18,7 +18,15 @@
  */
 package org.apache.openjpa.instrumentation.jmx;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
 import javax.management.ObjectName;
+import javax.management.DynamicMBean;
+import javax.management.ReflectionException;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
@@ -34,7 +42,7 @@ import org.apache.openjpa.util.UserException;
  * A JMX-specific instrument for the data cache
  */
 public class DataCacheJMXInstrument extends AbstractDataCacheInstrument 
-    implements JMXInstrument {
+    implements JMXInstrument, DataCacheJMXInstrumentMBean {
     
     private static Localizer _loc = Localizer.forPackage(DataCacheJMXInstrument.class);
 
@@ -95,5 +103,39 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument
 
     public void stop() {
         getProvider().stopInstrument(this);
+    }
+
+    public Object getAttribute(String attribute)
+        throws AttributeNotFoundException, MBeanException, ReflectionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public AttributeList getAttributes(String[] attributes) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public MBeanInfo getMBeanInfo() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Object invoke(String actionName, Object[] params, String[] signature)
+        throws MBeanException, ReflectionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setAttribute(Attribute attribute)
+        throws AttributeNotFoundException, InvalidAttributeValueException,
+        MBeanException, ReflectionException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public AttributeList setAttributes(AttributeList attributes) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

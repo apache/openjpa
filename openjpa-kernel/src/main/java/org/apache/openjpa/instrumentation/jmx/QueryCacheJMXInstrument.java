@@ -32,7 +32,7 @@ import org.apache.openjpa.util.UserException;
  * A JMX-specific instrument for the query cache
  */
 public class QueryCacheJMXInstrument extends AbstractQueryCacheInstrument 
-    implements JMXInstrument {
+    implements JMXInstrument, QueryCacheJMXInstrumentMBean {
     
     private static Localizer _loc = Localizer.forPackage(QueryCacheJMXInstrument.class);
 

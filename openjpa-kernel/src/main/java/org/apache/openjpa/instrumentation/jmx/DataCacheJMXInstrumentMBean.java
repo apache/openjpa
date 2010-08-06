@@ -16,14 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.instrumentation;
+package org.apache.openjpa.instrumentation.jmx;
+
+import org.apache.openjpa.instrumentation.DataCacheInstrument;
 
 /**
- * Simple MBean interface for providing instrumented query cache metrics 
+ * Simple MBean interface for providing instrumented data cache metrics 
  * and operations.
  * Note: Simple MBeans require an MBean interface matching the supplied 
  * implementation class.
  */
-public interface QueryCacheInstrumentMBean extends QueryCacheInstrument {
+public interface DataCacheJMXInstrumentMBean 
+    extends DataCacheInstrument {
 
 }
