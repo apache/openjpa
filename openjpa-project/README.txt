@@ -1,5 +1,6 @@
-Apache OpenJPA README
-=====================
+Apache OpenJPA - README.txt
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
 Thank you for downloading this release of Apache OpenJPA.
 

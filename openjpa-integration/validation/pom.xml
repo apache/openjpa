@@ -36,20 +36,8 @@
     <name>OpenJPA Integration Tests - Bean Validation</name>
     <description>OpenJPA Integration Tests - Bean Validation</description>
 
-    <properties>
-        <dbcp.maxActive>10</dbcp.maxActive>
-        <dbcp.maxIdle>5</dbcp.maxIdle>
-        <dbcp.minIdle>2</dbcp.minIdle>
-        <dbcp.maxWait>10000</dbcp.maxWait>
-        <dbcp.args>MaxActive=${dbcp.maxActive},MaxIdle=${dbcp.maxIdle},MinIdle=${dbcp.minIdle},MaxWait=${dbcp.maxWait}</dbcp.args>
-        <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
-        <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
-        <connection.username />
-        <connection.password />
-    </properties>
-
     <profiles>
-        <!-- Profile for testing with Agimatec validation provider -->
+        <!-- Profile for testing with Apache BVAL provider -->
         <!-- See http://incubator.apache.org/projects/beanvalidation.html -->
         <profile>
             <id>bval</id>
@@ -66,8 +54,8 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.bval</groupId>
-                    <artifactId>bval-jsr303</artifactId>
-                    <version>0.1-incubating-SNAPSHOT</version>
+                    <artifactId>org.apache.bval.bundle</artifactId>
+                    <version>0.1-incubating</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -88,6 +76,26 @@
                     <artifactId>commons-lang</artifactId>
                     <version>2.4</version>
                     <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+        <!-- Test profile for testing with Apache BVAL and Java SE 5 -->
+        <profile>
+            <id>test-java5</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>2.1.3</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -155,77 +163,6 @@
                 </repository>
             </repositories>
         </profile>
-
-        <!-- OLD Profile for testing with Agimatec validation provider -->
-        <profile>
-            <id>agimatec</id>
-            <activation>
-                <property>
-                    <name>agimatec</name>
-                </property>
-            </activation>
-            <dependencies>
-                <!-- See http://code.google.com/p/agimatec-validation/wiki/GettingStarted -->
-                <dependency>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-validation_1.0_spec</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.agimatec</groupId>
-                    <artifactId>agimatec-jsr303</artifactId>
-                    <version>0.9.6</version>
-                    <scope>test</scope>
-                    <exclusions>
-                        <!-- force usage of the geronimo-validation_1.0_spec -->
-                        <exclusion>
-                            <groupId>javax.validation</groupId>
-                            <artifactId>validation-api</artifactId>
-                        </exclusion>
-                        <!-- use our level of the geronimo-jpa_2.0_spec -->
-                        <exclusion>
-                            <groupId>javax.validation</groupId>
-                            <artifactId>validation-api</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.agimatec</groupId>
-                    <artifactId>agimatec-validation</artifactId>
-                    <version>0.9.6</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils</artifactId>
-                    <version>1.8.2</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                    <version>2.4</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <repositories>
-                <repository>
-                    <id>agimatec.oss.sonatype.org</id>
-                    <name>Sonatype OSS Repository</name>
-                    <url>http://oss.sonatype.org/content/repositories/agimatec</url>
-                    <layout>default</layout>
-                    <snapshots>
-                        <enabled>true</enabled>
-                        <checksumPolicy>ignore</checksumPolicy>
-                        <updatePolicy>daily</updatePolicy>
-                    </snapshots>
-                    <releases>
-                        <enabled>true</enabled>
-                        <checksumPolicy>fail</checksumPolicy>
-                    </releases>
-                </repository>
-            </repositories>
-        </profile>
     </profiles>
 
     <dependencies>
@@ -274,7 +211,6 @@
                 <executions>
                     <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
@@ -340,15 +276,19 @@
                         </property>
                         <property>
                             <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
+                            <value>${derby.locks.deadlockTimeout}</value>
                         </property>
                         <property>
                             <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
+                            <value>${derby.locks.waitTimeout}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
                             <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
                         </property>
                     </systemProperties>
                 </configuration>

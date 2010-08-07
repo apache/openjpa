@@ -66,6 +66,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -121,17 +122,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
                 <executions>
                     <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                                    <Agent-Class>org.apache.openjpa.enhance.InstrumentationFactory</Agent-Class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
@@ -140,6 +150,7 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <!-- 
             Internal (in SVN) repository which contains jar files that are not

@@ -160,6 +160,10 @@
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
                 <connection.password>${openjpa.postgresql.password}</connection.password>
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxActive>20</dbcp.maxActive>
             </properties>
         </profile>
 
@@ -719,6 +723,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -754,6 +759,23 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>default-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                </manifest>
+                                <manifestEntries>
+                                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-base-jar</id>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -774,7 +796,6 @@
                     </execution>
                     <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>

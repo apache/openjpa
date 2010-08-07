@@ -1,21 +1,6 @@
-Licensed to the Apache Software Foundation (ASF) under one or more
-contributor license agreements.  See the NOTICE file distributed with
-this work for additional information regarding copyright ownership.
-The ASF licenses this file to you under the Apache License, Version 2.0
-(the "License"); you may not use this file except in compliance with
-the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
- 
-                     Building OpenJPA
-===============================================================================
+Building Apache OpenJPA
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
 These instructions describe how to build OpenJPA from source code using the
 Apache Maven 2 build tool. They are written for use from the console, and are 
@@ -29,10 +14,10 @@ website at http://openjpa.apache.org/building-openjpa.html
       OpenJPA requires Java 1.6 or later to build, but still supports using
       Java SE 5 for runtime even though some features are only available
       with Java SE 6.
-   2. Install the build tool Apache Maven 2.0.9 or later, from:
+   2. Install the build tool Apache Maven 2.2.1 or later, from:
           http://maven.apache.org/
       If it is installed correctly, typing mvn -v from the console will result
-      in the text "Maven version: 2.0.9"
+      in the text "Maven version: 2.2.1"
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the openjpa 
@@ -70,31 +55,30 @@ Java(TM) SE Runtime Environment (build 1.6.0_17-b04-248-10M3025)
 Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01-101, mixed mode)
 
 $ mvn -v
-Maven version: 2.0.10
+Maven version: 2.2.1
 
 $ svn --version
 svn, version 1.5.5 (r34862)
    compiled Jan  5 2009, 12:30:39
 
-$ svn co https://svn.apache.org/repos/asf/openjpa/trunk/
-A  trunk/openjpa-lib
-A  trunk/openjpa-lib/src
-A  trunk/openjpa-lib/src/test
-A  trunk/openjpa-lib/src/test/java
-A  trunk/openjpa-lib/src/test/java/org
-A  trunk/openjpa-lib/src/test/java/org/apache
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.
-java
+$ svn co https://svn.apache.org/repos/asf/openjpa/tags/2.0.0
+A  2.0.0/openjpa-lib
+A  2.0.0/openjpa-lib/src
+A  2.0.0/openjpa-lib/src/test
+A  2.0.0/openjpa-lib/src/test/java
+A  2.0.0/openjpa-lib/src/test/java/org
+A  2.0.0/openjpa-lib/src/test/java/org/apache
+A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa
+A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib
+A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
+A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
 
  ...
 
-A  trunk/openjpa-persistence/pom.xml
+A  2.0.0/openjpa-persistence/pom.xml
 Checked out revision 915725.
 
-$ cd trunk/
+$ cd 2.0.0/
 
 $ mvn clean install -DfailIfNoTests=false -Dtest= 
 
@@ -156,6 +140,6 @@ $ mvn clean install -DfailIfNoTests=false -Dtest=
 
 $ ls openjpa-project/target/site/downloads/
 
-apache-openjpa-2.0.0-SNAPSHOT-binary.zip
-apache-openjpa-2.0.0-SNAPSHOT-source.zip
+apache-openjpa-2.0.0-binary.zip
+apache-openjpa-2.0.0-source.zip
  

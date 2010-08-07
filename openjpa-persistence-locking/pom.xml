@@ -746,7 +746,6 @@
                 <executions>
                     <execution>
                         <id>attach-tests</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>test-jar</goal>
                         </goals>

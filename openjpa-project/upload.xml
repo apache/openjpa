@@ -55,17 +55,17 @@
             </fileset>
         </scp>
         <!-- remove directories, hopefully this fails silently. mkdir does not and stops the process these exist.-->
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${pom.version}/docs" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${pom.version}/downloads" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/downloads" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm ${build.dir}/docs.zip" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="mkdir ${build.dir}/apache-openjpa-${pom.version}/downloads " trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="mkdir ${build.dir}/apache-openjpa-${project.version}/downloads " trust="true" />
         
-        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}/apache-openjpa-${pom.version}/downloads" trust="true">
+        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}/apache-openjpa-${project.version}/downloads" trust="true">
             <fileset dir="target/site/downloads" />
         </scp>
         
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w ${build.dir}/apache-openjpa-${pom.version}" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w ${build.dir}/apache-openjpa-${project.version}" trust="true" />
         
         <delete>
             <fileset dir="target/site/tempDocs" />
