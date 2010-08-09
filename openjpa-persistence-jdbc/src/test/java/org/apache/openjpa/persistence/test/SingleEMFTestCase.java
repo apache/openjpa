@@ -201,5 +201,16 @@ public abstract class SingleEMFTestCase
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
     }
+    
+    protected String getForUpdateClause() {
+        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+        if (dict.forUpdateClause != null) {
+            return dict.forUpdateClause;
+        }
+        if (dict.tableForUpdateClause != null) {
+            return dict.tableForUpdateClause;
+        }
+        return "";
+    }
 }
 
