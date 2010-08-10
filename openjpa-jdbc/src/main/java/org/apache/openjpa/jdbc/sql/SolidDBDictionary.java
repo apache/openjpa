@@ -47,6 +47,7 @@ public class SolidDBDictionary
         blobTypeName = "LONG VARBINARY";
         booleanTypeName = "TINYINT";
         clobTypeName = "LONG VARCHAR";
+        doubleTypeName = "DOUBLE PRECISION";
         
         allowsAliasInBulkClause = false;
         useGetStringForClobs = true;
