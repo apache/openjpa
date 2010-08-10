@@ -22,8 +22,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;

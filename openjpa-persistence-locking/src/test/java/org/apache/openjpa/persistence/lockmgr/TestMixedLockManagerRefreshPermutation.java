@@ -332,6 +332,61 @@ public class TestMixedLockManagerRefreshPermutation
         String t1Message2 = "Refresh in Thread 1 Again";
         String t2Message1 = "Refresh in Thread 2";
         
+//        Object[][] threadMain = {
+//                {Act.CreateEm},
+//                {Act.Find},
+//                {Act.SaveVersion},
+//                {Act.TestEmployee, 1, Default_FirstName},
+//                
+//                {Act.CloseEm},
+//                {Act.Sleep, 100},
+//
+//                {Act.CreateEm},
+//                {Act.StartTx},
+//                {Act.RefreshWithLock, 1, t1Lock},
+//                {Act.SaveVersion},
+//                {Act.TestException},
+//                
+//                {Act.NewThread, 1 },
+//                {Act.StartThread, 1 },
+//                
+//                {Act.Wait},
+//                {Act.UpdateEmployee},                
+//                {t1IsCommit},
+//                
+//                {Act.Notify, 1},
+//
+//                {Act.Find},
+//                
+//                {Act.WaitAllChildren},
+//                {Act.Find},
+//                {Act.TestEmployee, 1, null, t1VersionInc},
+//                {Act.TestException, 0, t1Exceptions },
+//                {Act.TestException, 1, t2Exceptions },
+//                {Act.CloseEm}
+//            };
+//
+//            Object[][] thread1 = {
+//                {Act.CreateEm},
+//                {Act.StartTx},
+//                {Act.FindWithLock, 1, t2Lock},
+//                {Act.SaveVersion},
+//                {Act.TestException},
+//                {Act.Notify, 0},
+//                
+//                {Act.Wait},
+//                {Act.Sleep, 2000},  // sleep for at least 2 sec so that the entity name updated with timestamp 
+//                                    // in each of the 2 threads are different. 
+//                {Act.UpdateEmployee},
+//                
+//                {t2IsCommit},
+//                {Act.Sleep, 1000},
+//                {Act.Find},
+//                {Act.TestEmployee, 1, null, t2VersionInc},
+//                {Act.CloseEm}
+//            };
+//            launchActionSequence(testName, parameters, threadMain, thread1);
+
         Object[][] threadMain = {
             {Act.CreateEm},
             {Act.Find},
@@ -351,6 +406,7 @@ public class TestMixedLockManagerRefreshPermutation
             {Act.TestEmployee, 1},
             {Act.TestException, 1, t1Exceptions },
             {Act.TestException, 2, t2Exceptions },
+            {Act.CloseEm}
         };
         Object[][] thread1 = {
             {Act.CreateEm},
@@ -381,7 +437,8 @@ public class TestMixedLockManagerRefreshPermutation
             
             {Act.Clear},
             {Act.Find},
-            {Act.TestEmployee, 1, null, t1VersionInc}
+            {Act.TestEmployee, 1, null, t1VersionInc},
+            {Act.CloseEm}
         };
         Object[][] thread2 = {
             {Act.CreateEm},
@@ -406,7 +463,8 @@ public class TestMixedLockManagerRefreshPermutation
             {Act.Clear},
             {Act.Find},
             {Act.TestEmployee, 1, null, t2VersionInc},
-        };
+            {Act.CloseEm}
+       };
         
         launchActionSequence(testName, parameters, threadMain, thread1,
             thread2);

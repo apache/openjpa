@@ -59,8 +59,8 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     public void testFindReadPessimisticRead() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticRead,Commit)",
-            LockModeType.READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
+            LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(Read,Commit/PessimisticRead,Rollback)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -70,8 +70,8 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     public void testFindReadPessimisticWrite() {
         commonFindTest(
             "testFind(Read,Commit/PessimisticWrite,Commit)",
-            LockModeType.READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
+            LockModeType.READ, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(Read,Commit/PessimisticWrite,Rollback)",
             LockModeType.READ, Act.CommitTx, 1, null,
@@ -115,8 +115,8 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     public void testFindWritePessimisticRead() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticRead,Commit)",
-            LockModeType.WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
+            LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(Write,Commit/PessimisticRead,Rollback)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -126,8 +126,8 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
     public void testFindWritePessimisticWrite() {
         commonFindTest(
             "testFind(Write,Commit/PessimisticWrite,Commit)",
-            LockModeType.WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
+            LockModeType.WRITE, Act.CommitTx, 1, ExpectingOptimisticLockExClass, 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(Write,Commit/PessimisticWrite,Rollback)",
             LockModeType.WRITE, Act.CommitTx, 1, null,
@@ -172,7 +172,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticRead,Rollback)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -183,7 +183,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null); 
         commonFindTest(
             "testFind(PessimisticRead,Commit/PessimisticWrite,Rollback)",
             LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null,
@@ -228,7 +228,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null); 
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticRead,Rollback)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -239,7 +239,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null); 
         commonFindTest(
             "testFind(PessimsiticWrite,Commit/PessimisticWrite,Rollback)",
             LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null,
@@ -284,7 +284,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticRead,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 0, null); 
+            LockModeType.PESSIMISTIC_READ, Act.CommitTx, 1, null); 
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticRead,Rollback)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -295,7 +295,7 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticWrite,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null, 
-            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 0, null);
+            LockModeType.PESSIMISTIC_WRITE, Act.CommitTx, 1, null);
         commonFindTest(
             "testFind(PessimsiticForceInc,Commit/PessimisticWrite,Rollback)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 1, null,
@@ -327,51 +327,57 @@ public class TestMixedLockManagerFindPermutation extends SequencedActionsTest {
                 ", expectedEx= " + Arrays.toString(t2Exceptions)};
             
         Object[][] threadMain = {
-            {Act.CreateEm},
-            {Act.Find},
-            {Act.SaveVersion},
-            {Act.TestEmployee, 1, Default_FirstName},
-            
-            {Act.NewThread, 1 },
-            {Act.NewThread, 2 },
-            {Act.StartThread, 1 },
-            {Act.Wait},
-            {Act.StartThread, 2 },
-            {Act.Notify, 1, 1000 },
-            {Act.Notify, 2, 1000 },
-            {Act.WaitAllChildren},
-            {Act.Find},
-            {Act.TestEmployee, 1},
-            {Act.TestException, 1, t1Exceptions },
-            {Act.TestException, 2, t2Exceptions },
-        };
-        Object[][] thread1 = {
-            {Act.CreateEm},
-            {Act.StartTx},
-            {Act.FindWithLock, 1, t1Lock},
-            {Act.SaveVersion},
-            {Act.TestException},
-            {Act.Notify, 0},
-            {Act.Wait},
-            {Act.UpdateEmployee},
-            
-            {t1IsCommit},
-            {Act.Find},
-            {Act.TestEmployee, 1, null, t1VersionInc}
-        };
-        Object[][] thread2 = {
-            {Act.CreateEm},
-            {Act.StartTx},
-            {Act.FindWithLock, 1, t2Lock},
-            {Act.SaveVersion},
-            {Act.Notify, 0},
-            {Act.Wait},
-            
-            {t2IsCommit},
-            {Act.Find},
-            {Act.TestEmployee, 1, null, t2VersionInc}
-        };
-        launchActionSequence(testName, parameters, threadMain, thread1,
-            thread2);
+                {Act.CreateEm},
+                {Act.Find},
+                {Act.SaveVersion},
+                {Act.TestEmployee, 1, Default_FirstName},
+                {Act.CloseEm},
+                {Act.Sleep, 100},
+
+                {Act.CreateEm},
+                {Act.StartTx},
+                {Act.FindWithLock, 1, t1Lock},
+                {Act.SaveVersion},
+                {Act.TestException},
+                
+                {Act.NewThread, 1 },
+                {Act.StartThread, 1 },
+                
+                {Act.Wait},
+                {Act.UpdateEmployee},                
+                {t1IsCommit},
+                
+                {Act.Notify, 1},
+
+                {Act.Find},
+                
+                {Act.WaitAllChildren},
+                {Act.Find},
+                {Act.TestEmployee, 1, null, t1VersionInc},
+                {Act.TestException, 0, t1Exceptions },
+                {Act.TestException, 1, t2Exceptions },
+                {Act.CloseEm}
+            };
+
+            Object[][] thread1 = {
+                {Act.CreateEm},
+                {Act.StartTx},
+                {Act.FindWithLock, 1, t2Lock},
+                {Act.SaveVersion},
+                {Act.TestException},
+                {Act.Notify, 0},
+                
+                {Act.Wait},
+                {Act.Sleep, 2000},  // sleep for at least 2 sec so that the entity name updated with timestamp 
+                                    // in each of the 2 threads are different. 
+                {Act.UpdateEmployee},
+                
+                {t2IsCommit},
+                {Act.Sleep, 1000},
+                {Act.Find},
+                {Act.TestEmployee, 1, null, t2VersionInc},
+                {Act.CloseEm}
+            };
+            launchActionSequence(testName, parameters, threadMain, thread1);
     }
 }
