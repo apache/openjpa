@@ -37,11 +37,12 @@
     <description>OpenJPA Integration Tests - Bean Validation</description>
 
     <profiles>
-        <!-- Profile for testing with Apache BVAL provider -->
+        <!-- Default profile for testing with Apache BVAL provider -->
         <!-- See http://incubator.apache.org/projects/beanvalidation.html -->
         <profile>
             <id>bval</id>
             <activation>
+                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>bval</name>
                 </property>
@@ -55,7 +56,6 @@
                 <dependency>
                     <groupId>org.apache.bval</groupId>
                     <artifactId>org.apache.bval.bundle</artifactId>
-                    <version>0.1-incubating</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-validation_1.0_spec -->
@@ -74,7 +74,6 @@
                 <dependency>
                     <groupId>commons-lang</groupId>
                     <artifactId>commons-lang</artifactId>
-                    <version>2.4</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -100,11 +99,10 @@
             </dependencies>
         </profile>
 
-        <!-- Default profile for testing with Hibernate Bean Validation RI -->
+        <!-- Profile for testing with Hibernate Bean Validation RI -->
         <profile>
             <id>hibernate</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
                 <property>
                     <name>hibernate</name>
                 </property>
