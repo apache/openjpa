@@ -74,6 +74,8 @@
                 <dependency>
                     <groupId>commons-lang</groupId>
                     <artifactId>commons-lang</artifactId>
+                    <!-- BVAL requires 2.4 or later -->
+                    <version>2.4</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
