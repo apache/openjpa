@@ -248,7 +248,7 @@
                                 <goals>
                                     <goal>javadoc</goal>
                                 </goals>
-                        <configuration>
+                                <configuration>
                                     <additionalparam>
                                         ${javadoc.additionalparam}
                                     </additionalparam>
@@ -261,14 +261,14 @@
                                         <link>http://java.sun.com/javaee/6/docs/api</link>
                                         <link>http://jakarta.apache.org/commons/collections/api-release</link>
                                     </links>
-                        </configuration>
-                                </execution>
-                            </executions>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
-                            <configuration>
+                        <configuration>
                             <useReleaseProfile>false</useReleaseProfile>
                             <goals>deploy site site-deploy</goals>
                             <arguments>-Papache-release,docbook-profile,test-derby -DskipTests=true</arguments>
@@ -281,28 +281,28 @@
                         <configuration>
                             <excludeSubProjects>false</excludeSubProjects>
                             <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                                <excludes>
+                            <excludes>
                                 <!-- comments are usupported in services files -->
-                                    <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
-                                    <exclude>**/javax.annotation.processing.Processor</exclude>
+                                <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                <exclude>**/javax.annotation.processing.Processor</exclude>
                                 <!-- comments are usupported by our rsrc parser -->
-                                    <exclude>**/*.rsrc</exclude>
+                                <exclude>**/*.rsrc</exclude>
                                 <!-- comments are usupported in these files -->
-                                    <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                                <exclude>**/org.apache.openjpa.revision.properties</exclude>
                                 <exclude>scripts/*.list</exclude>
                                 <exclude>scripts/*.options</exclude>
                                 <exclude>scripts/*.dict</exclude>
                                 <!-- generated content -->
-                                    <exclude>**/.*/**</exclude>
+                                <exclude>**/.*/**</exclude>
                                 <exclude>**/target/**/*</exclude>
                                 <exclude>**/dependency-reduced-pom.xml</exclude>
                                 <exclude>**/*.log</exclude>
                                 <exclude>**/maven-eclipse.xml</exclude>
                                 <exclude>**/rat.txt</exclude>
                                 <!-- Exclude internal build-only repository -->
-                                    <exclude>**/internal-repository/**</exclude>
-                                </excludes>
-                            </configuration>
+                                <exclude>**/internal-repository/**</exclude>
+                            </excludes>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -462,39 +462,39 @@
             <build>
                 <pluginManagement>
                     <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                        <excludes>
-                            <exclude>none</exclude>
-                        </excludes>
-                        <testExcludes>
-                            <exclude>**</exclude>
-                        </testExcludes>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>compile-java5</id>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
                             <configuration>
-                                <fork>true</fork>
-                                <executable>${java5.home}/bin/javac</executable>
-                                <compilerVersion>1.5</compilerVersion>
-                                <maxmem>${test.jvm.maxheapsize}</maxmem>
+                                <source>1.5</source>
+                                <target>1.5</target>
                                 <excludes>
-                                    <exclude>**</exclude>
+                                    <exclude>none</exclude>
                                 </excludes>
                                 <testExcludes>
-                                    <exclude>none</exclude>
+                                    <exclude>**</exclude>
                                 </testExcludes>
                             </configuration>
-                            <goals>
-                                <goal>testCompile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                            <executions>
+                                <execution>
+                                    <id>compile-java5</id>
+                                    <configuration>
+                                        <fork>true</fork>
+                                        <executable>${java5.home}/bin/javac</executable>
+                                        <compilerVersion>1.5</compilerVersion>
+                                        <maxmem>${test.jvm.maxheapsize}</maxmem>
+                                        <excludes>
+                                            <exclude>**</exclude>
+                                        </excludes>
+                                        <testExcludes>
+                                            <exclude>none</exclude>
+                                        </testExcludes>
+                                    </configuration>
+                                    <goals>
+                                        <goal>testCompile</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
