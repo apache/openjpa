@@ -80,6 +80,7 @@
         </profile>
 
         <!-- Test profile for testing with Apache BVAL and Java SE 5 -->
+        <!-- Note:  You have to set -Ptest-java5,bval together -->
         <profile>
             <id>test-java5</id>
             <activation>
