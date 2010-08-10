@@ -5,14 +5,14 @@ Copyright 2006-2010 The Apache Software Foundation
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
-Apache, the Apache feather logo and OpenJPA are trademarks of The Apache Software Foundation.
-
 The OpenJPA binary assembly includes software developed by the:
     Apache Commons Collections project
+    Apache Commons DBCP project
     Apache Commons Lang project
     Apache Commons Pool project
     Apache Derby project
-    Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec apis)
+    Apache Geronimo project (JMS 1.1, JTA 1.1, JPA 2.0 and Bean Validation 1.0 spec apis)
+    Apache Incubtor - Bean Validation project
     SERP project
 
 

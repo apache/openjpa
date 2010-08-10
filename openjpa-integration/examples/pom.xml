@@ -40,6 +40,7 @@
         <version>2.1.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-integration-examples</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Integration Tests - Examples</name>

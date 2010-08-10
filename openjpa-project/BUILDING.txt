@@ -14,10 +14,10 @@ website at http://openjpa.apache.org/building-openjpa.html
       OpenJPA requires Java 1.6 or later to build, but still supports using
       Java SE 5 for runtime even though some features are only available
       with Java SE 6.
-   2. Install the build tool Apache Maven 2.0.9 or later, from:
+   2. Install the build tool Apache Maven 2.2.1 or later, from:
           http://maven.apache.org/
       If it is installed correctly, typing mvn -v from the console will result
-      in the text "Maven version: 2.0.9"
+      in the text "Maven version: 2.2.1"
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the openjpa 
@@ -55,7 +55,7 @@ Java(TM) SE Runtime Environment (build 1.6.0_17-b04-248-10M3025)
 Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01-101, mixed mode)
 
 $ mvn -v
-Maven version: 2.0.10
+Maven version: 2.2.1
 
 $ svn --version
 svn, version 1.5.5 (r34862)
@@ -71,8 +71,7 @@ A  trunk/openjpa-lib/src/test/java/org/apache
 A  trunk/openjpa-lib/src/test/java/org/apache/openjpa
 A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib
 A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.
-java
+A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
 
  ...
 
