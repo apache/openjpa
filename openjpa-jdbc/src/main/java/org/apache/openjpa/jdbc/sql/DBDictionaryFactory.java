@@ -270,6 +270,8 @@ public class DBDictionaryFactory {
         // "testdb2" or something)
         if (prod.indexOf("db2") != -1 || prod.indexOf("as400") != -1)
             return dbdictionaryPlugin.unalias("db2");
+        if (prod.indexOf("soliddb") != -1) 
+            return dbdictionaryPlugin.unalias("soliddb");
 
         // known dbs that we don't support
         if (prod.indexOf("cloudscape") != -1)

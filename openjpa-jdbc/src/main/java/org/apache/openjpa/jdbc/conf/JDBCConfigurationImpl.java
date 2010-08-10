@@ -215,6 +215,7 @@ public class JDBCConfigurationImpl
             "oracle", "org.apache.openjpa.jdbc.sql.OracleDictionary",
             "pointbase", "org.apache.openjpa.jdbc.sql.PointbaseDictionary",
             "postgres", "org.apache.openjpa.jdbc.sql.PostgresDictionary",
+            "soliddb", "org.apache.openjpa.jdbc.sql.SolidDBDictionary",
             "sqlserver", "org.apache.openjpa.jdbc.sql.SQLServerDictionary",
             "sybase", "org.apache.openjpa.jdbc.sql.SybaseDictionary",
         };
