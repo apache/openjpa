@@ -291,6 +291,16 @@ public class TestQuerySQLCache
                 Persistence.createEntityManagerFactory("test", props));
         
         EntityManagerImpl em = (EntityManagerImpl)emf.createEntityManager();
+
+        em.getTransaction().begin();
+        em.createQuery("Delete from TblGrandChild").executeUpdate();
+        em.createQuery("Delete from TblChild").executeUpdate();
+        em.createQuery("Delete from TblParent").executeUpdate();
+        em.getTransaction().commit();
+        em.close();
+        
+        em = (EntityManagerImpl) emf.createEntityManager();
+        
         
         em.getTransaction().begin();
         for (int i = 0; i < 2; i++) {
