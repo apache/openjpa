@@ -76,7 +76,6 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
                     "openjpa.jdbc.SynchronizeMappings",    "buildSchema", 
                     "openjpa.RuntimeUnenhancedClasses",    "unsupported", 
                     "openjpa.DataCache", "true",
-                    "openjpa.RemoteCommitProvider", "sjvm",
                     "openjpa.jdbc.UpdateManager", "constraint",
                     PObject.class,
                     BidirectionalOne2OneOwner.class,

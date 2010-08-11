@@ -57,6 +57,17 @@ public class DataCacheManagerImpl
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;
+        String dc = _conf.getDataCache();
+        String qc = _conf.getQueryCache();
+        // If the DataCache or QueryCache is configured to be anything other than false, set the RemoteCommitProvider if
+        // there isn't one.
+        if ((dc != null && dc.contains("false") == false) || (qc != null && qc.contains("false") == false)) {
+            String rcp = _conf.getRemoteCommitProvider();
+            if (rcp == null) {
+                _conf.setRemoteCommitProvider("sjvm");
+            }
+        }
+        
         _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
