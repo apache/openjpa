@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.io.ByteArrayInputStream;
-import java.io.CharArrayReader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.Method;
@@ -83,6 +82,9 @@ public class DB2Dictionary
     protected static final String useKeepUpdateLockClause    = "USE AND KEEP UPDATE LOCKS";
     protected static final String useKeepExclusiveLockClause = "USE AND KEEP EXCLUSIVE LOCKS";
     protected static final String forReadOnlyClause = "FOR READ ONLY";
+    protected static final String defaultSequenceSQL 
+        = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
+
     protected String databaseProductName = "";
     protected String databaseProductVersion = "";
     protected int maj = 0;
@@ -97,7 +99,7 @@ public class DB2Dictionary
 
         nextSequenceQuery = "VALUES NEXTVAL FOR {0}";
 
-        sequenceSQL = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
+        sequenceSQL = defaultSequenceSQL;
         sequenceSchemaSQL = "SEQSCHEMA = ?";
         sequenceNameSQL = "SEQNAME = ?";
         characterColumnSize = 254;
@@ -357,8 +359,14 @@ public class DB2Dictionary
                 + "SYSIBM.SYSDUMMY1";
             nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
                 + "SYSIBM.SYSDUMMY1";
-            sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
-                + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
+            // allow users to set a non default sequenceSQL. 
+            if (defaultSequenceSQL.equals(sequenceSQL)){            	
+	            sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
+	                + "NAME AS SEQUENCE_NAME FROM SYSIBM.SYSSEQUENCES";
+	            
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("sequencesql-override", new Object[] {defaultSequenceSQL, sequenceSQL}));
+            }
             sequenceSchemaSQL = "SCHEMA = ?";
             sequenceNameSQL = "NAME = ?";
             if (maj == 8) {
@@ -375,8 +383,14 @@ public class DB2Dictionary
                 + "SYSIBM.SYSDUMMY1";
             validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
                 + "QSYS2.SYSTABLES";
-            sequenceSQL = "SELECT SEQUENCE_SCHEMA, "
-                + "SEQUENCE_NAME FROM QSYS2.SYSSEQUENCES";
+            // allow users to set a non default sequenceSQL.
+            if (defaultSequenceSQL.equals(sequenceSQL)){            
+	            sequenceSQL = "SELECT SEQUENCE_SCHEMA, "
+	                + "SEQUENCE_NAME FROM QSYS2.SYSSEQUENCES";
+	            
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("sequencesql-override", new Object[] {defaultSequenceSQL, sequenceSQL}));
+            }
             sequenceSchemaSQL = "SEQUENCE_SCHEMA = ?";
             sequenceNameSQL = "SEQUENCE_NAME = ?";
             break;
