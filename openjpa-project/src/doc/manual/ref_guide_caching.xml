@@ -988,15 +988,6 @@ cache, you should generally use the data cache facades presented in this
 chapter.
                     </para>
                 </listitem>
-                <listitem>
-                    <para>
-You must specify a <classname>org.apache.openjpa.event.RemoteCommitProvider
-</classname> (via the <link linkend="openjpa.RemoteCommitProvider"><literal>
-openjpa.RemoteCommitProvider</literal></link> property) in order to use the data
-cache, even when using the cache in a single-JVM mode. When using it in a
-single-JVM context, set this property to <literal>sjvm</literal>.
-                    </para>
-                </listitem>
             </itemizedlist>
         </section>
         <section id="datastore_cache_issues">

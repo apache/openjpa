@@ -2208,8 +2208,7 @@ LockManager</literal>
 <emphasis role="bold">Default: </emphasis><literal>mixed</literal>
             </para>
             <para>
-<emphasis role="bold">Possible values: </emphasis><literal>none</literal>,
-<literal>sjvm</literal>, <literal>version</literal>,
+<emphasis role="bold">Possible values: </emphasis><literal>none</literal>, <literal>version</literal>,
 <literal>pessimistic</literal>, <literal>mixed</literal>
             </para>
             <para>
@@ -2919,7 +2918,7 @@ org.apache.openjpa.conf.OpenJPAConfiguration.getRemoteCommitProvider
 RemoteCommitProvider</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis> -
+<emphasis role="bold">Default:</emphasis> - If <literal>openjpa.DataCache</literal> is enabled, the default value is <literal>sjvm</literal>.
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see
