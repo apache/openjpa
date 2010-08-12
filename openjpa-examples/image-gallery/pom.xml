@@ -45,6 +45,29 @@
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
   </properties>
 
+  <!-- Test profile for testing with Java SE 5. Apache BVAL requires JAXB deps -->
+  <!-- Note:  You have to set -Ptest-java5 and -Djava5.home=path to java5 -->
+  <profiles>
+    <profile>
+      <id>test-java5</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+          <version>2.1</version>
+        </dependency>
+        <dependency>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+          <version>2.1.3</version>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
   <dependencies>
     <!-- When using bval, commons-lang must be in the dependency list -->
     <dependency>
@@ -86,17 +109,6 @@
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.1</version>
-          <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
-            <!-- Disable the annotation processor for now due to a JDK 6 bug -->
-            <compilerArgument>-proc:none</compilerArgument>
-          </configuration>
-        </plugin>
         <plugin>
           <!-- The jar plugin builds a jar containing the image gallery classes -->
           <groupId>org.apache.maven.plugins</groupId>
