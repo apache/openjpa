@@ -18,7 +18,10 @@
  */
 package org.apache.openjpa.instrumentation;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.DataCache;
@@ -152,22 +155,6 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return null;
     }
     
-    public long getEvictionCount() {
-        CacheStatistics stats = getStatistics();
-// TODO : Implement eviction count in data cache stats
-//        if (stats != null)
-//            return stats.getEvictionCount();
-        return NO_STATS;
-    }
-    
-    public long getTotalEvictionCount() {
-        CacheStatistics stats = getStatistics();
-     // TODO : Implement eviction count in data cache stats
-//        if (stats != null)
-//            return stats.getTotalEvictionCount();
-        return NO_STATS;
-    }
-
     public String getConfigId() {
         return _configID;
     }
@@ -231,8 +218,63 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
     
+    public long getEvictionCount() {
+        CacheStatistics stats = getStatistics();
+        if (stats != null)
+            return stats.getEvictionCount();
+        return NO_STATS;
+    }
+
+    public long getEvictionCount(String className) 
+        throws ClassNotFoundException {
+        Class<?> clazz = Class.forName(className);
+        return getEvictionCount(clazz);
+    }
+
+    public long getEvictionCount(Class<?> c) {
+        CacheStatistics stats = getStatistics();
+        if (stats != null)
+            return stats.getEvictionCount(c);
+        return NO_STATS;        
+    }
+    
+    public long getTotalEvictionCount() {
+        CacheStatistics stats = getStatistics();
+        if (stats != null)
+            return stats.getTotalEvictionCount();
+        return NO_STATS;
+    }
+
+    public long getTotalEvictionCount(String className) 
+        throws ClassNotFoundException {
+        Class<?> clazz = Class.forName(className);
+        return getTotalEvictionCount(clazz);
+    }
+
+    public long getTotalEvictionCount(Class<?> c) {
+        CacheStatistics stats = getStatistics();
+        if (stats != null)
+            return stats.getTotalEvictionCount(c);
+        return NO_STATS;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Set<String> classNames() {
+        CacheStatistics stats = getStatistics();
+        if (stats != null) {
+            Set<String> classNames = new HashSet<String>();
+            Set<Class<?>> clazzNames = stats.classNames();
+            for (Class<?> clazz : clazzNames) {
+                if (clazz != null) {
+                    classNames.add(clazz.getName());
+                }
+            }
+            return classNames;
+        }
+        return Collections.EMPTY_SET;
+    }
+    
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }
-
 }

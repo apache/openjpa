@@ -82,6 +82,14 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertTrue(oemf.getCache().contains(CachedEntity.class, id));
         ce = oem.find(CachedEntity.class, id);
         
+        assertTrue(dci.getHitCount() > 0);
+        try {
+            assertTrue(dci.getHitCount(CachedEntity.class.getName()) > 0);
+        } catch (ClassNotFoundException e) {
+            fail("CachedEntity class not found");
+        }
+        assertTrue(dci.getWriteCount() > 0);
+        assertTrue(dci.classNames().contains(CachedEntity.class.getName()));
         // Thread out to do out-of-band MBean-based validation.  This could
         // have been done on the same thread, but threading out makes for a
         // more realistic test.
@@ -271,6 +279,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 assertTrue(clsHitCount > 0);
                 assertTrue(clsReadCount > 0);
                 assertTrue(clsWriteCount > 0);
+                Set<String> classNames = (Set<String>)mbs.invoke(on, "classNames", null, null);
+                assertNotNull(classNames);
+                assertTrue(classNames.contains(CachedEntity.class.getName()));
                 // Invoke the reset method and recollect stats
                 mbs.invoke(on, "reset", null, null);
                 hitCount = (Long)mbs.getAttribute(on, "HitCount");

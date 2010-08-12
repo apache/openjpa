@@ -187,6 +187,9 @@ public abstract class AbstractQueryCache
 
     public QueryResult remove(QueryKey key) {
         QueryResult o = removeInternal(key);
+        if (_statsEnabled) {
+            _stats.recordEviction(key);
+        }
         if (o != null && o.isTimedOut())
             o = null;
         if (log.isTraceEnabled()) {
@@ -448,6 +451,10 @@ public abstract class AbstractQueryCache
         return _name;
     }
     
+    public int count() {
+        return keySet().size();
+    }
+    
     /**
      * A default implementation of query statistics for the Query result cache.
      * 
@@ -463,9 +470,10 @@ public abstract class AbstractQueryCache
         private static final float LOAD_FACTOR = 0.75f;
         private static final int CONCURRENCY = 16;
         
-        private static final int ARRAY_SIZE = 2;
+        private static final int ARRAY_SIZE = 3;
         private static final int READ  = 0;
         private static final int HIT   = 1;
+        private static final int EVICT = 2;
         
         private long[] astat = new long[ARRAY_SIZE];
         private long[] stat  = new long[ARRAY_SIZE];
@@ -508,6 +516,14 @@ public abstract class AbstractQueryCache
 
         public long getTotalHitCount(T query) {
             return getCount(astats, query, HIT);
+        }
+
+        public long getEvictionCount() {
+            return stat[EVICT];
+        }
+
+        public long getTotalEvictionCount() {
+            return astat[EVICT];
         }
 
         private long getCount(Map<T, long[]> target, T query, int i) {
@@ -563,6 +579,12 @@ public abstract class AbstractQueryCache
         
         public void recordHit(T query) {
             addSample(query, HIT);
+        }
+        
+        public void recordEviction(T query) {
+            if (query == null)
+                return;
+            addSample(query, EVICT);
         }
         
         public void dump(PrintStream out) {

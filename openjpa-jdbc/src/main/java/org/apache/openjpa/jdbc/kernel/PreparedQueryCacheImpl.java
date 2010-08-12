@@ -152,7 +152,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		try {
 			if (_log != null && _log.isTraceEnabled())
                 _log.trace(_loc.get("prepared-query-invalidate", id));
-			return _delegate.remove(id) != null;
+			boolean rc = _delegate.remove(id) != null;
+			if (_statsEnabled && rc) {
+			    _stats.recordEviction(id);
+			}
+			return rc;
 		} finally {
 			unlock(false);
 		}
@@ -187,7 +191,11 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 			    if (_log != null && _log.isTraceEnabled()) 
 			        _log.trace(_loc.get("prepared-query-uncache", id, exclusion));
 			}
-			return _delegate.remove(id);
+			PreparedQuery pq = _delegate.remove(id);
+            if (_statsEnabled && pq != null) {
+                _stats.recordEviction(id);
+            }
+            return pq;
 		} finally {
 			unlock(false);
 		}

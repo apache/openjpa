@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.openjpa.datacache.AbstractQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.QueryKey;
 import org.apache.openjpa.kernel.QueryStatistics;
@@ -160,6 +161,26 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     }
     
     /**
+     * Returns number of total evictions since last reset
+     */
+    public long getEvictionCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getEvictionCount();
+        return NO_STATS;
+    }
+    
+    /**
+     * Returns number of total eviction requests since start.
+     */
+    public long getTotalEvictionCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getTotalEvictionCount();
+        return NO_STATS;
+    }
+
+    /**
      * Returns all query keys currently tracked in the cache.
      * @return
      */
@@ -183,6 +204,17 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
             }
         }
         return null;
+    }
+    
+    public long count() {
+        if (_qc == null) {
+            return NO_STATS;
+        }
+        if (_qc instanceof AbstractQueryCache) {
+            AbstractQueryCache aqc = (AbstractQueryCache)_qc;
+            return aqc.count();
+        }
+        return NO_STATS;
     }
 
     public InstrumentationLevel getLevel() {

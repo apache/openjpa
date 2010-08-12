@@ -40,8 +40,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.GeneralException;
-import org.apache.openjpa.util.OpenJPAException;
-
 import serp.util.Strings;
 
 /**
@@ -235,6 +233,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public DataCachePCData remove(Object key) {
         DataCachePCData o = removeInternal(key);
+        if (stats.isEnabled()) {
+            stats.newEvict(o == null ? null : o.getType());
+        }
         if (o != null && o.isTimedOut())
             o = null;
         if (log.isTraceEnabled()) {

@@ -19,6 +19,7 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Interface for providing instrumented data cache metrics and operations.
@@ -119,4 +120,9 @@ public interface DataCacheInstrument {
      * Returns date cache statistics collection started.
      */
     public Date startDate();
+    
+    /**
+     * Returns the names of classes currently tracked in the cache.
+     */
+    public Set<String> classNames();
 }

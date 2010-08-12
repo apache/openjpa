@@ -51,7 +51,12 @@ public interface QueryStatistics<T> extends Serializable {
 	 * Record that the given query has been executed. 
 	 */
 	void recordExecution(T query);
-		
+
+    /**
+     * Record that the given query has been evicted. 
+     */
+    void recordEviction(T query);
+
 	/**
 	 * Gets number of total query execution since last reset.
 	 */
@@ -94,6 +99,16 @@ public interface QueryStatistics<T> extends Serializable {
 	 */
 	public long getTotalHitCount(T query);
 
+	 /**
+     * Gets number of total query evictions since last reset.
+     */
+    public long getEvictionCount();
+        
+    /**
+     * Gets number of total query evictions since start.
+     */
+    public long getTotalEvictionCount();
+
 	/**
 	 * Gets the time of last reset.
 	 */
@@ -131,9 +146,10 @@ public interface QueryStatistics<T> extends Serializable {
 	    private static final float LOAD_FACTOR = 0.75f;
 	    private static final int CONCURRENCY = 16;
 	    
-		private static final int ARRAY_SIZE = 2;
+		private static final int ARRAY_SIZE = 3;
         private static final int READ  = 0;
         private static final int HIT   = 1;
+        private static final int EVICT = 2;
         
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
@@ -232,6 +248,13 @@ public interface QueryStatistics<T> extends Serializable {
 				addSample(query, HIT);
 		}
 		
+        public void recordEviction(T query) {
+            if (query == null) {
+                return;
+            }
+            addSample(query, EVICT);
+        }
+
 		public void dump(PrintStream out) {
             String header = "Query Statistics starting from " + start;
 			out.print(header);
@@ -267,6 +290,14 @@ public interface QueryStatistics<T> extends Serializable {
 		String toString(long[] row) {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
 		}
+
+        public long getEvictionCount() {
+            return stat[EVICT];
+        }
+
+        public long getTotalEvictionCount() {
+            return astat[EVICT];
+        }
 	}
 	
 	/**
@@ -318,6 +349,14 @@ public interface QueryStatistics<T> extends Serializable {
             return 0;
         }
 
+        public long getEvictionCount() {
+            return 0;
+        }
+
+        public long getTotalEvictionCount() {
+            return 0;
+        }
+
         public Set<T> keys() {
             return Collections.emptySet();
         }
@@ -336,6 +375,9 @@ public interface QueryStatistics<T> extends Serializable {
 
         public Date start() {
             return start;
+        }
+
+        public void recordEviction(T query) {
         }
 	}
 }

@@ -32,7 +32,8 @@ public interface QueryCacheInstrument {
     public long getTotalExecutionCount(); 
 
     /**
-     * Returns number of total exec requests since start.
+     * Returns number of total exec requests since start for
+     * the specified string-ified query key.
      */
     public long getTotalExecutionCount(String queryKey); 
 
@@ -42,7 +43,8 @@ public interface QueryCacheInstrument {
     public long getExecutionCount();
 
     /**
-     * Returns number of total execution requests since last reset
+     * Returns number of total execution requests since last reset for
+     * the specified string-ified query key.
      */
     public long getExecutionCount(String queryKey);
 
@@ -54,7 +56,7 @@ public interface QueryCacheInstrument {
 
     /**
      * Returns number of total read requests that have been found in cache since 
-     * last reset.
+     * last reset for the specified string-ified query key.
      */
     public long getHitCount(String queryKey);
 
@@ -64,7 +66,8 @@ public interface QueryCacheInstrument {
     public long getTotalHitCount();
 
     /**
-     * Returns number of total read requests that has been found since start.
+     * Returns number of total read requests that has been found since start for
+     * the specified string-ified query key.
      */
     public long getTotalHitCount(String queryKey);
 
@@ -84,8 +87,25 @@ public interface QueryCacheInstrument {
     public Date startDate();
     
     /**
-     * Returns all query keys currently in the cache.
+     * Returns all the string-ified keys for query results in the cache.
      * @return
      */
     public Set<String> queryKeys();
+
+    /**
+     * Returns number of total evictions since last reset
+     */
+    public long getEvictionCount();
+    
+    /**
+     * Returns number of total eviction requests since start.
+     */
+    public long getTotalEvictionCount();
+
+    /**
+     * Returns the number of total entries in the cache.
+     * @return entries
+     */
+    public long count();
+    
 }
