@@ -19,9 +19,12 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.QueryCache;
+import org.apache.openjpa.datacache.QueryKey;
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.instrumentation.AbstractInstrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 
@@ -46,94 +49,143 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
         _qc = qc;
     }
     
-    // TODO : Cache stats must be added to query cache.  They will likely be
-    // tracked by a QueryStatistics type when that takes place.
-    private CacheStatistics getStatistics() {
-        if (_qc == null)
-            return null;
-        return null; // _qc.getStatistics();
-    }
-
-    public long getHitCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getHitCount();
-        return NO_STATS;
-    }
-            
-    public long getReadCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getReadCount();
-        return NO_STATS;
-    }
-        
-    public long getTotalHitCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getTotalHitCount();
-        return NO_STATS;
-    }
-    
-    public long getTotalReadCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getTotalReadCount();
-        return NO_STATS;
-    }
-    
-    public long getTotalWriteCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getTotalWriteCount();
-        return NO_STATS;
-    }
-        
-    public long getWriteCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getWriteCount();
-        return NO_STATS;
-    }
-    
-    public void reset() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            stats.reset();        
-    }
-    
-    public Date sinceDate() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.since();
-        return null;
-    }
-    
-    public Date startDate() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.start();        
-        return null;
-    }
-    
-    public String getConfigId() {
-        return _configId;
-    }
-
     public void setConfigId(String cid) {
         _configId = cid;
-    }
-    
-    public String getContextRef() {
-        return _configRef;
     }
     
     public void setContextRef(String cref) {
         _configRef = cref;
     }
     
+    public String getConfigId() {
+        return _configId;
+    }
+
+    public String getContextRef() {
+        return _configRef;
+    }
+    
+    public void setPreparedQueryCache(QueryCache qc) {
+        _qc = qc;
+    }
+    
+    private QueryStatistics<QueryKey> getStatistics() {
+        if (_qc == null)
+            return null;
+        return _qc.getStatistics();
+    }
+
+    public long getExecutionCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getExecutionCount();
+        return NO_STATS;
+    }
+
+    public long getExecutionCount(String queryKey) {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null) {
+            QueryKey qk = findKey(queryKey);
+            return stats.getExecutionCount(qk);
+        }
+        return NO_STATS;
+    }
+
+    public long getTotalExecutionCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getTotalExecutionCount();
+        return NO_STATS;
+    }
+
+    public long getTotalExecutionCount(String queryKey) {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null) {
+            QueryKey qk = findKey(queryKey);
+            return stats.getTotalExecutionCount(qk);
+        }
+        return NO_STATS;
+    }
+
+    public long getHitCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getHitCount();
+        return NO_STATS;
+    }
+
+    public long getHitCount(String queryKey) {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null) {
+            QueryKey qk = findKey(queryKey);
+            return stats.getHitCount(qk);
+        }
+        return NO_STATS;
+    }
+
+    public long getTotalHitCount() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.getTotalHitCount();
+        return NO_STATS;
+    }
+
+    public long getTotalHitCount(String queryKey) {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null) {
+            QueryKey qk = findKey(queryKey);
+            return stats.getTotalHitCount(qk);
+        }
+        return NO_STATS;
+    }
+
+    public void reset() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            stats.reset();        
+    }
+    
+    public Date sinceDate() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.since();
+        return null;
+    }
+    
+    public Date startDate() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null)
+            return stats.start();        
+        return null;
+    }
+    
+    /**
+     * Returns all query keys currently tracked in the cache.
+     * @return
+     */
+    public Set<String> queryKeys() {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        if (stats != null) {
+            Set<String> keys = new HashSet<String>();
+            for (QueryKey qk : stats.keys()) {
+                keys.add(qk.toString());
+            }
+            return keys;
+        }
+        return null;
+    }
+
+    private QueryKey findKey(String key) {
+        QueryStatistics<QueryKey> stats = getStatistics();
+        for (QueryKey qk : stats.keys()) {
+            if (qk.toString().equals(key.toString())) {
+                return qk;
+            }
+        }
+        return null;
+    }
+
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
     }
-
 }

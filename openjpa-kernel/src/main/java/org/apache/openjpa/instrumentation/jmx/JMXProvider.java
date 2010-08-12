@@ -20,9 +20,11 @@ package org.apache.openjpa.instrumentation.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
 import org.apache.openjpa.lib.instrumentation.AbstractInstrumentationProvider;
@@ -38,12 +40,12 @@ public class JMXProvider
     // Aliases for built-in JMX Instrumentation
     public static final String[] JMX_INSTRUMENT_ALIASES = {
         "DataCache", "org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrument",
-        "QueryCache", "org.apache.openjpa.insrumentation.jmx.QueryCacheJMXInstrument",
-        "QuerySQLCache", "org.apache.openjpa.insrumentation.jmx.PreparedQueryCacheJMXInstrument"
+        "QueryCache", "org.apache.openjpa.instrumentation.jmx.QueryCacheJMXInstrument",
+        "QuerySQLCache", "org.apache.openjpa.instrumentation.jmx.PreparedQueryCacheJMXInstrument"
     };
     
     /**
-     * The standard mbean package for OpenJPA
+     * The MBean domain for OpenJPA
      */
     public static final String MBEAN_DOMAIN = "org.apache.openjpa";
     
@@ -80,14 +82,33 @@ public class JMXProvider
            if (mbs == null) {
                throw new UserException("jmx-server-failed-creation");
            }
+           setStarted(true);
        } catch (Throwable t) {
            throw new UserException("jmx-server-unavailable",t);
        }
     }
 
+    /**
+     * Stops all instruments registered with this provider and releases the 
+     * reference to the Platform MBean server instance. 
+     */
     @Override
     public void stop() {
-        // no-op with the built in MBean server
+        if (isStarted()) {
+            Set<Instrument> instruments = getInstruments();
+            if (instruments != null && instruments.size() > 0) {
+                for (Instrument inst : instruments) {
+                    stopInstrument(inst);
+                }
+            }
+            // The MBean server factory does appear to ref count properly so the 
+            // platform server cannot released from the factory once it is acquired.  
+            // Multiple attempts to capture and release the server will result in a 
+            // runtime exception.
+            // MBeanServerFactory.releaseMBeanServer(getMBeanServer());
+            // _mbs = null;
+            setStarted(false);
+        }
     }
 
     /**
@@ -125,6 +146,7 @@ public class JMXProvider
     public void startInstrument(Instrument instrument) {
         if (!instrument.isStarted()) {
             registerMBean((JMXInstrument)instrument);
+            instrument.setStarted(true);
         }
     }
 
@@ -135,6 +157,7 @@ public class JMXProvider
         if (instrument.isStarted() || force) {
             try {
                 getMBeanServer().unregisterMBean(((JMXInstrument)instrument).getObjectName());
+                instrument.setStarted(false);
             } catch (Exception e) {
                 // If force, swallow the exception since the bean may not even
                 // be registered.

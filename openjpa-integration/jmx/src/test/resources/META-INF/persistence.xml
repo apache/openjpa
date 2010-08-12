@@ -24,11 +24,23 @@
         <description>PU for JMX Platform MBean Testing</description>
         <class>org.apache.openjpa.integration.jmx.CachedEntity</class>
         <properties>
-            <property name="openjpa.Instrumentation" value="jmx(Instrument=DataCache)"/>
+            <property name="openjpa.Instrumentation" value="jmx(Instrument='DataCache,QueryCache')"/>
             <property name="openjpa.DataCache" value="true(EnableStatistics=true)"/>
+            <property name="openjpa.QueryCache" value="true(EnableStatistics=true)"/>
             <property name="openjpa.RemoteCommitProvider" value="sjvm"/>
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
             <property name="openjpa.DynamicEnhancementAgent" value="false"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="openjpa-integration-jmx-qsc">
+        <description>PU for JMX Platform MBean Testing with PreparedQueryCache/QuerySQLCache</description>
+        <class>org.apache.openjpa.integration.jmx.CachedEntity</class>
+        <properties>
+            <property name="openjpa.Instrumentation" value="jmx(Instrument=QuerySQLCache)"/>
+            <property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"/>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+            <property name="openjpa.DynamicEnhancementAgent" value="false"/>
+        </properties>
+    </persistence-unit>    
 </persistence>

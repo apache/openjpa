@@ -87,6 +87,12 @@ public interface Instrument {
     public boolean isStarted();
 
     /**
+     * Sets whether the instrument is an available state.
+     * @param started
+     */
+    public void setStarted(boolean started);
+    
+    /**
      * Starts the instrument.  Typically this will be performed through the provider,
      * but in some cases an instrument will have its own specialized startup.
      */

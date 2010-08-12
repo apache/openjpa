@@ -19,14 +19,22 @@
 package org.apache.openjpa.integration.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import javax.persistence.Query;
 
 import org.apache.openjpa.instrumentation.DataCacheInstrument;
 import org.apache.openjpa.instrumentation.InstrumentationManager;
+import org.apache.openjpa.instrumentation.PreparedQueryCacheInstrument;
+import org.apache.openjpa.instrumentation.QueryCacheInstrument;
 import org.apache.openjpa.instrumentation.jmx.JMXProvider;
 import org.apache.openjpa.lib.instrumentation.Instrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
@@ -35,11 +43,10 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
-    /**
-     * Verifies the data cache metrics are available through simple instrumentation.
-     */
 
-    @SuppressWarnings("deprecation")
+    /**
+     * Verifies data cache metrics are available through simple instrumentation.
+     */
     public void testDataCacheInstrument() {
         OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
  
@@ -78,30 +85,167 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         // Thread out to do out-of-band MBean-based validation.  This could
         // have been done on the same thread, but threading out makes for a
         // more realistic test.
-        Thread thr = new Thread(new DCMBeanThread());
-        thr.start();
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<Boolean> result = executor.submit(new DCMBeanCallable());
         try {
-            thr.join(60000);  // Wait for 1 minute for the MBean thread to return.
-            if (thr.isAlive()) {
-                // MBean did not return within a minute, interrupt it.
-                thr.interrupt();
-                Thread.sleep(5000);
-                if (thr.isAlive()) {
-                    // Attempt to hard kill the thread to prevent the test from hanging
-                    thr.stop();
-                }
-                fail("DataCache MBean verification thread failed.");
-            }
+            assertTrue(result.get());
         } catch (Throwable t) {
-            fail("Caught unexpected throwable: " + t);
+            fail("DataCache verification failed: " + t);
         }
         
         closeEMF(oemf);
     }
     
-    public class DCMBeanThread implements Runnable {
+    /**
+     * Verifies query cache metrics are available through simple instrumentation.
+     */
+    public void testQueryCacheInstrument() {
+        OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx");
+ 
+        // Verify an EMF was created with the supplied instrumentation
+        assertNotNull(oemf);
 
-        public void run() {
+        // Verify an instrumentation manager is available
+        InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
+        assertNotNull(mgr);
+        
+        // Get the in-band data cache instrument
+        Set<InstrumentationProvider> providers = mgr.getProviders();
+        assertNotNull(providers);
+        assertEquals(1, providers.size());
+        InstrumentationProvider provider = providers.iterator().next();
+        assertEquals(provider.getClass(), JMXProvider.class);
+
+        Instrument inst = provider.getInstrumentByName("QueryCache");
+        assertNotNull(inst);
+        assertTrue(inst instanceof QueryCacheInstrument);
+        QueryCacheInstrument qci = (QueryCacheInstrument)inst;
+        
+        assertEquals(0,qci.getExecutionCount());
+        assertEquals(0,qci.getTotalExecutionCount());
+        assertEquals(0,qci.getHitCount());
+        assertEquals(0,qci.getTotalHitCount());
+        
+        OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
+        
+        CachedEntity ce = new CachedEntity();
+        int id = new Random().nextInt();
+        ce.setId(id);
+        CachedEntity ce2 = new CachedEntity();
+        id = new Random().nextInt();
+        ce2.setId(id);
+
+        oem.getTransaction().begin();
+        oem.persist(ce);
+        oem.persist(ce2);
+        oem.getTransaction().commit();
+       
+        Query q = oem.createQuery("SELECT ce FROM CachedEntity ce");
+        
+        List<?> result = q.getResultList();
+        assertNotNull(result);
+        assertTrue(result.size() > 1);
+        oem.clear();
+
+        result = q.getResultList();
+        
+        assertTrue(qci.getExecutionCount() > 0);
+        assertTrue(qci.getTotalExecutionCount() > 0);
+        assertTrue(qci.getHitCount() > 0);
+        assertTrue(qci.getTotalHitCount() > 0);
+
+        // Thread out to do out-of-band MBean-based validation.  This could
+        // have been done on the same thread, but threading out makes for a
+        // more realistic test.
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<Boolean> execResult = executor.submit(new QueryCachesMBeanCallable(
+            QueryCachesMBeanCallable.QC_OBJNAME,
+            QueryCachesMBeanCallable.QC_QM));
+        try {
+            assertTrue(execResult.get());
+        } catch (Throwable t) {
+            fail("QueryCache verification failed: " + t);
+        }
+        closeEMF(oemf);
+    }
+
+    /**
+     * Verifies prepared query cache metrics are available through simple instrumentation.
+     */
+    public void testPreparedQueryCacheInstrument() {
+        OpenJPAEntityManagerFactorySPI oemf = createNamedEMF("openjpa-integration-jmx-qsc");
+ 
+        // Verify an EMF was created with the supplied instrumentation
+        assertNotNull(oemf);
+
+        // Verify an instrumentation manager is available
+        InstrumentationManager mgr = oemf.getConfiguration().getInstrumentationManagerInstance();
+        assertNotNull(mgr);
+        
+        // Get the in-band data cache instrument
+        Set<InstrumentationProvider> providers = mgr.getProviders();
+        assertNotNull(providers);
+        assertEquals(1, providers.size());
+        InstrumentationProvider provider = providers.iterator().next();
+        assertEquals(provider.getClass(), JMXProvider.class);
+
+        Instrument inst = provider.getInstrumentByName("QuerySQLCache");
+        assertNotNull(inst);
+        assertTrue(inst instanceof PreparedQueryCacheInstrument);
+        PreparedQueryCacheInstrument qci = (PreparedQueryCacheInstrument)inst;
+        
+        assertEquals(0,qci.getExecutionCount());
+        assertEquals(0,qci.getTotalExecutionCount());
+        assertEquals(0,qci.getHitCount());
+        assertEquals(0,qci.getTotalHitCount());
+        
+        OpenJPAEntityManagerSPI oem = oemf.createEntityManager();
+        
+        CachedEntity ce = new CachedEntity();
+        int id = new Random().nextInt();
+        ce.setId(id);
+        CachedEntity ce2 = new CachedEntity();
+        id = new Random().nextInt();
+        ce2.setId(id);
+
+        oem.getTransaction().begin();
+        oem.persist(ce);
+        oem.persist(ce2);
+        oem.getTransaction().commit();
+       
+        Query q = oem.createQuery("SELECT ce FROM CachedEntity ce");
+        
+        List<?> result = q.getResultList();
+        assertNotNull(result);
+        assertTrue(result.size() > 1);
+        oem.clear();
+
+        result = q.getResultList();
+        
+        assertTrue(qci.getExecutionCount() > 0);
+        assertTrue(qci.getTotalExecutionCount() > 0);
+        assertTrue(qci.getHitCount() > 0);
+        assertTrue(qci.getTotalHitCount() > 0);
+
+        // Thread out to do out-of-band MBean-based validation.  This could
+        // have been done on the same thread, but threading out makes for a
+        // more realistic test.
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<Boolean> execResult = executor.submit(new QueryCachesMBeanCallable(
+            QueryCachesMBeanCallable.QSC_OBJNAME,
+            QueryCachesMBeanCallable.QSC_QM));
+        try {
+            assertTrue(execResult.get());
+        } catch (Throwable t) {
+            fail("QueryCache verification failed: " + t);
+        }
+
+        closeEMF(oemf);
+    }
+
+    public class DCMBeanCallable implements Callable<Boolean> {
+
+        public Boolean call() {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             assertNotNull(mbs);
             ObjectName objname = null;
@@ -144,7 +288,88 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 assertEquals(0, clsWriteCount);
             } catch (Exception e) {
                 fail("Unexpected exception: " + e);
+                return false;
             }
+            return true;
         }
     }
+
+    public class QueryCachesMBeanCallable implements Callable<Boolean> {
+
+        public static final String QC_OBJNAME = "org.apache.openjpa:type=QueryCache,cfgid=openjpa-integration-jmx,*";
+        public static final String QSC_OBJNAME = "org.apache.openjpa:type=QuerySQLCache,cfgid=openjpa-integration-jmx-qsc,*";  
+        public static final String QC_QM = "queryKeys";
+        public static final String QSC_QM = "queries";
+        
+        private String _objNameStr;
+        private String _queryMethod;
+        
+        public QueryCachesMBeanCallable(String objName, String queryMethod) {
+            setObjName(objName);
+            setQueryMethod(queryMethod);
+        }
+        
+        @SuppressWarnings("unchecked")
+        public Boolean call() {
+            MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+            assertNotNull(mbs);
+            ObjectName objname = null;
+            try {
+                // Query for the QueryCache bean
+                objname = new ObjectName(getObjName());
+                Set<ObjectName> ons = mbs.queryNames(objname, null);
+                assertEquals(1, ons.size());
+                ObjectName on = ons.iterator().next();
+                // Assert query cache attributes can be accessed and are being updated through the MBean
+                long hitCount = (Long)mbs.getAttribute(on, "HitCount");
+                long execCount = (Long)mbs.getAttribute(on, "ExecutionCount");
+                assertTrue(hitCount > 0);
+                assertTrue(execCount > 0);
+                // Assert data cache MBean methods can be invoked
+                
+                Set<String> keys = (Set<String>)mbs.invoke(on, getQueryMethod(), null, null);
+                assertNotNull(keys);
+                assertTrue(keys.size() > 0);
+                String[] sigs = new String[] { "java.lang.String" };
+                for (String key : keys) {
+                    Object[] parms = new Object[] { key };
+                    long queryHitCount = (Long)mbs.invoke(on, "getHitCount", parms, sigs);
+                    long queryReadCount = (Long)mbs.invoke(on, "getExecutionCount", parms, sigs); 
+                    assertTrue(queryHitCount > 0);
+                    assertTrue(queryReadCount > 0);
+                }
+                // Invoke the reset method and recollect stats
+                mbs.invoke(on, "reset", null, null);
+                hitCount = (Long)mbs.getAttribute(on, "HitCount");
+                execCount = (Long)mbs.getAttribute(on, "ExecutionCount");
+                assertEquals(0, hitCount);
+                assertEquals(0, execCount);
+
+                keys = (Set<String>)mbs.invoke(on, getQueryMethod(), null, null);
+                assertNotNull(keys);
+                assertEquals(0, keys.size());
+            } catch (Exception e) {
+                fail("Unexpected exception: " + e);
+                return false;
+            }
+            return true;
+        }
+
+        public void setObjName(String objNameStr) {
+            this._objNameStr = objNameStr;
+        }
+
+        public String getObjName() {
+            return _objNameStr;
+        }
+
+        public void setQueryMethod(String _queryMethod) {
+            this._queryMethod = _queryMethod;
+        }
+
+        public String getQueryMethod() {
+            return _queryMethod;
+        }
+    }
+
 }

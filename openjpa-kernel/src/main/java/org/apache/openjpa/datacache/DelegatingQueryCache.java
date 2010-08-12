@@ -19,6 +19,7 @@
 package org.apache.openjpa.datacache;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
@@ -216,4 +217,14 @@ public class DelegatingQueryCache
             throw translate(re);
 		}
 	}
+
+    public QueryStatistics<QueryKey> getStatistics() {
+        if (_cache == null)
+            return null;
+        try {
+            return _cache.getStatistics();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

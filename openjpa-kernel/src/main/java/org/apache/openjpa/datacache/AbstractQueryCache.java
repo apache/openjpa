@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.datacache;
 
+import java.io.PrintStream;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
@@ -39,6 +42,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
+import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.Id;
@@ -77,7 +81,21 @@ public abstract class AbstractQueryCache
     
     // default evict policy
     public EvictPolicy evictPolicy = EvictPolicy.DEFAULT;
+    
+    private QueryStatistics<QueryKey> _stats;
+    private boolean _statsEnabled = false;
 
+    public void setEnableStatistics(boolean enable){
+        _statsEnabled = enable;
+    }
+    public boolean getEnableStatistics(){
+        return _statsEnabled;
+    }
+
+    public QueryStatistics<QueryKey> getStatistics() {
+        return _stats;
+    }
+    
     public void initialize(DataCacheManager manager) {
         if (evictPolicy == EvictPolicy.TIMESTAMP) {
             entityTimestampMap = new ConcurrentHashMap<String,Long>();
@@ -137,6 +155,9 @@ public abstract class AbstractQueryCache
     }
 
     public QueryResult get(QueryKey key) {
+        if (_statsEnabled) {
+            _stats.recordExecution(key);
+        }
         QueryResult o = getInternal(key);
         if (o != null && o.isTimedOut()) {
             o = null;
@@ -150,6 +171,9 @@ public abstract class AbstractQueryCache
                 log.trace(s_loc.get("cache-miss", key));
             else
                 log.trace(s_loc.get("cache-hit", key));
+        }
+        if (_statsEnabled && o != null) {
+            ((Default<QueryKey>)_stats).recordHit(key);
         }
         return o;
     }
@@ -200,6 +224,9 @@ public abstract class AbstractQueryCache
         clearInternal();
         if (log.isTraceEnabled())
             log.trace(s_loc.get("cache-clear", "<query-cache>"));
+        if (_statsEnabled) {
+            _stats.clear();
+        }
     }
 
     public void close() {
@@ -339,6 +366,8 @@ public abstract class AbstractQueryCache
     }
 
     public void endConfiguration() {
+        _stats = _statsEnabled ? new Default<QueryKey>() :
+            new QueryStatistics.None<QueryKey>();
     }
 
     // ---------- AbstractEventManager implementation ----------
@@ -418,4 +447,159 @@ public abstract class AbstractQueryCache
     public String getName() {
         return _name;
     }
+    
+    /**
+     * A default implementation of query statistics for the Query result cache.
+     * 
+     * Maintains statistics for only a fixed number of queries.
+     * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
+     * 
+     */
+    public static class Default<T> implements QueryStatistics<T> {
+
+        private static final long serialVersionUID = -7889619105916307055L;
+        
+        private static final int FIXED_SIZE = 1000;
+        private static final float LOAD_FACTOR = 0.75f;
+        private static final int CONCURRENCY = 16;
+        
+        private static final int ARRAY_SIZE = 2;
+        private static final int READ  = 0;
+        private static final int HIT   = 1;
+        
+        private long[] astat = new long[ARRAY_SIZE];
+        private long[] stat  = new long[ARRAY_SIZE];
+        private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+        private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+        private Date start = new Date();
+        private Date since = start;
+        
+        public Set<T> keys() {
+            return stats.keySet();
+        }
+
+        public long getExecutionCount() {
+            return stat[READ];
+        }
+
+        public long getTotalExecutionCount() {
+            return astat[READ];
+        }
+
+        public long getExecutionCount(T query) {
+            return getCount(stats, query, READ);
+        }
+
+        public long getTotalExecutionCount(T query) {
+            return getCount(astats, query, READ);
+        }
+
+        public long getHitCount() {
+            return stat[HIT];
+        }
+
+        public long getTotalHitCount() {
+            return astat[HIT];
+        }
+
+        public long getHitCount(T query) {
+            return getCount(stats, query, HIT);
+        }
+
+        public long getTotalHitCount(T query) {
+            return getCount(astats, query, HIT);
+        }
+
+        private long getCount(Map<T, long[]> target, T query, int i) {
+            long[] row = target.get(query);
+            return (row == null) ? 0 : row[i];
+        }
+
+        public Date since() {
+            return since;
+        }
+
+        public Date start() {
+            return start;
+        }
+
+        public synchronized void reset() {
+            stat = new long[ARRAY_SIZE];
+            stats.clear();
+            since = new Date();
+        }
+        
+        @SuppressWarnings("unchecked")
+        public synchronized void clear() {
+           astat = new long[ARRAY_SIZE];
+           stat  = new long[ARRAY_SIZE];
+           stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+           astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+           start  = new Date();
+           since  = start;
+        }
+        
+        private void addSample(T query, int index) {
+            stat[index]++;
+            astat[index]++;
+            addSample(stats, query, index);
+            addSample(astats, query, index);
+        }
+        
+        private void addSample(Map<T, long[]> target, T query, int i) {
+            long[] row = target.get(query);
+            if (row == null) {
+                row = new long[ARRAY_SIZE];
+            }
+            row[i]++;
+            target.put(query, row);
+        }
+        
+        public void recordExecution(T query) {
+            if (query == null)
+                return;
+            addSample(query, READ);
+        }
+        
+        public void recordHit(T query) {
+            addSample(query, HIT);
+        }
+        
+        public void dump(PrintStream out) {
+            String header = "Query Statistics starting from " + start;
+            out.print(header);
+            if (since == start) {
+                out.println();
+                out.println("Total Query Execution: " + toString(astat)); 
+                out.println("\tTotal \t\tQuery");
+            } else {
+                out.println(" last reset on " + since);
+                out.println("Total Query Execution since start " + 
+                        toString(astat)  + " since reset " + toString(stat));
+                out.println("\tSince Start \tSince Reset \t\tQuery");
+            }
+            int i = 0;
+            for (T key : stats.keySet()) {
+                i++;
+                long[] arow = astats.get(key);
+                if (since == start) {
+                    out.println(i + ". \t" + toString(arow) + " \t" + key);
+                } else {
+                    long[] row  = stats.get(key);
+                    out.println(i + ". \t" + toString(arow) + " \t"  + toString(row) + " \t\t" + key);
+                }
+            }
+        }
+        
+        long pct(long per, long cent) {
+            if (cent <= 0)
+                return 0;
+            return (100*per)/cent;
+        }
+        
+        String toString(long[] row) {
+            return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
+        }
+    }
+
 }

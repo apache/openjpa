@@ -19,11 +19,32 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Interface for providing instrumented data cache metrics and operations.
  */
 public interface QueryCacheInstrument {
+
+    /**
+     * Returns number of total exec requests since start.
+     */
+    public long getTotalExecutionCount(); 
+
+    /**
+     * Returns number of total exec requests since start.
+     */
+    public long getTotalExecutionCount(String queryKey); 
+
+    /**
+     * Returns number of total execution requests since last reset
+     */
+    public long getExecutionCount();
+
+    /**
+     * Returns number of total execution requests since last reset
+     */
+    public long getExecutionCount(String queryKey);
 
     /**
      * Returns number of total read requests that have been found in cache since 
@@ -32,19 +53,10 @@ public interface QueryCacheInstrument {
     public long getHitCount();
 
     /**
-     * Returns number of total read requests since last reset
+     * Returns number of total read requests that have been found in cache since 
+     * last reset.
      */
-    public long getReadCount();
-
-    /**
-     * Returns number of total write requests since last reset.
-     */
-    public long getWriteCount();
-
-    /**
-     * Returns number of total read requests since start.
-     */
-    public long getTotalReadCount(); 
+    public long getHitCount(String queryKey);
 
     /**
      * Returns number of total read requests that has been found since start.
@@ -52,21 +64,10 @@ public interface QueryCacheInstrument {
     public long getTotalHitCount();
 
     /**
-     * Returns number of total write requests for the given class since start.
+     * Returns number of total read requests that has been found since start.
      */
-    public long getTotalWriteCount();
-        
-    /**
-     * Returns the config id for the configuration attached to this cache
-     */
-    public String getConfigId();
-    
-    /**
-     * Returns the system unique id for the configuration attached to this
-     * cache
-     */
-    public String getContextRef();
-    
+    public long getTotalHitCount(String queryKey);
+
     /**
      * Resets cache statistics
      */
@@ -81,4 +82,10 @@ public interface QueryCacheInstrument {
      * Returns date cache statistics collection started.
      */
     public Date startDate();
+    
+    /**
+     * Returns all query keys currently in the cache.
+     * @return
+     */
+    public Set<String> queryKeys();
 }

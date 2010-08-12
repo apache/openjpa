@@ -19,6 +19,7 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
+import java.util.Set;
 
 public interface PreparedQueryCacheInstrument {
 
@@ -63,18 +64,7 @@ public interface PreparedQueryCacheInstrument {
      * Returns number of total read requests that has been found since start.
      */
     public long getTotalHitCount(String query);
-        
-    /**
-     * Returns the config id for the configuration attached to this cache
-     */
-    public String getConfigId();
-    
-    /**
-     * Returns the context unique id for the configuration attached to this
-     * cache
-     */
-    public String getContextRef();
-    
+
     /**
      * Resets cache statistics
      */
@@ -89,4 +79,10 @@ public interface PreparedQueryCacheInstrument {
      * Returns date cache statistics collection started.
      */
     public Date startDate();
+    
+    /**
+     * Returns all queries currently tracked in the cache.
+     * @return
+     */
+    public Set<String> queries();
 }

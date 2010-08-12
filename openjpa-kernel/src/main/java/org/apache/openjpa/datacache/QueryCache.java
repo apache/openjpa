@@ -20,6 +20,7 @@ package org.apache.openjpa.datacache;
 
 import java.util.Map;
 
+import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.lib.util.Closeable;
 
 /**
@@ -135,4 +136,11 @@ public interface QueryCache
      * Free the resources used by this cache.
 	 */
 	public void close ();
+	
+	   /**
+     * Gets the simple statistics for query results.
+     * If the statistics gathering is disabled, an empty statistics is returned.
+     * @since 2.1.0 
+     */
+    public QueryStatistics<QueryKey> getStatistics();
 }

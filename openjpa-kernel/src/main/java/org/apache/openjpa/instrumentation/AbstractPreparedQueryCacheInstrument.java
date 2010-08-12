@@ -19,6 +19,7 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryStatistics;
@@ -138,6 +139,13 @@ public abstract class AbstractPreparedQueryCacheInstrument extends AbstractInstr
         QueryStatistics<String> stats = getStatistics();
         if (stats != null)
             return stats.start();        
+        return null;
+    }
+    
+    public Set<String> queries() {
+        QueryStatistics<String> stats = getStatistics();
+        if (stats != null)
+            return stats.keys();
         return null;
     }
     
