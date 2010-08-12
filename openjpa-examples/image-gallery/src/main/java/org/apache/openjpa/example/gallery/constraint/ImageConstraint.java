@@ -28,6 +28,8 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 import org.apache.openjpa.example.gallery.ImageType;
+import static org.apache.openjpa.example.gallery.ImageType.GIF;
+import static org.apache.openjpa.example.gallery.ImageType.JPEG;
 
 /**
  * Type-level annotation used to specify an image constraint.  Uses 
@@ -41,5 +43,5 @@ public @interface ImageConstraint {
     String message() default "Image data is not a supported format.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    ImageType[] value() default { ImageType.GIF, ImageType.JPEG };
+    ImageType[] value() default { GIF, JPEG };
 }
