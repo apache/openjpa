@@ -49,6 +49,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     private int VALUE_MIN = 100;
     private int VALUE_MAX = VALUE_MIN + POBJECT_COUNT - 1;
     private static int THREADS = 5;
+    private static int MAX_TIMEOUT = 300;
     private ExecutorService group; 
     private Future[] futures;
 
@@ -337,7 +338,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
         try {
             for (Future f : futures)
                 try {
-                    f.get(60, TimeUnit.SECONDS);
+                    f.get(MAX_TIMEOUT, TimeUnit.SECONDS);
                 } catch (TimeoutException te) {
                     fail("Failed " + te + "\r\n" + getStackDump(te));
                 } catch (ExecutionException e) {
