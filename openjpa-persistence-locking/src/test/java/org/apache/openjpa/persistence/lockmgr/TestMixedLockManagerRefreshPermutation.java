@@ -308,7 +308,7 @@ public class TestMixedLockManagerRefreshPermutation
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/PessimisticForceInc,Commit)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 3, null, 
-            LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 3, null);
+            LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 2, null);
         commonRefreshTest(
             "testRefresh(PessimsiticForceInc,Commit/PessimisticForceInc,Rollback)",
             LockModeType.PESSIMISTIC_FORCE_INCREMENT, Act.CommitTx, 2, null,
@@ -328,87 +328,70 @@ public class TestMixedLockManagerRefreshPermutation
                 ", versionInc= +" + t2VersionInc +
                 ", expectedEx= " + Arrays.toString(t2Exceptions)};
             
-        String t1Message1 = "Refresh in Thread 1";
-        String t1Message2 = "Refresh in Thread 1 Again";
-        String t2Message1 = "Refresh in Thread 2";
+        String t1Message1 = "Refresh in Thread 0";
+        String t1Message2 = "Refresh in Thread 0 Again";
+        String t2Message1 = "Refresh in Thread 1";
         
         Object[][] threadMain = {
-            {Act.CreateEm},
-            {Act.Find},
-            {Act.SaveVersion},
-            {Act.TestEmployee, 1, Default_FirstName},
-            
-            {Act.NewThread, 1 },
-            {Act.NewThread, 2 },
-            
-            {Act.StartThread, 1 },
-            {Act.Wait},
-            
-            {Act.StartThread, 2 },            
-            {Act.WaitAllChildren},
-            
-            {Act.Find},
-            {Act.TestEmployee, 1},
-            {Act.TestException, 1, t1Exceptions },
-            {Act.TestException, 2, t2Exceptions },
-        };
-        Object[][] thread1 = {
-            {Act.CreateEm},
-            {Act.Find, 1},
-            {Act.SaveVersion},
-            {Act.TestEmployee, 1, Default_FirstName},
-            {Act.Notify, 0},
-            {Act.Wait},
-            
-            {Act.StartTx},
-            {Act.UpdateEmployee, 1, t1Message1},
-            {Act.TestEmployee, 1, t1Message1},
-            {Act.CommitTx},
-            {Act.TestException},
-            {Act.Notify, 2},
-            {Act.Wait},
-            
-            {Act.StartTx},
-            {Act.RefreshWithLock, 1, t1Lock },
-            {Act.TestLockMode, 1, t1Lock},
-            {Act.TestEmployee, 1, t1Message1},
-            {Act.UpdateEmployee, 1, t1Message2},
-            {Act.TestEmployee, 1, t1Message2},
-            
-            {t1IsCommit},
-            {Act.Notify, 2},
-            {Act.Notify, 2},
-            
-            {Act.Clear},
-            {Act.Find},
-            {Act.TestEmployee, 1, null, t1VersionInc}
-        };
-        Object[][] thread2 = {
-            {Act.CreateEm},
-            {Act.Find, 1},
-            {Act.SaveVersion},
-            {Act.TestEmployee, 1, Default_FirstName},
-            {Act.Notify, 1},
-            {Act.Wait},
-
-            {Act.StartTx},
-            {Act.UpdateEmployee, 1, t2Message1},
-            {Act.TestEmployee, 1, t2Message1},
-            {Act.RefreshWithLock, 1, t2Lock },
-            {Act.TestLockMode, 1, t2Lock},
-            {Act.TestEmployee, 1, t1Message1},
-            
-            {Act.Notify, 1},
-            {Act.Wait},
-            {t2IsCommit},
-            {Act.Wait},
-            
-            {Act.Clear},
-            {Act.Find},
-            {Act.TestEmployee, 1, null, t2VersionInc},
-        };
+                {Act.CreateEm},
+                {Act.Find},
+                {Act.SaveVersion},
+                {Act.TestEmployee, 1, Default_FirstName},
+                
+                {Act.NewThread, 1 },
+                {Act.StartThread, 1 },
+                {Act.Wait},
+      
+                {Act.StartTx},
+                {Act.UpdateEmployee, 1, t1Message1},
+                {Act.TestEmployee, 1, t1Message1},
+                {Act.CommitTx},
+                {Act.TestException},
+                {Act.Notify, 1},
+                {Act.Wait},
         
-        launchActionSequence(testName, parameters, threadMain, thread1,
-            thread2);
+                {Act.StartTx},
+                {Act.RefreshWithLock, 1, t1Lock},
+                {Act.TestLockMode, 1, t1Lock},
+                {Act.TestEmployee, 1, t1Message1},
+                {Act.UpdateEmployee, 1, t1Message2},
+                {Act.TestEmployee, 1, t1Message2},
+        
+                {t1IsCommit},
+                
+                {Act.Notify, 1},
+
+                {Act.WaitAllChildren},
+                {Act.Find},
+                {Act.TestEmployee, 1, null, t1VersionInc},
+        
+                {Act.TestException, 0, t1Exceptions },
+                {Act.TestException, 1, t2Exceptions },
+                {Act.CloseEm}
+            };
+
+            Object[][] thread1 = {
+                {Act.CreateEm},
+                {Act.Find, 1},
+                {Act.SaveVersion},
+                {Act.TestEmployee, 1, Default_FirstName},
+                {Act.TestException},
+                {Act.Notify, 0},
+                {Act.Wait},
+                
+                {Act.StartTx},
+                {Act.UpdateEmployee, 1, t2Message1},
+                {Act.TestEmployee, 1, t2Message1},
+                {Act.RefreshWithLock, 1, t2Lock },
+                {Act.TestLockMode, 1, t2Lock},
+                {Act.TestEmployee, 1, t1Message1},
+        
+                {Act.Notify, 0},
+                {Act.Wait},
+                {t2IsCommit},
+        
+                {Act.CloseEm}
+            };
+            launchActionSequence(testName, parameters, threadMain, thread1);
     }
 }

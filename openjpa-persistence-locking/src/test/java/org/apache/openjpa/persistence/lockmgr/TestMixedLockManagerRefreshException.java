@@ -66,6 +66,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             
             {Act.Refresh, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, null },
+            {Act.CloseEm}
         };
         launchActionSequence("testLockTxReqExceptions()",
             null, threadMainTxReqTest);
@@ -104,6 +105,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             
             {Act.RefreshWithLock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
+            {Act.CloseEm}
         };
         launchActionSequence("testLockTxReqExceptions()",
             null, threadMainTxReqTest);
@@ -165,6 +167,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             {Act.RefreshObject, "null", 
                 LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
+            {Act.CloseEm}
         };
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test invalid entity.", threadMainInvEntityIllegalArgTest);
@@ -204,6 +207,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
 
             {Act.Refresh, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
+            {Act.CloseEm}
         };
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test detached entity.", threadMainDetachEntityIllegalArgTest);
@@ -241,7 +245,8 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
 
             {Act.Refresh, 2, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
-        };        
+            {Act.CloseEm}
+       };        
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test detached entity using serialization.",
             threadMainDetachSerializeIllegalArgTest);
@@ -279,6 +284,7 @@ public class TestMixedLockManagerRefreshException extends SequencedActionsTest {
             {Act.TestException, 1, IllegalArgumentException.class },
             
             {Act.RollbackTx},
+            {Act.CloseEm}
         };
         launchActionSequence(
             "testLockIllegalArgrumentExceptions()",

@@ -121,7 +121,8 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
             {Act.WaitAllChildren},
             {Act.TestException, 1, t1Exceptions},
 
-            {Act.RollbackTx}
+            {Act.RollbackTx},
+            {Act.CloseEm}
         };
         Object[][] thread1 = {
             {Act.CreateEm},
@@ -134,6 +135,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
             {Act.NamedQueryWithLock, "findEmployeeById", 1, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},            
 
             {Act.RollbackTx},
+            {Act.CloseEm}
         };
         launchActionSequence(testName, parameters, threadMain, thread1);
     }

@@ -81,6 +81,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     private String empTableName;
     private List<TestThread> threads = null;
 
+    @SuppressWarnings("deprecation")
     protected void commonSetUp() {
         empTableName = getMapping(LockEmployee.class).getTable().getFullName();
 
@@ -326,10 +327,12 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         LockEmployee employee = null;
         LockModeType lockMode = null;
         Act curAction = null;
+        int actIndex = 0;
         Object[][] threadSequence = actions[threadToRun];
         for (Object[] args : threadSequence) {
             curAction = (Act) args[0];
-            log.trace("** Act=" + Arrays.toString(args));
+            String curAct = "Act[t" + threadToRun + ":" + (++actIndex) +"]=" + Arrays.toString(args);
+            log.trace("** " + curAct);
             try {
                 switch (curAction) {
                 case CreateEm:
@@ -591,7 +594,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         id = (Integer)args[1];
                     }
                     employee = employees.get(id);
-                    assertNotNull(employee);
+                    assertNotNull(curAct, employee);
                     break;
                 case TestEmployee:
                     id = 1;
@@ -602,22 +605,22 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     switch (args.length) {
                     case 4:
                         if (args[3] != null) {
-                            assertEquals("", saveVersion
+                            assertEquals(curAct, saveVersion
                                 + (Integer) args[3], employee.getVersion());
                         }
                     case 3:
                         if (args[2] != null) {
-                            assertEquals("", (String) args[2], employee
+                            assertEquals(curAct, (String) args[2], employee
                                 .getFirstName());
                         }
                     case 2:
                         if (args[1] != null) {
-                            assertEquals("", id.intValue(),
+                            assertEquals(curAct, id.intValue(),
                                 employee.getId());
                         }
                         break;
                     case 1:
-                        assertNull(employee);
+                        assertNull(curAct, employee);
                     }
                     break;
                 case SaveVersion:
@@ -640,7 +643,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         + (saveVersion + increment) + ", testing="
                         + employee.getVersion());
 
-                    assertEquals("", saveVersion + increment, employee
+                    assertEquals(curAct, saveVersion + increment, employee
                         .getVersion());
                     break;
                 case TestLockMode:
@@ -654,7 +657,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     log.trace("test version: expected=" + expectedlockMode
                         + ", testing=" + testinglockMode);
 
-                    assertEquals("", getCanonical(expectedlockMode),
+                    assertEquals(curAct, getCanonical(expectedlockMode),
                         getCanonical(testinglockMode));
                     break;
                 case ResetException:
@@ -696,7 +699,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                         && expectedExceptions.size() > 0) {
                         for (Class<?> expectedException :
                             expectedExceptions) {
-                            if (matchExpectedException(expectedException,
+                            if (matchExpectedException(curAct, expectedException,
                                 curThrowable)) {
                                 exMatched = true;
                                 break;
@@ -713,7 +716,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                             logStack(curThrowable);
                         }
                     }
-                    assertTrue("Expecting=" + expectedExceptions
+                    assertTrue(curAct + ":Expecting=" + expectedExceptions
                         + ", Testing=" + testExClass, exMatched);
                     exThread.throwable = null;
                     break;
@@ -908,9 +911,9 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         return props;
     }
 
-    private boolean matchExpectedException(Class<?> expected,
+    private boolean matchExpectedException(String curAct, Class<?> expected,
         Throwable tested) {
-        assertNotNull(expected);
+        assertNotNull(curAct, expected);
         Class<?> testExClass = null;
         boolean exMatched = true;
         if (tested != null) {

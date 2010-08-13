@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.lockmgr;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;

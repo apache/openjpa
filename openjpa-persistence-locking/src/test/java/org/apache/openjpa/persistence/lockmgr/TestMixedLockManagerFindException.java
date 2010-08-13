@@ -67,6 +67,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             
             {Act.FindWithLock, 1, LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, TransactionRequiredException.class },
+            {Act.CloseEm},
         };
         launchActionSequence("testLockTxReqExceptions()",
             null, threadMainTxReqTest);
@@ -182,6 +183,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             {Act.FindObject, LockEmployee.class, Boolean.TRUE, 
                 LockModeType.PESSIMISTIC_FORCE_INCREMENT },
             {Act.TestException, 0, IllegalArgumentException.class },
+            {Act.CloseEm}
         };
         launchActionSequence("testLockIllegalArgrumentExceptions()",
             "Test invalid entity.", threadMainInvEntityIllegalArgTest);
@@ -239,6 +241,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
                 ? OptimisticLockException.class : null},
             {Act.TestException, 1, expectingOptLockException2
                     ? OptimisticLockException.class : null},
+            {Act.CloseEm}
         };
         Object[][] thread1OptLockExTest = {
             {Act.CreateEm},
@@ -252,6 +255,7 @@ public class TestMixedLockManagerFindException extends SequencedActionsTest {
             
             {Act.CommitTx},
             {Act.Notify, 0},
+            {Act.CloseEm}
         };        
         launchActionSequence("testLockOptimisticLockExceptions()", null,
             threadMainOptLockExTest, thread1OptLockExTest);

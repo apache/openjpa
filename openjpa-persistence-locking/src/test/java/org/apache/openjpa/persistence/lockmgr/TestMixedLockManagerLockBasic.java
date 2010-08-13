@@ -109,6 +109,7 @@ public class TestMixedLockManagerLockBasic extends SequencedActionsTest {
             { Act.Clear },
             { Act.Find, 1 },
             { Act.TestEmployee, 1, lockMode.toString(), 0 },
+            { Act.CloseEm }
         };
         launchActionSequence(testName, "LockMode=" + lockMode, threadMain);
     }
