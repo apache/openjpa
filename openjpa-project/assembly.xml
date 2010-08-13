@@ -37,9 +37,7 @@
                 <include>NOTICE</include>
                 <include>README.txt</include>
                 <include>DISCLAIMER.txt</include>
-                <include>LICENSE.txt</include>
                 <include>STATUS.txt</include>
-                <include>NOTICE.txt</include>
                 <include>RELEASE-NOTES</include>
                 <include>RELEASE-NOTES.html</include>
                 <include>RELEASE-NOTES.txt</include>
@@ -126,7 +124,9 @@
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jpa_2.0_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
-                <!-- <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include> -->
+                <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include>
+                <include>org.apache.bval:org.apache.bval.bundle</include>
+                <include>commons-beanutils:commons-beanutils</include>
             </includes>
         </dependencySet>
     </dependencySets>

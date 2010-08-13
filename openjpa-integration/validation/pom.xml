@@ -48,33 +48,11 @@
                 </property>
             </activation>
             <dependencies>
+                <!-- use openjpa-all which includes Apache BVal and depends -->
                 <dependency>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-validation_1.0_spec</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.bval</groupId>
-                    <artifactId>org.apache.bval.bundle</artifactId>
-                    <scope>test</scope>
-                    <exclusions>
-                        <!-- force usage of the geronimo-validation_1.0_spec -->
-                        <exclusion>
-                            <groupId>javax.validation</groupId>
-                            <artifactId>validation-api</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>commons-beanutils</groupId>
-                    <artifactId>commons-beanutils</artifactId>
-                    <version>1.8.3</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                    <scope>test</scope>
+                    <groupId>org.apache.openjpa</groupId>
+                    <artifactId>openjpa-all</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
         </profile>
@@ -109,6 +87,23 @@
                 </property>
             </activation>
             <dependencies>
+                <dependency>
+                    <groupId>org.apache.openjpa</groupId>
+                    <artifactId>openjpa</artifactId>
+                    <version>${pom.version}</version>
+                    <!-- allow profiles to decide which validation spec to use -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.apache.geronimo.specs</groupId>
+                            <artifactId>geronimo-validation_1.0_spec</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>commons-dbcp</groupId>
+                    <artifactId>commons-dbcp</artifactId>
+                    <scope>test</scope>
+                </dependency>
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>
@@ -167,27 +162,10 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
-            <!-- allow profiles to decide which validation spec to use -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.geronimo.specs</groupId>
-                    <artifactId>geronimo-validation_1.0_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${pom.version}</version>
             <!-- <classifier>tests</classifier> -->
             <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

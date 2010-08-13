@@ -19,17 +19,24 @@
 
 openjpa-all includes software developed by the:
     Apache Commons Collections project
+    Apache Commons Collections project
+    Apache Commons DBCP project
     Apache Commons Lang project
     Apache Commons Logging project
     Apache Commons Pool project
-    Apache Geronimo project (JMS 1.1, JTA 1.1 and JPA 2.0 spec apis)
+    Apache Geronimo project 
+        Java EE Specs - JMS 1.1, JTA 1.1, Bean Validation 1.0 and JPA 2.0
     SERP project
+
+
+The following copyright notice(s) were affixed to portions of this code
+with which this file is now or was at one time distributed.
 
 OpenJPA includes software developed by the SERP project
 Copyright (c) 2002-2006, A. Abram White. All rights reserved.
 
 OpenJPA includes the persistence and orm schemas from the JPA specifications.
-Copyright 2005-2007 Sun Microsystems, Inc. All rights reserved.
+Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
 OpenJPA elects to include this software in this distribution under the
 CDDL license.  You can obtain a copy of the License at:
     https://glassfish.dev.java.net/public/CDDL+GPL.html
