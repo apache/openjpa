@@ -390,55 +390,5 @@ public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
                 {Act.CloseEm}
             };
             launchActionSequence(testName, parameters, threadMain, thread1);
-
-//        Object[][] threadMain = {
-//            {Act.CreateEm},
-//            {Act.Find},
-//            {Act.SaveVersion},
-//            {Act.TestEmployee, 1, Default_FirstName},
-//            
-//            {Act.NewThread, 1 },
-//            {Act.NewThread, 2 },
-//            {Act.StartThread, 1 },
-//            {Act.Wait},
-//            {Act.StartThread, 2 },
-//            {Act.Notify, 1, 1000 },
-//            {Act.Notify, 2, 1000 },
-//            {Act.WaitAllChildren},
-//            {Act.Find},
-//            {Act.TestEmployee, 1},
-//            {Act.TestException, 1, t1Exceptions },
-//            {Act.TestException, 2, t2Exceptions },
-//        };
-//        Object[][] thread1 = {
-//            {Act.CreateEm},
-//            {Act.StartTx},
-//            {Act.Find},
-//            {Act.SaveVersion},
-//            {Act.Lock, 1, t1Lock },
-//            {Act.TestException},
-//            {Act.Notify, 0},
-//            {Act.Wait},
-//            {Act.UpdateEmployee},
-//            
-//            {t1IsCommit},
-//            {Act.Find},
-//            {Act.TestEmployee, 1, null, t1VersionInc}
-//        };
-//        Object[][] thread2 = {
-//            {Act.CreateEm},
-//            {Act.StartTx},
-//            {Act.Find},
-//            {Act.SaveVersion},
-//            {Act.Lock, 1, t2Lock },
-//            {Act.Notify, 0},
-//            {Act.Wait},
-//            
-//            {t2IsCommit},
-//            {Act.Find},
-//            {Act.TestEmployee, 1, null, t2VersionInc}
-//        };
-//        launchActionSequence(testName, parameters, threadMain, thread1,
-//            thread2);
     }
 }
