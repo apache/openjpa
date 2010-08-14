@@ -36,8 +36,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 public class TestEmLockMode extends SequencedActionsTest {
     private static String NON_SUPPORTED_OPTIMISTIC_SQL = 
         "SELECT .* FROM LockEmployee .*";
-    private static String NON_SUPPORTED_FOR_UPDATE_SQL = 
-        "SELECT .* FROM LockEmployee .* FOR UPDATE.*";
+    private static String NON_SUPPORTED_FOR_UPDATE_SQL = "" ; // append lock clause from dict
     private static String VERSION_UPDATE_SQL = 
         "UPDATE LockEmployee SET version .* WHERE .*";
     private static String DB2_OPTIMISTIC_SQL = 
@@ -50,6 +49,15 @@ public class TestEmLockMode extends SequencedActionsTest {
     public void setUp() {
         setUp(LockEmployee.class, "openjpa.LockManager", "mixed");
         commonSetUp();
+        NON_SUPPORTED_FOR_UPDATE_SQL = NON_SUPPORTED_OPTIMISTIC_SQL + " " + escapeRegex(getForUpdateClause()) + ".*";
+    }
+    
+    private String escapeRegex(String clause) {
+        // escape an update clause for use in a regex. 
+        // only handling ( ) for now
+        String rval = clause.replace("(", "\\(");
+        rval = rval.replace(")", "\\)");
+        return rval;
     }
 
     /*

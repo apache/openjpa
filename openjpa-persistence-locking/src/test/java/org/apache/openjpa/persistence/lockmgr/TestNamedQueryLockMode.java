@@ -37,23 +37,26 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  * 
  */
 public class TestNamedQueryLockMode extends SQLListenerTestCase {
+    String lockClause = "FOR UPDATE";
+    
     public void setUp() {
         super.setUp(CLEAR_TABLES, LockEmployee.class, 
             "openjpa.LockManager", "pessimistic", 
             "openjpa.Optimistic", "false"
             );
+        lockClause = getForUpdateClause();
     }
 
     public void testForUpdateClausePresentInNamedQueryWithLockMode() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
+        assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
         em.getTransaction().rollback();
         em.getTransaction().begin();
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
+        assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
         em.getTransaction().rollback();
         em.getTransaction().begin();
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
+        assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
         em.getTransaction().rollback();
     }
 
@@ -72,8 +75,8 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
     public void testForUpdateClausePresentInQueryWithDefault() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeById").setParameter("id", 0));
-        assertClausePresentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeById").setParameter("id", 0));        
+        assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeById").setParameter("id", 0));
+        assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeById").setParameter("id", 0));        
         em.getTransaction().commit();
     }
     
@@ -84,12 +87,12 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
         OpenJPAQuery<?> q = em.createNamedQuery("findEmployeeById").setParameter("id", 0); 
         FetchPlan fp = q.getFetchPlan();
         fp.setReadLockMode(LockModeType.NONE);
-        assertClauseAbsentInSQL("FOR UPDATE", q);
+        assertClauseAbsentInSQL(lockClause, q);
         
         q = em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0); 
         fp = q.getFetchPlan();
         fp.setReadLockMode(LockModeType.NONE);
-        assertClauseAbsentInSQL("FOR UPDATE", q);
+        assertClauseAbsentInSQL(lockClause, q);
         
         em.getTransaction().commit();
     }
@@ -98,8 +101,8 @@ public class TestNamedQueryLockMode extends SQLListenerTestCase {
     public void testForUpdateClauseAbsentInQueryWithExplictNoLock() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        assertClauseAbsentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
-        assertClauseAbsentInSQL("FOR UPDATE", em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
+        assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
+        assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
         em.getTransaction().commit();
     }
 
