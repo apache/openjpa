@@ -34,6 +34,7 @@ import junit.framework.AssertionFailedError;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.LockTimeoutException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.util.OpenJPAException;
 
@@ -46,6 +47,23 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     private DBDictionary dict = null;
 
     public void setUp() {
+        // Disable tests for any DB that has supportsQueryTimeout==false, like Postgres
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        assertNotNull(tempEMF);
+        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
+        assertNotNull(dict);
+        if (!dict.supportsQueryTimeout)
+            setTestsDisabled(true);
+        if (emf == null) {
+            closeEMF(tempEMF);
+        }
+
+        if (isTestsDisabled())
+            return;
+        
         setUp(CLEAR_TABLES, Employee.class, Department.class, "openjpa.LockManager", "mixed");
 
         EntityManager em = null;
