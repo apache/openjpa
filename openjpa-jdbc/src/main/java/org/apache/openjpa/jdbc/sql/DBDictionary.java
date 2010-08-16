@@ -51,7 +51,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,10 +65,10 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -88,7 +87,6 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.NameSet;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schema;
-import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
@@ -3519,7 +3517,7 @@ public class DBDictionary
         if (DBIdentifier.isNull(fk.getIdentifier())) {
             String[] retVal;
             DBIdentifier fkName = fk.loadIdentifierFromDB(this,conn);
-            retVal = (fkName == null) ?  new String[0] :
+            retVal = (fkName == null || fkName.getName() == null) ?  new String[0] :
                 new String[]{ "ALTER TABLE "
                 + getFullName(fk.getTable(), false)
                 + " DROP CONSTRAINT " + toDBName(fkName) };

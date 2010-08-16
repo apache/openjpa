@@ -18,7 +18,11 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -27,6 +31,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceHashSet;
 
 /**
  * Dictionary for SolidDB database.
@@ -43,9 +49,19 @@ public class SolidDBDictionary
      * cannot continue accessing M-tables after the transaction has committed 
      * or aborted. The statement must be re-executed.), the default is 
      * STORE DISK.
+     * The default concurrency control mechanism depends on the table type:
+     *    Disk-based tables (D-tables) are by default optimistic.
+     *    Main-memory tables (M-tables) are always pessimistic.
      * 
      */
     public boolean storeIsMemory = false;
+
+    // weak set of connections we've already executed lock mode sql on
+    private final Collection _seenConnections = new ReferenceHashSet
+        (ReferenceHashSet.WEAK);
+    
+    private static final Localizer _loc = Localizer.forPackage
+        (SolidDBDictionary.class);
 
     public SolidDBDictionary() {
         platform = "SolidDB";
@@ -65,6 +81,10 @@ public class SolidDBDictionary
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "TRIM({0})";
+
+        currentDateFunction = "CURDATE()";
+        currentTimeFunction = "CURTIME()";
+        currentTimestampFunction = "NOW()";
         
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BINARY", "DATE", "TIME", 
@@ -149,25 +169,56 @@ public class SolidDBDictionary
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("(POSITION((");
+        buf.append("(LOCATE(");
         find.appendTo(buf);
-        buf.append(") IN (");
-
-        if (start != null)
-            substring(buf, str, start, null);
-        else
-            str.appendTo(buf);
-        
-        buf.append(")) - 1");
-
+        buf.append(", ");
+        str.appendTo(buf);
         if (start != null) {
-            buf.append(" + ");
-            start.appendTo(buf);
+            buf.append(", ");
+            if (start.getValue() instanceof Number) {
+                long startLong = toLong(start);
+                buf.append(Long.toString(startLong + 1));
+            } else {
+                buf.append("(");
+                start.appendTo(buf);
+                buf.append(" + 1)");
+            }
         }
-        buf.append(")");
+        buf.append(") - 1)");
     }
-    
-    public String toUpper(String internalName, boolean force) {
-        return internalName.toUpperCase();
+   
+    @Override
+    public Connection decorate(Connection conn)
+    throws SQLException {
+        conn = super.decorate(conn);
+        // if we haven't already done so, initialize the lock mode of the
+        // connection
+        if (_seenConnections.add(conn)) {
+            String sql = "SET OPTIMISTIC LOCK TIMEOUT 100";
+            execute(sql, conn, true);
+        }
+        return conn;
     }    
+
+    private void execute(String sql, Connection conn, boolean throwExc) {
+        Statement stmnt = null;
+        try {
+            stmnt = conn.createStatement();
+            stmnt.executeUpdate(sql);
+        } catch (SQLException se) {
+            if (throwExc)
+                throw SQLExceptions.getStore(se, this);
+            else {
+                if (log.isTraceEnabled())
+                    log.trace(_loc.get("can-not-execute", sql));
+            }
+        } finally {
+            if (stmnt != null)
+                try {
+                    stmnt.close();
+                } catch (SQLException se) {
+                }
+        }
+    }
+
 }
