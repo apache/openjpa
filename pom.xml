@@ -459,6 +459,18 @@
             <properties>
                 <java5.home>"java5.home - Must be user supplied"</java5.home>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>2.1.3</version>
+                </dependency>
+            </dependencies>
             <build>
                 <pluginManagement>
                     <plugins>
