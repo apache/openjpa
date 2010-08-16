@@ -1,4 +1,4 @@
-Apache OpenJPA 2.0.1-SNAPSHOT
+Apache OpenJPA 2.0.1
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ Content
 
 Overview
 --------
-   The Apache OpenJPA community is proud to release a 2.0.1-SNAPSHOT distribution of
+   The Apache OpenJPA community is proud to release a 2.0.1 distribution of
    OpenJPA. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatiable with prior releases based on the
@@ -164,10 +164,44 @@ Getting Involved
         * Bugs and other issues can be posted on the project JIRA.
 
 
-Included Changes in OpenJPA 2.0.1-SNAPSHOT
-------------------------------------------
+Included Changes in OpenJPA 2.0.1
+---------------------------------
 
-    * TBD *
+Sub-task
+--------
+    * [OPENJPA-1635] - Reduce lock contention in MetaDataRepository.processRegisteredClasses
+    * [OPENJPA-1638] - Add test variation to TestNamedQueryLockMode
+
+Bug
+---
+    * [OPENJPA-1424] - Out of bounds exception using fetch plan
+    * [OPENJPA-1641] - SybaseDictionary should try both JDBC column names and Sybase specific column names
+    * [OPENJPA-1668] - User's ''DBDictionary.sequenceSQL' setting not being honored on zOS 
+    * [OPENJPA-1678] - SQL Parameter values may contain sensitive information and should not be logged by default.
+    * [OPENJPA-1679] - Index name too long for DB2 zOS when schema is present
+    * [OPENJPA-1690] - DistinctResultList is not Serializable
+    * [OPENJPA-1704] - PCEnhancer incorrectly generates readExternal 
+    * [OPENJPA-1713] - OutOfMemory caused by EntityManagerImpl.push/popFetchPlan processing
+    * [OPENJPA-1714] - Consider openjpa.Optimistic setting when calculating the default lock mode to apply to a named query
+    * [OPENJPA-1715] - OpenJPA generates wrong SQL if a result variable that references an aggregate expression is used in ORDER BY clause
+    * [OPENJPA-1719] - Prepared SQL cache ordering problem with subqueries. 
+    * [OPENJPA-1722] - Problem serializing DistinctResultList when EntityManager is closed
+    * [OPENJPA-1737] - The openjpa-2.0.0.jar does not have its MANIFEST.MF has the first entry
+    * [OPENJPA-1742] - Recover if connectionFactory on EntityManagerFactory is invalid but cf on EntityManager is valid. 
+    * [OPENJPA-1749] - Throw exception if using datacache / synchronize mappings and specifying datasource name at EM creation.
+    * [OPENJPA-1753] - TestMixedLockManagerLockPermutation: Timing issue determines the pass/no-pass of the test case
+
+Improvement
+-----------
+    * [OPENJPA-1637] - Upgrade to latest Geronimo Specs for JPA2 and Bean Validation
+    * [OPENJPA-1673] - Update MetaDataRepository docs
+    * [OPENJPA-1712] - Upgrade builds to use Apache hosted Nexus repo
+    * [OPENJPA-1735] - Mark commons-logging as provided in the build to remove transient maven dependency
+
+Test
+----
+    * [OPENJPA-1639] - Simple openjpa-xmlstore tests
+    * [OPENJPA-1660] - Add support to test with Apache Bean Validation provider
 
 
 Included Changes in OpenJPA 2.0.0

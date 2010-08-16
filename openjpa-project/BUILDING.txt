@@ -21,7 +21,7 @@ website at http://openjpa.apache.org/building-openjpa.html
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the openjpa 
-      version, for example apache-openjpa-2.0.0-source.
+      version, for example apache-openjpa-2.0.1-source.
    4. Change to the openjpa source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install. 
@@ -61,24 +61,24 @@ $ svn --version
 svn, version 1.5.5 (r34862)
    compiled Jan  5 2009, 12:30:39
 
-$ svn co https://svn.apache.org/repos/asf/openjpa/tags/2.0.0
-A  2.0.0/openjpa-lib
-A  2.0.0/openjpa-lib/src
-A  2.0.0/openjpa-lib/src/test
-A  2.0.0/openjpa-lib/src/test/java
-A  2.0.0/openjpa-lib/src/test/java/org
-A  2.0.0/openjpa-lib/src/test/java/org/apache
-A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa
-A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib
-A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
-A  2.0.0/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
+$ svn co https://svn.apache.org/repos/asf/openjpa/tags/2.0.1
+A  2.0.1/openjpa-lib
+A  2.0.1/openjpa-lib/src
+A  2.0.1/openjpa-lib/src/test
+A  2.0.1/openjpa-lib/src/test/java
+A  2.0.1/openjpa-lib/src/test/java/org
+A  2.0.1/openjpa-lib/src/test/java/org/apache
+A  2.0.1/openjpa-lib/src/test/java/org/apache/openjpa
+A  2.0.1/openjpa-lib/src/test/java/org/apache/openjpa/lib
+A  2.0.1/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
+A  2.0.1/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
 
  ...
 
-A  2.0.0/openjpa-persistence/pom.xml
-Checked out revision 915725.
+A  2.0.1/openjpa-persistence/pom.xml
+Checked out revision 986101.
 
-$ cd 2.0.0/
+$ cd 2.0.1/
 
 $ mvn clean install -DfailIfNoTests=false -Dtest= 
 
@@ -140,6 +140,6 @@ $ mvn clean install -DfailIfNoTests=false -Dtest=
 
 $ ls openjpa-project/target/site/downloads/
 
-apache-openjpa-2.0.0-binary.zip
-apache-openjpa-2.0.0-source.zip
+apache-openjpa-2.0.1-binary.zip
+apache-openjpa-2.0.1-source.zip
  
