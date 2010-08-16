@@ -45,29 +45,6 @@
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
   </properties>
 
-  <!-- Test profile for testing with Java SE 5. Apache BVAL requires JAXB deps -->
-  <!-- Note:  You have to set -Ptest-java5 and -Djava5.home=path to java5 -->
-  <profiles>
-    <profile>
-      <id>test-java5</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-          <version>2.1</version>
-        </dependency>
-        <dependency>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-          <version>2.1.3</version>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.openjpa</groupId>
