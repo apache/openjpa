@@ -866,7 +866,11 @@ public class ClassMetaData
      * @see #getExtraFieldDataLength
      */
     public int getExtraFieldDataIndex(int field) {
-        return getExtraFieldDataTable()[field];
+        int[] array = getExtraFieldDataTable();
+        if (field < 0 || field >= array.length) {
+            return -1;
+        }
+        return array[field];
     }
 
     /**
