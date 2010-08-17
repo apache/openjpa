@@ -821,6 +821,13 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>openjpa-maven-plugin</artifactId>
                     <version>1.1</version>
+                    <exclusions>
+                        <!-- remove cyclical dependency -->
+                        <exclusion>
+                            <groupId>org.apache.openjpa</groupId>
+                            <artifactId>openjpa</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
