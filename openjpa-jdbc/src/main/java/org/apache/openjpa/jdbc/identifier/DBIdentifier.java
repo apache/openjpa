@@ -69,9 +69,23 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      */
     public static final DBIdentifier NULL = new DBIdentifier(DBIdentifierType.NULL);
     
+    public boolean _ignoreCase = false;
+    
     // All constructors are protected or private.  Static factory operations
     // should be used to construct new identifiers.
     protected DBIdentifier() {
+    }
+
+    /**
+     * Returns whether case is ignored during equality operations.
+     * @return
+     */
+    public boolean getIgnoreCase() {
+        return _ignoreCase;
+    }
+    
+    public void setIgnoreCase(boolean ignoreCase) {
+        _ignoreCase = ignoreCase;
     }
 
     private DBIdentifier(DBIdentifierType type) {
@@ -310,6 +324,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         DBIdentifier sName = new DBIdentifier();
         sName.setNameInternal(getNameInternal());
         sName.setType(getType());
+        sName.setIgnoreCase(getIgnoreCase());
         return sName;
     }
     
@@ -358,7 +373,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         }
         if (obj instanceof DBIdentifier) {
             DBIdentifier sName = (DBIdentifier)obj;
-            return this.equals(sName, false);
+            return this.equals(sName, getIgnoreCase() || sName.getIgnoreCase());
         } else if (obj instanceof String) {
             return obj.equals(this.getNameInternal());
         }
@@ -596,6 +611,15 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * name an type. Optionally, converting the name to upper case and delimiting it.
      */
     protected static DBIdentifier newIdentifier(String name, DBIdentifierType id, boolean toUpper, boolean delimit) {
+        return newIdentifier(name,id, toUpper, delimit, false);
+    }
+
+    /**
+     * Constructs a new identifier (potentially a compound QualifiedDBIdentifier) with the provided 
+     * name an type. Optionally, converting the name to upper case and delimiting it.
+     */
+    protected static DBIdentifier newIdentifier(String name, DBIdentifierType id, boolean toUpper, boolean delimit,
+        boolean ignoreCase) {
         if (name == null) {
             return DBIdentifier.NULL;
         }
@@ -604,6 +628,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         // Create a DBIDentifier for single component names.  Otherwise, create a QualifiedDBIdentifier.
         if (!_compoundIdentifier[id.ordinal()] || delimit) {
             dbId = new DBIdentifier(name, id, delimit);
+            dbId.setIgnoreCase(ignoreCase);
             if (toUpper) {
                 return toUpper(dbId);
             }
@@ -611,6 +636,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
             // Name can be split. Break it up into components and return a path
             DBIdentifier[] sNames = DBIdentifier.split(id, name);
             dbId = new QualifiedDBIdentifier(sNames);
+            dbId.setIgnoreCase(ignoreCase);
         }
         return dbId;
     }
@@ -814,7 +840,8 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         if (getNameInternal() == null) {
             return false;
         }
-        if (ignoreCase || !Normalizer.isDelimited(getNameInternal())) {
+        if (getIgnoreCase() || sName.getIgnoreCase() ||
+            ignoreCase || !Normalizer.isDelimited(getNameInternal())) {
             return getNameInternal().equalsIgnoreCase(sName.getNameInternal());
         }
         return getNameInternal().equals(sName.getNameInternal());

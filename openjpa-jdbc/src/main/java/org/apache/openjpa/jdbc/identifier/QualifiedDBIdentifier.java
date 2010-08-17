@@ -353,6 +353,7 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
         sPath.setSchemaName(getSchemaName().clone());
         sPath.setBaseName(super.getName());
         sPath.setType(getType());
+        sPath.setIgnoreCase(getIgnoreCase());
         return sPath;
     }
 

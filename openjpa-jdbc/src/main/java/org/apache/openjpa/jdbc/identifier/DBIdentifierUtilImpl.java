@@ -285,7 +285,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         // case or try to determine whether delimiting is required.  Let the
         // normalizer figure it out using standard rules.
         if (delimCase.equals(nonDelimCase)) {
-            return DBIdentifier.newIdentifier(name, id, false, false);
+            return DBIdentifier.newIdentifier(name, id, false, false, !delimCase.equals(CASE_PRESERVE));
         }
         
         // Otherwise, try to determine whether to delimit based on an expected vs.
@@ -307,7 +307,8 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
         }
         
         boolean delimit = !caseName.equals(name) || getIdentifierConfiguration().delimitAll();
-        return DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit);
+        return DBIdentifier.newIdentifier((delimit ? name : caseName), id, false, delimit, 
+            !delimCase.equals(CASE_PRESERVE));
     }
 
     public DBIdentifier append(DBIdentifierType resultId, DBIdentifier...names) {

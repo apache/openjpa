@@ -49,7 +49,7 @@ public class IdentifierImpl implements Identifier, Serializable {
         if (_name == null) {
             return super.hashCode();
         }
-        return _name.hashCode();
+        return _name.toUpperCase().hashCode();
     }
 
     public int length() {
