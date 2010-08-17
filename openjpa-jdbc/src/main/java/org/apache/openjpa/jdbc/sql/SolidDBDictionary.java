@@ -18,21 +18,23 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.sql.Connection;
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Dictionary for SolidDB database.
@@ -52,14 +54,38 @@ public class SolidDBDictionary
      * The default concurrency control mechanism depends on the table type:
      *    Disk-based tables (D-tables) are by default optimistic.
      *    Main-memory tables (M-tables) are always pessimistic.
+     * Since OpenJPA applications expects lock waits (as usually is done with 
+     * normal pessimistic databases), the server should be set to the pessimistic mode. 
+     * The optimistic mode is about not waiting for the locks at all. That increases 
+     * concurrency but requires more programming. The pessimistic mode with the 
+     * READ COMMITTED isolation level (default) should get as much concurrency as one 
+     * might need. The pessimistic locking mode can be set in solid.ini:  
+     *    [General]
+     *        Pessimistic=yes
+     *    
      * 
      */
     public boolean storeIsMemory = false;
-
-    // weak set of connections we've already executed lock mode sql on
-    private final Collection _seenConnections = new ReferenceHashSet
-        (ReferenceHashSet.WEAK);
     
+    /**
+     * If true, then simulate auto-assigned values in SolidDB by
+     * using a trigger that inserts a sequence value into the
+     * primary key value when a row is inserted.
+     */
+    public boolean useTriggersForAutoAssign = true;
+
+    /**
+     * The global sequence name to use for autoassign simulation.
+     */
+    public String autoAssignSequenceName = null;
+
+    /**
+     * Flag to use OpenJPA 0.3 style naming for auto assign sequence name and
+     * trigger name for backwards compatibility.
+     */
+    public boolean openjpa3GeneratedKeyNames = false;
+
+
     private static final Localizer _loc = Localizer.forPackage
         (SolidDBDictionary.class);
 
@@ -124,7 +150,84 @@ public class SolidDBDictionary
             buf.append("MEMORY");
         else
             buf.append("DISK");
-        return new String[]{ buf.toString() };
+        
+        String[] create = new String[]{ buf.toString() };
+        if (!useTriggersForAutoAssign)
+            return create;
+
+        List seqs = null;
+        String seq, trig;
+        for (int i = 0; cols != null && i < cols.length; i++) {
+            if (!cols[i].isAutoAssigned())
+                continue;
+            if (seqs == null)
+                seqs = new ArrayList(4);
+
+            seq = autoAssignSequenceName;
+            if (seq == null) {
+                if (openjpa3GeneratedKeyNames)
+                    seq = getOpenJPA3GeneratedKeySequenceName(cols[i]);
+                else
+                    seq = getGeneratedKeySequenceName(cols[i]);
+                seqs.add("CREATE SEQUENCE " + seq);
+            }
+            if (openjpa3GeneratedKeyNames)
+                trig = getOpenJPA3GeneratedKeyTriggerName(cols[i]);
+            else
+                trig = getGeneratedKeyTriggerName(cols[i]);
+
+            // create the trigger that will insert new values into
+            // the table whenever a row is created
+            // CREATE TRIGGER TRIG01 ON table1 
+            //     BEFORE INSERT 
+            //     REFERENCING NEW COL1 AS NEW_COL1
+            // BEGIN
+            //     EXEC SEQUENCE seq1 NEXT INTO NEW_COL1;
+            // END;
+
+            seqs.add("CREATE TRIGGER " + trig
+                + " ON " + toDBName(table.getIdentifier())
+                + " BEFORE INSERT REFERENCING NEW " + toDBName(cols[i].getIdentifier())
+                + " AS NEW_COL1 BEGIN EXEC SEQUENCE " + seq + " NEXT INTO NEW_COL1; END");
+        }
+        if (seqs == null)
+            return create;
+
+        // combine create table sql and create seqences sql
+        String[] sql = new String[create.length + seqs.size()];
+        System.arraycopy(create, 0, sql, 0, create.length);
+        for (int i = 0; i < seqs.size(); i++)
+            sql[create.length + i] = (String) seqs.get(i);
+        return sql;
+    }
+
+    /**
+     * Trigger name for simulating auto-assign values on the given column.
+     */
+    protected String getGeneratedKeyTriggerName(Column col) {
+        // replace trailing _SEQ with _TRG
+        String seqName = getGeneratedKeySequenceName(col);
+        return seqName.substring(0, seqName.length() - 3) + "TRG";
+    }
+
+    /**
+     * Returns a OpenJPA 3-compatible name for an auto-assign sequence.
+     */
+    protected String getOpenJPA3GeneratedKeySequenceName(Column col) {
+        Table table = col.getTable();
+        DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "SEQ");
+        return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
+            getSchemaGroup(), maxTableNameLength, true));
+    }
+
+    /**
+     * Returns a OpenJPA 3-compatible name for an auto-assign trigger.
+     */
+    protected String getOpenJPA3GeneratedKeyTriggerName(Column col) {
+        Table table = col.getTable();        
+        DBIdentifier sName = DBIdentifier.preCombine(table.getIdentifier(), "TRIG");
+        return toDBName(getNamingUtil().makeIdentifierValid(sName, table.getSchema().
+            getSchemaGroup(), maxTableNameLength, true));
     }
 
     @Override
@@ -188,37 +291,69 @@ public class SolidDBDictionary
     }
    
     @Override
-    public Connection decorate(Connection conn)
-    throws SQLException {
-        conn = super.decorate(conn);
-        // if we haven't already done so, initialize the lock mode of the
-        // connection
-        if (_seenConnections.add(conn)) {
-            String sql = "SET OPTIMISTIC LOCK TIMEOUT 100";
-            execute(sql, conn, true);
+    public boolean isSystemIndex(DBIdentifier name, Table table) {
+        // names starting with "$$" are reserved for SolidDB internal use
+        String strName = DBIdentifier.isNull(name) ? null : name.getName();
+        boolean startsWith$$ = false;
+        if (strName != null) {
+            startsWith$$ = name.isDelimited() ? strName.startsWith("\"$$") :
+                strName.startsWith("$$");
         }
-        return conn;
-    }    
+        return super.isSystemIndex(name, table) || startsWith$$; 
+    }
 
-    private void execute(String sql, Connection conn, boolean throwExc) {
-        Statement stmnt = null;
-        try {
-            stmnt = conn.createStatement();
-            stmnt.executeUpdate(sql);
-        } catch (SQLException se) {
-            if (throwExc)
-                throw SQLExceptions.getStore(se, this);
-            else {
-                if (log.isTraceEnabled())
-                    log.trace(_loc.get("can-not-execute", sql));
-            }
-        } finally {
-            if (stmnt != null)
-                try {
-                    stmnt.close();
-                } catch (SQLException se) {
-                }
+    @Override
+    public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
+            Column col) throws SQLException {
+        int type = (val == null || col == null) ? JavaTypes.BIGDECIMAL
+                : col.getJavaType();
+        switch (type) {
+        case JavaTypes.DOUBLE:
+        case JavaTypes.DOUBLE_OBJ:
+            setDouble(stmnt, idx, val.doubleValue(), col);
+            break;
+        case JavaTypes.FLOAT:
+        case JavaTypes.FLOAT_OBJ:
+            setDouble(stmnt, idx, val.floatValue(), col);
+            break;
+        case JavaTypes.LONG:
+        case JavaTypes.LONG_OBJ:
+            setLong(stmnt, idx, val.longValue(), col);
+            break;
+        default:
+            super.setBigDecimal(stmnt, idx, val, col);
         }
     }
 
+    @Override
+    public void setDouble(PreparedStatement stmnt, int idx, double val,
+            Column col) throws SQLException {
+        int type = (col == null) ? JavaTypes.DOUBLE
+                : col.getJavaType();
+        switch (type) {
+        case JavaTypes.DOUBLE:
+        case JavaTypes.DOUBLE_OBJ:
+            setDouble(stmnt, idx, val, col);
+            break;
+        case JavaTypes.FLOAT:
+        case JavaTypes.FLOAT_OBJ:
+            setDouble(stmnt, idx, new Double(val).floatValue(), col);
+            break;
+        case JavaTypes.LONG:
+        case JavaTypes.LONG_OBJ:
+            setLong(stmnt, idx, new Double(val).longValue(), col);
+            break;
+        }
+    }
+    
+    @Override
+    public boolean needsToCreateIndex(Index idx, Table table) {
+       // SolidDB will automatically create a unique index for the 
+       // constraint, so don't create another index again
+       PrimaryKey pk = table.getPrimaryKey();
+       if (pk != null && idx.columnsMatch(pk.getColumns()))
+           return false;
+       return true;
+    }
+    
 }
