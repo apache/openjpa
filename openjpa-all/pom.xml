@@ -64,7 +64,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>${createSources}</createSourcesJar>
+                            <createSourcesJar>true</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!-- 

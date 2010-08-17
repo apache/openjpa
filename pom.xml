@@ -65,9 +65,6 @@
              anything else allows the test to execute normally
         -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
-        <!--turn off sources.jar generation by setting to none and false -->
-        <createSource>verify</createSource>
-        <createSources>true</createSources>
         <!-- common JDBC driver versions -->
         <derby.version>10.5.3.0_1</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
@@ -140,15 +137,13 @@
         <!-- ================ -->
         <!--  Build Profiles  -->
         <!-- ================ -->
+
+<!-- Inherited from parent apache-7.pom
         <profile>
             <id>apache-release</id>
             <build>
                 <plugins>
                     <plugin>
-                    <!--
-                        javadoc plugin doesn't copy resources like the normal jar plugin.
-                        Unzip license,etc from normal jar and add to javadoc jar.
-                     -->
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -160,7 +155,6 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <!-- create output dir for nested parent poms -->
                                         <mkdir dir="${project.build.directory}" />
                                         <unzip dest="${project.build.directory}/apidocs">
                                             <patternset>
@@ -176,139 +170,13 @@
                         </executions>
                     </plugin>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.apache.apache.resources</groupId>
-                                <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                                <version>1.0.2</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>source-release-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                                    <descriptorRefs>
-                                        <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
-                                    </descriptorRefs>
-                                    <tarLongFileFormat>gnu</tarLongFileFormat>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <configuration>
-                            <updateReleaseInfo>true</updateReleaseInfo>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <inherited>true</inherited>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>attach-javadoc</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>process-javadoc</id>
-                                <phase>process-classes</phase>
-                                <goals>
-                                    <goal>javadoc</goal>
-                                </goals>
-                                <configuration>
-                                    <additionalparam>
-                                        ${javadoc.additionalparam}
-                                    </additionalparam>
-                                    <aggregate>true</aggregate>
-                                    <subpackages>org.apache.openjpa</subpackages>
-                                    <verbose>false</verbose>
-                                    <maxmemory>512m</maxmemory>
-                                    <links>
-                                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                        <link>http://java.sun.com/javaee/6/docs/api</link>
-                                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                                    </links>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <configuration>
-                            <useReleaseProfile>false</useReleaseProfile>
-                            <goals>deploy site site-deploy</goals>
-                            <arguments>-Papache-release,docbook-profile,test-derby -DskipTests=true</arguments>
-                            <autoVersionSubmodules>true</autoVersionSubmodules>
-                        </configuration>
-                    </plugin>
-                    <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
-                        <configuration>
-                            <excludeSubProjects>false</excludeSubProjects>
-                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                            <excludes>
-                                <!-- comments are usupported in services files -->
-                                <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
-                                <exclude>**/javax.annotation.processing.Processor</exclude>
-                                <!-- comments are usupported by our rsrc parser -->
-                                <exclude>**/*.rsrc</exclude>
-                                <!-- comments are usupported in these files -->
-                                <exclude>**/org.apache.openjpa.revision.properties</exclude>
-                                <exclude>scripts/*.list</exclude>
-                                <exclude>scripts/*.options</exclude>
-                                <exclude>scripts/*.dict</exclude>
-                                <!-- generated content -->
-                                <exclude>**/.*/**</exclude>
-                                <exclude>**/target/**/*</exclude>
-                                <exclude>**/dependency-reduced-pom.xml</exclude>
-                                <exclude>**/*.log</exclude>
-                                <exclude>**/maven-eclipse.xml</exclude>
-                                <exclude>**/rat.txt</exclude>
-                                <exclude>release.properties</exclude>
-                                <exclude>DEPENDENCIES</exclude>
-                                <!-- Exclude internal build-only repository -->
-                                <exclude>**/internal-repository/**</exclude>
-                            </excludes>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+-->
 
         <profile>
             <id>sign-release</id>
@@ -365,28 +233,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>process-classes</phase>
-                                <goals><goal>javadoc</goal></goals>
-                                <configuration>
-                                    <additionalparam>
-                                        ${javadoc.additionalparam}
-                                    </additionalparam>
-                                    <aggregate>true</aggregate>
-                                    <subpackages>org.apache.openjpa</subpackages>
-
-                                    <verbose>false</verbose>
-                                    <!-- <linksource>true</linksource> -->
-                                    <maxmemory>512m</maxmemory>
-                                    <links>
-                                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                        <link>http://java.sun.com/javaee/6/docs/api</link>
-                                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                                    </links>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -756,24 +602,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <configuration>
-                        <archive>
-                            <manifest>
-                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            </manifest>
-                            <manifestEntries>
-                                <Implementation-Build>${buildNumber}</Implementation-Build>
-                                <Specification-Title>JSR-317 Java Persistence API</Specification-Title>
-                                <Specification-Vendor>Sun Microsystems, Inc.</Specification-Vendor>
-                                <Specification-Version>2.0</Specification-Version>
-                            </manifestEntries>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
@@ -863,24 +691,28 @@
                         <excludeSubProjects>false</excludeSubProjects>
                         <numUnapprovedLicenses>0</numUnapprovedLicenses>
                         <excludes>
+                            <!-- comments are usupported in services files -->
+                            <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                            <exclude>**/javax.annotation.processing.Processor</exclude>
+                            <!-- comments are usupported by our rsrc parser -->
+                            <exclude>**/*.rsrc</exclude>
+                            <!-- comments are usupported in these files -->
+                            <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                            <exclude>scripts/*.list</exclude>
+                            <exclude>scripts/*.options</exclude>
+                            <exclude>scripts/*.dict</exclude>
                             <!-- generated content -->
                             <exclude>**/.*/**</exclude>
                             <exclude>**/target/**/*</exclude>
+                            <exclude>**/dependency-reduced-pom.xml</exclude>
+                            <exclude>**/*.log</exclude>
+                            <exclude>**/maven-eclipse.xml</exclude>
+                            <exclude>**/rat.txt</exclude>
+                            <exclude>release.properties</exclude>
+                            <exclude>DEPENDENCIES</exclude>
+                            <!-- Exclude internal build-only repository -->
+                            <exclude>**/internal-repository/**</exclude>
                         </excludes>
-                        <includes>
-                            <!-- only check common source files -->
-                            <include>**/src/**/*.bat</include>
-                            <include>**/src/**/*.css</include>
-                            <include>**/src/**/*.html</include>
-                            <include>**/src/**/*.java</include>
-                            <include>**/src/**/*.js</include>
-                            <include>**/src/**/*.jsp</include>
-                            <include>**/src/**/*.properties</include>
-                            <include>**/src/**/*.sh</include>
-                            <include>**/src/**/*.txt</include>
-                            <include>**/src/**/*.vm</include>
-                            <include>**/src/**/*.xml</include>
-                        </includes>
                     </configuration>
                 </plugin>
                 <!-- inherited from apache-7.pom, but need config updates -->
@@ -890,24 +722,9 @@
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
                         <goals>deploy site site-deploy</goals>
-                        <arguments>-Papache-release,docbook-profile,test-derby -DskipTests=true</arguments>
+                        <arguments>-Papache-release,docbook-profile,test-derby -DskipTests</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.4.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>2.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2-beta-5</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -922,60 +739,9 @@
                     </dependencies>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.0</version>
-                    <executions>
-                        <execution>
-                            <id>sign-artifacts</id>
-                            <phase>install</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.6.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.1.2</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>taglist-maven-plugin</artifactId>
                     <version>2.3</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <version>1.0</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>process</goal>
-                            </goals>
-                            <configuration>
-                                <resourceBundles>
-                                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-                                </resourceBundles>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -1011,6 +777,34 @@
                     </dependencies>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-jar</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                       <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                    </manifest>
+                                    <manifestEntries>
+                                        <Implementation-Build>${buildNumber}</Implementation-Build>
+                                    </manifestEntries>
+                                </archive>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>attach-tests</id>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>2.0.1</version>
@@ -1022,11 +816,6 @@
                             <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         </instructions>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>1.0-beta-1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -1044,19 +833,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-remote-resources-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>${createSource}</phase>
                         <goals>
                             <goal>jar</goal>
                             <goal>test-jar</goal>
@@ -1117,43 +897,6 @@
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
             </plugin>
-            <!-- this has to be done in each module so we don't generate
-                 tests.jar artifacts that fail the IANAL check
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                                <manifestEntries>
-                                    <Implementation-Build>${buildNumber}</Implementation-Build>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-tests</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-            <!-- Don't include in all builds for now
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-            </plugin>
-            -->
         </plugins>
     </build>
 
@@ -1162,6 +905,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -1172,6 +916,18 @@
                             <report>mailing-list</report>
                             <report>issue-tracking</report>
                             <report>license</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                            <report>test-javadoc</report>
                         </reports>
                     </reportSet>
                 </reportSets>
