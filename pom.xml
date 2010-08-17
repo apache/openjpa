@@ -576,6 +576,18 @@
                 <artifactId>jmock-junit3</artifactId>
                 <version>2.5.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <version>1.1</version>
+                <exclusions>
+                    <!-- remove cyclical dependency -->
+                    <exclusion>
+                        <groupId>org.apache.openjpa</groupId>
+                         <artifactId>openjpa</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -821,13 +833,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>openjpa-maven-plugin</artifactId>
                     <version>1.1</version>
-                    <exclusions>
-                        <!-- remove cyclical dependency -->
-                        <exclusion>
-                            <groupId>org.apache.openjpa</groupId>
-                            <artifactId>openjpa</artifactId>
-                        </exclusion>
-                    </exclusions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
