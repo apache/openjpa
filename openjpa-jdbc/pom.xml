@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>

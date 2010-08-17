@@ -149,7 +149,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <!-- allow profiles to decide which validation spec to use -->
             <exclusions>
                 <exclusion>
@@ -161,7 +161,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <!-- <classifier>tests</classifier> -->
             <type>test-jar</type>
             <scope>test</scope>

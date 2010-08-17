@@ -40,12 +40,12 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <!-- <classifier>test-base</classifier> -->
             <type>test-jar</type>
             <scope>test</scope>
@@ -107,7 +107,7 @@
                         <groupId>org.apache.openjpa</groupId>
                         <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
                         <artifactId>openjpa-persistence-jdbc</artifactId>
-                        <version>${pom.version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <!-- Maybe one day we can used published artifacts for this...
         <dependency>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
@@ -158,7 +158,7 @@
                     <dependency>
                         <groupId>org.apache.openjpa</groupId>
                         <artifactId>openjpa</artifactId>
-                        <version>${pom.version}</version>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
