@@ -59,7 +59,7 @@
     	<programlisting>
 EntityManager em = ... ; 
 CriteriaBuilder queryBuilder = em.getCriteriaBuilder();
-CriteriaQuery qdef = queryBuilder.createCriteriaQuery();
+CriteriaQuery qdef = queryBuilder.createQuery();
     	</programlisting>
     	The first step in constructing a query definition is specification of 
     	query roots.  Query roots specify the domain objects on which the query 
