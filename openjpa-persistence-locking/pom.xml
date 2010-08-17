@@ -694,8 +694,8 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
-            <!-- <classifier>test-base</classifier> -->
-            <type>test-jar</type>
+            <classifier>test-base</classifier>
+            <!-- <type>test-jar</type> -->
             <scope>test</scope>
         </dependency>
         <dependency>
