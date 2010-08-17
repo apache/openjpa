@@ -155,9 +155,10 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
                     <dependency>
                         <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
+                        <artifactId>openjpa-persistence-jdbc</artifactId>
                         <version>${project.version}</version>
                     </dependency>
                 </dependencies>
