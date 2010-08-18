@@ -580,9 +580,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- apache-7.pom default of 2.0.2 fails for JDK5 testing -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.1</version>
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>
