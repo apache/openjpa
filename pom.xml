@@ -308,16 +308,6 @@
             <properties>
                 <java5.home>"java5.home - Must be user supplied"</java5.home>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </dependency>
-            </dependencies>
             <build>
                 <pluginManagement>
                     <plugins>
