@@ -687,8 +687,23 @@ public class PersistenceProductDerivation
                         addProperty(key, Configurations.combinePlugins(orig, (String) override));
                 }
             }
-
             super.setInto(conf, null);
+            
+            // At this point user properties have been loaded into the configuration. Apply any modifications based off those.
+            if (conf instanceof OpenJPAConfiguration) {
+                OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
+                // If the datacache is enabled, make sure we have a RemoteCommitProvider
+                String dc = oconf.getDataCache();
+                String rcp = oconf.getRemoteCommitProvider();
+                // If the datacache is set and is something other than false
+                if (dc != null && dc.equals("false") == false) {
+                    // If RCP is null or empty, set it to sjvm.
+                    if (rcp == null || (rcp != null && rcp.equals("") == false)) {
+                        oconf.setRemoteCommitProvider("sjvm");
+                    }
+                }
+            }
+            
             Log log = conf.getConfigurationLog();
             if (log.isTraceEnabled()) {
                 String src = (_source == null) ? "?" : _source;
