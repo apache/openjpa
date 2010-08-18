@@ -314,7 +314,7 @@ public class SolidDBDictionary
             break;
         case JavaTypes.FLOAT:
         case JavaTypes.FLOAT_OBJ:
-            setDouble(stmnt, idx, val.floatValue(), col);
+            setFloat(stmnt, idx, val.floatValue(), col);
             break;
         case JavaTypes.LONG:
         case JavaTypes.LONG_OBJ:
@@ -333,11 +333,11 @@ public class SolidDBDictionary
         switch (type) {
         case JavaTypes.DOUBLE:
         case JavaTypes.DOUBLE_OBJ:
-            setDouble(stmnt, idx, val, col);
+            super.setDouble(stmnt, idx, val, col);
             break;
         case JavaTypes.FLOAT:
         case JavaTypes.FLOAT_OBJ:
-            setDouble(stmnt, idx, new Double(val).floatValue(), col);
+            setFloat(stmnt, idx, new Double(val).floatValue(), col);
             break;
         case JavaTypes.LONG:
         case JavaTypes.LONG_OBJ:
