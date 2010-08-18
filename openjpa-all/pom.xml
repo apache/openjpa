@@ -52,6 +52,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+                 Need to disable jar plugin here, as it overwrites the shade
+                 plugin created binary jar.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-tests</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
