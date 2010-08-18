@@ -750,58 +750,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- 
-                 Create a o-p-j-tests.jar so we can reuse some of the base
-                 TestCase classes in other modules, like openjpa-integration.
-            -->
-            <plugin> 
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifest>
-                                   <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                </manifest>
-                                <manifestEntries>
-                                    <Implementation-Build>${buildNumber}</Implementation-Build>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-base-jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>test-base</classifier>
-                            <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
-                            <includes>
-                                <!-- Note: Including entities in this jar will
-                                     cause problems for any modules that need
-                                     to enhance their own entities.
-                                -->
-                                <include>**/org/apache/openjpa/persistence/test/*.class</include>
-                                <include>META-INF/LICENSE*</include>
-                                <include>META-INF/NOTICE*</include>
-                                <include>META-INF/DISCLAIM*</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-tests</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

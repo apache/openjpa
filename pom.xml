@@ -123,6 +123,7 @@
         <module>openjpa-jdbc</module>
         <module>openjpa-persistence</module>
         <module>openjpa-persistence-jdbc</module>
+        <module>openjpa-testsupport</module>
         <module>openjpa-persistence-locking</module>
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
