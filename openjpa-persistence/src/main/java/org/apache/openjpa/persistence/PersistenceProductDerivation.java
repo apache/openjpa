@@ -689,7 +689,8 @@ public class PersistenceProductDerivation
             }
             super.setInto(conf, null);
             
-            // At this point user properties have been loaded into the configuration. Apply any modifications based off those.
+            // At this point user properties have been loaded into the configuration. Apply any modifications based off
+            // those.
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
                 // If the datacache is enabled, make sure we have a RemoteCommitProvider
