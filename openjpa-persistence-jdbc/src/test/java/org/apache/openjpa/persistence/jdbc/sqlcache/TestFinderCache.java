@@ -62,6 +62,7 @@ public class TestFinderCache extends SQLListenerTestCase {
         super.setUp(CLEAR_TABLES, 
                 "openjpa.RuntimeUnenhancedClasses", "unsupported",
                 "openjpa.DynamicEnhancementAgent", "false",
+                "openjpa.DataCache","false",
                 Merchandise.class, Book.class, CD.class, 
             Author.class, Person.class, Singer.class, Address.class);
         createTestData();
