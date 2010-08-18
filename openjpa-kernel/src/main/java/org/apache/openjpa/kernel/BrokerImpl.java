@@ -4423,9 +4423,18 @@ public class BrokerImpl
 
     public Object getObjectId(Object obj) {
         assertOpen();
-        if (ImplHelper.isManageable(obj))
-            return (ImplHelper.toPersistenceCapable(obj, _conf))
-                .pcFetchObjectId();
+        if (ImplHelper.isManageable(obj)) {
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
+            if (pc != null) {
+                if (pc.pcGetStateManager() == null) {
+                    MetaDataRepository repo = _conf.getMetaDataRepositoryInstance();
+                    // If the statemanager is null the call to pcFetchObjectId always returns null. Create a new object
+                    // id.
+                    return ApplicationIds.create(pc, repo.getMetaData(pc.getClass(), null, true));
+                }
+                return pc.pcFetchObjectId();
+            }
+        }
         return null;
     }
 
