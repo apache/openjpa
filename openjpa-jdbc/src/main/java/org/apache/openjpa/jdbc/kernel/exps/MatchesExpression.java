@@ -25,6 +25,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
+import org.apache.openjpa.kernel.exps.Parameter;
+
 import serp.util.Strings;
 
 /**
@@ -101,7 +103,8 @@ class MatchesExpression
             // with '%' and '.' with '_'
             str = replaceEscape(str, _multi, "%", _escape);
             str = replaceEscape(str, _single, "_", _escape);
-            buf.append(" LIKE ").appendValue(str, col);
+            buf.append(" LIKE ").appendValue(str, col, 
+                    _const instanceof Parameter ? (Parameter)_const : null);
 
             // escape out characters by using the database's escape sequence
             DBDictionary dict = ctx.store.getDBDictionary();
