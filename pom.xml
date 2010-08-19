@@ -824,6 +824,10 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -874,7 +878,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>[2.2.1,)</version>
+                                    <version>[2.0.9,)</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[1.6,)</version>
