@@ -44,7 +44,7 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <!-- need a depend on o-p-j tests jar -->
+        <!-- hidden depend on o-p-j tests jar
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
@@ -52,6 +52,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>jakarta-regexp</groupId>
             <artifactId>jakarta-regexp</artifactId>
