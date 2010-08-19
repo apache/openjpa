@@ -197,6 +197,7 @@ Improvement
     * [OPENJPA-1673] - Update MetaDataRepository docs
     * [OPENJPA-1712] - Upgrade builds to use Apache hosted Nexus repo
     * [OPENJPA-1735] - Mark commons-logging as provided in the build to remove transient maven dependency
+    * [OPENJPA-1771] - Upgrade to latest Apache BVAL for testing and apache-rat plugin
 
 Test
 ----
