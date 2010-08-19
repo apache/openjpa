@@ -42,6 +42,7 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <!-- need a depend on o-p-j tests jar -->
         <dependency>
@@ -61,26 +62,26 @@
     <build>
         <plugins>
             <plugin>
-                <!--
-                    Manually build a subset jar of o-p-j-tests.jar
-                -->
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>extract-jar</id>
+                        <id>unpack</id>
                         <phase>test-compile</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <tasks>
-                                <unjar overwrite="true" dest="${project.build.testOutputDirectory}">
-                                    <fileset dir="${basedir}/../openjpa-persistence-jdbc">
-                                        <include name="target/openjpa-persistence-jdbc-${project.version}-tests.jar" />
-                                    </fileset>
-                                </unjar>
-                            </tasks>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.openjpa</groupId>
+                                    <artifactId>openjpa-persistence-jdbc</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>test-jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -88,6 +89,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>attach-tests</id>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
                         <configuration>
                             <includes>
                                 <!-- Note: Including entities in this jar will
@@ -100,6 +111,8 @@
                                 <include>META-INF/persistence.xml</include>
                             </includes>
                         </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Don't run any of the extracted tests here... -->
             <plugin>

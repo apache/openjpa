@@ -672,6 +672,11 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.1</version>
+                </plugin>
                 <!-- inherited from apache-7.pom, but need config updates -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
