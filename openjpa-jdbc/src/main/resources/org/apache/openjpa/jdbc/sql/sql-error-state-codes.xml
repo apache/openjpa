@@ -191,7 +191,7 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SolidDBDictionary">
-		<lock></lock>
+		<lock>HY000</lock>
 		<referential-integrity></referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
