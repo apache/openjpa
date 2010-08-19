@@ -47,8 +47,8 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <artifactId>openjpa-all</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- Maybe one day we can used published artifacts for this...
         <dependency>
@@ -64,25 +64,9 @@
         -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
+            <artifactId>openjpa-testsupport</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -94,19 +78,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-tests</id>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- old way of using antrun to enhance classes
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -154,10 +125,11 @@
                     </execution>
                 </executions>
                 <dependencies>
+                    <!-- use o-p-j instead of openjpa to avoid cyclical dependency in maven graph -->
                     <dependency>
                         <groupId>org.apache.openjpa</groupId>
-                        <artifactId>openjpa</artifactId>
-                        <version>${pom.version}</version>
+                        <artifactId>openjpa-persistence-jdbc</artifactId>
+                        <version>${project.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

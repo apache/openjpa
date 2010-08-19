@@ -70,7 +70,7 @@
 
                         <path id="assembly.classpath"> 
                             <fileset dir="${examples.base}">
-                                <include name="**/openjpa-all-${pom.version}.jar" />
+                                <include name="**/openjpa-all-${project.version}.jar" />
                             </fileset>
                         </path>
                         <available classname="org.apache.openjpa.conf.OpenJPAVersion" classpathref="assembly.classpath" property="unzip.success" />
@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
