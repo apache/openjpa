@@ -673,7 +673,7 @@
             <dependency>
                 <groupId>org.apache.bval</groupId>
                 <artifactId>org.apache.bval.bundle</artifactId>
-                <version>0.2-incubating-SNAPSHOT</version>
+                <version>0.2-incubating</version>
             </dependency>
             <dependency>
                 <groupId>commons-beanutils</groupId>
@@ -869,7 +869,7 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
-                    <version>0.6</version>
+                    <version>0.7</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
