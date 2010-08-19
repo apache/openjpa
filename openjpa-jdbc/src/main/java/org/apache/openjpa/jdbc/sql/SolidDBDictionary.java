@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,13 +29,19 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
+import org.apache.openjpa.jdbc.kernel.exps.Lit;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.schema.Schema;
+import org.apache.openjpa.jdbc.schema.SchemaGroup;
+import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
+import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Dictionary for SolidDB database.
@@ -75,7 +82,7 @@ public class SolidDBDictionary
     public boolean useTriggersForAutoAssign = true;
 
     /**
-     * The global sequence name to use for autoassign simulation.
+     * The global sequence name to use for auto-assign simulation.
      */
     public String autoAssignSequenceName = null;
 
@@ -84,6 +91,11 @@ public class SolidDBDictionary
      * trigger name for backwards compatibility.
      */
     public boolean openjpa3GeneratedKeyNames = false;
+    
+    /**
+     * Possible values for LockingMode are "PESSIMISTIC" and "OPTIMISTIC"
+     */
+    public String lockingMode = null;
 
 
     private static final Localizer _loc = Localizer.forPackage
@@ -111,6 +123,10 @@ public class SolidDBDictionary
         currentDateFunction = "CURDATE()";
         currentTimeFunction = "CURTIME()";
         currentTimestampFunction = "NOW()";
+        lastGeneratedKeyQuery = "SELECT {0}.CURRENT";
+        sequenceSQL = "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM SYS_SEQUENCES";
+        sequenceSchemaSQL = "SEQSCHEMA = ?";
+        sequenceNameSQL = "SEQNAME = ?";
         
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BINARY", "DATE", "TIME", 
@@ -119,7 +135,15 @@ public class SolidDBDictionary
     }
 
     @Override
-    public String[] getCreateTableSQL(Table table) {
+    public void endConfiguration() {
+        super.endConfiguration();
+        if (useTriggersForAutoAssign) {
+            supportsAutoAssign = true;
+        }
+    }
+    
+    @Override
+    public String[] getCreateTableSQL(Table table, SchemaGroup group) {
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ").append(getFullName(table, false)).append(" (");
         Column[] cols = table.getColumns();
@@ -151,7 +175,26 @@ public class SolidDBDictionary
         else
             buf.append("DISK");
         
-        String[] create = new String[]{ buf.toString() };
+        String[] create = null;
+        if (lockingMode != null) {
+            StringBuilder buf1 = new StringBuilder();
+            if (lockingMode.equalsIgnoreCase("PESSIMISTIC")) { 
+                buf1.append("ALTER TABLE ").append(getFullName(table, false)).
+                    append(" SET PESSIMISTIC");
+            } else if (lockingMode.equalsIgnoreCase("OPTIMISTIC")){
+                buf1.append("ALTER TABLE ").append(getFullName(table, false)).
+                    append(" SET OPTIMISTIC");
+            } else 
+                throw new UserException(_loc.get("invalid-locking-mode", lockingMode));
+            
+            create = new String[2];
+            create[0] = buf.toString();
+            create[1] = buf1.toString();
+        } else {
+            create = new String[1];
+            create[0] = buf.toString();
+        }
+        
         if (!useTriggersForAutoAssign)
             return create;
 
@@ -163,14 +206,11 @@ public class SolidDBDictionary
             if (seqs == null)
                 seqs = new ArrayList(4);
 
-            seq = autoAssignSequenceName;
-            if (seq == null) {
-                if (openjpa3GeneratedKeyNames)
-                    seq = getOpenJPA3GeneratedKeySequenceName(cols[i]);
-                else
-                    seq = getGeneratedKeySequenceName(cols[i]);
-                seqs.add("CREATE SEQUENCE " + seq);
-            }
+            seq = getAutoGenSeqName(cols[i]);
+            if (sequenecExists(table.getSchemaIdentifier().getName(), seq, group))
+                seqs.add("DROP SEQUENCE " + seq);
+            seqs.add("CREATE SEQUENCE " + seq);
+            
             if (openjpa3GeneratedKeyNames)
                 trig = getOpenJPA3GeneratedKeyTriggerName(cols[i]);
             else
@@ -189,6 +229,7 @@ public class SolidDBDictionary
                 + " ON " + toDBName(table.getIdentifier())
                 + " BEFORE INSERT REFERENCING NEW " + toDBName(cols[i].getIdentifier())
                 + " AS NEW_COL1 BEGIN EXEC SEQUENCE " + seq + " NEXT INTO NEW_COL1; END");
+            
         }
         if (seqs == null)
             return create;
@@ -201,6 +242,23 @@ public class SolidDBDictionary
         return sql;
     }
 
+    protected boolean sequenecExists(String schemaName, String seqName, SchemaGroup group) {
+        Schema[] schemas = group.getSchemas();
+        for (int i = 0; i < schemas.length; i++) {
+            String dbSchemaName = schemas[i].getIdentifier().getName();
+            if (schemaName != null && !schemaName.equalsIgnoreCase(dbSchemaName))
+                continue;
+                  
+            Sequence[] seqs = schemas[i].getSequences();
+            for (int j = 0; j < seqs.length; j++) {
+                String dbSeqName = seqs[j].getName();
+                if (dbSeqName != null && dbSeqName.equalsIgnoreCase(seqName))
+                    return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * Trigger name for simulating auto-assign values on the given column.
      */
@@ -230,6 +288,22 @@ public class SolidDBDictionary
             getSchemaGroup(), maxTableNameLength, true));
     }
 
+    protected String getAutoGenSeqName(Column col) {
+        String seqName = autoAssignSequenceName;
+        if (seqName == null) {
+            if (openjpa3GeneratedKeyNames)
+                seqName = getOpenJPA3GeneratedKeySequenceName(col);
+            else
+                seqName = getGeneratedKeySequenceName(col);
+        }
+        return seqName;
+    }
+
+    @Override
+    protected String getGenKeySeqName(String query, Column col) {
+        return MessageFormat.format(query, new Object[]{getAutoGenSeqName(col)});        
+    }
+    
     @Override
     public String convertSchemaCase(DBIdentifier objectName) {
         if (objectName != null && objectName.getName() == null)
@@ -303,6 +377,23 @@ public class SolidDBDictionary
     }
 
     @Override
+    public boolean isSystemSequence(DBIdentifier name, DBIdentifier schema,
+            boolean targetSchema) {
+        if (super.isSystemSequence(name, schema, targetSchema))
+            return true;
+        String schemaName = DBIdentifier.isNull(schema) ? null : schema.getName();
+        boolean startsWith_SYSTEM = schema.isDelimited() ? schemaName.startsWith("\"_SYSTEM") :
+            schemaName.startsWith("_SYSTEM");
+        
+        String seqName = DBIdentifier.isNull(name) ? null : name.getName();
+        boolean startsWithSYS_SEQ_ = name.isDelimited() ? seqName.startsWith("\"SYS_SEQ_") :
+            seqName.startsWith("SYS_SEQ_");
+        if (startsWith_SYSTEM && startsWithSYS_SEQ_)
+            return true;
+        return false;
+    }
+
+    @Override
     public void setBigDecimal(PreparedStatement stmnt, int idx, BigDecimal val,
             Column col) throws SQLException {
         int type = (val == null || col == null) ? JavaTypes.BIGDECIMAL
@@ -347,13 +438,90 @@ public class SolidDBDictionary
     }
     
     @Override
-    public boolean needsToCreateIndex(Index idx, Table table) {
+    public boolean needsToCreateIndex(Index idx, Table table, Unique[] uniques) {
        // SolidDB will automatically create a unique index for the 
        // constraint, so don't create another index again
        PrimaryKey pk = table.getPrimaryKey();
        if (pk != null && idx.columnsMatch(pk.getColumns()))
            return false;
-       return true;
+       
+       // If table1 has constraints on column (a, b), an explicit index on (a)
+       // will cause duplicate index error from SolidDB
+       Column[] icols = idx.getColumns();
+       boolean isDuplicate = false;
+       boolean mayBeDuplicate = false;
+       for (int i = 0; i < uniques.length; i++) {
+           Column[] ucols = uniques[i].getColumns();
+           if (ucols.length < icols.length)
+               continue;
+           for (int j = 0, k = 0; j < ucols.length && k < icols.length; j++, k++) {
+               if (mayBeDuplicate && ucols[j].getQualifiedPath().equals(icols[k].getQualifiedPath())) {
+                   if (k == icols.length - 1) {
+                       isDuplicate = true;
+                   } else {
+                       mayBeDuplicate = true;
+                   }
+               } else
+                   mayBeDuplicate = false;
+           }
+           if (isDuplicate)
+               break;
+       }
+       return isDuplicate;
+    }
+
+    @Override
+    protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), 
+            DBIdentifier.newSequence(sequenceName));
     }
     
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(sequenceSQL);
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
+            buf.append(" WHERE ");
+        if (!DBIdentifier.isNull(schemaName)) {
+            buf.append(sequenceSchemaSQL);
+            if (!DBIdentifier.isNull(sequenceName))
+                buf.append(" AND ");
+        }
+        if (!DBIdentifier.isNull(sequenceName))
+            buf.append(sequenceNameSQL);
+        return buf.toString();
+    }
+
+    @Override
+    protected void appendSelect(SQLBuffer selectSQL, Object alias, Select sel,
+            int idx) {
+        // if this is a literal value, add a cast...
+        Object val = sel.getSelects().get(idx);
+        boolean toCast = (val instanceof Lit) && 
+        ((Lit)val).getParseType() != Literal.TYPE_DATE && 
+        ((Lit)val).getParseType() != Literal.TYPE_TIME &&
+        ((Lit)val).getParseType() != Literal.TYPE_TIMESTAMP;
+
+        if (toCast) 
+            selectSQL.append("CAST(");
+
+            // ... and add the select per super's behavior...
+        super.appendSelect(selectSQL, alias, sel, idx);
+
+        // ... and finish the cast
+        if (toCast) {
+            Class c = ((Lit) val).getType();
+            int javaTypeCode = JavaTypes.getTypeCode(c);
+            int jdbcTypeCode = getJDBCType(javaTypeCode, false);
+            String typeName = getTypeName(jdbcTypeCode);
+            selectSQL.append(" AS " + typeName);
+
+            // if the literal is a string, use the default char col size
+            // in the cast statement.
+            if (String.class.equals(c))
+                selectSQL.append("(" + characterColumnSize + ")");
+
+            selectSQL.append(")");
+        }
+    }
 }

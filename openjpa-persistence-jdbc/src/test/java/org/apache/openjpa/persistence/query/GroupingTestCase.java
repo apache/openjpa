@@ -26,6 +26,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.ArgumentException;
@@ -186,6 +187,10 @@ public abstract class GroupingTestCase
     }
 
     public void testSubstringInGroupBy() {
+        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        if (dict instanceof SolidDBDictionary)
+            return;
+        
         // this is an extension of JPQL
         Query q = em.createQuery("select substring(o.stringField, 1, 1), " +
             "count(o) from AllFieldTypes o " +

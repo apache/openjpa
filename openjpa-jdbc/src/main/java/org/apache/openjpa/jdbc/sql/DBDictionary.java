@@ -87,6 +87,7 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.NameSet;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Schema;
+import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
@@ -3302,6 +3303,14 @@ public class DBDictionary
      * Return a series of SQL statements to create the given table, complete
      * with columns. Indexes and constraints will be created separately.
      */
+    public String[] getCreateTableSQL(Table table, SchemaGroup group) {
+        return getCreateTableSQL(table);
+    }
+    
+    /**
+     * Return a series of SQL statements to create the given table, complete
+     * with columns. Indexes and constraints will be created separately.
+     */
     public String[] getCreateTableSQL(Table table) {
         StringBuilder buf = new StringBuilder();
         String tableName = checkNameLength(getFullName(table, false), 
@@ -4525,10 +4534,7 @@ public class DBDictionary
         String query = lastGeneratedKeyQuery;
         if (query.indexOf('{') != -1) // only if the token is in the string
         {
-            query = MessageFormat.format(query, new Object[]{
-                toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
-                getGeneratedKeySequenceName(col),
-            });
+            query = getGenKeySeqName(query, col);
         }
 
         PreparedStatement stmnt = prepareStatement(conn, query);
@@ -4545,6 +4551,13 @@ public class DBDictionary
         }
     }
 
+    protected String getGenKeySeqName(String query, Column col) {
+        return MessageFormat.format(query, new Object[]{
+                toDBName(col.getIdentifier()), getFullName(col.getTable(), false),
+                getGeneratedKeySequenceName(col),
+            });        
+    }
+    
     /**
      * Return the sequence name used by databases for the given autoassigned
      * column. This is only used by databases that require an explicit name
@@ -5204,6 +5217,10 @@ public class DBDictionary
             }
         }
         return false;
+    }
+
+    public boolean needsToCreateIndex(Index idx, Table table, Unique[] uniques) {
+        return needsToCreateIndex(idx, table);
     }
 
     public boolean needsToCreateIndex(Index idx, Table table) {

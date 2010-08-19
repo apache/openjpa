@@ -558,7 +558,7 @@ public class SchemaTool {
                     if (dbTable != null) {
                         idx = findIndex(dbTable, idxs[k]);
                         if (idx == null) {
-                            if (createIndex(idxs[k], dbTable))
+                            if (createIndex(idxs[k], dbTable, tabs[j].getUniques()))
                                 dbTable.importIndex(idxs[k]);
                             else
                                 _log.warn(_loc.get("add-index", idxs[k],
@@ -953,7 +953,7 @@ public class SchemaTool {
      */
     public boolean createTable(Table table)
         throws SQLException {
-        return executeSQL(_dict.getCreateTableSQL(table));
+        return executeSQL(_dict.getCreateTableSQL(table, _db));
     }
 
     /**
@@ -993,10 +993,15 @@ public class SchemaTool {
      */
     public boolean createIndex(Index idx, Table table)
         throws SQLException {
+        return createIndex(idx, table, null);
+    }
+    
+    public boolean createIndex(Index idx, Table table, Unique[] uniques)
+        throws SQLException {
         // Informix will automatically create a unique index for the 
         // primary key, so don't create another index again
 
-        if (!_dict.needsToCreateIndex(idx,table))
+        if (!_dict.needsToCreateIndex(idx,table,uniques))
             return false;
 
         int max = _dict.maxIndexesPerTable;
