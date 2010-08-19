@@ -42,7 +42,6 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <!-- need a depend on o-p-j tests jar -->
         <dependency>
