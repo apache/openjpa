@@ -19,7 +19,21 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 
-import javax.persistence.*;
+import java.util.Set;
+
+import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EntityResult;
+import javax.persistence.FieldResult;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.SqlResultSetMapping;
 
 @Entity
 @SqlResultSetMapping(name = "EmbedMapping", entities = {
@@ -38,6 +52,9 @@ public class EmbedOwner {
         joinColumns = @JoinColumn(name = "OVER_OWNER"))
     protected EmbedValue embed;
 
+    @ElementCollection
+    Set<EmbedValue> embedCollection;
+    
     @Basic
     @Column(name = "OWN_BASIC")
     protected String basic;
@@ -64,5 +81,9 @@ public class EmbedOwner {
 
     public EmbedValue getEmbed() {
         return embed;
+    }
+    
+    public Set<EmbedValue> getEmbedCollection() {
+        return embedCollection;
     }
 }

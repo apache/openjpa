@@ -19,6 +19,8 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.sql.Types;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -28,10 +30,11 @@ import org.apache.openjpa.jdbc.meta.strats.ClobValueHandler;
 import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
 import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
  * Test for embedded
@@ -50,10 +53,13 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
     }
 
     public void setUp() {
-        setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES);
+        setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
+        ,"openjpa.Log","SQL=trace"    
+        );
     }
 
     public void testEmbedded() {
+
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         EmbedOwner owner = new EmbedOwner();
@@ -90,25 +96,59 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         assertNull(embeddedMeta.getField("transientField"));
     }
 
-    public void testNull() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        EmbedOwner owner = new EmbedOwner();
-        owner.setBasic("foo");
-        em.persist(owner);
-        int pk = owner.getPk();
-        em.getTransaction().commit();
-        em.close();
+    private void nullTestLogic(boolean cache) {
+        // A place holder to swap the existing emf back in... maybe unnecessary?
+        OpenJPAEntityManagerFactorySPI tempEmf = null;
+        if (cache) {
+            tempEmf = emf;
+            emf = createEMF("openjpa.DataCache", "true");
+        }
+        try {
+            EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
+            
+            EmbedOwner owner = new EmbedOwner();
+            owner.setBasic("foo");
+            
+            assertNull(owner.getEmbed());
+            assertNull(owner.getEmbedCollection());
+            em.persist(owner);
+            assertNull(owner.getEmbed());
+            assertNull(owner.getEmbedCollection());
+            
+            int pk = owner.getPk();
+            em.getTransaction().commit();
+            assertNull(owner.getEmbed());
+            assertNull(owner.getEmbedCollection());
+            em.close();
+            assertNull(owner.getEmbed());            
+            assertNull(owner.getEmbedCollection());
 
-        em = emf.createEntityManager();
-        owner = em.find(EmbedOwner.class, pk);
-        assertEquals("foo", owner.getBasic());
-        EmbedValue embed = owner.getEmbed();
-        assertNotNull(embed);
-        assertNull(embed.getClob());
-        assertNull(embed.getBasic());
-        assertNull(embed.getBlob());
-        em.close();
+            em = emf.createEntityManager();
+            owner = em.find(EmbedOwner.class, pk);
+            assertEquals("foo", owner.getBasic());
+            EmbedValue embed = owner.getEmbed();
+            assertNotNull(embed);
+            assertNull(embed.getClob());
+            assertNull(embed.getBasic());
+            assertNull(embed.getBlob());
+            
+            Set<EmbedValue> embedCollection = owner.getEmbedCollection(); 
+            assertNotNull(embedCollection);
+            assertEquals(0, embedCollection.size());
+            em.close();
+        } finally {
+            if(tempEmf!=null){
+                emf.close();
+                emf = tempEmf;
+            }
+        }
+    }
+    public void testNullNoCache() {
+        nullTestLogic(false);
+    }
+    public void testNullCacheEnabled() {
+        nullTestLogic(true);
     }
 
     public void testMappingTransferAndOverride() {

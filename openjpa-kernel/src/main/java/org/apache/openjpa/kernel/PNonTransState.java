@@ -42,7 +42,7 @@ class PNonTransState
         context.clearSavedFields();
 
         // spec says all proxies to second class objects should be reset
-        context.proxyFields(true, true);
+        context.proxyFields(true, false);
     }
 
     PCState delete(StateManagerImpl context) {

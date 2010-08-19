@@ -198,10 +198,18 @@ public class PCDataImpl
     /**
      * Set field-level information into the given state manager.
      */
-    protected void loadField(OpenJPAStateManager sm, FieldMetaData fmd,
-        FetchConfiguration fetch, Object context) {
+    protected void loadField(OpenJPAStateManager sm, FieldMetaData fmd, FetchConfiguration fetch, Object context) {
         int index = fmd.getIndex();
         Object val = toField(sm, fmd, getData(index), fetch, context);
+        
+        // If val is null, make sure that we don't send back a null Embeddable or ElementCollection...perhaps others?
+        // Probably should think about trying to shove this data back into the cache at this point so we don't
+        // continually run through this code.
+        if (val == null && fmd.isEmbeddedPC()) {
+            val = sm.getContext().embed(null, null, sm, fmd).getManagedInstance();
+        } else if (val == null && fmd.isElementCollection()) {
+            val = sm.newProxy(index);
+        }
         sm.storeField(index, val);
     }
 
