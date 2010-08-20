@@ -26,7 +26,7 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "lobs")
+@Table(name = "zlobs")
 public class Lobs implements Serializable {
 
     private static final long serialVersionUID = 1L;
