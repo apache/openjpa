@@ -200,6 +200,16 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <show>package</show>
+                            <quiet>true</quiet>
+                            <source>1.5</source>
+                            <links>
+                                <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                <link>http://java.sun.com/javaee/6/docs/api</link>
+                                <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                            </links>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -559,43 +569,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>javadoc</goal>
-                            </goals>
-                            <configuration>
-                                <additionalparam>
-                                    ${javadoc.additionalparam}
-                                </additionalparam>
-                                <aggregate>true</aggregate>
-                                <subpackages>org.apache.openjpa</subpackages>
-                                <!-- <linksource>true</linksource> -->
-                                <verbose>false</verbose>
-                                <maxmemory>512m</maxmemory>
-                                <links>
-                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                    <link>http://java.sun.com/javaee/6/docs/api</link>
-                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                                </links>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.5</version>
                     <configuration>
@@ -789,6 +762,44 @@
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>2.3.1</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>javadoc</goal>
+                            </goals>
+                            <configuration>
+                                <additionalparam>
+                                    ${javadoc.additionalparam}
+                                </additionalparam>
+                                <aggregate>true</aggregate>
+                                <subpackages>org.apache.openjpa</subpackages>
+                                <!-- <linksource>true</linksource> -->
+                                <verbose>false</verbose>
+                                <maxmemory>512m</maxmemory>
+                                <links>
+                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                    <link>http://java.sun.com/javaee/6/docs/api</link>
+                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                                </links>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -871,26 +882,38 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>2.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <show>package</show>
+                    <quiet>true</quiet>
+                    <source>1.5</source>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/javaee/6/docs/api</link>
+                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                    </links>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
                             <report>javadoc</report>
+                            <report>test-javadoc</report>
                         </reports>
                     </reportSet>
                 </reportSets>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jdepend-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>taglist-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -901,10 +924,6 @@
                     <includeTestSourceDirectory>true</includeTestSourceDirectory> 
                     <excludes>**/*_.java</excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>
