@@ -42,4 +42,23 @@
         <module>tck</module>
         <module>validation</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!-- disable creating javadoc for all sub-modules -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -37,6 +37,21 @@
 
     <build>
         <plugins>
+            <!-- disable creating javadoc for this module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--
                  Need to disable source plugin here, as it overwrites the shade
                  plugin created sources jar.

@@ -201,15 +201,16 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
-                            <show>package</show>
-                            <quiet>true</quiet>
-                            <source>1.5</source>
-                            <links>
-                                <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                <link>http://java.sun.com/javaee/6/docs/api</link>
-                                <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                            </links>
+                            <encoding>${project.build.sourceEncoding}</encoding>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -657,7 +658,7 @@
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
                         <goals>deploy site site-deploy</goals>
-                        <arguments>-Papache-release,docbook-profile,test-derby -DskipTests</arguments>
+                        <arguments>-Papache-release,docbook-profile,test-derby,bval -DskipTests</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
                 </plugin>
@@ -765,40 +766,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.6.1</version>
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <additionalparam>
+                            ${javadoc.additionalparam}
+                        </additionalparam>
+                        <aggregate>true</aggregate>
+                        <subpackages>org.apache.openjpa</subpackages>
+                        <!-- <linksource>true</linksource> -->
+                        <verbose>false</verbose>
+                        <maxmemory>512m</maxmemory>
+                        <links>
+                            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                            <link>http://java.sun.com/javaee/6/docs/api</link>
+                            <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                        </links>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>javadoc</goal>
-                            </goals>
-                            <configuration>
-                                <additionalparam>
-                                    ${javadoc.additionalparam}
-                                </additionalparam>
-                                <aggregate>true</aggregate>
-                                <subpackages>org.apache.openjpa</subpackages>
-                                <!-- <linksource>true</linksource> -->
-                                <verbose>false</verbose>
-                                <maxmemory>512m</maxmemory>
-                                <links>
-                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                    <link>http://java.sun.com/javaee/6/docs/api</link>
-                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                                </links>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -888,20 +871,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <show>package</show>
-                    <quiet>true</quiet>
-                    <source>1.5</source>
-                    <links>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                        <link>http://java.sun.com/javaee/6/docs/api</link>
-                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                    </links>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
                             <report>javadoc</report>
-                            <report>test-javadoc</report>
                         </reports>
                     </reportSet>
                 </reportSets>
