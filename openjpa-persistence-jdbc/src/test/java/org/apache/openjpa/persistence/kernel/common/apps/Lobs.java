@@ -1,6 +1,3 @@
-/**
- *
- */
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,17 +19,12 @@
 package org.apache.openjpa.persistence.kernel.common.apps;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
-/**
- * @author aokeke
- */
 @Entity
 @Table(name = "lobs")
 public class Lobs implements Serializable {
@@ -40,9 +32,12 @@ public class Lobs implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Lob
-    @Basic(fetch = FetchType.EAGER)
-    @Column(name = "report")
-    protected String lob = null;
+    @Column(name = "lobNullable", nullable = true)
+    protected String lobNullable = null;
+
+    @Lob
+    @Column(name = "lobNotNullable", nullable = false)
+    protected String lobNotNullable = "";
 
     @Id
     public int id;
@@ -54,11 +49,6 @@ public class Lobs implements Serializable {
         id = key;
     }
 
-    public Lobs(String report, int key) {
-        this.lob = report;
-        this.id = key;
-    }
-
     public int getId() {
         return id;
     }
@@ -67,11 +57,19 @@ public class Lobs implements Serializable {
         this.id = id;
     }
 
-    public String getLob() {
-        return lob;
+    public String getLobNullable() {
+        return lobNullable;
     }
 
-    public void setLob(String lob) {
-        this.lob = lob;
+    public void setLobNullable(String lob) {
+        this.lobNullable = lob;
+    }
+
+    public String getLobNotNullable() {
+        return lobNotNullable;
+    }
+
+    public void setLobNotNullable(String lob) {
+        this.lobNotNullable = lob;
     }
 }

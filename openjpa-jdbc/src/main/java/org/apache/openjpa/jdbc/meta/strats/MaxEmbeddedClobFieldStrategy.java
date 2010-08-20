@@ -53,7 +53,7 @@ public class MaxEmbeddedClobFieldStrategy
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
         String s = sm.fetchString(field.getIndex());
-        if (s == null || s.length() > _maxSize)
+        if (s == null || (s.length() > _maxSize && !field.getColumns()[0].isNotNull()))
             row.setNull(field.getColumns()[0], true);
         else
             row.setString(field.getColumns()[0], s);

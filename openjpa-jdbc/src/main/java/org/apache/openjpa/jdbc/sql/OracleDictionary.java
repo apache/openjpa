@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -38,7 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -543,6 +543,28 @@ public class OracleDictionary
             }
         }
         super.setString(stmnt, idx, val, col);
+    }
+
+    @Override
+    public void setBinaryStream(PreparedStatement stmnt, int idx,
+        InputStream val, int length, Column col)
+        throws SQLException {
+        if (length == 0)
+            stmnt.setBlob(idx, getEmptyBlob());
+        else {
+            super.setBinaryStream(stmnt, idx, val, length, col);
+        }
+    }
+
+    @Override
+    public void setClobString(PreparedStatement stmnt, int idx, String val,
+        Column col)
+        throws SQLException {
+        if (!useSetStringForClobs && val.length() == 0)
+            stmnt.setClob(idx, getEmptyClob());
+        else {
+            super.setClobString(stmnt, idx, val, col);
+        }
     }
 
     @Override

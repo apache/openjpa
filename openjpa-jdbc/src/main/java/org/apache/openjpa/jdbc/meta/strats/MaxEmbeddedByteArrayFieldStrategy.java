@@ -58,7 +58,7 @@ public class MaxEmbeddedByteArrayFieldStrategy
         throws SQLException {
         byte[] b = PrimitiveWrapperArrays.toByteArray(sm.fetchObject
             (field.getIndex()));
-        if (b == null || b.length > _maxSize)
+        if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))
             row.setBytes(field.getColumns()[0], null);
         else
             row.setBytes(field.getColumns()[0], b);

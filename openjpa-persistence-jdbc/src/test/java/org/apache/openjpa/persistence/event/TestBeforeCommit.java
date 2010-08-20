@@ -24,6 +24,9 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
@@ -32,6 +35,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
 
     AnEntity ae = null;
     public final int PKID = 2;
+    private DBDictionary dict = null;
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
 
@@ -39,6 +43,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         if (emf == null) {
             emf = createEMF(AnEntity.class);
         }
+        dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
 
@@ -62,7 +67,10 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
 
         tran.begin();
         ae = doQuery(em);
-        assertEquals("", ae.getName());
+        if (dict instanceof OracleDictionary)
+            assertNull(ae.getName());
+        else
+            assertEquals("", ae.getName());
         assertEquals(1, ae.getVersion());
         tran.commit();
 
@@ -90,7 +98,10 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();
         ae = doQuery(em);
-        assertEquals("", ae.getName());
+        if (dict instanceof OracleDictionary)
+            assertNull(ae.getName());
+        else 
+            assertEquals("", ae.getName());
         assertEquals(1, ae.getVersion());
         em.clear();
 
@@ -100,12 +111,15 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         // when BeforeCommit was fired AE was not managed. As a result its state is out of sync with the database.
         assertEquals("Ava", ae.getName());
         ae = doQuery(em);
-        assertEquals("", ae.getName());
+        if (dict instanceof OracleDictionary)
+            assertNull(ae.getName());
+        else 
+            assertEquals("", ae.getName());
         assertEquals(1, ae.getVersion());
     }
 
     public void beforeCommit(TransactionEvent event) {
-        ae.setName(ae.getName() + "Ava");
+        ae.setName(ae.getName() == null ?  "Ava" : ae.getName()+ "Ava");
     }
 
     private AnEntity doQuery(EntityManager em) {

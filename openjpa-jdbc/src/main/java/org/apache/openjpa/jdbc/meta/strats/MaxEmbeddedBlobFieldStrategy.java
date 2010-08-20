@@ -54,7 +54,7 @@ public class MaxEmbeddedBlobFieldStrategy
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
         byte[] b = (byte[]) sm.getImplData(field.getIndex());
-        if (b == null || b.length > _maxSize)
+        if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))
             row.setNull(field.getColumns()[0], true);
         else {
             sm.setImplData(field.getIndex(), null);
