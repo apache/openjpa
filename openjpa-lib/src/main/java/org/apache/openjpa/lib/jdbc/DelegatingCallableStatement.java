@@ -29,12 +29,15 @@ import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -818,7 +821,8 @@ public abstract class DelegatingCallableStatement
         return _stmnt.getTimestamp(a, b);
     }
 
-    // java.sql.Wrapper implementation (JDBC 4)
+    // JDBC 4 methods follow.
+
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -828,5 +832,217 @@ public abstract class DelegatingCallableStatement
             return getDelegate();
         else
             return null;
+    }
+
+    public Reader getCharacterStream(int parameterIndex) throws SQLException {
+        return _stmnt.getCharacterStream(parameterIndex);
+    }
+
+    public Reader getCharacterStream(String parameterName) throws SQLException {
+        return _stmnt.getCharacterStream(parameterName);
+    }
+
+    public Reader getNCharacterStream(int parameterIndex) throws SQLException {
+        return _stmnt.getNCharacterStream(parameterIndex);
+    }
+
+    public Reader getNCharacterStream(String parameterName) throws SQLException {
+        return _stmnt.getNCharacterStream(parameterName);
+    }
+
+    public NClob getNClob(int parameterIndex) throws SQLException {
+        return _stmnt.getNClob(parameterIndex);
+    }
+
+    public NClob getNClob(String parameterName) throws SQLException {
+        return _stmnt.getNClob(parameterName);
+    }
+
+    public String getNString(int parameterIndex) throws SQLException {
+        return _stmnt.getNString(parameterIndex);
+    }
+
+    public String getNString(String parameterName) throws SQLException {
+        return _stmnt.getNString(parameterName);
+    }
+
+    public RowId getRowId(int parameterIndex) throws SQLException {
+        return _stmnt.getRowId(parameterIndex);
+    }
+
+    public RowId getRowId(String parameterName) throws SQLException {
+        return _stmnt.getRowId(parameterName);
+    }
+
+    public SQLXML getSQLXML(int parameterIndex) throws SQLException {
+        return _stmnt.getSQLXML(parameterIndex);
+    }
+
+    public SQLXML getSQLXML(String parameterName) throws SQLException {
+        return _stmnt.getSQLXML(parameterName);
+    }
+
+    public void setAsciiStream(String parameterName, InputStream x, long length) throws SQLException {
+        _stmnt.setAsciiStream(parameterName, x, length);
+    }
+
+    public void setAsciiStream(String parameterName, InputStream x) throws SQLException {
+        _stmnt.setAsciiStream(parameterName, x);
+    }
+
+    public void setBinaryStream(String parameterName, InputStream x, long length) throws SQLException {
+        _stmnt.setBinaryStream(parameterName, x, length);
+    }
+
+    public void setBinaryStream(String parameterName, InputStream x) throws SQLException {
+        _stmnt.setBinaryStream(parameterName, x);
+    }
+
+    public void setBlob(String parameterName, Blob x) throws SQLException {
+        _stmnt.setBlob(parameterName, x);
+    }
+
+    public void setBlob(String parameterName, InputStream inputStream, long length) throws SQLException {
+        _stmnt.setBlob(parameterName, inputStream, length);
+    }
+
+    public void setBlob(String parameterName, InputStream inputStream) throws SQLException {
+        _stmnt.setBlob(parameterName, inputStream);
+    }
+
+    public void setCharacterStream(String parameterName, Reader reader, long length) throws SQLException {
+        _stmnt.setCharacterStream(parameterName, reader, length);
+    }
+
+    public void setCharacterStream(String parameterName, Reader reader) throws SQLException {
+        _stmnt.setCharacterStream(parameterName, reader);
+    }
+
+    public void setClob(String parameterName, Clob x) throws SQLException {
+        _stmnt.setClob(parameterName, x);
+    }
+
+    public void setClob(String parameterName, Reader reader, long length) throws SQLException {
+        _stmnt.setClob(parameterName, reader, length);
+    }
+
+    public void setClob(String parameterName, Reader reader) throws SQLException {
+        _stmnt.setClob(parameterName, reader);
+    }
+
+    public void setNCharacterStream(String parameterName, Reader value, long length) throws SQLException {
+        _stmnt.setNCharacterStream(parameterName, value, length);
+    }
+
+    public void setNCharacterStream(String parameterName, Reader value) throws SQLException {
+        _stmnt.setNCharacterStream(parameterName, value);
+    }
+
+    public void setNClob(String parameterName, NClob value) throws SQLException {
+        _stmnt.setNClob(parameterName, value);
+    }
+
+    public void setNClob(String parameterName, Reader reader, long length) throws SQLException {
+        _stmnt.setNClob(parameterName, reader, length);
+    }
+
+    public void setNClob(String parameterName, Reader reader) throws SQLException {
+        _stmnt.setNClob(parameterName, reader);
+    }
+
+    public void setNString(String parameterName, String value) throws SQLException {
+        _stmnt.setNString(parameterName, value);
+    }
+
+    public void setRowId(String parameterName, RowId x) throws SQLException {
+        _stmnt.setRowId(parameterName, x);
+    }
+
+    public void setSQLXML(String parameterName, SQLXML xmlObject) throws SQLException {
+        _stmnt.setSQLXML(parameterName, xmlObject);
+    }
+
+    public void setAsciiStream(int parameterIndex, InputStream x, long length) throws SQLException {
+        _stmnt.setAsciiStream(parameterIndex, x, length);
+    }
+
+    public void setAsciiStream(int parameterIndex, InputStream x) throws SQLException {
+        _stmnt.setAsciiStream(parameterIndex, x);
+    }
+
+    public void setBinaryStream(int parameterIndex, InputStream x, long length) throws SQLException {
+        _stmnt.setBinaryStream(parameterIndex, x, length);
+    }
+
+    public void setBinaryStream(int parameterIndex, InputStream x) throws SQLException {
+        _stmnt.setBinaryStream(parameterIndex, x);
+    }
+
+    public void setBlob(int parameterIndex, InputStream inputStream, long length) throws SQLException {
+        _stmnt.setBlob(parameterIndex, inputStream, length);
+    }
+
+    public void setBlob(int parameterIndex, InputStream inputStream) throws SQLException {
+        _stmnt.setBlob(parameterIndex, inputStream);
+    }
+
+    public void setCharacterStream(int parameterIndex, Reader reader, long length) throws SQLException {
+        _stmnt.setCharacterStream(parameterIndex, reader, length);
+    }
+
+    public void setCharacterStream(int parameterIndex, Reader reader) throws SQLException {
+        _stmnt.setCharacterStream(parameterIndex, reader);
+    }
+
+    public void setClob(int parameterIndex, Reader reader, long length) throws SQLException {
+        _stmnt.setClob(parameterIndex, reader, length);
+    }
+
+    public void setClob(int parameterIndex, Reader reader) throws SQLException {
+        _stmnt.setClob(parameterIndex, reader);
+    }
+
+    public void setNCharacterStream(int parameterIndex, Reader value, long length) throws SQLException {
+        _stmnt.setNCharacterStream(parameterIndex, value, length);
+    }
+
+    public void setNCharacterStream(int parameterIndex, Reader value) throws SQLException {
+        _stmnt.setNCharacterStream(parameterIndex, value);
+    }
+
+    public void setNClob(int parameterIndex, NClob value) throws SQLException {
+        _stmnt.setNClob(parameterIndex, value);
+    }
+
+    public void setNClob(int parameterIndex, Reader reader, long length) throws SQLException {
+        _stmnt.setNClob(parameterIndex, reader, length);
+    }
+
+    public void setNClob(int parameterIndex, Reader reader) throws SQLException {
+        _stmnt.setNClob(parameterIndex, reader);
+    }
+
+    public void setNString(int parameterIndex, String value) throws SQLException {
+        _stmnt.setNString(parameterIndex, value);
+    }
+
+    public void setRowId(int parameterIndex, RowId x) throws SQLException {
+        _stmnt.setRowId(parameterIndex, x);
+    }
+
+    public void setSQLXML(int parameterIndex, SQLXML xmlObject) throws SQLException {
+        _stmnt.setSQLXML(parameterIndex, xmlObject);
+    }
+
+    public boolean isClosed() throws SQLException {
+        return _stmnt.isClosed();
+    }
+
+    public boolean isPoolable() throws SQLException {
+        return _stmnt.isPoolable();
+    }
+
+    public void setPoolable(boolean poolable) throws SQLException {
+        _stmnt.setPoolable(poolable);
     }
 }

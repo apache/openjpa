@@ -291,7 +291,8 @@ public abstract class DelegatingStatement implements Statement, Closeable {
         return _stmnt.getResultSetHoldability();
     }
 
-    // java.sql.Wrapper implementation (JDBC 4)
+    // JDBC 4 methods follow.
+
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -301,5 +302,17 @@ public abstract class DelegatingStatement implements Statement, Closeable {
             return getDelegate();
         else
             return null;
+    }
+
+    public boolean isClosed() throws SQLException {
+        return _stmnt.isClosed();
+    }
+
+    public void setPoolable(boolean b) throws SQLException {
+        _stmnt.setPoolable(b);
+    }
+
+    public boolean isPoolable() throws SQLException {
+        return _stmnt.isPoolable();
     }
 }
