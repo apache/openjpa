@@ -119,6 +119,7 @@ public class SolidDBDictionary
         supportsNullUniqueColumn = false;
         
         concatenateFunction = "CONCAT({0},{1})";
+        stringLengthFunction = "LENGTH({0})";
         trimLeadingFunction = "LTRIM({0})";
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "TRIM({0})";

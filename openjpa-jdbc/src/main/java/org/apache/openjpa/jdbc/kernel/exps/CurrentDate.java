@@ -64,11 +64,10 @@ class CurrentDate
     
     public Object getValue(Object[] params) {
         try {
-            _type.getConstructor(long.class).newInstance(System.currentTimeMillis());
+            return _type.getConstructor(long.class).newInstance(System.currentTimeMillis());
         } catch (Exception e) {
             return new Date();
         }
-        return null;
     }
 
     public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
