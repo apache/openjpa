@@ -64,6 +64,7 @@ public class Compatibility {
     private boolean _superclassDiscriminatorStrategyByDefault = true;
     private boolean _isAbstractMappingUniDirectional = false;
     private boolean _isNonDefaultMappingAllowed = false;
+    private boolean _reorderMetaDataResolution = true;
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
     
@@ -506,6 +507,26 @@ public class Compatibility {
      */
     public boolean isNonDefaultMappingAllowed() {
         return _isNonDefaultMappingAllowed;
+    }
+    
+    /**
+     * Whether OpenJPA should reorder entities in MetaDataRepository.processBuffer() to ensure that the metadata for 
+     * entities with foreign keys in their identity are processed after the entities it depends on.
+     * 
+     * @return true if the reordering should be performed, false if not.
+     */
+    public boolean getReorderMetaDataResolution() {
+        return _reorderMetaDataResolution;
+    }
+    
+    /**
+     * Whether OpenJPA should reorder entities in MetaDataRepository.processBuffer() to ensure that the metadata for 
+     * entities with foreign keys in their identity are processed after the entities it depends on.
+     * 
+     * @param reorderProcessBuffer true if the reordering should be performed, false if not.
+     */
+    public void setReorderMetaDataResolution(boolean reorderProcessBuffer) {
+        _reorderMetaDataResolution = reorderProcessBuffer;
     }
 
     /**

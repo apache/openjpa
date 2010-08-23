@@ -28,7 +28,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEntityAsIdentityFields extends SingleEMFTestCase {    
     public void setUp() {
-        setUp(Account.class, AccountGroup.class, Person.class);
+        setUp(
+                Account.class, AccountGroup.class, Person.class,
+                "openjpa.Compatibility", "reorderMetaDataResolution=true");
     }
     
     /**

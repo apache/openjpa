@@ -141,8 +141,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private final Collection<Class<?>> _registered = new HashSet<Class<?>>();
 
     // set of metadatas we're in the process of resolving
-    private final List<ClassMetaData> _resolving = new ArrayList<ClassMetaData>();
-    private final List<ClassMetaData> _mapping = new ArrayList<ClassMetaData>();
+    private final InheritanceOrderedMetaDataList _resolving = new InheritanceOrderedMetaDataList();
+    private final InheritanceOrderedMetaDataList _mapping = new InheritanceOrderedMetaDataList();
     private final List<RuntimeException> _errs = new LinkedList<RuntimeException>();
 
     // system listeners
@@ -152,6 +152,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     protected boolean _preloadComplete = false;
     protected boolean _locking = true;
     private static final String PRELOAD_STR = "Preload";
+    
+    private boolean _reorderMetaDataResolution = false;
 
     /**
      * Default constructor. Configure via {@link Configurable}.
@@ -768,28 +770,22 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Process the given metadata and the associated buffer.
      */
-    private List<ClassMetaData> processBuffer(ClassMetaData meta, List<ClassMetaData> buffer, int mode) {
-        // add the metadata to the buffer unless an instance for the same entity
-        // is already there
-        for (ClassMetaData cmd : buffer)
-            if (cmd.getDescribedType().equals(meta.getDescribedType()))
-                return null;
-
+    private List<ClassMetaData> processBuffer(ClassMetaData meta, InheritanceOrderedMetaDataList buffer, int mode) {
         // if we're already processing a metadata, just buffer this one; when
         // the initial metadata finishes processing, we traverse the buffer
         // and process all the others that were introduced during reentrant
         // calls
-        buffer.add(meta);
-        if (buffer.size() != 1)
+        if (!buffer.add(meta) || buffer.size() != 1)
             return null;
 
         // continually pop a metadata and process it until we run out; note
         // that each processing call might place more metas in the buffer as
-        // one class tries to access metadata for another
+        // one class tries to access metadata for another; also note that the
+        // buffer orders itself from least to most derived
         ClassMetaData buffered;
         List<ClassMetaData> processed = new ArrayList<ClassMetaData>(5);
         while (!buffer.isEmpty()) {
-            buffered = buffer.get(0);
+            buffered = buffer.peek();
             try {
                 buffered.resolve(mode);
                 processed.add(buffered);
@@ -812,6 +808,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         
+        // Check if process buffer reordering for PCTypes that have relationships to other PCTypes in their identity 
+        // should be performed.
+        if (_reorderMetaDataResolution) {
+            processed = resolveFKInPKDependenciesOrdering(processed);
+        }
         return processed;
     }
 
@@ -1843,6 +1844,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
+        _reorderMetaDataResolution = _conf.getCompatibilityInstance().getReorderMetaDataResolution();
     }
 
     public void startConfiguration() {
@@ -2410,6 +2412,196 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      */
     public XMLFieldMetaData newXMLFieldMetaData(Class<?> type, String name) {
         return new XMLFieldMetaData(type, name);
+    }
+    
+    /**
+     * Analyzes the list of ClassMetaData in the supplied list for any which has foreign keys to other ClassMetaData 
+     * instances in its identity (in other words, PCTypes which have primary keys that are foreign keys to other
+     * tables), and returns a list arranged so that a ClassMetaData that depends on another ClassMetaData appears
+     * after it in the list.
+     *
+     * @param cmdList - List of ClassMetaData to examine
+     * @return - List of ClassMetaData, with ClassMetaData dependees moved after the last identified dependent 
+     *           ClassMetaData, if any move is necessary.
+     */
+    private List<ClassMetaData> resolveFKInPKDependenciesOrdering(List<ClassMetaData> cmdList) {
+        HashMap<ClassMetaData, CMDDependencyNode> nodeMap = new HashMap<ClassMetaData, CMDDependencyNode>();
+        HashSet<CMDDependencyNode> nodesWithDependenciesSet = new HashSet<CMDDependencyNode>();
+        ArrayList<CMDDependencyNode> nodeList = new ArrayList<CMDDependencyNode>(cmdList.size());
+        
+        // Initial analysis of ClassMetaData objects -- Populate the linked list with objects in the same order of 
+        // appearance in the original list. Identify CMDs whose identities have a FK to another CMD, and catalog that 
+        // dependency.
+        for (ClassMetaData cmd : cmdList) {
+            // Add this node to the list
+            CMDDependencyNode node = nodeMap.get(cmd);
+            if (node == null) {
+                node = new CMDDependencyNode(cmd);
+                nodeMap.put(cmd, node);
+            }
+            nodeList.add(node);
+            
+            // Examine its primary key fields, flag any references to another PCType that is defined in cmdList as a 
+            // dependency
+            FieldMetaData[] fmdArr = cmd.getPrimaryKeyFields();
+            for (FieldMetaData fmd : fmdArr) {
+                ValueMetaData vmd = fmd.getValue();
+                if (vmd.isTypePC()) {
+                    ClassMetaData targetCMD = vmd.getDeclaredTypeMetaData();
+
+                    // Only process entries which are in the cmdList, as we don't want to be adding anything new.
+                    if (!cmdList.contains(targetCMD)) {
+                        continue;
+                    }
+
+                    // Register the dependency
+                    CMDDependencyNode targetNode = null;
+                    if ((targetNode = nodeMap.get(targetCMD)) == null) {
+                        targetNode = new CMDDependencyNode(targetCMD);
+                        nodeMap.put(targetCMD, targetNode);
+                    }
+                    node.registerDependentNode(targetNode);
+                    nodesWithDependenciesSet.add(node);
+                }
+            }
+        }
+        
+        // Analysis is complete. For each CMD that has an identity foreign key dependency on another CMD, ensure that it
+        // appears later in the list then the CMD it is dependent on. If it appears earlier, move it immediately after 
+        // the CMD. If there are multiple CMDs the identity is dependent on, move it after the last dependency in
+        // the linked list.
+        for (CMDDependencyNode node : nodesWithDependenciesSet) {
+            // Check if there is a cycle (dependencies or subdependencies that create a cycle in the graph. If one is 
+            // detected, then this algorithm cannot be used to reorder the CMD list.  Emit a warning, and return the 
+            // original list.
+            if (node.checkForCycle()) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(_loc.get("cmd-discover-cycle", node.getCmd().getResourceName()));
+                }
+                return cmdList;
+            }
+ 
+            int nodeIndex = nodeList.indexOf(node);
+            Set<CMDDependencyNode> dependencies = node.getDependsOnSet();       
+            
+            // If the current node has a dependency that appears later in the list, then this node needs
+            // to be moved to the point immediately after that dependency.
+            CMDDependencyNode moveAfter = null;
+            int moveAfterIndex = -1;
+            for (CMDDependencyNode depNode : dependencies) {               
+                int dependencyIndex = nodeList.indexOf(depNode);
+                if ((nodeIndex < dependencyIndex) && (moveAfterIndex < dependencyIndex)) {
+                    moveAfter = depNode;
+                    moveAfterIndex = dependencyIndex;
+                }
+            }
+            if (moveAfter != null) {
+                nodeList.remove(nodeIndex);
+                nodeList.add(nodeList.indexOf(moveAfter) + 1, node);
+            }      
+        }
+        
+        // Sorting is complete, build the return list.  Clear the dependsOnSet for the GC.
+        ArrayList<ClassMetaData> returnList = new ArrayList<ClassMetaData>();
+        for (CMDDependencyNode current : nodeList) {
+            returnList.add(current.getCmd());
+            current.getDependsOnSet().clear();
+        }
+        
+        return returnList;
+    }
+
+
+    /**
+     * Linked list node class for managing any foreign keys in the identity of a ClassMetaData instance.
+     * 
+     */
+    private class CMDDependencyNode {
+        private ClassMetaData cmd;
+
+        // Marker for quick determination if this node has dependencies
+        private boolean hasDependencies = false;
+
+        // List of ClassMetaData objects this ClassMetaData depends on
+        private HashSet<CMDDependencyNode> dependsOnSet = new HashSet<CMDDependencyNode>();
+
+        /**
+         * Inner class constructor
+         */
+        CMDDependencyNode(ClassMetaData cmd) {
+            this.cmd = cmd;
+        }
+
+        /**
+         * Returns the ClassMetaData instance referenced by this node.
+         */
+        public ClassMetaData getCmd() {
+            return cmd;
+        }
+
+        /**
+         * 
+         * @return true if this node's ClassMetaData has a FK in its identity that refers to another ClassMetaData; 
+         *         false if it does not.
+         */
+        public boolean getHasDependencies() {
+            return hasDependencies;
+        }
+
+        /**
+         * Registers a ClassMetaData modelled by a CMDDependencyNode as a dependency of this ClassMetaData.
+         * 
+         */
+        public void registerDependentNode(CMDDependencyNode node) {
+            getDependsOnSet().add(node);
+            hasDependencies = true;
+        }
+
+        /**
+         * Returns a Set containing all of the CMDDependencyNode instances that this node has a FK in identity 
+         * dependency on.
+         * 
+         */
+        public Set<CMDDependencyNode> getDependsOnSet() {
+            return dependsOnSet;
+        }
+
+        /**
+         * Checks all dependencies, and sub-dependencies, for any cycles in the dependency graph.
+         * 
+         * @return true if a cycle was discovered, false if not.
+         */
+        public boolean checkForCycle() {
+            java.util.Stack<CMDDependencyNode> visitStack = new java.util.Stack<CMDDependencyNode>();
+            return internalCheckForCycle(visitStack);
+        }
+
+        /**
+         * Internal implementation of the cycle detection.
+         * 
+         * @param visitStack
+         * @return true if a cycle is detected, false if no cycle was detected.
+         */
+        private boolean internalCheckForCycle(java.util.Stack<CMDDependencyNode> visitStack) {
+            if (visitStack.contains(this)) {
+                return true;
+            }
+            visitStack.push(this);
+
+            try {
+                for (CMDDependencyNode node : dependsOnSet) {
+                    if (node.getHasDependencies()) {
+                        if (node.internalCheckForCycle(visitStack) == true) {
+                            return true;
+                        }
+                    }
+                }
+            } finally {
+                visitStack.pop();
+            }
+            
+            return false;
+        }
     }
 
     public static boolean needsPreload(Options o) {
