@@ -176,6 +176,20 @@ users, but may not support every feature of this release, please refer to the
                 </row>
                 <row>
                     <entry colname="dbname">
+                        <link linkend="dbsupport_soliddb">IBM solidDB</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        6.5.0.0
+                    </entry>
+                    <entry colname="drivname">
+                        solidDB JDBC Drive
+                    </entry>
+                    <entry colname="drivversion">
+                        2.0
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
                         <link linkend="dbsupport_sybase">Sybase Adaptive Server Enterprise</link>
                     </entry>
                     <entry colname="dbversion">
@@ -481,6 +495,20 @@ databases that have been fully tested against this release, please refer to the
                     </entry>
                     <entry colname="drivversion">
                         8.1
+                    </entry>
+                </row>
+                <row>
+                    <entry colname="dbname">
+                        <link linkend="dbsupport_solidDB">IBM solidDB</link>
+                    </entry>
+                    <entry colname="dbversion">
+                        6.5.0.0
+                    </entry>
+                    <entry colname="drivname">
+                        solidDB JDBC Driver
+                    </entry>
+                    <entry colname="drivversion">
+                        2.0
                     </entry>
                 </row>
                 <row>
@@ -1251,6 +1279,63 @@ supported when using
                     </para>
                 </listitem>
             </itemizedlist>
+        </section>
+    </section>
+
+    <section id="dbsupport_soliddb">
+        <title>
+            IBM solidDB
+        </title>
+        <example id="example_props_soliddb">
+            <title>
+                Example properties for IBM solidDB
+            </title>
+<programlisting>
+openjpa.ConnectionDriverName: solid.jdbc.SolidDriver
+openjpa.ConnectionURL: jdbc:solid://localhost:2315/dba/dba
+</programlisting>
+        </example>
+        <section id="dbsupport_soliddb_table_types">
+            <title>
+                M-type tables vs. D-type tables
+            </title>
+            <para>
+IBM solidDB supports two types of tables: in-memory tables (M-tables) and 
+on-disk tables (D-tables). Since cursor hold over commit can not apply to M-tables 
+(which will cause SOLID Table Error 13187: The cursor cannot continue  
+accessing M-tables after the transaction has committed or aborted. 
+The statement must be re-executed), the default OpenJPA tables are D-tables. 
+One can set the whole server to disk-based mode by adding 
+         [General]
+             DefaultStoreIsMemory=no 
+in solid.ini. The table types can also be determined by setting OpenJPA property 
+"openjpa.jdbc.DBDictionary" with value "storeIsMemory=true" or "storeIsMemory=false" 
+in the persistence.xml. The "STORE MEMORY" and "STORE DISK" will be appended to 
+the create table DDL, respectively. 
+            </para>
+        </section>    
+        <section id="dbsupport_soliddb_concurrency_control">
+            <title>
+                Concurrency control mechanism
+            </title>
+            <para>
+The default concurrency control mechanism depends on the table type:
+Disk-based tables (D-tables) are by default optimistic.
+Main-memory tables (M-tables) are always pessimistic.
+Since OpenJPA applications expects lock waits as usually is done with 
+normal pessimistic databases, the server should be set to the pessimistic mode. 
+The optimistic mode is about not waiting for the locks at all. That increases 
+concurrency but requires more programming. The pessimistic mode with the 
+READ COMMITTED isolation level (default) should get as much concurrency as one 
+might need. The pessimistic locking mode can be set in solid.ini:  
+      [General]
+         Pessimistic=yes
+One can override the locking mode on the per table base by setting OpenJPA property 
+"openjpa.jdbc.DBDictionary" to value "lockingMode=PESSIMISTIC" in the persistence.xml. 
+An extra SQL will be generated along with CREATE TABLE DDL: 
+ALTER TABLE EX_POBJECT SET PESSIMISTIC. 
+The possible values for lockingMode is OPTIMISTIC/PESSIMISTIC.         
+           </para>
         </section>
     </section>
     <section id="dbsupport_sybase">
