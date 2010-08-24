@@ -139,11 +139,74 @@
         <!--  Build Profiles  -->
         <!-- ================ -->
 
-        <!-- Release profile is inherited from parent apache-7.pom
+        <!-- Override some release settings inherited from apache-7.pom -->
         <profile>
             <id>apache-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludeSubProjects>false</excludeSubProjects>
+                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                            <excludes>
+                                <!-- comments are usupported in services files -->
+                                <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                <exclude>**/javax.annotation.processing.Processor</exclude>
+                                <!-- comments are usupported by our rsrc parser -->
+                                <exclude>**/*.rsrc</exclude>
+                                <!-- comments are usupported in these files -->
+                                <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                                <exclude>scripts/*.list</exclude>
+                                <exclude>scripts/*.options</exclude>
+                                <exclude>scripts/*.dict</exclude>
+                                <!-- generated content -->
+                                <exclude>**/.*/**</exclude>
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
+                                <exclude>**/*.log</exclude>
+                                <exclude>**/maven-eclipse.xml</exclude>
+                                <exclude>**/rat.txt</exclude>
+                                <exclude>release.properties</exclude>
+                                <exclude>DEPENDENCIES</exclude>
+                                <!-- Exclude internal build-only repository -->
+                                <exclude>**/internal-repository/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+<!--
+                            <execution>
+                                <id>aggregate</id>
+                                <phase>site</phase>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+-->
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        -->
 
         <profile>
             <id>sign-release</id>
@@ -200,9 +263,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -571,7 +631,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.6</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>
@@ -610,41 +670,6 @@
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>0.7</version>
-                    <executions>
-                        <execution>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <excludeSubProjects>false</excludeSubProjects>
-                        <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                        <excludes>
-                            <!-- comments are usupported in services files -->
-                            <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
-                            <exclude>**/javax.annotation.processing.Processor</exclude>
-                            <!-- comments are usupported by our rsrc parser -->
-                            <exclude>**/*.rsrc</exclude>
-                            <!-- comments are usupported in these files -->
-                            <exclude>**/org.apache.openjpa.revision.properties</exclude>
-                            <exclude>scripts/*.list</exclude>
-                            <exclude>scripts/*.options</exclude>
-                            <exclude>scripts/*.dict</exclude>
-                            <!-- generated content -->
-                            <exclude>**/.*/**</exclude>
-                            <exclude>**/target/**/*</exclude>
-                            <exclude>**/dependency-reduced-pom.xml</exclude>
-                            <exclude>**/*.log</exclude>
-                            <exclude>**/maven-eclipse.xml</exclude>
-                            <exclude>**/rat.txt</exclude>
-                            <exclude>release.properties</exclude>
-                            <exclude>DEPENDENCIES</exclude>
-                            <!-- Exclude internal build-only repository -->
-                            <exclude>**/internal-repository/**</exclude>
-                        </excludes>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -759,22 +784,18 @@
                     <version>1.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.3.1</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.5</version>
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <show>package</show>
+                        <quiet>true</quiet>
+                        <source>1.5</source>
                         <additionalparam>
                             ${javadoc.additionalparam}
                         </additionalparam>
-                        <aggregate>true</aggregate>
                         <subpackages>org.apache.openjpa</subpackages>
-                        <!-- <linksource>true</linksource> -->
-                        <verbose>false</verbose>
                         <maxmemory>512m</maxmemory>
                         <links>
                             <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
@@ -856,6 +877,37 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludeSubProjects>false</excludeSubProjects>
+                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                    <excludes>
+                        <!-- generated content -->
+                        <exclude>**/.*/**</exclude>
+                        <exclude>**/target/**/*</exclude>
+                    </excludes>
+                    <includes>
+                        <!-- only check common source files -->
+                        <include>**/src/**/*.bat</include>
+                        <include>**/src/**/*.css</include>
+                        <include>**/src/**/*.html</include>
+                        <include>**/src/**/*.java</include>
+                        <include>**/src/**/*.js</include>
+                        <include>**/src/**/*.jsp</include>
+                        <include>**/src/**/*.properties</include>
+                        <include>**/src/**/*.sh</include>
+                        <include>**/src/**/*.txt</include>
+                        <include>**/src/**/*.vm</include>
+                        <include>**/src/**/*.xml</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -865,11 +917,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.1.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
                             <report>jdepend-maven-plugin</report>
-                            <!-- <report>jxr-maven-plugin</report> -->
                             <report>surefire-report-maven-plugin</report>
                             <report>maven-javadoc-plugin</report>
                             <report>mailing-list</report>
@@ -879,11 +931,27 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <show>package</show>
+                        <quiet>true</quiet>
+                        <source>1.5</source>
+                        <additionalparam>
+                            ${javadoc.additionalparam}
+                        </additionalparam>
+                        <aggregate>true</aggregate>
+                        <subpackages>org.apache.openjpa</subpackages>
+                        <maxmemory>512m</maxmemory>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/javaee/6/docs/api</link>
+                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                    </links>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -893,6 +961,7 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jdepend-maven-plugin</artifactId>
@@ -900,11 +969,13 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.6</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
+                <version>2.4</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
