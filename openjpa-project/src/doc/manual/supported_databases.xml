@@ -182,7 +182,7 @@ users, but may not support every feature of this release, please refer to the
                         6.5.0.0
                     </entry>
                     <entry colname="drivname">
-                        solidDB JDBC Drive
+                        solidDB JDBC Driver
                     </entry>
                     <entry colname="drivversion">
                         2.0
