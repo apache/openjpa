@@ -41,30 +41,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
-
-            <!--
-                 Need to disable source plugin here, as it overwrites the shade
-                 plugin created sources jar.
-            -->
+            <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase> 
-                    </execution>
-                </executions>
+                <configuration>
+                    <attach>false</attach>
+                </configuration>
             </plugin>
 
             <!-- Create our aggregate JAR -->
@@ -79,7 +66,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
+                            <createSourcesJar>${createSources}</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!--

@@ -692,7 +692,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-testsupport</artifactId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
@@ -720,16 +720,38 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- Extract the common test support files from o-p-j-tests.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
-                        <phase>none</phase>
+                        <id>unpack</id>
+                        <phase>test-compile</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>unpack</goal>
                         </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.openjpa</groupId>
+                                    <artifactId>openjpa-persistence-jdbc</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>test-jar</type>
+                                    <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                                    <includes>org/apache/openjpa/persistence/test/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
