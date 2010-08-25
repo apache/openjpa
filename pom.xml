@@ -208,7 +208,8 @@
                             <exclude>**/org.apache.openjpa.revision.properties</exclude>
                             <exclude>**/target/**/*</exclude>
                             <exclude>release.properties</exclude>
-                            <exclude>.gitignore</exclude>
+                            <exclude>**/.*/**</exclude>
+                            <exclude>**/pom.xml.tag</exclude>
                         </excludes>
                         </configuration>
                     </plugin>
@@ -478,6 +479,9 @@
                             <exclude>**/*.txt</exclude>
                             <exclude>**/org.apache.openjpa.revision.properties</exclude>
                             <exclude>**/target/**/*</exclude>
+                            <exclude>release.properties</exclude>
+                            <exclude>**/.*/**</exclude>
+                            <exclude>**/pom.xml.tag</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
