@@ -87,6 +87,16 @@
             </excludes>
         </fileSet>
         <fileSet>
+            <directory>../openjpa-examples/opentrader</directory>
+            <outputDirectory>examples/opentrader</outputDirectory>
+            <excludes>
+                <exclude>**/target/**</exclude>
+                <exclude>**/*.log</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
             <directory>../openjpa-examples/simple/src/main/java</directory>
             <outputDirectory>examples/simple</outputDirectory>
             <excludes>
