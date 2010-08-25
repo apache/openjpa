@@ -37,19 +37,21 @@
 
     <build>
         <plugins>
-            <!--
-                 Need to disable source plugin here, as it overwrites the shade
-                 plugin created sources jar.
-            -->
+            <!-- disable creating javadoc for this module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase> 
-                    </execution>
-                </executions>
+                <configuration>
+                    <attach>false</attach>
+                </configuration>
             </plugin>
 
             <!-- Create our aggregate JAR -->

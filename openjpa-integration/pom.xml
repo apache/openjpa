@@ -44,4 +44,17 @@
         <module>validation</module>
         <module>jmx</module>
     </modules>
+
+    <build>
+        <plugins>
+            <!-- disable creating javadoc for these modules -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

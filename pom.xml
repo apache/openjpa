@@ -76,12 +76,30 @@
         <slf4jVersion>1.6.1</slf4jVersion>
     </properties>
 
+    <licenses>
+        <license>
+            <name>Apache Software License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+    </organization>
+
     <url>http://openjpa.apache.org</url>
 
     <issueManagement>
         <system>jira</system>
         <url>http://issues.apache.org/jira/browse/OPENJPA</url>
     </issueManagement>
+
+    <ciManagement>
+        <system>Hudson</system>
+        <url>https://hudson.apache.org/hudson/job/OpenJPA-trunk-deploy/</url>
+    </ciManagement>
 
     <inceptionYear>2006</inceptionYear>
 
@@ -128,7 +146,6 @@
         <module>openjpa-jdbc</module>
         <module>openjpa-persistence</module>
         <module>openjpa-persistence-jdbc</module>
-        <module>openjpa-testsupport</module>
         <module>openjpa-persistence-locking</module>
         <module>openjpa-xmlstore</module>
         <module>openjpa-slice</module>
@@ -144,11 +161,53 @@
         <!--  Build Profiles  -->
         <!-- ================ -->
 
-        <!-- Release profile is inherited from parent apache-7.pom
+        <!-- Override some release settings inherited from apache-7.pom -->
         <profile>
             <id>apache-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludeSubProjects>false</excludeSubProjects>
+                            <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                            <excludes>
+                                <!-- comments are usupported in services files -->
+                                <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
+                                <exclude>**/javax.annotation.processing.Processor</exclude>
+                                <!-- comments are usupported by our rsrc parser -->
+                                <exclude>**/*.rsrc</exclude>
+                                <!-- comments are usupported in these files -->
+                                <exclude>**/org.apache.openjpa.revision.properties</exclude>
+                                <exclude>scripts/*.list</exclude>
+                                <exclude>scripts/*.options</exclude>
+                                <exclude>scripts/*.dict</exclude>
+                                <!-- generated content -->
+                                <exclude>**/.*/**</exclude>
+                                <exclude>**/target/**/*</exclude>
+                                <exclude>**/dependency-reduced-pom.xml</exclude>
+                                <exclude>**/*.log</exclude>
+                                <exclude>**/maven-eclipse.xml</exclude>
+                                <exclude>**/rat.txt</exclude>
+                                <exclude>release.properties</exclude>
+                                <exclude>DEPENDENCIES</exclude>
+                                <!-- Exclude internal build-only repository -->
+                                <exclude>**/internal-repository/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
-        -->
 
         <profile>
             <id>sign-release</id>
@@ -580,13 +639,27 @@
     </dependencies>
 
     <build>
+        <defaultGoal>install</defaultGoal>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+
         <pluginManagement>
             <plugins>
                 <!-- apache-7.pom default of 2.0.2 fails for JDK5 testing -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.1</version>
+                    <version>2.3.1</version>
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>
@@ -595,45 +668,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <configuration>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>javadoc</goal>
-                            </goals>
-                            <configuration>
-                                <additionalparam>
-                                    ${javadoc.additionalparam}
-                                </additionalparam>
-                                <aggregate>true</aggregate>
-                                <subpackages>org.apache.openjpa</subpackages>
-                                <!-- <linksource>true</linksource> -->
-                                <verbose>false</verbose>
-                                <maxmemory>512m</maxmemory>
-                                <links>
-                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                                    <link>http://java.sun.com/javaee/6/docs/api</link>
-                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
-                                </links>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.5</version>
+                    <version>2.6</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>
@@ -672,41 +708,11 @@
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>0.7</version>
-                    <executions>
-                        <execution>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <excludeSubProjects>false</excludeSubProjects>
-                        <numUnapprovedLicenses>0</numUnapprovedLicenses>
-                        <excludes>
-                            <!-- comments are usupported in services files -->
-                            <exclude>**/javax.persistence.spi.PersistenceProvider</exclude>
-                            <exclude>**/javax.annotation.processing.Processor</exclude>
-                            <!-- comments are usupported by our rsrc parser -->
-                            <exclude>**/*.rsrc</exclude>
-                            <!-- comments are usupported in these files -->
-                            <exclude>**/org.apache.openjpa.revision.properties</exclude>
-                            <exclude>scripts/*.list</exclude>
-                            <exclude>scripts/*.options</exclude>
-                            <exclude>scripts/*.dict</exclude>
-                            <!-- generated content -->
-                            <exclude>**/.*/**</exclude>
-                            <exclude>**/target/**/*</exclude>
-                            <exclude>**/dependency-reduced-pom.xml</exclude>
-                            <exclude>**/*.log</exclude>
-                            <exclude>**/maven-eclipse.xml</exclude>
-                            <exclude>**/rat.txt</exclude>
-                            <exclude>release.properties</exclude>
-                            <exclude>DEPENDENCIES</exclude>
-                            <!-- Exclude internal build-only repository -->
-                            <exclude>**/internal-repository/**</exclude>
-                        </excludes>
-                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.1</version>
                 </plugin>
                 <!-- inherited from apache-7.pom, but need config updates -->
                 <plugin>
@@ -715,7 +721,7 @@
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
                         <goals>deploy site site-deploy</goals>
-                        <arguments>-Papache-release,docbook-profile,test-derby -DskipTests</arguments>
+                        <arguments>-Papache-release,docbook-profile,test-derby,bval -DskipTests</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
                 </plugin>
@@ -816,6 +822,42 @@
                     <version>1.1</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadoc</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>javadoc</goal>
+                            </goals>
+                            <configuration>
+                                <additionalparam>
+                                    ${javadoc.additionalparam}
+                                </additionalparam>
+                                <aggregate>true</aggregate>
+                                <subpackages>org.apache.openjpa</subpackages>
+                                <verbose>false</verbose>
+                                <maxmemory>512m</maxmemory>
+                                <links>
+                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                    <link>http://java.sun.com/javaee/6/docs/api</link>
+                                    <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                                </links>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>2.3.1</version>
@@ -894,6 +936,37 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludeSubProjects>false</excludeSubProjects>
+                    <numUnapprovedLicenses>0</numUnapprovedLicenses>
+                    <excludes>
+                        <!-- generated content -->
+                        <exclude>**/.*/**</exclude>
+                        <exclude>**/target/**/*</exclude>
+                    </excludes>
+                    <includes>
+                        <!-- only check common source files -->
+                        <include>**/src/**/*.bat</include>
+                        <include>**/src/**/*.css</include>
+                        <include>**/src/**/*.html</include>
+                        <include>**/src/**/*.java</include>
+                        <include>**/src/**/*.js</include>
+                        <include>**/src/**/*.jsp</include>
+                        <include>**/src/**/*.properties</include>
+                        <include>**/src/**/*.sh</include>
+                        <include>**/src/**/*.txt</include>
+                        <include>**/src/**/*.vm</include>
+                        <include>**/src/**/*.xml</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -904,28 +977,25 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.1.1</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>jdepend-maven-plugin</report>
-                            <!-- <report>jxr-maven-plugin</report> -->
-                            <report>surefire-report-maven-plugin</report>
-                            <report>maven-javadoc-plugin</report>
-                            <report>mailing-list</report>
-                            <report>issue-tracking</report>
-                            <report>license</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <show>package</show>
+                    <quiet>true</quiet>
+                    <source>1.5</source>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/javaee/6/docs/api</link>
+                        <link>http://jakarta.apache.org/commons/collections/api-release</link>
+                    </links>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
                             <report>javadoc</report>
-                            <report>test-javadoc</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -936,21 +1006,8 @@
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>taglist-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.2</version>
-                <configuration>
-                    <configLocation>${checkstyle.config.location}</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/*_.java</excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
+                <artifactId>jdepend-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
             </plugin>
         </plugins>
     </reporting>
