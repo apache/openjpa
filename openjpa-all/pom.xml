@@ -36,35 +36,40 @@
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies</name>
 
+    <dependencies>
+        <!--
+            Start with openjpa.jar and let the maven-shade-plugin
+            determine the transitive dependencies to include from it.
+        -->
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- include commons-logging -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <!-- disable creating javadoc for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>none</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--
-                 Need to disable source plugin here, as it overwrites the shade
-                 plugin created sources jar.
-            -->
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>   
+            <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
+                <configuration>
+                    <attach>false</attach>
+                </configuration>
             </plugin>
             <!--
                  Need to disable jar plugin here, as it overwrites the shade
@@ -75,11 +80,12 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-tests</id>
+                        <id>default-jar</id>
                         <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -127,21 +133,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <!--
-            Start with openjpa.jar and let the maven-shade-plugin
-            determine the transitive dependencies to include from it.
-        -->
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- include commons-logging -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-    </dependencies>
 </project>
