@@ -71,6 +71,19 @@
         <mysql.version>5.1.12</mysql.version>
     </properties>
 
+    <licenses>
+        <license>
+            <name>Apache Software License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org</url>
+    </organization>
+
     <url>http://openjpa.apache.org</url>
 
     <issueManagement>
