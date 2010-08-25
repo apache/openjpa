@@ -53,6 +53,7 @@
     <!ENTITY ref_guide_slice.xml SYSTEM "ref_guide_slice.xml">
     <!ENTITY ref_guide_integration.xml SYSTEM "ref_guide_integration.xml">
     <!ENTITY ref_guide_optimization.xml SYSTEM "ref_guide_optimization.xml">
+    <!ENTITY ref_guide_instrumentation.xml SYSTEM "ref_guide_instrumentation.xml">
     <!ENTITY samples_guide.xml SYSTEM "samples_guide.xml">
     <!ENTITY jpa_resources.xml SYSTEM "jpa_resources.xml">
     <!ENTITY supported_databases.xml SYSTEM "supported_databases.xml">
@@ -113,6 +114,7 @@
         &ref_guide_slice.xml;
         &ref_guide_integration.xml;
         &ref_guide_optimization.xml;
+        &ref_guide_instrumentation.xml;
     </part>
 
     <!--

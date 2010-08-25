@@ -2124,7 +2124,50 @@ when the application refers to a resource for the first time.
             </para>
         </section>
 
-
+        <section id="openjpa.Instrumentation">
+            <title>
+                openjpa.Instrumentation
+            </title>
+            <indexterm zone="openjpa.Instrumentation">
+                <primary>
+                    Instrumentation
+                </primary>
+            </indexterm>
+            <indexterm zone="Instrumentation">
+                <primary>
+                    Instrumentation
+                </primary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>
+openjpa.Instrumentation</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getInstrumentation()">
+<methodname>
+org.apache.openjpa.conf.OpenJPAConfiguration.getInstrumentation
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+Instrumentation</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default: </emphasis><literal>-</literal>
+            </para>
+            <para>
+<emphasis role="bold">Possible values: </emphasis><literal>jmx</literal>,
+<literal>custom plugin string</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> A plugin string (see
+<xref linkend="ref_guide_conf_plugins"/>) describing one or more instances of
+<ulink url="../javadoc/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html">
+<classname>org.apache.openjpa.lib.instrumentation.InstrumentationProvider</classname></ulink> and
+specific instruments to enable. See <xref linkend="ref_guide_instrumentation"/> for details.
+            </para>
+        </section>
         
         <section id="openjpa.InverseManager">
             <title>
