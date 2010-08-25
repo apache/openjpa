@@ -1,7 +1,7 @@
 <html>
-<title>Release Notes for OpenJPA</title>
+<title>Release Notes for OpenJPA 1.0.4</title>
 <body>
-<h1>Release Notes for OpenJPA</h1>
+<h1>Release Notes for OpenJPA 1.0.4</h1>
 
 <ul>
 <li><a href="#Overview">Overview</a></li>
@@ -9,17 +9,14 @@
 <li><a href="#Prerequisites">Prerequisites</a></li>
 <li><a href="#Documentation">Documentation</a></li>
 <li><a href="#GetInvolved">Getting Involved</a></li>
-<li><a href="#Sub-task">Sub-task</a></li>
-<li><a href="#Bug">Bug</a></li>
-<li><a href="#Improvement">Improvement</a></li>
+<li><a href="#JIRA">JIRA Issues Resolved</a></li>
 <li><a href="#Previous">RELEASE-NOTES for previous releases</a></li>
 </ul>
 
 <h2><a name="Overview"></a>Overview</h2>
 
-<p> These notes describe the difference between OpenJPA release 1.0.3 and the
-   preceding releases 1.0.0, 1.0.1 and 1.0.2. 1.0.3 is a maintenance release
-   and contains primarily bugfixes.
+<p> These notes describe the difference between OpenJPA release 1.0.4 and the
+   preceding release 1.0.3.
 <P>
 OpenJPA is a feature-rich implementation of the persistence part of 
 Java Community Process JSR-220 (Enterprise JavaBeans 3.0), which is
@@ -96,68 +93,135 @@ How do I Contribute?
     <li> Bugs and other issues can be posted on the project JIRA. </li>
 </ul>
 
-
-        Release Notes - OpenJPA - Version 1.0.3
+<h2><a name="JIRA"</a>JIRA Issues Fixed in this release</h2>
     
-<h2><a name="Sub-task"></a>        Sub-task
+<h2>       Sub-task
 </h2>
 <ul>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-517'>OPENJPA-517</a>] -         Oracle also supports WITH statements
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-681'>OPENJPA-681</a>] -         Subquery generates SQL with syntax error
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-555'>OPENJPA-555</a>] -         MappingTool got NullPointerException in DB2Dictionary.isDB2ZOSV8xOrLater()
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1023'>OPENJPA-1023</a>] -         Message files contain windows EOL characters
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-575'>OPENJPA-575</a>] -         Use do priv for to get CL for Oracle empty blob/clob
-</li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-591'>OPENJPA-591</a>] -         Entities are flushed before being detached or serialized
-</li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-648'>OPENJPA-648</a>] -         Table generator uses incorrect schema name
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1210'>OPENJPA-1210</a>] -         Specify derby timeouts via properties.
 </li>
 </ul>
     
-<h2><a name="Bug"></a>        Bug
+<h2>        Bug
 </h2>
 <ul>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-51'>OPENJPA-51</a>] -         bad sql pushdown, sub select is missing from clause
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-210'>OPENJPA-210</a>] -         Query returning 2 entities w/1-1 relationship returns wrong types in the result list
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-209'>OPENJPA-209</a>] -         Query returning 2 entities w/unidir 1-1 relationship gets openjpa.persistence.ArgumentException: Address with the same id already exists in the L1 cache.
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-466'>OPENJPA-466</a>] -         Primary key constraint violated using (Oracle) sequence to generate ID in multithreaded app
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-245'>OPENJPA-245</a>] -         Attach NEW and auto-increment identity
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-536'>OPENJPA-536</a>] -         getMetaData() causes OutOfMemoryError under some cases
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-499'>OPENJPA-499</a>] -         Missing dependencies in openjpa-persistence and openjpa-persistence-jdbc
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-572'>OPENJPA-572</a>] -         Merge operation fails with IdClass composite key
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-512'>OPENJPA-512</a>] -         Maven build fails if -Dmaven.test.skip=true
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-573'>OPENJPA-573</a>] -         JPQL: The combination LIKE ESCAPE does not accept parameters
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-518'>OPENJPA-518</a>] -         openJpa jar is being locked causing future deployments on an app server to fail
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-594'>OPENJPA-594</a>] -         Incorrect schema separator used for Informix tables
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-527'>OPENJPA-527</a>] -         Merge of new one-to-many list only persists last element.
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-605'>OPENJPA-605</a>] -         Informix will throw an exception when a unique index is explictily created on the primary key columns
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-529'>OPENJPA-529</a>] -         ManagedClassSubclasses stores table names twice. 
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-606'>OPENJPA-606</a>] -         InformixDictionary default setting beaks many testcases
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-535'>OPENJPA-535</a>] -         Javadoc spelling errors in SchemaFactory and Localizer
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-622'>OPENJPA-622</a>] -         Informix -lock timieout, cursor not open problem for NonJTA datasource transaction RESOURCE_LOCAL in JEE
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-537'>OPENJPA-537</a>] -         openjpa-parent pom should not overwrite central repository setting
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-629'>OPENJPA-629</a>] -         When creating foreign keys the schema name is not trimmed for WS before checking DB
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-540'>OPENJPA-540</a>] -         Classloading issue with WAS, Spring, and OpenJPA
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-644'>OPENJPA-644</a>] -         Handle databaseProductVersion string from newer jcc driver for DB2 ISeries
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-542'>OPENJPA-542</a>] -         OracleDictionary.getEmptyClob uses its classloader instead of the current classloader. 
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-645'>OPENJPA-645</a>] -         Date millisecond precision lost for Informix IDS and SQLServer
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-543'>OPENJPA-543</a>] -         Unclosed prepared statements in SQLStoreQuery.executeUpdate.
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-650'>OPENJPA-650</a>] -         Document openjpa.RuntimeUnenhancedClasses=unsupported/warn configuration property
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-547'>OPENJPA-547</a>] -         INNER JOIN Fetch query incorrectly generates  LEFT join SQL
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-685'>OPENJPA-685</a>] -         Problem enhancing test cases with Maven 2.0.9 
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-552'>OPENJPA-552</a>] -         Do not recognize Connection* properties in persistence.xml in appl server container
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-710'>OPENJPA-710</a>] -         Unordered collection field adds ORDER BY clause
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-554'>OPENJPA-554</a>] -         The GetMapValue class should have/supply an alias for ORDER-BY clauses.
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-711'>OPENJPA-711</a>] -         PDF manual lacks images
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-559'>OPENJPA-559</a>] -         java.rmi.MarshalException due to mismatched serialization UIDs of: Source (RepId RMI:org.apache.openjpa.kernel.DetachedStateManager
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-713'>OPENJPA-713</a>] -         openjpa-1.2.0.jar file is 11 MB
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-565'>OPENJPA-565</a>] -         Duplicate @NamedQuery terminates subsequent @NameQuery definitions in @NamedQueries 
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-715'>OPENJPA-715</a>] -         OpenJpa does not generate IDs properly. &quot;duplicate key value in a unique or primary key constraint&quot; while merging object tree.
 </li>
-<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-632'>OPENJPA-632</a>] -         setFirstResult and setMaxResults not working for Oracle.
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-724'>OPENJPA-724</a>] -         Corrections for the manual
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-727'>OPENJPA-727</a>] -         Image mapping-table.png missing in HTML manual
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-864'>OPENJPA-864</a>] -         Subquery problems with SYNTAX_DATABASE (Oracle)
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-873'>OPENJPA-873</a>] -         @MappedSuperClass Cause Null Pointer Exception in Class With IdClass
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-896'>OPENJPA-896</a>] -         Several source files include Windows EoL chars
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-917'>OPENJPA-917</a>] -         stored procedures throw InvalidStateException when using getSingleResult() or getResultList()
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-951'>OPENJPA-951</a>] -         Javadoc jar file does not contain legal files
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1025'>OPENJPA-1025</a>] -         AbstractResultList.subList throws UnsupportedOperationException
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1029'>OPENJPA-1029</a>] -         SQLServerDictionary causes NumberFormatException if MS SQL Server JDBC driver is used
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1061'>OPENJPA-1061</a>] -         Entities extending from a Mapped Superclass that defines the ID fields share the same ObjectID type parameter
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1067'>OPENJPA-1067</a>] -         SetQueryTimeout(x) where x != 0 causes SQLException with DB2 on Z/OS
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1197'>OPENJPA-1197</a>] -         NativeQueries fail with MySQL 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1243'>OPENJPA-1243</a>] -         migrate Informix functionality from 1.2 to 1.0.x
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1244'>OPENJPA-1244</a>] -         Activation profiles should be more inclusive
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1308'>OPENJPA-1308</a>] -         shouldn't always use CAST with UPPER and LOWER for DB2
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1328'>OPENJPA-1328</a>] -         Move cacheable class configuration to ClassMetaData
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1457'>OPENJPA-1457</a>] -         Remove Java.net maven repostiory from tck pom.xml
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1678'>OPENJPA-1678</a>] -         SQL Parameter values may contain sensitive information and should not be logged by default.
 </li>
 </ul>
     
-<h2><a name="Improvement"></a>        Improvement
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-633'>OPENJPA-633</a>] -         Update the release process to use maven plugins
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-666'>OPENJPA-666</a>] -         MS SQL Server 2005 does not support native sequences.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-726'>OPENJPA-726</a>] -         Provide MD5Sums for latest downloads
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-752'>OPENJPA-752</a>] -         ProxySetupStateManager.setProxyData routing through PersistanceCapable caused &quot;PersistenceException: null&quot;
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-772'>OPENJPA-772</a>] -         Proper maven pluginManagement and use ianal-maven-plugin for enforcing legal files
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-779'>OPENJPA-779</a>] -         patch for eclipse .project and .classpath files...
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-876'>OPENJPA-876</a>] -         Better test profiles for proprietary databases (DB2, Oracle) and continuous build
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-881'>OPENJPA-881</a>] -         Enable connection pooling for testcases. 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-901'>OPENJPA-901</a>] -         Use hosted JAI artifacts as the default for the docbook build
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-975'>OPENJPA-975</a>] -         Oracle needs ability to not have an escape character for search strings.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1045'>OPENJPA-1045</a>] -         Add opt-in and opt-out configuration for L2 DataCache
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1136'>OPENJPA-1136</a>] -         Add .gitignore for git users
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1557'>OPENJPA-1557</a>] -         Logging configuration is difficult for running tests
+</li>
+</ul>
+                                
+<h2>        Test
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1071'>OPENJPA-1071</a>] -         Derby test suit speed-up
+</li>
+</ul>
+    
+<h2>        Improvement
 </h2>
 <ul>
 <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-374'>OPENJPA-374</a>] -         OpenJPA build process enhances Entity classes even when testing is deactivated via -Dtest=false
@@ -169,9 +233,10 @@ How do I Contribute?
 <h2><a name="Previous"></a>         Previous Releases
 </h2>
 Release notes for earlier releases of OpenJPA may be found in SVN at the following locations. 
-<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/RELEASE-NOTES.html?view=markup'>OpenJPA 1.0.2 RELEASE-NOTES.html</a></li>
-<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/RELEASE-NOTES.html?view=markup'>OpenJPA 1.0.1 RELEASE-NOTES.html</a></li>
-<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/RELEASE-NOTES.html?view=markup'>OpenJPA 1.0.0 RELEASE-NOTES.html</a></li>
+<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.3/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.3 RELEASE-NOTES.html</a></li>
+<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.2 RELEASE-NOTES.html</a></li>
+<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.1 RELEASE-NOTES.html</a></li>
+<li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.0 RELEASE-NOTES.html</a></li>
 
 </body>
 </html>
