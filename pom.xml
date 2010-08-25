@@ -208,6 +208,7 @@
                             <exclude>**/org.apache.openjpa.revision.properties</exclude>
                             <exclude>**/target/**/*</exclude>
                             <exclude>release.properties</exclude>
+                            <exclude>.gitignore</exclude>
                         </excludes>
                         </configuration>
                     </plugin>
