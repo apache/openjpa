@@ -36,23 +36,6 @@
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies</name>
 
-    <dependencies>
-        <!--
-            Start with openjpa.jar and let the maven-shade-plugin
-            determine the transitive dependencies to include from it.
-        -->
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!-- include commons-logging -->
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <!-- disable creating javadoc for this module -->
@@ -98,7 +81,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
+                            <createSourcesJar>${createSources}</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!-- 
@@ -133,4 +116,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!--
+            Start with openjpa.jar and let the maven-shade-plugin
+            determine the transitive dependencies to include from it.
+        -->
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- include commons-logging -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+    </dependencies>
 </project>
