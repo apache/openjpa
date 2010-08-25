@@ -377,19 +377,13 @@
                                                 <include name="*.zip"/>
                                             </fileset>
                                         </checksum>
-                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/downloads" 
-                                             trust="true">
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/downloads" trust="true">
                                             <fileset dir="target/site/downloads"/>
                                         </scp>
-                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/docs" 
-                                             trust="true">
+                                        <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/docs" trust="true">
                                             <fileset dir="target/site/tempDocs/docs"/> 
                                         </scp>
-                                        <sshexec host="people.apache.org" 
-                                                 username="${nightly.user.name}" 
-                                                 password="${nightly.password}"
-                                                 command="chmod -R g+w /www/openjpa.apache.org/builds/latest-1.0.x"
-                                                 trust="true"/>
+                                        <sshexec host="people.apache.org" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w /www/openjpa.apache.org/builds/latest-1.0.x" trust="true"/>
                                         <delete>
                                             <fileset dir="target/site/tempDocs"/>
                                         </delete>
