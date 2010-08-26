@@ -41,7 +41,7 @@
         Changing this version needs to also be done in all children poms
         See: http://jira.codehaus.org/browse/MNG-624
     -->
-    <version>1.0.4</version>
+    <version>1.0.4-SNAPSHOT</version>
     <url>http://openjpa.apache.org</url>
     <issueManagement>
         <system>jira</system>
@@ -619,8 +619,8 @@
       </site>
     </distributionManagement>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.4</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.4</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/tags/1.0.4</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/1.0.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/1.0.x</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/1.0.x</url>
     </scm>
 </project>
