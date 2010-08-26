@@ -26,6 +26,7 @@ import org.apache.openjpa.trader.domain.Trade;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.GwtEvent.Type;
 
 /**
  * Specialization of GWTEvent (that represent mouse/keybord events and DOM events) 
@@ -52,7 +53,8 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
     }
 
     public static class TradableAdded extends ServiceEvent<Tradable, ServiceEventHandler.AddTradableHandler> {
-        public static Type<ServiceEventHandler.AddTradableHandler> TYPE = new Type<ServiceEventHandler.AddTradableHandler>();
+        public static Type<ServiceEventHandler.AddTradableHandler> TYPE = 
+            new Type<ServiceEventHandler.AddTradableHandler>();
 
         public TradableAdded(Tradable tradable) {
             super(tradable);
@@ -65,13 +67,14 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
         }
 
         @Override
-        public com.google.gwt.event.shared.GwtEvent.Type<ServiceEventHandler.AddTradableHandler> getAssociatedType() {
+        public Type<ServiceEventHandler.AddTradableHandler> getAssociatedType() {
             return TYPE;
         }
     }
 
     public static class TradableRemoved extends ServiceEvent<Tradable, ServiceEventHandler.RemoveTradableHandler> {
-        public static Type<ServiceEventHandler.RemoveTradableHandler> TYPE = new Type<ServiceEventHandler.RemoveTradableHandler>();
+        public static Type<ServiceEventHandler.RemoveTradableHandler> TYPE = 
+            new Type<ServiceEventHandler.RemoveTradableHandler>();
 
         public TradableRemoved(Tradable tradable) {
             super(tradable);
@@ -83,7 +86,7 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
         }
 
         @Override
-        public com.google.gwt.event.shared.GwtEvent.Type<ServiceEventHandler.RemoveTradableHandler> getAssociatedType() {
+        public Type<ServiceEventHandler.RemoveTradableHandler> getAssociatedType() {
             return TYPE;
         }
     }
@@ -102,13 +105,14 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
         }
 
         @Override
-        public com.google.gwt.event.shared.GwtEvent.Type<UpdateStockHandler> getAssociatedType() {
+        public Type<UpdateStockHandler> getAssociatedType() {
             return TYPE;
         }
     }
     
     public static class TradeCommitted extends ServiceEvent<Trade, ServiceEventHandler.AddTradeHandler> {
-        public static Type<ServiceEventHandler.AddTradeHandler> TYPE = new Type<ServiceEventHandler.AddTradeHandler>();
+        public static Type<ServiceEventHandler.AddTradeHandler> TYPE = 
+            new Type<ServiceEventHandler.AddTradeHandler>();
 
         public TradeCommitted(Trade trade) {
             super(trade);
@@ -121,7 +125,7 @@ public abstract class ServiceEvent<T, H extends EventHandler> extends GwtEvent<H
         }
 
         @Override
-        public com.google.gwt.event.shared.GwtEvent.Type<ServiceEventHandler.AddTradeHandler> getAssociatedType() {
+        public Type<ServiceEventHandler.AddTradeHandler> getAssociatedType() {
             return TYPE;
         }
     }

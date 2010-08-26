@@ -117,5 +117,4 @@ public class ErrorDialog extends PopupPanel {
         label.addStyleName(STYLE_MESSAGE);
         return label;
     }
-    
 }

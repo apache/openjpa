@@ -34,6 +34,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 
@@ -50,37 +53,43 @@ public class MatchWindow extends PopupPanel {
     public MatchWindow(final OpenTrader session, final Tradable tradable, final List<Match> matches) {
         super(false, true);
         this.session = session;
+        setAnimationEnabled(true);
+        
+        DockPanel panel = new DockPanel();
+        panel.setHorizontalAlignment(DockPanel.ALIGN_CENTER);
 
+        final HTML header = new HTML();
         final boolean ask = (tradable instanceof Ask);
+        String txt = (matches.isEmpty() ? "No" : ""+matches.size()) + " matching "+ (ask ? "Bid" : "Ask") + " for " 
+                   + toString(tradable) + "<br>";
+        header.setHTML(txt);
+        header.addStyleName("table-caption");
+        
+        Button close = new Button(matches.isEmpty() ? "OK" : "Cancel");
+        close.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                hide();
+            }
+        });
 
+        FlexTable body = new FlexTable();
         final RadioButton[] buttons = new RadioButton[matches.size()];
-        FlowPanel panel = new FlowPanel();
-        
-        String txt = (matches.isEmpty() ? "No" : matches.size()) + " matching " + (ask ? "Bid" : "Ask") 
-                       + " for " + toString(tradable) + "<br>";
-        HTML html = new HTML();
-        html.setHTML(txt);
-        html.addStyleName("table-caption");
-        panel.add(html);
-        
         if (!matches.isEmpty()) {
-            FlexTable table = new FlexTable();
             for (int i = 0;  i < matches.size(); i++) {
                 Match match = matches.get(i);
                 Tradable t2 = ask ? match.getBid() : match.getAsk();
                 Trader cpty = ask ? match.getBid().getBuyer() : match.getAsk().getSeller();
                 buttons[i] = new RadioButton("matches");
                 buttons[i].setValue(i == 0);
-                table.setWidget(i, 0, buttons[i]);
-                table.setWidget(i, 1, FormatUtil.formatPrice(t2.getPrice()));
-                table.setWidget(i, 2, FormatUtil.formatVolume(t2.getVolume()));
-                table.setText(i, 3, " by " + cpty.getName());
+                body.setWidget(i, 0, buttons[i]);
+                body.setWidget(i, 1, FormatUtil.formatPrice(t2.getPrice()));
+                body.setWidget(i, 2, FormatUtil.formatVolume(t2.getVolume()));
+                body.setText(i, 3, " by " + cpty.getName());
             }
-            panel.add(table);
-            panel.add(new HTML("<p>"));
             
             Button act = new Button(ask ? "Sell" : "Buy");
-            panel.add(act);
+            act.setFocus(true);
+            body.setWidget(matches.size()+1, 1, act);
             act.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     for (int i = 0; i < buttons.length; i++) {
@@ -93,17 +102,22 @@ public class MatchWindow extends PopupPanel {
                     }
                 }
             });
+            body.setWidget(matches.size()+1, 2, close);
         } else {
-            panel.add(new HTML("<p>"));
+            body.setWidget(0,0, new HTML("<p>Open a new browser page and login with a different Trader name<br>"
+                    + "to create a matching " + (ask ? "Bid" : "Ask") + "<p>"));
+            
+            close.setFocus(true);
+            body.setWidget(1, 0, close);
+            body.getFlexCellFormatter().setAlignment(1,0, 
+                    HasHorizontalAlignment.ALIGN_CENTER, 
+                    HasVerticalAlignment.ALIGN_MIDDLE);
         }
-        Button cancel = new Button("Cancel");
-        panel.add(cancel);
-        cancel.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                hide(true);
-            }
-        });
-        add(panel);
+        
+        
+        panel.add(header, DockPanel.NORTH);
+        panel.add(body, DockPanel.CENTER);
+        setWidget(panel);
     }
     
     String toString(Tradable t) {

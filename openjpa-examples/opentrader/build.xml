@@ -20,7 +20,7 @@
 <!-- Build script to compile, package a OpenJPA/Slice based application     -->
 <!-- with Google Web Toolkit client to be deployed in a servlet container.  -->
 <!-- ====================================================================== -->
-<project name="JavaOneGWT">
+<project name="OpenTrader">
 
 	<!-- local environment paths for required libraries                     -->
 	<property file="build.properties" />
