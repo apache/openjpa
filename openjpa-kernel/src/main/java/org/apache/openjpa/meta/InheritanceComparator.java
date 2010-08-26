@@ -30,13 +30,17 @@ import java.util.Comparator;
 public class InheritanceComparator
     implements Comparator, Serializable {
 
-    private Class _base = null;
+    private Class _base = Object.class;
 
     /**
      * Set the least-derived type possible; defaults to <code>null</code>.
      */
     public void setBase(Class base) {
         _base = base;
+    }
+
+    public Class getBase() {
+        return _base;
     }
 
     /**

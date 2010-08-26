@@ -22,6 +22,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
@@ -143,6 +144,10 @@ public abstract class AbstractNonSequentialResultList
             list.add(obj);
         }
         return list.toArray(a);
+    }
+
+    public List subList(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
     }
 
     private class Itr extends AbstractListIterator {

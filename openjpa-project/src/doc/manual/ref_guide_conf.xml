@@ -2741,6 +2741,50 @@ reading registered classes. Setting this to true unnecessarily may obscure more
 serious problems.
             </para>
         </section>
+        <section id="openjpa.RuntimeUnenhancedClasses">
+            <title>openjpa.RuntimeUnenhancedClasses</title>
+            <para> 
+                <emphasis role="bold">Property name: </emphasis>
+                <literal>openjpa.RuntimeUnenhancedClasses</literal>
+            </para>
+            <para>
+                 <emphasis role="bold">Configuration API: </emphasis>
+                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getRuntimeUnenhancedClasses()">org.apache.openjpa.conf.OpenJPAConfiguration.getRuntimeUnenhancedClasses</ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config property:</emphasis>
+                RuntimeUnenhancedClasses
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis>
+                <literal>supported</literal>
+                
+            </para>
+            <para>
+                <emphasis role="bold">Possible values:</emphasis>
+                <literal>supported</literal>, 
+                <literal>unsupported</literal>, 
+                <literal>warn</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis>
+                The RuntimeUnenhancedClasses property controls how OpenJPA 
+                handles classes that have not been enhanced byt the PCEnhancer 
+                tool or automatically by a javaagent. If RuntimeUnenhanced is 
+                set to <literal>supported</literal> OpenJPA will automatically 
+                create subclasses for unenhanced entity classes. If set to 
+                <literal>unsupported</literal>OpenJPA will not create subclasses 
+                for unenhanced entity classes and will throw an exception when 
+                they are detected. If set to <literal>warn</literal> OpenJPA 
+                will not create subclasses for unenhanced entity classes 
+                but will log a warning message.  
+            </para>
+            <para>
+                See the reference guide section on unenhanced types for more 
+                information 
+                <xref linkend="ref_guide_pc_enhance_unenhanced_types"/>
+            </para>
+        </section>
         <section id="openjpa.SavepointManager">
             <title>
                 openjpa.SavepointManager
@@ -3709,8 +3753,8 @@ UpdateManager</literal>
 <classname>org.apache.openjpa.jdbc.kernel.UpdateManager</classname></ulink> to
 use to flush persistent object changes to the datastore. The provided default
 implementation is
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/OperationOrderUpdateManager">
-<classname>org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager</classname>
+<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/ConstraintUpdateManager">
+<classname>org.apache.openjpa.jdbc.kernel.ConstraintUpdateManager</classname>
 </ulink>.
             </para>
         </section>

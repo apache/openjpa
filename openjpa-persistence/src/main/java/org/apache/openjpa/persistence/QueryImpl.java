@@ -39,6 +39,7 @@ import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
@@ -224,7 +225,7 @@ public class QueryImpl
     }
 
     private Object execute() {
-        if (_query.getOperation() != QueryOperations.OP_SELECT)
+        if (! isNative() && _query.getOperation() != QueryOperations.OP_SELECT)
             throw new InvalidStateException(_loc.get("not-select-query",
                 _query.getQueryString()), null, null, false);
 
@@ -484,6 +485,10 @@ public class QueryImpl
         } finally {
             _query.unlock();
         }
+    }
+    
+    public boolean isNative() {
+        return QueryLanguages.LANG_SQL.equals(getLanguage());
     }
 
     public boolean hasPositionalParameters() {

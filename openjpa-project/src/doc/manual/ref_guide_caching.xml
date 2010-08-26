@@ -216,6 +216,51 @@ public class Employee {
 }
 </programlisting>
             </example>
+
+            <para>
+            <indexterm>
+                <primary>caching</primary>
+                <secondary>exclusions</secondary>
+            </indexterm>
+            Entities may be explicitly excluded from the cache by providing a 
+            list of fully qualified class names in the ExcludedTypes argument.
+            The entities provided via ExcludedTypes will not be cached 
+            regardless of the @DataCache annotation. 
+            </para>
+            <example id="ex_exclude_types_from_cache">
+                <title>
+                    Excluding entities
+                </title>
+                <para>
+                    Exclude entities foo.bar.Person and foo.bar.Employee from the cache. 
+                    <programlisting>
+&lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>
+            <indexterm>
+                <primary>caching</primary>
+                <secondary>inclusions</secondary>
+            </indexterm>
+            Entities may be explicitly included from the cache by providing a 
+            list of fully qualified class names in the Types argument. The
+            entities provided via ExcludedTypes will not cached regardless
+            of the @DataCache annotation. Any entities which are not included
+            in this list will not be cached. 
+            </para>
+            <example id="ex_include_types_in_cache">
+                <title>
+                    Including entities
+                </title>
+                <para>
+                    Include only entity foo.bar.FullTimeEmployee from the cache. 
+                    <programlisting>
+&lt;property name="openjpa.DataCache" value="true(Types=foo.bar.FullTimeEmployee)"/&gt;
+                    </programlisting>
+                </para>
+            </example>
             <para>
 See the <ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
 <classname>org.apache.openjpa.persistence.DataCache</classname></ulink> Javadoc

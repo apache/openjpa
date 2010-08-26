@@ -28,12 +28,14 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
+import org.apache.openjpa.util.UnsupportedException;
 
 /**
  * Dictionary for Informix database. Notable features:
@@ -91,14 +93,6 @@ public class InformixDictionary
         supportsDeferredConstraints = false;
         constraintNameMode = CONS_NAME_AFTER;
 
-        maxTableNameLength = 18;
-        maxColumnNameLength = 18;
-        maxIndexNameLength = 18;
-        maxConstraintNameLength = 18;
-
-        // Informix uses a non-standard ":" to separate schema and table names
-        catalogSeparator = ":";
-
         // informix supports "CLOB" type, but any attempt to insert
         // into them raises: "java.sql.SQLException: Can't convert fromnull"
         useGetStringForClobs = true;
@@ -111,7 +105,8 @@ public class InformixDictionary
         blobTypeName = "BYTE";
         doubleTypeName = "NUMERIC(32,20)";
         dateTypeName = "DATE";
-        timestampTypeName = "DATE";
+        timeTypeName = "DATETIME HOUR TO SECOND";
+        timestampTypeName = "DATETIME YEAR TO FRACTION(3)";
         doubleTypeName = "NUMERIC(32,20)";
         floatTypeName = "REAL";
         bigintTypeName = "NUMERIC(32,0)";
@@ -122,7 +117,6 @@ public class InformixDictionary
         }));
 
         supportsQueryTimeout = false;
-        supportsMultipleNontransactionalResultSets = false;
         supportsLockingWithDistinctClause = false;
         supportsLockingWithMultipleTables = false;
         supportsLockingWithOrderClause = false;
@@ -134,8 +128,22 @@ public class InformixDictionary
 
         // Informix doesn't support aliases in deletes if the table has an index
         allowsAliasInBulkClause = false;
-        
-        supportsSubselect = false;
+
+        // Informix doesn't understand "X CROSS JOIN Y", but it does understand
+        // the equivalent "X JOIN Y ON 1 = 1"
+        crossJoinClause = "JOIN";
+        requiresConditionForCrossJoin = true;
+
+        concatenateFunction = "CONCAT({0},{1})";
+        nextSequenceQuery = "SELECT {0}.NEXTVAL FROM SYSTABLES WHERE TABID=1";
+        supportsCorrelatedSubselect = false;
+        swapSchemaAndCatalog = false;
+
+        // Informix does not support foreign key delete action NULL or DEFAULT
+        supportsNullDeleteAction = false;
+        supportsDefaultDeleteAction = false;
+
+        trimSchemaName = true;
     }
 
     public void connectedConfiguration(Connection conn)
@@ -147,6 +155,14 @@ public class InformixDictionary
                 driverVendor = VENDOR_DATADIRECT;
             else
                 driverVendor = VENDOR_OTHER;
+        }
+        if (isJDBC3) {
+            conn.setHoldability(ResultSet.HOLD_CURSORS_OVER_COMMIT);
+            if (log.isTraceEnabled())
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                        new Boolean(conn.getAutoCommit()), 
+                        new Integer(conn.getHoldability()),
+                        new Integer(conn.getTransactionIsolation())}));
         }
     }
 
@@ -192,7 +208,7 @@ public class InformixDictionary
         throws SQLException {
         // informix actually requires that a boolean be set: it cannot
         // handle a numeric argument
-        stmnt.setBoolean(idx, val);
+        stmnt.setString(idx, val ? "t" : "f");
     }
 
     public String[] getCreateTableSQL(Table table) {
@@ -257,5 +273,19 @@ public class InformixDictionary
             } catch (SQLException se) {
             }
         return conn;
+    }
+
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+            FilterValue start) {
+        throw new UnsupportedException();
+    }
+
+    public boolean needsToCreateIndex(Index idx, Table table) {
+       // Informix will automatically create a unique index for the
+       // primary key, so don't create another index again
+       PrimaryKey pk = table.getPrimaryKey();
+       if (pk != null && idx.columnsMatch(pk.getColumns()))
+           return false;
+       return true;
     }
 }

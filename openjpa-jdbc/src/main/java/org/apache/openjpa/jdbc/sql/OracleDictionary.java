@@ -161,6 +161,7 @@ public class OracleDictionary
         }));
         
         selectWordSet.add("WITH");
+        requiresSearchStringEscapeForLike = false;
     }
 
     public void endConfiguration() {

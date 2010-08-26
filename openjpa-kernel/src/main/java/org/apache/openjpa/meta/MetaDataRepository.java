@@ -30,15 +30,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
+import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -46,10 +45,11 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
-import org.apache.openjpa.util.ImplHelper;
+
 import serp.util.Strings;
 
 /**
@@ -132,13 +132,14 @@ public class MetaDataRepository
 
     // we buffer up any classes that register themselves to prevent
     // reentrancy errors if classes register during a current parse (common)
+    private boolean _registeredEmpty = true;
     private final Collection _registered = new ArrayList();
 
     // set of metadatas we're in the process of resolving
-    private final SortedSet _resolving = new TreeSet
-        (new MetaDataInheritanceComparator());
-    private final SortedSet _mapping = new TreeSet
-        (new MetaDataInheritanceComparator());
+    private final InheritanceOrderedMetaDataList _resolving =
+        new InheritanceOrderedMetaDataList();
+    private final InheritanceOrderedMetaDataList _mapping =
+        new InheritanceOrderedMetaDataList();
     private final List _errs = new LinkedList();
 
     // system listeners
@@ -269,7 +270,7 @@ public class MetaDataRepository
             _sourceMode |= mode;
         else
             _sourceMode &= ~mode;
-    }
+    } 
 
     /**
      * Return the metadata for the given class.
@@ -655,7 +656,8 @@ public class MetaDataRepository
     /**
      * Process the given metadata and the associated buffer.
      */
-    private List processBuffer(ClassMetaData meta, SortedSet buffer, int mode) {
+    private List processBuffer(ClassMetaData meta,
+        InheritanceOrderedMetaDataList buffer, int mode) {
         // if we're already processing a metadata, just buffer this one; when
         // the initial metadata finishes processing, we traverse the buffer
         // and process all the others that were introduced during reentrant
@@ -670,7 +672,7 @@ public class MetaDataRepository
         ClassMetaData buffered;
         List processed = new ArrayList(5);
         while (!buffer.isEmpty()) {
-            buffered = (ClassMetaData) buffer.first();
+            buffered = buffer.peek();
             try {
                 buffered.resolve(mode);
                 processed.add(buffered);
@@ -1297,6 +1299,7 @@ public class MetaDataRepository
         // buffer registered classes until an oid metadata request is made,
         // at which point we'll parse everything in the buffer
         synchronized (_registered) {
+            _registeredEmpty = false;
             _registered.add(cls);
         }
     }
@@ -1317,19 +1320,50 @@ public class MetaDataRepository
     }
 
     /**
-     * Updates our datastructures with the latest registered classes.
+     * Updates our datastructures with the latest registered classes. This method will only block
+     * when there are class registrations waiting to be processed. 
+     * 
+     * @return the list of classes that was processed due to this method call.
      */
     Class[] processRegisteredClasses(ClassLoader envLoader) {
+        Class[] res = EMPTY_CLASSES;
+        if (_registeredEmpty == false) {
+            // The reason that we're locking on this and _registered is that this
+            // class has locking semantics such that we always need to lock 'this', then [x].
+            // This method can result in processRegisteredClass(..) being called and if we didn't
+            // lock on 'this' we could cause a deadlock. ie: One thread coming in on getSequenceMetaData(..) 
+            // and another on getMetaData(String , ClassLoader , boolean ) .
+            synchronized(this){
+                synchronized(_registered){
+                    // Check again, it is possible another thread already processed.
+                    if (_registeredEmpty == false) {
+                        res = processRegisteredClassesInternal(envLoader);
+                        if (_registered.size() == 0) {
+                            // It is possible that we failed to register a class and it was added back into
+                            // our _registered class list to try again later. @see
+                            // OpenJPAConfiguration#getRetryClassRegistration
+                            _registeredEmpty = true;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+         
+    /**
+     * Private worker method that processes the registered classes list. No locking is performed in this
+     * method as the caller needs to hold a lock on _registered.
+     */
+    private Class[] processRegisteredClassesInternal(ClassLoader envLoader) {
+        // Probably overkill
         if (_registered.isEmpty())
             return EMPTY_CLASSES;
 
         // copy into new collection to avoid concurrent mod errors on reentrant
         // registrations
-        Class[] reg;
-        synchronized (_registered) {
-            reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
-            _registered.clear();
-        }
+        Class[] reg = (Class[]) _registered.toArray(new Class[_registered.size()]);
+        _registered.clear();
 
         Collection pcNames = getPersistentTypeNames(false, envLoader);
         Collection failed = null;
@@ -1355,9 +1389,7 @@ public class MetaDataRepository
             }
         }
         if (failed != null) {
-            synchronized (_registered) {
                 _registered.addAll(failed);
-            }
         }
         return reg;
     }

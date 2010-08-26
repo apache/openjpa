@@ -26,7 +26,7 @@ package org.apache.openjpa.lib.rop;
 public class TestEagerResultList extends ResultListTest {
 
     public TestEagerResultList(String test) {
-        super(test);
+        super(test, true);
     }
 
     protected ResultList getResultList(ResultObjectProvider provider) {

@@ -54,7 +54,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <profiles>
@@ -63,6 +63,7 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
@@ -252,22 +253,13 @@ database.driver=${db.driver}
     </profile>
     </profiles>
 
-    <repositories>
-        <repository>
-            <id>java.net</id>
-            <name>Java.net Maven Repository</name>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
-            <layout>legacy</layout>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- use the authoritative javax.persistence API for testing -->
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0b</version>
-        </dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_3.0_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency> 
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>

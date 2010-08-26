@@ -431,11 +431,21 @@ if you set the <literal>classLoadEnhancement</literal> javaagent flag to
 runtime enhancement process for some reason.
                 </para></listitem>
                 <listitem><para>
-<emphasis>state comparison and subclassing</emphasis>: if you are running
+<emphasis>Runtime Unenhanced Classes</emphasis>: AKA statte comparison and 
+subclassing. If you are running
 in a Java 5 environment without a javaagent, or in a Java 6 environment that
 does not support class retransformation, OpenJPA will still create subclasses
 as outlined above. However, in some cases, OpenJPA may not be able to receive
 notifications when you read or write persistent data.
+                </para>
+                <para>
+                <note>
+Runtime Unenhanced Classes has some known limitations which are discussed below
+and documented in JIRA issues on the OpenJPA website. Support for this method 
+of automatic enhancement may be enabled or disabled via the 
+<xref linkend="openjpa.RuntimeUnenhancedClasses">
+openjpa.RuntimeUnenhancedClasses configuration </xref>option.
+                </note>
                 </para>
                 <para>
 If you are using <emphasis>property access</emphasis> for your persistent data,
@@ -592,9 +602,9 @@ method:
                     Finding an Entity with an Entity Identity Field
                 </title>
 <programlisting>
-public Delivery createDelivery(EntityManager em, Order order) {
+public Delivery createDelivery(Order order) {
     Delivery delivery = new Delivery();
-    delivery.setId(o);
+    delivery.setId(order);
     delivery.setDelivered(new Date());
     return delivery;
 }

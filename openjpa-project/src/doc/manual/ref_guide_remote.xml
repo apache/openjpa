@@ -563,6 +563,15 @@ construction. For example, you might set the <literal>java.naming.provider.url
 To configure a factory to use the JMS provider, your properties might look like
 the following:
                 </para>
+                <example id="ref_guide_event_conf_jmsex">
+                    <title>
+                        JMS Remote Commit Provider Configuration
+                    </title>
+<programlisting>
+&lt;property name="openjpa.RemoteCommitProvider"
+    value="jms(ExceptionReconnectAttempts=5)"/&gt;
+</programlisting>
+                </example>
                 <note>
                     <para>
 Because of the nature of JMS, it is important that you invoke <methodname>
@@ -624,7 +633,7 @@ which notifications should be sent. No default value.
 <literal>NumBroadcastThreads</literal>: The number of threads to create for the
 purpose of transmitting events to peers. You sould increase this value as the
 number of concurrent transactions increases. The maximum number of concurrent
-transactions is a function of the size of the connection pool. See the the
+transactions is a function of the size of the connection pool. See the
 <literal>MaxActive</literal> property of <literal>
 openjpa.ConnectionFactoryProperties</literal> in
 <xref linkend="ref_guide_dbsetup_builtin"/>. Setting a value of 0 will
@@ -702,6 +711,15 @@ persisted object ids as well.
 To transmit persisted object ids in our remote commit events using the JMS
 provider, we modify the previous example as follows:
                 </para>
+                <example id="ref_guide_event_conf_jms2ex">
+                    <title>
+                        JMS Remote Commit Provider transmitting Persisted Object Ids
+                    </title>
+<programlisting>
+&lt;property name="openjpa.RemoteCommitProvider"
+    value="jms(ExceptionReconnectAttempts=5, TransmitPersistedObjectIds=true)"/&gt;
+</programlisting>
+                </example>
             </section>
         </section>
         <section id="ref_guide_event_customization">

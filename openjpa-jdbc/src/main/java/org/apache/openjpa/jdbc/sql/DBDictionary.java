@@ -143,7 +143,7 @@ public class DBDictionary
     private static final String ZERO_TIMESTAMP_STR =
         "'" + new Timestamp(0) + "'";
 
-    private static final Localizer _loc = Localizer.forPackage
+    protected static final Localizer _loc = Localizer.forPackage
         (DBDictionary.class);
 
     // schema data
@@ -158,7 +158,6 @@ public class DBDictionary
     public int maxIndexNameLength = 128;
     public int maxIndexesPerTable = Integer.MAX_VALUE;
     public boolean supportsForeignKeys = true;
-    public boolean supportsTimestampNanos = true;
     public boolean supportsUniqueConstraints = true;
     public boolean supportsDeferredConstraints = true;
     public boolean supportsRestrictDeleteAction = true;
@@ -208,11 +207,18 @@ public class DBDictionary
     public boolean requiresAliasForSubselect = false;
     public boolean allowsAliasInBulkClause = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
+    public boolean requiresSearchStringEscapeForLike = true;
     public String searchStringEscape = "\\";
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;
     public boolean supportsModOperator = false;
     public boolean supportsXMLColumn = false;
+    public boolean supportsCaseConversionForLob = false;
+
+    /**
+     * Some Databases append whitespace after the schema name
+     */
+    public boolean trimSchemaName = false;
 
     // functions
     public String castFunction = "CAST({0} AS {1})";
@@ -303,11 +309,24 @@ public class DBDictionary
     protected JDBCConfiguration conf = null;
     protected Log log = null;
     protected boolean connected = false;
+    protected boolean isJDBC3 = false;
     protected final Set reservedWordSet = new HashSet();
     protected final Set systemSchemaSet = new HashSet();
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
-
+    
+    /**
+     * Some JDBC drivers - ie DB2 type 2 on Z/OS throw exceptions on
+     * setQueryTimeout when provided specific input values.
+     * To remain consistent with earlier versions of the driver we should ignore
+     * the exception.
+     * 
+     * This variable will be removed in future releases when we can handle the
+     * exception properly.
+     * @deprecated
+     */ 
+    public boolean ignoreSQLExceptionOnSetQueryTimeout = false; 
+    
     /**
      * If a native query begins with any of the values found here then it will
      * be treated as a select statement.  
@@ -342,15 +361,30 @@ public class DBDictionary
      */
     public void connectedConfiguration(Connection conn)
         throws SQLException {
-        if (!connected) {
+        DatabaseMetaData metaData = null;
+        try {
+            metaData = conn.getMetaData();
+            // JDBC3-only method, so it might throw a
+            // AbstractMethodError
             try {
-                if (log.isTraceEnabled())
-                    log.trace(DBDictionaryFactory.toString
-                        (conn.getMetaData()));
-            } catch (Exception e) {
-                log.trace(e.toString(), e);
+                isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+            } catch (Throwable t) {
+                // ignore if not JDBC3
             }
+        } catch (Exception e) {
+            if (log.isTraceEnabled())
+                log.trace(e.toString(), e);
         }
+        
+        if (log.isTraceEnabled()) {
+            log.trace(DBDictionaryFactory.toString(metaData));
+            if (isJDBC3)
+                log.trace(_loc.get("connection-defaults", new Object[]{
+                        new Boolean(conn.getAutoCommit()), 
+                        new Integer(conn.getHoldability()),
+                        new Integer(conn.getTransactionIsolation())}));
+        }
+        
         connected = true;
     }
 
@@ -1063,10 +1097,7 @@ public class DBDictionary
             nanos = 0;
         }
 
-        if (supportsTimestampNanos)
-            val.setNanos(nanos);
-        else
-            val.setNanos(0);
+        val.setNanos(nanos);
 
         if (cal == null)
             stmnt.setTimestamp(idx, val);
@@ -3995,7 +4026,20 @@ public class DBDictionary
     public String getCastFunction(Val val, String func) {
         return func;
     }
-    
+
+    /**
+     * Return the correct CAST function syntax.  This should be overriden by subclasses
+     * that need access to the Column information.
+     * 
+     * @param val operand of cast
+     * @param func original string
+     * @param col database column
+     * @return a String with the correct CAST function syntax
+     */
+    public String getCastFunction(Val val, String func, Column col) {
+        return getCastFunction (val, func);
+    }
+
     /**
      * Create an index if necessary for some database tables
      */
@@ -4022,5 +4066,17 @@ public class DBDictionary
             }
         }
         return false;
+    }
+
+    public boolean needsToCreateIndex(Index idx, Table table) {
+        return true;
+    }
+
+    public boolean getTrimSchemaName() {
+        return trimSchemaName;
+    }
+
+    public void setTrimSchemaName(boolean trimSchemaName) {
+        this.trimSchemaName = trimSchemaName;
     }
 }

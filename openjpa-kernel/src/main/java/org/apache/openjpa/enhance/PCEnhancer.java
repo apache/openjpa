@@ -1030,8 +1030,13 @@ public class PCEnhancer {
             addCopyKeyFieldsToObjectIdMethod(false);
             addCopyKeyFieldsFromObjectIdMethod(true);
             addCopyKeyFieldsFromObjectIdMethod(false);
+            if (_meta.hasAbstractPKField() == true) {
+            	addGetIDOwningClass();
+            }
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
+        } else if (_meta.hasPKFieldsFromAbstractClass()) {
+            addGetIDOwningClass();
         }
     }
 
@@ -2413,14 +2418,28 @@ public class PCEnhancer {
             // new ObjectId (cls, oid)
             code.anew().setType(ObjectId.class);
             code.dup();
-            code.classconstant().setClass(getType(_meta));
+            if (_meta.hasAbstractPKField() == false) {
+                code.classconstant().setClass(getType(_meta));
+            } else {
+                code.aload().setThis();
+                code.invokevirtual().setMethod(
+                        PRE + "GetIDOwningClass", Class.class, null);
+            }
         }
 
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE))
-            code.classconstant().setClass(getType(_meta));
+        {
+        	if (_meta.hasAbstractPKField() == false) {
+        		code.classconstant().setClass(getType(_meta));
+        	} else {
+        	    code.aload().setThis();
+        	    code.invokevirtual().setMethod(
+        	            PRE + "GetIDOwningClass", Class.class, null);
+        	}
+        }
         if (obj) {
             code.aload().setParam(0);
             code.checkcast().setType(String.class);
@@ -2452,7 +2471,19 @@ public class PCEnhancer {
         code.calculateMaxStack();
         code.calculateMaxLocals();
     }
+   
+    private void addGetIDOwningClass() throws NoSuchMethodException {
+    	 BCMethod method = _pc.declareMethod(PRE + "GetIDOwningClass",
+    			Class.class, null);
+        Code code = method.getCode(true);
+        
+        code.classconstant().setClass(getType(_meta));
+        code.areturn();       
 
+        code.calculateMaxStack();
+        code.calculateMaxLocals();       
+    }
+    
     /**
      * When communicating with the StateManager, many methods are used
      * depending on the class of state being passed. This method,

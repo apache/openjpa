@@ -858,7 +858,13 @@ public class RelationFieldStrategy
 
         if (oid == null)
             sm.storeObject(field.getIndex(), null);
-        else
-            sm.setIntermediate(field.getIndex(), oid);
+        else {
+            if (JavaTypes.maybePC(field.getValue()) &&
+                !field.getValue().getDeclaredTypeMetaData().isEmbeddedOnly()) {
+                Object obj = store.find(oid, field, fetch);
+                sm.storeObject(field.getIndex(), obj);
+            } else    
+                sm.setIntermediate(field.getIndex(), oid);
+        }
     }
 }

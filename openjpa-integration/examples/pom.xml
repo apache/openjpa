@@ -36,7 +36,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <profiles>
@@ -45,6 +45,7 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>

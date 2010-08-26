@@ -481,7 +481,10 @@ public class AnnotationPersistenceMetaDataParser
             return null;
 
         Entity entity = (Entity) _cls.getAnnotation(Entity.class);
+        MappedSuperclass mapped = (MappedSuperclass)
+        	_cls.getAnnotation(MappedSuperclass.class);
         if (isMetaDataMode()) {
+        	meta.setAbstract(mapped != null);
             // while the spec only provides for embedded exclusive, it doesn't
             // seem hard to support otherwise
             if (entity == null)
@@ -748,6 +751,8 @@ public class AnnotationPersistenceMetaDataParser
                 org.apache.openjpa.datacache.DataCache.NAME_DEFAULT);
         else
             meta.setDataCacheName(null);
+        
+        meta.setIsCacheable(cache.enabled(), true);
     }
 
     /**

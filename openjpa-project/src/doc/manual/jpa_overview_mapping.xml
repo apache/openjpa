@@ -99,6 +99,14 @@ JPA uses the defaults defined by the specification. As we present
 each mapping throughout this chapter, we also describe the defaults that apply
 when the mapping is absent.
     </para>
+    <note>
+        <para>
+Mapping metadata is used primarily with schema generation. This metadata should not
+be relied upon for validation prior to communicating with the database. 
+For example using the @Column(nullable=false) annotation does not do up front validation
+that the value in the entity is correct. 
+        </para>
+    </note>
     <section id="jpa_overview_mapping_table">
         <title>
             Table
@@ -184,22 +192,10 @@ consider the class' primary table. Later, we will see how to map certain fields
 to other tables.
         </para>
         <para>
-The example below maps classes to tables according to the following diagram. The
+The example below maps classes to tables to separate schemas. The
 <literal>CONTRACT</literal>, <literal>SUB</literal>, and <literal>LINE_ITEM
 </literal> tables are in the <literal>CNTRCT</literal> schema; all other tables
 are in the default schema.
-        </para>
-        <mediaobject>
-            <imageobject>
-                <!-- PNG image data, 513 x 410 (see README) -->
-                <imagedata fileref="img/mapping-tables.png" width="341px"/>
-                
-            </imageobject>
-        </mediaobject>
-        <para>
-Note that the diagram does not include our model's <classname>Document
-</classname> and <classname>Address</classname> classes. Mapped superclasses and
-embeddable classes are never mapped to tables.
         </para>
         <example id="jpa_overview_mapping_classex">
             <title>
@@ -4127,6 +4123,7 @@ The same metadata expressed in XML:
             &lt;join-table name="MAG_ARTS"&gt;
                 &lt;join-column name="MAG_ISBN" referenced-column-name="ISBN"/&gt;
                 &lt;join-column name="MAG_TITLE" referenced-column-name="TITLE"/&gt;
+                &lt;inverse-join-column name="ART_ID" referenced-column-name="ID"/&gt;
             &lt;/join-table&gt;
         &lt;/one-to-many&gt;
         ...
@@ -4136,12 +4133,15 @@ The same metadata expressed in XML:
     &lt;table name="ART"/&gt;
         &lt;attributes&gt;
             &lt;id name="id"/&gt;
-            &lt;many-to-many name="articles"&gt;
+            &lt;many-to-many name="authors"&gt;
                 &lt;order-by&gt;lastName, firstName&lt;/order-by&gt;
                 &lt;join-table name="ART_AUTHS"&gt;
                     &lt;join-column name="ART_ID" referenced-column-name="ID"/&gt;
                     &lt;inverse-join-column name="AUTH_ID" referenced-column-name="AID"/&gt;
                 &lt;/join-table&gt;
+            &lt;cascade&gt;
+                &lt;cascade-persist/&gt;
+            &lt;/cascade&gt;
             &lt;/many-to-many&gt;
             ...
        &lt;/attributes&gt;
@@ -4182,7 +4182,7 @@ complete mappings below:
             <itemizedlist>
                 <listitem>
                     <para>
-<literal>Magazine.publisher</literal> and <literal>Company.ags</literal>.
+<literal>Magazine.publisher</literal> and <literal>Company.mags</literal>.
                     </para>
                 </listitem>
                 <listitem>
@@ -4276,9 +4276,9 @@ The same metadata expressed in XML:
         ...
         &lt;one-to-many name="items"&gt;
             &lt;map-key name="num"&gt;
-            &lt;join-table name="MAG_ARTS"&gt;
-                &lt;join-column name="MAG_ISBN" referenced-column-name="ISBN"/&gt;
-                &lt;join-column name="MAG_TITLE" referenced-column-name="TITLE"/&gt;
+            &lt;join-table name="SUB_ITEMS" schema="CNTRCT"&gt;
+                &lt;join-column name="SUB_ID"/&gt;
+                &lt;inverse-join-column name="ITEM_ID"/&gt;
             &lt;/join-table&gt;
             &lt;cascade&gt;
                 &lt;cascade-persist/&gt;

@@ -778,6 +778,7 @@ public class XMLPersistenceMetaDataParser
             String name = attrs.getValue("name");
             if (!StringUtils.isEmpty(name))
                 meta.setTypeAlias(name);
+            meta.setAbstract(mappedSuper);
             meta.setEmbeddedOnly(mappedSuper || "embeddable".equals(elem));
             if (mappedSuper)
                 meta.setIdentityType(meta.ID_UNKNOWN);

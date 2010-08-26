@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
@@ -65,6 +66,8 @@ import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
 import serp.util.Strings;
+
+import org.apache.openjpa.lib.conf.Configurations;
 
 /**
  * Contains metadata about a persistent type.
@@ -188,6 +191,11 @@ public class ClassMetaData
     private FetchGroup[] _fgs = null;
     private FetchGroup[] _customFGs = null;
     private boolean _intercepting = false;
+    private boolean _abstract = false;
+    private Boolean _hasAbstractPKField = null;
+    private Boolean _hasPKFieldsFromAbstractClass = null;
+
+    private Boolean _isCacheable = null; 
 
     /**
      * Constructor. Supply described type and repository.
@@ -1327,14 +1335,23 @@ public class ClassMetaData
     }
 
     /**
-     * The name of the datacache to use for this class, or null if none.
+     * The name of the datacache to use for this class. If this class is not
+     * eligible for caching based its annotation or the cache configuration
+     * null will be returned.
+     * 
+     * @return The cache name, or null if this type should not be cached.
      */
     public String getDataCacheName() {
         if (DEFAULT_STRING.equals(_cacheName)) {
-            if (_super != null)
+            if (_super != null) {
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
-            else
+            }
+            else {
                 _cacheName = DataCache.NAME_DEFAULT;
+            }
+            if(!isCacheable()) { 
+               _cacheName = null; 
+            }
         }
         return _cacheName;
     }
@@ -1864,10 +1881,13 @@ public class ClassMetaData
         if (_super != null) {
             // concrete superclass oids must match or be parent of ours
             ClassMetaData sup = getPCSuperclassMetaData();
-            if (!sup.getObjectIdType().isAssignableFrom(_objectId))
+            Class objectIdType = sup.getObjectIdType();
+            if (objectIdType != null &&
+                !objectIdType.isAssignableFrom(_objectId)) {
                 throw new MetaDataException(_loc.get("id-classes",
                     new Object[]{ _type, _objectId, _super,
                         sup.getObjectIdType() }));
+            }
 
             // validate that no other pks are declared if we have a
             // concrete PC superclass
@@ -2343,4 +2363,196 @@ public class ClassMetaData
 			return f1.getListingIndex () - f2.getListingIndex ();
 		}
 	}
+
+    /**
+     * Determine whether this Type should be included in the DataCache (if one
+     * is provided) based on the DataCache's configuration.
+     * 
+     * @return true if the DataCache will accept this type, otherwise false.
+     */
+    private boolean isCacheable() {
+        if (_isCacheable != null) {
+            return _isCacheable.booleanValue();
+        }
+        setIsCacheable(true, false);
+        return _isCacheable.booleanValue();
+    }
+    
+    /**
+     * <p>
+     * Set whether or not the class represented by this ClassMetaData object should be included in the datacache. The
+     * arguments provided are *hints* as to whether the class should be included in the datacache, and can be overridden
+     * by the configuration set in openjpa.Datacache.
+     * </p>
+     * 
+     * <p>
+     * Rules for this determination are:
+     * </p>
+     * <ol>
+     * <li>If the class shows up in the list of excluded types, it does not get cached, period.</li>
+     * <li>If the class does not show up in the excluded types, but the included types field is set (ie, has at least
+     * one class), then:
+     * <ol>
+     * <li>If the class is listed in the include list, then it gets cached</li>
+     * <li>If the class is set as cacheable by the @Datacache annotation, it gets cached</li>
+     * <li>If neither a or b are true, then the class does not get cached</li>
+     * </ol>
+     * </li>
+     * <li>If neither the include or exclude lists are defined, then go along with the value passed into the argument,
+     * which is either the default value (true) or whatever was set with the @Datacache annotation</li>
+     * </ol>
+     * 
+     * @param isCacheable
+     *            Hint whether this class should be included in the datacache. Default behavior is yes, though the
+     *            @Datacache annotation can specify if it should not be cached.
+     * @param annotationOverride
+     *            Whether this hint originated from the @Datacache annotation or whether this is the default "yes" hint.
+     *            The origination of the hint influences the decision making process in rule #2b.
+     * 
+     */
+    public void setIsCacheable(boolean isCacheable, boolean annotationOverride) {
+       Options dataCacheOptions = getDataCacheOptions();
+       Set excludedTypes = extractDataCacheClassListing(dataCacheOptions.getProperty("ExcludedTypes", null));
+       Set types = extractDataCacheClassListing(dataCacheOptions.getProperty("Types", null));
+       
+       String className = getDescribedType().getName();
+       if (excludedTypes != null && excludedTypes.contains(className)) {
+           // Rule #1
+           _isCacheable = Boolean.FALSE;
+       } else if (types != null) {
+           // Rule #2
+           if ((annotationOverride && isCacheable) || (types.contains(className))) {
+               _isCacheable = Boolean.TRUE;
+           } else {
+               _isCacheable = Boolean.FALSE;
+           }
+       } else {
+           // Rule #3
+           _isCacheable = isCacheable ? Boolean.TRUE : Boolean.FALSE;
+       }
+    }
+    
+    /**
+     * Extract all of the DataCache plugin options from the configuration
+     * 
+     */
+    private Options getDataCacheOptions() {
+       String dataCacheConfig = getRepository().getConfiguration().getDataCache();
+        Options dataCacheOptions = Configurations.parseProperties(Configurations.getProperties(dataCacheConfig));
+        return dataCacheOptions;
+    }
+    
+    /**
+     * Tool to extract classes defined in the datacache include and exclude list into
+     * individual entries in a Set.
+     * 
+     */
+    private final Set extractDataCacheClassListing(String classList) {
+       if (classList == null || classList.length() == 0) {
+           return null;
+       }
+       
+       HashSet returnSet = new HashSet();
+       String[] entries = classList.split(";");
+       for (int index = 0; index < entries.length; index++) {
+           returnSet.add(entries[index]);
+       }
+       return returnSet;
+    }
+    
+    /**
+     * Returns true if the pcType modeled by this ClassMetaData
+     * object is abstract (ie, a MappedSuperclass in JPA terms.)
+     * 
+     * @return
+     */
+    public boolean isAbstract() {
+        return _abstract;
+    }
+
+    /**
+     * Sets the value determining if the pcType modeled by this
+     * ClassMetaData object is abstract (ie, a MappedSuperclass in JPA terms.)
+     * 
+     * @return
+     */
+    public void setAbstract(boolean flag) {
+        _abstract = flag;
+        _hasAbstractPKField = null;
+    }
+
+    /**
+     * Convenience method to determine if the pcType modeled by
+     * this ClassMetaData object is both abstract and declares PKFields. This
+     * method is used by the PCEnhancer to determine if special handling is
+     * required.
+     * 
+     * @return
+     */
+    public boolean hasAbstractPKField() {
+        if (_hasAbstractPKField != null) {
+            return _hasAbstractPKField.booleanValue();
+        }
+
+        // Default to false, set to true only if this type is abstract and
+        // declares a PKField.
+        _hasAbstractPKField = Boolean.FALSE;
+
+        if (isAbstract() == true) {
+            FieldMetaData[] declaredFields = getDeclaredFields();
+            if (declaredFields != null && declaredFields.length != 0) {
+                for(int i = 0 ; i < declaredFields.length; i ++) {
+                    if (declaredFields[i].isPrimaryKey()) {
+                        _hasAbstractPKField = Boolean.TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return _hasAbstractPKField.booleanValue();
+    }
+
+    /**
+     * Convenience method to determine if this type is a direct
+     * decendent of an abstract type declaring PKFields. Returns true if there
+     * are no pcTypes mapped to a table between this type and an abstract pcType
+     * declaring PKFields. Returns false if there no such abstract pcTypes in
+     * the inheritance hierarchy or if there are any pcTypes mapped to tables in
+     * between the type represented by this ClassMetaData object and the
+     * abstract pcType declaring PKFields.
+     * 
+     * @return
+     */
+    public boolean hasPKFieldsFromAbstractClass() {
+        if (_hasPKFieldsFromAbstractClass != null) {
+            return _hasPKFieldsFromAbstractClass.booleanValue();
+        }
+
+        // Default to FALSE, until proven true.
+        _hasPKFieldsFromAbstractClass = Boolean.FALSE;
+
+        FieldMetaData[] pkFields = getPrimaryKeyFields();
+        FieldMetaData fmd; 
+        for(int i = 0 ; i < pkFields.length; i++) { 
+            fmd = pkFields[i];
+            ClassMetaData fmdDMDA = fmd.getDeclaringMetaData();
+            if (fmdDMDA.isAbstract()) {
+                ClassMetaData cmd = getPCSuperclassMetaData();
+                while (cmd != fmdDMDA) {
+                    if (fmdDMDA.isAbstract()) {
+                        cmd = cmd.getPCSuperclassMetaData();
+                    } else {
+                        break;
+                    }
+                }
+                if (cmd == fmdDMDA) {
+                    _hasPKFieldsFromAbstractClass = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+
+        return _hasPKFieldsFromAbstractClass.booleanValue();
+    }
 }

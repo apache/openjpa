@@ -139,7 +139,20 @@ public class PessimisticLockManager
                     if (log.isWarnEnabled())
                         log.warn(_loc.get("millis-query-timeout"));
                 }
-                stmnt.setQueryTimeout(timeout / 1000);
+                try { 
+                    stmnt.setQueryTimeout(timeout / 1000);
+                }
+                catch(SQLException e) { 
+                    if(! dict.ignoreSQLExceptionOnSetQueryTimeout) { 
+                        throw e;
+                    }
+                    else {
+                        if (log.isTraceEnabled()) {
+                            log.trace(_loc.get("error-setting-query-timeout",
+                                new Integer(timeout), e.getMessage()), e);
+                        }
+                    }
+                }
             }
             rs = stmnt.executeQuery();
             if (!rs.next())

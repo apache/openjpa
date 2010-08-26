@@ -1,21 +1,16 @@
-                           Release Notes for OpenJPA
+                           Release Notes for OpenJPA 1.0.4
 
      * Overview
      * License
      * Prerequisites
      * Documentation
      * Getting Involved
-     * Bugs
-     * Improvements
-     * New Features
-     * Task
-     * Test
+     * JIRA Issues resolved
 
 Overview
 
    These notes describe the difference between OpenJPA release 1.0.3 and the
-   preceding releases 1.0.0, 1.0.1 and 1.0.2. 1.0.3 is a maintenance release
-   and contains primarily bugfixes.
+   preceding release: 1.0.3.
 
    OpenJPA is a feature-rich implementation of the persistence part of Java
    Community Process JSR-220 (Enterprise JavaBeans 3.0), which is known as
@@ -82,61 +77,76 @@ Getting Involved
        freenode.net.
      * Bugs and other issues can be posted on the project JIRA.
 
-OpenJPA 1.0.3 Changes
+JIRA Issues Resolved in this release
 
-    Sub-tasks
+Sub-task
 
-    * [OPENJPA-517] - Oracle also supports WITH statements
-    * [OPENJPA-555] - MappingTool got NullPointerException in 
-        DB2Dictionary.isDB2ZOSV8xOrLater()
-    * [OPENJPA-575] - Use do priv for to get CL for Oracle empty blob/clob
-    * [OPENJPA-591] - Entities are flushed before being detached or serialized
-    * [OPENJPA-648] - Table generator uses incorrect schema name
+    * [OPENJPA-681] - Subquery generates SQL with syntax error
+    * [OPENJPA-1023] - Message files contain windows EOL characters
+    * [OPENJPA-1210] - Specify derby timeouts via properties.
 
-    Bugs
+Bug
 
-    * [OPENJPA-51] - bad sql pushdown, sub select is missing from clause
-    * [OPENJPA-245] - Attach NEW and auto-increment identity
-    * [OPENJPA-209] - Query returning 2 entities w/unidir 1-1 relationship gets
-        openjpa.persistence.ArgumentException: Address with the same id already
-        exists in the L1 cache.
-    * [OPENJPA-499] - Missing dependencies in openjpa-persistence and
-        openjpa-persistence-jdbc
-    * [OPENJPA-512] - Maven build fails if -Dmaven.test.skip=true
-    * [OPENJPA-518] - openJpa jar is being locked causing future deployments on
-        an app server to fail
-    * [OPENJPA-527] - Merge of new one-to-many list only persists last element.
-    * [OPENJPA-529] - ManagedClassSubclasses stores table names twice.
-    * [OPENJPA-535] - Javadoc spelling errors in SchemaFactory and Localizer
-    * [OPENJPA-537] - openjpa-parent pom should not overwrite central 
-        repository setting
-    * [OPENJPA-540] - Classloading issue with WAS, Spring, and OpenJPA
-    * [OPENJPA-542] - OracleDictionary.getEmptyClob uses its classloader 
-        instead of the current classloader.
-    * [OPENJPA-543] - Unclosed prepared statements in 
-        SQLStoreQuery.executeUpdate.
-    * [OPENJPA-547] - INNER JOIN Fetch query incorrectly generates LEFT join SQL
-    * [OPENJPA-552] - Do not recognize Connection* properties in 
-        persistence.xml in appl server container
-    * [OPENJPA-554] - The GetMapValue class should have/supply an alias for 
-        ORDER-BY clauses.
-    * [OPENJPA-559] - java.rmi.MarshalException due to mismatched serialization
-        UIDs of: Source (RepId RMI:org.apache.openjpa.kernel.DetachedStateManager
-    * [OPENJPA-565] - Duplicate @NamedQuery terminates subsequent @NameQuery 
-        definitions in @NamedQueries
-    * [OPENJPA-632] - setFirstResult and setMaxResults not working for Oracle.
+    * [OPENJPA-210] - Query returning 2 entities w/1-1 relationship returns wrong types in the result list
+    * [OPENJPA-466] - Primary key constraint violated using (Oracle) sequence to generate ID in multithreaded app
+    * [OPENJPA-536] - getMetaData() causes OutOfMemoryError under some cases
+    * [OPENJPA-572] - Merge operation fails with IdClass composite key
+    * [OPENJPA-573] - JPQL: The combination LIKE ESCAPE does not accept parameters
+    * [OPENJPA-594] - Incorrect schema separator used for Informix tables
+    * [OPENJPA-605] - Informix will throw an exception when a unique index is explictily created on the primary key columns
+    * [OPENJPA-606] - InformixDictionary default setting beaks many testcases
+    * [OPENJPA-622] - Informix -lock timieout, cursor not open problem for NonJTA datasource transaction RESOURCE_LOCAL in JEE
+    * [OPENJPA-629] - When creating foreign keys the schema name is not trimmed for WS before checking DB
+    * [OPENJPA-644] - Handle databaseProductVersion string from newer jcc driver for DB2 ISeries
+    * [OPENJPA-645] - Date millisecond precision lost for Informix IDS and SQLServer
+    * [OPENJPA-650] - Document openjpa.RuntimeUnenhancedClasses=unsupported/warn configuration property
+    * [OPENJPA-685] - Problem enhancing test cases with Maven 2.0.9
+    * [OPENJPA-710] - Unordered collection field adds ORDER BY clause
+    * [OPENJPA-711] - PDF manual lacks images
+    * [OPENJPA-713] - openjpa-1.2.0.jar file is 11 MB
+    * [OPENJPA-715] - OpenJpa does not generate IDs properly. "duplicate key value in a unique or primary key constraint" while merging object tree.
+    * [OPENJPA-724] - Corrections for the manual
+    * [OPENJPA-727] - Image mapping-table.png missing in HTML manual
+    * [OPENJPA-864] - Subquery problems with SYNTAX_DATABASE (Oracle)
+    * [OPENJPA-873] - @MappedSuperClass Cause Null Pointer Exception in Class With IdClass
+    * [OPENJPA-896] - Several source files include Windows EoL chars
+    * [OPENJPA-917] - stored procedures throw InvalidStateException when using getSingleResult() or getResultList()
+    * [OPENJPA-951] - Javadoc jar file does not contain legal files
+    * [OPENJPA-1025] - AbstractResultList.subList throws UnsupportedOperationException
+    * [OPENJPA-1029] - SQLServerDictionary causes NumberFormatException if MS SQL Server JDBC driver is used
+    * [OPENJPA-1061] - Entities extending from a Mapped Superclass that defines the ID fields share the same ObjectID type parameter
+    * [OPENJPA-1067] - SetQueryTimeout(x) where x != 0 causes SQLException with DB2 on Z/OS
+    * [OPENJPA-1197] - NativeQueries fail with MySQL
+    * [OPENJPA-1243] - migrate Informix functionality from 1.2 to 1.0.x
+    * [OPENJPA-1244] - Activation profiles should be more inclusive
+    * [OPENJPA-1308] - shouldn't always use CAST with UPPER and LOWER for DB2
+    * [OPENJPA-1328] - Move cacheable class configuration to ClassMetaData
+    * [OPENJPA-1457] - Remove Java.net maven repostiory from tck pom.xml
+    * [OPENJPA-1678] - SQL Parameter values may contain sensitive information and should not be logged by default.
 
 Improvement
 
-    * [OPENJPA-374] - OpenJPA build process enhances Entity classes even when
-        testing is deactivated via -Dtest=false
-    * [OPENJPA-541] - Generate SQL92 JOIN syntax for Oracle 9 or later releases
+    * [OPENJPA-633] - Update the release process to use maven plugins
+    * [OPENJPA-666] - MS SQL Server 2005 does not support native sequences.
+    * [OPENJPA-726] - Provide MD5Sums for latest downloads
+    * [OPENJPA-752] - ProxySetupStateManager.setProxyData routing through PersistanceCapable caused "PersistenceException: null"
+    * [OPENJPA-772] - Proper maven pluginManagement and use ianal-maven-plugin for enforcing legal files
+    * [OPENJPA-779] - patch for eclipse .project and .classpath files...
+    * [OPENJPA-876] - Better test profiles for proprietary databases (DB2, Oracle) and continuous build
+    * [OPENJPA-881] - Enable connection pooling for testcases.
+    * [OPENJPA-901] - Use hosted JAI artifacts as the default for the docbook build
+    * [OPENJPA-975] - Oracle needs ability to not have an escape character for search strings.
+    * [OPENJPA-1045] - Add opt-in and opt-out configuration for L2 DataCache
+    * [OPENJPA-1136] - Add .gitignore for git users
+    * [OPENJPA-1557] - Logging configuration is difficult for running tests
+
+Test
+
+    * [OPENJPA-1071] - Derby test suit speed-up
 
 
-OpenJPA 1.0.2 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/CHANGES.txt?view=markup
-
-OpenJPA 1.0.1 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/CHANGES.txt?view=markup
-
-OpenJPA 1.0.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/CHANGES.txt?view=markup
-
+OpenJPA 1.0.3 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.3/openjpa-project/CHANGES.txt?view=co
+OpenJPA 1.0.2 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.2/openjpa-project/CHANGES.txt?view=co
+OpenJPA 1.0.1 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.1/openjpa-project/CHANGES.txt?view=co
+OpenJPA 1.0.0 Changes: http://svn.apache.org/viewvc/openjpa/tags/1.0.0/openjpa-project/CHANGES.txt?view=co
 

@@ -19,13 +19,17 @@
 package org.apache.openjpa.datacache;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -34,6 +38,8 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+
+import serp.util.Strings;
 
 /**
  * Abstract {@link DataCache} implementation that provides various
@@ -65,6 +71,9 @@ public abstract class AbstractDataCache
     private String _name = null;
     private boolean _closed = false;
     private String _schedule = null;
+    
+    protected Set _includedTypes;
+    protected Set _excludedTypes;
 
     public String getName() {
         return _name;
@@ -451,5 +460,33 @@ public abstract class AbstractDataCache
         for(int i=0; i<keys.size(); i++)
             resultMap.put(keys.get(i), get(keys.get(i)));
         return resultMap;
+    }
+    
+    public Set getTypes() {
+        return _includedTypes;
+    }
+    
+    public Set getExcludedTypes() {
+        return _excludedTypes;
+    }
+
+    public void setTypes(Set types) {
+        _includedTypes = types;
+    }
+
+    public void setTypes(String types) {
+        _includedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet(Arrays
+                .asList(Strings.split(types, ";", 0)));
+    }
+
+    public void setExcludedTypes(Set types) {
+        _excludedTypes = types;
+    }
+
+    public void setExcludedTypes(String types) {
+        _excludedTypes =
+            StringUtils.isEmpty(types) ? null : new HashSet(Arrays
+                .asList(Strings.split(types, ";", 0)));
     }
 }

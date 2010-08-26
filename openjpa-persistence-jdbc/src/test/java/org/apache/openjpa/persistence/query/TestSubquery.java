@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -31,8 +33,9 @@ public class TestSubquery
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(Customer.class, Customer.CustomerKey.class,
-            Order.class, OrderItem.class, CLEAR_TABLES);
+        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
+            OrderItem.class, Employee.class, Dependent.class,
+            DependentId.class, Magazine.class, Publisher.class, CLEAR_TABLES);
     }
 
     static String[]  querys = new String[] {
@@ -66,6 +69,18 @@ public class TestSubquery
             " and (select min(o2.amount) from Customer c, in(c.orders) o2)",
         "select o.oid from Customer c, in(c.orders)o where o.amount >" +
             " (select sum(o2.amount) from c.orders o2)",
+        "select o1.oid, c.name from Order o1, Customer c where o1.amount = " +
+            " any(select o2.amount from in(c.orders) o2)",
+        "SELECT p, m "+
+            "FROM Publisher p "+
+            "LEFT OUTER JOIN p.magazineCollection m "+
+            "WHERE m.id = (SELECT MAX(m2.id) "+
+            "FROM Magazine m2 "+
+            "WHERE m2.idPublisher.id = p.id "+
+            "AND m2.datePublished = "+
+            "(SELECT MAX(m3.datePublished) "+
+            "FROM Magazine m3 "+
+            "WHERE m3.idPublisher.id = p.id)) ", 
     // outstanding problem subqueries:
     //"select o from Order o where o.amount > (select count(o) from Order o)",
     //"select o from Order o where o.amount > (select count(o2) from Order o2)",
@@ -82,20 +97,45 @@ public class TestSubquery
 
 
     public void testSubquery() {
-        EntityManager em = emf.createEntityManager();
-        for (int i = 0; i < querys.length; i++) {
-            String q = querys[i];
-            List rs = em.createQuery(q).getResultList();
-            assertEquals(0, rs.size());
-        }
+        if(getDBDictionary(emf).supportsSubselect) {
+            EntityManager em = emf.createEntityManager();
+            for (int i = 0; i < querys.length; i++) {
+                String q = querys[i];
+                List rs = em.createQuery(q).getResultList();
+                assertEquals(0, rs.size());
+            }
 
-        em.getTransaction().begin();
-        for (int i = 0; i < updates.length; i++) {
-            int updateCount = em.createQuery(updates[i]).executeUpdate();
-            assertEquals(0, updateCount);
-        }
+            em.getTransaction().begin();
+            for (int i = 0; i < updates.length; i++) {
+                int updateCount = em.createQuery(updates[i]).executeUpdate();
+                assertEquals(0, updateCount);
+            }
 
-        em.getTransaction().rollback();
-        em.close();
+            em.getTransaction().rollback();
+            em.close();
+        }
+    }
+    
+    /**
+     * Verify a sub query can contain MAX and additional date comparisons 
+     * without losing the correct alias information. This sort of query 
+     * originally caused problems for DBDictionaries which used DATABASE syntax. 
+     */
+    public void testSubSelectMaxDateRange() {
+        if(getDBDictionary(emf).supportsSubselect) { 
+            String query =
+                "SELECT e,d from Employee e, Dependent d "
+                + "WHERE e.empId = :empid "
+                + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
+                + "AND d.id.effDate > :minDate "
+                + "AND d.id.effDate < :maxDate ";
+            EntityManager em = emf.createEntityManager();
+            Query q = em.createQuery(query);
+            q.setParameter("empid", (long) 101);
+            q.setParameter("minDate", new Date(100));
+            q.setParameter("maxDate", new Date(100000));
+            q.getResultList();
+            em.close();
+        }
     }
 }

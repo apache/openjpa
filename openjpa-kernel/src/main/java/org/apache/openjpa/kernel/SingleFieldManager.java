@@ -756,8 +756,12 @@ class SingleFieldManager
                     setFailedObject(obj);
         } else {
             sm = _broker.getStateManager(obj);
-            if (sm == null || !sm.isProvisional())
+            if (sm == null || !sm.isProvisional()) { 
                 sm = _broker.persist(obj, null, true, call);
+                // ensure generated IDs get assigned properly
+                if (!logical)
+                    ((StateManagerImpl)sm).assignObjectId(false, true);
+            }
         }
 
         if (sm != null) {

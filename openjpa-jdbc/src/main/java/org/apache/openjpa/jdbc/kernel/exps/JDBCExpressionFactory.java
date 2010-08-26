@@ -215,9 +215,12 @@ public class JDBCExpressionFactory
         String single, String multi, String esc) {
         if (!(v2 instanceof Const))
             throw new UserException(_loc.get("const-only", "matches"));
-        return new MatchesExpression((Val) v1, (Const) v2, single, multi,
-            esc != null ? esc : _type.getMappingRepository().
-                getDBDictionary().searchStringEscape);
+        if (esc == null && _type.getMappingRepository().
+                getDBDictionary().requiresSearchStringEscapeForLike == true) { 
+            esc = _type.getMappingRepository().
+                getDBDictionary().searchStringEscape;
+        }        
+        return new MatchesExpression((Val) v1, (Const) v2, single, multi, esc);
     }
 
     public Subquery newSubquery(ClassMetaData candidate, boolean subs,

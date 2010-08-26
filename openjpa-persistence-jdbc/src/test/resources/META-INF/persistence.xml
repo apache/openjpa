@@ -68,6 +68,7 @@
         <mapping-file>META-INF/listener-orm.xml</mapping-file>
         <class>org.apache.openjpa.persistence.callbacks.EntityListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.GlobalListenerEntity</class>
+        <class>org.apache.openjpa.persistence.callbacks.Message</class>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>

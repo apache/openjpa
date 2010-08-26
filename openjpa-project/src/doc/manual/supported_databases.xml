@@ -693,6 +693,13 @@ in schema names, you need to set the "schemaCase=preserve" parameter in the
 property.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+SQL Server 2005 does not support native sequences. If you would like to use 
+generated values with SQL Server you should use GenerationType.IDENTITY, 
+GenerationType.TABLE, or GenerationType.AUTO.
+                    </para> 
+                </listitem>
             </itemizedlist>
         </section>
     </section>
@@ -808,7 +815,7 @@ openjpa.ConnectionURL: jdbc:oracle:thin:@SERVER_NAME:1521:DB_NAME
 Oracle has support for "query hints", which are formatted comments embedded in
 SQL that provide some hint for how the query should be executed. These hints are
 usually designed to provide suggestions to the Oracle query optimizer for how to
-efficiently perform a certainly query, and aren't typically needed for any but
+efficiently perform a certain query, and aren't typically needed for any but
 the most intensive queries.
             </para>
             <example id="dbsupport_oracle_query_hints_ex">

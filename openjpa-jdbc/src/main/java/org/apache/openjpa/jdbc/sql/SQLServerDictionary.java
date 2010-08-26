@@ -64,49 +64,73 @@ public class SQLServerDictionary
     public void connectedConfiguration(Connection conn)
         throws SQLException {
         super.connectedConfiguration(conn);
-
+        boolean requiresWarnings = true;
         DatabaseMetaData meta = conn.getMetaData();
         String driverName = meta.getDriverName();
         String url = meta.getURL();
         if (driverVendor == null) {
-            if ("NetDirect JSQLConnect".equals(driverName))
-                driverVendor = VENDOR_NETDIRECT;
-            else if (driverName != null && driverName.startsWith("jTDS"))
-                driverVendor = VENDOR_JTDS;
-            else if ("SQLServer".equals(driverName)) {
-                if (url != null && url.startsWith("jdbc:microsoft:sqlserver:"))
-                    driverVendor = VENDOR_MICROSOFT;
-                else if (url != null
-                    && url.startsWith("jdbc:datadirect:sqlserver:"))
-                    driverVendor = VENDOR_DATADIRECT;
-                else
-                    driverVendor = VENDOR_OTHER;
-            } else
+            if (driverName != null) {
+                if (driverName.startsWith("Microsoft SQL Server")) {
+                    // v1.1, 1.2 or 2.0 driver
+                    driverVendor = VENDOR_MICROSOFT;                
+                    // serverMajorVersion of 8==2000, 9==2005, 10==2008
+                    if (meta.getDatabaseMajorVersion() >= 9)
+                        supportsXMLColumn = true;
+                    if (meta.getDriverMajorVersion() >= 2) {
+                        // see http://blogs.msdn.com/jdbcteam/archive/2007/05/\
+                        // 02/what-is-adaptive-response-buffering-and-why-\
+                        // should-i-use-it.aspx
+                        // 2.0 driver connectURL automatically includes 
+                        // responseBuffering=adaptive
+                        // and disableStatementPooling=true
+                        requiresWarnings = false;
+                    }
+                } else {
+                    if ("NetDirect JSQLConnect".equals(driverName))
+                        driverVendor = VENDOR_NETDIRECT;
+                    else if (driverName.startsWith("jTDS"))
+                        driverVendor = VENDOR_JTDS;
+                    else if ("SQLServer".equals(driverName)) {
+                        if (url != null &&
+                            url.startsWith("jdbc:microsoft:sqlserver:"))
+                            driverVendor = VENDOR_MICROSOFT;
+                        else if (url != null
+                            && url.startsWith("jdbc:datadirect:sqlserver:"))
+                            driverVendor = VENDOR_DATADIRECT;
+                        else
+                            driverVendor = VENDOR_OTHER;
+                    }
+                    // old way of determining xml support
+                    if (driverName.indexOf(platform) != -1) {
+                        String versionString = driverName.
+                            substring(platform.length() + 1);
+                        if (versionString.indexOf(" ") != -1)
+                            versionString = versionString.substring(0,
+                                versionString.indexOf(" "));
+                        int version = Integer.parseInt(versionString);
+                        if (version >= 2005)
+                            supportsXMLColumn = true;
+                    }
+                }
+            } else {
                 driverVendor = VENDOR_OTHER;
-            if (driverName.indexOf(platform) != -1) {
-                String versionString = driverName.
-                    substring(platform.length() + 1);
-                if (versionString.indexOf(" ") != -1)
-                    versionString = versionString.substring(0,
-                        versionString.indexOf(" "));
-                int version = Integer.parseInt(versionString);
-                if (version >= 2005)
-                    supportsXMLColumn = true;
             }
         }
 
-        // warn about using cursors
-        if ((VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor)
+        // warn about not using cursors for pre-2.0 MS driver
+        // as connectURL includes selectMethod=direct
+        if (((VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor)
+            && requiresWarnings) 
             || VENDOR_DATADIRECT.equalsIgnoreCase(driverVendor))
-            && url.toLowerCase().indexOf("selectmethod=cursor") == -1)
+            && (url.toLowerCase().indexOf("selectmethod=cursor") == -1))
             log.warn(_loc.get("sqlserver-cursor", url));
 
-        // warn about prepared statement caching if using ms driver
+        // warn about prepared statement caching if using pre-2.0 MS drivers
+        // as connectURL includes responseBuffering=full
         String props = conf.getConnectionFactoryProperties();
-        if (props == null)
-            props = "";
-        if (VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor)
-            && props.toLowerCase().indexOf("maxcachedstatements=0") == -1)
+        if ((props != null) && 
+            VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor) && requiresWarnings
+            && (props.toLowerCase().indexOf("maxcachedstatements=0") == -1))
             log.warn(_loc.get("sqlserver-cachedstmnts"));
     }
 

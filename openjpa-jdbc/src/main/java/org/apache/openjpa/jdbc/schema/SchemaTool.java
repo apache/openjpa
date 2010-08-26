@@ -986,6 +986,10 @@ public class SchemaTool {
      */
     public boolean createIndex(Index idx, Table table)
         throws SQLException {
+
+        if (!_dict.needsToCreateIndex(idx,table))
+            return false;
+
         int max = _dict.maxIndexesPerTable;
 
         int len = table.getIndexes().length;
