@@ -40,7 +40,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -103,9 +103,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.4</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.4</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.4</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.3</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.3</url>
     </scm>
 
     <build>

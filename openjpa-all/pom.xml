@@ -28,16 +28,16 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5-SNAPSHOT</version>
     </parent>
     <properties>
         <scm.dir>svn.apache.org/repos/asf/openjpa/branches/1.0.x/openjpa-all</scm.dir>
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.4/openjpa-all</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/1.0.x/openjpa-all</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/1.0.x/openjpa-all</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openjpa/branches/1.0.x/openjpa-all</url>
     </scm>
 
     <build>
