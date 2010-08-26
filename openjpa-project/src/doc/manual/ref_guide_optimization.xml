@@ -61,7 +61,7 @@ more work onto the server will have a negative impact on scalability.
                 <row>
                     <entry colname="name">
                         <emphasis role="bold">
-                            Plugin in a Connection Pool
+                            Use a Connection Pool
                         </emphasis>
                         <para>
 <emphasis>performance, scalability</emphasis>
@@ -69,8 +69,8 @@ more work onto the server will have a negative impact on scalability.
                     </entry>
                     <entry colname="desc">
 OpenJPA's built-in datasource does not perform connection pooling or
-prepared statement caching.  Plugging in a third-party pooling datasource may
-drastically improve performance.
+prepared statement caching.  Plugging in a third-party pooling datasource like <link linkend="ref_guide_integration_dbcp">Apache Commons DBCP</link>, which is included in the binary distribution and openjpa-all artifact, may
+drastically improve application performance.
                     </entry>
                 </row>
                 <row>

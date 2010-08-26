@@ -489,4 +489,56 @@ the schema tool:
             </example>
         </section>
     </section>
+
+    <section id="ref_guide_integration_dbcp">
+        <title>
+            Apache Commons DBCP
+        </title>
+        <indexterm zone="ref_guide_integration_dbcp">
+            <primary>
+                DBCP
+            </primary>
+        </indexterm>
+        <para>
+OpenJPA does not provide its own JDBC connection pooling, as this should already be supplied to applications running in a Java EE application server in container managed mode.  For Java SE or applications running in application managed mode, the OpenJPA aggregate openjpa-all artifact and the binary assembly contains copies of <ulink url="http://commons.apache.org/dbcp/">Apache Commons DBCP</ulink>, which provides a robust connection pooling implementation.
+        </para>
+
+        <section id="ref_guide_integration_dbcp_conf">
+            <title>
+                Apache Commons DBCP Configuration Options
+            </title>
+            <indexterm>
+                <primary>
+                    DBCP
+                </primary>
+                <secondary>
+                    configuration options
+                </secondary>
+            </indexterm>
+            <para>
+The <link linkend="ref_guide_dbsetup_thirdparty">JDBC DataSource configuration options</link> that we will need to modify in order to use Apache Commons DBCP for connection pooling are:
+<programlisting>
+    connectionDriverName="org.apache.commons.dbcp.BasicDataSource"
+    connectionProperties="DriverClassName=&lt;prior connectionDriverName&gt;, ..."
+</programlisting>
+Additional Commons DBCP arguments can be provided in the connectionProperties value, such as:
+<programlisting>
+    MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+</programlisting>
+Please visit the Commons DBCP website for the entire list of <ulink url="http://commons.apache.org/dbcp/configuration.html">configuration options</ulink> and explanations.
+            </para>
+
+            <example id="ref_guide_integration_dbcp_derby">
+                <title>
+                    Using Commons DBCP with Apache Derby
+                </title>
+For example, to use Commons DBCP with an Apache Derby database server, we would need to provide the following settings, as either settings in the persistence.xml or as system environment overrides:
+<programlisting>
+&lt;property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/&gt;
+&lt;property name="openjpa.ConnectionProperties" value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver, Url=jdbc:derby://localhost:1527/openjpa, Username=uid, Password=pwd"/&gt;
+</programlisting>
+Notice that we supplied Username and Password settings, which are required by Commons DBCP for connecting to a database over the network, but can be dummy values if database security is not enabled.
+            </example>
+        </section>
+    </section>
 </chapter>
