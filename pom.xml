@@ -65,9 +65,9 @@
              anything else allows the test to execute normally
         -->
         <tests.openjpa.allowfailure>ignore</tests.openjpa.allowfailure>
-        <!--turn off sources.jar generation by setting to none and false -->
-        <createSource>verify</createSource>
-        <createSources>true</createSources>
+        <!--turn on sources.jar generation by setting to verify and true -->
+        <createSource>none</createSource>
+        <createSources>false</createSources>
         <!-- common JDBC driver versions -->
         <derby.version>10.5.3.0_1</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
@@ -164,6 +164,16 @@
         <!-- Override some release settings inherited from apache-7.pom -->
         <profile>
             <id>apache-release</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                </property>
+            </activation>
+            <properties>
+                <!--turn on sources.jar generation -->
+                <createSource>verify</createSource>
+                <createSources>true</createSources>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -867,6 +877,10 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ianal-maven-plugin</artifactId>
