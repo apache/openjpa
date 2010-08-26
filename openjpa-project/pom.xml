@@ -40,7 +40,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.4</version>
     </parent>
 
     <properties>
@@ -103,9 +103,9 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.3</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.3</developerConnection>
-        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.3</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.0.4</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.0.4</developerConnection>
+        <url>https://svn.apache.org/repos/asf/openjpa/tags/1.0.4</url>
     </scm>
 
     <build>
@@ -359,33 +359,33 @@
                                 <phase>package</phase>
                                 <configuration>
                                     <tasks>
-                                        <mkdir dir="target/site/tempDocs"/>
+                                        <mkdir dir="target/site/tempDocs" />
                                         <unzip dest="target/site/tempDocs">
                                             <fileset dir="target/site/downloads">
-                                                <include name="*binary*.zip"/>
+                                                <include name="*binary*.zip" />
                                             </fileset>
                                             <patternset>
-                                                <include name="**/javadoc/**"/>
-                                                <include name="**/manual/**"/>
+                                                <include name="**/javadoc/**" />
+                                                <include name="**/manual/**" />
                                             </patternset>
                                         </unzip>
                                         <move todir="target/site/tempDocs/docs">
-                                            <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs"/> 
+                                            <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs" /> 
                                         </move>
                                         <checksum>
                                             <fileset dir="target/site/downloads/">
-                                                <include name="*.zip"/>
+                                                <include name="*.zip" />
                                             </fileset>
                                         </checksum>
                                         <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/downloads" trust="true">
-                                            <fileset dir="target/site/downloads"/>
+                                            <fileset dir="target/site/downloads" />
                                         </scp>
                                         <scp todir="${nightly.user.name}:${nightly.password}@people.apache.org:/www/openjpa.apache.org/builds/latest-1.0.x/docs" trust="true">
-                                            <fileset dir="target/site/tempDocs/docs"/> 
+                                            <fileset dir="target/site/tempDocs/docs" /> 
                                         </scp>
-                                        <sshexec host="people.apache.org" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w /www/openjpa.apache.org/builds/latest-1.0.x" trust="true"/>
+                                        <sshexec host="people.apache.org" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w /www/openjpa.apache.org/builds/latest-1.0.x" trust="true" />
                                         <delete>
-                                            <fileset dir="target/site/tempDocs"/>
+                                            <fileset dir="target/site/tempDocs" />
                                         </delete>
                                     </tasks>
                                 </configuration>
