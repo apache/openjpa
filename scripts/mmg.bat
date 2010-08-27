@@ -39,16 +39,17 @@ set JAVAC=%JAVA_HOME%\bin\javac
 @rem ---------------------------------------------------------------------------
 @rem Compiler classpath shown for a typical OpenJPA development environment in Windows. 
 @rem The essential aspect is openjpa libraries must be in the compiler's classpath.
-set M_REPO="C:\Documents and Settings\Administrator\.m2\repository"
+set M_REPO="%USERPROFILE%\.m2\repository"
 set SPEC=geronimo-jpa_2.0_spec
 set VERSION=1.0-EA9-SNAPSHOT
 set JPA_LIB=%M_REPO%\org\apache\geronimo\specs\%SPEC%\%VERSION%\%SPEC%-%VERSION%.jar
 
 set CLASSPATH=%JPA_LIB%
-set CLASSPATH=%CLASSPATH%;..\openjpa\src\main\resources
-set CLASSPATH=%CLASSPATH%;..\openjpa-persistence\target\classes
-set CLASSPATH=%CLASSPATH%;..\openjpa-kernel\target\classes
-set CLASSPATH=%CLASSPATH%;..\openjpa-lib\target\classes
+set CLASSPATH=%CLASSPATH%;%~dp0\..\openjpa\src\main\resources
+set CLASSPATH=%CLASSPATH%;%~dp0\..\openjpa-persistence\target\classes
+set CLASSPATH=%CLASSPATH%;%~dp0\..\openjpa-persistence\src\main\resources
+set CLASSPATH=%CLASSPATH%;%~dp0\..\openjpa-kernel\target\classes
+set CLASSPATH=%CLASSPATH%;%~dp0\..\openjpa-lib\target\classes
 
 @rem ---------------------------------------------------------------------------
 echo Using Java Compiler %JAVAC%
@@ -56,7 +57,7 @@ echo Using Java Compiler %JAVAC%
 
 @rem ---------------------------------------------------------------------------
 @rem Root directory for of the generated source files. Specified as -s option 
-set GEN_DIR=../openjpa-persistence-jdbc/src/test/java
+set GEN_DIR=%~dp0\..\openjpa-persistence-jdbc\src\test\java
 
 @rem Only one option is shown for logging. Other available options are documented in
 @rem OpenJPA User Manual and JavaDoc
