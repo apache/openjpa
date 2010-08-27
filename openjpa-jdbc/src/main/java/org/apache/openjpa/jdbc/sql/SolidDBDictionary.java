@@ -211,7 +211,7 @@ public class SolidDBDictionary
                 seqs = new ArrayList(4);
 
             seq = getAutoGenSeqName(cols[i]);
-            if (sequenecExists(table.getSchemaIdentifier().getName(), seq, group))
+            if (sequenceExists(table.getSchemaIdentifier().getName(), seq, group))
                 seqs.add("DROP SEQUENCE " + seq);
             seqs.add("CREATE SEQUENCE " + seq);
             
@@ -238,7 +238,7 @@ public class SolidDBDictionary
         if (seqs == null)
             return create;
 
-        // combine create table sql and create seqences sql
+        // combine create table sql and create sequences sql
         String[] sql = new String[create.length + seqs.size()];
         System.arraycopy(create, 0, sql, 0, create.length);
         for (int i = 0; i < seqs.size(); i++)
@@ -246,7 +246,7 @@ public class SolidDBDictionary
         return sql;
     }
 
-    protected boolean sequenecExists(String schemaName, String seqName, SchemaGroup group) {
+    protected boolean sequenceExists(String schemaName, String seqName, SchemaGroup group) {
         Schema[] schemas = group.getSchemas();
         for (int i = 0; i < schemas.length; i++) {
             String dbSchemaName = schemas[i].getIdentifier().getName();
@@ -530,7 +530,7 @@ public class SolidDBDictionary
     }
 
     /**
-     * Solid does no support deferred referential integrity checking.
+     * Solid does not support deferred referential integrity checking.
      */
     @Override
     protected ForeignKey newForeignKey(ResultSet fkMeta)
