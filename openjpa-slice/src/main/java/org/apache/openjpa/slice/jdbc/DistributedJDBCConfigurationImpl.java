@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
+import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
-import org.apache.openjpa.lib.log.LogFactoryImpl;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -138,10 +140,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     }
     
     private void setDiagnosticContext(OpenJPAConfiguration conf) {
-        String unit = conf.getId();
         LogFactory logFactory = conf.getLogFactory();
-        if (logFactory instanceof LogFactoryImpl) {
-            ((LogFactoryImpl)logFactory).setDiagnosticContext(unit);
+        try {
+            Method setter = AccessController.doPrivileged(J2DoPrivHelper.
+                    getDeclaredMethodAction(logFactory.getClass(), 
+                    "setDiagnosticContext", new Class[]{String.class}));
+            setter.invoke(logFactory, conf.getId());
+        } catch (Throwable t) {
+            // no contextual logging
         }
     }
 
@@ -629,6 +635,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
         }
         return _replicationRepos.contains(cls);
     }
+    
     
     /**
      * A private repository of replicated types.

@@ -202,7 +202,7 @@
          
          <property name="openjpa.Multithreaded" value="false"/>
          <property name="openjpa.Log" value="DefaultLevel=INFO, Enhance=TRACE, SQL=TRACE"/>
-         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=native"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=native)"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
             <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
             <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
@@ -224,10 +224,10 @@
          <property name="openjpa.slice.Ford.ConnectionURL" value="jdbc:mysql://localhost/honda"/>
          
          <property name="openjpa.Multithreaded" value="false"/>
-         <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=native)"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
-            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
-            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
       </properties>
    </persistence-unit>
    

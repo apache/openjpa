@@ -111,7 +111,9 @@ public abstract class PersistenceTestCase
             map.put("openjpa.MetaDataFactory",
                 "jpa(Types=" + buf.toString() + ")");
         }
-
+        if (!map.containsKey("openjpa.ConnectionFactoryProperties")) {
+            map.put("openjpa.ConnectionFactoryProperties", "PrintParameters=true");
+        }
         return (OpenJPAEntityManagerFactorySPI) Persistence.
             createEntityManagerFactory(pu, map);
     }

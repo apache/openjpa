@@ -37,6 +37,11 @@ public interface DistributionPolicy {
 	/**
 	 * Gets the name of the target slice where the given newly persistent or
 	 * the detached, to-be-merged instance will be stored.
+	 * <br>
+	 * If the current state of the given instance is sufficient to determine
+	 * the target slice, return null. In that case, the runtime will callback
+	 * this method again before the instance being flushed to the datastore.
+	 * By then, the policy <em>must</em> be able to determine the target slice.  
 	 *  
 	 * @param pc The newly persistent or to-be-merged object. 
 	 * @param slices list of names of the active slices. The ordering of 

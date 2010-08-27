@@ -26,6 +26,7 @@ import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
@@ -85,18 +86,35 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
         boolean replicated = SliceImplHelper.isReplicated(pc, getConfiguration());
         if (getOperatingSet().isEmpty() && !SliceImplHelper.isSliceAssigned(sm)) {
             info = SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this);
-            _rootSlice = info.getSlices()[0];
+            if (info != null) {
+                _rootSlice = info.getSlices()[0];
+            }
         }
-        sm = super.persist(pc, id, explicit, call);
+        if (sm == null) {
+            sm = super.persist(pc, id, explicit, call);
+        }
         if (!SliceImplHelper.isSliceAssigned(sm)) {
             if (info == null) {
-                info = replicated ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) : new SliceInfo(
-                        _rootSlice);
+                info = replicated 
+                     ? SliceImplHelper.getSlicesByPolicy(pc, getConfiguration(), this) 
+                     : _rootSlice != null ? new SliceInfo(_rootSlice) : null;
             }
-            info.setInto(sm);
+            if (info != null)
+                info.setInto(sm);
         }
         return sm;
     }
+    
+    @Override
+    protected void setStateManager(Object id, StateManagerImpl sm, int status) {
+        try {
+            super.setStateManager(id, sm, status);
+        } catch (Exception e) {
+            if (status == 0) { // STATUS_INIT
+                // ignore
+            }
+        }
+    }    
 
     @Override
     public boolean endOperation() {

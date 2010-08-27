@@ -38,12 +38,22 @@ public class SliceImplHelper {
 		Localizer.forPackage(SliceImplHelper.class);
 	
 	/**
-	 * Gets the target slices by calling user-specified 
-	 * {@link DistributionPolicy} or {@link ReplicationPolicy} 
+	 * Gets the target slices by calling user-specified {@link DistributionPolicy} or {@link ReplicationPolicy} 
      * depending on whether the given instance is {@link DistributedConfiguration#isReplicated(Class) replicated}.
+     * The policy is invoked when an instance enters the managed life cycle. However, if the instance
+     * being persisted is distributed to a target slice that is <em>not</em> determinable by its own basic attributes,
+     * but on its associated instance then those association may not have been initialized at the point of entry. 
+     * In such case, the policy may return null. However, when a target slice may not be determinable at the 
+     * entry to managed life cycle, a target slice must be determinable by the time an instance is flushed.   
+     * 
+     * @param pc the managed instance whose target slice is to be determined.
+     * @param conf to supply the distribution policy
+     * @param ctx the (opaque) context of invocation. No semantics is currently associated.
+     * 
+     * @return information about the target slice for the given instance. Can be null if the policy
+     * can not determine the target slice(s) based on the current state of the instance.  
 	 */
-	public static SliceInfo getSlicesByPolicy(Object pc, 
-			DistributedConfiguration conf, Object ctx) {
+	public static SliceInfo getSlicesByPolicy(Object pc, DistributedConfiguration conf, Object ctx) {
 		List<String> actives = conf.getActiveSliceNames();
 		Object policy = null;
 		String[] targets = null;
@@ -51,17 +61,19 @@ public class SliceImplHelper {
 		if (replicated) {
 			policy = conf.getReplicationPolicyInstance();
             targets = ((ReplicationPolicy)policy).replicate(pc, actives, ctx);
+            assertSlices(targets, pc, conf.getActiveSliceNames(), policy);
 		} else {
 			policy = conf.getDistributionPolicyInstance();
-            targets = new String[]{((DistributionPolicy)policy).distribute
-				(pc, actives, ctx)};
+			String target = ((DistributionPolicy)policy).distribute(pc, actives, ctx);
+			if (target != null) {
+			    targets = new String[]{target};
+		        assertSlices(targets, pc, conf.getActiveSliceNames(), policy);
+			}
 		}
-		assertSlices(targets, pc, conf.getActiveSliceNames(), policy);
-		return new SliceInfo(replicated, targets);
+		return targets != null ? new SliceInfo(replicated, targets) : null;
 	}
 	
-	private static void assertSlices(String[] targets, Object pc, 
-	    List<String> actives, Object policy) {
+	private static void assertSlices(String[] targets, Object pc, List<String> actives, Object policy) {
 	    if (targets == null || targets.length == 0)
             throw new UserException(_loc.get("no-policy-slice", new Object[] {
                 policy.getClass().getName(), pc, actives}));
@@ -80,7 +92,6 @@ public class SliceImplHelper {
         return getSlicesByPolicy(sm.getPersistenceCapable(), conf, ctx);
     }
     
-    
 	/**
 	 * Affirms if the given instance be replicated to multiple slices.
 	 */
@@ -88,15 +99,6 @@ public class SliceImplHelper {
         return pc == null ? false : conf.isReplicated(pc.getClass());
 	}
 
-	/**
-	 * Affirms if the given instance be replicated to multiple slices.
-	 */
-//	public static boolean isReplicated(OpenJPAStateManager sm) {
-//	    return sm == null ? false : 
-//		if (sm == null)
-//			return false;
-//		return sm.getMetaData().isReplicated();
-//	}
 	
 	/**
 	 * Affirms if the given StateManager has an assigned slice.
