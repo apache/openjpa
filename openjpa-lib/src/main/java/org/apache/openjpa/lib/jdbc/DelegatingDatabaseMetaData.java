@@ -823,11 +823,14 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData.getClientInfoProperties();
     }
 
-    public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) throws SQLException {
+    public ResultSet getFunctionColumns(String catalog, String schemaPattern,
+            String functionNamePattern, String columnNamePattern)
+            throws SQLException {
         return _metaData.getFunctionColumns(catalog, schemaPattern, functionNamePattern, columnNamePattern);
     }
 
-    public ResultSet getFunctions(String catalog, String schemaPattern, String functionNamePattern) throws SQLException {
+    public ResultSet getFunctions(String catalog, String schemaPattern,
+            String functionNamePattern) throws SQLException {
         return _metaData.getFunctions(catalog, schemaPattern, functionNamePattern);
     }
 
