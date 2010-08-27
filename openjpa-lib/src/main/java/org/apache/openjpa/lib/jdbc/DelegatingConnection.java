@@ -19,16 +19,24 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.lang.reflect.Constructor;
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
@@ -468,7 +476,8 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         return stmnt;
     }
 
-    // java.sql.Wrapper implementation (JDBC 4)
+    //  JDBC 4.0 methods follow.
+
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -478,5 +487,49 @@ public abstract class DelegatingConnection implements Connection, Closeable {
             return getDelegate();
         else
             return null;
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+        return _conn.createArrayOf(typeName, elements);
+    }
+
+    public Blob createBlob() throws SQLException {
+        return _conn.createBlob();
+    }
+
+    public Clob createClob() throws SQLException {
+        return _conn.createClob();
+    }
+
+    public NClob createNClob() throws SQLException {
+        return _conn.createNClob();
+    }
+
+    public SQLXML createSQLXML() throws SQLException {
+        return _conn.createSQLXML();
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+        return _conn.createStruct(typeName, attributes);
+    }
+
+    public Properties getClientInfo() throws SQLException {
+        return _conn.getClientInfo();
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        return _conn.getClientInfo(name);
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        return _conn.isValid(timeout);
+    }
+
+    public void setClientInfo(Properties properties) throws SQLClientInfoException {
+        _conn.setClientInfo(properties);
+    }
+
+    public void setClientInfo(String name, String value) throws SQLClientInfoException {
+        _conn.setClientInfo(name, value);
     }
 }

@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
@@ -801,7 +802,8 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
         return _metaData;
     }
 
-    // java.sql.Wrapper implementation (JDBC 4)
+    //  JDBC 4.0 methods follow.
+
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -811,5 +813,33 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
             return getDelegate();
         else
             return null;
+    }
+
+    public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+        return _metaData.autoCommitFailureClosesAllResultSets();
+    }
+
+    public ResultSet getClientInfoProperties() throws SQLException {
+        return _metaData.getClientInfoProperties();
+    }
+
+    public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) throws SQLException {
+        return _metaData.getFunctionColumns(catalog, schemaPattern, functionNamePattern, columnNamePattern);
+    }
+
+    public ResultSet getFunctions(String catalog, String schemaPattern, String functionNamePattern) throws SQLException {
+        return _metaData.getFunctions(catalog, schemaPattern, functionNamePattern);
+    }
+
+    public RowIdLifetime getRowIdLifetime() throws SQLException {
+        return _metaData.getRowIdLifetime();
+    }
+
+    public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
+        return _metaData.getSchemas(catalog, schemaPattern);
+    }
+
+    public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+        return _metaData.supportsStoredFunctionsUsingCallSyntax();
     }
 }
