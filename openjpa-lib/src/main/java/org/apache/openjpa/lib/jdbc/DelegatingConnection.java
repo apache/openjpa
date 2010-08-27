@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -29,13 +28,10 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-import org.apache.openjpa.lib.util.Localizer;
 
 
 /**
@@ -55,41 +51,6 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
-    }
-
-    // jdbc 3 method keys
-    private static final Object SET_HOLDABILITY = new Object();
-    private static final Object GET_HOLDABILITY = new Object();
-    private static final Object SET_SAVEPOINT_NONAME = new Object();
-    private static final Object SET_SAVEPOINT = new Object();
-    private static final Object ROLLBACK_SAVEPOINT = new Object();
-    private static final Object RELEASE_SAVEPOINT = new Object();
-    private static final Object CREATE_STATEMENT = new Object();
-    private static final Object PREPARE_STATEMENT = new Object();
-    private static final Object PREPARE_CALL = new Object();
-    private static final Object PREPARE_WITH_KEYS = new Object();
-    private static final Object PREPARE_WITH_INDEX = new Object();
-    private static final Object PREPARE_WITH_NAMES = new Object();
-
-    private static final Localizer _loc = Localizer.forPackage
-        (DelegatingConnection.class);
-
-    private static final Map<Object, Method> _jdbc3;
-
-    static {
-        boolean jdbc3 = false;
-        Method m = null;
-        try {
-            m = Connection.class.getMethod("setSavepoint", new Class[]{ String.class });
-            jdbc3 = true;
-        } catch (Throwable t) {
-        }
-
-        if (jdbc3) {
-            _jdbc3 = new HashMap<Object,Method>();
-            _jdbc3.put(SET_SAVEPOINT, m);
-        } else
-            _jdbc3 = null;
     }
 
     private final Connection _conn;
@@ -361,66 +322,35 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         _conn.setTypeMap(map);
     }
 
-    // JDBC 3.0 methods follow; these are required to be able to
-    // compile against JDK 1.4; these methods will not work on
-    // previous JVMs
+    // JDBC 3.0 methods follow.
 
     public void setHoldability(int holdability) throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(SET_HOLDABILITY);
-        if (m == null)
-            m = createJDBC3Method(SET_HOLDABILITY, "setHoldability",
-                new Class[]{ int.class });
-        invokeJDBC3(m, new Object[]{ holdability });
+        _conn.setHoldability(holdability);
     }
 
     public int getHoldability() throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(GET_HOLDABILITY);
-        if (m == null)
-            m = createJDBC3Method(GET_HOLDABILITY, "getHoldability", null);
-        return ((Number) invokeJDBC3(m, null)).intValue();
+        return _conn.getHoldability();
     }
 
     public Savepoint setSavepoint() throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(SET_SAVEPOINT_NONAME);
-        if (m == null)
-            m = createJDBC3Method(SET_SAVEPOINT_NONAME, "setSavepoint", null);
-        return (Savepoint) invokeJDBC3(m, null);
+        return _conn.setSavepoint();
     }
 
     public Savepoint setSavepoint(String savepoint) throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(SET_SAVEPOINT);
-        if (m == null)
-            m = createJDBC3Method(SET_SAVEPOINT, "setSavepoint",
-                new Class[]{ String.class });
-        return (Savepoint) invokeJDBC3(m, new Object[]{ savepoint });
+        return _conn.setSavepoint(savepoint);
     }
 
     public void rollback(Savepoint savepoint) throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(ROLLBACK_SAVEPOINT);
-        if (m == null)
-            m = createJDBC3Method(ROLLBACK_SAVEPOINT, "rollback",
-                new Class[]{ Savepoint.class });
-        invokeJDBC3(m, new Object[]{ savepoint });
+        _conn.rollback(savepoint);
     }
 
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-        assertJDBC3();
-        Method m = (Method) _jdbc3.get(RELEASE_SAVEPOINT);
-        if (m == null)
-            m = createJDBC3Method(RELEASE_SAVEPOINT, "releaseSavepoint",
-                new Class[]{ Savepoint.class });
-        invokeJDBC3(m, new Object[]{ savepoint });
+        _conn.releaseSavepoint(savepoint);
     }
 
     public Statement createStatement(int resultSetType,
         int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
-        assertJDBC3();
         return createStatement(resultSetType, resultSetConcurrency,
             resultSetHoldability, true);
     }
@@ -433,14 +363,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
             stmnt = _del.createStatement(resultSetType, resultSetConcurrency,
                 resultSetHoldability, false);
         else {
-            Method m = (Method) _jdbc3.get(CREATE_STATEMENT);
-            if (m == null)
-                m = createJDBC3Method(CREATE_STATEMENT, "createStatement",
-                    new Class[]{ int.class, int.class, int.class });
-            stmnt = (Statement) invokeJDBC3(m, new Object[]{
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability });
+            stmnt = _conn.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
         }
         if (wrap)
             stmnt = DelegatingStatement.newInstance(stmnt, this);
@@ -450,7 +373,6 @@ public abstract class DelegatingConnection implements Connection, Closeable {
     public PreparedStatement prepareStatement(String sql,
         int resultSetType, int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
-        assertJDBC3();
         return prepareStatement(sql, resultSetType, resultSetConcurrency,
             resultSetHoldability, true);
     }
@@ -463,15 +385,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
             stmnt = _del.prepareStatement(sql, resultSetType,
                 resultSetConcurrency, resultSetHoldability, false);
         else {
-            Method m = (Method) _jdbc3.get(PREPARE_STATEMENT);
-            if (m == null)
-                m = createJDBC3Method(PREPARE_STATEMENT, "prepareStatement",
-                    new Class[]{ String.class, int.class, int.class,
-                        int.class });
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability });
+            stmnt = _conn.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
         }
         if (wrap)
             stmnt = DelegatingPreparedStatement.newInstance(stmnt, this);
@@ -481,7 +395,6 @@ public abstract class DelegatingConnection implements Connection, Closeable {
     public CallableStatement prepareCall(String sql,
         int resultSetType, int resultSetConcurrency, int resultSetHoldability)
         throws SQLException {
-        assertJDBC3();
         return prepareCall(sql, resultSetType, resultSetConcurrency,
             resultSetHoldability, true);
     }
@@ -494,15 +407,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
             stmnt = _del.prepareCall(sql, resultSetType,
                 resultSetConcurrency, resultSetHoldability, false);
         else {
-            Method m = (Method) _jdbc3.get(PREPARE_CALL);
-            if (m == null)
-                m = createJDBC3Method(PREPARE_CALL, "prepareCall",
-                    new Class[]{ String.class, int.class, int.class,
-                        int.class });
-            stmnt = (CallableStatement) invokeJDBC3(m, new Object[]{ sql,
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability });
+            stmnt = _conn.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
         }
         if (wrap)
             stmnt = DelegatingCallableStatement.newInstance(stmnt, this);
@@ -511,7 +416,6 @@ public abstract class DelegatingConnection implements Connection, Closeable {
 
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
         throws SQLException {
-        assertJDBC3();
         return prepareStatement(sql, autoGeneratedKeys, true);
     }
 
@@ -521,12 +425,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         if (_del != null)
             stmnt = _del.prepareStatement(sql, autoGeneratedKeys);
         else {
-            Method m = (Method) _jdbc3.get(PREPARE_WITH_KEYS);
-            if (m == null)
-                m = createJDBC3Method(PREPARE_WITH_KEYS, "prepareStatement",
-                    new Class[]{ String.class, int.class });
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
-                autoGeneratedKeys });
+            stmnt = _conn.prepareStatement(sql, autoGeneratedKeys);
         }
         if (wrap)
             stmnt = DelegatingPreparedStatement.newInstance(stmnt, this);
@@ -535,7 +434,6 @@ public abstract class DelegatingConnection implements Connection, Closeable {
 
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
         throws SQLException {
-        assertJDBC3();
         return prepareStatement(sql, columnIndexes, true);
     }
 
@@ -545,12 +443,7 @@ public abstract class DelegatingConnection implements Connection, Closeable {
         if (_del != null)
             stmnt = _del.prepareStatement(sql, columnIndexes, wrap);
         else {
-            Method m = (Method) _jdbc3.get(PREPARE_WITH_INDEX);
-            if (m == null)
-                m = createJDBC3Method(PREPARE_WITH_INDEX, "prepareStatement",
-                    new Class[]{ String.class, int[].class });
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
-                columnIndexes });
+            stmnt = _conn.prepareStatement(sql, columnIndexes);
         }
         if (wrap)
             stmnt = DelegatingPreparedStatement.newInstance(stmnt, this);
@@ -559,56 +452,20 @@ public abstract class DelegatingConnection implements Connection, Closeable {
 
     public PreparedStatement prepareStatement(String sql, String[] columnNames)
         throws SQLException {
-        assertJDBC3();
         return prepareStatement(sql, columnNames, true);
     }
 
     protected PreparedStatement prepareStatement(String sql,
         String[] columnNames, boolean wrap) throws SQLException {
-        assertJDBC3();
         PreparedStatement stmnt;
         if (_del != null)
             stmnt = _del.prepareStatement(sql, columnNames, wrap);
         else {
-            Method m = (Method) _jdbc3.get(PREPARE_WITH_NAMES);
-            if (m == null)
-                m = createJDBC3Method(PREPARE_WITH_NAMES, "prepareStatement",
-                    new Class[]{ String.class, String[].class });
-            stmnt = (PreparedStatement) invokeJDBC3(m, new Object[]{ sql,
-                columnNames });
+            stmnt = _conn.prepareStatement(sql, columnNames);
         }
         if (wrap)
             stmnt = DelegatingPreparedStatement.newInstance(stmnt, this);
         return stmnt;
-    }
-
-    private static void assertJDBC3() {
-        if (_jdbc3 == null)
-            throw new UnsupportedOperationException(_loc.get("not-jdbc3")
-                .getMessage());
-    }
-
-    private Object invokeJDBC3(Method m, Object[] args) throws SQLException {
-        try {
-            return m.invoke(_conn, args);
-        } catch (Throwable t) {
-            if (t instanceof SQLException)
-                throw(SQLException) t;
-            throw new NestableRuntimeException(_loc.get("invoke-jdbc3")
-                .getMessage(), t);
-        }
-    }
-
-    private static Method createJDBC3Method(Object key, String name,
-        Class<?>[] args) {
-        try {
-            Method m = Connection.class.getMethod(name, args);
-            _jdbc3.put(key, m);
-            return m;
-        } catch (Throwable t) {
-            throw new NestableRuntimeException(_loc.get("error-jdbc3")
-                .getMessage(), t);
-        }
     }
 
     // java.sql.Wrapper implementation (JDBC 4)
