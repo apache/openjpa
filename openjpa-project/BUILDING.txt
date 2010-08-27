@@ -18,7 +18,7 @@ limitations under the License.
 ===============================================================================
 
 These instructions describe how to build OpenJPA from source code using the
-Apache Maven 2 build too. They are written for use from the console, and are 
+Apache Maven 2 build tool. They are written for use from the console, and are 
 known to work on Linux and Mac OSX. They are also reported to work from Windows.
 
 The most up to date version of these instructions may be found on the OpenJPA 
@@ -28,13 +28,13 @@ website at http://openjpa.apache.org/building-openjpa.html
       java -version
       OpenJPA requires Java 1.5 but will not compile with Java 6. For more
       detail please see http://issues.apache.org/jira/browse/OPENJPA-5.
-   2. Install the build tool Apache Maven 2.0.4, from http://maven.apache.org/.
-      If it is installed correctly, typing mvn -v from the console will result
-      in the text "Maven version: 2.0.4"
+   2. Download the Apache Maven build tool from http://maven.apache.org/.
+      The latest maintenance release for Maven 2.x should work with this version
+      of OpenJPA. As of this writing we've used up to version 2.2.1. 
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-project-${version}-source. Where ${version} is the openjpa 
-      version, for example openjpa-project-0.9.7-incubating-source.
+      version, for example openjpa-project-1.0.4-source.
    4. Change to the openjpa source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install. 
@@ -119,29 +119,33 @@ $ mvn compile
 
  ...
 
-[INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] ------------------------------------------------------------------------
-[INFO] OpenJPA ............................................... SUCCESS [0.789s]
-[INFO] Utilities ............................................. SUCCESS [3.489s]
-[INFO] Kernel ................................................ SUCCESS [9.347s]
-[INFO] JDBC .................................................. SUCCESS [12.208s]
-[INFO] XML Store ............................................. SUCCESS [1.166s]
-[INFO] JDBC 1.5 .............................................. SUCCESS [1.519s]
-[INFO] Kernel 1.5 ............................................ SUCCESS [0.538s]
-[INFO] JPA ................................................... SUCCESS [2.777s]
-[INFO] JPA JDBC .............................................. SUCCESS [2.151s]
-[INFO] OpenJPA Project ....................................... SUCCESS [1.495s]
+[INFO] OpenJPA ............................................... SUCCESS [0.364s]
+[INFO] OpenJPA Utilities ..................................... SUCCESS [3.063s]
+[INFO] OpenJPA Kernel ........................................ SUCCESS [3.617s]
+[INFO] OpenJPA JDBC .......................................... SUCCESS [0.468s]
+[INFO] OpenJPA XML Store ..................................... SUCCESS [0.086s]
+[INFO] OpenJPA Utilities 1.5 ................................. SUCCESS [0.077s]
+[INFO] OpenJPA Kernel 1.5 .................................... SUCCESS [0.079s]
+[INFO] OpenJPA JDBC 1.5 ...................................... SUCCESS [0.147s]
+[INFO] OpenJPA JPA ........................................... SUCCESS [0.430s]
+[INFO] OpenJPA JPA JDBC ...................................... SUCCESS [0.340s]
+[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [0.261s]
+[INFO] OpenJPA Distribution .................................. SUCCESS [0.474s]
+[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.000s]
+[INFO] OpenJPA Examples Integration Tests .................... SUCCESS [0.000s]
+[INFO] OpenJPA JPA TCK Integration Tests ..................... SUCCESS [0.003s]
+[INFO] OpenJPA Persistence Examples .......................... SUCCESS [0.099s]
 [INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 37 seconds
-[INFO] Finished at: Wed Jul 26 11:44:33 PDT 2006
-[INFO] Final Memory: 10M/41M
+[INFO] Total time: 11 seconds
+[INFO] Finished at: Fri Aug 27 15:55:54 CDT 2010
+[INFO] Final Memory: 15M/82M
 [INFO] ------------------------------------------------------------------------
-
 
 $ mvn package -Dtest=false
 
@@ -149,17 +153,19 @@ $ mvn package -Dtest=false
 
 ...
 
-[INFO] [assembly:assembly {execution: bin}]
-[INFO] Building zip: /tmp/openjpatestbuild/trunk/openjpa-project/target/filtered
--site/resources/downloads/openjpa-0.9.0.zip
+[INFO] [assembly:attached {execution: bin}]
+[WARNING] Cannot include project artifact: org.apache.openjpa:apache-openjpa:pom:1.0.5-SNAPSHOT; it doesn't have an associated file or directory.
+[WARNING] Cannot include project artifact: org.apache.openjpa:apache-openjpa:pom:1.0.5-SNAPSHOT; it doesn't have an associated file or directory.
+[INFO] Building zip: /tmpbuild/openjpa-parent/openjpa-project/../target/site/downloads/apache-openjpa-1.0.5-SNAPSHOT-binary.zip
+[WARNING] DEPRECATED [descriptor]: Please use descriptors instead
+[INFO] [assembly:attached {execution: sources}]
+[INFO] Building zip: /tmpbuild/openjpa-parent/openjpa-project/../target/site/downloads/apache-openjpa-1.0.5-SNAPSHOT-source.zip
 
 ... 
 
 
-$ ls -lh openjpa-project/target/filtered-site/resources/downloads/
-
-total 9.2M
--rw-r--r--    1 mprudhom wheel       4.0M Jul 26 11:46 openjpa-0.9.0-sources.zip
--rw-r--r--    1 mprudhom wheel       5.2M Jul 26 11:46 openjpa-0.9.0.zip
-
+$ ls -lh target/site/downloads/
+total 23M
+-rw-r--r-- 1 mikedd mikedd  18M 2010-08-26 09:32 apache-openjpa-1.0.4-binary.zip
+-rw-r--r-- 1 mikedd mikedd 5.1M 2010-08-26 09:32 apache-openjpa-1.0.4-source.zip
  
