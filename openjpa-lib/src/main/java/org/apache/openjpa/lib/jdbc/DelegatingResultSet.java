@@ -27,11 +27,14 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -660,44 +663,43 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
         return _rs.getTimestamp(a, b);
     }
 
-    // JDBC 3.0 (unsupported) method follow; these are required to be able
-    // to compile against JDK 1.4
+    // JDBC 3.0 methods follow.
 
     public URL getURL(int column) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _rs.getURL(column);
     }
 
     public URL getURL(String columnName) throws SQLException {
-        throw new UnsupportedOperationException();
+        return _rs.getURL(columnName);
     }
 
     public void updateRef(int column, Ref ref) throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateRef(column, ref);
     }
 
     public void updateRef(String columnName, Ref ref) throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateRef(columnName, ref);
     }
 
     public void updateBlob(String columnName, Blob blob) throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateBlob(columnName, blob);
     }
 
     public void updateClob(String columnName, Clob clob) throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateClob(columnName, clob);
     }
 
     public void updateArray(int column, Array array) throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateArray(column, array);
     }
 
     public void updateArray(String columnName, Array array)
         throws SQLException {
-        throw new UnsupportedOperationException();
+        _rs.updateArray(columnName, array);
     }
     
+    // JDBC 4.0 methods follow.
 
-    // java.sql.Wrapper implementation (JDBC 4)
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
@@ -707,6 +709,198 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
             return getDelegate();
         else
             return null;
+    }
+
+    public int getHoldability() throws SQLException {
+        return _rs.getHoldability();
+    }
+
+    public Reader getNCharacterStream(int columnIndex) throws SQLException {
+        return _rs.getNCharacterStream(columnIndex);
+    }
+
+    public Reader getNCharacterStream(String columnLabel) throws SQLException {
+        return _rs.getNCharacterStream(columnLabel);
+    }
+
+    public NClob getNClob(int columnIndex) throws SQLException {
+        return _rs.getNClob(columnIndex);
+    }
+
+    public NClob getNClob(String columnLabel) throws SQLException {
+        return _rs.getNClob(columnLabel);
+    }
+
+    public String getNString(int columnIndex) throws SQLException {
+        return _rs.getNString(columnIndex);
+    }
+
+    public String getNString(String columnLabel) throws SQLException {
+        return _rs.getNString(columnLabel);
+    }
+
+    public RowId getRowId(int columnIndex) throws SQLException {
+        return _rs.getRowId(columnIndex);
+    }
+
+    public RowId getRowId(String columnLabel) throws SQLException {
+        return _rs.getRowId(columnLabel);
+    }
+
+    public SQLXML getSQLXML(int columnIndex) throws SQLException {
+        return _rs.getSQLXML(columnIndex);
+    }
+
+    public SQLXML getSQLXML(String columnLabel) throws SQLException {
+        return _rs.getSQLXML(columnLabel);
+    }
+
+    public boolean isClosed() throws SQLException {
+        return _rs.isClosed();
+    }
+
+    public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException {
+        _rs.updateAsciiStream(columnIndex, x, length);
+    }
+
+    public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
+        _rs.updateAsciiStream(columnIndex, x);
+    }
+
+    public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
+        _rs.updateAsciiStream(columnLabel, x, length);
+    }
+
+    public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
+        _rs.updateAsciiStream(columnLabel, x);
+    }
+
+    public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException {
+        _rs.updateBinaryStream(columnIndex, x, length);
+    }
+
+    public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException {
+        _rs.updateBinaryStream(columnIndex, x);
+    }
+
+    public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException {
+        _rs.updateBinaryStream(columnLabel, x, length);
+    }
+
+    public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
+        _rs.updateBinaryStream(columnLabel, x);
+    }
+
+    public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
+        _rs.updateBlob(columnIndex, inputStream, length);
+    }
+
+    public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
+        _rs.updateBlob(columnIndex, inputStream);
+    }
+
+    public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException {
+        _rs.updateBlob(columnLabel, inputStream, length);
+    }
+
+    public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
+        _rs.updateBlob(columnLabel, inputStream);
+    }
+
+    public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+        _rs.updateCharacterStream(columnIndex, x, length);
+    }
+
+    public void updateCharacterStream(int columnIndex, Reader x) throws SQLException {
+        _rs.updateCharacterStream(columnIndex, x);
+    }
+
+    public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
+        _rs.updateCharacterStream(columnLabel, reader, length);
+    }
+
+    public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
+        _rs.updateCharacterStream(columnLabel, reader);
+    }
+
+    public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
+        _rs.updateClob(columnIndex, reader, length);
+    }
+
+    public void updateClob(int columnIndex, Reader reader) throws SQLException {
+        _rs.updateClob(columnIndex, reader);
+    }
+
+    public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
+        _rs.updateClob(columnLabel, reader, length);
+    }
+
+    public void updateClob(String columnLabel, Reader reader) throws SQLException {
+        _rs.updateClob(columnLabel, reader);
+    }
+
+    public void updateNCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+        _rs.updateNCharacterStream(columnIndex, x, length);
+    }
+
+    public void updateNCharacterStream(int columnIndex, Reader x) throws SQLException {
+        _rs.updateNCharacterStream(columnIndex, x);
+    }
+
+    public void updateNCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
+        _rs.updateNCharacterStream(columnLabel, reader, length);
+    }
+
+    public void updateNCharacterStream(String columnLabel, Reader reader) throws SQLException {
+        _rs.updateNCharacterStream(columnLabel, reader);
+    }
+
+    public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
+        _rs.updateNClob(columnIndex, nClob);
+    }
+
+    public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
+        _rs.updateNClob(columnIndex, reader, length);
+    }
+
+    public void updateNClob(int columnIndex, Reader reader) throws SQLException {
+        _rs.updateNClob(columnIndex, reader);
+    }
+
+    public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
+        _rs.updateNClob(columnLabel, nClob);
+    }
+
+    public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
+        _rs.updateNClob(columnLabel, reader, length);
+    }
+
+    public void updateNClob(String columnLabel, Reader reader) throws SQLException {
+        _rs.updateNClob(columnLabel, reader);
+    }
+
+    public void updateNString(int columnIndex, String nString) throws SQLException {
+        _rs.updateNString(columnIndex, nString);
+    }
+
+    public void updateNString(String columnLabel, String nString) throws SQLException {
+        _rs.updateNString(columnLabel, nString);
+    }
+
+    public void updateRowId(int columnIndex, RowId x) throws SQLException {
+        _rs.updateRowId(columnIndex, x);
+    }
+
+    public void updateRowId(String columnLabel, RowId x) throws SQLException {
+        _rs.updateRowId(columnLabel, x);
+    }
+
+    public void updateSQLXML(int columnIndex, SQLXML xmlObject) throws SQLException {
+        _rs.updateSQLXML(columnIndex, xmlObject);
+    }
+
+    public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
+        _rs.updateSQLXML(columnLabel, xmlObject);
     }
 }
 
