@@ -30,6 +30,7 @@ import org.apache.openjpa.trader.domain.Match;
 import org.apache.openjpa.trader.domain.Stock;
 import org.apache.openjpa.trader.domain.Tradable;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -63,7 +64,7 @@ public class TradingWindow extends ScrollableTable<Tradable>
                   ServiceEventHandler.UpdateStockHandler {
     private final OpenTrader session;
     private Timer refreshTimer;
-    private int refreshInterval = 60*1000;
+    private int refreshInterval = 15*1000;
 
     public TradingWindow(final OpenTrader session, final int w, final int h) {
         super("Trading Window for " + session.getTrader().getName(), w, h, true);
@@ -142,14 +143,14 @@ public class TradingWindow extends ScrollableTable<Tradable>
         if (refreshTimer != null)
             return;
         // Setup timer to refresh list automatically.
-        Timer refreshTimer = new Timer() {
+        refreshTimer = new Timer() {
             @Override
             public void run() {
                 int n = getRowCount();
                 for (int i = 0; i < n; i++) {
                     Tradable t = get(i);
                     if (t != null) {
-                        session.getService().refresh(t, new RefreshTradableCallback(t));
+                        session.getService().refresh(t, new RefreshTradableCallback());
                     }
                 }
             }
@@ -211,7 +212,7 @@ public class TradingWindow extends ScrollableTable<Tradable>
     }
 
     public class MatchCallback implements AsyncCallback<List<Match>>, ClickHandler {
-        final Tradable tradable;
+        private final Tradable tradable;
 
         public MatchCallback(Tradable tradable) {
             super();
@@ -237,21 +238,12 @@ public class TradingWindow extends ScrollableTable<Tradable>
     }
 
     public class RefreshTradableCallback implements AsyncCallback<Tradable> {
-        final Tradable tradable;
-        public RefreshTradableCallback(Tradable tradable) {
-            super();
-            this.tradable = tradable;
-        }
 
         @Override
         public void onSuccess(Tradable result) {
-            if (result == null) {
-                remove(tradable);
-            } else if (result.isTraded()) {
+            if (result.isTraded()) {
                 remove(result);
                 session.fireEvent(new ServiceEvent.TradeCommitted(result.getTrade()));
-            } else {
-                update(result, new Integer[]{1,4});
             }
         }
         

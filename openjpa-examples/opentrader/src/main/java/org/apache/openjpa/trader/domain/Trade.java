@@ -44,15 +44,6 @@ public class Trade implements Serializable {
     private double price;
     private int volume;
 
-//    @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH}, optional=false)
-//    private Stock stock;
-//    
-//    @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH}, optional=false)
-//    private Trader buyer;
-//    
-//    @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH}, optional=false)
-//    private Trader seller;
-    
     @OneToOne(cascade={CascadeType.MERGE,CascadeType.DETACH}, optional=false)
     private Ask ask;
     
@@ -78,9 +69,6 @@ public class Trade implements Serializable {
             throw new IllegalArgumentException("Stock (ask) " + a.getStock() 
                     + " does not match Stock (bid) " + b.getStock());
         }
-//        buyer  = b.getBuyer();
-//        seller = a.getSeller();
-//        stock  = a.getStock();
         ask = a;
         bid = b;
         ask.setTrade(this);
@@ -136,5 +124,9 @@ public class Trade implements Serializable {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+    
+    public String toString() {
+    	return "Trade-"+id;
     }
 }

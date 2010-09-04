@@ -28,6 +28,7 @@ import org.apache.openjpa.trader.domain.Tradable;
 import org.apache.openjpa.trader.domain.Trade;
 import org.apache.openjpa.trader.domain.Trader;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -101,9 +102,10 @@ public class TradeHistoryPanel extends ScrollableTable<Trade>
      */
     public void onTradeCommitted(ServiceEvent.TradeCommitted event) {
         Trader trader = session.getTrader();
-        if ((trader.equals(event.getPayload().getSeller()) && _type == Ask.class) 
-         || (trader.equals(event.getPayload().getBuyer())  && _type == Bid.class)) {   
-            insert(event.getPayload());
+        Trade trade = event.getPayload();
+        if ((trader.equals(trade.getSeller()) && _type == Ask.class) 
+         || (trader.equals(trade.getBuyer())  && _type == Bid.class)) {   
+            insert(trade);
         }
     }
 }

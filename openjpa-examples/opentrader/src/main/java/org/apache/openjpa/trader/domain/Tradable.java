@@ -71,7 +71,8 @@ public abstract class Tradable implements Serializable {
     @ManyToOne(cascade={CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH},optional=false)
     private Stock stock;
     
-    @OneToOne(cascade={CascadeType.MERGE,CascadeType.DETACH}, optional=true, fetch=FetchType.LAZY) 
+    @OneToOne(cascade={CascadeType.MERGE,CascadeType.DETACH, CascadeType.REFRESH}, optional=true, 
+    		fetch=FetchType.LAZY) 
     private Trade trade; 
     
    
@@ -174,8 +175,6 @@ public abstract class Tradable implements Serializable {
     }
     
     public Trade getTrade() {
-        if (trade == null)
-            throw new IllegalStateException(this + " is not yet traded");
         return trade;
     }
 
@@ -221,8 +220,7 @@ public abstract class Tradable implements Serializable {
     }
     
     public String toString() {
-        String type = this.getClass().getName();
-        return  type.substring(type.lastIndexOf('.'))+ ":" + id;
+    	String typeName = getClass().getName();
+    	return typeName.substring(typeName.lastIndexOf('.')+1) + "-" + id;
     }
-
 }

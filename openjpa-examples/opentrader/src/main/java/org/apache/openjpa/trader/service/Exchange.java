@@ -125,6 +125,9 @@ public class Exchange extends PersistenceService implements TradingService {
         EntityManager em = getEntityManager();
         begin();
         t = em.find(t.getClass(), t.getId());
+        if (t != null) {
+        	em.refresh(t);
+        }
         commit();
         return t;
     }
