@@ -24,15 +24,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.NotSupportedException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -71,9 +71,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-public class TableJDBCSeq
-    extends AbstractJDBCSeq
-    implements Configurable {
+public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
 
     public static final String ACTION_DROP = "drop";
     public static final String ACTION_ADD = "add";
@@ -88,8 +86,7 @@ public class TableJDBCSeq
     private transient Log _log = null;
     private int _alloc = 50;
     private int _intValue = 1;
-    private final HashMap<ClassMapping, Status> _stat =
-        new HashMap<ClassMapping, Status>();
+    private final ConcurrentHashMap<ClassMapping, Status> _stat = new ConcurrentHashMap<ClassMapping, Status>();
 
     private DBIdentifier _table = DBIdentifier.newTable(DEFAULT_TABLE);
     private DBIdentifier _seqColumnName = DBIdentifier.newColumn("SEQUENCE_VALUE");
@@ -286,8 +283,7 @@ public class TableJDBCSeq
         }
     }
 
-    protected Object nextInternal(JDBCStore store, ClassMapping mapping)
-        throws Exception {
+    protected Object nextInternal(JDBCStore store, ClassMapping mapping) throws Exception {
         // if needed, grab the next handful of ids
         Status stat = getStatus(mapping);
         if (stat == null)
@@ -301,8 +297,8 @@ public class TableJDBCSeq
                 stat.seq = Math.max(stat.seq, 1);
                 if (stat.seq < stat.max)
                     return stat.seq++;
+                allocateSequence(store, mapping, stat, _alloc, true);
             }
-            allocateSequence(store, mapping, stat, _alloc, true);
         }
     }
 
@@ -350,10 +346,15 @@ public class TableJDBCSeq
      * if cannot handle the given class. The mapping may be null.
      */
     protected Status getStatus(ClassMapping mapping) {  
-        Status status = (Status)_stat.get(mapping);        
+        Status status = (Status) _stat.get(mapping);        
         if (status == null){ 
             status = new Status();
-            _stat.put(mapping, status);
+            Status tStatus = _stat.putIfAbsent(mapping, status);
+            // This can happen if another thread calls .put(..) sometime after our call to get. Return
+            // the value from the putIfAbsent call as that is truly in the map.
+            if (tStatus != null) {
+                return tStatus;
+            }
         }
         return status;
     }
