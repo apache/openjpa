@@ -282,6 +282,9 @@ TOKEN : /* literals */
 	  )*
 	  "'"
 	>
+    // Double quoted string
+    | < STRING_LITERAL2: "\"" ( (~["\""]) )* "\""
+    >
 	| < CHARACTER_LITERAL: "'"
 	  (   (~["'","\\","\n","\r"])
 		| ("\\"
@@ -773,6 +776,7 @@ void literal_or_param() : { }
 {
 	(numeric_literal()
 	| string_literal()
+	| string_literal2()
 	| boolean_literal()
 	| input_parameter()
 	| entity_type_literal())
@@ -1094,7 +1098,7 @@ void string_expression() : { }
 
 void string_primary() : { }
 {
-	string_literal() | LOOKAHEAD(path()) path() |
+	string_literal() | string_literal2() | LOOKAHEAD(path()) path() |
 	LOOKAHEAD(qualified_path()) qualified_path() |	
 	LOOKAHEAD(general_identification_variable()) general_identification_variable() |
 	LOOKAHEAD(identification_variable()) identification_variable() |
@@ -1416,7 +1420,7 @@ void path_component() #IDENTIFICATIONVARIABLE :
 
 void literal() : { }
 {
-	numeric_literal() | boolean_literal() | string_literal() | enum_literal() | date_literal() |
+	numeric_literal() | boolean_literal() | string_literal() | string_literal2() | enum_literal() | date_literal() |
 	time_literal() | timestamp_literal()
 }
 
@@ -1454,6 +1458,12 @@ void string_literal() #STRINGLITERAL :
 	t = <STRING_LITERAL> { jjtThis.setToken (t); }
 }
 
+
+void string_literal2() #STRINGLITERAL2 :
+{ Token t; }
+{
+	t = <STRING_LITERAL2> { jjtThis.setToken (t); }
+}
 
 void date_literal() #DATELITERAL :
 { Token t; }
@@ -1503,7 +1513,7 @@ void positional_input_parameter() #POSITIONALINPUTPARAMETER :
 
 void pattern_value() #PATTERNVALUE : { }
 {
-	(input_parameter() | string_literal())
+	(input_parameter() | string_literal() | string_literal2())
 	[(<ESCAPE> escape_character() #ESCAPECHARACTER)]
 }
 

@@ -1025,6 +1025,10 @@ public class JPQLExpressionBuilder
                 return factory.newLiteral(trimQuotes(node.text),
                     Literal.TYPE_SQ_STRING);
 
+            case JJTSTRINGLITERAL2:
+                return factory.newLiteral(trimDoubleQuotes(node.text),
+                    Literal.TYPE_SQ_STRING);
+
             case JJTPATTERNVALUE:
                 return eval(firstChild(node));
 
@@ -1688,6 +1692,19 @@ public class JPQLExpressionBuilder
 
         while ((index = str.indexOf("''", index + 1)) != -1)
             str = str.substring(0, index + 1) + str.substring(index + 2);
+
+        return str;
+    }
+
+    /**
+     * Trim off leading and trailing double-quotes.
+     */
+    private String trimDoubleQuotes(String str) {
+        if (str == null || str.length() <= 1)
+            return str;
+
+        if (str.startsWith("\"") && str.endsWith("\""))
+            str = str.substring(1, str.length() - 1);
 
         return str;
     }
