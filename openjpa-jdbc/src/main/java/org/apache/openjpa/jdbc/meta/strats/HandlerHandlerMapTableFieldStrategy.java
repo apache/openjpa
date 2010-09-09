@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.*;
 import java.util.*;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.*;
 import org.apache.openjpa.jdbc.meta.*;
@@ -214,8 +215,11 @@ public class HandlerHandlerMapTableFieldStrategy
 
             for (Iterator itr = change.iterator(); itr.hasNext();) {
                 mkey = itr.next();
+                Object mval = map.get(mkey);
+                if ((mval instanceof PersistenceCapable) && !((PersistenceCapable)mval).pcIsDirty())
+                    continue;   
                 HandlerStrategies.where(key, mkey, store, changeRow, _kcols);
-                HandlerStrategies.set(val, map.get(mkey), store, changeRow,
+                HandlerStrategies.set(val, mval, store, changeRow,
                     _vcols, _vio, true);
                 rm.flushSecondaryRow(changeRow);
             }

@@ -23,9 +23,10 @@ import java.io.ObjectStreamException;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.apache.openjpa.enhance.PersistenceCapable;
 
 /**
  * Utility methods used by map proxies.
@@ -73,6 +74,32 @@ public class ProxyMaps
     public static Set afterEntrySet(ProxyMap map, Set entries) {
         return new ProxyEntrySetImpl(map, entries);
     }
+
+    /**
+     * Call before invoking {@link Map#get} on super.
+     */
+    public static boolean beforeGet(ProxyMap map, Object key) {
+        assertAllowedType(key, map.getKeyType());
+        return map.containsKey(key);
+    }
+
+    /**
+     * Call after invoking {@link Map#get} on super.
+     *
+     * @param ret the return value from the super's method
+     * @param before the return value from {@link #beforeGet}
+     * @return the value to return from {@link Map#get}
+     */
+    public static Object afterGet(ProxyMap map, Object key,
+        Object ret, boolean before) {
+        if (before) {
+            if (map.getChangeTracker() != null && (ret instanceof PersistenceCapable))
+                ((MapChangeTracker) map.getChangeTracker()).changed(key, ret, 
+                    ret);
+        } 
+        return ret;
+    }
+
 
     /**
      * Call before invoking {@link Map#put} on super.
