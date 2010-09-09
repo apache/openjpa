@@ -1,4 +1,4 @@
-Apache OpenJPA 2.0.1
+Apache OpenJPA 2.0.2-SNAPSHOT
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ Content
 
 Overview
 --------
-   The Apache OpenJPA community is proud to release a 2.0.1 distribution of
+   The Apache OpenJPA community is proud to release a 2.0.2-SNAPSHOT distribution of
    OpenJPA. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatiable with prior releases based on the
@@ -162,6 +162,12 @@ Getting Involved
         * Informal discussion also occurs on the #openjpa IRC channel on
           freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
+
+
+Included Changes in OpenJPA 2.0.2
+---------------------------------
+
+    * TBD
 
 
 Included Changes in OpenJPA 2.0.1
