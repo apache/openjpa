@@ -31,6 +31,7 @@ under the License.
   <li><a href="#ReleaseNotes">Release Notes</a></li>
   <ul>
     <li><a href="#210">2.1.0-SNAPSHOT</a></li>
+    <li><a href="#201">2.0.1</a></li>
     <li><a href="#200">2.0.0</a></li>
     <li><a href="#200beta3">2.0.0 Beta 3</a></li>
     <li><a href="#200beta2">2.0.0 Beta 2</a></li>
@@ -255,7 +256,75 @@ in each release of OpenJPA.</P>
 
 <hr>
 <h3><a name="210">OpenJPA 2.1.0-SNAPSHOT</h3>
-<ul><li> TBD </li></ul>
+<h4>TBD...</h4>
+
+<hr>
+<h3><a name="201">OpenJPA 2.0.1</h3>
+<h4>Sub-task</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1635'>OPENJPA-1635</a>] -         Reduce lock contention in MetaDataRepository.processRegisteredClasses
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1638'>OPENJPA-1638</a>] -         Add test variation to TestNamedQueryLockMode
+</li>
+</ul>
+
+<h4>Bug</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1424'>OPENJPA-1424</a>] -         Out of bounds exception using fetch plan
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1641'>OPENJPA-1641</a>] -         SybaseDictionary should try both JDBC column names and Sybase specific column names
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1668'>OPENJPA-1668</a>] -         User's ''DBDictionary.sequenceSQL' setting not being honored on zOS 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1678'>OPENJPA-1678</a>] -         SQL Parameter values may contain sensitive information and should not be logged by default.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1679'>OPENJPA-1679</a>] -         Index name too long for DB2 zOS when schema is present
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1690'>OPENJPA-1690</a>] -         DistinctResultList is not Serializable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1704'>OPENJPA-1704</a>] -         PCEnhancer incorrectly generates readExternal 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1713'>OPENJPA-1713</a>] -         OutOfMemory caused by EntityManagerImpl.push/popFetchPlan processing
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1714'>OPENJPA-1714</a>] -         Consider openjpa.Optimistic setting when calculating the default lock mode to apply to a named query
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1715'>OPENJPA-1715</a>] -         OpenJPA generates wrong SQL if a result variable that references an aggregate expression is used in ORDER BY clause
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1719'>OPENJPA-1719</a>] -         Prepared SQL cache ordering problem with subqueries. 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1722'>OPENJPA-1722</a>] -         Problem serializing DistinctResultList when EntityManager is closed
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1737'>OPENJPA-1737</a>] -         The openjpa-2.0.0.jar does not have its MANIFEST.MF has the first entry
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1742'>OPENJPA-1742</a>] -         Recover if connectionFactory on EntityManagerFactory is invalid but cf on EntityManager is valid. 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1749'>OPENJPA-1749</a>] -         Throw exception if using datacache / synchronize mappings and specifying datasource name at EM creation.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1753'>OPENJPA-1753</a>] -         TestMixedLockManagerLockPermutation: Timing issue determines the pass/no-pass of the test case
+</li>
+</ul>
+
+<h4>Improvement</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1637'>OPENJPA-1637</a>] -         Upgrade to latest Geronimo Specs for JPA2 and Bean Validation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1673'>OPENJPA-1673</a>] -         Update MetaDataRepository docs
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1712'>OPENJPA-1712</a>] -         Upgrade builds to use Apache hosted Nexus repo
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1735'>OPENJPA-1735</a>] -         Mark commons-logging as provided in the build to remove transient maven dependency
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1771'>OPENJPA-1771</a>] -         Upgrade to latest Apache BVAL for testing and apache-rat plugin
+</li>
+</ul>
+
+<h4>Test</h4>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1639'>OPENJPA-1639</a>] -         Simple openjpa-xmlstore tests
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1660'>OPENJPA-1660</a>] -         Add support to test with Apache Bean Validation provider
+</li>
+</ul>
 
 
 <hr>
