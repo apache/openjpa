@@ -50,7 +50,7 @@
             </properties>
             <build>
             <plugins>
-               <plugin>
+              <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -229,6 +229,10 @@
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
                 <connection.password>${openjpa.postgresql.password}</connection.password>
+                <!-- DBCP overrides -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+                <dbcp.maxActive>20</dbcp.maxActive>
             </properties>
         </profile>
 
@@ -262,6 +266,11 @@
                     -Dmssql.artifactid=sqljdbc4
             -->
             <id>test-mssql</id>
+            <activation>
+                <property>
+                    <name>test-mssql</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${mssql.groupid}</groupId>
@@ -300,6 +309,11 @@
         <!-- Profile for testing with SQLServer DB using the jTDS driver -->
         <profile>
             <id>test-sqlserver</id>
+            <activation>
+                <property>
+                    <name>test-sqlserver</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>net.sourceforge.jtds</groupId>
@@ -345,7 +359,11 @@
         <!-- Profile for testing with Ingres DB -->
         <profile>
             <id>test-ingres</id>
-            <activation><property><name>test-ingres</name></property></activation>
+            <activation>
+                <property>
+                    <name>test-ingres</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.ingres.jdbc</groupId>
@@ -483,6 +501,11 @@
                     -Ddb2.version=9.5
             -->
             <id>test-db2-jcc</id>
+            <activation>
+                <property>
+                    <name>test-db2-jcc</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${db2.groupid}</groupId>
@@ -525,6 +548,65 @@
             </repositories>
         </profile>          
 
+        <!-- Profile for testing Apache Derby with the DB2 JCC driver -->
+        <profile>
+            <id>test-derbyjcc</id>
+            <activation>
+                <property>
+                    <name>test-derbyjcc</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.driver.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.license.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <db2.maven.repo>http://not.a.real.repository</db2.maven.repo>
+                <db2.groupid>com.ibm.db2</db2.groupid>
+                <db2.driver.artifactid>jcc-driver</db2.driver.artifactid>
+                <db2.license.artifactid>jcc-license</db2.license.artifactid>
+                <db2.version>9.5</db2.version>
+                <!--
+                    Note: DB must be created before using this profile,
+                    which can be done by running:
+                        mvn test -Dtest=<testcase> -Ptest-derbynet
+                -->
+                <openjpa.derbyjcc.url>jdbc:db2://localhost:1527/openjpa13</openjpa.derbyjcc.url>
+                <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
+                <openjpa.derbyjcc.username>uid</openjpa.derbyjcc.username>
+                <openjpa.derbyjcc.password>pwd</openjpa.derbyjcc.password>
+                <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
+                <connection.url>${openjpa.derbyjcc.url}</connection.url>
+                <connection.username>${openjpa.derbyjcc.username}</connection.username>
+                <connection.password>${openjpa.derbyjcc.password}</connection.password>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>db2.repository</id>
+                    <name>DB2 Repository</name>
+                    <url>${db2.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
         <!-- Profile for testing Informix with the DB2 JCC driver -->
         <profile>
             <!-- 
@@ -551,6 +633,11 @@
                     -Dids.version=9.5
             -->
             <id>test-ids-jcc</id>
+            <activation>
+                <property>
+                    <name>test-ids-jcc</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${ids.groupid}</groupId>
@@ -619,6 +706,11 @@
                     -Doracle.version=10g
             -->
             <id>test-oracle</id>
+            <activation>
+                <property>
+                    <name>test-oracle</name>
+                </property>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>${oracle.groupid}</groupId>
@@ -660,12 +752,12 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -694,6 +786,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -716,42 +809,6 @@
                         </configuration>
                         <goals>
                             <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- 
-                 Create a o-p-j-tests.jar so we can reuse some of the base
-                 TestCase classes in other modules, like openjpa-integration.
-            -->
-            <plugin> 
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>test-base</classifier>
-                            <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
-                            <includes>
-                                <!-- Note: Including entities in this jar will
-                                     cause problems for any modules that need
-                                     to enhance their own entities.
-                                -->
-                                <include>**/org/apache/openjpa/persistence/test/*.class</include>
-                                <include>META-INF/LICENSE*</include>
-                                <include>META-INF/NOTICE*</include>
-                                <include>META-INF/DISCLAIM*</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-tests</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>

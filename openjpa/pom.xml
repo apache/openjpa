@@ -37,19 +37,21 @@
 
     <build>
         <plugins>
-            <!--
-                 Need to disable source plugin here, as it overwrites the shade
-                 plugin created sources jar.
-            -->
+            <!-- disable creating javadoc for this module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>none</phase> 
-                    </execution>
-                </executions>
+                <configuration>
+                    <attach>false</attach>
+                </configuration>
             </plugin>
 
             <!-- Create our aggregate JAR -->
@@ -64,7 +66,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
+                            <createSourcesJar>${createSources}</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!--
@@ -116,7 +118,7 @@
                         <!-- OSGi Bundle Metadata -->
                         <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         <Private-Package />
-                        <Export-Package>org.apache.openjpa.*;version=${pom.version}</Export-Package>
+                        <Export-Package>org.apache.openjpa.*;version=${project.version}</Export-Package>
                         <Import-Package>com.ibm.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.apache.log4j.*;resolution:=optional,org.slf4j.*;resolution:=optional,org.apache.commons.logging.*;resolution:=optional,javax.activation.xa*;resolution:=optional,javax.jms.*;version="[1.1.0,1.2)";resolution:=optional,javax.transaction.*;version="[1.1.0,1.2)";resolution:=optional,javax.validation.*;version="[1.0.0,1.1)";resolution:=optional,javax.xml.bind.*;resolution:=optional,serp.*;resolution:=optional,javax.persistence.*;version="[1.1.0,2.1)",*</Import-Package>
                     </instructions>
                 </configuration>
@@ -129,17 +131,17 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-lib</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <!--
                  Need to exclude jaxb, so the following will not get included
                  as compile depends in the aggregate JAR by the shade plugin:
@@ -196,22 +198,22 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-xmlstore</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-slice</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

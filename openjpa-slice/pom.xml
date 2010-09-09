@@ -7,9 +7,9 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,140 +21,132 @@
     Maven release plugin requires the project tag to be on a single line. 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.openjpa</groupId>
-	<artifactId>openjpa-slice</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenJPA Slice</name>
-	<description>OpenJPA Slice</description>
-	<url>http://openjpa.apache.org</url>
-	<parent>
-		<groupId>org.apache.openjpa</groupId>
-		<artifactId>openjpa-parent</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
-	</parent>
-	<properties>
-        <test.jvm.arguments>-Xmx500m</test.jvm.arguments>
-		<!-- to set debug arguments, you might set the following at the command line:
-			-Dtest.jvm.args="-Xmx500m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000"
-		-->
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-kernel</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-jdbc</artifactId>
-			<version>${pom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jpa_1.0_spec</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-persistence</artifactId>
-			<version>${pom.version}</version>
-			<scope>test</scope>
-		</dependency>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.openjpa</groupId>
+        <artifactId>openjpa-parent</artifactId>
+        <version>1.3.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-slice</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenJPA Slice</name>
+    <description>OpenJPA Slice</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_1.0_spec</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-persistence</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-	</dependencies>
-	<profiles>
-		<!-- Profile for testing with Apache Derby -->
-		<profile>
-			<id>test-derby</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<property>
-					<name>test-derby</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>org.apache.derby</groupId>
-					<artifactId>derby</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-			<properties>
-				<connection.driver.name>
-					org.apache.derby.jdbc.EmbeddedDriver
-				</connection.driver.name>
-				<connection.url>
-					jdbc:derby:target/database/slice-derby-One;create=true
-				</connection.url>
-				<connection.username />
-				<connection.password />
-			</properties>
-		</profile>
-		<profile>
-			<id>test-mysql</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>test-mysql</name>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-					<version>5.1.5</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-			<properties>
-				<connection.driver.name>
-					com.mysql.jdbc.Driver
-				</connection.driver.name>
-				<connection.url>${openjpa.mysql.url}</connection.url>
-				<connection.username>
-					${openjpa.mysql.username}
-				</connection.username>
-				<connection.password>
-					${openjpa.mysql.password}
-				</connection.password>
-			</properties>
-		</profile>
+    </dependencies>
 
-	</profiles>
+    <profiles>
+        <!-- Profile for testing with Apache Derby -->
+        <profile>
+            <id>test-derby</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>test-derby</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.derby</groupId>
+                    <artifactId>derby</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>org.apache.derby.jdbc.EmbeddedDriver</connection.driver.name>
+                <connection.url>jdbc:derby:target/database/slice-derby-One;create=true</connection.url>
+                <connection.username />
+                <connection.password />
+            </properties>
+        </profile>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>test-compile</phase>
-						<configuration>
-							<tasks>
-								<ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
-									<property name="maven.test.skip" value="${maven.test.skip}" />
-									<property name="test" value="${test}" />
-									<property name="outdir" value="${project.build.outputDirectory}" />
-									<property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
+        <!-- Sample profile for testing with MySQL DB -->
+        <profile>
+            <!-- different id, so this doesn't run during automated testing -->
+            <id>test-mysql-slice</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>test-mysql-slice</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <version>${mysql.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.mysql.jdbc.Driver</connection.driver.name>
+                <connection.url>${openjpa.mysql.url}</connection.url>
+                <connection.username>${openjpa.mysql.username}</connection.username>
+                <connection.password>${openjpa.mysql.password}</connection.password>
+                <!-- DBCP overrides for MySQL testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <tasks>
+                                <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
+                                    <property name="maven.test.skip" value="${maven.test.skip}" />
+                                    <property name="test" value="${test}" />
+                                    <property name="outdir" value="${project.build.outputDirectory}" />
+                                    <property name="project.build.testOutputDirectory" value="${project.build.testOutputDirectory}" />
                                     <property name="openjpa.Log" value="${openjpa.Log}" />
-								</ant>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-           
+                                </ant>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -172,6 +164,6 @@
                     </systemProperties>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 </project>

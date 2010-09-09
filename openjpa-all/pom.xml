@@ -22,32 +22,53 @@
     the release plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>openjpa-all</artifactId>
-    <packaging>jar</packaging>
-    <name>OpenJPA Aggregate Jar with Dependencies</name>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-parent</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-all</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenJPA Aggregate Jar with Dependencies</name>
+
     <build>
         <plugins>
-            <!--
-                 Need to disable source plugin here, as it overwrites the shade
-                 plugin created sources jar.
-            -->
+            <!-- disable creating javadoc for this module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>   
+            <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <attach>false</attach>
+                </configuration>
+            </plugin>
+            <!--
+                 Need to disable jar plugin here, as it overwrites the shade
+                 plugin created binary jar.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
+                        <id>default-jar</id>
                         <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -60,7 +81,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
+                            <createSourcesJar>${createSources}</createSourcesJar>
                             <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
                             <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
                             <!-- 
@@ -104,7 +125,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <!-- include commons-logging -->
         <dependency>
