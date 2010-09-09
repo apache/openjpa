@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.openjpa.enhance.PersistenceCapable;
-
 /**
  * Utility methods used by map proxies.
  *
@@ -85,6 +83,9 @@ public class ProxyMaps
 
     /**
      * Call after invoking {@link Map#get} on super.
+     * The potential change is tracked when the get method is called. This change
+     * will not translated to an update statement if the retrieved value 
+     * is not dirty. 
      *
      * @param ret the return value from the super's method
      * @param before the return value from {@link #beforeGet}
@@ -93,10 +94,10 @@ public class ProxyMaps
     public static Object afterGet(ProxyMap map, Object key,
         Object ret, boolean before) {
         if (before) {
-            if (map.getChangeTracker() != null && (ret instanceof PersistenceCapable))
+            if (map.getChangeTracker() != null)
                 ((MapChangeTracker) map.getChangeTracker()).changed(key, ret, 
                     ret);
-        } 
+        }
         return ret;
     }
 
