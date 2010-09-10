@@ -355,8 +355,9 @@ public class FirebirdDictionary
     @Override
     protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder(sequenceSQL);
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName)) {
             buf.append(sequenceNameSQL);
+        }
         return buf.toString();
     }
 
