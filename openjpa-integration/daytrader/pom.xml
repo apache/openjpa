@@ -47,7 +47,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
+            <artifactId>openjpa</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Maybe one day we can used published artifacts for this...
@@ -64,9 +64,25 @@
         -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-testsupport</artifactId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${derby.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

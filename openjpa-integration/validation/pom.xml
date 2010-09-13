@@ -141,7 +141,19 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-testsupport</artifactId>
+            <artifactId>openjpa</artifactId>
+            <version>${project.version}</version>
+            <!-- allow profiles to decide which validation spec to use -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <artifactId>geronimo-validation_1.0_spec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
@@ -155,6 +167,33 @@
 
     <build>
         <plugins>
+            <!-- Extract the common test support files from o-p-j-tests.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.openjpa</groupId>
+                                    <artifactId>openjpa-persistence-jdbc</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>test-jar</type>
+                                    <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                                    <includes>org/apache/openjpa/persistence/test/*.class</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
