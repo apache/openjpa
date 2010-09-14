@@ -287,6 +287,25 @@
             </properties>
         </profile>
         
+        <!-- Profile for testing with Sybase DB using the jConnect driver -->
+        <profile>
+            <id>test-sybase-jconnect</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${jconnect.groupId}</groupId>
+                    <artifactId>${jconnect.artifactId}</artifactId>
+                    <version>${jconnect.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>com.sybase.jdbc3.jdbc.SybDriver</connection.driver.name>
+                <connection.url>${openjpa.sybase.url}</connection.url>
+                <connection.username>${openjpa.sybase.username}</connection.username>
+                <connection.password>${openjpa.sybase.password}</connection.password>
+            </properties>
+        </profile>
+        
         <!-- Profile for testing with Ingres DB -->
         <profile>
             <id>test-ingres</id>
