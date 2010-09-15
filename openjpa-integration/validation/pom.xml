@@ -93,7 +93,7 @@
                 <dependency>
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-validator</artifactId>
-                    <version>4.0.0.GA</version>
+                    <version>4.0.2.GA</version>
                     <scope>test</scope>
                     <exclusions>
                         <!-- force usage of the geronimo-jpa_2.0_spec -->
@@ -124,8 +124,8 @@
             <repositories>
                 <repository>
                     <id>repository.jboss.org</id>
-                    <name>JBoss Repository</name>
-                    <url>http://repository.jboss.org/maven2</url>
+                    <name>JBoss Nexus Repository</name>
+                    <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
                     <layout>default</layout>
                     <snapshots>
                         <enabled>false</enabled>
