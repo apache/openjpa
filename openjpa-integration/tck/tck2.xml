@@ -44,6 +44,8 @@
 -->
 <project name="JPA2TCK" default="run-tck">
 
+    <!-- Import ant-contrib for If/then/else support -->
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
     <!--
         Target:  init
@@ -195,10 +197,11 @@ databaseName=${db.name}
         Macro for the TCK harness launcher
     -->
     <macrodef name="tsant">
+        <attribute name="dir" default="${tck.dir}/src" />
         <attribute name="buildfile" />
         <attribute name="target" />
         <sequential>
-            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
+            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
                 <arg value="-emacs" />
                 <arg value="-buildfile" />
                 <arg value="@{buildfile}" />
@@ -214,8 +217,8 @@ databaseName=${db.name}
                 <env key="ANT_HOME" value="${tck.dir}/tools/ant" />
                 <sysproperty key="ant.home" value="${tck.dir}/tools/ant" />
 
-                <sysproperty key="pkg.dir" value="${jpatck.pkg.dir}" />
                 <!--
+                <sysproperty key="pkg.dir" value="${jpatck.pkg.dir}" />
                 <sysproperty key="test" value="${jpatck.test}" />
                 -->
 
@@ -274,9 +277,8 @@ databaseName=${db.name}
                       all other setup steps have been performed.
      -->
     <target name="run-tck">
-        <echo>Running all JPA 2.0 TCK tests</echo>
+        <echo>Running JPA 2.0 TCK tests</echo>
         <echo>Init must have been called before running this target!</echo>
-        <property name="jpatck.pkg.dir" value="com" />
         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
         <property name="provider.properties" value="${openjpa.properties}" />
 
@@ -296,8 +298,19 @@ databaseName=${db.name}
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
         <!-- now run the TCK -->
-        <echo>Calling TCK build.xml</echo>
-        <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" />
+        <if>
+            <isset property="jpatck.pkg.dir" />
+        <then>
+            <echo>Calling TCK build.xml for pkg.dir=${jpatck.pkg.dir}</echo>
+            <property name="dir" value="${tck.dir}/src/${jpatck.pkg.dir}" />
+            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" />
+        </then>
+        <else>
+            <echo>Calling TCK build.xml for ALL tests</echo>
+            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" />
+        </else>
+        </if>
+
         <echo>TCK build.xml returned result=${tsant.result}</echo>
 
         <!-- archive the results and check for test failures -->
