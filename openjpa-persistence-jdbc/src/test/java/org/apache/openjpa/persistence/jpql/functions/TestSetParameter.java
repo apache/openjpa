@@ -123,7 +123,7 @@ public class TestSetParameter extends SingleEMFTestCase {
           .setParameter(2, "Some City")
           .setParameter(3, "Some Country")
           .setParameter(4, "Some Street")
-          .setParameter(5, System.currentTimeMillis()%10000)
+          .setParameter(5, String.valueOf(System.currentTimeMillis()%10000))
           .executeUpdate();
         em.getTransaction().commit();
         assertEquals(1, count);
