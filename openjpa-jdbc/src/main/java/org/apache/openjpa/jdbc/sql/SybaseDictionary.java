@@ -66,7 +66,7 @@ public class SybaseDictionary
         (SybaseDictionary.class);
 
     private static Constructor<SybaseConnection> sybaseConnectionImpl;
-
+    
     static {
         try {
             sybaseConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(SybaseConnection.class, 
@@ -163,6 +163,8 @@ public class SybaseDictionary
         supportsNullUpdateAction = false;
         supportsDefaultUpdateAction = false;
         supportsCascadeUpdateAction = false;
+        
+        trimsTrailingWhitespace = true; // whitespace is removed from varchars
     }
 
     @Override
@@ -204,12 +206,24 @@ public class SybaseDictionary
             append(" (");
 
         Column[] cols = table.getColumns();
+        
         boolean hasIdentity = false;
 
         for (int i = 0; i < cols.length; i++) {
-            if (cols[i].isAutoAssigned())
+            // can only have one identity column
+            if (cols[i].isAutoAssigned()) {
                 hasIdentity = true;
+            }
 
+            // The column may exist if dropping and recreating a table.
+            if(cols[i].getIdentifier().getName().equals(identityColumnName)) {
+                hasIdentity=true;
+                // column type may be lost when recreating - reset to NUMERIC
+                if(cols[i].getType() != Types.NUMERIC) { // should check if compatible 
+                    cols[i].setType(Types.NUMERIC);
+                }
+            }
+            
             buf.append(i == 0 ? "" : ", ");
             buf.append(getDeclareColumnSQL(cols[i], false));
         }
