@@ -20,10 +20,15 @@ package org.apache.openjpa.persistence.jpql.expressions;
 
 import java.util.List;
 
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.common.apps.*;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.common.apps.Address;
+import org.apache.openjpa.persistence.common.apps.CompUser;
+import org.apache.openjpa.persistence.common.apps.FemaleUser;
+import org.apache.openjpa.persistence.common.apps.MaleUser;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestJPQLScalarExpressions extends AbstractTestCase {
@@ -189,7 +194,12 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         List rs3 = em.createQuery(query3).getResultList();
         Object[] result3 = (Object[]) rs3.get(0);
         assertEquals("the result is not female", "Female", result3[1]);
-        assertEquals("the name is not shannon", "Shannon ", result3[0]);
+        if (((JDBCConfiguration) ((OpenJPAEntityManager) em).getConfiguration()).
+                        getDBDictionaryInstance().trimsTrailingWhitespace) {
+            assertEquals("the name is not shannon", "Shannon", result3[0]);
+        } else {
+            assertEquals("the name is not shannon", "Shannon ", result3[0]);
+        }
         result3 = (Object[]) rs3.get(2);
         assertEquals("the result is not male", "Male", result3[1]);
         assertEquals("the name is not seetha", "Seetha", result3[0]);
