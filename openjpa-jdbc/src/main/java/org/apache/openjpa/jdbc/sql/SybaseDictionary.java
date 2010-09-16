@@ -163,8 +163,6 @@ public class SybaseDictionary
         supportsNullUpdateAction = false;
         supportsDefaultUpdateAction = false;
         supportsCascadeUpdateAction = false;
-        
-        trimsTrailingWhitespace = true; // whitespace is removed from varchars
     }
 
     @Override
