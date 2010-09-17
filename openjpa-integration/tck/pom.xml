@@ -25,7 +25,7 @@
         For JPA 1.0 -
             ${user.home}/.m2/privaterepos/jpa-1_0b-tck.zip
         For JPA 2.0 -
-            ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009.zip
+            ${user.home}/.m2/privaterepos/jpatck-2.0_15-Jun-2010.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" system property.
@@ -178,10 +178,6 @@
                         <path id="cp">
                             <path refid="maven.compile.classpath" />
                         </path>
-
-                        <ant antfile="${basedir}/tck2.xml" inheritRefs="true">
-                            <target name="run-pluggability" />
-                        </ant>
 
                         <ant antfile="${basedir}/tck2.xml" inheritRefs="true">
                             <target name="run-tck" />
