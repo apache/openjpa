@@ -54,15 +54,37 @@
     the release plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>tck</artifactId>
-    <packaging>pom</packaging>
-    <name>OpenJPA JPA TCK Integration Tests</name>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
         <version>1.2.3-SNAPSHOT</version>
     </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-integration-tck</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA Integration Tests - JPA TCK</name>
+    <description>OpenJPA Integration Tests - JPA TCK</description>
+
+    <properties>
+        <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <!-- Don't publish these artifacts to central -->
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
     <profile>
@@ -101,7 +123,6 @@
                             <!-- use official JPA API instead of GM's -->
                             <fileset dir="${tck.dir}/lib">
                                 <include name="**/*.jar" />
-                                <exclude name="**/geronimo-jpa*" />
                             </fileset>
                             <pathelement path="${java.class.path}" />
                             <pathelement path="${db.jar}" />
@@ -114,11 +135,12 @@
                         <property name="db.username" value="nousername" />
                         <property name="db.password" value="nopassword" />
 
-                        <property name="openjpa.log.level" value="WARN" />
+                        <property name="openjpa.Log" value="${openjpa.Log}" />
 
                         <property name="jpatck.pkg.dir" value="com" />
                         <property name="jpatck.test" value="" />
 
+                        <property name="jpatck.reports.dir" value="${tck.dir}/../reports" />
                         <property name="jpatck.work.dir" value="${tck.dir}/../work" />
                         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
 
@@ -134,7 +156,7 @@ openjpa.ConnectionPassword: ${db.password}
 openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
-openjpa.Log: DefaultLevel=${openjpa.log.level}
+openjpa.Log: ${openjpa.Log}
 openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=false
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
                         </echo>
@@ -151,7 +173,7 @@ openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 
 jpa.home=${tck.dir}
 work.dir=${jpatck.work.dir}
-report.dir=${tck.dir}/../reports
+report.dir=${jpatck.reports.dir}
 jpa.classes=${cp.property}
 database.classes=${jpa.classes}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
@@ -170,6 +192,7 @@ databaseName=${db.name}
                         <!-- convert backslashes and known paths with spaces
                             to get around a problem with the TCK testrunner 
                             on windows -->
+                        <echo>Update directory paths if running on Windows</echo>
                         <replace summary="yes" file="${jpatck.config}.tmp" replacefilterfile="windows-replacefilter.properties" />
                         <concat append="true" destfile="${jpatck.config}">
                             <fileset file="${jpatck.config}.tmp" />
@@ -178,6 +201,10 @@ databaseName=${db.name}
                         <path id="agent.path">
                             <fileset dir="../../openjpa-all/target">
                                 <include name="*.jar" />
+                                <exclude name="*-sources.jar" />
+                                <exclude name="original-*.jar" />
+                                <exclude name="*-tests.jar" />
+                                <exclude name="*-javadoc.jar" />
                             </fileset>
                         </path>
                         <pathconvert dirsep="/" property="agent" refid="agent.path" />
@@ -200,7 +227,7 @@ databaseName=${db.name}
                             <attribute name="buildfile" />
                             <attribute name="target" />
                             <sequential>
-                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000">
+                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
                                     <arg value="-emacs" />
                                     <arg value="-buildfile" />
                                     <arg value="@{buildfile}" />
@@ -234,10 +261,21 @@ databaseName=${db.name}
                         <echo>Logging JPA TCK output to ${tck.log}</echo>
 
                         <!-- first initialize the database -->
+                        <echo>Calling TCK initdb.xml</echo>
                         <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
+                        <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
                         <!-- now run the TCK -->
+                        <echo>Calling TCK build.xml</echo>
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
+                        <echo>TCK build.xml returned result=${tsant.result}</echo>
+
+                        <!-- archive the results -->
+                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
+                        <zip destfile="${tck.results.archive}">
+                            <fileset dir="${jpatck.work.dir}" />
+                        </zip>
+                        <echo>Results archive at: ${tck.results.archive}</echo>
 
                         <!--
                             The TCK's Java process doesn't actually fail when
@@ -249,27 +287,24 @@ databaseName=${db.name}
                             <contains string="${jpatck.results}" substring="Completed test run: not ok" />
                         </condition>
                         <fail if="jpatck.failed">Some tests failed</fail>
-
+                        <!-- else -->
                         <echo>JPA TCK Passed 100%!</echo>
 
-                        <property name="tck.results.archive" value="${tck.base}/openjpa-tck-results.zip" />
-                        <zip destfile="${tck.results.archive}" basedir="${jpatck.work.dir}" />
-                        <echo>Results archive at: ${tck.results.archive}</echo>
-
-                        </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                    </tasks>
+                  </configuration>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution>
+              </executions>
             </plugin>
-        </plugins>
-    </build>
-    </profile>
+          </plugins>
+        </build>
+      </profile>
     </profiles>
 
     <dependencies>
+        <!--  Use the JPA spec from Geronimo -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_1.0_spec</artifactId>

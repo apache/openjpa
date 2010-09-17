@@ -31,15 +31,20 @@
     the release plugin.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>examples</artifactId>
-    <packaging>pom</packaging>
-    <name>OpenJPA Examples Integration Tests</name>
+
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
         <version>1.2.3-SNAPSHOT</version>
     </parent>
+
+    <groupId>org.apache.openjpa</groupId>
+    <artifactId>openjpa-integration-examples</artifactId>
+    <packaging>pom</packaging>
+    <name>OpenJPA Integration Tests - Examples</name>
+    <description>OpenJPA Integration Tests - Examples</description>
 
     <profiles>
     <profile>
@@ -58,9 +63,10 @@
                         <echo>Running OpenJPA Examples</echo>
 
                         <property name="examples.base" value="${basedir}/target/examples" />
+                        <delete dir="${examples.base}" quiet="true"/>
                         <mkdir dir="${examples.base}" />
 
-                        <unzip overwrite="false" dest="${examples.base}" src="../../target/site/downloads/apache-openjpa-${pom.version}-binary.zip" />
+                        <unzip overwrite="false" dest="${examples.base}" src="../../openjpa-project/target/site/downloads/apache-openjpa-${project.version}-binary.zip" />
 
                         <path id="assembly.classpath"> 
                             <fileset dir="${examples.base}">
@@ -93,7 +99,7 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

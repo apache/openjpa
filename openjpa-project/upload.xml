@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+-->
+<project name="upload" default="upload" basedir=".">
+    <description>
+        Ant build file used to upload binaries to openjpa.apache.org/builds/latest. 
+    </description>
+    <target name="upload">
+
+        <property name="build.dir" value="/www/openjpa.apache.org/builds"/>
+        <property name="host" value="people.apache.org"/>
+
+        <mkdir dir="target/site/tempDocs" />
+        <unzip dest="target/site/tempDocs">
+            <fileset dir="target/site/downloads">
+                <include name="*binary*.zip" />
+            </fileset>
+            <patternset>
+                <include name="**/javadoc/**" />
+                <include name="**/manual/**" />
+            </patternset>
+        </unzip>
+        <zip destfile="target/site/tempDocs/docs.zip">
+            <fileset dir="target/site/tempDocs">
+                <include name="**/javadoc/**"/>
+                <include name="**/manual/**"/>
+                <exclude name="docs/**"/>
+            </fileset>
+        </zip>
+        <checksum> 
+            <fileset dir="target/site/downloads/">
+                <include name="*.zip" />
+            </fileset>
+        </checksum>
+        
+        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}" trust="true">
+            <fileset dir="target/site/tempDocs"> 
+                <include name="docs.zip"/>
+            </fileset>
+        </scp>
+        <!-- remove directories, hopefully this fails silently. mkdir does not and stops the process these exist.-->
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/downloads" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm ${build.dir}/docs.zip" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="mkdir ${build.dir}/apache-openjpa-${project.version}/downloads " trust="true" />
+        
+        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}/apache-openjpa-${project.version}/downloads" trust="true">
+            <fileset dir="target/site/downloads" />
+        </scp>
+        
+        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w ${build.dir}/apache-openjpa-${project.version}" trust="true" />
+        
+        <delete>
+            <fileset dir="target/site/tempDocs" />
+        </delete>
+    </target>
+</project>
+
