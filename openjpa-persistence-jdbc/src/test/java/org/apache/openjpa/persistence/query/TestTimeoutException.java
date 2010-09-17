@@ -87,11 +87,14 @@ public class TestTimeoutException extends SingleEMFTestCase {
             fail("Expected " + QueryTimeoutException.class.getName());
         } catch (Throwable t) {
             assertError(t, QueryTimeoutException.class);
+            assertTrue(em2.getTransaction().isActive());
         }
-        
-        assertTrue(em2.getTransaction().isActive());
-        em2.getTransaction().rollback();
-        em1.getTransaction().rollback();
+        finally { 
+            em1.getTransaction().rollback();
+            em1.close();
+            em2.getTransaction().rollback();
+            em2.close();
+        }
     }
     
     public void testLockTimeOutExceptionWhileLockingAlreadyLockedEntities() {
@@ -118,11 +121,13 @@ public class TestTimeoutException extends SingleEMFTestCase {
             fail("Expected " + PessimisticLockException.class.getName());
         } catch (Throwable t) {
            assertError(t, PessimisticLockException.class);
+           assertTrue(em2.getTransaction().isActive());
+        } finally {
+            em1.getTransaction().rollback();
+            em1.close();
+            em2.getTransaction().rollback();
+            em2.close();
         }
-        assertTrue(em2.getTransaction().isActive());
-        em2.getTransaction().rollback();
-        
-        em1.getTransaction().rollback();
     }
 
     public void testQueryTimeOutExceptionWhileFindWithLocksOnAlreadyLockedEntities() {
@@ -150,11 +155,13 @@ public class TestTimeoutException extends SingleEMFTestCase {
             fail("Expected " + LockTimeoutException.class.getName());
         } catch (Throwable t) {
             assertError(t, LockTimeoutException.class);
+            assertTrue(em2.getTransaction().isActive());
+        } finally {
+            em1.getTransaction().rollback();
+            em1.close();
+            em2.getTransaction().rollback();
+            em2.close();
         }
-        
-        assertTrue(em2.getTransaction().isActive());
-        em2.getTransaction().rollback();
-        em1.getTransaction().rollback();
     }
     
     public Object createEntity(EntityManager em) {
