@@ -640,6 +640,15 @@ public class Column
                     default:
                         return false;
                 }
+            case 2007:  // Oracle-defined opaque type code for XMLType
+                switch (type) {
+                    case Types.CHAR:
+                    case Types.LONGVARCHAR:
+                    case Types.VARCHAR:
+                        return true;
+                     default:
+                         return false;
+                }
             default:
                 return type == getType();
         }
