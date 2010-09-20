@@ -1275,6 +1275,10 @@ public class EntityManagerImpl
 
     public void close() {
         assertNotCloseInvoked();
+        Log log = _emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        if (log.isTraceEnabled()) {
+            log.trace(this + ".close() invoked.");
+        }
         _broker.close();
         _plans.clear();
     }

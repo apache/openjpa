@@ -237,6 +237,9 @@ public class EntityManagerFactoryImpl
         for (Object key : props.keySet()) {
             em.setProperty(key.toString(), props.get(key));
         }
+        if (log != null && log.isTraceEnabled()) {
+            log.trace(this + " created EntityManager " + em + ".");
+        }
         return em;
     }
     
@@ -264,6 +267,10 @@ public class EntityManagerFactoryImpl
     }
 
     public void close() {
+        Log log = _factory.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
+        if (log.isTraceEnabled()) {
+            log.trace(this + ".close() invoked.");
+        }
         _factory.close();
     }
 

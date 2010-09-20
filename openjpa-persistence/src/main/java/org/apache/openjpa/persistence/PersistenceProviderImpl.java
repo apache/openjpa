@@ -102,7 +102,11 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            return JPAFacadeHelper.toEntityManagerFactory(factory);
+            OpenJPAEntityManagerFactory emf = JPAFacadeHelper.toEntityManagerFactory(factory);
+            if (_log.isTraceEnabled()) {
+                _log.trace(this + " creating " + emf + " for PU " + name + ".");
+            }
+            return emf;
         } catch (Exception e) {
             if (_log != null) {
                 _log.error(_loc.get("create-emf-error", name), e);
@@ -196,7 +200,12 @@ public class PersistenceProviderImpl
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
             
-            return JPAFacadeHelper.toEntityManagerFactory(factory);
+            OpenJPAEntityManagerFactory emf = JPAFacadeHelper.toEntityManagerFactory(factory);
+            if (_log.isTraceEnabled()) {
+                _log.trace(this + " creating container " + emf + " for PU " + pui.getPersistenceUnitName() + ".");
+            }
+            
+            return emf;
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
