@@ -90,7 +90,7 @@ Getting Involved
    How do I Contribute?
         * To discuss Apache OpenJPA topics check out the mailing lists.
         * Informal discussion also occurs on the #openjpa IRC channel on
-       freenode.net.
+          freenode.net.
         * Bugs and other issues can be posted on the project JIRA.
 
 

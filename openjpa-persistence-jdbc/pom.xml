@@ -143,7 +143,7 @@
                 </dependency>
             </dependencies>
             <properties>
-                <openjpa.derbynet.url>jdbc:derby://localhost:1527/openjpa20;create=true;traceDirectory=target;traceFile=derby.log</openjpa.derbynet.url>
+                <openjpa.derbynet.url>jdbc:derby://localhost:1527/openjpa13;create=true;traceDirectory=target;traceFile=derby.log</openjpa.derbynet.url>
                 <openjpa.derbynet.driver>org.apache.derby.jdbc.ClientDriver</openjpa.derbynet.driver>
                 <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
                 <openjpa.derbynet.username>uid</openjpa.derbynet.username>
@@ -262,8 +262,6 @@
                 by also supplying the following properties:
                     -Dmssql.groupid=com.microsoft.sqlserver
                     -Dmssql.version=2.0
-                If you are using Java SE 6 or later, you will need to use:
-                    -Dmssql.artifactid=sqljdbc4
             -->
             <id>test-mssql</id>
             <activation>
@@ -993,7 +991,7 @@
                         <property>
                             <name>openjpa.Log</name>
                             <value>${openjpa.Log}</value>
-                        </property>>
+                        </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
                             <value>org.apache.commons.dbcp.BasicDataSource</value>

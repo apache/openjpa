@@ -308,18 +308,15 @@ databaseName=${db.name}
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_1.0_spec</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-kernel</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
