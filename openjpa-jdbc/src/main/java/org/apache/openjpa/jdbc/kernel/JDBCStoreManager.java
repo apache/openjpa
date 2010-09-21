@@ -305,8 +305,16 @@ public class JDBCStoreManager
         try {
             return mapping.getVersion().checkVersion(sm, this, true);
         } catch (SQLException se) {
-            throw SQLExceptions.getStore(se, _dict);
+            throw SQLExceptions.getStore(se, _dict, getReadLockLevel());
         }
+    }
+
+    private int getReadLockLevel() {
+        JDBCFetchConfiguration fetch = getFetchConfiguration();
+        if (fetch != null) {
+            return fetch.getReadLockLevel();
+        }
+        return -1;
     }
 
     public int compareVersion(OpenJPAStateManager state, Object v1, Object v2) {

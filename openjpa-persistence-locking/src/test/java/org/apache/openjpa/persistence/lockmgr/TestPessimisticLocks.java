@@ -21,6 +21,11 @@ package org.apache.openjpa.persistence.lockmgr;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -32,7 +37,10 @@ import javax.persistence.TypedQuery;
 import junit.framework.AssertionFailedError;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -65,7 +73,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         if (isTestsDisabled())
             return;
         
-        setUp(CLEAR_TABLES, Employee.class, Department.class, "openjpa.LockManager", "mixed");
+        setUp(CLEAR_TABLES, Employee.class, Department.class, VersionEntity.class, "openjpa.LockManager", "mixed");
 
         EntityManager em = null;
         em = emf.createEntityManager();
@@ -399,6 +407,82 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em.getTransaction().commit();
     }
     
+    protected Log getLog() {
+        return emf.getConfiguration().getLog("Tests");
+    }
+
+    /**
+     * This variation introduces a row level write lock in a secondary thread,
+     * issues a refresh in the main thread with a lock timeout, and expects a 
+     * LockTimeoutException.
+     */
+    public void testRefreshLockTimeout() {
+
+        // Only run this test on DB2 and Derby for now.  It could cause
+        // the test to hang on other platforms.
+        if (!(dict instanceof DerbyDictionary ||
+              dict instanceof DB2Dictionary)) {
+            return;
+        }
+        
+        EntityManager em = emf.createEntityManager();
+        
+        resetSQL();
+        VersionEntity ve = new VersionEntity();
+        int veid = new Random().nextInt();
+        ve.setId(veid);
+        ve.setName("Versioned Entity");
+
+        em.getTransaction().begin();
+        em.persist(ve);
+        em.getTransaction().commit();
+                
+        em.getTransaction().begin();
+        // Assert that the department can be found and no lock mode is set
+        ve = em.find(VersionEntity.class, veid);
+        assertTrue(em.contains(ve));        
+        assertTrue(em.getLockMode(ve) == LockModeType.NONE);
+        em.getTransaction().commit();
+        
+        // Kick of a thread to lock the DB for update
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<Boolean> result = executor.submit(new RefreshWithLock(veid, this));
+        try {
+            // Wait for the thread to lock the row
+            getLog().trace("Main: waiting");
+            synchronized (this) {
+                // The derby lock timeout is configured for 60 seconds, by default.
+                wait(70000);
+            }
+            getLog().trace("Main: done waiting");
+            Map<String,Object> props = new HashMap<String,Object>();
+            // This property does not have any effect on Derby for the locking
+            // condition produced by this test.  Instead, Derby uses the 
+            // lock timeout value specified in the config (pom.xml)
+            props.put("javax.persistence.lock.timeout", 5000);
+            em.getTransaction().begin();
+            getLog().trace("Main: refresh with force increment");
+            em.refresh(ve, LockModeType.PESSIMISTIC_FORCE_INCREMENT, props);  
+            getLog().trace("Main: commit");
+            em.getTransaction().commit();
+            getLog().trace("Main: done commit");
+            fail("Expected LockTimeoutException");
+        } catch (Throwable t) {
+            getLog().trace("Main: exception - " + t.getMessage(), t);
+            assertTrue( t instanceof LockTimeoutException);
+        } finally {
+            try {
+                // Wake the thread and wait for the thread to finish
+                synchronized(this) {
+                    this.notify();
+                }
+                result.get();
+            } catch (Throwable t) { 
+                fail("Caught throwable waiting for thread finish: " + t);
+            }
+        }
+    }
+        
     /**
      * Assert that an exception of proper type has been thrown. Also checks that
      * that the exception has populated the failed object.
@@ -435,4 +519,51 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         return null;
     }
 
+    /**
+     * Separate execution thread used to forcing a lock condition on 
+     * a row in the VersionEntity table.
+     */
+    public class RefreshWithLock implements Callable<Boolean> {
+
+        private int _id;
+        private Object _monitor;
+        
+        public RefreshWithLock(int id, Object monitor) {
+            _id = id;
+            _monitor = monitor;
+        }
+        
+        public Boolean call() throws Exception {
+            try {
+                EntityManager em = emf.createEntityManager();
+                
+                em.getTransaction().begin();
+                // Find with pessimistic force increment.  Will lock row for duration of TX.
+                VersionEntity ve = em.find(VersionEntity.class, _id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                assertTrue(em.getLockMode(ve) == LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+                // Wake up the main thread
+                getLog().trace("Thread: wake up main thread");
+                synchronized(_monitor) {
+                    _monitor.notify();
+                }
+                // Wait up to 120 seconds for main thread to complete.  The default derby timeout is 60 seconds. 
+                try {
+                    getLog().trace("Thread: waiting up to 120 secs for notify");
+                    synchronized(_monitor) {
+                        _monitor.wait(120000);
+                    }
+                    getLog().trace("Thread: done waiting");
+                } catch (Throwable t) {
+                    getLog().trace("Unexpected thread interrupt",t);
+                }
+                
+                em.getTransaction().commit();
+                em.close();
+                getLog().trace("Thread: done");
+            } catch (Throwable t) {
+                getLog().trace("Thread: caught - " + t.getMessage(), t);
+            }
+            return Boolean.TRUE;
+        }
+    }
 }
