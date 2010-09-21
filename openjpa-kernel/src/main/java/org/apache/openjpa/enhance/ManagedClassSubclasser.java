@@ -123,7 +123,7 @@ public class ManagedClassSubclasser {
         if (redefine) {
             log.info(_loc.get("enhance-and-subclass-and-redef-start", classes));
         } else {
-            log.info(_loc.get("enhance-and-subclass-no-redef-start",  classes));
+            log.warn(_loc.get("enhance-and-subclass-no-redef-start",  classes));
         }
         final Map<Class<?>, byte[]> map = new HashMap<Class<?>, byte[]>();
         final List<Class<?>> subs = new ArrayList<Class<?>>(classes.size());
