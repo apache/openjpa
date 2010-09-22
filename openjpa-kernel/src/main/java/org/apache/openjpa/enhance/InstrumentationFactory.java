@@ -83,15 +83,19 @@ public class InstrumentationFactory {
      */
     public static synchronized Instrumentation getInstrumentation(final Log log) {
         if (log.isTraceEnabled() == true) {
-            log.trace(InstrumentationFactory.class.getName() + "getInstrumentation() _disabled:" + " _inst:" + _inst
-                + "_dynamicallyInstall:" + _dynamicallyInstall);
+            log.trace(_name + ".getInstrumentation() _inst:" + _inst
+                + " _dynamicallyInstall:" + _dynamicallyInstall);
         }
         if ( _inst != null || !_dynamicallyInstall)
             return _inst;
 
         // dynamic loading of the agent is only available in JDK 1.6+
-        if (JavaVersions.VERSION < 6)
+        if (JavaVersions.VERSION < 6) {
+            if (log.isTraceEnabled() == true) {
+                log.trace(_name + ".getInstrumentation() Dynamic loading only supported on Java SE 6 or later");
+            }
             return null;
+        }
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
@@ -182,35 +186,46 @@ public class InstrumentationFactory {
         String javaHome = System.getProperty("java.home");
         File javaHomeFile = new File(javaHome);
 
-        // IBM JDK hack -- for some reason when running on the IBM JDK, the JVM
-        // appends /jre to the java.home SystemProperty. Remove the addition to
-        // be consistent with Sun. Note: Not sure if this is something dependent
-        // on my machine. Not really that big of a deal since this isn't
-        // supported on the IBM JDK at this point.
-        File toolsJarFile =
-            new File(javaHomeFile, "lib" + File.separator + "tools.jar");
+        File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
         if (toolsJarFile.exists() == false) {
-            // If tools jar file isn't found, we may be on an IBM JDK. If the
-            // java.home property ends in /jre, try removing it to look for the
-            // tools.jar.
-            String absPath = javaHomeFile.getAbsolutePath();
-            if (absPath.endsWith(File.separator + "jre") == true) {
-                javaHomeFile = javaHomeFile.getParentFile();
-                toolsJarFile =
-                    new File(javaHomeFile, "lib" + File.separator +
-                        "tools.jar");
+            if (log.isTraceEnabled() == true) {
+                log.trace(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath());
+            }
+            if (JavaVendors.getCurrentVendor().isIBM()) {
+                // If we're on an IBM SDK, then remove /jre off of java.home and try again.
+                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
+                    javaHomeFile = javaHomeFile.getParentFile();
+                    toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
+                    if (toolsJarFile.exists() == false) {
+                        if (log.isTraceEnabled() == true) {
+                            log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
+                                toolsJarFile.getAbsolutePath());
+                        }
+                    }
+                }
+            } else if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0) {
+                // If we're on a Mac, then change the search path to use ../Classes/classes.jar.
+                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home") == true) {
+                    javaHomeFile = javaHomeFile.getParentFile();
+                    toolsJarFile = new File(javaHomeFile, "Classes" + File.separator + "classes.jar");
+                    if (toolsJarFile.exists() == false) {
+                        if (log.isTraceEnabled() == true) {
+                            log.trace(_name + ".findToolsJar() -- for Mac OS couldn't find " +
+                                toolsJarFile.getAbsolutePath());
+                        }
+                    }
+                }
             }
         }
 
         if (toolsJarFile.exists() == false) {
-            String toolsJarPath = toolsJarFile.getAbsolutePath();
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".findToolsJar() -- couldn't find "
-                    + toolsJarPath);
-            }
             return null;
+        } else {
+            if (log.isTraceEnabled() == true) {
+                log.trace(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
+            }
+            return toolsJarFile;
         }
-        return toolsJarFile;
     }
 
     /**
