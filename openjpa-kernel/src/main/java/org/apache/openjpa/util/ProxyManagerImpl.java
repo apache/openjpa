@@ -59,6 +59,8 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -560,7 +562,9 @@ public class ProxyManagerImpl
         delegateConstructors(bc, type);
         addProxyMethods(bc, false);
         addProxyMapMethods(bc, type);
-        proxyRecognizedMethods(bc, type, ProxyMaps.class, ProxyMap.class);
+        Class<? extends ProxyMaps> mapProxyClassType =
+            ConcurrentMap.class.isAssignableFrom(type) ? ProxyConcurrentMaps.class : ProxyMaps.class;
+        proxyRecognizedMethods(bc, type, mapProxyClassType, ProxyMap.class);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
         return bc;
