@@ -485,7 +485,7 @@
                 <db2.version>9.5</db2.version>
                 <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
                 <!--<connection.url>jdbc:db2://localhost/openjpa</connection.url>-->
-                <connection.url>${ospenjpa.db2.url}</connection.url>
+                <connection.url>${openjpa.db2.url}</connection.url>
                 <connection.username>${openjpa.db2.username}</connection.username>
                 <connection.password>${openjpa.db2.password}</connection.password>
             </properties>
