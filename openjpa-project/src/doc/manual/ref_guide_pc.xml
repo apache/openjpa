@@ -410,6 +410,14 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 				enhancement.			
 			</para>
 		</listitem>		
+		<listitem>
+                	<para>
+				Just as with the Javaagent approach, if you
+				declare a persistent class list, then OpenJPA
+				will only search for metadata and try to
+				enhance the listed classes.
+            		</para>
+		</listitem>		
 	</itemizedlist>
 	<para>
 		When then dynamic enhancer is loaded, the following 
