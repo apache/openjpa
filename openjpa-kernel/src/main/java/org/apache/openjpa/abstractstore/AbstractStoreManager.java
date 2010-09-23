@@ -316,13 +316,13 @@ public abstract class AbstractStoreManager
         return true;
     }
 
-    public Class getManagedType(Object oid) {
+    public Class<?> getManagedType(Object oid) {
         if (oid instanceof Id)
             return ((Id) oid).getType();
         return null;
     }
 
-    public Class getDataStoreIdType(ClassMetaData meta) {
+    public Class<?> getDataStoreIdType(ClassMetaData meta) {
         return Id.class;
     }
 
