@@ -101,6 +101,7 @@ public interface DriverDataSource
     /**
      * Provide any built-in decorators; may be null.
      */
+    @SuppressWarnings("unchecked")
     public List createConnectionDecorators();
 
     /**

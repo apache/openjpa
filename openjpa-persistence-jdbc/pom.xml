@@ -65,7 +65,11 @@
                         </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
-                            <value>org.apache.commons.dbcp.BasicDataSource</value>
+                            <value>${connection.driver.name}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionURL</name>
+                            <value>${connection.url}</value>
                         </property>
                         <property>
                             <name>derby.stream.error.file</name>
@@ -73,7 +77,7 @@
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
-                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                            <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
                         </property>
                         <property>
                             <name>tests.openjpa.allowfailure</name>
@@ -1019,7 +1023,11 @@
                         </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
-                            <value>org.apache.commons.dbcp.BasicDataSource</value>
+                            <value>${connection.driver.name}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionURL</name>
+                            <value>${connection.url}</value>
                         </property>
                         <property>
                             <name>derby.stream.error.file</name>
@@ -1043,7 +1051,7 @@
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>
-                            <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                            <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
                         </property>
                         <property>
                             <name>tests.openjpa.allowfailure</name>

@@ -242,7 +242,9 @@ public class JDBCConfigurationImpl
 
         driverDataSourcePlugin = addPlugin("jdbc.DriverDataSource", false);
         aliases = new String[]{
+            "auto", "org.apache.openjpa.jdbc.schema.AutoDriverDataSource",
             "simple", "org.apache.openjpa.jdbc.schema.SimpleDriverDataSource",
+            "dbcp", "org.apache.openjpa.jdbc.schema.DBCPDriverDataSource",
         };
         driverDataSourcePlugin.setAliases(aliases);
         driverDataSourcePlugin.setDefault(aliases[0]);

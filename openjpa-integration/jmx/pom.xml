@@ -125,16 +125,20 @@
             <argLine>${surefire.jvm.args}</argLine>
             <systemProperties>
                <property>
-                  <name>openjpa.Log</name>
-                  <value>${openjpa.Log}</value>
+                   <name>openjpa.Log</name>
+                   <value>${openjpa.Log}</value>
                </property>
                <property>
-                  <name>openjpa.DynamicEnhancementAgent</name>
-                  <value>false</value>
+                   <name>openjpa.DynamicEnhancementAgent</name>
+                   <value>false</value>
                </property>
                <property>
-                  <name>openjpa.ConnectionDriverName</name>
-                  <value>org.apache.commons.dbcp.BasicDataSource</value>
+                   <name>openjpa.ConnectionDriverName</name>
+                   <value>${connection.driver.name}</value>
+               </property>
+               <property>
+                   <name>openjpa.ConnectionURL</name>
+                   <value>${connection.url}</value>
                </property>
                <property>
                    <name>derby.stream.error.file</name>
@@ -150,7 +154,7 @@
                </property>
                <property>
                    <name>openjpa.ConnectionProperties</name>
-                   <value>DriverClassName=${connection.driver.name},Url=${connection.url},Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
+                   <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
                </property>
                <property>
                    <name>tests.openjpa.allowfailure</name>

@@ -163,10 +163,21 @@ public class Configurations {
 
     /**
      * Create and configure an instance with the given class name and
-     * properties.
+     * properties as a String.
      */
     public static Object newInstance(String clsName, Configuration conf,
         String props, ClassLoader loader) {
+        Object obj = newInstance(clsName, null, conf, loader, true);
+        configureInstance(obj, conf, props);
+        return obj;
+    }
+
+    /**
+     * Create and configure an instance with the given class name and
+     * properties.
+     */
+    public static Object newInstance(String clsName, Configuration conf,
+        Properties props, ClassLoader loader) {
         Object obj = newInstance(clsName, null, conf, loader, true);
         configureInstance(obj, conf, props);
         return obj;

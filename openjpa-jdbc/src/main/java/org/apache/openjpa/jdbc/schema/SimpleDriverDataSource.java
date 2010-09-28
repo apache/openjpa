@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Connection;
@@ -28,8 +27,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
@@ -91,10 +88,12 @@ public abstract class SimpleDriverDataSource
         return getConnection(props);
     }
 
-    public Connection getConnection(Properties props)
-        throws SQLException {
-    	Connection con = getDriver().connect(_connectionURL, props == null? new Properties() : props);
-    	
+    public Connection getConnection(Properties props) throws SQLException {
+        return getSimpleConnection(props);
+    }
+    
+    protected Connection getSimpleConnection(Properties props) throws SQLException {
+    	Connection con = getSimpleDriver().connect(_connectionURL, props == null? new Properties() : props);
     	if (con == null) {
             throw new SQLException(_eloc.get("poolds-null",
                     _connectionDriverName, _connectionURL).getMessage());
@@ -139,6 +138,11 @@ public abstract class SimpleDriverDataSource
         _connectionPassword = connectionPassword;
     }
 
+    // Only allow sub-classes to retrieve the password
+    protected String getConnectionPassword() {
+        return _connectionPassword;
+    }
+
     public void setConnectionProperties(Properties props) {
         _connectionProperties = props;
     }
@@ -155,6 +159,7 @@ public abstract class SimpleDriverDataSource
         return _connectionFactoryProperties;
     }
 
+    @SuppressWarnings("unchecked")
     public List createConnectionDecorators() {
         return null;
     }
@@ -175,7 +180,7 @@ public abstract class SimpleDriverDataSource
         return _connectionDriverName;
     }
 
-    private Driver getDriver() {
+    protected Driver getSimpleDriver() {
         if (_driver != null)
             return _driver;
 
@@ -198,7 +203,7 @@ public abstract class SimpleDriverDataSource
         }
 
         try {
-            Class c = Class.forName(_connectionDriverName,
+            Class<?> c = Class.forName(_connectionDriverName,
                 true, _classLoader);
             _driver = (Driver) AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
@@ -214,10 +219,12 @@ public abstract class SimpleDriverDataSource
     
 
     // java.sql.Wrapper implementation (JDBC 4)
+    @SuppressWarnings("unchecked")
     public boolean isWrapperFor(Class iface) {
         return iface.isAssignableFrom(SimpleDriverDataSource.class);
     }
 
+    @SuppressWarnings("unchecked")
     public Object unwrap(Class iface) {
         if (isWrapperFor(iface))
             return this;
