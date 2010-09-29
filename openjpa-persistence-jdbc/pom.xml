@@ -134,7 +134,6 @@
                 </dependency>
             </dependencies>
             <properties>
-                <postgresql.version>8.4-701.jdbc3</postgresql.version>
                 <connection.driver.name>org.postgresql.Driver</connection.driver.name>
                 <!--<connection.url>jdbc:postgresql://localhost/openjpa</connection.url>-->
                 <connection.url>${openjpa.postgresql.url}</connection.url>
@@ -739,11 +738,6 @@
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>

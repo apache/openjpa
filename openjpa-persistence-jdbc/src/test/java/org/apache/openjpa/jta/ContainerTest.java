@@ -68,6 +68,21 @@ public abstract class ContainerTest extends SingleEMFTestCase {
     
     @Override
     public void tearDown() throws Exception {
+        try {
+            if (emf != null && emf.isOpen()) {
+                // can't use AbstractPersistenceTestCase.closeEMF() due to using managed transactions
+                // closeAllOpenEMs(emf);
+                emf.close();
+            }
+        } catch (Exception e) {
+            // if a test failed, swallow any exceptions that happen
+            // during tear-down, as these just mask the original problem.
+            if (testResult.wasSuccessful()) {
+                throw e;
+            }
+        } finally {
+            emf = null;
+        }
     }
     
     protected void commit() {

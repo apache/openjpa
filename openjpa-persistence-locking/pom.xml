@@ -143,7 +143,6 @@
                 </dependency>
             </dependencies>
             <properties>
-                <postgresql.version>8.3-603.jdbc3</postgresql.version>
                 <connection.driver.name>org.postgresql.Driver</connection.driver.name>
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
@@ -673,16 +672,6 @@
             <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

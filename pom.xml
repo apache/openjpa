@@ -75,6 +75,7 @@
         <derby.version>10.5.3.0_1</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <mysql.version>5.1.12</mysql.version>
+        <postgresql.version>8.4-701.jdbc3</postgresql.version>
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
     </properties>
@@ -596,6 +597,12 @@
                 <version>${hsqldb.version}</version>
             </dependency>
             <dependency>
+                <groupId>postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>jakarta-regexp</groupId>
                 <artifactId>jakarta-regexp</artifactId>
                 <version>1.4</version>
@@ -640,13 +647,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.sourceforge.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

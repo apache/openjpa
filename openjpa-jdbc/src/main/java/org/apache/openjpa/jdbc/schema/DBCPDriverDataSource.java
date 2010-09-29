@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
@@ -38,7 +39,7 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  * usage of Commons DBCP when available, use AutoDriverDataSource instead.
  */
 public abstract class DBCPDriverDataSource
-extends SimpleDriverDataSource implements Configurable {
+extends SimpleDriverDataSource implements Configurable, Closeable {
 
     private static String DBCPPACKAGENAME = "org.apache.commons.dbcp";
     private static String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp.BasicDataSource";
@@ -67,6 +68,20 @@ extends SimpleDriverDataSource implements Configurable {
         return getDBCPConnection(props);
     }
 
+    public void close() throws SQLException {
+        try {
+            if (_ds != null) {
+                if (isDBCPLoaded()) {
+                    ((org.apache.commons.dbcp.BasicDataSource)_dbcpClass.cast(_ds)).close();
+                }
+            }
+        } catch (ClassCastException cce) {
+            // no-op
+        } finally {
+            _ds = null;
+        }
+    }
+    
     protected Connection getDBCPConnection(Properties props) throws SQLException {
         Connection con = getDBCPDataSource(props).getConnection();
         if (con == null) {
