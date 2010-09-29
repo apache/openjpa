@@ -729,7 +729,7 @@ void like_expression() #LIKE : { }
 
 void null_comparison_expression() #ISNULL : { }
 {
-	(input_parameter() | path())
+	(input_parameter() | path() | aggregate_select_expression())
 	<IS> [<NOT> { jjtThis.not = true; }] <NULL> 
 }
 
@@ -931,7 +931,7 @@ void datetime_expression() : { }
 
 void datetime_primary() : { }
 {
-	path() | functions_returning_datetime() | input_parameter()
+	path() | functions_returning_datetime() | input_parameter() | aggregate_select_expression()
 }
 
 
