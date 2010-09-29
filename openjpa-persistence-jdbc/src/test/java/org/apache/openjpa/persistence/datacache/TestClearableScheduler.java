@@ -18,19 +18,13 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.ClearableScheduler;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
-import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.datacache.common.apps.ScheduledEviction;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestClearableScheduler extends SingleEMFTestCase {
@@ -49,7 +43,7 @@ public class TestClearableScheduler extends SingleEMFTestCase {
             "openjpa.DataCache", "true(EvictionSchedule=+1)"
             , "openjpa.QueryCache", "true"
             ,"openjpa.RemoteCommitProvider", "sjvm"
-            ,ScheduledEviction.class, CLEAR_TABLES
+            ,CachedPerson.class, CLEAR_TABLES
             );
     }
 
