@@ -40,7 +40,6 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -51,7 +50,6 @@ import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
 
@@ -845,7 +843,7 @@ public class OracleDictionary
             sql[0] += " CACHE " + seq.getAllocate();
         return sql;
     }
-    
+
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         StringBuffer buf = new StringBuffer();
         buf.append("SELECT SEQUENCE_OWNER AS SEQUENCE_SCHEMA, ").
