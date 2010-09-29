@@ -41,18 +41,33 @@ import org.apache.openjpa.trader.service.TradingService;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
- * The server side implementation of the RPC service.
+ * The server side implementation of the GWT RPC service.
+ * <p>
+ * This implementation delegates to original implementation, thereby blocking the GWT Servlet
+ * dependency to the original implementation of the service. This implementation being a 
+ * servlet allows us to switch the delegate during {@#init(ServletConfig) initialization}  
+ * to either a {@link Exchange real JPA-based } implementation or a {@link MockTradingService simple in-memory}
+ * implementation of the {@link TradingService service interface}.
+ * <p>
+ * The other important advantage of such delegation is to translate exception. The underlying service
+ * exceptions are translated by an {@link ExceptionAdapter exception translator} that ensures that
+ * the translated exceptions are serializable and hence accessible to the browser-based client. 
+ *   
+ * @author Pinaki Poddar
  */
 @SuppressWarnings("serial")
 public class TradingServiceAdapterImpl extends RemoteServiceServlet implements TradingServiceAdapter {
     
-    TradingService _del;
+    private TradingService _del;
+    private ExceptionAdapter _translator = new ExceptionAdapter();
     
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         String unit = config.getInitParameter("persistence.unit");
         String mock = config.getInitParameter("mock");
+        String serverTrace = config.getInitParameter("server-side-stacktrace");
         _del = ("true".equalsIgnoreCase(mock)) ? new MockTradingService() : new Exchange(unit);
+        _translator.setPrintServerSideStackTrace("true".equalsIgnoreCase(serverTrace));
     }
     
     public void destroy() {
@@ -164,9 +179,17 @@ public class TradingServiceAdapterImpl extends RemoteServiceServlet implements T
             throw translate(e);
         }
     }
+    
+    public String getServiceURI() {
+        try {
+            return _del.getServiceURI();
+        } catch (Throwable e) {
+            throw translate(e);
+        }
+    }
+
 
     RuntimeException translate(Throwable t) {
-        t.printStackTrace();
-        return new ExceptionAdapter().translate(t);
+        return _translator.translate(t);
     }
 }

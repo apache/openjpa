@@ -68,4 +68,6 @@ public interface TradingServiceAdapterAsync {
     void withdraw(Tradable t, AsyncCallback<Tradable> callback);
     
     void refresh(Tradable t, AsyncCallback<Tradable> callback);
+    
+    void getServiceURI(AsyncCallback<String> callback);
 }

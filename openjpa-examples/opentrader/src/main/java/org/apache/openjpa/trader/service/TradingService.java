@@ -41,12 +41,12 @@ public interface TradingService {
     /**
      * A query to find symbols of all stocks.
      */
-    String GET_ALL_STOCKS = "select s from Stock s";
+    public static final String GET_ALL_STOCKS = "select s from Stock s";
     
     /**
      * A query to match asks to a given bid.
      */
-    String MATCH_BID  = "select new Match(a,b) from Ask a, Bid b " 
+    public static final String MATCH_BID  = "select new Match(a,b) from Ask a, Bid b " 
                       + "where b = :bid and a.stock.symbol = b.stock.symbol " 
                       + "and a.price <= b.price and a.volume >= b.volume " 
                       + "and NOT(a.seller = b.buyer) and a.trade is NULL and b.trade is NULL";
@@ -55,7 +55,7 @@ public interface TradingService {
     /**
      * A query to match bids of a given ask.
      */
-    String MATCH_ASK  = "select new Match(a,b) from Ask a, Bid b " 
+    public static final String MATCH_ASK  = "select new Match(a,b) from Ask a, Bid b " 
                       + "where a = :ask  and a.stock.symbol = b.stock.symbol " 
                       + "and a.price <= b.price and a.volume >= b.volume " 
                       + "and NOT(a.seller = b.buyer) and a.trade is NULL and b.trade is NULL"; 
@@ -64,16 +64,16 @@ public interface TradingService {
     /**
      * A query to find a trader by his/her name.
      */
-    String QUERY_TRADER_BY_NAME = "select t from Trader t where t.name=:name";
+    public static final String QUERY_TRADER_BY_NAME = "select t from Trader t where t.name=:name";
     
     
     /**
      * A query to find all trades in a given period.
      */
-    String QUERY_TRADE_BY_PERIOD = "select t from Trade t where t.id between (:from, :to)";
+    public static final String QUERY_TRADE_BY_PERIOD = "select t from Trade t where t.id between (:from, :to)";
     
     
-    public static final String DEFAULT_UNIT_NAME = "exchange";
+    public static final String DEFAULT_UNIT_NAME = "exchange-local";
     
     /**
      * Gets the list of stocks registered with this service.
@@ -161,4 +161,11 @@ public interface TradingService {
      * @return
      */
     List<LogStatement> getLog();
+    
+    /**
+     * Get a descriptive URI-like string for this service.
+     * 
+     * @return
+     */
+    String getServiceURI();
 }

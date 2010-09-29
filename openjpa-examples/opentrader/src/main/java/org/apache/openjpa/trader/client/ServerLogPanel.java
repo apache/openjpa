@@ -56,7 +56,7 @@ public class ServerLogPanel extends ScrollableTable<LogStatement>
     
     
     public ServerLogPanel(final OpenTrader session, final int w, final int h) {
-        super("Server Logs", w,h, false);
+        super("Server Log (" + session.getServiceURI() + ")", w,h, false);
         this.session = session;
         
         session.registerHandler(ServiceEvent.TradableAdded.TYPE, this);

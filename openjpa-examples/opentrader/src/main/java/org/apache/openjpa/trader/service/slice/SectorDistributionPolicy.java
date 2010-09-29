@@ -21,13 +21,17 @@ package org.apache.openjpa.trader.service.slice;
 import java.util.List;
 
 import org.apache.openjpa.slice.DistributionPolicy;
+import org.apache.openjpa.trader.domain.Sector;
 import org.apache.openjpa.trader.domain.Stock;
 import org.apache.openjpa.trader.domain.Tradable;
+import org.apache.openjpa.trader.domain.Trade;
 import org.apache.openjpa.trader.domain.Trader;
 
 /**
- * Distributes each persistent domain instances of OpenTrader model into specific slice
- * based on the sector.
+ * An example of {@link DistributionPolicy distribution policy} that distributes each persistent 
+ * domain instances of OpenTrader model into specific slice based on the {@link Sector} to which
+ * a {@link Stock} belongs. This policy demonstrates the use case where data is distributed by
+ * a related property of the instance.
  * 
  * @author Pinaki Poddar
  *
@@ -44,12 +48,11 @@ public class SectorDistributionPolicy implements DistributionPolicy {
             stock = ((Tradable)pc).getStock();
         } else if (pc instanceof Stock) {
             stock = (Stock)pc;
+        } else if (pc instanceof Trade) {
+        	stock = ((Trade)pc).getStock();
         } else if (pc instanceof Trader) {
             throw new IllegalArgumentException("Trader should have been replicated");
         }
-//        if (stock == null) {
-//            throw new IllegalStateException(pc + "(" + pc.getClass() + ") is not associated with a Stock");
-//        }
         return stock != null ? slices.get(stock.getSector().ordinal()) : null;
     }
 

@@ -101,6 +101,7 @@ public class OpenTrader implements EntryPoint, UncaughtExceptionHandler {
     
     // Server-State variables as Session Identifier
     private Trader trader;
+    private String _serviceURI;
 
     // The handle to the remote service.
     private TradingServiceAdapterAsync tradingService;
@@ -153,13 +154,18 @@ public class OpenTrader implements EntryPoint, UncaughtExceptionHandler {
         return stockPanel.getModel();
     } 
     
+    String getServiceURI() {
+    	return _serviceURI;
+    }
+    
     /**
      * Builds up the widgets once the login is complete i.e. the server has supplied
      * the initialization data.
      * 
      */
-    void init(Trader trader, List<Stock> stocks) {
+    void init(Trader trader, String uri, List<Stock> stocks) {
         this.trader = trader;
+        _serviceURI = uri;
         
         Window.setTitle(trader.getName());
 

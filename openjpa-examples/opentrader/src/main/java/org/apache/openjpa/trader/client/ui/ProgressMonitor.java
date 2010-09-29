@@ -53,12 +53,13 @@ public class ProgressMonitor extends Timer {
         header = new HTML();
         bar = new FlexTable();
         
-        bar.setCellSpacing(1);
+        bar.setCellSpacing(0);
+        bar.setCellPadding(0);
         bar.setWidget(0, 0, header);
         header.addStyleName("progressMonitor-caption");
         for (int i = 0; i < N; i++) {
             Label box = new Label();
-            box.setSize("10px", "20px");
+            box.setSize("30px", "20px");
             DOM.setStyleAttribute(box.getElement(), "backgroundColor", "black");
             DOM.setStyleAttribute(box.getElement(), OPACITY, lowOpacity);
             bar.setWidget(1, i, box);

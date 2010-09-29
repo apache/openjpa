@@ -103,4 +103,6 @@ public interface TradingServiceAdapter extends RemoteService {
            throws RuntimeException;
     List<LogStatement> getLog() 
            throws RuntimeException;
+    String getServiceURI()
+    		throws RuntimeException;
 }

@@ -20,7 +20,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
-    <persistence-unit name="slice-exchange">
+    <persistence-unit name="exchange-slice">
     	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
     	<class>org.apache.openjpa.trader.domain.Tradable</class>
     	<class>org.apache.openjpa.trader.domain.Ask</class>
@@ -35,13 +35,14 @@
         <property name="openjpa.ConnectionUserName"        value="demo"/>
         <property name="openjpa.ConnectionPassword"        value="pwd"/>
         
-        <property name="openjpa.slice.Names"                value="slice1,slice2,slice3"/>
+        <property name="openjpa.slice.Names"                value="sector1, sector2, sector3"/>
         <property name="openjpa.slice.DistributionPolicy"   value="org.apache.openjpa.trader.service.slice.SectorDistributionPolicy"/>
         <property name="openjpa.slice.ReplicatedTypes"      value="org.apache.openjpa.trader.domain.Trader"/>  
+        <property name="openjpa.slice.QueryTargetPolicy"    value="org.apache.openjpa.trader.service.slice.SectorBasedQueryTargetPolicy"/>
                                    
-        <property name="openjpa.slice.slice1.ConnectionURL" value="jdbc:mysql://localhost/sector1"/>
-        <property name="openjpa.slice.slice2.ConnectionURL" value="jdbc:mysql://localhost/sector2"/>
-        <property name="openjpa.slice.slice3.ConnectionURL" value="jdbc:mysql://localhost/sector3"/>
+        <property name="openjpa.slice.sector1.ConnectionURL" value="jdbc:mysql://localhost/sector1"/>
+        <property name="openjpa.slice.sector2.ConnectionURL" value="jdbc:mysql://localhost/sector2"/>
+        <property name="openjpa.slice.sector3.ConnectionURL" value="jdbc:mysql://localhost/sector3"/>
         
         
         
@@ -58,7 +59,7 @@
     </persistence-unit>
     
     
-    <persistence-unit name="exchange">
+    <persistence-unit name="exchange-local">
     	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
     	<class>org.apache.openjpa.trader.domain.Tradable</class>
     	<class>org.apache.openjpa.trader.domain.Ask</class>
@@ -71,6 +72,28 @@
         <property name="openjpa.ConnectionURL" value="jdbc:mysql://localhost/exchange"/>
         <property name="openjpa.ConnectionUserName" value="root"/>
         <property name="openjpa.ConnectionPassword" value=""/>
+        <property name="openjpa.Multithreaded" value="true"/>
+        <property name="openjpa.DynamicEnhancementAgent" value="false"/>
+        <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+        <property name="openjpa.ConnectionFactoryProperties" value="PrintParameters=true"/>
+        
+        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=True)"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="exchange">
+    	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    	<class>org.apache.openjpa.trader.domain.Tradable</class>
+    	<class>org.apache.openjpa.trader.domain.Ask</class>
+    	<class>org.apache.openjpa.trader.domain.Bid</class>
+    	<class>org.apache.openjpa.trader.domain.Trader</class>
+    	<class>org.apache.openjpa.trader.domain.Trade</class>
+    	<class>org.apache.openjpa.trader.domain.Stock</class>
+        <properties>
+        <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver"/>
+        <property name="openjpa.ConnectionURL" value="jdbc:mysql://opentrader.cxlsv2qt7orp.us-east-1.rds.amazonaws.com:3306/exchange"/>
+        <property name="openjpa.ConnectionUserName" value="ppoddar"/>
+        <property name="openjpa.ConnectionPassword" value="password"/>
         <property name="openjpa.Multithreaded" value="true"/>
         <property name="openjpa.DynamicEnhancementAgent" value="false"/>
         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>

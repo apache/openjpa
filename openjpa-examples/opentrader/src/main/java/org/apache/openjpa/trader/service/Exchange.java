@@ -20,6 +20,7 @@ package org.apache.openjpa.trader.service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -260,5 +261,18 @@ public class Exchange extends PersistenceService implements TradingService {
         }
         config.put("openjpa.Log", BufferedLog.class.getName());
         return config;
+    }
+    
+    public String getServiceURI() {
+    	Map<String,Object> props = getUnit().getProperties();
+    	Object url = props.get("openjpa.ConnectionURL");
+    	try {
+    	if (url == null) {
+    		url = Arrays.toString((String[])props.get("openjpa.slice.Names"));
+    	}
+    	} catch (Exception ex) {
+    		url = "?";
+    	}
+    	return "jpa:" + props.get("openjpa.Id") + "@" + url;
     }
 }

@@ -52,6 +52,7 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class LoginDialog extends PopupPanel {
     private Trader trader;
+    private String serverURI;
     private final OpenTrader session;
     
     public LoginDialog(final OpenTrader session) {
@@ -117,9 +118,25 @@ public class LoginDialog extends PopupPanel {
         
         public void onSuccess(Trader result) {
             trader = result;
+            session.getService().getServiceURI(new GetServerURI());
+        }
+    }
+    
+    /**
+     * Initializes the server URI.
+     *
+     */
+    public class GetServerURI implements AsyncCallback<String> {
+        public void onFailure(Throwable caught) {
+            session.handleError(caught);
+        }
+
+        public void onSuccess(String uri) {
+            serverURI = uri;
             session.getService().getStocks(new InitializeStocks());
         }
     }
+
     
     /**
      * Initializes the tradable stocks followed by the main application.
@@ -132,7 +149,7 @@ public class LoginDialog extends PopupPanel {
 
         public void onSuccess(List<Stock> stocks) {
             ProgressMonitor.stop();
-            session.init(trader, stocks);
+            session.init(trader, serverURI, stocks);
         }
     }
 }

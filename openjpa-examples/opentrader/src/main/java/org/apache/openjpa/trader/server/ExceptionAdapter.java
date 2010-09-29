@@ -21,20 +21,28 @@ package org.apache.openjpa.trader.server;
 import java.util.Arrays;
 import java.util.List;
 
-
-
 /**
  * Adapts a server-side exception to a RuntimeException.
+ * This implementation a GWT compiler aware and hence any package dependency will require the
+ * source code for this dependent packages. The purpose of this translator is to translate
+ * the stack trace of those exceptions, such as <code>org.apache.openjpa.persistence.PersistenceException</code>
+ * <em>without</em> bringing in that dependency.
  * 
  * @author Pinaki Poddar
  *
  */
 public class ExceptionAdapter {
-    static List<String> exceptionTypes = Arrays.asList(
-            "org.apache.openjpa.persistence.PersistenceException");
+    static List<String> exceptionTypes = Arrays.asList("org.apache.openjpa.persistence.PersistenceException");
     
-
-    RuntimeException translate(Throwable t) {
+    private boolean _printStackTrace;
+    
+    public void setPrintServerSideStackTrace(boolean flag) {
+    	_printStackTrace = flag;
+    }
+    
+    public RuntimeException translate(Throwable t) {
+    	if (_printStackTrace)
+    		t.printStackTrace();
         Throwable cause = searchForKnownButNonTranslatableException(t);
         if (cause != null) {
             t = cause;
@@ -63,5 +71,4 @@ public class ExceptionAdapter {
         }
         return false;
     }
-
 }

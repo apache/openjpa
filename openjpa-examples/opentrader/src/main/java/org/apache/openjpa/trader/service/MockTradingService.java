@@ -171,5 +171,9 @@ public class MockTradingService implements TradingService {
     @Override
     public void close() {
     }
+    
+    public String getServiceURI() {
+    	return "Mock";
+    }
 
 }

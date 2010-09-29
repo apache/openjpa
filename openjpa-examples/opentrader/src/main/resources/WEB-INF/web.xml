@@ -32,11 +32,11 @@
 		<servlet-class>org.apache.openjpa.trader.server.TradingServiceAdapterImpl</servlet-class>
 		<init-param>
 			<param-name>persistence.unit</param-name>
-			<param-value>exchange</param-value>
-		</init-param>
-		<init-param>
+			<param-value>exchange-slice</param-value>
 			<param-name>mock</param-name>
 			<param-value>false</param-value>
+			<param-name>server-side-stacktrace</param-name>
+			<param-value>true</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>
