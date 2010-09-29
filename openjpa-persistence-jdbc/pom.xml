@@ -46,6 +46,7 @@
             </activation>
             <properties>
                 <build.enhance>false</build.enhance>
+                <openjpa.dynamicEnhance>true</openjpa.dynamicEnhance>
                 <surefire.jvm.args>-Dopenjpa.RuntimeUnenhancedClasses=unsupported ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
             <build>
@@ -54,36 +55,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${surefire.jvm.args}</argLine>
                     <includes>
                         <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
-                     </includes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionDriverName</name>
-                            <value>${connection.driver.name}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionURL</name>
-                            <value>${connection.url}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionProperties</name>
-                            <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
-                        </property>
-                        <property>
-                            <name>tests.openjpa.allowfailure</name>
-                            <value>${tests.openjpa.allowfailure}</value>
-                        </property>
-                    </systemProperties>
+                    </includes>
                 </configuration>
             </plugin>
           </plugins>
@@ -830,7 +804,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${surefire.jvm.args}</argLine>
                     <excludes>
                         <!-- exclude classes that end with 'Test'; these 
                              are not test cases per OpenJPA standards -->
@@ -1012,52 +985,6 @@
                         <!-- TestEJBTransactionalClass tests nothing -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
                     </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>false</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionDriverName</name>
-                            <value>${connection.driver.name}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionURL</name>
-                            <value>${connection.url}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.deadlockTimeout</name>
-                            <value>${derby.locks.deadlockTimeout}</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.waitTimeout</name>
-                            <value>${derby.locks.waitTimeout}</value>
-                        </property>
-                        <property>
-                            <name>derby.storage.pageCacheSize</name>
-                            <value>10000</value>
-                        </property>
-                        <property>
-                            <name>derby.storage.initialPages</name>
-                            <value>10</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionProperties</name>
-                            <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
-                        </property>
-                        <property>
-                            <name>tests.openjpa.allowfailure</name>
-                            <value>${tests.openjpa.allowfailure}</value>
-                        </property>
-                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

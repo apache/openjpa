@@ -53,6 +53,9 @@
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
+        <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
+        <openjpa.dynamicEnhance>false</openjpa.dynamicEnhance>
+        <!-- Commons DBCP settings passed in as openjpa.ConnectionProperties -->
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
         <dbcp.minIdle>2</dbcp.minIdle>
@@ -685,6 +688,60 @@
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.DynamicEnhancementAgent</name>
+                            <value>${openjpa.dynamicEnhance}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionDriverName</name>
+                            <value>${connection.driver.name}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionURL</name>
+                            <value>${connection.url}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionUserName</name>
+                            <value>${connection.username}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionPassword</name>
+                            <value>${connection.password}</value>
+                        </property>
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>target/derby.log</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.deadlockTimeout</name>
+                            <value>${derby.locks.deadlockTimeout}</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.waitTimeout</name>
+                            <value>${derby.locks.waitTimeout}</value>
+                        </property>
+                        <property>
+                            <name>derby.storage.pageCacheSize</name>
+                            <value>10000</value>
+                        </property>
+                        <property>
+                            <name>derby.storage.initialPages</name>
+                            <value>10</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionProperties</name>
+                            <value>${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
+                        </property>
+                    </systemProperties>
                     </configuration>
                 </plugin>
                 <plugin>

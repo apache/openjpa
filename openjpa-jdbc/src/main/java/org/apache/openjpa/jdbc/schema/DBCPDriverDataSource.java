@@ -142,49 +142,49 @@ extends SimpleDriverDataSource implements Configurable {
         // only perform the following check for the first connection attempt (_driverClassName == null),
         // as multiple connections could be requested (like from SchemaTool) and isDBCPDriver() will be true
         if (isDBCPDataSource()) {
-            String propDriver = hasProperty(dbcpProps, "DriverClassName");
+            String propDriver = hasProperty(dbcpProps, "driverClassName");
             if (propDriver == null || propDriver.trim().isEmpty()) {
                 // if user specified DBCP for the connectionDriverName, then make sure they supplied a DriverClassName
                 throw new RuntimeException(_eloc.get("connection-property-invalid", "DriverClassName",
                     propDriver).getMessage());
             }
-            propDriver = hasProperty(dbcpProps, "Url");
+            propDriver = hasProperty(dbcpProps, "url");
             if (propDriver == null || propDriver.trim().isEmpty()) {
                 // if user specified DBCP for the connectionDriverName, then make sure they supplied a Url
-                throw new RuntimeException(_eloc.get("connection-property-invalid", "Url",
+                throw new RuntimeException(_eloc.get("connection-property-invalid", "URL",
                     propDriver).getMessage());
             }
         } else {
             // set Commons DBCP expected DriverClassName to the original connection driver name
-            dbcpProps.setProperty(hasKey(dbcpProps, "DriverClassName", "DriverClassName"), getConnectionDriverName());
+            dbcpProps.setProperty(hasKey(dbcpProps, "driverClassName", "driverClassName"), getConnectionDriverName());
             // set Commons DBCP expected URL property
-            dbcpProps.setProperty(hasKey(dbcpProps, "Url", "Url"), getConnectionURL());
+            dbcpProps.setProperty(hasKey(dbcpProps, "url", "url"), getConnectionURL());
         }
         
         // Commons DBCP requires non-Null username/password values in the connection properties
-        if (hasKey(dbcpProps, "Username") == null) {
+        if (hasKey(dbcpProps, "username") == null) {
             if (getConnectionUserName() != null)
-                dbcpProps.setProperty("Username", getConnectionUserName());
+                dbcpProps.setProperty("username", getConnectionUserName());
             else
-                dbcpProps.setProperty("Username", "");
+                dbcpProps.setProperty("username", "");
         }
         // Commons DBCP requires non-Null username/password values in the connection properties
-        if (hasKey(dbcpProps, "Password") == null) {
+        if (hasKey(dbcpProps, "password") == null) {
             if (getConnectionPassword() != null)
-                dbcpProps.setProperty("Password", getConnectionPassword());
+                dbcpProps.setProperty("password", getConnectionPassword());
             else
-                dbcpProps.setProperty("Password", "");
+                dbcpProps.setProperty("password", "");
         }
 
         // set some default properties for DBCP
-        if (hasKey(dbcpProps, "MaxIdle") == null) {
-            dbcpProps.setProperty("MaxIdle", "1");
+        if (hasKey(dbcpProps, "maxIdle") == null) {
+            dbcpProps.setProperty("maxIdle", "1");
         }
-        if (hasKey(dbcpProps, "MinIdle") == null) {
-            dbcpProps.setProperty("MinIdle", "0");
+        if (hasKey(dbcpProps, "minIdle") == null) {
+            dbcpProps.setProperty("minIdle", "0");
         }
-        if (hasKey(dbcpProps, "MaxActive") == null) {
-            dbcpProps.setProperty("MaxActive", "10");
+        if (hasKey(dbcpProps, "maxActive") == null) {
+            dbcpProps.setProperty("maxActive", "10");
         }
         
         return dbcpProps;
@@ -202,28 +202,26 @@ extends SimpleDriverDataSource implements Configurable {
         // need to map "user" to "username" for Commons DBCP
         String uid = removeProperty(mergedProps, "user");
         if (uid != null) {
-            mergedProps.setProperty("Username", uid);
+            mergedProps.setProperty("username", uid);
         }
         
         // now, merge in any passed in properties
         if (props != null && !props.isEmpty()) {
             for (Iterator<Object> itr = props.keySet().iterator(); itr.hasNext();) {
                 String key = (String)itr.next();
-                String value = mergedProps.getProperty(key);
-                if (value != null) {
-                    // need to map "user" to "username" for Commons DBCP
-                    if ("user".equalsIgnoreCase(key)) {
-                        key = "Username";
-                    }
-                    // case-insensitive search for existing key
-                    String existingKey = hasKey(mergedProps, key);
-                    if (existingKey != null) {
-                        // update existing entry
-                        mergedProps.setProperty(existingKey, value);                        
-                    } else {
-                        // add property to the merged set
-                        mergedProps.setProperty(key, value);
-                    }
+                String value = props.getProperty(key);
+                // need to map "user" to "username" for Commons DBCP
+                if ("user".equalsIgnoreCase(key)) {
+                    key = "username";
+                }
+                // case-insensitive search for existing key
+                String existingKey = hasKey(mergedProps, key);
+                if (existingKey != null) {
+                    // update existing entry
+                    mergedProps.setProperty(existingKey, value);                        
+                } else {
+                    // add property to the merged set
+                    mergedProps.setProperty(key, value);
                 }
             }
         }

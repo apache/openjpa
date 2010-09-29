@@ -181,7 +181,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${test.jvm.arguments}</argLine>
                     <excludes>
                         <!-- exclude classes that end with 'Test'; these 
                              are not test cases per OpenJPA standards -->
@@ -192,40 +191,6 @@
                         <exclude>org/apache/openjpa/**/*$*.class</exclude>
                         <exclude>org/apache/openjpa/**/*.*.class</exclude>
                     </excludes>
-                    <systemProperties>
-                        <property>
-                            <name>openjpa.Log</name>
-                            <value>${openjpa.Log}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>false</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionDriverName</name>
-                            <value>${connection.driver.name}</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionURL</name>
-                            <value>${connection.url}</value>
-                        </property>
-                        <property>
-                            <name>derby.stream.error.file</name>
-                            <value>target/derby.log</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.deadlockTimeout</name>
-                            <value>5</value>
-                        </property>
-                        <property>
-                            <name>derby.locks.waitTimeout</name>
-                            <value>6</value>
-                        </property>
-                        <property>
-                            <name>openjpa.ConnectionProperties</name>
-                            <value>Username=${connection.username},Password=${connection.password},${dbcp.args}</value>
-                        </property>
-                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
