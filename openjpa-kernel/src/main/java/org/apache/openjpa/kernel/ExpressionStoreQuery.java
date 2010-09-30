@@ -19,6 +19,8 @@
 package org.apache.openjpa.kernel;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
@@ -508,8 +511,28 @@ public class ExpressionStoreQuery
                 for (int i = 0; i < exps.grouping.length; i++)
                     exps.grouping[i].acceptVisit(visitor);
                 visitor._grouping = false;
-                if (exps.having != null)
-                    exps.having.acceptVisit(visitor);
+                if (exps.having != null) {
+                    Class cls = exps.having.getClass();
+                    if (cls.getName().endsWith("Expression"))
+                        cls = cls.getSuperclass();
+                    Object value2 = null;
+                    Method getValue2 = null;
+                    try {
+                        getValue2 = cls.getMethod("getValue2");
+                        getValue2.setAccessible(true);
+                        value2 = getValue2.invoke(exps.having, (Object[]) null);
+                    } catch (NoSuchMethodException name) {
+                        // skip
+                    } catch (IllegalAccessException iae) {
+                        // skip
+                    } catch (InvocationTargetException ite) {
+                        // skip
+                    } 
+                    if (value2 != null && value2 instanceof Subquery)
+                        ;  // complex having with subquery, validation is performed by DBMS
+                    else
+                        exps.having.acceptVisit(visitor);
+                }
                 for (int i = 0; i < exps.projections.length; i++)
                     exps.projections[i].acceptVisit(visitor);
             }
