@@ -280,11 +280,24 @@ public class SelectConstructor
             Val orderVal;
             for (int i = 0; i < exps.ordering.length; i++) {
                 orderVal = (Val) exps.ordering[i];
-                state.ordering[i] = orderVal.initialize(sel, ctx, 0);
+                if (contains(orderVal, exps.grouping)) 
+                    state.ordering[i] = orderVal.initialize(sel, ctx, Val.JOIN_REL);
+                else
+                    state.ordering[i] = orderVal.initialize(sel, ctx, 0);
+                    
                 joins = sel.and(joins, state.ordering[i].joins);
             }
         }
         sel.where(joins);
+    }
+    
+    private boolean contains(Val orderVal, Value[] grouping) {
+        for (int i = 0; i < grouping.length; i++) {
+            Val groupVal = (Val) grouping[i];
+            if (orderVal.equals(groupVal))
+                return true;
+        }
+        return false;
     }
 
     /**

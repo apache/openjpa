@@ -33,7 +33,7 @@ public class TestEJBQueryInterface extends BaseQueryTest {
     }
 
     public void setUp() throws Exception {
-        super.setUp(Entity1.class, Entity2.class);
+        super.setUp(Entity1.class, Entity2.class, Order.class, OrderItem.class);
 
         int instNum = 10;
 
@@ -147,5 +147,16 @@ public class TestEJBQueryInterface extends BaseQueryTest {
         endEm(em);
     }
 
+    public void testOrderBy() {
+        EntityManager em = currentEntityManager();
+        startTx(em);
+        String jpql = "SELECT o.oid FROM OrderItem l LEFT JOIN l.order o GROUP BY o.oid ORDER BY o.oid ";
+        try {
+            List ret = em.createQuery(jpql).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
     //rest of the interface is tested by the CTS
 }
