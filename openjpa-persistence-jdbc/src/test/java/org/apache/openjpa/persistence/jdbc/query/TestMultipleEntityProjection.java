@@ -157,6 +157,26 @@ public class TestMultipleEntityProjection extends SingleEMFTestCase {
 		query = em.createQuery(jpql);
 		result = query.getResultList();
 		assertTrue(result.isEmpty());
+
+//      The following JPQL results in syntax error,
+//      see comments in OPENJPA-1814              
+//		jpql = "select m.publisher, max(m.datePublished) " + 
+//		    "from Magazine m group by m.publisher " + 
+//		    "having max(m.tsPublished) IN " + 
+//		    "(select max(m.tsPublished) from Magazine m " +
+//		    "where m.datePublished = CURRENT_TIMESTAMP)";
+//		query = em.createQuery(jpql);
+//		result = query.getResultList();
+//		assertTrue(result.isEmpty());
+
+		jpql = "select m.publisher, max(m.datePublished) " + 
+		    "from Magazine m group by m.publisher " + 
+		    "having max(m.tsPublished) = " + 
+		    "(select max(m.tsPublished) from Magazine m " + 
+		    "where m.datePublished = CURRENT_TIMESTAMP)";
+		query = em.createQuery(jpql);
+		result = query.getResultList();
+		assertTrue(result.isEmpty());
 	}
 	
 	/**
