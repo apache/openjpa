@@ -137,6 +137,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <argLine>${surefire.jvm.args}</argLine>
                     <excludes>
                         <!-- exclude classes that end with 'Test'; these 
                              are not test cases per OpenJPA standards -->

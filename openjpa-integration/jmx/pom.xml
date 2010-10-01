@@ -61,8 +61,8 @@
     </dependency>
   </dependencies>
   
-  <build>
-      <plugins>
+    <build>
+        <plugins>
             <!-- Extract the common test support files from o-p-j-tests.jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -90,38 +90,41 @@
                 </executions>
             </plugin>
 
-        <plugin>
-          <!-- Use openjpa maven plugin to enhance the domain model classes -->
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>openjpa-maven-plugin</artifactId>
-          <configuration>
-            <includes>org/apache/openjpa/integration/jmx/*.class</includes>
-            <addDefaultConstructor>true</addDefaultConstructor>
-            <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
-            <!-- persistenceXmlFile>${project.basedir}/src/test/resources/META-INF/persistence.xml</persistenceXmlFile-->
-          </configuration>
-          <executions>
-            <execution>
-              <id>enhancer</id>
-              <phase>process-test-classes</phase>
-              <goals>
-                <goal>test-enhance</goal>
-              </goals>
-            </execution>
-          </executions>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.openjpa</groupId>
-              <artifactId>openjpa-all</artifactId>
-              <version>${project.version}</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
-          <!-- The surefire plugin is used to run the jUnit tests -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-        </plugin>
-      </plugins>
-  </build>
+            <plugin>
+                <!-- Use openjpa maven plugin to enhance the domain model classes -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <configuration>
+                    <includes>org/apache/openjpa/integration/jmx/*.class</includes>
+                    <addDefaultConstructor>true</addDefaultConstructor>
+                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+                    <!-- persistenceXmlFile>${project.basedir}/src/test/resources/META-INF/persistence.xml</persistenceXmlFile-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>enhancer</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>test-enhance</goal>
+                       </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.openjpa</groupId>
+                        <artifactId>openjpa-all</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <!-- The surefire plugin is used to run the jUnit tests -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${surefire.jvm.args}</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

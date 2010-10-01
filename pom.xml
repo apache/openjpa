@@ -694,7 +694,7 @@
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
-                        <useSystemClassLoader>true</useSystemClassLoader>
+                        <useSystemClassLoader>false</useSystemClassLoader>
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
@@ -731,14 +731,6 @@
                         <property>
                             <name>derby.locks.waitTimeout</name>
                             <value>${derby.locks.waitTimeout}</value>
-                        </property>
-                        <property>
-                            <name>derby.storage.pageCacheSize</name>
-                            <value>10000</value>
-                        </property>
-                        <property>
-                            <name>derby.storage.initialPages</name>
-                            <value>10</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionProperties</name>

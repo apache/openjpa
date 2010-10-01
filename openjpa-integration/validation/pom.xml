@@ -194,7 +194,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>test-compile</phase>
+                        <phase>process-test-classes</phase>
                         <configuration>
                             <tasks>                           
                                 <ant antfile="src/main/ant/enhancer.xml" target="enhance" inheritRefs="true">
