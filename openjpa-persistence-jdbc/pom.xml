@@ -55,7 +55,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${surefire.jvm.args}</argLine>
                     <includes>
                         <include>org/apache/openjpa/persistence/enhance/DynamicEnhancementSuite.java</include>
                     </includes>
@@ -771,6 +770,7 @@
 
     <build>
         <plugins>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -795,6 +795,35 @@
                     </execution>
                 </executions>
             </plugin>
+-->
+            <!-- Try using o-m-p to reduce antrun memory leaks -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>org/apache/openjpa/persistence/inheritance/serializable/**,org/apache/openjpa/persistence/detach/serializable/**,org/apache/openjpa/persistence/xml/**,org/apache/openjpa/persistence/unenhanced/**,org/apache/openjpa/persistence/property/AccessModsEntity.class,org/apache/openjpa/enhance/Unenhanced**,org/apache/openjpa/persistence/jdbc/annotations/Unenhanced**,org/apache/openjpa/enhance/AbstractUnenhanced**,org/apache/openjpa/kernel/AbstractUnenhanced**</excludes>
+                    <addDefaultConstructor>true</addDefaultConstructor>
+                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>enhancer</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>test-enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.openjpa</groupId>
+                        <artifactId>openjpa-persistence-jdbc</artifactId>
+                        <version>${project.version}</version>
+                        <scope>test</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
