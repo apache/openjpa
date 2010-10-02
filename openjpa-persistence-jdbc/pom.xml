@@ -963,11 +963,6 @@
                         <!-- TestPMMemory creates heapdumps etc and there's no real asserts within the test.  -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestPMMemory.java</exclude>
 
-                        <!-- ================================================================== -->
-                        <!--  MetaModel tests are *temporarily* excluded to wait for            -->
-                        <!--  spec to stabilize on Result Processing API                        -->
-                        <!--  This was blanket exclude, but some tests were erroneously excluded.-->
-                        <!-- ==================================================================  --> 
                         <exclude>org/apache/openjpa/persistence/meta/TestExternalValues.java</exclude>
                         
                         <!-- Exclude subclassing tests   -->
