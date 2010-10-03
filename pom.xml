@@ -694,7 +694,7 @@
                         <argLine>${surefire.jvm.args}</argLine>
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
-                        <useSystemClassLoader>false</useSystemClassLoader>
+                        <useSystemClassLoader>true</useSystemClassLoader>
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
