@@ -26,6 +26,7 @@ import javax.persistence.Query;
 
 import junit.textui.TestRunner;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -64,9 +65,13 @@ public class TestXMLCustomerOrder
     private static final double ORDER_2_AMOUNT = 1000;
     private static final boolean ORDER_2_DELIVERED = false;
 
+    private static boolean firstTestExecuted;
+
     public void setUp() {
+        Object clearOrDropTables = (firstTestExecuted) ? CLEAR_TABLES : DROP_TABLES;
+        firstTestExecuted = true;
         setUp(Customer.class, Customer.CustomerKey.class, Order.class,
-            EAddress.class, DROP_TABLES);  // test create table DDL for XML column
+            EAddress.class, clearOrDropTables);  // test create table DDL for XML column but only once to save time.
 
         // skip test if dictionary has no support for XML column type
         setTestsDisabled(!dictionarySupportsXMLColumn());
@@ -347,10 +352,11 @@ public class TestXMLCustomerOrder
     private USAAddress createUSAAddress(String name) {
         USAAddress address = new ObjectFactory().createUSAAddress();
         address.setName(name);
-        address.getStreet().add("12500 Monterey");
+        // Use a 4000-byte value so the entire XML string is longer than 4000 bytes - ensure Oracle handles this.
+        address.getStreet().add(StringUtils.repeat("12500 Mont", 400));
         address.setCity("San Jose");
         address.setState("CA");
-        address.setZIP(new Integer("95141"));
+        address.setZIP(95141);
         return address;
     }
 

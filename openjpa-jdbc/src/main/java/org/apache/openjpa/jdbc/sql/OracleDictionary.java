@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -104,6 +105,11 @@ public class OracleDictionary
      * configure statements that it detects are operating on unicode fields.
      */
     public boolean useSetFormOfUseForUnicode = true;
+
+    /**
+     * Type constructor for XML column, used in INSERT and UPDATE statements.
+     */
+    public String xmlTypeMarker = "XMLType(?)";
 
     // some oracle drivers have problems with select for update; warn the
     // first time locking is attempted
@@ -237,9 +243,9 @@ public class OracleDictionary
                     timestampTypeName = "DATE"; // added oracle 9
                     supportsXMLColumn = false;
                 }
-                    // select of an xml column requires ".getStringVal()"
-                    // suffix. eg. t0.xmlcol.getStringVal()
-                    getStringVal = ".getStringVal()";
+                // select of an xml column requires ".getStringVal()" (for values <= 4000 bytes only)
+                // or ".getClobVal()" suffix. eg. t0.xmlcol.getClobVal()
+                getStringVal = ".getClobVal()";
             } else if (metadataClassName.startsWith("com.ddtek.")
                 || url.indexOf("jdbc:datadirect:oracle:") != -1
                 || "Oracle".equals(driverName)) {
@@ -249,6 +255,7 @@ public class OracleDictionary
                 driverVendor = VENDOR_OTHER;
         }
         cacheDriverBehavior(driverVendor);
+        guessJDBCVersion(conn);
     }
 
     /**
@@ -560,6 +567,16 @@ public class OracleDictionary
     public void setClobString(PreparedStatement stmnt, int idx, String val,
         Column col)
         throws SQLException {
+        if (col.isXML()) {
+            if (isJDBC4) {
+                // This JDBC 4 method handles values longer than 4000 bytes.
+                stmnt.setClob(idx, new StringReader(val), val.length());
+            } else {
+                // This method is limited to 4000 bytes.
+                setCharacterStream(stmnt, idx, new StringReader(val), val.length(), col);
+            }
+            return;
+        }
         if (!useSetStringForClobs && val.length() == 0)
             stmnt.setClob(idx, getEmptyClob());
         else {
@@ -1308,6 +1325,38 @@ public class OracleDictionary
             row.setNull(col);
         } else {
             row.setBlob(col, getEmptyBlob());
+        }
+    }
+
+    /**
+     * Oracle requires special handling of XML column.
+     * Unless the value length is less or equal to 4000 bytes,
+     * the parameter marker must be decorated with type constructor.
+     */
+    @Override
+    public String getMarkerForInsertUpdate(Column col, Object val) {
+        if (col.isXML() && val != RowImpl.NULL) {
+            return xmlTypeMarker;
+        }
+        return super.getMarkerForInsertUpdate(col, val);
+    }
+
+    /**
+     * Oracle drivers, at least in versions 10.2.0.4 and 11.2.0.1, incorrectly return a driver major version from
+     * {@link DatabaseMetaData#getJDBCMajorVersion()}.
+     */
+    protected void guessJDBCVersion(Connection conn) {
+        if (_driverBehavior != BEHAVE_ORACLE) {
+            return;
+        }
+        isJDBC4 = true;
+        try {
+            conn.getClientInfo();   // Try to call a JDBC 4 method.
+        } catch (SQLException e) {
+            // OK, we are on JDBC 4.
+        } catch (Throwable t) {
+            // Most likely an AbstractMethodError from JDBC 3 driver.
+            isJDBC4 = false;
         }
     }
 }

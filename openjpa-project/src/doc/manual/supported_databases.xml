@@ -1206,6 +1206,14 @@ openjpa.ConnectionRetainMode: always
             </example>
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+Mapping persistent attributes to <link linkend="ref_guide_xmlmapping">XML columns</link> requires
+a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database.
+Otherwise an <literal>ORA-01461: can bind a LONG value only for insert into a LONG column</literal>
+error may result.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>

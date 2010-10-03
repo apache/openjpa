@@ -1490,8 +1490,8 @@ to <literal>"FOR UPDATE"</literal>.
 <literal>GetStringVal</literal>: 
 A special function to return the value of an XML 
 column in a select statement.  For example, Oracle uses 
-<literal>".getStringVal()"</literal>, as in, 
-<literal>"select t0.xmlcol.getStringVal() from xmltab t0"</literal>.
+<literal>".getClobVal()"</literal>, as in 
+<literal>"SELECT t0.xmlcol.getClobVal() FROM xmltab t0"</literal>.
 Defaults to the empty string.
                     </para>
                 </listitem>
@@ -1503,14 +1503,6 @@ Defaults to the empty string.
                         </primary>
                         <secondary>
                             InClauseLimit
-                        </secondary>
-                    </indexterm>
-                    <indexterm>
-                        <primary>
-                            JDBC
-                        </primary>
-                        <secondary>
-                            GetStringVal
                         </secondary>
                     </indexterm>
 <literal>InClauseLimit</literal>: 

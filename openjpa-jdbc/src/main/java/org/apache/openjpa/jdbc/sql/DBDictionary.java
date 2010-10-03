@@ -355,6 +355,7 @@ public class DBDictionary
     protected Log log = null;
     protected boolean connected = false;
     protected boolean isJDBC3 = false;
+    protected boolean isJDBC4 = false;
     protected final Set<String> reservedWordSet = new HashSet<String>();
     // reservedWordSet subset that CANNOT be used as valid column names
     // (i.e., without surrounding them with double-quotes)
@@ -423,9 +424,11 @@ public class DBDictionary
             try {
                 metaData = conn.getMetaData();
                 try {
-                    // JDBC3-only method, so it might throw a 
+                    // JDBC3-only method, so it might throw an
                     // AbstractMethodError
-                    isJDBC3 = metaData.getJDBCMajorVersion() >= 3;
+                    int JDBCMajorVersion = metaData.getJDBCMajorVersion();
+                    isJDBC3 = JDBCMajorVersion >= 3;
+                    isJDBC4 = JDBCMajorVersion >= 4;
                 } catch (Throwable t) {
                     // ignore if not JDBC3
                 }
@@ -5436,5 +5439,17 @@ public class DBDictionary
             getTrailingDelimiter();
         }
         return conversionKey;
+    }
+
+    /**
+     * Return parameter marker for INSERT and UPDATE statements.
+     * Usually it is <code>?</code> but some database-specific types might require customization.
+     * 
+     * @param col column definition
+     * @param val value to be inserted/updated
+     * @return parameter marker
+     */
+    public String getMarkerForInsertUpdate(Column col, Object val) {
+        return "?";
     }
 }

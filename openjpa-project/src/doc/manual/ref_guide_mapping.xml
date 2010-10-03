@@ -2633,6 +2633,10 @@ SQL Server 2005
                   </listitem>
               </itemizedlist>
               <para>
+See <xref linkend="supported_databases"/> for possible database-specific
+restrictions.
+              </para>
+              <para>
 Annotate the entity property using the XMLValueHandler strategy:
 		      </para>
 <programlisting>
