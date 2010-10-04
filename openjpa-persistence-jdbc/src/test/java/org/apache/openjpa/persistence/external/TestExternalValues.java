@@ -19,15 +19,43 @@
 package org.apache.openjpa.persistence.external;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.PersistenceException;
+import junit.framework.Assert;
+
 import org.apache.openjpa.persistence.RollbackException;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestExternalValues extends SingleEMFTestCase {
 
     public void setUp() {
-        super.setUp(EntityA.class);
+        super.setUp(CLEAR_TABLES, EntityA.class);
+    }
+
+    public void testExternalValues() {
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+
+        EntityA entity = new EntityA();
+
+        entity.setS1("SMALL");
+        entity.setS2("MEDIUM");
+        entity.setUseStreaming(true);
+
+        em.persist(entity);
+        
+        em.getTransaction().commit();
+        
+        // Validate
+        
+        Query q = em.createQuery("SELECT a from EntityA a");
+        EntityA aPrime = (EntityA) q.getSingleResult();
+        Assert.assertEquals("SMALL", aPrime.getS1());
+        Assert.assertEquals("MEDIUM", aPrime.getS2());
+        Assert.assertEquals(true, aPrime.getUseStreaming());
+
+        em.close();
     }
 
     public void testUnrecognizedExternalValue() {
