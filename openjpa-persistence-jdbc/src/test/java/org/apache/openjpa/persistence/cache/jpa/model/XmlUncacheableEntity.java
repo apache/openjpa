@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.cache.jpa.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
@@ -28,9 +29,11 @@ import javax.persistence.Version;
 @Entity
 public class XmlUncacheableEntity implements CacheEntity {
     @Id
+    @Column(name="ID")
     private int id;
 
     @Version
+    @Column(name="VERSN")
     private int version;
 
     private String name;

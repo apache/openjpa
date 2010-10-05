@@ -323,11 +323,11 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
         em = getEntityManagerFactory().createEntityManager();
         em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.BYPASS);
         CacheableEntity ceFromDB =
-            (CacheableEntity) em.createNativeQuery("Select * from CacheableEntity where id = 1", CacheableEntity.class)
+            (CacheableEntity) em.createNativeQuery("Select * from CacheableEntity where ID = 1", CacheableEntity.class)
                 .getSingleResult();
 
         XmlCacheableEntity xceFromDB =
-            (XmlCacheableEntity) em.createNativeQuery("Select * from XmlCacheableEntity where id = 1",
+            (XmlCacheableEntity) em.createNativeQuery("Select * from XmlCacheableEntity where ID = 1",
                 XmlCacheableEntity.class).getSingleResult();
 
         assertEquals(version + 1, ceFromDB.getVersion());
@@ -360,8 +360,8 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
             int e1Version = e1.getVersion();
             int e2Version = e2.getVersion();
 
-            String e1Sql = "UPDATE CacheableEntity SET VERSION=?1 WHERE ID=?2";
-            String e2Sql = "UPDATE XmlCacheableEntity SET VERSION=?1 WHERE ID=?2";
+            String e1Sql = "UPDATE CacheableEntity SET VERSN=?1 WHERE ID=?2";
+            String e2Sql = "UPDATE XmlCacheableEntity SET VERSN=?1 WHERE ID=?2";
             em.getTransaction().begin();
             assertEquals(1, em.createNativeQuery(e1Sql).setParameter(1, e1Version + 1).setParameter(2, e1.getId())
                 .executeUpdate());
