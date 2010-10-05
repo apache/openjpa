@@ -35,6 +35,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.jdbc.KeyColumn;
 import org.apache.openjpa.persistence.FetchAttribute;
@@ -51,9 +52,9 @@ import org.apache.openjpa.persistence.jdbc.KeyColumn;
 @FetchAttribute(name = "bigIntegerPCMap", recursionDepth = 0),
 @FetchAttribute(name = "embeddedE", recursionDepth = 0),
 @FetchAttribute(name = "embeddedA", recursionDepth = 0)
-
     })
     })
+@Table(name="K_ATTACHD")
 public class AttachD implements Serializable {
 
     @Id

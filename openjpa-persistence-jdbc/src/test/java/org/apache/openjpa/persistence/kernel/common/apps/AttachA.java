@@ -43,7 +43,7 @@ import org.apache.openjpa.persistence.FetchGroups;
 @FetchAttribute(name = "attachEArray", recursionDepth = 0)
     })
     })
-@Table(name="K_AttachA")
+@Table(name="K_ATTACHA")
 public class AttachA implements Serializable {
 
     @Id

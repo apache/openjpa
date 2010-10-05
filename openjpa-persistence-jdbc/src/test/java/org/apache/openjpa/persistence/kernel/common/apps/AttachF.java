@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.FetchAttribute;
 import org.apache.openjpa.persistence.FetchGroup;
@@ -46,6 +47,7 @@ import org.apache.openjpa.persistence.PersistentCollection;
 @FetchAttribute(name = "embeddedC", recursionDepth = 0)
     })
     })
+@Table(name="K_ATTACHF")
 public class AttachF implements Serializable {
 
     @Id

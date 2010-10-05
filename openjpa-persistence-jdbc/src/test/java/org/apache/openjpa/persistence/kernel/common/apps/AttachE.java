@@ -47,7 +47,7 @@ import org.apache.openjpa.persistence.FetchGroups;
 @FetchAttribute(name = "f")
     })
     })
-@Table(name="K_AttachE")
+@Table(name="K_ATTACHE")
 public class AttachE implements Serializable {
 
     @Id
