@@ -754,11 +754,6 @@ retrieve all persistent state; other side effects might not be desirable.
             </para>
         </warning>
         <para>
-Each class must use either field access or property access for all state; you
-cannot use both access types within the same class. Additionally, a subclass
-must use the same access type as its superclass.
-        </para>
-        <para>
 The remainder of this document uses the term "persistent field" to refer to
 either a persistent field or a persistent property.
         </para>
