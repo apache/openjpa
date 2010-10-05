@@ -218,46 +218,6 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
     
-    public long getEvictionCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getEvictionCount();
-        return NO_STATS;
-    }
-
-    public long getEvictionCount(String className) 
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getEvictionCount(clazz);
-    }
-
-    public long getEvictionCount(Class<?> c) {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getEvictionCount(c);
-        return NO_STATS;        
-    }
-    
-    public long getTotalEvictionCount() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getTotalEvictionCount();
-        return NO_STATS;
-    }
-
-    public long getTotalEvictionCount(String className) 
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getTotalEvictionCount(clazz);
-    }
-
-    public long getTotalEvictionCount(Class<?> c) {
-        CacheStatistics stats = getStatistics();
-        if (stats != null)
-            return stats.getTotalEvictionCount(c);
-        return NO_STATS;
-    }
-    
     @SuppressWarnings("unchecked")
     public Set<String> classNames() {
         CacheStatistics stats = getStatistics();

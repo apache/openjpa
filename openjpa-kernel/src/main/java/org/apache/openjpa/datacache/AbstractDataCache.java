@@ -34,12 +34,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.util.OpenJPAId;
+
 import serp.util.Strings;
 
 /**
@@ -54,7 +58,7 @@ import serp.util.Strings;
 public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     implements DataCache, Configurable {
 	
-    protected CacheStatistics.Default stats = new CacheStatistics.Default();
+    protected CacheStatisticsSPI _stats = new CacheStatisticsImpl();
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
 
@@ -86,11 +90,11 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
     public void setEnableStatistics(boolean enable){
         if(enable == true){
-            stats.enable();
+            _stats.enable();
         }
     }
     public void getEnableStatistics(){
-        stats.isEnabled();
+        _stats.isEnabled();
     }
 
     public String getEvictionSchedule() {
@@ -157,9 +161,6 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public boolean contains(Object key) {
         DataCachePCData o = getInternal(key);
-        if (stats.isEnabled()) {
-            stats.newGet(o == null ? null : o.getType(), o != null);
-        }
         if (o != null && o.isTimedOut()) {
             o = null;
             removeInternal(key);
@@ -195,9 +196,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
             else
                 log.trace(s_loc.get("cache-hit", key));
         }
-        if (stats.isEnabled()) {
-            stats.newGet((o == null) ? null : o.getType(), o != null);
-        }
+
         return o;
     }
 
@@ -213,9 +212,6 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     }
 
     public DataCachePCData put(DataCachePCData data) {
-        if (stats.isEnabled()) {
-            stats.newPut(data.getType());
-        }
         DataCachePCData o = putInternal(data.getId(), data);
         if (log.isTraceEnabled())
             log.trace(s_loc.get("cache-put", data.getId()));
@@ -224,18 +220,12 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void update(DataCachePCData data) {
         if (recacheUpdates()) {
-            if (stats.isEnabled()) {
-                stats.newPut(data.getType());
-            }
             putInternal(data.getId(), data);
         }
     }
 
     public DataCachePCData remove(Object key) {
         DataCachePCData o = removeInternal(key);
-        if (stats.isEnabled()) {
-            stats.newEvict(o == null ? null : o.getType());
-        }
         if (o != null && o.isTimedOut())
             o = null;
         if (log.isTraceEnabled()) {
@@ -418,9 +408,6 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      */
     protected void putAllInternal(Collection<DataCachePCData> pcs) {
         for (DataCachePCData pc : pcs) {
-            if (stats.isEnabled()) {
-                stats.newPut(pc.getType());
-            }
             putInternal(pc.getId(), pc);
         }
     }
@@ -492,9 +479,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public boolean isPartitioned() {
         return false;
     }
-
-    public CacheStatistics getStatistics() {
-    	return stats;
+    
+     public CacheStatistics getStatistics() {
+    	return _stats;
     }
 
     // ---------- Configurable implementation ----------
@@ -549,5 +536,9 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public void setExcludedTypes(String types) {
         _excludedTypes =
             StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+    }
+
+    public DataCache selectCache(OpenJPAStateManager sm) {
+        return this;
     }
 }

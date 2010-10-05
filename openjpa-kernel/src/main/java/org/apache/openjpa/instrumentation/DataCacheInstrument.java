@@ -60,17 +60,7 @@ public interface DataCacheInstrument {
      */
     public long getTotalWriteCount(String className) 
         throws ClassNotFoundException;
-
-    /**
-     * Gets the number of cache evictions from the last reset.
-     */
-    public long getEvictionCount();
-
-    /**
-     * Gets the total number of cache evictions since cache start. 
-     */
-    public long getTotalEvictionCount();
-        
+       
     /**
      * Returns the name of the cache
      */

@@ -147,6 +147,10 @@ public class DataCacheStoreManager
                     data = newPCData(sm);
                     data.store(sm);
                     mods.additions.add(new PCDataHolder(data, sm));
+                    CacheStatistics stats = cache.getStatistics();
+                    if (stats.isEnabled()) {
+                        ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
+                    }
                 }
             }
 
@@ -181,6 +185,10 @@ public class DataCacheStoreManager
                     } else {
                         data.store(sm, fields);
                         mods.existingUpdates.add(new PCDataHolder(data, sm));
+                    }
+                    CacheStatistics stats = cache.getStatistics();
+                    if (stats.isEnabled()) {
+                        ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
                     }
                 }
             }
@@ -272,9 +280,22 @@ public class DataCacheStoreManager
     }
 
     public boolean exists(OpenJPAStateManager sm, Object edata) {
-        DataCache cache = _mgr.selectCache(sm); 
-        if (cache != null && !isLocking(null) && cache.contains(sm.getObjectId()))
+        DataCache cache = _mgr.selectCache(sm);
+        CacheStatistics stats = cache.getStatistics();
+        if (cache != null && !isLocking(null) && cache.contains(sm.getObjectId())){
+            if (stats.isEnabled()) {
+                // delay this call ONLY if stats collection is enabled
+                Class<?> cls = sm.getMetaData().getDescribedType();
+                ((CacheStatisticsSPI)stats).newGet(cls, false);
+            }
             return true;
+        }
+        // If isLocking(null)==true && cache.contains(..) == true... probably shouldn't count?
+        if (stats.isEnabled()) {
+            // delay this call ONLY if stats collection is enabled
+            Class<?> cls = sm.getMetaData().getDescribedType();
+            ((CacheStatisticsSPI)stats).newGet(cls, false);
+        }
         return super.exists(sm, edata);
     }
 
@@ -301,7 +322,11 @@ public class DataCacheStoreManager
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
         FetchConfiguration fc = sm.getContext().getFetchConfiguration();
+        CacheStatistics stats = cache.getStatistics();
         if (cache == null || sm.isEmbedded() || fc.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS) {
+            if(stats.isEnabled()){
+                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+            }
             return super.syncVersion(sm, edata);
         }
         
@@ -313,6 +338,9 @@ public class DataCacheStoreManager
 
         // if we have a cached version update from there
         if (version != null) {
+            if(stats.isEnabled()){
+                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+            }
             if (!version.equals(sm.getVersion())) {
                 sm.setVersion(version);
                 return false;
@@ -320,6 +348,9 @@ public class DataCacheStoreManager
             return true;
         }
 
+        if(stats.isEnabled()){
+            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+        }
         // use data store version
         return super.syncVersion(sm, edata);
     }
@@ -329,18 +360,29 @@ public class DataCacheStoreManager
         if (cache == null) {
             return super.initialize(sm, state, fetch, edata);
         }
+        Class<?> cls = sm.getMetaData().getDescribedType();
         DataCachePCData data = cache.get(sm.getObjectId());
+        CacheStatistics stats = cache.getStatistics();
         boolean fromDatabase = false; 
         boolean alreadyCached = data != null; 
         if (sm.isEmbedded() 
          || fetch.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS
          || fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
+            // stats -- Skipped reading from the cache, noop
             fromDatabase = super.initialize(sm, state, fetch, edata);
         } else {
-            if (alreadyCached && !isLocking(fetch)) {                
-                sm.initialize(data.getType(), state);
+            if (alreadyCached && !isLocking(fetch)) {
+                if (stats.isEnabled()) {
+                    ((CacheStatisticsSPI)stats).newGet(cls, true);
+                }
+                sm.initialize(cls, state);
                 data.load(sm, fetch, edata);
             } else {
+                if (!alreadyCached) {
+                    if (stats.isEnabled()) {
+                        ((CacheStatisticsSPI)stats).newGet(cls, false);
+                    }
+                }
                 fromDatabase = super.initialize(sm, state, fetch, edata);
             }
         }
@@ -349,6 +391,9 @@ public class DataCacheStoreManager
                            && ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached)
                             || (fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH));
         if (updateCache) {
+            if (stats.isEnabled()) {
+                ((CacheStatisticsSPI)stats).newPut(cls);
+            }
             cacheStateManager(cache, sm, data);
         }
         return fromDatabase || alreadyCached;
@@ -389,11 +434,17 @@ public class DataCacheStoreManager
         if (cache == null || sm.isEmbedded() || bypass(fetch, StoreManager.FORCE_LOAD_NONE))
             return super.load(sm, fields, fetch, lockLevel, edata);
 
+        CacheStatistics stats = cache.getStatistics();
+        Class<?> cls = sm.getMetaData().getDescribedType();
         DataCachePCData data = cache.get(sm.getObjectId());
         if (lockLevel == LockLevels.LOCK_NONE && !isLocking(fetch) && data != null)
             data.load(sm, fields, fetch, edata);
-        if (fields.length() == 0)
+        if (fields.length() == 0){
+            if (stats.isEnabled()) {
+                ((CacheStatisticsSPI)stats).newGet(cls, true);
+            }
             return true;
+        }
 
         // load from store manager; clone the set of still-unloaded fields
         // so that if the store manager decides to modify it it won't affect us
@@ -452,15 +503,21 @@ public class DataCacheStoreManager
 
             for (OpenJPAStateManager sm : smList) {
                 data = dataMap.get(sm.getObjectId());
-
+                CacheStatistics stats = cache.getStatistics();
                 if (sm.getManagedInstance() == null) {
                     if (data != null) {
                         //### the 'data.type' access here probably needs
                         //### to be addressed for bug 511
+                        if (stats.isEnabled()) {
+                            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+                        }
                         sm.initialize(data.getType(), state);
                         data.load(sm, fetch, edata);
                     } else {
                         unloaded = addUnloaded(sm, null, unloaded);
+                        if (stats.isEnabled()) {
+                            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+                        }
                     }
                 } else if (load != FORCE_LOAD_NONE
                         || sm.getPCState() == PCState.HOLLOW) {
@@ -469,10 +526,22 @@ public class DataCacheStoreManager
                         // load unloaded fields
                         fields = sm.getUnloaded(fetch);
                         data.load(sm, fields, fetch, edata);
-                        if (fields.length() > 0)
+                        if (fields.length() > 0){
                             unloaded = addUnloaded(sm, fields, unloaded);
-                    } else
+                            if (stats.isEnabled()) {
+                                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+                            }
+                        }else{
+                            if (stats.isEnabled()) {
+                                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+                            }
+                        }
+                    } else{
                         unloaded = addUnloaded(sm, null, unloaded);
+                        if (stats.isEnabled()) {
+                            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+                        }
+                    }
                 }
             }
         }
@@ -517,6 +586,10 @@ public class DataCacheStoreManager
                     cache.put(data);
                 else
                     cache.update(data);
+                CacheStatistics stats = cache.getStatistics();
+                if (stats.isEnabled()) {
+                    ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
+                }
             } finally {
                 cache.writeUnlock();
             }
