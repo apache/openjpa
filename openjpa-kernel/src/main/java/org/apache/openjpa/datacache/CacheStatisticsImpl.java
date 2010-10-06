@@ -128,9 +128,6 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
         if (!enabled) {
             return;
         }
-        if (cls == null) {
-            throw new RuntimeException("Snap! newGet will null cls Name");
-        }
         cls = (cls == null) ? Object.class : cls;
         addSample(cls, READ);
         if (hit) {
