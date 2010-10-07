@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -46,7 +47,8 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         setUnsupportedDatabases(
                 MySQLDictionary.class,
                 OracleDictionary.class,
-                SQLServerDictionary.class);
+                SQLServerDictionary.class, 
+                SybaseDictionary.class);
         if (isTestsDisabled()) {
             // getLog().trace("TestMultipleSchemaNames() - Skipping all tests - Not supported on this DB");
             return;

@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestAutoIncrement extends SingleEMTestCase {
@@ -33,7 +34,7 @@ public class TestAutoIncrement extends SingleEMTestCase {
             disabled = true;
             return;
         }
-        if (dic instanceof SQLServerDictionary || dic instanceof OracleDictionary) {
+        if (dic instanceof SQLServerDictionary || dic instanceof OracleDictionary || dic instanceof SybaseDictionary) {
             disabled = true;
             return;
         }
