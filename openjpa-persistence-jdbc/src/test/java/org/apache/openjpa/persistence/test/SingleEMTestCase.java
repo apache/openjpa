@@ -106,16 +106,21 @@ public abstract class SingleEMTestCase
      * @return false if the EntityManager was already closed.
      */
     protected boolean close() {
+        boolean brc = false;
         if (em == null)
-            return false;
+            return brc;
 
-        rollback();
+        try {
+            rollback();
 
-        if (!em.isOpen())
-            return false;
-
-        em.close();
-        return !em.isOpen();
+            if (!em.isOpen())
+                return brc;
+        } finally {
+            em.close();
+            brc = em.isOpen();
+            em = null;
+        }
+        return !brc;
     }
 
     /** 

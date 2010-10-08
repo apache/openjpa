@@ -46,6 +46,7 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Base class for Persistence TestCases. This class contains utility methods but does not maintain an EntityManager or
@@ -115,6 +116,27 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         if (oemf == null) {
             throw new NullPointerException("Expected an entity manager factory " + "for the persistence unit named: \""
                 + pu + "\"");
+        }
+        return oemf;
+    }
+
+    /**
+     * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
+     * tell the test framework to delete all table contents before running the tests.
+     * 
+     * @param props
+     *            list of persistent types used in testing and/or configuration values in the form
+     *            key,value,key,value...
+     */
+    protected OpenJPAEntityManagerFactorySPI createNamedOpenJPAEMF(final String pu,
+            String res, Map<String,Object> props) {
+        OpenJPAEntityManagerFactorySPI oemf = null;
+        Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
+        config.putAll(props);
+        oemf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(pu, res, props);
+        if (oemf == null) {
+            throw new NullPointerException("Expected an OpenJPA entity manager factory " +
+                "for the persistence unit named: \"" + pu + "\"");
         }
         return oemf;
     }
