@@ -48,6 +48,12 @@ public abstract class SQLListenerTestCase
         super.setUp(copy); 
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        resetSQL();
+    }
+
     /**
      * Confirm that the specified SQL has been executed.
      *
