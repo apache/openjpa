@@ -56,6 +56,14 @@ extends AbstractCachedEMFTestCase {
             listen2 = new ListenerImpl());
     }
 
+    public void tearDown() throws Exception {
+        super.tearDown();
+        clear(emf1);
+        closeEMF(emf1);
+        clear(emf2);
+        closeEMF(emf2);
+    }
+        
     public void testSJVMRemoteCommitProvider() {
         assertNotSame(JPAFacadeHelper.toBrokerFactory(emf1),
             JPAFacadeHelper.toBrokerFactory(emf2));
