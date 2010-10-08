@@ -25,31 +25,28 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestBadAutoDetachProperty extends TestCase {
+public class TestBadAutoDetachProperty extends AbstractPersistenceTestCase {
     public void testEmptyValue() {
         HashMap props = new HashMap(System.getProperties());
         props.put("openjpa.AutoDetach", "");
-        EntityManagerFactory emf = (OpenJPAEntityManagerFactory) Persistence
-                .createEntityManagerFactory("test", props);
+        EntityManagerFactory emf = createNamedEMF("test", props);
         EntityManager em = emf.createEntityManager();
-        em.close();
-        emf.close();
+        clear(emf);
+        closeEMF(emf);
     }
 
     public void testCommaOnlyValue() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
         try {
             HashMap props = new HashMap(System.getProperties());
             props.put("openjpa.AutoDetach", ",");
-            EntityManagerFactory emf = (OpenJPAEntityManagerFactory) Persistence
-                    .createEntityManagerFactory("test", props);
-            EntityManager em = emf.createEntityManager();
-            em.close();
-            emf.close();
+            emf = createNamedEMF("test", props);
+            em = emf.createEntityManager();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
             if (cause != null) {
@@ -70,18 +67,20 @@ public class TestBadAutoDetachProperty extends TestCase {
         } catch (RuntimeException e) {
             fail("Should have caught a PersistenceException, instead caught: "
                     + e);
+        } finally {
+            clear(emf);
+            closeEMF(emf);
         }
     }
 
     public void testEmptyItemValue() {
+        EntityManagerFactory emf = null;
+        EntityManager em = null;
         try {
             HashMap props = new HashMap(System.getProperties());
             props.put("openjpa.AutoDetach", "close,,commit");
-            EntityManagerFactory emf = (OpenJPAEntityManagerFactory) Persistence
-                    .createEntityManagerFactory("test", props);
-            EntityManager em = emf.createEntityManager();
-            em.close();
-            emf.close();
+            emf = createNamedEMF("test", props);
+            em = emf.createEntityManager();
         } catch (PersistenceException e) {
             Throwable cause = e.getCause();
             if (cause != null) {
@@ -102,6 +101,9 @@ public class TestBadAutoDetachProperty extends TestCase {
         } catch (RuntimeException e) {
             fail("Should have caught a PersistenceException, instead caught: "
                     + e);
+        } finally {
+            clear(emf);
+            closeEMF(emf);
         }
     }
 }

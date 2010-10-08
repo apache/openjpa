@@ -177,14 +177,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
                 qTime.intValue(), timeout.intValue());
         } finally {
             // cleanup
-            if ((em1 != null) && em1.isOpen())
-                em1.close();
-            if (emf1 != null)
-                emf1.close();
-            if ((em2 != null) && em2.isOpen())
-                em2.close();
-            if (emf2!= null)
-                emf2.close();
+            closeEMF(emf1);
+            closeEMF(emf2);
         }
     }
 
@@ -300,14 +294,8 @@ public class TestQueryProperties extends SingleEMFTestCase {
                 qTime.intValue(), timeout.intValue());
         } finally {
             // cleanup
-            if ((em1 != null) && em1.isOpen())
-                em1.close();
-            if (emf1 != null)
-                emf1.close();
-            if ((em2 != null) && em2.isOpen())
-                em2.close();
-            if (emf2!= null)
-                emf2.close();
+            closeEMF(emf1);
+            closeEMF(emf2);
         }
     }
     

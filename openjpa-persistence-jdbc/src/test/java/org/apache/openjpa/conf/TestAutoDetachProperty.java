@@ -44,6 +44,8 @@ public class TestAutoDetachProperty extends TestCase {
     public void tearDown() throws Exception {
         em.close();
         em = null;
+        emf.close();
+        emf = null;
     }
 
     public void testIsAutoDetachingOnClose() {

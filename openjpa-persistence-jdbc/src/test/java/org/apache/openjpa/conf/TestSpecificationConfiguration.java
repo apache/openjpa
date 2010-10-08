@@ -66,9 +66,8 @@ public class TestSpecificationConfiguration extends SingleEMFTestCase {
             assertEquals(2, major);
             assertTrue(spec.isSame("JPA"));
         } finally {
-            if (emf1 != null) {
-                emf1.close();
-            }
+            clear(emf1);
+            closeEMF(emf1);
         }
     }
 

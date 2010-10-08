@@ -48,12 +48,19 @@ public class TestDynamicConfiguration extends SingleEMFTestCase {
 		assertNotNull(emf2);
 		OpenJPAConfiguration conf2 = emf2.getConfiguration();
 		
-		assertFalse(emf1==emf2);
-		assertFalse(emf1.equals(emf2));
-		assertFalse(conf1==conf2);
-		assertEquals(conf1, conf2);
-		assertEquals(conf1.hashCode(), conf2.hashCode());
-        assertEquals(conf1.toProperties(false), conf2.toProperties(false));
+		try {
+	        assertFalse(emf1==emf2);
+	        assertFalse(emf1.equals(emf2));
+	        assertFalse(conf1==conf2);
+	        assertEquals(conf1, conf2);
+	        assertEquals(conf1.hashCode(), conf2.hashCode());
+	        assertEquals(conf1.toProperties(false), conf2.toProperties(false));
+		} finally {
+		    clear(emf1);
+		    closeEMF(emf1);
+            clear(emf2);
+            closeEMF(emf2);
+		}
 	}
 	
 	public void testConfigurationIsReadOnlyAfterFirstConstruction() {

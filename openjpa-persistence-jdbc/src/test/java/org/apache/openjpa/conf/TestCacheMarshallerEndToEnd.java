@@ -81,7 +81,8 @@ public class TestCacheMarshallerEndToEnd
         assertContains(log.lines, "    " + AllFieldTypes.class.getName());
         assertContains(log.lines, "    " + NamedQueryEntity.class.getName());
         assertContains(log.lines, "    NamedQueryEntity.namedQuery");
-        emf.close();
+        clear(emf);
+        closeEMF(emf);
 
         emf = createEMF(LOAD_PROPS);
         EntityManager em = emf.createEntityManager();
@@ -92,7 +93,8 @@ public class TestCacheMarshallerEndToEnd
         assertEquals(1, q.getResultList().size());
         em.getTransaction().rollback();
         em.close();
-        emf.close();
+        clear(emf);
+        closeEMF(emf);
     }
 
     private void assertContains(List<String> lines, String prefix) {
