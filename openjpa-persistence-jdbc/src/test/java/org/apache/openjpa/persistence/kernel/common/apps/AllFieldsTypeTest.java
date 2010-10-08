@@ -23,6 +23,8 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -50,6 +52,7 @@ public class AllFieldsTypeTest {
     private Calendar testCalendar;
     private Object testObject;
     private BigInteger testBigInteger;
+    @Column(scale=8, precision=12)
     private BigDecimal testBigDecimal;
 
     public Date getTestDate() {
