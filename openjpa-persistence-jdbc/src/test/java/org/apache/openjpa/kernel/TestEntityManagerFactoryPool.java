@@ -38,16 +38,20 @@ public class TestEntityManagerFactoryPool
         Map m = new HashMap();
         // also tests string values for the property
         m.put("openjpa.EntityManagerFactoryPool", "True");
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+        EntityManagerFactory emf1 = Persistence.createEntityManagerFactory(
             "test", m);
-        assertSame(this.emf, emf);
+        assertSame(this.emf, emf1);
+        clear(emf1);
+        closeEMF(emf1);
     }
 
     public void testBrokerFactoryPoolMiss() {
         Map m = new HashMap();
         m.put("openjpa.EntityManagerFactoryPool", Boolean.TRUE);
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+        EntityManagerFactory emf1 = Persistence.createEntityManagerFactory(
             "second-persistence-unit", m);
-        assertNotSame(this.emf, emf);
+        assertNotSame(this.emf, emf1);
+        clear(emf1);
+        closeEMF(emf1);
     }
 }

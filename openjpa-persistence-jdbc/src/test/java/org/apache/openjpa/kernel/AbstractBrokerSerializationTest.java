@@ -238,12 +238,11 @@ public abstract class AbstractBrokerSerializationTest<T>
     }
 
     public void testInMemorySavepointsWithNewInstances() {
-        emf.close();
-        OpenJPAEntityManagerFactory emf = createEMF(
+        OpenJPAEntityManagerFactory emf1 = createEMF(
             getManagedType(), getSecondaryType(),
             "openjpa.EntityManagerFactoryPool", "true",
             "openjpa.SavepointManager", "in-mem");
-        OpenJPAEntityManager em = emf.createEntityManager();
+        OpenJPAEntityManager em = emf1.createEntityManager();
         OpenJPAEntityManager em2 = null;
         try {
             em.getTransaction().begin();
@@ -267,16 +266,17 @@ public abstract class AbstractBrokerSerializationTest<T>
         } finally {
             close(em);
             close(em2);
+            clear(emf1);
+            closeEMF(emf1);
         }
     }
 
     public void testInMemorySavepointsWithModifiedInstances() {
-        emf.close();
-        OpenJPAEntityManagerFactory emf = createEMF(
+        OpenJPAEntityManagerFactory emf1 = createEMF(
             getManagedType(), getSecondaryType(),
             "openjpa.EntityManagerFactoryPool", "true",
             "openjpa.SavepointManager", "in-mem");
-        OpenJPAEntityManager em = emf.createEntityManager();
+        OpenJPAEntityManager em = emf1.createEntityManager();
         OpenJPAEntityManager em2 = null;
         try {
             em.getTransaction().begin();
@@ -298,6 +298,8 @@ public abstract class AbstractBrokerSerializationTest<T>
         } finally {
             close(em);
             close(em2);
+            clear(emf1);
+            closeEMF(emf1);
         }
     }
 

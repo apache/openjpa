@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.util.List;
 import java.util.Collections;
 import javax.persistence.EntityManager;
 
@@ -30,17 +29,22 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 public class TestDynamicClassRegistration
     extends AbstractCachedEMFTestCase {
 
-    private OpenJPAEntityManagerFactorySPI emf;
+    private OpenJPAEntityManagerFactorySPI emf1;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
+        emf1 = createNamedEMF("empty-pu");
+    }
 
-        emf = createNamedEMF("empty-pu");
+    public void tearDown() throws Exception {
+        super.tearDown();
+        clear(emf1);
+        closeEMF(emf1);
     }
 
     public void testEnhancedDynamicClassRegistration()
@@ -53,9 +57,9 @@ public class TestDynamicClassRegistration
             getClass().getClassLoader());
 
         ClassMetaData meta =
-            JPAFacadeHelper.getMetaData(emf, SimpleEntity.class);
+            JPAFacadeHelper.getMetaData(emf1, SimpleEntity.class);
         assertNotNull(meta);
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = emf1.createEntityManager();
         javax.persistence.Query q = em.createQuery("select o from simple o");
         em.close();
     }
@@ -66,14 +70,14 @@ public class TestDynamicClassRegistration
 
         // trigger class initialization
         ManagedClassSubclasser.prepareUnenhancedClasses(
-            emf.getConfiguration(),
+            emf1.getConfiguration(),
             Collections.singleton(UnenhancedFieldAccess.class),
             null);
 
         ClassMetaData meta =
-            JPAFacadeHelper.getMetaData(emf, UnenhancedFieldAccess.class);
+            JPAFacadeHelper.getMetaData(emf1, UnenhancedFieldAccess.class);
         assertNotNull(meta);
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = emf1.createEntityManager();
         javax.persistence.Query q = em.createQuery(
             "select o from UnenhancedFieldAccess o");
         em.close();
