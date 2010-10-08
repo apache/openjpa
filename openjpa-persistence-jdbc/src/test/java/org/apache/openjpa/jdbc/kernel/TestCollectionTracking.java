@@ -120,8 +120,8 @@ public class TestCollectionTracking extends SingleEMFTestCase {
         em1.close();
     }
 
-    public void tearDown() throws Exception {
+//    public void tearDown() throws Exception {
         // avoids super class to delete all records
-    }
+//    }
 
 }
