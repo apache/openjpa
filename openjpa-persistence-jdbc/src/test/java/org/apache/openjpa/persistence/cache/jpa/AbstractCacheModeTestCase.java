@@ -372,6 +372,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
             em.refresh(e2);
             assertEquals(e1Version + 1, e1.getVersion());
             assertEquals(e2Version + 1, e2.getVersion());
+            em.close();
         }
     }
 
