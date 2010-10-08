@@ -25,7 +25,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 import org.apache.openjpa.util.ExceptionInfo;
 
 //This test was created for OPENJPA-1550.  In this issue the user was
@@ -34,7 +34,7 @@ import org.apache.openjpa.util.ExceptionInfo;
 //'params' listed in the prepared statement were missing.  This test will set
 //various batch limits and verify that with the fix to 1550, the correct
 //'failed object' and prepared statement is returned. 
-public class TestBatchLimitException extends PersistenceTestCase {
+public class TestBatchLimitException extends AbstractPersistenceTestCase {
 
     static Ent1 expectedFailedObject;
     static Ent1 expectedFailedObjectOracle;
@@ -105,7 +105,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em2.getTransaction().rollback();
             }
             em2.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -139,7 +139,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em2.getTransaction().rollback();
             }
             em2.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -187,7 +187,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em2.getTransaction().rollback();
             }
             em2.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -242,7 +242,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em2.getTransaction().rollback();
             }
             em2.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -283,7 +283,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em.getTransaction().rollback();
             }
             em.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -326,7 +326,7 @@ public class TestBatchLimitException extends PersistenceTestCase {
                 em2.getTransaction().rollback();
             }
             em2.close();
-            emf.close();
+            closeEMF(emf);
         }
     }
 
