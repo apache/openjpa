@@ -26,7 +26,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public class TestPropertyCacheModeInvalid extends AbstractCacheTestCase {
 
-    private static OpenJPAEntityManagerFactorySPI emf = null;
     
     @Override
     public void setUp() {}

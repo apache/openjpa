@@ -41,6 +41,8 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
     protected final String RETRIEVE_MODE_PROP = "javax.persistence.cache.retrieveMode";
     protected final String STORE_MODE_PROP = "javax.persistence.cache.storeMode";
     
+    protected static OpenJPAEntityManagerFactorySPI emf = null;
+
     abstract OpenJPAEntityManagerFactorySPI getEntityManagerFactory();
     abstract JDBCListener getListener();
 
@@ -85,6 +87,16 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
         super.setUp();
         cleanDatabase();
         populate();
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        if (emf != null) {
+            clear(emf);
+            closeEMF(emf);
+            emf = null;
+        }
     }
     
     public void cleanDatabase() throws Exception {

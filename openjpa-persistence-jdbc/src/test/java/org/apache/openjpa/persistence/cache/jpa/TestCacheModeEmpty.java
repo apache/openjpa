@@ -27,7 +27,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
-    private static OpenJPAEntityManagerFactorySPI emf = null;
+    
     private static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;

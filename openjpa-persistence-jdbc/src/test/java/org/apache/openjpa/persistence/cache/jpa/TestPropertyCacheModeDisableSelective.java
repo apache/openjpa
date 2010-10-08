@@ -36,7 +36,6 @@ import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
 
 public class TestPropertyCacheModeDisableSelective extends AbstractCacheModeTestCase {
 
-    private static OpenJPAEntityManagerFactorySPI emf = null;
     private static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
