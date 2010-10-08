@@ -52,7 +52,7 @@ import junit.framework.TestCase;
 
 @DatabasePlatform("org.apache.derby.jdbc.EmbeddedDriver")
 public class TestEquivalentConfiguration extends SingleEMFTestCase {
-    private EntityManagerFactory emf;
+    private EntityManagerFactory emf1 = null;
 
     private Properties _system;
 
@@ -106,16 +106,21 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     public void tearDown() throws Exception {
         restore(_system);
         super.tearDown();
+        if (emf1 != null) {
+            clear(emf1);
+            closeEMF(emf1);
+            emf1 = null;
+        }
     }
     
     /**
      * Tests that openjpa.* namespace can be used for persistence.xml.
      */
     public void testOldStylePersistenceUnitConfiguration() {
-        emf = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME,
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(OLD_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(OLD_STYLE_DRIVER_KEY));
         assertTrue(containsProperty(OLD_STYLE_URL_KEY));
         assertFalse(containsProperty(NEW_STYLE_DRIVER_KEY));
@@ -128,10 +133,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * Tests that javax.* namespace can be used for persistence.xml.
      */
     public void testNewStylePersistenceUnitConfiguration() {
-        emf = OpenJPAPersistence.createEntityManagerFactory(NEW_STYLE_UNIT_NAME,
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(NEW_STYLE_UNIT_NAME,
             PERSISTENCE_UNIT);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(NEW_STYLE_DRIVER_KEY));
         assertTrue(containsProperty(NEW_STYLE_URL_KEY));
         assertFalse(containsProperty(OLD_STYLE_DRIVER_KEY));
@@ -145,10 +150,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
      * persistence.xml.
      */
     public void testMixedStylePersistenceUnitConfiguration() {
-        emf = OpenJPAPersistence.createEntityManagerFactory(
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(
             MIXED_STYLE_UNIT_NAME, PERSISTENCE_UNIT);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(NEW_STYLE_DRIVER_KEY));
         assertFalse(containsProperty(NEW_STYLE_URL_KEY));
         assertFalse(containsProperty(OLD_STYLE_DRIVER_KEY));
@@ -165,7 +170,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     
     public void testConflictStylePersistenceUnitConfiguration() {
         try {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 CONFLICT_STYLE_UNIT_NAME, PERSISTENCE_UNIT);
             fail();
         } catch (RuntimeException ex) {
@@ -181,14 +186,14 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
             System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
             System.setProperty(NEW_STYLE_URL_KEY, URL);
 
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 SYSTEM_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT);
         } finally {
             System.getProperties().remove(NEW_STYLE_DRIVER_KEY);
             System.getProperties().remove(NEW_STYLE_URL_KEY);
         }
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(NEW_STYLE_DRIVER_KEY));
         assertTrue(containsProperty(NEW_STYLE_URL_KEY));
         assertFalse(containsProperty(OLD_STYLE_DRIVER_KEY));
@@ -205,13 +210,13 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
             System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
             System.setProperty(OLD_STYLE_URL_KEY, URL);
 
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 SYSTEM_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT);
         } finally {
             System.getProperties().remove(OLD_STYLE_DRIVER_KEY);
             System.getProperties().remove(OLD_STYLE_URL_KEY);
         }
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertFalse(containsProperty(NEW_STYLE_DRIVER_KEY));
         assertFalse(containsProperty(NEW_STYLE_URL_KEY));
         assertTrue(containsProperty(OLD_STYLE_DRIVER_KEY));
@@ -228,14 +233,14 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_URL_KEY, URL);
         try {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 SYSTEM_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT);
         } finally {
             System.getProperties().remove(OLD_STYLE_DRIVER_KEY);
             System.getProperties().remove(NEW_STYLE_URL_KEY);
         }
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertFalse(containsProperty(NEW_STYLE_DRIVER_KEY));
         assertTrue(containsProperty(NEW_STYLE_URL_KEY));
         assertTrue(containsProperty(OLD_STYLE_DRIVER_KEY));
@@ -252,7 +257,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         System.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         System.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
         try {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 SYSTEM_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT);
             fail();
         } catch (RuntimeException ex) {
@@ -271,10 +276,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(OLD_STYLE_URL_KEY, URL);
 
-        emf = OpenJPAPersistence.createEntityManagerFactory(
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 RUNTIME_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT, conf);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(OLD_STYLE_DRIVER_KEY));
         assertTrue(containsProperty(OLD_STYLE_URL_KEY));
         assertFalse(containsProperty(NEW_STYLE_DRIVER_KEY));
@@ -291,10 +296,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         conf.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(NEW_STYLE_URL_KEY, URL);
 
-        emf = OpenJPAPersistence.createEntityManagerFactory(
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(
             RUNTIME_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT, conf);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertFalse(containsProperty(OLD_STYLE_DRIVER_KEY));
         assertFalse(containsProperty(OLD_STYLE_URL_KEY));
         assertTrue(containsProperty(NEW_STYLE_DRIVER_KEY));
@@ -312,10 +317,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         conf.setProperty(OLD_STYLE_DRIVER_KEY, DRIVER);
         conf.setProperty(NEW_STYLE_URL_KEY, URL);
 
-        emf = OpenJPAPersistence.createEntityManagerFactory(
+        emf1 = OpenJPAPersistence.createEntityManagerFactory(
             RUNTIME_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT, conf);
 
-        assertNotNull(emf);
+        assertNotNull(emf1);
         assertTrue(containsProperty(OLD_STYLE_DRIVER_KEY));
         assertFalse(containsProperty(OLD_STYLE_URL_KEY));
         assertFalse(containsProperty(NEW_STYLE_DRIVER_KEY));
@@ -334,7 +339,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
         conf.setProperty(NEW_STYLE_DRIVER_KEY, DRIVER);
 
         try {
-            emf = OpenJPAPersistence.createEntityManagerFactory(
+            emf1 = OpenJPAPersistence.createEntityManagerFactory(
                 RUNTIME_CONFIGURED_UNIT_NAME, PERSISTENCE_UNIT, conf);
             fail();
         } catch (RuntimeException ex) {
@@ -343,10 +348,10 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     }
 
     void verifyDatabaseConnection() {
-        String driver = OpenJPAPersistence.cast(emf).getConfiguration()
+        String driver = OpenJPAPersistence.cast(emf1).getConfiguration()
                 .getConnectionDriverName();
         
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = emf1.createEntityManager();
         em.getTransaction().begin();
         em.flush();
         em.getTransaction().commit();
@@ -357,7 +362,7 @@ public class TestEquivalentConfiguration extends SingleEMFTestCase {
     }
     
     OpenJPAConfiguration getConfiguration() {
-        return ((OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.cast(emf))
+        return ((OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.cast(emf1))
             .getConfiguration();
     }
 
