@@ -39,6 +39,7 @@ public class TestExceptionsFromCallbacks
 
     @Override
     public void setUp() {
+        super.setUp(ExceptionsFromCallbacksEntity.class, CLEAR_TABLES);
         Set needEnhancement = new HashSet();
         needEnhancement.add(
             "testPostUpdateExceptionDuringFlushWithNewInstance");
@@ -52,11 +53,10 @@ public class TestExceptionsFromCallbacks
             "testPostUpdateExceptionDuringCommitWithExistingFlushedInstance");
         if (!PersistenceCapable.class.isAssignableFrom(
             ExceptionsFromCallbacksEntity.class)
-            && needEnhancement.contains(getName()))
+            && needEnhancement.contains(getName())) {
             // actually, we really only need redef
             fail("this test method does not work without enhancement");
-
-        setUp(ExceptionsFromCallbacksEntity.class, CLEAR_TABLES);
+        }
         testRunning = true;
     }
 

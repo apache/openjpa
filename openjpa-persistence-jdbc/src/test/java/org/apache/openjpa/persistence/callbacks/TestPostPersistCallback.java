@@ -54,6 +54,7 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
         assertFalse(pc.getId() == 0);
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
+        em.close();
     }
     
     public void testPostPersistCalledAfterCommit() {
@@ -72,6 +73,7 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
         assertFalse(pc.getId() == 0);
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
+        em.close();
     }
     
     public void testPostPersistCalledAfterPersist() {
@@ -92,5 +94,6 @@ public class TestPostPersistCallback extends SingleEMFTestCase {
         
         assertEquals(1, pc.postPersistCallbackCount);
         assertEquals(pc.getId(), pc.idOnCallback);
+        em.close();
     }
 }
