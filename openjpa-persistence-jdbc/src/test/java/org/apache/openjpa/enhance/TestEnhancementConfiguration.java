@@ -18,19 +18,20 @@
  */
 package org.apache.openjpa.enhance;
 
-import javax.persistence.EntityManager;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.util.ImplHelper;
 
 public class TestEnhancementConfiguration
     extends SingleEMFTestCase {
 
+    @Override
+    public void setUp() throws Exception {
+        setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
+            UnenhancedFieldAccess.class, CLEAR_TABLES);
+    }
+    
     public void testEnhancementConfiguration() {
         try {
-            emf = createEMF(
-                "openjpa.RuntimeUnenhancedClasses", "unsupported",
-                UnenhancedFieldAccess.class, CLEAR_TABLES);
             assertFalse(ImplHelper.isManagedType(emf.getConfiguration(),
                 UnenhancedFieldAccess.class));
             emf.createEntityManager().close();

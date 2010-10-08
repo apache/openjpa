@@ -32,7 +32,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 
