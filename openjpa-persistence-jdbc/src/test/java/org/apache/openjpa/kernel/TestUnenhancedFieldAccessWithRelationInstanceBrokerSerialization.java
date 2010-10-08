@@ -20,7 +20,9 @@ package org.apache.openjpa.kernel;
 
 import org.apache.openjpa.enhance.UnenhancedFieldAccess;
 import org.apache.openjpa.enhance.UnenhancedFieldAccessSubclass;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
+@AllowFailure(message="excluded")
 public class TestUnenhancedFieldAccessWithRelationInstanceBrokerSerialization
     extends AbstractUnenhancedRelationBrokerSerializationTest
         <UnenhancedFieldAccessSubclass> {

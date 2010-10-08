@@ -29,7 +29,9 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
+@AllowFailure(message="excluded")
 public class TestDynamicClassRegistration
     extends AbstractCachedEMFTestCase {
 
