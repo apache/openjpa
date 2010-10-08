@@ -57,7 +57,8 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
     private static class FixedMap<K, V> extends LinkedHashMap<K, V> {
         private static final long serialVersionUID = -3153852097468390779L;
 
-        public boolean removeEldestEntry(Map.Entry<K, V> entry) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry entry) {
             return this.size() > 2;
         }
     }
