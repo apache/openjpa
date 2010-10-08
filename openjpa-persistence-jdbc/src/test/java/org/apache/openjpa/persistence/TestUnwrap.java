@@ -49,6 +49,7 @@ public class TestUnwrap extends SingleEMFTestCase {
             Object unwrapped = query.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
+        em.close();
     }
 
     /**
@@ -68,6 +69,7 @@ public class TestUnwrap extends SingleEMFTestCase {
             Object unwrapped = em.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
+        em.close();
     }
     
     /**
@@ -95,6 +97,7 @@ public class TestUnwrap extends SingleEMFTestCase {
                 txn.rollback();
             }
         }
+        em.close();
     }
     
     /**
@@ -123,6 +126,7 @@ public class TestUnwrap extends SingleEMFTestCase {
                 txn.rollback();
             }
         }
+        em.close();
     }
 
 }

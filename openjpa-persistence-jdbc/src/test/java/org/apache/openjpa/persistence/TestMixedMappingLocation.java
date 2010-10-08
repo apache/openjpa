@@ -43,5 +43,6 @@ public class TestMixedMappingLocation extends SingleEMFTestCase {
      */
     public void testMixedOrmAnno() throws Exception {
         OpenJPAEntityManagerSPI  em = emf.createEntityManager();
+        em.close();
     }
 }
