@@ -59,7 +59,4 @@ public class TestQuerySubclass extends SingleEMFTestCase {
         assertEquals(1, books.size());
         assertEquals(1, movies.size());
     }
-
-    public void tearDown() throws Exception {
-    }
 }

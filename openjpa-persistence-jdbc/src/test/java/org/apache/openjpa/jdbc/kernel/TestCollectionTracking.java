@@ -119,9 +119,4 @@ public class TestCollectionTracking extends SingleEMFTestCase {
         em1.getTransaction().commit();
         em1.close();
     }
-
-//    public void tearDown() throws Exception {
-        // avoids super class to delete all records
-//    }
-
 }
