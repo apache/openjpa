@@ -60,16 +60,19 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
         props.put("openjpa.jdbc.QuerySQLCache", 
                   "org.apache.openjpa.persistence.compatible.TestQuerySQLCache.BadCacheMap");
 
+        OpenJPAEntityManagerFactorySPI emf1 = null;
         try {
-            OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
+            emf1 = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
                                                  cast(Persistence.createEntityManagerFactory("test", props));
             // 
             // EMF creation must throw an exception because the cache implementation class will not be found
             // 
-            assertFalse(false);
+            fail("EMF creation must throw an exception because the cache implementation class will not be found");
         }
         catch (Exception e) {
             assertTrue(true);
+        } finally {
+            closeEMF(emf1);
         }
     }
 
@@ -108,117 +111,124 @@ public class TestQuerySQLCache extends SingleEMFTestCase {
                                                           + TblParent.class.getName() + ")");
         props.put("openjpa.jdbc.QuerySQLCache", "true");
 
-        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.
+        OpenJPAEntityManagerFactorySPI emf1 = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.
                                              cast(Persistence.createEntityManagerFactory("test", props));
-        EntityManagerImpl em = (EntityManagerImpl)emf.createEntityManager();
-
-        em.getTransaction().begin();
-
-        for (int i = 1; i < 3; i++) {
-            TblParent p = new TblParent();
-            p.setParentId(i);
-            TblChild c = new TblChild();
-            c.setChildId(i);
-            c.setTblParent(p);
-            p.addTblChild(c);
-            em.persist(p);
-            em.persist(c);
-
-            TblGrandChild gc = new TblGrandChild();
-            gc.setGrandChildId(i);
-            gc.setTblChild(c);
-            c.addTblGrandChild(gc);
-
-            em.persist(p);
-            em.persist(c);
-            em.persist(gc);
-        }
-        em.flush();
-        em.getTransaction().commit();
-        em.clear();
-
-        for (int i = 1; i < 3; i++) {
-            TblParent p = em.find(TblParent.class, i);
-            int pid = p.getParentId();
-            assertEquals(pid, i);
-            Collection<TblChild> children = p.getTblChildren();
-            boolean hasChild = false;
-            for (TblChild c : children) {
-                hasChild = true;
-                Collection<TblGrandChild> gchildren = c.getTblGrandChildren();
-                int cid = c.getChildId();
-                assertEquals(cid, i);
-                boolean hasGrandChild = false;
-                for (TblGrandChild gc : gchildren) {
-                    hasGrandChild = true;
-                    int gcId = gc.getGrandChildId();
-                    assertEquals(gcId, i);
-                }
-                assertTrue(hasGrandChild);
+        try {
+            EntityManagerImpl em = (EntityManagerImpl)emf1.createEntityManager();
+    
+            em.getTransaction().begin();
+    
+            for (int i = 1; i < 3; i++) {
+                TblParent p = new TblParent();
+                p.setParentId(i);
+                TblChild c = new TblChild();
+                c.setChildId(i);
+                c.setTblParent(p);
+                p.addTblChild(c);
+                em.persist(p);
+                em.persist(c);
+    
+                TblGrandChild gc = new TblGrandChild();
+                gc.setGrandChildId(i);
+                gc.setTblChild(c);
+                c.addTblGrandChild(gc);
+    
+                em.persist(p);
+                em.persist(c);
+                em.persist(gc);
             }
-            assertTrue(hasChild);
+            em.flush();
+            em.getTransaction().commit();
+            em.clear();
+    
+            for (int i = 1; i < 3; i++) {
+                TblParent p = em.find(TblParent.class, i);
+                int pid = p.getParentId();
+                assertEquals(pid, i);
+                Collection<TblChild> children = p.getTblChildren();
+                boolean hasChild = false;
+                for (TblChild c : children) {
+                    hasChild = true;
+                    Collection<TblGrandChild> gchildren = c.getTblGrandChildren();
+                    int cid = c.getChildId();
+                    assertEquals(cid, i);
+                    boolean hasGrandChild = false;
+                    for (TblGrandChild gc : gchildren) {
+                        hasGrandChild = true;
+                        int gcId = gc.getGrandChildId();
+                        assertEquals(gcId, i);
+                    }
+                    assertTrue(hasGrandChild);
+                }
+                assertTrue(hasChild);
+                em.close();
+            }
+        } finally {
+            closeEMF(emf1);
         }
-        em.close();
-        emf.close();
     }
 
 
     private void runMultiEMCaching(Map props) {
         EntityManagerFactory emfac = Persistence.createEntityManagerFactory("test", props);
-        EntityManager em = emfac.createEntityManager();            
+        try {
+            EntityManager em = emfac.createEntityManager();            
 
-        // 
-        // Create some entities
-        // 
-        em.getTransaction().begin();
-        for (int i = 0; i < nPeople; i++) {
-            Person p = new Person();
-            p.setId(i);
-            em.persist(p);
-        }
-        em.flush();
-        em.getTransaction().commit();
-        em.close();
-
-        Thread[] newThreads = new Thread[nThreads];
-        FindPeople[] customer = new FindPeople[nThreads];
-        for (int i=0; i < nThreads; i++) {
-            customer[i] = new FindPeople(emfac, 0, nPeople, nIterations, i);
-            newThreads[i] = new Thread(customer[i]);
-            newThreads[i].start();
-        }
-
-        // 
-        // Wait for the worker threads to complete
-        // 
-        for (int i = 0; i < nThreads; i++) {
-            try {
-                newThreads[i].join();
+            // 
+            // Create some entities
+            // 
+            em.getTransaction().begin();
+            for (int i = 0; i < nPeople; i++) {
+                Person p = new Person();
+                p.setId(i);
+                em.persist(p);
             }
-            catch (InterruptedException e) {
-                this.fail("Caught Interrupted Exception: " + e);
+            em.flush();
+            em.getTransaction().commit();
+            em.close();
+
+            Thread[] newThreads = new Thread[nThreads];
+            FindPeople[] customer = new FindPeople[nThreads];
+            for (int i=0; i < nThreads; i++) {
+                customer[i] = new FindPeople(emfac, 0, nPeople, nIterations, i);
+                newThreads[i] = new Thread(customer[i]);
+                newThreads[i].start();
             }
-        }   
 
-        // 
-        // Run through the state of all runnables to assert if any of them failed.
-        // 
-        for (int i = 0; i < nThreads; i++) {
-            assertFalse(customer[i].hadFailures());
-        }
+            // 
+            // Wait for the worker threads to complete
+            // 
+            for (int i = 0; i < nThreads; i++) {
+                try {
+                    newThreads[i].join();
+                }
+                catch (InterruptedException e) {
+                    this.fail("Caught Interrupted Exception: " + e);
+                }
+            }   
 
-        // 
-        // Clean up the entities used in this test
-        // 
-        em = emfac.createEntityManager();            
-        em.getTransaction().begin();
-        for (int i = 0; i < nPeople; i++) {
-            Person p = em.find(Person.class, i);
-            em.remove(p);
+            // 
+            // Run through the state of all runnables to assert if any of them failed.
+            // 
+            for (int i = 0; i < nThreads; i++) {
+                assertFalse(customer[i].hadFailures());
+            }
+
+            // 
+            // Clean up the entities used in this test
+            // 
+            em = emfac.createEntityManager();            
+            em.getTransaction().begin();
+            for (int i = 0; i < nPeople; i++) {
+                Person p = em.find(Person.class, i);
+                em.remove(p);
+            }
+            em.flush();
+            em.getTransaction().commit();
+            em.close();
+        } finally {
+            closeEMF(emfac);
         }
-        em.flush();
-        em.getTransaction().commit();
-        em.close();
     }
     
     

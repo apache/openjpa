@@ -81,7 +81,7 @@ public class TestContainerSpecCompatibilityOptions
         assertEquals("JPA", spec.getName().toUpperCase());
         assertEquals(spec.getVersion(), 1);
         
-        emf1.close();
+        closeEMF(emf1);
 
     }
 
@@ -136,7 +136,7 @@ public class TestContainerSpecCompatibilityOptions
                 em.close();
             }
         } finally {
-            oemf.close();
+            closeEMF(oemf);
         }
     }
 
@@ -205,7 +205,7 @@ public class TestContainerSpecCompatibilityOptions
             fail("OneToMany mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
-            oemf.close();            
+            closeEMF(oemf);            
         }
     }
     

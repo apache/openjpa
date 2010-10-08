@@ -54,18 +54,20 @@ extends AbstractCachedEMFTestCase {
                 "org/apache/openjpa/persistence/compat/" +
                 "persistence_1_0.xml");
 
-        Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
-        assertTrue(compat.getFlushBeforeDetach());
-        assertTrue(compat.getCopyOnDetach());
-        assertTrue(compat.getIgnoreDetachedStateFieldForProxySerialization());
-        assertTrue(compat.getPrivatePersistentProperties());
-        String vMode = emf.getConfiguration().getValidationMode();
-        assertEquals("NONE", vMode);
-        Specification spec = emf.getConfiguration().getSpecificationInstance();
-        assertEquals("JPA", spec.getName().toUpperCase());
-        assertEquals(spec.getVersion(), 1);
-        
-        emf.close();
+        try {
+            Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
+            assertTrue(compat.getFlushBeforeDetach());
+            assertTrue(compat.getCopyOnDetach());
+            assertTrue(compat.getIgnoreDetachedStateFieldForProxySerialization());
+            assertTrue(compat.getPrivatePersistentProperties());
+            String vMode = emf.getConfiguration().getValidationMode();
+            assertEquals("NONE", vMode);
+            Specification spec = emf.getConfiguration().getSpecificationInstance();
+            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals(spec.getVersion(), 1);
+        } finally {
+            closeEMF(emf);
+        }
     }
 
     /*
@@ -79,18 +81,20 @@ extends AbstractCachedEMFTestCase {
                 "org/apache/openjpa/persistence/compat/" +
                 "persistence_2_0.xml");
 
-        Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
-        assertFalse(compat.getFlushBeforeDetach());
-        assertFalse(compat.getCopyOnDetach());
-        assertFalse(compat.getIgnoreDetachedStateFieldForProxySerialization());
-        assertFalse(compat.getPrivatePersistentProperties());
-        String vMode = emf.getConfiguration().getValidationMode();
-        assertEquals("AUTO", vMode);
-        Specification spec = emf.getConfiguration().getSpecificationInstance();
-        assertEquals("JPA", spec.getName().toUpperCase());
-        assertEquals(spec.getVersion(), 2);
-        
-        emf.close();
+        try {
+            Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
+            assertFalse(compat.getFlushBeforeDetach());
+            assertFalse(compat.getCopyOnDetach());
+            assertFalse(compat.getIgnoreDetachedStateFieldForProxySerialization());
+            assertFalse(compat.getPrivatePersistentProperties());
+            String vMode = emf.getConfiguration().getValidationMode();
+            assertEquals("AUTO", vMode);
+            Specification spec = emf.getConfiguration().getSpecificationInstance();
+            assertEquals("JPA", spec.getName().toUpperCase());
+            assertEquals(spec.getVersion(), 2);
+        } finally {
+            closeEMF(emf);
+        }
     }
 
     /*
@@ -125,7 +129,7 @@ extends AbstractCachedEMFTestCase {
                 em.close();
             }
         } finally {
-            emf.close();
+            closeEMF(emf);
         }
     }
 
@@ -194,7 +198,7 @@ extends AbstractCachedEMFTestCase {
             fail("OneToMany mapping failed with exception message: " + e.getMessage());
         } finally {
             em.close();
-            emf.close();            
+            closeEMF(emf);            
         }
     }
     
