@@ -45,8 +45,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestMetaDataComplete extends SingleEMFTestCase {
 	private static OpenJPAEntityManagerFactorySPI oemf;
-
 	private static ClassMetaData entityA, entityB, derivedA, derivedB;
+	private static int currentTest = 0;
 
 	public void setUp() throws Exception {
 		if (oemf == null) {
@@ -62,10 +62,18 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
             derivedA = repos.getMetaData(DerivedA.class, null, true);
             derivedB = repos.getMetaData(DerivedB.class, null, true);
 		}
+		currentTest++;
 	}
 
-	public void tearDown() {
-
+	public void tearDown() throws Exception {
+	    if (currentTest >= 6) {
+	        super.tearDown();
+	        oemf = null;
+            entityA = null;
+            entityB = null;
+            derivedA = null;
+            derivedB = null;
+	    }
 	}
 
 	protected String getPersistenceUnitName() {
