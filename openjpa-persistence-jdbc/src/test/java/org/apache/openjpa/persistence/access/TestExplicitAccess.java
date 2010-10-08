@@ -115,6 +115,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         qry.setParameter("strVal", "PropertyAccess");
         PropAccess pa2 = (PropAccess)qry.getSingleResult();
         assertEquals(pa, pa2);
+        em.close();
     }
     
     /**

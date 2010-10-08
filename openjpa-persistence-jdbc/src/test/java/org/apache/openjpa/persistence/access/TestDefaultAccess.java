@@ -74,7 +74,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         verifyDefaultFieldAccess(em);
                         
         em.close();
-        emf1.close();
+        clear(emf1);
+        closeEMF(emf1);
     }
 
     /**
@@ -91,7 +92,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         verifyDefaultPropertyAccess(em);
 
         em.close();
-        emf1.close();
+        clear(emf1);
+        closeEMF(emf1);
     }
 
     /**
@@ -108,7 +110,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         verifyDefaultFieldAccess(em);
                         
         em.close();
-        emf1.close();
+        clear(emf1);
+        closeEMF(emf1);
     }
 
     /**
@@ -126,7 +129,8 @@ public class TestDefaultAccess extends SingleEMFTestCase {
         verifyDefaultPropertyAccess(em);
 
         em.close();
-        emf1.close();
+        clear(emf1);
+        closeEMF(emf1);
     }
     
     private void verifyDefaultFieldAccess(OpenJPAEntityManagerSPI em) {

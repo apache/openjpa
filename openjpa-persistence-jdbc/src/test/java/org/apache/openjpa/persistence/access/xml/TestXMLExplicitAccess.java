@@ -147,9 +147,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                 "No field named \"strField\" in \"XMLDefFieldMixedPropAccess\"",
                 "[id, stringField, version]");
+        } finally {
+            em.close();
         }
-
-        em.close();                
     }
     
     /**
@@ -193,9 +193,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                 "No field named \"strProp\" in \"XMLDefPropMixedFieldAccess\"",
                 "[id, strField, version]");
+        } finally {
+            em.close();
         }
-
-        em.close();
     }
     
     /**
@@ -203,13 +203,13 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      * subclass using property access get mapped properly.
      */
     public void testAbstractMappedSuperField() {
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
 
         XMLPropertySub ps = new XMLPropertySub();
         // Call super setter with underlying field access
@@ -248,9 +248,11 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                 "No field named \"crtDate\" in \"XMLPropertySub\"",
                 "[createDate, id, name]");
+        } finally {
+            em.close();
+            clear(emf1);
+            closeEMF(emf1);
         }
-
-        em.close();
     }
 
     /**
@@ -259,13 +261,13 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      */
     public void testAbstractMappedSuperProperty() {
 
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         
         XMLFieldSub fs = new XMLFieldSub();
         // Call super setter with underlying field access
@@ -304,9 +306,11 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                 "No field named \"createDate\" in \"XMLFieldSub\"",
                 "[crtDate, id, name]");
+        } finally {
+            em.close();
+            clear(emf1);
+            closeEMF(emf1);
         }
-
-        em.close();
     }
 
     /**
@@ -316,13 +320,13 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
      */
     public void testMappedSuperField() {
         
-        OpenJPAEntityManagerFactorySPI emf = 
+        OpenJPAEntityManagerFactorySPI emf1 = 
             (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.
             createEntityManagerFactory("Access-XML",
             "org/apache/openjpa/persistence/access/" +
             "access-persistence.xml");
 
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf1.createEntityManager();
         
         XMLPropertySub2 ps = new XMLPropertySub2();
         // Call super setter with underlying field access
@@ -361,9 +365,11 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"crtDate\" in \"XMLPropertySub2\"",
                     "[createDate, id, name]");
+        } finally {
+            em.close();
+            clear(emf1);
+            closeEMF(emf1);
         }
-
-        em.close();        
     }
 
     /**
@@ -412,9 +418,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"createDate\" in \"XMLFieldSub2\"",
                     "[crtDate, id, name]");
+        } finally {
+            em.close();        
         }
-
-        em.close();        
     }
 
     /**
@@ -464,10 +470,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"myFieldProp\" in \"XMLMixedFieldSub\"",
                     "[createDate, mid, myField, name]");
-        }
-
-        em.close();        
-        
+        } finally {
+            em.close();        
+        }        
     }
 
     /**
@@ -544,9 +549,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"crtDate\" in \"XMLSuperPropertyEntity\"",
                     "[id, name]");
-        }        
-        
-        em.close();        
+        } finally {
+            em.close();        
+        }
     }
 
     /**
@@ -623,8 +628,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"crtDate\" in \"XMLSuperFieldEntity\"",
                     "[id, name]");
-        }        
-        em.close();        
+        } finally {
+            em.close();        
+        }
     }
 
     /**
@@ -671,9 +677,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"firstName\" in \"XMLEmbedFieldAccess\"",
                     "[fName, lName]");
+        } finally {
+            em.close();        
         }
-
-        em.close();
     }
 
     /**
@@ -722,9 +728,9 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                     "No field named \"fName\" in \"XMLEmbedPropAccess\"",
                     "[firstName, lastName]");
+        } finally {
+            em.close();        
         }
-
-        em.close();
     }
 
     /**
@@ -774,8 +780,8 @@ public class TestXMLExplicitAccess extends SingleEMFTestCase {
             assertExceptionMessage(e, ArgumentException.class,
                 "No field named \"middleName\" in \"XMLEmbedMixedAccess\"",
                 "[firstName, lastName, mName]");
+        } finally {
+            em.close();        
         }
-
-        em.close();
     }
 }
