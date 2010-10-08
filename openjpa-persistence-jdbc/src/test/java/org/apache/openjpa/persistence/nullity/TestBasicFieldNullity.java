@@ -27,6 +27,7 @@ import javax.persistence.RollbackException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -167,10 +168,16 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
         List<NullValues> result = query.getResultList();
         assertFalse(result.isEmpty());
         for (NullValues n : result) {
-            if (dict instanceof OracleDictionary)
+            if (dict instanceof OracleDictionary) {
                 assertNull(n.getUniqueNullable());
-            else
-                assertEquals(EMPTY_STRING, n.getUniqueNullable()); 
+            }
+            else if (dict instanceof SybaseDictionary) { 
+                // Sybase converts empty strings to "" 
+                assertEquals(" ", n.getUniqueNullable());
+            }
+            else {
+                assertEquals(EMPTY_STRING, n.getUniqueNullable());
+            }
         }
     }
     

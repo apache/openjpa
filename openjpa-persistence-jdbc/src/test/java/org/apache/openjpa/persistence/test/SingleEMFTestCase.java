@@ -203,7 +203,7 @@ public abstract class SingleEMFTestCase
     }
     
     protected String getForUpdateClause() {
-        DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+        DBDictionary dict = getDBDictionary();
         if (dict.forUpdateClause != null) {
             return dict.forUpdateClause;
         }
@@ -211,6 +211,10 @@ public abstract class SingleEMFTestCase
             return dict.tableForUpdateClause;
         }
         return "";
+    }
+    
+    protected DBDictionary getDBDictionary() { 
+        return  ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
     }
 }
 
