@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.enhance;
 
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
+@AllowFailure(message="excluded")
 public class TestRelationToUnlistedClass
     extends SingleEMFTestCase {
 
