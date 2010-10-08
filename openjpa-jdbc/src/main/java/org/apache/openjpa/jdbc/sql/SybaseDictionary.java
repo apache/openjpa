@@ -67,6 +67,9 @@ public class SybaseDictionary
 
     private static Constructor<SybaseConnection> sybaseConnectionImpl;
     
+    public static String RIGHT_TRUNCATION_ON_SQL = "set string_rtruncation on";
+    public static String NUMERIC_TRUNCATION_OFF_SQL = "set arithabort numeric_truncation off";
+    
     static {
         try {
             sybaseConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(SybaseConnection.class, 
@@ -163,6 +166,7 @@ public class SybaseDictionary
         supportsNullUpdateAction = false;
         supportsDefaultUpdateAction = false;
         supportsCascadeUpdateAction = false;
+        
     }
 
     @Override
@@ -311,13 +315,20 @@ public class SybaseDictionary
     public Connection decorate(Connection conn)
         throws SQLException {
         conn = super.decorate(conn);
+        Connection savedConn = conn;
+        
+//        if(ignoreConnectionSetup) { 
+//            if(conn instanceof DelegatingConnection) { 
+//                conn = ((DelegatingConnection)conn).getInnermostDelegate();
+//            }
+//        }
+        
         // In order for Sybase to raise the truncation exception when the 
         // string length is greater than the column length for Char, VarChar, 
         // Binary, VarBinary, the "set string_rtruncation on" must be executed. 
         // This setting is effective for the duration of current connection.
         if (setStringRightTruncationOn) {
-            String str = "set string_rtruncation on";
-            PreparedStatement stmnt = prepareStatement(conn, str);        
+            PreparedStatement stmnt = prepareStatement(conn, RIGHT_TRUNCATION_ON_SQL);        
             stmnt.execute();
             stmnt.close();
         }
@@ -327,13 +338,13 @@ public class SybaseDictionary
         // precision.  This setting specifies that the operation should not 
         // fail if a numeric truncation occurs.
         if (ignoreNumericTruncation) {
-            String str = "set arithabort numeric_truncation off";
-            PreparedStatement stmnt = prepareStatement(conn, str);        
+            PreparedStatement stmnt = prepareStatement(conn, NUMERIC_TRUNCATION_OFF_SQL);        
             stmnt.execute();
             stmnt.close();            
-        }        
+        }
         
-        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, conn);
+        
+        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, savedConn);
     }
     
     /**

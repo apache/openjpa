@@ -156,20 +156,6 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
         public void run();
     }
 
-    /**
-     * Simple JDBCListener which stores the executed sql in a List. The List is
-     * provided by the getSql() method so that subclasses may use separate
-     * lists.
-     */
-    public class Listener extends AbstractJDBCListener {
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && getSql() != null) {
-                getSql().add(event.getSQL());
-            }
-        }
-    }
-
     // =======================================================================
     // Test utilities
     // =======================================================================

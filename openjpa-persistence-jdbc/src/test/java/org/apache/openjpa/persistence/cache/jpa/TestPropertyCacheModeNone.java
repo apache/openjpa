@@ -27,6 +27,7 @@ import javax.persistence.Cache;
 
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestPropertyCacheModeNone extends AbstractCacheModeTestCase {
 
@@ -52,7 +53,7 @@ public class TestPropertyCacheModeNone extends AbstractCacheModeTestCase {
 
     public JDBCListener getListener() {
         if (listener == null) {
-            listener = new Listener();
+            listener = new FilteringJDBCListener(getSql());
         }
         return listener;
     }

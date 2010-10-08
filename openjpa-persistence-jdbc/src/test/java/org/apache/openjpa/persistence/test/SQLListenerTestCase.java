@@ -20,8 +20,11 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
@@ -41,7 +44,7 @@ public abstract class SQLListenerTestCase
         Object[] copy = new Object[props.length + 2];
         System.arraycopy(props, 0, copy, 0, props.length);
         copy[copy.length - 2] = "openjpa.jdbc.JDBCListeners";
-        copy[copy.length - 1] = new JDBCListener[] { new Listener() };
+        copy[copy.length - 1] = new JDBCListener[] { new FilteringJDBCListener(sql) };
         super.setUp(copy); 
     }
 
@@ -209,17 +212,6 @@ public abstract class SQLListenerTestCase
     	for (String s : list)
     		buf.append(s).append("\r\n");
     	return buf.toString();
-    }
-
-    public class Listener
-        extends AbstractJDBCListener {
-
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null) {
-                sql.add(event.getSQL());
-            }
-        }
     }
 
     public enum SQLAssertType {

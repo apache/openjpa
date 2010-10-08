@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.cache.jpa.model.UncacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.UnspecifiedEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlCacheableEntity;
 import org.apache.openjpa.persistence.cache.jpa.model.XmlUncacheableEntity;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestCase {
 
@@ -60,7 +61,7 @@ public class TestPropertyCacheModeEnableSelective extends AbstractCacheModeTestC
 
     public JDBCListener getListener() {
         if (listener == null) {
-            listener = new Listener();
+            listener = new FilteringJDBCListener(getSql());
         }
         return listener;
     }
