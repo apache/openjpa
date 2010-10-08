@@ -139,6 +139,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
             for (EntityManagerFactory emf : emfs.values()) {
                 try {
                     closeEMF(emf);
+                    emf = null;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -576,9 +577,14 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         ObjectInputStream in = new ObjectInputStream(bin);
         Object result = in.readObject();
 
-        if (validateEquality) {
-            assertEquals(orig.hashCode(), result.hashCode());
-            assertEquals(orig, result);
+        try {
+            if (validateEquality) {
+                assertEquals(orig.hashCode(), result.hashCode());
+                assertEquals(orig, result);
+            }
+        } finally {
+            out.close();
+            in.close();
         }
 
         return result;
