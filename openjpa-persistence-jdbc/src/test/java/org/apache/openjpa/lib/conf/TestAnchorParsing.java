@@ -125,6 +125,7 @@ public class TestAnchorParsing extends TestCase {
         } catch (MissingResourceException mre) {
             // expected
         }
+        validFile = null;
     }
 
     public void testNonexistantFileLoad() {
@@ -149,6 +150,8 @@ public class TestAnchorParsing extends TestCase {
                 break;
             out.write(bytes, 0, count);
         }
+        in.close();
+        out.close();
         f.deleteOnExit();
         return f;
     }
