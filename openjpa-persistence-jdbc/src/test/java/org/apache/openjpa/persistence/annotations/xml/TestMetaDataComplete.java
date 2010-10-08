@@ -49,6 +49,7 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	private static int currentTest = 0;
 
 	public void setUp() throws Exception {
+        currentTest++;
 		if (oemf == null) {
             super.setUp(EntityA.class, EntityB.class, DerivedA.class,
 					DerivedB.class);
@@ -62,10 +63,10 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
             derivedA = repos.getMetaData(DerivedA.class, null, true);
             derivedB = repos.getMetaData(DerivedB.class, null, true);
 		}
-		currentTest++;
 	}
 
 	public void tearDown() throws Exception {
+	    // only cleanup after the last test has run
 	    if (currentTest >= 6) {
 	        super.tearDown();
 	        oemf = null;
