@@ -25,7 +25,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 
 @Entity
-@Table(name="PERSON_SIMPLE")
+@Table(name="PERSON_SIMPLE2")
 public class SubclassPerson extends AbstractSuperclass {
     private int id;
     private String forename;
