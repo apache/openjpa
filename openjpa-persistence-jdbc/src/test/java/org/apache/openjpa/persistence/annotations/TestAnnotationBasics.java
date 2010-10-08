@@ -46,6 +46,7 @@ public class TestAnnotationBasics extends AnnotationTestCase {
             ClassMetaData.ID_APPLICATION == meta.getIdentityType());
         assertTrue("Entity1 should use single-field identity",
             meta.isOpenJPAIdentity());
+        endEm(em);
     }
 /*
     public void testVersionField() {

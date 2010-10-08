@@ -79,7 +79,7 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
         deleteAll(TablePerClass1.class);
 
         OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
-       startTx(em);
+        startTx(em);
         TablePerClass1 tpc1 = new TablePerClass1();
         tpc1.setBasic(1);
         EmbedValue ev = new EmbedValue();
@@ -92,7 +92,7 @@ public class TestTablePerClassInheritance extends AnnotationTestCase
         ev.setBasic("22");
         tpc2.setEmbed(ev);
         em.persistAll(tpc1, tpc2);
-       endTx(em);
+        endTx(em);
         int id1 = tpc1.getPk();
         int id2 = tpc2.getPk();
         endEm(em);

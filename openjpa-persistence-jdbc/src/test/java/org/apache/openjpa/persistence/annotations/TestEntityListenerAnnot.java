@@ -24,11 +24,13 @@ import javax.persistence.*;
 import junit.framework.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
+@AllowFailure(message="excluded")
 public class TestEntityListenerAnnot extends AnnotationTestCase
 {
 

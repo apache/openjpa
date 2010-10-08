@@ -41,9 +41,8 @@ public class TestPersistentCollection extends SingleEMFTestCase {
 
     @SuppressWarnings("unchecked")
     public void testPersistentCollectionOfEmbeddables() {
+        EntityManager em = emf.createEntityManager();
         try {
-            EntityManager em = emf.createEntityManager();
-
             em.getTransaction().begin();
 
             PColl_EntityC c = new PColl_EntityC();
@@ -59,6 +58,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.persist(a);
             em.getTransaction().commit();
             em.close();
+            em = null;
 
             em = emf.createEntityManager();
             Query q = em.createQuery("SELECT o FROM PColl_EntityA o"); 
@@ -73,16 +73,19 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             assertEquals(101, c1.getId());
             assertEquals(1, d1.getId());
             em.close();
+            em = null;
         } catch (Throwable t) {
             fail(t.getMessage());
+        } finally {
+            if (em != null)
+                em.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     public void testPersistentCollectionOfEntities() {
+        EntityManager em = emf.createEntityManager();
         try {
-            EntityManager em = emf.createEntityManager();
-
             em.getTransaction().begin();
 
             PColl_EntityC c = new PColl_EntityC();
@@ -98,6 +101,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.persist(a);
             em.getTransaction().commit();
             em.close();
+            em = null;
 
             em = emf.createEntityManager();
             Query q = em.createQuery("SELECT o FROM PColl_EntityA1 o"); 
@@ -113,15 +117,18 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             assertEquals(101, c1.getId());
             assertEquals(1, a1.getId());
             em.close();
+            em = null;
         } catch (Throwable t) {
             fail(t.getMessage());
+        } finally {
+            if (em != null)
+                em.close();
         }
     }    
 
     public void testPersistentCollectionStringsLazy() {
+        EntityManager em = emf.createEntityManager();
         try {
-            EntityManager em = emf.createEntityManager();
-
             em.getTransaction().begin();
 
             PColl_EntityStringLazy a = new PColl_EntityStringLazy();
@@ -130,6 +137,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.persist(a);
             em.getTransaction().commit();
             em.close();
+            em = null;
             
             em = emf.createEntityManager();
             Query q = em.createQuery("SELECT o FROM PColl_EntityStringLazy o"); 
@@ -139,15 +147,18 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
             assertEquals(1, a1.getId());
             em.close();
+            em = null;
         } catch (Throwable t) {
             fail(t.getMessage());
+        } finally {
+            if (em != null)
+                em.close();
         }
     }    
 
     public void testPersistentCollectionStringsEager() {
+        EntityManager em = emf.createEntityManager();
         try {
-            EntityManager em = emf.createEntityManager();
-
             em.getTransaction().begin();
 
             PColl_EntityStringEager a = new PColl_EntityStringEager();
@@ -156,6 +167,7 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             em.persist(a);
             em.getTransaction().commit();
             em.close();
+            em = null;
             
             em = emf.createEntityManager();
             Query q = em.createQuery("SELECT o FROM PColl_EntityStringEager o"); 
@@ -165,8 +177,12 @@ public class TestPersistentCollection extends SingleEMFTestCase {
             assertEquals("one", a1.getCollectionOfStrings().toArray()[0]);
             assertEquals(1, a1.getId());
             em.close();
+            em = null;
         } catch (Throwable t) {
             fail(t.getMessage());
+        } finally {
+            if (em != null)
+                em.close();
         }
     }    
 }

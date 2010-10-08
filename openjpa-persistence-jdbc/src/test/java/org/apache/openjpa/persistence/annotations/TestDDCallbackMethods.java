@@ -24,9 +24,11 @@ import junit.framework.*;
 import javax.persistence.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
+@AllowFailure(message="excluded")
 public class TestDDCallbackMethods extends AnnotationTestCase
 {
 

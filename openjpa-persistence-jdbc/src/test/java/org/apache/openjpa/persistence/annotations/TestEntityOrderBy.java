@@ -27,6 +27,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import junit.framework.*;
 
@@ -35,6 +36,7 @@ import junit.framework.*;
  *
  * @author Abe White
  */
+@AllowFailure(message="excluded")
 public class TestEntityOrderBy extends AnnotationTestCase
 {
 

@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.meta.strats.* ;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -36,6 +37,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
    @author Steve Kim
   */
+@AllowFailure(message="excluded")
 public class TestVersion extends AnnotationTestCase
 {
 	private Object oid;

@@ -28,9 +28,9 @@ import
 import junit.framework.*;
 
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
-
-
+@AllowFailure(message="excluded")
 public class TestPropertyAccess extends AnnotationTestCase
 {
 	public TestPropertyAccess(String name)

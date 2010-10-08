@@ -27,8 +27,10 @@ import javax.persistence.*;
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
+@AllowFailure(message="excluded")
 public class TestAdvAnnot extends AnnotationTestCase
 {
 	public TestAdvAnnot(String name)
@@ -36,8 +38,7 @@ public class TestAdvAnnot extends AnnotationTestCase
 		super(name, "annotationcactusapp");
 	}
 
-	public void setUp()
-	{
+	public void setUp() {
 		deleteAll(Schedule.class);
 		deleteAll(FlightSchedule.class);
 

@@ -33,6 +33,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 import org.apache.openjpa.persistence.common.utils.*;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import junit.framework.*;
 
@@ -41,6 +42,7 @@ import junit.framework.*;
  *
  * @author Steve Kim
  */
+@AllowFailure(message="excluded")
 public class TestEJBEmbedded extends AnnotationTestCase
 {
 
