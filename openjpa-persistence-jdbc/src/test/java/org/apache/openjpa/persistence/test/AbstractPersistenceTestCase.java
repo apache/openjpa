@@ -200,9 +200,12 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             return false;
         }
 
-        closeAllOpenEMs(emf);
-        emf.close();
-        return !emf.isOpen();
+        try {
+            closeAllOpenEMs(emf);
+        } finally {
+            emf.close();
+            return !emf.isOpen();
+        }
     }
 
     /**
