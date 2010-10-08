@@ -27,6 +27,7 @@ import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
@@ -67,10 +68,16 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
 
         tran.begin();
         ae = doQuery(em);
-        if (dict instanceof OracleDictionary)
+        if (dict instanceof OracleDictionary) {
             assertNull(ae.getName());
-        else
+        }
+        else if (dict instanceof SybaseDictionary) {
+            // Sybase converts empty strings to " " 
+            assertEquals(" ", ae.getName()); 
+        }
+        else {
             assertEquals("", ae.getName());
+        }
         assertEquals(1, ae.getVersion());
         tran.commit();
 
@@ -98,10 +105,16 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         em.addTransactionListener(this);
         EntityTransaction tran = em.getTransaction();
         ae = doQuery(em);
-        if (dict instanceof OracleDictionary)
+        if (dict instanceof OracleDictionary) {
             assertNull(ae.getName());
-        else 
+        }
+        else if (dict instanceof SybaseDictionary) {
+            // Sybase converts "" to " "
+            assertEquals(" ", ae.getName()); 
+        }
+        else { 
             assertEquals("", ae.getName());
+        }
         assertEquals(1, ae.getVersion());
         em.clear();
 
