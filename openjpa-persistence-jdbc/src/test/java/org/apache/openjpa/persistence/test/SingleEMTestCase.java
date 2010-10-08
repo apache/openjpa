@@ -118,7 +118,6 @@ public abstract class SingleEMTestCase
         } finally {
             em.close();
             brc = em.isOpen();
-            em = null;
         }
         return !brc;
     }
