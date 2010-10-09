@@ -40,6 +40,7 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
      *            list of persistent types used in testing and/or configuration values in the form
      *            key,value,key,value...
      */
+    @Override
     protected OpenJPAEntityManagerFactorySPI createNamedEMF(String pu, Object... props) {
         Map<String, Object> map = getPropertiesMap(props);
         EMFKey key = new EMFKey(pu, map);
@@ -54,11 +55,30 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
         return oemf;
     }
 
+    @Override
+    protected OpenJPAEntityManagerFactorySPI createNamedOpenJPAEMF(String pu,
+            String res, Map<String,Object> props) {
+        EMFKey key = new EMFKey(pu, props);
+        OpenJPAEntityManagerFactorySPI oemf = _emfs.get(key);
+        if (_fresh || oemf == null || !oemf.isOpen()) {
+            oemf = super.createNamedOpenJPAEMF(pu, res, props);
+            if (!_fresh) {
+                _emfs.put(key, oemf);
+            }
+        }
+        _fresh = false;
+        return oemf;
+    }
+
     private static class FixedMap<K, V> extends LinkedHashMap<K, V> {
         private static final long serialVersionUID = -3153852097468390779L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry entry) {
+        protected boolean removeEldestEntry(Map.Entry<K,V> entry) {
+            OpenJPAEntityManagerFactorySPI oemf = (OpenJPAEntityManagerFactorySPI)entry.getValue();
+            // if (oemf != null && oemf.isOpen()) {
+            //     oemf.close();
+            // }
             return this.size() > 2;
         }
     }
