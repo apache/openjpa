@@ -26,9 +26,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.RollbackException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
-import org.apache.openjpa.util.UserException;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 public class TestSwitchConnection extends AbstractPersistenceTestCase {
     private String defaultJndiName = "jdbc/mocked";
@@ -41,7 +46,7 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
         em.createQuery("Delete from confPerson").executeUpdate();
         em.getTransaction().commit();
         em.close();
-        emf.close();
+        closeEMF(emf);
     }
 
     protected void setUp() {
@@ -79,24 +84,31 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
     }
 
     public void testConnectionFactoryName() {
-        // TODO Disable for non derby.
+        // Disable for non-Derby.
         // split out so that we can try javax.persistence.jtaDataSource in the future.
         overridePropertyOnEM("openjpa.ConnectionFactoryName", jndiNames[0]);
     }
     
     public void testJtaDataSource() {
-        // TODO Disable for non derby.
+        // Disable for non-Derby.
         // split out so that we can try javax.persistence.jtaDataSource in the future.
         overridePropertyOnEM("javax.persistence.jtaDataSource", jndiNames[0]);
     }
 
     public void overridePropertyOnEM(String name, String value) {
         // use the default JndiName for the base EntityManagerFactory
-        EntityManagerFactory emf = getEmf(name, defaultJndiName);
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)getEmf(name, defaultJndiName);
         assertNotNull(emf);
 
-        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
         assertNotNull(em);
+
+        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        if (!(dict instanceof DerbyDictionary)) {
+            // Disable for non-Derby.
+            return;
+        }
 
         EntityManager em1 = getEm(emf, name, value);
         assertNotNull(em1);
@@ -144,20 +156,24 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
         }
         em.close();
         em1.close();
-        emf.close();
+        closeEMF(emf);
     }
 
+    @AllowFailure(message="fails on everything but Derby")
     public void testInvalidCfName() throws Exception {
+        // Disable for non-Derby.
         // ensure EM creation fails - when provided an invalid JNDI name
         EntityManagerFactory emf = null;
         try {
-            emf = getEmf("openjpa.ConnectionFactoryName", defaultJndiName); 
+            emf = getEmf("openjpa.ConnectionFactoryName", defaultJndiName);
             getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); // ensure failing JNDI name is in the message
             assertTrue(e.getMessage().contains("EntityManager")); // ensure where the JNDI name came from is in message
+        } finally {
+            closeEMF(emf);
         }
     }
     
@@ -172,6 +188,8 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("L2 Cache")); 
+        } finally {
+            closeEMF(emf);
         }
     }
     
@@ -186,6 +204,8 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("openjpa.QueryCache")); 
+        } finally {
+            closeEMF(emf);
         }
     }
     
@@ -200,6 +220,8 @@ public class TestSwitchConnection extends AbstractPersistenceTestCase {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings")); 
+        } finally {
+            closeEMF(emf);
         }
     }
 }

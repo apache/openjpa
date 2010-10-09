@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -40,6 +41,7 @@ import org.apache.openjpa.lib.conf.Value;
  *
  * @author Marc Prud'hommeaux
  */
+@AllowFailure(message="excluded")
 public class TestOpenJPAConfiguration
     extends AbstractTestCase {
 
