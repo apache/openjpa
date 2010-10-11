@@ -45,6 +45,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public abstract class AbstractCriteriaTestCase extends TestCase {
 
@@ -371,22 +372,13 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         return getClass().getAnnotation(AllowFailure.class);
     }
 
-    public class SQLAuditor extends AbstractJDBCListener {
-        private List<String> sqls = new ArrayList<String>();
-
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sqls != null) {
-                sqls.add(event.getSQL());
-            }
-        }
-
-        void clear() {
-            sqls.clear();
+    public class SQLAuditor extends FilteringJDBCListener {
+        public SQLAuditor() {
+            super(new ArrayList<String>());
         }
 
         List<String> getSQLs() {
-            return new ArrayList<String>(sqls);
+            return getCopy();
         }
     }
     

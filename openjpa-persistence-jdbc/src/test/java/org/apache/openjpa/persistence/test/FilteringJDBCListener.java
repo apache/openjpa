@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,5 +56,13 @@ public class FilteringJDBCListener extends AbstractJDBCListener {
         if (sql != null && _sqlStatements != null && !_ignoredSQL.contains(sql)) {
             _sqlStatements.add(sql);
         }
+    }
+    
+    public void clear() { 
+        _sqlStatements.clear(); 
+    }
+    
+    public List<String> getCopy() { 
+        return new ArrayList<String>(_sqlStatements);
     }
 }
