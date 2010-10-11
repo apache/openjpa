@@ -24,6 +24,7 @@ import javax.persistence.RollbackException;
 
 import junit.framework.AssertionFailedError;
 
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.kernel.common.apps.Blobs;
 import org.apache.openjpa.persistence.kernel.common.apps.Lobs;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -83,7 +84,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testBlobZeroLengthByteArray() { 
+    public void testBlobZeroLengthByteArray() throws Exception { 
         // test with 0 length bytes
         byte[] bytes = new byte[0];
         EntityManager em = emf.createEntityManager();
@@ -93,7 +94,16 @@ public class TestLobs extends SingleEMFTestCase {
         lobs.setLobNotNullable(bytes);
         lobs.setLobNullable(bytes);
         em.persist(lobs);
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (getDBDictionary() instanceof SybaseDictionary) {
+                assertTrue(e instanceof RollbackException);
+                return;
+            } else {
+                throw e;
+            }
+        }
         em.close();
 
         em = emf.createEntityManager();
@@ -192,8 +202,23 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().begin();
         Query query = em.createQuery("select e from Lobs e");
         lobs = (Lobs)query.getSingleResult();
-        assertTrue(lobs.getLobNullable() == null || lobs.getLobNullable().length() == 0);
-        assertTrue(lobs.getLobNotNullable() == null || lobs.getLobNotNullable().length() == 0);
+        
+        if (lobs.getLobNullable() != null) {
+            if (getDBDictionary() instanceof SybaseDictionary) {
+                // Sybase stores empty strings as " "
+                assertEquals(" ", lobs.getLobNullable());
+            } else {
+                assertEquals(0, lobs.getLobNullable().length());
+            }
+        }
+        if (lobs.getLobNotNullable() != null) {
+            if (getDBDictionary() instanceof SybaseDictionary) {
+                // Sybase stores empty strings as " "
+                assertEquals(" ", lobs.getLobNotNullable());
+            } else {
+                assertEquals(0, lobs.getLobNotNullable().length());
+            }
+        }
         assertEquals(lobs.getLobNullable(), lobs.getLobNotNullable());
         em.remove(lobs);
         em.getTransaction().commit();

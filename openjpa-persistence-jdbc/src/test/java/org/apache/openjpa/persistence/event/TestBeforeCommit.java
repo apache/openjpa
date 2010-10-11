@@ -22,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -107,12 +108,10 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         ae = doQuery(em);
         if (dict instanceof OracleDictionary) {
             assertNull(ae.getName());
-        }
-        else if (dict instanceof SybaseDictionary) {
+        } else if (dict instanceof SybaseDictionary) {
             // Sybase converts "" to " "
-            assertEquals(" ", ae.getName()); 
-        }
-        else { 
+            assertEquals(" ", ae.getName());
+        } else {
             assertEquals("", ae.getName());
         }
         assertEquals(1, ae.getVersion());
@@ -124,15 +123,23 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
         // when BeforeCommit was fired AE was not managed. As a result its state is out of sync with the database.
         assertEquals("Ava", ae.getName());
         ae = doQuery(em);
-        if (dict instanceof OracleDictionary)
+        if (dict instanceof OracleDictionary) {
             assertNull(ae.getName());
-        else 
+        } else if (dict instanceof SybaseDictionary) {
+            assertEquals(" ", ae.getName());
+        } else {
             assertEquals("", ae.getName());
+        }
         assertEquals(1, ae.getVersion());
     }
 
     public void beforeCommit(TransactionEvent event) {
-        ae.setName(ae.getName() == null ?  "Ava" : ae.getName()+ "Ava");
+        if(StringUtils.isBlank(ae.getName())) { 
+            ae.setName("Ava");
+        }
+        else {
+            ae.setName(ae.getName() + "Ava");
+        }
     }
 
     private AnEntity doQuery(EntityManager em) {

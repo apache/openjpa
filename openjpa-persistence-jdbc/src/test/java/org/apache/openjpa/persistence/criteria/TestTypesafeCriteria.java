@@ -46,8 +46,8 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.jdbc.sql.AbstractSQLServerDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 /**
@@ -1568,12 +1568,12 @@ public class TestTypesafeCriteria extends CriteriaTest {
         String jpql = "select c.accountNum*10.32597 from Customer c where c.id=10";        
         long accountNumber = 1234516279;
         
-        if (getDictionary() instanceof SQLServerDictionary) {
+        if (getDictionary() instanceof AbstractSQLServerDictionary) {
             // @AllowFailure
-            // TODO - Skipping for MSSQL, as the calculation result has a precision larger than 38
+            // TODO - Skipping for MSSQL & Sybase, as the calculation result has a precision larger than 38
             // params=(BigDecimal) 10.3259699999999998709654391859658062458038330078125
             getEntityManagerFactory().getConfiguration().getLog("test").warn(
-                "SKIPPING testBigDecimalConversion() for SQLServer");
+                "SKIPPING testBigDecimalConversion() for SQLServer & Sybase");
             return;
         }
         
