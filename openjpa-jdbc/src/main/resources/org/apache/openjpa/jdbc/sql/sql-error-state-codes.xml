@@ -58,7 +58,7 @@
 	<dictionary class="org.apache.openjpa.jdbc.sql.SybaseDictionary">
 		<lock>1204,1205,1279</lock>
 		<referential-integrity>423,511,515,530,547,2601,2615,2714</referential-integrity>
-		<object-exists></object-exists>
+		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic>1205</optimistic>
 		<query>611</query>
