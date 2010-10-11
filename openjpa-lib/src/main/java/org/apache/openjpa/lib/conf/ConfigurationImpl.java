@@ -585,9 +585,7 @@ public class ConfigurationImpl
      * 
      * @param storeDefaults
      *            whether or not to retrieve a property if its value is the
-     *            default value. This parameter is irrelevant if getAll is true.
-     * @param getAll
-     *            whether or not to get all of the properties
+     *            default value.
      * @return
      */
     public Map toProperties(boolean storeDefaults) {
@@ -606,10 +604,11 @@ public class ConfigurationImpl
         // with default values, add values to properties
         if (_props == null || storeDefaults) {
             String str;
-            for (Value val : _vals) { 
+            for (Value val : _vals) {
+                // NOTE: Following was removed to hide Value.INVISIBLE properties, like connectionPassword
                 // if key in existing properties, we already know value is up to date
-//                if (_props != null && Configurations.containsProperty(val, _props) && val.isVisible())
-//                    continue;
+                //if (_props != null && Configurations.containsProperty(val, _props) && val.isVisible())
+                //    continue;
                 str = val.getString();
                 if ((str != null && (storeDefaults || !str.equals(val.getDefault()))))
                     setValue(clone, val);
@@ -651,7 +650,9 @@ public class ConfigurationImpl
             if (o == null)
                 continue;
             if (o instanceof String) {
-                if (!StringUtils.equals((String) o, val.getString()))
+                // OPENJPA-1830 Do not overwrite existing string values with "******"
+                if ((!StringUtils.equals((String) o, val.getString())) &&
+                        (!StringUtils.equals((String) o, Value.INVISIBLE)))
                     val.setString((String) o);
             } else {
                 ser &= o instanceof Serializable;

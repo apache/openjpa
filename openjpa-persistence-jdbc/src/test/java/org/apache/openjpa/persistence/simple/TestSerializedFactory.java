@@ -22,10 +22,7 @@ import java.io.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -36,7 +33,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestSerializedFactory extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(AllFieldTypes.class);
+        setUp(AllFieldTypes.class, CLEAR_TABLES);
     }
 
     /**
