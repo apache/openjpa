@@ -39,7 +39,26 @@ public class TestLobs extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(DROP_TABLES, Lobs.class, Blobs.class);
     }
-    public void testNullableAndNonNullableBLobs() {
+    
+    // blob tests 
+    public void testBlobSetToNull() { 
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Blobs lobs = new Blobs();
+        lobs.setLobNotNullable(null);
+        lobs.setLobNullable(null);
+        em.persist(lobs);
+        try {
+            em.getTransaction().commit();
+            fail("Expected a RollbackException");
+        } catch (Exception e) {
+            assertError(e, RollbackException.class);
+        }
+        em.close();
+    }
+    
+    public void testBlobPersistQuery() {
         // test with null
         EntityManager em = emf.createEntityManager();
         Blobs lobs = new Blobs();
@@ -53,20 +72,7 @@ public class TestLobs extends SingleEMFTestCase {
         em.persist(lobs);
         em.getTransaction().commit();
         em.close();
-
-        em = emf.createEntityManager();
-        em.getTransaction().begin();
-        lobs = new Blobs();
-        lobs.setLobNotNullable(null);
-        lobs.setLobNullable(null);
-        em.persist(lobs);
-        try {
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            assertError(e, RollbackException.class);
-        }
-        em.close();
-
+        
         em = emf.createEntityManager();
         em.getTransaction().begin();
         Query query = em.createQuery("select e from Blobs e");
@@ -75,10 +81,14 @@ public class TestLobs extends SingleEMFTestCase {
         em.remove(lobs);
         em.getTransaction().commit();
         em.close();
+    }
 
+    public void testBlobZeroLengthByteArray() { 
         // test with 0 length bytes
-        bytes = new byte[0];
-        em = emf.createEntityManager();
+        byte[] bytes = new byte[0];
+        EntityManager em = emf.createEntityManager();
+        Blobs lobs = new Blobs();
+        
         em.getTransaction().begin();
         lobs.setLobNotNullable(bytes);
         lobs.setLobNullable(bytes);
@@ -88,7 +98,7 @@ public class TestLobs extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        query = em.createQuery("select e from Blobs e");
+        Query query = em.createQuery("select e from Blobs e");
         lobs = (Blobs)query.getSingleResult();
         assertTrue(lobs.getLobNullable() == null || lobs.getLobNullable().length == 0);
         assertTrue(lobs.getLobNotNullable() == null || lobs.getLobNotNullable().length == 0);
@@ -98,14 +108,16 @@ public class TestLobs extends SingleEMFTestCase {
         em.remove(lobs);
         em.getTransaction().commit();
         em.close();
+    }
 
+    public void testBlobLargeData() { 
         // test with large data
-        bytes = new byte[5000];
+        byte[] bytes = new byte[5000];
         for (int i = 0; i < bytes.length; i++)
             bytes[i] = randomByte().byteValue();
 
-        em = emf.createEntityManager();
-        lobs = new Blobs();
+        EntityManager em = emf.createEntityManager();
+        Blobs lobs = new Blobs();
         em.getTransaction().begin();
         lobs.setLobNotNullable(bytes);
         lobs.setLobNullable(bytes);
@@ -115,7 +127,7 @@ public class TestLobs extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        query = em.createQuery("select e from Blobs e");
+        Query query = em.createQuery("select e from Blobs e");
         lobs = (Blobs)query.getSingleResult();
         for (int i = 0; i < 5000; i++) {
             assertEquals(lobs.getLobNullable()[i], lobs.getLobNotNullable()[i]);
@@ -125,8 +137,10 @@ public class TestLobs extends SingleEMFTestCase {
         em.getTransaction().commit();
         em.close();
     }
+    
+    // lob tests
 
-    public void testNullableAndNonNullableLobs() {
+    public void testLobPersistQuery() {
         // test with null
         EntityManager em = emf.createEntityManager();
         Lobs lobs = new Lobs();
@@ -139,19 +153,6 @@ public class TestLobs extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        lobs = new Lobs();
-        lobs.setLobNotNullable(null);
-        lobs.setLobNullable(null);
-        em.persist(lobs);
-        try {
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            assertError(e, RollbackException.class);
-        }
-        em.close();
-
-        em = emf.createEntityManager();
-        em.getTransaction().begin();
         Query query = em.createQuery("select e from Lobs e");
         lobs = (Lobs)query.getSingleResult();
         // Oracle treats "" as null
@@ -159,11 +160,29 @@ public class TestLobs extends SingleEMFTestCase {
         em.remove(lobs);
         em.getTransaction().commit();
         em.close();
-
-        // test with ""
-        em = emf.createEntityManager();
+    }
+    
+    public void testLobSetToNull() { 
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
-        lobs.setLobNotNullable("");
+        Lobs lobs = new Lobs();
+        lobs.setLobNotNullable(null);
+        lobs.setLobNullable(null);
+        em.persist(lobs);
+        try {
+            em.getTransaction().commit();
+            fail("Expected a RollbackException");
+        } catch (Exception e) {
+            assertError(e, RollbackException.class);
+        }
+        em.close();
+    }
+   
+    public void testLobEmptyString() {
+        // test with ""
+        EntityManager em = emf.createEntityManager();
+        Lobs lobs = new Lobs();
+        em.getTransaction().begin();
         lobs.setLobNullable("");
         em.persist(lobs);
         em.getTransaction().commit();
@@ -171,7 +190,7 @@ public class TestLobs extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        query = em.createQuery("select e from Lobs e");
+        Query query = em.createQuery("select e from Lobs e");
         lobs = (Lobs)query.getSingleResult();
         assertTrue(lobs.getLobNullable() == null || lobs.getLobNullable().length() == 0);
         assertTrue(lobs.getLobNotNullable() == null || lobs.getLobNotNullable().length() == 0);
@@ -179,14 +198,16 @@ public class TestLobs extends SingleEMFTestCase {
         em.remove(lobs);
         em.getTransaction().commit();
         em.close();
-
+    }
+    
+    public void testLobLargeData() { 
         // test with large data
         String temp = "";
         for (int i = 0; i < 500; i++) // at 400 it changes from strings to Objects
             temp = temp + "1234567890";
 
-        em = emf.createEntityManager();
-        lobs = new Lobs();
+        EntityManager em = emf.createEntityManager();
+        Lobs lobs = new Lobs();
         em.getTransaction().begin();
         lobs.setLobNotNullable(temp);
         lobs.setLobNullable(temp);
@@ -196,7 +217,7 @@ public class TestLobs extends SingleEMFTestCase {
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
-        query = em.createQuery("select e from Lobs e");
+        Query query = em.createQuery("select e from Lobs e");
         lobs = (Lobs)query.getSingleResult();
         assertEquals(lobs.getLobNullable(), lobs.getLobNotNullable());
         assertEquals(temp, lobs.getLobNullable());
