@@ -51,7 +51,7 @@
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
-        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize}</test.jvm.arguments>
+        <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
         <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
         <openjpa.dynamicEnhance>false</openjpa.dynamicEnhance>
