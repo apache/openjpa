@@ -518,10 +518,10 @@ public class TestTransition2 extends BaseKernelTest {
         // parent should be valid
         assertEquals("PARENT", parent.getStringField());
 
-        // 'b' should be cleared
-        assertNull(b.getStringField());
-        assertEquals(0, b.getIntField());
-        assertNull(b.getSelfOneOne());
+        // 'b' should not be cleared JPA 2.0 "3.2.3 Removal"
+        assertNotNull(b.getStringField());
+        assertNotEquals(0, b.getIntField());
+        assertNotNull(b.getSelfOneOne());
     }
 
     /**
@@ -643,10 +643,10 @@ public class TestTransition2 extends BaseKernelTest {
         // parent should be valid
         assertEquals("PARENT", parent.getStringField());
 
-        // 'b' should be cleared
-        assertNull(b.getStringField());
-        assertEquals(0, b.getIntField());
-        assertNull(b.getSelfOneOne());
+        // 'b' should not be cleared JPA 2.0 "3.2.3 Removal"
+        assertNotNull(b.getStringField());
+        assertNotEquals(0, b.getIntField());
+        assertNotNull(b.getSelfOneOne());
     }
 
     /**

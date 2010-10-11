@@ -30,12 +30,10 @@ class EDeletedState
     extends PCState {
 
     PCState commit(StateManagerImpl context) {
-        context.clearFields();
         return TRANSIENT;
     }
 
     PCState commitRetain(StateManagerImpl context) {
-        context.clearFields();
         return TRANSIENT;
     }
 
