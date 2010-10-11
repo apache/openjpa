@@ -51,7 +51,7 @@ public abstract class AutoDriverDataSource
         // if we're using managed transactions, or user specified a DBCP driver
         // or DBCP is not on the classpath, then use SimpleDriver
         if (conf == null || conf.isTransactionModeManaged() || conf.isConnectionFactoryModeManaged() ||
-                !isDBCPLoaded()) {
+                !isDBCPLoaded(getClassLoader())) {
             return getSimpleConnection(props);
         } else {
             // use DBCPDriverDataSource

@@ -43,10 +43,11 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
 
     private static String DBCPPACKAGENAME = "org.apache.commons.dbcp";
     private static String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp.BasicDataSource";
+    private static Class<?> _dbcpClass;
+    private static Boolean _dbcpAvail;
+    private static RuntimeException _dbcpEx;
+
     protected JDBCConfiguration conf;
-    private Class<?> _dbcpClass;
-    private Boolean _dbcpAvail;
-    private RuntimeException _dbcpEx;
     private DataSource _ds;
     
     private static final Class<? extends DBCPDriverDataSource> implClass;
@@ -71,7 +72,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     public void close() throws SQLException {
         try {
             if (_ds != null) {
-                if (isDBCPLoaded()) {
+                if (isDBCPLoaded(getClassLoader())) {
                     ((org.apache.commons.dbcp.BasicDataSource)_dbcpClass.cast(_ds)).close();
                 }
             }
@@ -92,17 +93,23 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     }
 
     protected DataSource getDBCPDataSource(Properties props) {
-        if (isDBCPLoaded()) {
+        if (isDBCPLoaded(getClassLoader())) {
             if (_ds == null) {
-                Properties dbcpProps = updateDBCPProperties(props);
-                _ds = (DataSource) Configurations.newInstance(DBCPBASICDATASOURCENAME, conf,
-                    dbcpProps, getClassLoader());
+                try {
+                    Properties dbcpProps = updateDBCPProperties(props);
+                    _ds = (DataSource) Configurations.newInstance(DBCPBASICDATASOURCENAME, conf,
+                        dbcpProps, getClassLoader());
+                } catch (Exception e) {
+                    _dbcpEx = new RuntimeException(_eloc.get("driver-null", DBCPBASICDATASOURCENAME).getMessage(), e);
+                }
                 return _ds;
             } else {
                 return _ds;
             }
         } else {
-            // user chose DBCP, so fail if it isn't on the classpath
+            // user choose DBCP, so fail if it isn't on the classpath
+            if (_dbcpEx == null)
+                _dbcpEx = new RuntimeException(_eloc.get("driver-null", DBCPBASICDATASOURCENAME).getMessage());
             throw _dbcpEx;
         }
     }
@@ -125,7 +132,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
      * based on if org.apache.commons.dbcp.BasicDataSource can be loaded.
      * @return true if Commons DBCP was found on the classpath, otherwise false
      */
-    protected boolean isDBCPLoaded() {
+    static protected boolean isDBCPLoaded(ClassLoader cl) {
         if (Boolean.TRUE.equals(_dbcpAvail) && (_dbcpClass != null)) {
             return true;
         } else if (Boolean.FALSE.equals(_dbcpAvail)) {
@@ -133,7 +140,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         } else {
             // first time checking, so try to load it
             try {
-                _dbcpClass = Class.forName(DBCPBASICDATASOURCENAME, true, getClassLoader());
+                _dbcpClass = Class.forName(DBCPBASICDATASOURCENAME, true, cl);
                 _dbcpAvail = Boolean.TRUE;
                 return true;
             } catch (Exception e) {
