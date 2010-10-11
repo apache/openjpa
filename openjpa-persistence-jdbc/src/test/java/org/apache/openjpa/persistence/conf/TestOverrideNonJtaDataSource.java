@@ -27,31 +27,42 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.RollbackException;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.ArgumentException;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-public class TestOverrideNonJtaDataSource extends AbstractPersistenceTestCase {
+public class TestOverrideNonJtaDataSource extends SingleEMFTestCase {
     private String defaultJndiName = "jdbc/mocked";
     private String[] jndiNames = { "jdbc/mocked1" };
 
     protected void init(String cfName) {
-        EntityManagerFactory emf = getEmf("openjpa.ConnectionFactoryName", cfName, true);
-        EntityManager em = emf.createEntityManager();
+        EntityManagerFactory emf1 = getEmf("openjpa.ConnectionFactoryName", cfName, true);
+        EntityManager em = emf1.createEntityManager();
         em.getTransaction().begin();
         em.createQuery("Delete from confPerson").executeUpdate();
         em.getTransaction().commit();
         em.close();
-        closeEMF(emf);
+        closeEMF(emf1);
     }
 
-    protected void setUp() {
-        // create an EMF for each database.
-        init(defaultJndiName);
-        init(jndiNames[0]);
+    public void setUp() throws Exception {
+        super.setUp(Person.class, CLEAR_TABLES);
+        OpenJPAEntityManager em = emf.createEntityManager();
+        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
+        if (conf.getConnectionUserName() != null || !conf.getConnectionUserName().equals("")) {
+            // Disable for non-Derby, due to connectionUserName to schema mapping failures
+            setTestsDisabled(true);
+            getLog().trace("TestOverrideNonJtaDataSource can only be executed against Derby w/o a schema");
+        } else {
+            // create an EMF for each database.
+            init(defaultJndiName);
+            init(jndiNames[0]);
+        }
     }
     
     protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue) {
@@ -63,7 +74,7 @@ public class TestOverrideNonJtaDataSource extends AbstractPersistenceTestCase {
         if (syncMappings) {
             return createEMF(
                 "openjpa.jdbc.SynchronizeMappings", "buildSchema",
-                "openjpa.ConnectionDriverName", "",
+                "openjpa.ConnectionDriverName", "", 
                 "openjpa.ConnectionFactoryMode", "managed",
                 "openjpa.ConnectionFactoryName", defaultJndiName,  // must have a cf1, to initialize configuration
                 cfPropertyName,cfPropertyValue, 
@@ -101,74 +112,70 @@ public class TestOverrideNonJtaDataSource extends AbstractPersistenceTestCase {
 
     public void overridePropertyOnEM(String name, String value) {
         // use the default JndiName for the base EntityManagerFactory
-        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)getEmf(name, defaultJndiName);
-        assertNotNull(emf);
-
-        OpenJPAEntityManagerSPI em = emf.createEntityManager();
-        assertNotNull(em);
-
-        JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-        if (!(dict instanceof DerbyDictionary)) {
-            // Disable for non-Derby.
-            return;
-        }
-
-        EntityManager em1 = getEm(emf, name, value);
-        assertNotNull(em1);
-
-        // 'prove' that we're using a different database by inserting the same row
-        em.getTransaction().begin();
-        em.persist(new Person(1, "em"));
-        em.getTransaction().commit();
-
-        em1.getTransaction().begin();
-        em1.persist(new Person(1, "em1"));
-        em1.getTransaction().commit();
-
-        em.clear();
-        em1.clear();
-
-        Person p = em.find(Person.class, 1);
-        Person p1 = em1.find(Person.class, 1);
-        assertNotSame(p, p1);
-        assertEquals("em", p.getName());
-        assertEquals("em1", p1.getName());
-
-        em.clear();
-        em1.clear();
-
-        // make sure inserting the same row again fails.
-        em.getTransaction().begin();
-        em.persist(new Person(1));
+        OpenJPAEntityManagerFactorySPI emf1 = (OpenJPAEntityManagerFactorySPI)getEmf(name, defaultJndiName);
+        assertNotNull(emf1);
         try {
+            OpenJPAEntityManagerSPI em = emf1.createEntityManager();
+            assertNotNull(em);
+
+            EntityManager em1 = getEm(emf1, name, value);
+            assertNotNull(em1);
+
+            // 'prove' that we're using a different database by inserting the same row
+            em.getTransaction().begin();
+            em.persist(new Person(1, "em"));
             em.getTransaction().commit();
-            fail("Should not be able to commit the same row a second time");
-        } catch (RollbackException rbe) {
-            assertTrue(rbe.getCause() instanceof EntityExistsException);
-            // expected
-        }
 
-        em1.getTransaction().begin();
-        em1.persist(new Person(1));
-        try {
+            em1.getTransaction().begin();
+            em1.persist(new Person(1, "em1"));
             em1.getTransaction().commit();
-            fail("Should not be able to commit the same row a second time");
-        } catch (RollbackException rbe) {
-            assertTrue(rbe.getCause() instanceof EntityExistsException);
-            // expected
+
+            em.clear();
+            em1.clear();
+
+            Person p = em.find(Person.class, 1);
+            Person p1 = em1.find(Person.class, 1);
+            assertNotSame(p, p1);
+            assertEquals("em", p.getName());
+            assertEquals("em1", p1.getName());
+
+            em.clear();
+            em1.clear();
+
+            // make sure inserting the same row again fails.
+            em.getTransaction().begin();
+            em.persist(new Person(1));
+            try {
+                em.getTransaction().commit();
+                fail("Should not be able to commit the same row a second time");
+            } catch (RollbackException rbe) {
+                assertTrue("Expected EntityExistsException but found " + rbe.getCause(),
+                    rbe.getCause() instanceof EntityExistsException);
+                // expected
+            }
+
+            em1.getTransaction().begin();
+            em1.persist(new Person(1));
+            try {
+                em1.getTransaction().commit();
+                fail("Should not be able to commit the same row a second time");
+            } catch (RollbackException rbe) {
+                assertTrue(rbe.getCause() instanceof EntityExistsException);
+                // expected
+            }
+            em.close();
+            em1.close();
+        } finally {
+            closeEMF(emf1);
         }
-        em.close();
-        em1.close();
-        closeEMF(emf);
     }
 
     public void testInvalidCfName() throws Exception {
         // ensure EM creation fails - when provided an invalid JNDI name
-        EntityManagerFactory emf = null;
+        EntityManagerFactory emf1 = null;
         try {
-            emf = getEmf("openjpa.ConnectionFactory2Name", defaultJndiName);
-            getEm(emf, "openjpa.ConnectionFactory2Name", "jdbc/NotReal");
+            emf1 = getEmf("openjpa.ConnectionFactory2Name", defaultJndiName);
+            getEm(emf1, "openjpa.ConnectionFactory2Name", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
@@ -176,55 +183,55 @@ public class TestOverrideNonJtaDataSource extends AbstractPersistenceTestCase {
             assertTrue(e.getMessage().contains("jdbc/NotReal")); // ensure failing JNDI name is in the message
             assertTrue(e.getMessage().contains("EntityManager")); // ensure where the JNDI name came from is in message
         } finally {
-            closeEMF(emf);
+            closeEMF(emf1);
         }
     }
     
     public void testDataCache() { 
-        EntityManagerFactory emf = null;
+        EntityManagerFactory emf1 = null;
     
-        emf = getEmf("openjpa.DataCache", "true");
         try {
-            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            emf1 = getEmf("openjpa.DataCache", "true");
+            getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("L2 Cache")); 
         } finally {
-            closeEMF(emf);
+            closeEMF(emf1);
         }
     }
     
     public void testQueryCache() { 
-        EntityManagerFactory emf = null;
+        EntityManagerFactory emf1 = null;
     
-        emf = getEmf("openjpa.QueryCache", "true");
         try {
-            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            emf1 = getEmf("openjpa.QueryCache", "true");
+            getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("openjpa.QueryCache")); 
         } finally {
-            closeEMF(emf);
+            closeEMF(emf1);
         }
     }
     
     public void testSyncMappings() { 
-        EntityManagerFactory emf = null;
+        EntityManagerFactory emf1 = null;
     
-        emf = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema");
         try {
-            getEm(emf, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
+            emf1 = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+            getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
             assertTrue(e.isFatal());
             assertTrue(e.getMessage().contains("jdbc/NotReal")); 
             assertTrue(e.getMessage().contains("openjpa.jdbc.SynchronizeMappings")); 
         } finally {
-            closeEMF(emf);
+            closeEMF(emf1);
         }
     }
 }
