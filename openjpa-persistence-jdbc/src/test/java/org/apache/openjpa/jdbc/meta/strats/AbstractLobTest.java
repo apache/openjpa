@@ -27,6 +27,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
@@ -58,7 +59,8 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
         if (dict instanceof MySQLDictionary ||
             dict instanceof SQLServerDictionary ||
             dict instanceof OracleDictionary ||
-            dict instanceof PostgresDictionary) {
+            dict instanceof PostgresDictionary || 
+            dict instanceof DB2Dictionary ) {
             return true;
         }
         return false;
