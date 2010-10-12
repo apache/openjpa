@@ -77,6 +77,7 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     
     public void tearDown()  throws Exception {
         group.shutdown();
+        super.tearDown();
     }
 
     void create(int N) {
