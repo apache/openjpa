@@ -132,7 +132,8 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             String res, Map<String,Object> props) {
         OpenJPAEntityManagerFactorySPI oemf = null;
         Map<Object, Object> config = new HashMap<Object, Object>(System.getProperties());
-        config.putAll(props);
+        if (props != null)
+            config.putAll(props);
         oemf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory(pu, res, props);
         if (oemf == null) {
             throw new NullPointerException("Expected an OpenJPA entity manager factory " +
