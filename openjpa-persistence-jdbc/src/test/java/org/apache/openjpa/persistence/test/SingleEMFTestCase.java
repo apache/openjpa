@@ -85,6 +85,7 @@ public abstract class SingleEMFTestCase
                 throw e;
         } finally {
             closeEMF(emf);
+            emf = null;
         }
     }
     

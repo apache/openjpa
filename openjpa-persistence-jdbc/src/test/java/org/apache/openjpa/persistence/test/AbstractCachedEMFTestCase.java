@@ -76,10 +76,18 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
         @Override
         protected boolean removeEldestEntry(Map.Entry<K,V> entry) {
             OpenJPAEntityManagerFactorySPI oemf = (OpenJPAEntityManagerFactorySPI)entry.getValue();
-            // if (oemf != null && oemf.isOpen()) {
-            //     oemf.close();
-            // }
-            return this.size() > 2;
+            if (this.size() > 2) {
+                // if the eldest should be removed, then try to close it first
+                if (oemf != null && oemf.isOpen()) {
+                    try {
+                        oemf.close();
+                    } catch (Exception e) {
+                        // no-op - eat it
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 
