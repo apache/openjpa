@@ -73,6 +73,13 @@ public class H2Dictionary extends DBDictionary {
             "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
             "TRUE", "UNION", "WHERE" 
             }));
+        
+        // reservedWordSet subset that CANNOT be used as valid column names
+        // (i.e., without surrounding them with double-quotes)
+        invalidColumnWordSet.addAll(Arrays.asList(new String[]{
+            "ORDER",
+        }));
+
     }
 
     @Override
