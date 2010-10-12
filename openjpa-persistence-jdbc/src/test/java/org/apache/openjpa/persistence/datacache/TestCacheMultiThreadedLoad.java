@@ -18,11 +18,14 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import org.apache.openjpa.persistence.test.AllowFailure;
+
 /**
  * Multi-threaded cache load test for running in the autobuild.
  *
  * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
  */
+@AllowFailure(message="surefire excluded")
 public class TestCacheMultiThreadedLoad
     extends CacheLoadTest {
 

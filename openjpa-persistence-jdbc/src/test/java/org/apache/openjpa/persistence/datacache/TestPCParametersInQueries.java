@@ -27,6 +27,7 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.kernel.Broker;
@@ -38,6 +39,7 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 /**
  * New test case.
  */
+@AllowFailure(message="surefire excluded")
 public class TestPCParametersInQueries extends AbstractTestCase {
 
     public TestPCParametersInQueries(String test) {

@@ -80,7 +80,7 @@ public class TestLRUCache extends SingleEMFTestCase {
                 assertTrue(res);
             }
         }
-
+        em.close();
     }
 
     public void testDataCacheOverFlow() {
@@ -109,6 +109,7 @@ public class TestLRUCache extends SingleEMFTestCase {
                 assertTrue(contains);
             }
         }
+        em.close();
     }
 
     private boolean contains(String needle, List<String> haystack) {

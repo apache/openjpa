@@ -24,19 +24,26 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestEntitiesAsKeys extends AbstractCachedEMFTestCase {
+public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
 
-    OpenJPAEntityManagerFactorySPI emf =
-        createEMF(MapHolder.class, MapEmbeddable.class, "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
-            "sjvm", "openjpa.RuntimeUnenhancedClasses", "unsupported");
+    private OpenJPAEntityManagerFactorySPI emf;
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        emf = createEMF(MapHolder.class, MapEmbeddable.class, "openjpa.DataCache", "true",
+            "openjpa.RemoteCommitProvider", "sjvm", "openjpa.RuntimeUnenhancedClasses", "unsupported");
         populate();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeEMF(emf);
+        emf = null;
+    }
+    
     public void populate() {
         EntityManager em = emf.createEntityManager();
         // clean up before execution

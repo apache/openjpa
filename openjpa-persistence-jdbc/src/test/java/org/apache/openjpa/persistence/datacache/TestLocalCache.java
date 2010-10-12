@@ -18,9 +18,12 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
+import org.apache.openjpa.persistence.test.AllowFailure;
+
 /**
  * Test the local cache. Tests only a single PMF.
  */
+@AllowFailure(message="surefire excluded")
 public class TestLocalCache
     extends CacheTest {
 

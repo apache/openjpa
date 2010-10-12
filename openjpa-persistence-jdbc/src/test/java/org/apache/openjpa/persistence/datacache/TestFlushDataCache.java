@@ -27,8 +27,10 @@ import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.datacache.common.apps.
         FlushDataCacheObject;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
+@AllowFailure(message="surefire excluded")
 public class TestFlushDataCache
     extends AbstractTestCase {
 

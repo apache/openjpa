@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.datacache;
 
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectB;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.kernel.Broker;
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
  * Test some assumptions about query result metadata that the query
  * cache relies on.
  */
+@AllowFailure(message="surefire excluded")
 public class TestQueryResultTypes extends AbstractTestCase {
 
     public TestQueryResultTypes(String test) {

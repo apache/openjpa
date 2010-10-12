@@ -30,6 +30,7 @@ import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectE;
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectJ;
 import org.apache.openjpa.persistence.datacache.common.apps.
         SelfReferencingCacheTestObject;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.kernel.Broker;
@@ -39,6 +40,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.util.UserException;
 
+@AllowFailure(message="surefire excluded")
 public class TestJPQLRelationProjections
     extends AbstractTestCase {
 

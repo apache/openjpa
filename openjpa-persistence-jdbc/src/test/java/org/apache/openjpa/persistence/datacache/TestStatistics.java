@@ -62,18 +62,14 @@ public class TestStatistics extends SingleEMFTestCase {
         em.clear();
     }
 
-    public void tearDown() throws Exception {
-
-    }
-
     /**
      * Test that the CacheStatistics is disabled by default.
      */
     public void testDefaultSettings() {
         Object[] props = { "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider", "sjvm" };
         OpenJPAEntityManagerFactory emf1 = createNamedEMF("second-persistence-unit", props);
-
         assertFalse(emf1.getStoreCache().getStatistics().isEnabled());
+        closeEMF(emf1);
     }
 
     /**
@@ -178,7 +174,8 @@ public class TestStatistics extends SingleEMFTestCase {
         assertNotSame(emf1.getStoreCache().getStatistics(), emf2.getStoreCache().getStatistics());
         assertNotSame(((StoreCacheImpl) emf1.getStoreCache()).getDelegate(), ((StoreCacheImpl) emf2.getStoreCache())
             .getDelegate());
-
+        closeEMF(emf1);
+        closeEMF(emf2);
     }
 
     public void testPersist() {

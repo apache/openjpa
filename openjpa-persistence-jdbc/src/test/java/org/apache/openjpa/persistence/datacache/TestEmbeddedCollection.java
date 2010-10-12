@@ -42,23 +42,20 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestEmbeddedCollection extends SingleEMFTestCase {
 
 	private static final int SIZE = 4;
-	private static OpenJPAEntityManagerFactorySPI emf = null;
+ 
 	/**
 	 * Sets up EntityManagerFactory: with DataCache.
 	 */
+	@Override
 	public void setUp() throws Exception {
-		if (emf == null) {
-            super.setUp("openjpa.jdbc.SynchronizeMappings", "buildSchema",
-                    "openjpa.RuntimeUnenhancedClasses", "unsupported",
-                    "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
-                    "sjvm", "openjpa.jdbc.UpdateManager", "constraint",
-					EmbeddingOwnerEntity.class, 
-					EmbeddedEntity.class,
-					CLEAR_TABLES);
-			emf = super.emf;
-			
-			createData();
-		}
+        super.setUp("openjpa.jdbc.SynchronizeMappings", "buildSchema",
+                "openjpa.RuntimeUnenhancedClasses", "unsupported",
+                "openjpa.DataCache", "true", "openjpa.RemoteCommitProvider",
+                "sjvm", "openjpa.jdbc.UpdateManager", "constraint",
+				EmbeddingOwnerEntity.class, 
+				EmbeddedEntity.class,
+				CLEAR_TABLES);
+		createData();
 		assertNotNull(emf);
 		assertNotNull(emf.getStoreCache());
 		assertTrue(isDataCacheActive(emf));
@@ -68,11 +65,6 @@ public class TestEmbeddedCollection extends SingleEMFTestCase {
         return ((StoreCacheImpl) emf.getStoreCache()).getDelegate() != null
                 && emf.getConfiguration().getDataCacheManagerInstance()
 						.getSystemDataCache() != null;
-	}
-	
-	@Override
-	public void tearDown() throws Exception {
-		
 	}
 	
 	public void createData() {

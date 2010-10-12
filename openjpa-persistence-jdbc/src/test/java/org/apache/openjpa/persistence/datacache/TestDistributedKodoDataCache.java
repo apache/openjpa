@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest2;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.event.TCPRemoteCommitProvider;
@@ -35,6 +36,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.util.Id;
 
+@AllowFailure(message="surefire excluded")
 public class TestDistributedKodoDataCache extends AbstractTestCase {
 
     // We want more than 1 instance of each type of class.

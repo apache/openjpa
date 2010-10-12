@@ -64,7 +64,7 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
     private static final String MARKER_CACHE     = "in Object Cache";
     private static final String MARKER_DIRTY_CACHE = "in Object Cache (dirty)";
     private static long ID_COUNTER = System.currentTimeMillis();
-    
+    private static int TEST_COUNT = 0;
 
     /**
      * Sets up two EntityManagerFactory: one with DataCache another without.
@@ -98,6 +98,16 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
             // however, following distinguishes whether DataCache is active  
             assertTrue(isDataCacheActive(emfWithDataCache));
             assertFalse(isDataCacheActive(emfWithoutDataCache));
+        }
+        TEST_COUNT++;
+    }
+    
+    public void tearDown() throws Exception {
+        // HACK - need to manually close EMFs after all tests have run
+        if (TEST_COUNT >= 21) {
+            closeEMF(emfWithDataCache);
+            closeEMF(emfWithoutDataCache);
+            super.tearDown();            
         }
     }
     

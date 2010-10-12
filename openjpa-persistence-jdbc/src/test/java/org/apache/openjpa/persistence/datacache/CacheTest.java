@@ -293,25 +293,29 @@ public abstract class CacheTest extends AbstractTestCase {
 
     public void tearDown() throws Exception {
         endEm(em);
-
+        em = null;
+        repos = null;
         try {
-            factory.close();
+            closeEMF(factory);
         }
         catch (Exception e) {
         }
+        factory = null;
         try {
-            factory2.close();
+            closeEMF(factory2);
+        }
+        catch (Exception e) {
+        }
+        factory2 = null;
+        try {
+            closeEMF(timeoutFactory);
         }
         catch (Exception e) {
         }
         super.tearDown();
-
-        factory = null;
-        factory2 = null;
         timeoutFactory = null;
         oid = null;
         parentOid = null;
-        em = null;
         a = null;
     }
 

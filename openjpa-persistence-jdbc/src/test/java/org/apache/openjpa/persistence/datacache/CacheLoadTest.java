@@ -52,7 +52,9 @@ public class CacheLoadTest
     protected int interationCount =
         Integer.getInteger("cachetest.iterations", 1000).intValue();
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         Map propsMap = new HashMap();
         propsMap.put("openjpa.DataCache", "true");
         propsMap.put("openjpa.RemoteCommitProvider", "sjvm");
@@ -60,6 +62,12 @@ public class CacheLoadTest
         emf = getEmf(propsMap);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        closeEMF(emf);
+        super.tearDown();
+    }
+    
     public void testCacheLoad()
         throws Exception {
         mttest(Integer.getInteger("cachetest.threads", 30).intValue(),

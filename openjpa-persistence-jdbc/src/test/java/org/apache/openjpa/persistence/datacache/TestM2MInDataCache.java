@@ -82,5 +82,6 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
         } catch (Exception e) {
             fail("Fail to get a Map field when DataCache is on");
         }
+        em.close();
     }
 }

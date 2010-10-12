@@ -26,11 +26,13 @@ import javax.persistence.EntityManagerFactory;
 
 
 import org.apache.openjpa.persistence.datacache.common.apps.CacheObjectA;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
+@AllowFailure(message="surefire excluded")
 public class TestUniteratedQueryResult
     extends AbstractTestCase {
 
