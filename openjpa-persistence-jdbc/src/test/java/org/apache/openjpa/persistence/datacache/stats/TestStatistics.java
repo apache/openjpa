@@ -92,6 +92,8 @@ public class TestStatistics extends SingleEMFTestCase {
 			assertEquals(stats.getReadCount(), stats.getHitCount());
 			assertEquals(0, stats.getWriteCount());
 		}
+        em.getTransaction().commit();
+        em.close();
 	}
 
 	void assertStatistics(CacheStatistics stats, long[] expected) {
