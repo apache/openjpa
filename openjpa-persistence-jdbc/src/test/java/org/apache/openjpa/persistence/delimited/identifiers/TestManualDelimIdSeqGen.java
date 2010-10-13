@@ -55,6 +55,17 @@ public class TestManualDelimIdSeqGen extends SQLListenerTestCase {
         }
     }
     
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        dict = null;
+        conf = null;
+        super.tearDown();
+    }
+
     public void createEntityE() {
         entityE = new EntityE("e name");
     }

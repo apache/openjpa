@@ -61,6 +61,15 @@ public class TestManualDelimIdResultSetAnnotations
         assertNotNull(em);
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        super.tearDown();
+    }
+
     private void createCat(int id) {
         cat = new Cat(id);
         cat.setName("Puff");

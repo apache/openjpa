@@ -53,6 +53,15 @@ public class TestManualDelimInheritance extends SQLListenerTestCase {
         assertNotNull(em);
     }
     
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        super.tearDown();
+    }
+
     private void createDog(int id) {
         dog = new Dog(id);
         dog.setName("Spot");

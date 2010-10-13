@@ -58,6 +58,15 @@ public class TestDelimitedJoinAnnotation extends SQLListenerTestCase {
     }
     
     @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        super.tearDown();
+    }
+
+    @Override
     protected OpenJPAEntityManagerFactorySPI createEMF(final Object... props) {
         return createNamedEMF("delimited-identifiers", props);
     }
