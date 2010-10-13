@@ -158,6 +158,7 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         Assert.assertEquals(p.getAddress().getStreet(), "street_1");
         Assert.assertEquals(p.getAddress().getState(), "state_1");
         Assert.assertEquals(p.getName(), "name_1");
+        em.close();
     }
 
     public void queryObj1() {

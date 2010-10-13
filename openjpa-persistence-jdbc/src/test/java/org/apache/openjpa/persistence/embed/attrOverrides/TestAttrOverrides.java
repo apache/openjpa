@@ -105,6 +105,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
         assertEquals(p.getAddress().getStreet(), "street_1");
         assertEquals(p.getAddress().getState(), "state_1");
         assertEquals(p.getName(), "name_1");
+        em.close();
     }
 
     public void queryObj1() {
@@ -186,6 +187,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
                 "+4_1");
 
         assertEquals(p.getParcels().size(), numPropertiesPerPersons);
+        em.close();
     }
 
     public void queryObj2() {
@@ -282,6 +284,7 @@ public class TestAttrOverrides  extends SQLListenerTestCase {
             assertEquals(expNickName, s);
             i--;
         }
+        em.close();
    }
 }
 

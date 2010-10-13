@@ -46,6 +46,7 @@ public class TestEmbedded extends SQLListenerTestCase {
         a.setGeocode(g);
         em.persist(a);
         em.getTransaction().commit();
+        em.close();
     }
     
     /*
@@ -99,6 +100,7 @@ public class TestEmbedded extends SQLListenerTestCase {
             em.persist(a);
         } 
         em.getTransaction().commit();
+        em.close();
         
         em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -117,6 +119,7 @@ public class TestEmbedded extends SQLListenerTestCase {
         assertTrue(count>1);
         em.getTransaction().commit();
         assertEquals(1, sql.size());
+        em.close();
     }
 
     private void persistAddress(Address address) {

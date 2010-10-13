@@ -229,6 +229,7 @@ public class TestAssocOverrides  extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         PartTimeEmployee p = em.find(PartTimeEmployee.class, 1);
         Assert.assertEquals(p.getHourlyWage(), (float)100);
+        em.close();
     }
 
     public void queryObj2() {

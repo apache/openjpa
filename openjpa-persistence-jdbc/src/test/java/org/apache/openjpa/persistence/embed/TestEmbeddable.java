@@ -959,6 +959,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Embed embed = a.getEmbed();
         assertNull(embed);
         assertFalse(puu.isLoaded(a, "embed"));
+        em.close();
     }
 
     /*
@@ -2431,6 +2432,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         
         VicePresident vp = em.find(VicePresident.class, 1);
         assertVicePresident(vp);
+        em.close();
     }
     
     public void assertItem1(Item1 item) {
@@ -2493,13 +2495,15 @@ public class TestEmbeddable extends SQLListenerTestCase {
         
         FileName4 fileName3 = item.getImage(Item4.Catagory.A3);
         assertEquals("file3", fileName3.getFName());       
-        assertEquals("file3", fileName3.getLName());       
+        assertEquals("file3", fileName3.getLName());
+        em.close();
     }
 
     public void findObjMapKeyTemporal() {
         EntityManager em = emf.createEntityManager();
         Item5 item = em.find(Item5.class, 1);
         assertEquals(3, item.getImages().size());
+        em.close();
     }
     
     public void queryObjMapKeyTemporal() {
@@ -2511,6 +2515,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         q.setParameter("id", 1);
         List coll = q.getResultList();
         assertEquals(1, coll.size());
+        em.close();
     }
 
     public void queryItem(EntityManagerFactory emf) {
@@ -2740,6 +2745,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             assertNotNull(seller);
             assertTrue(seller.getId() != 0);
         }
+        em.close();
     }
 
     /*
@@ -3063,5 +3069,6 @@ public class TestEmbeddable extends SQLListenerTestCase {
             } 
         }
         assertTrue(found);
+        em.close();
     }
 }
