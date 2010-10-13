@@ -59,6 +59,8 @@ public abstract class SingleEMFTestCase
      * Initialize entity manager factory. Put {@link #CLEAR_TABLES} in
      * this list to tell the test framework to delete all table contents
      * before running the tests.
+     * NOTE:  The EMF and any EMs will be closed in tearDown(),
+     * but any user created EMFs need to be manually closed.
      *
      * @param props list of persistent types used in testing and/or 
      * configuration values in the form key,value,key,value...
