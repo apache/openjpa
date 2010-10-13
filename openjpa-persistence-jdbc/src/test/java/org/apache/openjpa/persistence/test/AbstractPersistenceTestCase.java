@@ -313,17 +313,25 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             return;
         }
         EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        for (ClassMetaData meta : types) {
-            if (!meta.isMapped() || meta.isEmbeddedOnly()
-                || Modifier.isAbstract(meta.getDescribedType().getModifiers()) 
-                && !isBaseManagedInterface(meta, types)) {
-                continue;
+        try {
+            em.getTransaction().begin();
+            for (ClassMetaData meta : types) {
+                if (!meta.isMapped() || meta.isEmbeddedOnly()
+                    || Modifier.isAbstract(meta.getDescribedType().getModifiers()) 
+                    && !isBaseManagedInterface(meta, types)) {
+                    continue;
+                }
+                em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").executeUpdate();
             }
-            em.createQuery("DELETE FROM " + meta.getTypeAlias() + " o").executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            // ignore
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
