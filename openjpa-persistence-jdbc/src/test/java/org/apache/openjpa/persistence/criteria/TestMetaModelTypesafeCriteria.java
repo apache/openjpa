@@ -65,7 +65,8 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
     protected EntityType<TransactionHistory> transactionHistory_ = null;
     protected EntityType<VideoStore> videoStore_ = null;
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
         super.setUp();
 
         Metamodel mm = em.getMetamodel();

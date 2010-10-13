@@ -60,6 +60,12 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
         return dict;
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        dict = null;
+        super.tearDown();
+    }
+
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.

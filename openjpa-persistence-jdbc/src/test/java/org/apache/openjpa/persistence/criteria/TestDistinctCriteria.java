@@ -30,7 +30,7 @@ import javax.persistence.criteria.Root;
 
 public class TestDistinctCriteria extends CriteriaTest {
     @Override
-    public void setUp()  {
+    public void setUp() throws Exception {
         super.setUp();
         try {
             deleteDataForTestDistinct();

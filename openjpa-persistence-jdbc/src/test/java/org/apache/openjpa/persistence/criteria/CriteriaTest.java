@@ -50,7 +50,9 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         return CLASSES;
     }
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         if (getEntityManagerFactory() == null) {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
@@ -61,6 +63,22 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
         cb = getEntityManagerFactory().getCriteriaBuilder();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        cb = null;
+        auditor.clear();
+        auditor = null;
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+            emf = null;
+        }
+        super.tearDown();
+    }
+    
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }

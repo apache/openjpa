@@ -98,6 +98,22 @@ import org.apache.openjpa.persistence.test.AllowFailure;
 
 
 public class TestEmbeddableCriteria extends EmbeddableDomainTestCase {
+
+    private static int TEST_COUNT = 0;
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        TEST_COUNT++;
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        // Hack to cleanup EM and EMF when we're done
+        if (TEST_COUNT >= 123)
+            super.tearDown();
+    }
+    
     public void testEmbeddableQuery1() {
         String jpql = "select e from EntityA_Coll_String a, in (a.nickNames) e order by a.id";
         CriteriaQuery<String> q = cb.createQuery(String.class);

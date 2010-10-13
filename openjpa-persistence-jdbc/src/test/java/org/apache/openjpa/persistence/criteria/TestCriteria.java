@@ -97,10 +97,6 @@ public class TestCriteria extends SingleEMFTestCase {
         emf.createEntityManager();
     }
     
-    public void tearDown() {
-        // do nothing as we may not have a database connection
-    }
-    
     public void testLogicalPredicateAssociativity() {
         DomainObject e = qb.createQueryDefinition(Employee.class);
         Predicate p1 = e.get("salary").greaterThan(100);

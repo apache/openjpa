@@ -35,7 +35,9 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
  */
 public class TestQueryByExample extends CriteriaTest {
     DBDictionary dict = null;
-    public void setUp() {
+    
+    @Override
+    public void setUp() throws Exception {
         super.setUp();
         
         // If using an Oracle DB, use sql92 syntax in order to get a correct
@@ -47,6 +49,12 @@ public class TestQueryByExample extends CriteriaTest {
         if (dict instanceof OracleDictionary) {
             dict.setJoinSyntax("sql92");
         }
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        dict = null;
+        super.tearDown();
     }
     
     public void testBasicFieldsWithNonDefaultValue() {

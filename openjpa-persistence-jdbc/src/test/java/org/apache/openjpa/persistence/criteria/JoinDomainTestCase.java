@@ -34,7 +34,9 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         return new Class[]{A.class,B.class,C.class,D.class};
     }
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         if (getEntityManagerFactory() == null) {
             auditor = new SQLAuditor();
             setEntityManagerFactory(createNamedEMF(getDomainClasses()));
@@ -45,6 +47,19 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
         cb = getEntityManagerFactory().getCriteriaBuilder();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+            emf = null;
+        }
+        super.tearDown();
+    }
+    
     protected OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         return emf;
     }
