@@ -346,4 +346,5 @@ public class TestNonstandardMappingAnnotations
         }
         
         em.close();
-    }}
+    }
+}

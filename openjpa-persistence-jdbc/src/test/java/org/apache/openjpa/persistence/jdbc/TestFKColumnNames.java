@@ -24,19 +24,15 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * Testcase that verifies the names for Foreign Key columns is as expected.
  */
-public class TestFKColumnNames extends TestCase {
+public class TestFKColumnNames extends AbstractPersistenceTestCase {
 
-    OpenJPAEntityManagerFactorySPI emf =
-            (OpenJPAEntityManagerFactorySPI) Persistence
-                    .createEntityManagerFactory("test");
 
     /**
      * <P>
@@ -49,6 +45,9 @@ public class TestFKColumnNames extends TestCase {
      * </P>
      */
     public void testSQLKeywords() {
+        OpenJPAEntityManagerFactorySPI emf =
+            (OpenJPAEntityManagerFactorySPI) Persistence
+                    .createEntityManagerFactory("test");
         MappingRepository repos =
                 (MappingRepository) emf.getConfiguration()
                         .getMetaDataRepositoryInstance();
@@ -58,6 +57,7 @@ public class TestFKColumnNames extends TestCase {
 
         assertEquals("FROM_ID", repos.getMapping(Inner2.class, null, true)
                 .getFieldMapping("from").getColumns()[0].getName());
+        closeEMF(emf);
     }
 
     @Entity

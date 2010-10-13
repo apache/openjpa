@@ -63,6 +63,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     	em.merge(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{2,2, 2.0f}, em.getVersion(pc));
+        em.close();
     }
 
     public void testConcurrentOptimisticUpdateFailsForSingleTable() {
@@ -84,6 +85,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         pc1.setName("Updated in em1");
         pc2.setName("Updated in em2");
         em1.getTransaction().commit();
+        em1.close();
         
         try {
             em2.getTransaction().commit();
@@ -111,7 +113,9 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
         
         em1.getTransaction().commit();
+        em1.close();
         em2.getTransaction().commit();
+        em2.close();
     }
     
     public void testVersionOnPersistAndUpdateForMultiTable() {
@@ -128,6 +132,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
     	em.merge(pc);
         em.getTransaction().commit();
         assertVersionEquals(new Number[]{2,2,2,2}, em.getVersion(pc));
+        em.close();
     }
 
     public void testConcurrentOptimisticUpdateFailsForMultiTable() {
@@ -150,6 +155,7 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         pc1.setName("Updated in em1");
         pc2.setName("Updated in em2");
         em1.getTransaction().commit();
+        em1.close();
         
         try {
             em2.getTransaction().commit();
@@ -178,7 +184,9 @@ public class TestMultiColumnVersion extends SingleEMFTestCase {
         assertVersionEquals(em1.getVersion(pc1), em2.getVersion(pc2));
         
         em1.getTransaction().commit();
+        em1.close();
         em2.getTransaction().commit();
+        em2.close();
     }
 
     static void assertVersionEquals(Object expected, Object actual) {

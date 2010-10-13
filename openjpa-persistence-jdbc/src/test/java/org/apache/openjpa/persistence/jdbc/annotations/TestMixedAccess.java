@@ -27,28 +27,32 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
 public class TestMixedAccess extends AbstractCachedEMFTestCase {
 
     public void testMixedAccessEntityError() {
+        EntityManagerFactory emf = null;
         try {
-            EntityManagerFactory emf =
-                createEMF(UnenhancedMixedAccess.class, "openjpa.RuntimeUnenhancedClasses", "supported");
+            emf = createEMF(UnenhancedMixedAccess.class, "openjpa.RuntimeUnenhancedClasses", "supported");
             emf.createEntityManager().close();
         } catch (RuntimeException e) {
             String msg = e.getMessage();
             if (!(msg.contains("UnenhancedMixedAccess.id") &&
                 msg.contains("UnenhancedMixedAccess.getStringField")))
                 throw e;
+        } finally {
+            closeEMF(emf);
         }
     }
 
     public void testInappropriateTransientError() {
+        EntityManagerFactory emf = null;
         try {
-            EntityManagerFactory emf = createEMF(
-                UnenhancedInappropriateTransient.class, "openjpa.RuntimeUnenhancedClasses", "supported");
+            emf = createEMF(UnenhancedInappropriateTransient.class, "openjpa.RuntimeUnenhancedClasses", "supported");
             emf.createEntityManager().close();
          } catch (RuntimeException e) {
             String msg = e.getMessage();
             if (!(msg.contains("UnenhancedInappropriateTransient.id") &&
                 msg.contains("UnenhancedInappropriateTransient.prePersist")))
                 throw e;
-        }
+         } finally {
+             closeEMF(emf);
+         }
     }
 }

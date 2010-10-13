@@ -47,6 +47,7 @@ public class TestPropertyAccess
         assertNotNull(pa1_2);
         assertEquals(10, pa1_2.getId());
         assertEquals("foo", pa1_2.getName());
+        em.close();
     }
 
     public void testPropertyAccessBasicMutation() {
@@ -70,6 +71,7 @@ public class TestPropertyAccess
         PropertyAccess1 pa1_3 = em.find(PropertyAccess1.class, 10);
         assertNotSame(pa1_2, pa1_3);
         assertEquals("foobar", pa1_3.getName());
+        em.close();
     }
 
     public void testJPQL() {
