@@ -132,6 +132,7 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
                     .getTranslations().contains(translation));
 		}
 		em.getTransaction().rollback();
+		em.close();
 	}
 	
 	
@@ -145,8 +146,10 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
 	 */
 	public int count(Class c) {
 		OpenJPAEntityManager em = emf.createEntityManager();
-		return ((Number) em.createQuery("SELECT COUNT(p) FROM " + 
+		Number n = ((Number) em.createQuery("SELECT COUNT(p) FROM " + 
                 c.getSimpleName() + " p").getSingleResult()).intValue();
+		closeEM(em);
+		return n.intValue();
 	}
 	
 	/**
@@ -215,6 +218,8 @@ public class TestTablePerClassInheritanceWithAbstractRoot extends
         } catch(ArgumentException e) {
             // as expected
             //System.out.println("e.getMessages()");
+        } finally {
+            em.close();
         }
     }
 }

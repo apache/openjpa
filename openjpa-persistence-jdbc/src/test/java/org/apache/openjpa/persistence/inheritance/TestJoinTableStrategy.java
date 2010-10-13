@@ -73,11 +73,6 @@ public class TestJoinTableStrategy extends SingleEMFTestCase {
 		em.close();
 	}
 
-	@Override
-	public void tearDown() {
-		// problem deleting table in MySQL
-	}
-
 	public void testFindEntity() {
 		EntityManager em1 = emf.createEntityManager();
         Manager m = em1.find(Manager.class, 1);

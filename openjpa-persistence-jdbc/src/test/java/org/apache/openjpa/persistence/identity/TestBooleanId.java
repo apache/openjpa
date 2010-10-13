@@ -33,11 +33,18 @@ public class TestBooleanId extends SQLListenerTestCase {
     private BooleanIdEntity se;
     private CompoundBooleanIdEntity ce;
     
+    @Override
     public void setUp() throws Exception {
         super.setUp(BooleanIdEntity.class,
             CompoundBooleanIdEntity.class,
             DROP_TABLES);
         assertTrue(emf != null);
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        closeEM(em);
+        super.tearDown();
     }
     
     public void testSimpleBooleanIdEntity() {

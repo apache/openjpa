@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.inheritance.serializable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
@@ -71,6 +72,7 @@ public class TestSerialization extends SingleEMFTestCase {
         emp = em.find(Employee.class, id);
 
         assertEquals(deserialized, emp);
+        em.close();
     }
 
     /**
@@ -78,19 +80,28 @@ public class TestSerialization extends SingleEMFTestCase {
      */
     private Object serializeObject(Object orig) {
         Object deserialized = null;
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos = new ObjectOutputStream(baos);
             oos.writeObject(orig);
 
             ByteArrayInputStream bais = new ByteArrayInputStream(baos
                     .toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bais);
+            ois = new ObjectInputStream(bais);
 
-            deserialized = ois.readObject();
+            deserialized = ois.readObject();            
         } catch (Exception e) {
             fail(e.toString());
+        } finally {
+            try {
+                oos.close();
+                ois.close();
+            } catch (IOException e) {
+                // ignore
+            }
         }
         return deserialized;
     }

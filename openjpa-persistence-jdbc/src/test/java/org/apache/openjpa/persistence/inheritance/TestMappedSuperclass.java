@@ -72,6 +72,7 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.persist(sd);
         em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -104,5 +105,6 @@ public class TestMappedSuperclass extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.merge(sd);
         em.getTransaction().commit();
+        em.close();
     }
 }

@@ -66,6 +66,7 @@ public class TestAbstractJoinedAppId
         assertTrue(rs.size() > 0);
         for (int i = 0; i < rs.size(); i++)
             assertTrue(rs.get(i) instanceof Subclass);
+        em.close();
     }
 
     public void testTraverseRelation() {

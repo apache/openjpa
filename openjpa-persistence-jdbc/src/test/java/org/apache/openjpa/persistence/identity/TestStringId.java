@@ -26,14 +26,18 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 public class TestStringId extends AbstractPersistenceTestCase {
     private static EntityManagerFactory _emf;
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
         _emf = createEMF(StringIdEntity.class);
 
         cleanup();
     }
 
+    @Override
     public void tearDown() {
-        _emf.close();
+        closeEMF(_emf);
+        _emf = null;
     }
 
     private void cleanup() {

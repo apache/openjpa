@@ -69,6 +69,8 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
             rs = em.createQuery(query).getResultList();
         } catch (ArgumentException e) {
             // as expected
+        } finally {
+            em.close();
         }
     }
 }

@@ -57,6 +57,7 @@ public class TestFindAbstractClass
         query = "select c from AbstractBase c";
         rs = em.createQuery(query).getResultList();
         assertTrue(rs.get(0) instanceof ConcreteSubclass);
+        em.close();
     }
 
     public void testFind() {

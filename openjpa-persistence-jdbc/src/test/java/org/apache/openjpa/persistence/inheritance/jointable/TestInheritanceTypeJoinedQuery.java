@@ -171,6 +171,7 @@ public class TestInheritanceTypeJoinedQuery  extends SQLListenerTestCase {
             Object obj = rs.get(i);
             assertTrue((obj instanceof ParttimeEmployee) || (obj instanceof FulltimeEmployee));
         }
+        em.close();
     }
 
     public void testInheritanceTypeJoinedQuery() {

@@ -624,6 +624,7 @@ public class TestDefaultInheritanceStrategy
         verifyInheritanceFinderResult(em, BaseClass6.class, 479, 302);
         verifyInheritanceFinderResult(em, SubclassI.class, 109);
         verifyInheritanceFinderResult(em, SubclassJ.class, 238);
+        em.close();
     }
 
     /**
