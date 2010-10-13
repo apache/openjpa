@@ -66,6 +66,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertFalse(gv.getUuidhex().equals(gv2.getUuidhex()));
         assertFalse(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
         assertFalse(gv.getUuidT4string().equals(gv2.getUuidT4string()));
+        closeEM(em);
     }
     
     public void testInitialValues() { 
@@ -83,6 +84,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         }  catch (EntityExistsException eee) {
             // also ok
             return;
+        } finally {
+            closeEM(em);
         }
         
         // should not get here...
@@ -105,6 +108,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         }  catch (EntityExistsException eee) {
             // also ok
             return;
+        } finally {
+            closeEM(em);
         }
         
         // should not get here...
@@ -124,6 +129,8 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         } catch (InvalidStateException ise) {
             // expected result
             return;
+        } finally {
+            closeEM(em);
         }
         
         // should not get here...
@@ -154,6 +161,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         em.getTransaction().commit();
 
         assertNotEquals(0, gv.getCustomSeqWithIndirectionField());
+        closeEM(em);
     }
     
     public void testUUIDGenerators() {
@@ -199,6 +207,7 @@ public class TestGeneratedValues extends SingleEMFTestCase {
         assertTrue(gv.getField() == gv2.getField());
         assertTrue(gv.getUuidhex().equals(gv2.getUuidhex()));
         assertTrue(gv.getUuidT4hex().equals(gv2.getUuidT4hex()));
+        closeEM(em);
     }
                 
     /*
