@@ -62,6 +62,8 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
         em.getTransaction().begin();
         Query query = em.createNativeQuery(sql);
         assertTrue(query.getParameters().isEmpty());
+        em.getTransaction().commit();
+        em.close();
 	}
 	
 	void verifyParams(String jpql, Class<? extends Exception> error,
@@ -87,6 +89,7 @@ public class TestNativeQueryParameterBinding extends SingleEMFTestCase {
 				} 
 			}		
 		}
-		em.getTransaction().commit();
+        em.getTransaction().commit();
+        em.close();
 	}
 }
