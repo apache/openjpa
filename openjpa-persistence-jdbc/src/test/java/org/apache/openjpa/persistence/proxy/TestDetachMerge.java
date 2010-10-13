@@ -634,13 +634,6 @@ public class TestDetachMerge extends SingleEMFTestCase {
         return myEMF.createEntityManager();
     }
 
-    private void closeEM(EntityManager em) {
-        if (em != null) {
-            em.close();
-            em = null;
-        }
-    }
-
     private void assertEqual(IAnnuityHolder annuityHolder, IAnnuityHolder results, String string, String string2)
     throws Exception {
             if (annuityHolder == null && results == null) 
