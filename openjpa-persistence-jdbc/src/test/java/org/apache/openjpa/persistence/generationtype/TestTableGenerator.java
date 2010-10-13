@@ -43,5 +43,6 @@ public class TestTableGenerator extends SingleEMFTestCase {
         em.refresh(dog);
 
         assertEquals(20, dog.getId());
+        closeEM(em);
     }
 }

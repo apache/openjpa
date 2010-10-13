@@ -83,5 +83,7 @@ public class TestByteArray extends SingleEMTestCase {
         holder = em.find(ByteArrayHolder.class, holder.getTaskId());
         String baFromH = new String(holder.getTkiid());
         assertEquals(new String (ba), baFromH);
+        closeEM(em);
+        closeEM(em2);
     }
 }

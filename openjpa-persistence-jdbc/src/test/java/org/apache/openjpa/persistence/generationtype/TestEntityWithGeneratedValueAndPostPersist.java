@@ -62,6 +62,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
         // check the value captured by the PostPersist callback
         assertEquals("Entity's current value does not match value captured " +
         		"in postPersist", pc.getBingo(), cache);
+        closeEM(em);
     }
     
     public void testValueCapturedInPostPersistAfterFlush() {
@@ -90,6 +91,7 @@ public class TestEntityWithGeneratedValueAndPostPersist
         // check the value captured by the PostPersist callback
         assertEquals("Entity's current value does not match value captured " +
         		"in postPersist", pc.getBingo(), cache);
+        closeEM(em);
     }
     
     private EntityManager getEM() {

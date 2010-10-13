@@ -443,6 +443,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
                 em.getTransaction().rollback();
             }
         }
+        closeEM(em);
         closeEMF(tempEmf);
     }
 
