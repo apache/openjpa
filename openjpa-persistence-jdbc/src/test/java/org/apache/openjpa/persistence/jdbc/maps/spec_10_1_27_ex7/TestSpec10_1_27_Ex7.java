@@ -184,8 +184,8 @@ public class TestSpec10_1_27_Ex7 extends SQLListenerTestCase {
         c = em.find(Company.class, 1);
         assertCompany(c);
         deleteObj(em, c);
+*/      
 	    em.close();
-*/	    
 	}
 
     public void updateObj1(EntityManager em, Company c) {

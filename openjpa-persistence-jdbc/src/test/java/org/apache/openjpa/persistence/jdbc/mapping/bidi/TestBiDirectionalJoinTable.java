@@ -167,9 +167,4 @@ public class TestBiDirectionalJoinTable extends SQLListenerTestCase {
 		assertEquals(1+2*ADDRESS_COUNT, sql.size());
 	}
 	
-	
-	@Override
-	public void tearDown() {
-		
-	}
 }

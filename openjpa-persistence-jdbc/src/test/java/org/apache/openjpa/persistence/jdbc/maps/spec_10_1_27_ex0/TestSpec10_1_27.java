@@ -247,6 +247,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
 
         VicePresident vp = em.find(VicePresident.class, 1);
         assertVicePresident(vp);
+        em.close();
     }
 
     public void assertItem1(Item1 item) {

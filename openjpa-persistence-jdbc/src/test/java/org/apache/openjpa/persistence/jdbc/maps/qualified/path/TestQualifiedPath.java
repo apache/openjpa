@@ -95,6 +95,8 @@ public class TestQualifiedPath extends SQLListenerTestCase {
         q = em.createQuery(query);
         rs = q.getResultList();
         assertEquals(1, rs.size());
+        em.close();
+        em = null;
     }
     
     private void createObj() {

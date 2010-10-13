@@ -59,6 +59,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     	ms = em.find(MultilingualString.class, entity1.getId());
     	assertEquals("Good evening", ms.getText("en"));
     	em.getTransaction().commit();
+    	em.close();
     }
     
     public void testUpdateMapValue() throws Exception {
@@ -79,6 +80,7 @@ public class TestMapUpdate extends SQLListenerTestCase {
     	// This assertion fails, the entity still has the old value.
     	assertEquals("Good evening", ms.getText("en"));
     	em.getTransaction().commit();
+    	em.close();
     }
     
     private void createObj(EntityManagerFactory emf) {

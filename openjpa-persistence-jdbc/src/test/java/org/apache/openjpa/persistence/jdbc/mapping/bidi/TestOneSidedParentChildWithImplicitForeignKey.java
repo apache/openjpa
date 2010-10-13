@@ -57,8 +57,9 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 	private static long CHILD_ID_COUNTER = System.currentTimeMillis();
 	private static int CHILD_COUNT = 3;
 
+	@Override
 	public void setUp() {
-		setUp(DROP_TABLES, ParentWithAppIdentity.class,
+		super.setUp(DROP_TABLES, ParentWithAppIdentity.class,
                 ParentWithSequenceIdentity.class, ParentWithAutoIdentity.class,
 				Child.class);
 		em = emf.createEntityManager();
@@ -150,8 +151,10 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		em.getTransaction().commit();
 	}
 
-	public void tearDown() {
-
+	@Override
+	public void tearDown() throws Exception {
+	    closeEM(em);
+	    super.tearDown();
 	}
 
 	public IParent newParent(int parentType) {
