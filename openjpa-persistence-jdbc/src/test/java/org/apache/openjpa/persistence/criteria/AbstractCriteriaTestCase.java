@@ -69,6 +69,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
+     * NOTE: Caller must close the returned EMF.
      * 
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
