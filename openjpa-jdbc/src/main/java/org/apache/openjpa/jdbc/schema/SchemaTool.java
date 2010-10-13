@@ -44,6 +44,8 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
+import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
+import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
 import org.apache.openjpa.lib.util.Files;
@@ -137,6 +139,19 @@ public class SchemaTool {
         _dict = _conf.getDBDictionaryInstance();
     }
 
+    /**
+     * Cleanup DataSource after run()/record()
+     */
+    public void clear() {
+        if (_ds != null && _ds instanceof DelegatingDataSource) {
+            try {
+                ((DelegatingDataSource)_ds).close();
+            } catch (Exception e) {
+                // no-op
+            }
+        }
+    }
+    
     /**
      * The action supplied on construction.
      */

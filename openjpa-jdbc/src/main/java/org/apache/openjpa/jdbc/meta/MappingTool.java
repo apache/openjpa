@@ -504,6 +504,7 @@ public class MappingTool
                         tool.setSchemaGroup(getSchemaGroup());
                         tool.run();
                         tool.record();
+                        tool.clear();
                     }
                 }
 
