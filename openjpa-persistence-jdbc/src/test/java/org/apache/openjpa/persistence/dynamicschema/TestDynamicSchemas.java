@@ -65,6 +65,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( derbyEMF );
+        closeEMF(derbyEMF);
     }
 
 
@@ -76,6 +77,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( db2EMF );
+        closeEMF(db2EMF);
     }
 
 
@@ -87,6 +89,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( oracleEMF );
+        closeEMF(oracleEMF);
     }
 
 
@@ -98,6 +101,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( accessEMF );
+        closeEMF(accessEMF);
     }
 
 
@@ -109,6 +113,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( sqlserverEMF );
+        closeEMF(sqlserverEMF);
     }
 
 
@@ -120,6 +125,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( mysqlEMF );
+        closeEMF(mysqlEMF);
     }
 
 
@@ -131,6 +137,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( postgresEMF );
+        closeEMF(postgresEMF);
     }
 
 
@@ -142,6 +149,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( informixEMF );
+        closeEMF(informixEMF);
     }
 
 
@@ -153,6 +161,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( sybaseEMF );
+        closeEMF(sybaseEMF);
     }
 
 
@@ -164,6 +173,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( firebirdEMF );
+        closeEMF(firebirdEMF);
     }
 
 

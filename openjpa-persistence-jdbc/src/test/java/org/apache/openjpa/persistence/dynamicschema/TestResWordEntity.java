@@ -56,7 +56,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         em.clear();
         re = em.find(ResWordEntity.class, pe.getId());
 
-        em.close();
+        closeEM(em);
+        closeEMF(emf);
     }
 
     public void testMultipleSchemafactories2() {
@@ -80,7 +81,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         em.clear();
         re = em.find(ResWordEntity.class, pe.getId());
 
-        em.close();
+        closeEM(em);
+        closeEMF(emf);
     }
 
     public void testMultipleSchemafactories3() {
@@ -103,7 +105,8 @@ public class TestResWordEntity extends SingleEMFTestCase {
         em.clear();
         re = em.find(ResWordEntity.class, pe.getId());
 
-        em.close();
+        closeEM(em);
+        closeEMF(emf);
     }
 
     public void testMultipleSchemafactories4() {
@@ -126,6 +129,7 @@ public class TestResWordEntity extends SingleEMFTestCase {
         em.clear();
         re = em.find(ResWordEntity.class, pe.getId());
 
-        em.close();
+        closeEM(em);
+        closeEMF(emf);
     }
 }
