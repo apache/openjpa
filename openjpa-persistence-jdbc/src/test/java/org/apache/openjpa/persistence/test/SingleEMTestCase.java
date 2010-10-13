@@ -28,6 +28,8 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
 /**
  * A base test case that can be used to easily test scenarios where there
  * is only a single EntityManager at any given time.
+ * Extends SingleEMFTestCase and cleans up provided EM in tearDown() and relies on
+ * SingEMFTestCase.tearDown() to clean up the EMF it provides.
  *
  * @author Marc Prud'hommeaux
  */

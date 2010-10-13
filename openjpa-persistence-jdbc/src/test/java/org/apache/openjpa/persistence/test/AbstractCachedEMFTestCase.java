@@ -25,7 +25,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
  * Testcase which caches EntityManagerFactories based on the persistence unit name and the properties provided at
- * runtime.
+ * runtime.  Extends AbstractPersistenceTestCase and provides cleanup of EMFs created by createNamedEMF() through
+ * LinkHashMap.removeEldestEntry().
  * 
  */
 public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestCase {

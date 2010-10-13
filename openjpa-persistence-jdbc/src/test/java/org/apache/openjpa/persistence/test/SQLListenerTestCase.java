@@ -31,6 +31,7 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 
 /**
  * Base class for tests that need to check generated SQL.
+ * Extends SingleEMFTestCase, which will cleanup the EMF it provides.
  *
  * @author Patrick Linskey
  */

@@ -32,12 +32,14 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 /**
  * Base class for OpenJPA-specific Test Case.
  * Provides utilities for configuration setup and persistent entity 
- * registration during setUp() method.
+ * registration during setUp() method and EMF cleanup in tearDown().
  * Derived classes can access protected EntityManagerFactory to create 
  * EntityManager. The protected EntityManagerFactory is declared to be
  * OpenJPA-extended SPI interface <code>OpenJPAEntityManagerFactorySPI</code>
  * so that derived classes can access internal mapping/metadata/configuration
- * and other structures.  
+ * and other structures.
+ * Extends AbstractCachedEMFTestCase, which extends AbstractPersistenceTestCase
+ * and cleans up the EMF it provides in tearDown().
  *   
  */
 public abstract class SingleEMFTestCase

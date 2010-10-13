@@ -50,7 +50,8 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Base class for Persistence TestCases. This class contains utility methods but does not maintain an EntityManager or
- * EntityManagerFactory - these tasks are left for subclasses to handle.
+ * EntityManagerFactory - these tasks are left for subclasses to handle.  Extends junit.framework.TestCase and
+ * performs NO automatic clean up of EMFs created by createEMF() or createNamedEMF().
  */
 public abstract class AbstractPersistenceTestCase extends TestCase {
     public static final String FRESH_EMF = "Creates new EntityManagerFactory";

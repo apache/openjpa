@@ -88,6 +88,12 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.apache.regexp.REUtil;
 
+/**
+ * Extends AbstractCachedEMFTestCase, which extends AbstractPersistenceTestCase.
+ * Cleans up EMFs returned by getEmf() in tearDown().
+ *
+ * @version $Rev$ $Date$
+ */
 public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
 
     private String persistenceXmlResource;

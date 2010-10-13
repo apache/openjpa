@@ -47,6 +47,11 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
+/**
+ * Extends junit.framework.TestCase
+ *
+ * @version $Rev$ $Date$
+ */
 public abstract class AbstractCriteriaTestCase extends TestCase {
 
     protected abstract SQLAuditor getAuditor();
