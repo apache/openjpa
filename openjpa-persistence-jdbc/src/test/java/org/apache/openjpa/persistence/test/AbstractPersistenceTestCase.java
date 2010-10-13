@@ -83,6 +83,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Create an entity manager factory. Put {@link #CLEAR_TABLES} in this list to tell the test framework to delete all
      * table contents before running the tests.
+     * NOTE: Caller must close the returned EMF.
      * 
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
@@ -102,6 +103,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
+     * NOTE: Caller must close the returned EMF.
      * 
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
@@ -123,6 +125,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     /**
      * Create an entity manager factory for persistence unit <code>pu</code>. Put {@link #CLEAR_TABLES} in this list to
      * tell the test framework to delete all table contents before running the tests.
+     * NOTE: Caller must close the returned EMF.
      * 
      * @param props
      *            list of persistent types used in testing and/or configuration values in the form
@@ -219,16 +222,20 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Safely close the given factory.
      */
     protected boolean closeEMF(EntityManagerFactory emf) {
+        boolean brc = false;
         if (emf == null || !emf.isOpen()) {
-            return false;
+            return brc;
         }
-
         try {
-            closeAllOpenEMs(emf);
+            // clear() will also close the EMs
+            // closeAllOpenEMs(emf);
+            clear(emf);
         } finally {
             emf.close();
-            return !emf.isOpen();
+            brc = !emf.isOpen();
+            emf = null;
         }
+        return brc;
     }
 
     /**
