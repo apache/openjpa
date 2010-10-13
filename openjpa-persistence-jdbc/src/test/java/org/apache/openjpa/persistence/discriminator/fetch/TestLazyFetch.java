@@ -25,9 +25,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestLazyFetch extends PersistenceTestCase {
+public class TestLazyFetch extends AbstractPersistenceTestCase {
     private static int N_EMPS = 3;
 
     public EntityManagerFactory newEmf() {
@@ -36,7 +36,8 @@ public class TestLazyFetch extends PersistenceTestCase {
         return emf;
     }
 
-    public void setUp() {
+    @Override
+    public void setUp() throws Exception {
         EntityManagerFactory emf = newEmf();
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
@@ -85,8 +86,8 @@ public class TestLazyFetch extends PersistenceTestCase {
             assertTrue(m.getEmployees().contains(e));
             assertEquals(m, e.getManager());
         }
-        em.close();
-        emf.close();
+        closeEM(em);
+        closeEMF(emf);
     }   
     
     @SuppressWarnings("unchecked")
@@ -106,7 +107,7 @@ public class TestLazyFetch extends PersistenceTestCase {
             assertTrue(m.getEmployees().contains(e));
             assertEquals(m, e.getManager());
         }
-        em.close();
-        emf.close();
+        closeEM(em);
+        closeEMF(emf);
     }
 }
