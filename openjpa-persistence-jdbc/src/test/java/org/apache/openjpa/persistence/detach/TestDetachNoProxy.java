@@ -100,7 +100,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         verifySerializable(e20, true, false);
                
         em.close();
-        emf2.close();
+        closeEMF(emf2);
     }
 
     /* 
@@ -151,7 +151,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         verifySerializable(e20copy, false, false);
         
         em.close();
-        emf2.close();
+        closeEMF(emf2);
     }
 
     /*
@@ -206,7 +206,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         }
 
         em.close();
-        emf2.close();
+        closeEMF(emf2);
     }
 
     /*
@@ -260,7 +260,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         }
 
         em.close();
-        emf1.close();
+        closeEMF(emf1);
     }
 
     /*
@@ -314,7 +314,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         }
 
         em.close();
-        emf2.close();
+        closeEMF(emf2);
     }
 
     /*
@@ -367,7 +367,7 @@ public class TestDetachNoProxy extends SingleEMFTestCase {
         }
 
         em.close();
-        emf2.close();
+        closeEMF(emf2);
     }
 
     /**

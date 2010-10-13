@@ -27,7 +27,6 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
     TimestampVersionEntity tsVer;
     NoVersionEntity noVer;
     int id;
-    OpenJPAEntityManager em;
     Compatibility compat;
     
     public void setUp() {
@@ -51,12 +50,13 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
     }
     
     private void persist() {
-        em = emf.createEntityManager();
+        OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         em.persist(noVer);
         em.persist(intVer); // also persists referenced tsVer
         em.getTransaction().commit();
         em.close();
+        em = null;
     }
     
     public void testReloadTrue() {
@@ -71,7 +71,7 @@ public class TestDetachReloadProp extends SQLListenerTestCase {
     
     private void detachProcessing() {
         // Detach individual entities explicitly
-        em = emf.createEntityManager();
+        OpenJPAEntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
         intVer = em.find(IntVersionEntity.class, id);
         tsVer = em.find(TimestampVersionEntity.class, id);
