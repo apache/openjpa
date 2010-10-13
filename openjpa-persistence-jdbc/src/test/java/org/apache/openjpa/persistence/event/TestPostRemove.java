@@ -62,6 +62,7 @@ public class TestPostRemove extends ContainerTest {
         commit();
         assertTrue("PostRemove not called after commit", isPostRemovedInvoked(pc) 
                 && pc.getPostRemoveTime() <= System.nanoTime());
+        em.close();
     }
     
     public void testPostRemoveInvokedAfterDatabaseDeleteWithoutFlush() {
@@ -73,6 +74,7 @@ public class TestPostRemove extends ContainerTest {
         assertFalse("PostRemove called before commit", isPostRemovedInvoked(pc));
         commit();
         assertTrue("PostRemove not called after commit", pc.getPostRemoveTime() <= System.nanoTime());
+        em.close();
     }
     
     public void testPostRemoveNotInvokedAfterRollback() {
@@ -84,6 +86,7 @@ public class TestPostRemove extends ContainerTest {
         assertFalse("PostRemove called before rollback", isPostRemovedInvoked(pc));
         rollback();
         assertTrue("PostRemove called after rollback", pc.getPostRemoveTime() <= System.nanoTime());
+        em.close();
     }
     
     public void testPostRemoveNotInvokedAfterRollbackWithIntermediateFlush() {
@@ -97,6 +100,7 @@ public class TestPostRemove extends ContainerTest {
         assertFalse("PostRemove called before rollback", isPostRemovedInvoked(pc));
         rollback();
         assertTrue("PostRemove called after rollback", pc.getPostRemoveTime() <= System.nanoTime());
+        em.close();
     }
     
     public void testPostRemoveInvokedOnFlushThatIssuesDatabaseDelete() {
@@ -117,6 +121,7 @@ public class TestPostRemove extends ContainerTest {
         assertTrue("PostRemove not called after delete flush", isPostRemovedInvoked(pc));
         commit();
         assertTrue("PostRemove not called after commit", pc.getPostRemoveTime() <= System.nanoTime());
+        em.close();
     }
 
 
@@ -128,6 +133,7 @@ public class TestPostRemove extends ContainerTest {
         assertFalse("PostRemove called before commit", isPostRemovedInvoked(pc));
         commit();
         assertFalse("PostRemove called after commit", isPostRemovedInvoked(pc));
+        em.close();
     }
     
     boolean isPostRemovedInvoked(PostRemoveCallbackEntity pc) {

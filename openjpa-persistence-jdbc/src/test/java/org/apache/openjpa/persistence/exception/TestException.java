@@ -122,6 +122,7 @@ public class TestException extends SingleEMFTestCase {
 		} catch (Throwable t) {
 			assertException(t, EntityExistsException.class);
 		}
+		em.close();
 	}
 	
 	public void testThrowsEntityNotFoundException() {
@@ -147,6 +148,7 @@ public class TestException extends SingleEMFTestCase {
 		} catch (Throwable t) {
 			assertException(t, EntityNotFoundException.class);
 		}
+		em.close();
 	}
 	
 	public void testErrorCodeConfigurationHasAllKnownDictionaries() {
@@ -179,6 +181,7 @@ public class TestException extends SingleEMFTestCase {
 	    } catch (Throwable t) {
 		   assertException(t, IllegalArgumentException.class);
 	    }
+	    em.close();
 	}
 	
 	/**
@@ -192,6 +195,7 @@ public class TestException extends SingleEMFTestCase {
          } catch (Throwable t) {
              assertException(t, IllegalArgumentException.class);
          }
+         em.close();
       }
 	
 	/**
