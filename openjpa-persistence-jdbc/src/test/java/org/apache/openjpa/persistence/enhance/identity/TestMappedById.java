@@ -259,6 +259,7 @@ public class TestMappedById extends SingleEMFTestCase {
             int count = (int)o.longValue();
             assertEquals(2, count);
         }
+        em.close();
     }
 
     public void createObj1() {
@@ -303,6 +304,7 @@ public class TestMappedById extends SingleEMFTestCase {
         assertEquals(numDependentsPerEmployee, ds.size());
         Employee1 e0 = emps1.get(1);
         assertEquals(e0, e);
+        em.close();
     }
 
     public void queryObj1() {
@@ -374,6 +376,7 @@ public class TestMappedById extends SingleEMFTestCase {
         assertEquals(numDependentsPerEmployee, ds.size());
         Employee2 e0 = emps2.get(1);
         assertEquals(e0, e);
+        em.close();
     }
 
     public void queryObj2() {
@@ -449,6 +452,7 @@ public class TestMappedById extends SingleEMFTestCase {
         Person1 p = em.find(Person1.class, pid);
         Person1 p0 = persons1.get(pid.getFirstName());
         assertEquals(p0, p);
+        em.close();
     }
 
     public void queryObj3() {
@@ -523,6 +527,7 @@ public class TestMappedById extends SingleEMFTestCase {
         Person2 p = em.find(Person2.class, ssn);
         Person2 p1 = p.getMedical().getPatient();
         assertEquals(p1, p);
+        em.close();
     }
 
     public void queryObj4() {
@@ -617,6 +622,7 @@ public class TestMappedById extends SingleEMFTestCase {
         Dependent3 d = em.find(Dependent3.class, dids3.get(1));
         Dependent3 d0 = depMap3.get(dids3.get(1));
         assertEquals(d0, d);
+        em.close();
     }
 
     public void queryObj5() {
@@ -688,6 +694,7 @@ public class TestMappedById extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.remove(m);
         em.getTransaction().commit();
+        em.close();
     }
 
     public void queryObj6() { 
@@ -753,6 +760,7 @@ public class TestMappedById extends SingleEMFTestCase {
         MedicalHistory4 m = em.find(MedicalHistory4.class, new PersonId4("f_1", "l_1"));
         MedicalHistory4 m0 = medicals4.get("f_1");
         assertEquals(m, m0);
+        em.close();
     }
 
     public void queryObj7() {
@@ -873,5 +881,6 @@ public class TestMappedById extends SingleEMFTestCase {
         BeneContactId id1 = c.getId();
         BeneContact c1 = em.find(BeneContact.class, id1);
         assertEquals("email8", c1.getEmail());
+        em.close();
     }
 }

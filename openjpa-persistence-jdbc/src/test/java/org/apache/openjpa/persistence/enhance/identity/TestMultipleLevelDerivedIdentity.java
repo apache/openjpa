@@ -71,6 +71,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
             e.printStackTrace();
             fail("Fail to merge twice: " + e.getMessage());
         }
+        em.close();
 	}
 	
 	public void testPersist() {
@@ -85,6 +86,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		Library lib = (Library) list.get(0);
 		assertNotNull(lib.getBook(BOOK_NAME));
 		assertNotNull(lib.getBook(BOOK_NAME).getPage(1));
+		em.close();
 	}
 	
 	public void testQueryIntermediateLevel() {
@@ -101,6 +103,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 			assertEquals(lib, page.getBook().getLibrary());
             assertEquals(page, page.getBook().getPage(page.getNumber()));
 		}
+		em.close();
 	}
 	
 	public void testQueryLeafLevel() {
@@ -115,6 +118,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 			assertEquals(lib, page.getBook().getLibrary());
             assertEquals(page, page.getBook().getPage(page.getNumber()));
 		}
+		em.close();
 	}
 
 	public void testFindRootNode() {
@@ -123,6 +127,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		assertNotNull(lib);
 		assertNotNull(lib.getBook(BOOK_NAME));
 		assertNotNull(lib.getBook(BOOK_NAME).getPage(1));
+		em.close();
 	}
 	
 	public void testFindIntermediateNode() {
@@ -133,6 +138,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		bookId.setName(BOOK_NAME);
 		Book book = em.find(Book.class, bookId);
 		assertNotNull(book);
+		em.close();
 	}
 	
 	public void testFindLeafNode() {
@@ -146,6 +152,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		pageId.setNumber(2);
 		Page page = em.find(Page.class, pageId);
 		assertNotNull(page);
+		em.close();
 	}
 	
 	public void testUpdate() {
@@ -158,6 +165,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		assertNotNull(book);
 		book.setAuthor("modifiy Author");
 		em.getTransaction().commit();
+		em.close();
 	}
 	
 	public void testDeleteRoot() {
@@ -170,6 +178,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	    assertEquals(0, count(Library.class));
 	    assertEquals(0, count(Book.class));
 	    assertEquals(0, count(Page.class));
+	    em.close();
 	}
 	
 	public void testDeleteLeafObtainedByQuery() {
@@ -184,6 +193,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	    assertEquals(1, count(Library.class));
 	    assertEquals(1, count(Book.class));
 	    assertEquals(NUM_PAGES-1, count(Page.class));
+	    em.close();
 	}
 	
 	public void testDeleteLeafObtainedByFind() {
@@ -203,6 +213,7 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 	    assertEquals(1, count(Library.class));
 	    assertEquals(1, count(Book.class));
 	    assertEquals(NUM_PAGES-1, count(Page.class));
+	    em.close();
 	}
 
 	
@@ -232,5 +243,6 @@ public class TestMultipleLevelDerivedIdentity extends SingleEMFTestCase {
 		em.getTransaction().commit();
 
 		em.clear();
+		em.close();
 	}
 }

@@ -64,6 +64,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		
 		Page1 p = b.getPage(new PageId1(1, bid));
 		assertNotNull(p);
+		em.close();
 	}
 	
 	public void testQueryIntermediateLevel() {
@@ -83,6 +84,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 			assertEquals(page, page.getBook().getPage(
 				new PageId1(pid.getNumber(), book.getBid())));
 		}
+		em.close();
 	}
 	
 	public void testQueryLeafLevel() {
@@ -99,6 +101,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 			assertEquals(page, page.getBook().
 				getPage(page.getPid()));
 		}
+		em.close();
 	}
 
 	public void testFindRootNode() {
@@ -111,6 +114,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(b);
 		PageId1 pid = new PageId1(1, bid);
 		assertNotNull(b.getPage(pid));
+		em.close();
 	}
 	
 	public void testFindIntermediateNode() {
@@ -122,6 +126,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		bookId.setName(BOOK_NAME);
 		Book1 book = em.find(Book1.class, bookId);
 		assertNotNull(book);
+		em.close();
 	}
 	
 	public void testFindLeafNode() {
@@ -136,6 +141,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		pageId.setNumber(2);
 		Page1 page = em.find(Page1.class, pageId);
 		assertNotNull(page);
+		em.close();
 	}
 	
 	public void testUpdate() {
@@ -149,6 +155,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 		assertNotNull(book);
 		book.setAuthor("modifiy Author");
 		em.getTransaction().commit();
+		em.close();
 	}
 	
 	public void testDeleteRoot() {
@@ -162,6 +169,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    assertEquals(0, count(Library1.class));
 	    assertEquals(0, count(Book1.class));
 	    assertEquals(0, count(Page1.class));
+	    em.close();
 	}
 	
 	public void testDeleteLeafObtainedByQuery() {
@@ -178,6 +186,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    assertEquals(1, count(Library1.class));
 	    assertEquals(1, count(Book1.class));
 	    assertEquals(NUM_PAGES-1, count(Page1.class));
+	    em.close();
 	}
 	
 	public void testDeleteLeafObtainedByFind() {
@@ -198,6 +207,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	    assertEquals(1, count(Library1.class));
 	    assertEquals(1, count(Book1.class));
 	    assertEquals(NUM_PAGES-1, count(Page1.class));
+	    em.close();
 	}
 
     public void testOrderBy() {
@@ -206,6 +216,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
         Library1 lib = em.find(Library1.class, LIBRARY_NAME);
         assertNotNull(lib);
         assertSQLFragnments(sql, "ORDER BY t1.LIBRARY_NAME ASC, t1.BOOK_NAME ASC");
+        em.close();
     }
     
 	/**
@@ -249,6 +260,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
         assertSQLFragnments(sql, "CREATE TABLE DI_BOOK1", "LIBRARY_NAME", "BOOK_NAME");
         assertSQLFragnments(sql, "CREATE TABLE DI_PAGE1", "LIBRARY_NAME", "BOOK_NAME", "PAGE_NUM");
         assertSQLFragnments(sql, "CREATE TABLE DI_LINE1", "LIBRARY_NAME", "BOOK_NAME", "PAGE_NUM", "LINE_NUM");
+        em.close();
 	}
 
     void assertSQLFragnments(List<String> list, String... keys) {

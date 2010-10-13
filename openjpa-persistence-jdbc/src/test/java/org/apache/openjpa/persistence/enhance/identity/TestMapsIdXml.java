@@ -99,6 +99,7 @@ public class TestMapsIdXml extends SingleEMFTestCase {
         assertEquals(numDependentsPerEmployee, ds.size());
         Employee1Xml e0 = emps1xml.get(1);
         assertEquals(e0, e);
+        em.close();
     }
 
     public void queryObj1Xml() {
