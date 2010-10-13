@@ -239,6 +239,23 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
     }
 
     /**
+     * Safely close the given EM
+     * 
+     * @param em
+     * @return
+     */
+    protected boolean closeEM(EntityManager em) {
+        if (em == null || !em.isOpen()) {
+            return false;
+        }
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        em.close();
+        return true;
+    }
+    
+    /**
      * Closes all open entity managers after first rolling back any open transactions.
      */
     protected void closeAllOpenEMs(EntityManagerFactory emf) {
@@ -249,10 +266,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         for (Broker b : ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf)).getOpenBrokers()) {
             if (b != null && !b.isClosed()) {
                 EntityManager em = JPAFacadeHelper.toEntityManager(b);
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                em.close();
+                closeEM(em);
             }
         }
     }
@@ -327,10 +341,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         } catch (Exception e) {
             // ignore
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            em.close();
+            closeEM(em);
         }
     }
 
