@@ -132,12 +132,17 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         this.props = props;
     }
 
+    /**
+     * Closes any EMFs created by getEmf()
+     * 
+     */
     public void tearDown() throws Exception {
         try {
             super.tearDown();
         } finally {
             for (EntityManagerFactory emf : emfs.values()) {
                 try {
+                    // closeEMF() will also close any open/active EMs
                     closeEMF(emf);
                     emf = null;
                 } catch (Exception e) {
@@ -194,6 +199,12 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         return ret;
     }
 
+    /**
+     * Creates a EMF and adds it to a Map for cleanup in tearDown()
+     * 
+     * @param map
+     * @return
+     */
     protected OpenJPAEntityManagerFactory getEmf(Map map) {
         if (map == null)
             map = new HashMap();
@@ -238,6 +249,11 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
                     "SchemaAction='add,deleteTableContents')");
     }
 
+    /**
+     * Creates a EMF and adds it to a Map for cleanup in tearDown()
+     * 
+     * @return
+     */
     protected OpenJPAEntityManagerFactory getEmf() {
         Map m = new HashMap();
         return getEmf(m);
@@ -285,10 +301,10 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     }
 
     protected void endEm(EntityManager em) {
-        if (em.isOpen())
+        if (em != null && em.isOpen())
             em.close();
         if (em == currentEntityManager)
-        currentEntityManager = null;
+            currentEntityManager = null;
     }
 
     protected Object getStackTrace(Throwable t) {
