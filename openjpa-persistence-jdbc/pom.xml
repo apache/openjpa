@@ -46,7 +46,7 @@
             </activation>
             <properties>
                 <build.enhance>false</build.enhance>
-                <openjpa.dynamicEnhance>true</openjpa.dynamicEnhance>
+                <openjpa.DynamicEnhancementAgent>true</openjpa.DynamicEnhancementAgent>
                 <surefire.jvm.args>-Dopenjpa.RuntimeUnenhancedClasses=unsupported ${test.jvm.arguments}</surefire.jvm.args>
             </properties>
             <build>

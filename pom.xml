@@ -54,7 +54,7 @@
         <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize} -XX:+HeapDumpOnOutOfMemoryError</test.jvm.arguments>
         <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
         <!-- Setting for openjpa.DynamicEnhancementAgent usage -->
-        <openjpa.dynamicEnhance>false</openjpa.dynamicEnhance>
+        <openjpa.DynamicEnhancementAgent>false</openjpa.DynamicEnhancementAgent>
         <!-- Commons DBCP settings passed in as openjpa.ConnectionProperties -->
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>
@@ -337,79 +337,6 @@
                        </configuration>
                    </plugin>
                 </plugins>
-            </build>
-        </profile>
-
-        <!-- Use this profile to build/execute the junits w/ a 1.5 JDK
-             Note: You must also specific a DB test profile, like test-derby
-             and provide -Djava5.home=<path to 1.5 JDK, like /opt/jdk1.5.0_22>
-        -->
-        <profile>
-            <id>test-java5</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <java5.home>"java5.home - Must be user supplied"</java5.home>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                    <version>2.1</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                    <version>2.1.3</version>
-                </dependency>
-            </dependencies>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <source>1.5</source>
-                                <target>1.5</target>
-                                <excludes>
-                                    <exclude>none</exclude>
-                                </excludes>
-                                <testExcludes>
-                                    <exclude>**</exclude>
-                                </testExcludes>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <id>compile-java5</id>
-                                    <configuration>
-                                        <fork>true</fork>
-                                        <executable>${java5.home}/bin/javac</executable>
-                                        <compilerVersion>1.5</compilerVersion>
-                                        <maxmem>${test.jvm.maxheapsize}</maxmem>
-                                        <excludes>
-                                            <exclude>**</exclude>
-                                        </excludes>
-                                        <testExcludes>
-                                            <exclude>none</exclude>
-                                        </testExcludes>
-                                    </configuration>
-                                    <goals>
-                                        <goal>testCompile</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <jvm>${java5.home}/bin/java</jvm>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
         </profile>
 
@@ -702,7 +629,7 @@
                         </property>
                         <property>
                             <name>openjpa.DynamicEnhancementAgent</name>
-                            <value>${openjpa.dynamicEnhance}</value>
+                            <value>${openjpa.DynamicEnhancementAgent}</value>
                         </property>
                         <property>
                             <name>openjpa.ConnectionDriverName</name>
