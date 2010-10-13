@@ -53,6 +53,15 @@ public class TestXmlDelimInheritance extends SQLListenerTestCase {
     }
     
     @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        super.tearDown();
+    }
+
+    @Override
     protected String getPersistenceUnitName() {
         return "delimited-identifiers-inheritance-xml";
     }    

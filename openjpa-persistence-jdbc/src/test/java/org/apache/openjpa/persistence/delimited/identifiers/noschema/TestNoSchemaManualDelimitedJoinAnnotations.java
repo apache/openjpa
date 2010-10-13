@@ -64,6 +64,17 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
         dict = conf.getDBDictionaryInstance();
     }
     
+    @Override
+    public void tearDown() throws Exception {
+        if (em != null && em.isOpen()) {
+            em.close();
+            em = null;
+        }
+        dict = null;
+        conf = null;
+        super.tearDown();
+    }
+
     private void createCandD(int id) {
         entityC = new EntityC(id);
         entityC.setName("ec");
