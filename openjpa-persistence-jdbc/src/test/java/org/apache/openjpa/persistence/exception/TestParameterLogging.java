@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.exception;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
@@ -28,9 +25,9 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.RollbackException;
 
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestParameterLogging extends PersistenceTestCase {
+public class TestParameterLogging extends AbstractPersistenceTestCase {
 
     String _regex = ".*params=.*1,.*]";
 
@@ -63,12 +60,8 @@ public class TestParameterLogging extends PersistenceTestCase {
             if (tran.isActive()) {
                 tran.rollback();
             }
-            if (em.isOpen()) {
-                em.close();
-            }
-            if (emf.isOpen()) {
-                emf.close();
-            }
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
