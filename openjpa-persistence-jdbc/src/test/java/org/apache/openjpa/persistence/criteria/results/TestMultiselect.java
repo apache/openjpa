@@ -43,7 +43,7 @@ public class TestMultiselect extends CriteriaTest {
     private static boolean initialized = false;
     
     @Override
-    public void setUp() {
+    public void setUp() throws Exception {
         super.setUp();
         if (!initialized) {
             clearData();
