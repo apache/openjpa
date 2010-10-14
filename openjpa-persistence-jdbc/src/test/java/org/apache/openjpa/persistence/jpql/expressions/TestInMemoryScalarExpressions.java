@@ -21,8 +21,12 @@ package org.apache.openjpa.persistence.jpql.expressions;
 import java.util.List;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryImpl;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
@@ -30,13 +34,19 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
 
+    /**
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * asserts later in the testcase.
+     */
+    private String expectedShannonName = "Shannon ";
+    
     public TestInMemoryScalarExpressions(String name) {
         super(name, "jpqlclausescactusapp");
     }
 
     public void setUp() {
         deleteAll(CompUser.class);
-        EntityManager em = currentEntityManager();
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
 
         Address[] add = new Address[]{
@@ -67,6 +77,11 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         em.persist(user6);
         userid6 = user6.getUserid();
 
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if(dict instanceof SybaseDictionary) { 
+            expectedShannonName="Shannon";
+        }
+        
         endTx(em);
         endEm(em);
     }
@@ -109,7 +124,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(2);
-        assertEquals("the name is not shannon ", "Shannon ", result[0]);        
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);        
         assertNull("is not null", result[1]);
         
         endEm(em);
@@ -134,7 +149,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(5);
-        assertEquals("the name is not shannon ", "Shannon ", result[0]);        
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);        
         assertEquals("is not 'us'", "us", result[1]);
         
         endEm(em);
@@ -160,7 +175,7 @@ public class TestInMemoryScalarExpressions extends AbstractTestCase {
         qi.setCandidateCollection(rsall);
         List rs = q1.getResultList();
         Object[] result = (Object[]) rs.get(3);
-        assertEquals("the name is not shannon ", "Shannon ", result[0]);
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
         assertEquals("not 30", "30", result[1].toString());
 
         endEm(em);

@@ -32,6 +32,7 @@ import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.embed.attrOverrides.TestAssocOverridesXML.SQLListener;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
     private List<String> _sql = new ArrayList<String>();
@@ -41,7 +42,7 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
                 "openjpa.DataCache", "true",
                 "openjpa.QueryCache", "true(CacheSize=1000, EvictPolicy='timestamp')",
                 "openjpa.RemoteCommitProvider", "sjvm",
-                "openjpa.jdbc.JDBCListeners",new JDBCListener[] { new SQLListener() });
+                "openjpa.jdbc.JDBCListeners",new JDBCListener[] { new FilteringJDBCListener(_sql) });
     }
 
     public void testEmptyResultTimeout() {
@@ -127,16 +128,6 @@ public class TestQueryTimestampEviction extends AbstractQueryCacheTest {
         
         if (t2.getState().equals(java.lang.Thread.State.WAITING)) {
             fail("The thread is still waiting on a writeLock()!");
-        }
-    }
-
-    public class SQLListener extends AbstractJDBCListener {
-
-        @Override
-        public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && _sql != null) {
-                _sql.add(event.getSQL());
-            }
         }
     }
 }

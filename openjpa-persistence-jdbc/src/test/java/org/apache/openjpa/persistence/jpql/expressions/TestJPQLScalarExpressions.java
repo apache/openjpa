@@ -23,20 +23,30 @@ import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 public class TestJPQLScalarExpressions extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
-
+    
+    /**
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * asserts later in the testcase.
+     */
+    private String expectedShannonName = "Shannon ";
+    
     public TestJPQLScalarExpressions(String name) {
         super(name, "jpqlclausescactusapp");
     }
 
     public void setUp() {
         deleteAll(CompUser.class);
-        EntityManager em = currentEntityManager();
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
 
         Address[] add = new Address[]{
@@ -66,7 +76,11 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         userid5 = user5.getUserid();
         em.persist(user6);
         userid6 = user6.getUserid();
-
+        
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if(dict instanceof SybaseDictionary) { 
+            expectedShannonName="Shannon";
+        }
         endTx(em);
         endEm(em);
     }
@@ -146,7 +160,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
 
         List rs = em.createQuery(query).getResultList();
         Object[] result = (Object[]) rs.get(1);
-        assertEquals("the name is not shannon ", "Shannon ", result[0]);
+        assertEquals("the name is not shannon ", expectedShannonName, result[0]);
         assertNull("is not null", result[1]);
         
         endTx(em);
@@ -189,7 +203,7 @@ public class TestJPQLScalarExpressions extends AbstractTestCase {
         List rs3 = em.createQuery(query3).getResultList();
         Object[] result3 = (Object[]) rs3.get(0);
         assertEquals("the result is not female", "Female", result3[1]);
-        assertEquals("the name is not shannon", "Shannon ", result3[0]);
+        assertEquals("the name is not shannon", expectedShannonName, result3[0]);
         result3 = (Object[]) rs3.get(2);
         assertEquals("the result is not male", "Male", result3[1]);
         assertEquals("the name is not seetha", "Seetha", result3[0]);

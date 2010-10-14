@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
@@ -34,14 +35,20 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 public class TestEJBQLFunction extends AbstractTestCase {
 
     private int userid1, userid2, userid3, userid4, userid5, userid6;
-
+    
+    /**
+     * Some databases trim the whitespace from a string upon insert. Store Shannon's name for 
+     * asserts later in the testcase.
+     */
+    private String expectedShannonName = "Shannon ";
+    
     public TestEJBQLFunction(String name) {
         super(name, "jpqlclausescactusapp");
     }
 
     public void setUp() {
         deleteAll(CompUser.class);
-        EntityManager em = currentEntityManager();
+        OpenJPAEntityManagerSPI em = (OpenJPAEntityManagerSPI) currentEntityManager();
         startTx(em);
 
         Address[] add = new Address[]{
@@ -72,6 +79,11 @@ public class TestEJBQLFunction extends AbstractTestCase {
         em.persist(user6);
         userid6 = user6.getUserid();
 
+        DBDictionary dict = ((JDBCConfiguration) em.getConfiguration()).getDBDictionaryInstance();
+        if(dict instanceof SybaseDictionary) { 
+            expectedShannonName="Shannon";
+        }
+        
         endTx(em);
         endEm(em);
     }
@@ -145,8 +157,10 @@ public class TestEJBQLFunction extends AbstractTestCase {
         if (dict instanceof OracleDictionary) {
             assertTrue(user.getName() == null ||
                 "".equals(user.getName()));
+        } else if (dict instanceof SybaseDictionary) {
+            assertEquals(" ", user.getName());
         } else {
-            assertEquals("", user.getName());            
+            assertEquals("", user.getName());
         }
 
         endTx(em);
@@ -159,7 +173,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         CompUser user = em.find(CompUser.class, userid2);
         assertNotNull(user);
-        assertEquals("Shannon ", user.getName());
+        assertEquals(expectedShannonName, user.getName());
 
         String query = "UPDATE CompUser e SET " +
             "e.name = Trim(e.name) WHERE " +
@@ -284,7 +298,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertTrue(result.contains("Shannon "));
+        assertTrue(result.contains(expectedShannonName));
 
         endEm(em);
     }
@@ -363,7 +377,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(3, result.size());
-        assertTrue(result.contains("Shannon "));
+        assertTrue(result.contains(expectedShannonName));
         assertTrue(result.contains("Shade"));
         assertTrue(result.contains("Seetha"));
 
@@ -380,7 +394,7 @@ public class TestEJBQLFunction extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(3, result.size());
-        assertTrue(result.contains("Shannon "));
+        assertTrue(result.contains(expectedShannonName));
         assertTrue(result.contains("Seetha"));
         assertTrue(result.contains("Shade"));
 
