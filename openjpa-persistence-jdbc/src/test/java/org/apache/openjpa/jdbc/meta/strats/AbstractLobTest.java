@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
@@ -53,7 +54,8 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
 
     protected List<Class<? extends DBDictionary>> supportedDatabases =
         new ArrayList<Class<? extends DBDictionary>>
-            (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class));
+            (Arrays.asList(MySQLDictionary.class, OracleDictionary.class, SQLServerDictionary.class,
+            		DB2Dictionary.class));
         
     public void setUp() throws Exception {
         // Test CREATE TABLE but only once to save time.
