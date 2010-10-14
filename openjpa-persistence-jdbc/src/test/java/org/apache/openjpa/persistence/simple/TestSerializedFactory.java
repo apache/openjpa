@@ -82,6 +82,8 @@ public class TestSerializedFactory extends SingleEMFTestCase {
             emf2.close();
         assertFalse("The entity manager factory is not closed", 
                 emf2.isOpen());
+        emf2 = null;
+        oos.close();
     }
 
     public static void main(String[] args) {

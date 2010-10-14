@@ -78,6 +78,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(1, Math.abs(pc1.getId() - pc2.getId()));
+		em.close();
 	}
 
 	public void testAutoIncrementIdentityWithNativeSequence() {
@@ -90,6 +91,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
 		em.getTransaction().commit();
 
 		assertEquals(1, Math.abs(pc1.getId() - pc2.getId()));
+		em.close();
 	}
 
     /**
@@ -108,6 +110,7 @@ public class TestAutoIncrement extends SingleEMFTestCase {
             // Sequence probably exists.
             em.getTransaction().rollback();
         }
+        closeEM(em);
         closeEMF(factorySPI);
     }
 }

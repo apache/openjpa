@@ -129,16 +129,23 @@ public class TestFlushBeforeDetach extends SQLListenerTestCase {
      */
     private Object serializeObject(Object orig) throws Exception {
         Object deserialized = null;
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(orig);
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(orig);
 
-        ByteArrayInputStream bais =
-                new ByteArrayInputStream(baos.toByteArray());
-        ObjectInputStream ois = new ObjectInputStream(bais);
+            ByteArrayInputStream bais =
+                    new ByteArrayInputStream(baos.toByteArray());
+            ois = new ObjectInputStream(bais);
 
-        deserialized = ois.readObject();
-        return deserialized;
+            deserialized = ois.readObject();
+            return deserialized;
+        } finally {
+            oos.close();
+            ois.close();
+        }
     }
 }

@@ -59,6 +59,7 @@ public class TestMissingMetaData extends TestCase {
     
     public void tearDown() {
         emf.close();
+        emf = null;
     }
     
     public static void main(String[] args) {

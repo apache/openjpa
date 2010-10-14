@@ -62,6 +62,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         assertEquals("Default ValidationFactory", 
             null,
             conf.getValidationFactoryInstance());
+        closeEMF(emf);
     }
 
     /**
@@ -91,6 +92,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         assertEquals("ValidationFactory", 
             this.getClass(),
             conf.getValidationFactoryInstance());
+        closeEMF(emf);
     }
 
     /**
@@ -120,6 +122,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
         assertEquals("ValidationFactory", 
             this.getClass(),
             conf.getValidationFactoryInstance());
+        closeEMF(emf);
     }
 
     /**
@@ -159,6 +162,7 @@ public class TestValidationFactory extends SingleEMFTestCase {
             getLog().trace("testValidationFactory4() - caught expected " +
                 "PersistenceException", e);
         }
+        closeEMF(emf);
     }
 
 }

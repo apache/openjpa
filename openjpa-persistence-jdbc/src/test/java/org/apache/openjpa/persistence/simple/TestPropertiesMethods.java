@@ -34,6 +34,7 @@ import org.apache.openjpa.persistence.AutoClearType;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * This test case tests the getProperties() and getSupportedProperties() methods
@@ -43,16 +44,16 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * @author Pinaki Poddar
  * 
  */
-public class TestPropertiesMethods extends TestCase {
+public class TestPropertiesMethods extends AbstractPersistenceTestCase {
     private static final String UNIT_NAME = "test";
-    private static OpenJPAEntityManagerFactory emf;
+    private OpenJPAEntityManagerFactory emf;
     private OpenJPAEntityManager em;
     
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
-        if (emf == null) {
-            Map config = new HashMap();
-            config.putAll(System.getProperties());
+        super.setUp();
+        Map config = new HashMap();
+        config.putAll(System.getProperties());
             
 /* numeric   */ config.put("openjpa.DataCacheTimeout", 300);
 /* num enum  */ config.put("openjpa.AutoClear", 0);
@@ -64,10 +65,17 @@ public class TestPropertiesMethods extends TestCase {
 /* equiv key */ //config.put("javax.persistence.jdbc.url", "jdbc:derby:target/database/test;create=true"); 
 /* prime use */ //config.put("openjpa.ConnectionUserName", "root");
             
-            emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(UNIT_NAME, config));
-            assertNotNull(emf);
-        }
+        emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(UNIT_NAME, config));
+        assertNotNull(emf);
         em = OpenJPAPersistence.cast(emf.createEntityManager());
+    }
+    
+    @Override
+    public void tearDown() {
+        closeEM(em);
+        em = null;
+        closeEMF(emf);
+        emf = null;
     }
     
 //    public void testProperties() {
