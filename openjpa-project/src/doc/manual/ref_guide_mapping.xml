@@ -2951,6 +2951,13 @@ SQL Server
                 </listitem>
             </itemizedlist>
             <para>
+                <listitem>
+                    <para>
+DB2
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <para>
 See <xref linkend="supported_databases"/> for possible database-specific
 restrictions.
             </para>
