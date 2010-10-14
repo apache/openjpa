@@ -506,6 +506,8 @@
                     <configuration>
                         <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                         <revisionOnScmFailure>offline</revisionOnScmFailure>
+                        <useLastCommittedRevision>true</useLastCommittedRevision>
+                        <timestampFormat>{0,date,long} at {0,time,short}</timestampFormat>
                     </configuration>
                     <executions>
                         <execution>
@@ -674,6 +676,12 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>2.3.1</version>
+                </plugin>
+                <!-- Newer versions of plugin will cause PDF build failures -->
+                <plugin>
+                    <groupId>com.agilejava.docbkx</groupId>
+                    <artifactId>docbkx-maven-plugin</artifactId>
+                    <version>2.0.7</version>
                 </plugin>
             </plugins>
         </pluginManagement>
