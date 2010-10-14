@@ -46,11 +46,6 @@ public class TestSequence extends SingleEMFTestCase {
             "openjpa.Multithreaded", "true");
     }
 
-    // Override teardown to preserve database contents
-    @Override
-    public void tearDown() throws Exception {
-    }
-
     public void testMultiThreadedNativeSequences() throws Exception {
         boolean supportsNativeSequence = false;
 
