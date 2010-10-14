@@ -52,7 +52,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         super.setUp(Person.class, CLEAR_TABLES);
         OpenJPAEntityManager em = emf.createEntityManager();
         JDBCConfiguration conf = (JDBCConfiguration) em.getConfiguration();
-        if (conf.getConnectionUserName() != null || !conf.getConnectionUserName().equals("")) {
+        String user = conf.getConnectionUserName();
+        if (user != null && !user.equals("")) {
             // Disable for non-Derby, due to connectionUserName to schema mapping failures
             setTestsDisabled(true);
             getLog().trace("TestOverrideNonJtaDataSource can only be executed against Derby w/o a schema");
