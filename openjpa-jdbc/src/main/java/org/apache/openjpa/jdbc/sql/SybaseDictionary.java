@@ -167,6 +167,7 @@ public class SybaseDictionary
         supportsDefaultUpdateAction = false;
         supportsCascadeUpdateAction = false;
         
+        fixedSizeTypeNameSet.remove("NUMERIC");
     }
 
     @Override
