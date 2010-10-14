@@ -38,8 +38,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
  * OpenJPA-extended SPI interface <code>OpenJPAEntityManagerFactorySPI</code>
  * so that derived classes can access internal mapping/metadata/configuration
  * and other structures.
- * Extends AbstractCachedEMFTestCase, which extends AbstractPersistenceTestCase
- * and cleans up the EMF it provides in tearDown().
+ * Extends AbstractCachedEMFTestCase, which extends AbstractPersistenceTestCase.
+ * Cleans up the EMF it provides and any EMs created from it in tearDown().
  *   
  */
 public abstract class SingleEMFTestCase

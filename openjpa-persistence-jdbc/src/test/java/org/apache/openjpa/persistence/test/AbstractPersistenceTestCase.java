@@ -234,7 +234,9 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         } finally {
             emf.close();
             brc = !emf.isOpen();
-            emf = null;
+            if (!brc) {
+                System.err.println("AbstractPersistenceTestCase().closeEMF() - EMF is still open.");
+            }
         }
         return brc;
     }
@@ -253,7 +255,11 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             em.getTransaction().rollback();
         }
         em.close();
-        return true;
+        boolean brc = !em.isOpen();
+        if (!brc) {
+            System.err.println("AbstractPersistenceTestCase().closeEM() - EM is still open.");
+        }
+        return brc;
     }
     
     /**

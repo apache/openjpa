@@ -59,8 +59,8 @@ public abstract class SingleEMTestCase
 
     @Override
     public void tearDown() throws Exception {
-        rollback();
-        close();
+        closeEM(em);
+        em = null;
         super.tearDown();
     }
 
