@@ -19,6 +19,8 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.sql.Connection;
@@ -29,12 +31,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
 import org.apache.openjpa.jdbc.kernel.exps.Param;
@@ -939,6 +940,34 @@ public class DB2Dictionary
     String nullSafe(String s) {
         return s == null ? "" : s;
     }
+    
+    public void insertBlobForStreamingLoad(Row row, Column col, 
+            JDBCStore store, Object ob, Select sel) throws SQLException {
+        if (ob != null) {
+            row.setBinaryStream(col, (InputStream)ob, -1);
+        } else {
+            row.setNull(col);
+        }
+    }
+
+    public void insertClobForStreamingLoad(Row row, Column col, Object ob)
+    throws SQLException {
+        if (ob != null) {
+            row.setCharacterStream(col, (Reader)ob, -1);
+        } else {
+            row.setNull(col);
+        }
+    }
+
+    public void updateBlob(Select sel, JDBCStore store, InputStream is)
+        throws SQLException {
+        //NO-OP
+    }
+
+    public void updateClob(Select sel, JDBCStore store, Reader reader)
+        throws SQLException {
+        //NO-OP
+    }    
 
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
