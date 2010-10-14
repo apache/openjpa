@@ -2720,12 +2720,12 @@ MySQL
 Oracle
                     </para>
                 </listitem>
+                <listitem>
                     <para>
 DB2
                     </para>
                 </listitem>
             </itemizedlist>
-            <para>
             <example id="ref_guide_streamsupport_example">
                 <title>
                     Showing annotated InputStream
