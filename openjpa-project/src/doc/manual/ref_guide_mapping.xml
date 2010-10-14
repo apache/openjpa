@@ -2706,6 +2706,26 @@ To persist a stream, use the
 <classname>org.apache.openjpa.persistence.Persistent</classname></ulink> 
 annotation.
               </para>
+            <para>
+LOB streaming is supported on the following databases.
+            </para>
+            <itemizedlist>
+                <listitem>
+                    <para>
+MySQL
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+Oracle
+                    </para>
+                </listitem>
+                    <para>
+DB2
+                    </para>
+                </listitem>
+            </itemizedlist>
+            <para>
             <example id="ref_guide_streamsupport_example">
                 <title>
                     Showing annotated InputStream
