@@ -38,7 +38,7 @@ public class TestSwitchConnection extends SingleEMFTestCase {
     private String[] jndiNames = { "jdbc/mocked1" };
 
     protected void init(String cfName) {
-        EntityManagerFactory emf1 = getEmf("openjpa.ConnectionFactoryName", cfName, true);
+        EntityManagerFactory emf1 = getEmf(true, "openjpa.ConnectionFactoryName", cfName);
         EntityManager em = emf1.createEntityManager();
         em.getTransaction().begin();
         em.createQuery("Delete from confPerson").executeUpdate();
@@ -64,22 +64,23 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         }
     }
 
-    protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue) {
-        return getEmf(cfPropertyName, cfPropertyValue, false);
+    protected EntityManagerFactory getEmf(String ...props) {
+        return getEmf(false, props);
     }
     
-    protected EntityManagerFactory getEmf(String cfPropertyName, String cfPropertyValue, boolean syncMappings) {
+    protected EntityManagerFactory getEmf(boolean syncMappings, String ...props) { 
         // null out the driver to prevent system properties from taking effect.
         // do not set connectionFactoryModeManaged - or connectionFactory2 will be used.
-        if(syncMappings) { 
-            return createEMF( 
-                "openjpa.jdbc.SynchronizeMappings", "buildSchema",
-                "openjpa.ConnectionDriverName", "",
-                cfPropertyName,cfPropertyValue);
+        int additionalProp = syncMappings ? 4 : 2;
+        Object[] modProps = new Object[props.length + additionalProp];
+        modProps[0] = "openjpa.ConnectionDriverName";
+        modProps[1] = "";
+        if (syncMappings) {
+            modProps[2] = "openjpa.jdbc.SynchronizeMappings";
+            modProps[3] = "buildSchema";
         }
-        return createEMF(
-            "openjpa.ConnectionDriverName", "",
-            cfPropertyName,cfPropertyValue);
+        System.arraycopy(props, 0, modProps, additionalProp, props.length);
+        return createEMF(modProps);
     }
 
     protected EntityManager getEm(EntityManagerFactory emf1, String name, String value) {
@@ -184,7 +185,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         EntityManagerFactory emf1 = null;
     
         try {
-            emf1 = getEmf("openjpa.DataCache", "true");
+            emf1 = getEmf("openjpa.DataCache", "true",
+                          "openjpa.ConnectionFactoryName", defaultJndiName);
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
@@ -200,7 +202,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         EntityManagerFactory emf1 = null;
     
         try {
-            emf1 = getEmf("openjpa.QueryCache", "true");
+            emf1 = getEmf("openjpa.QueryCache", "true",
+                          "openjpa.ConnectionFactoryName", defaultJndiName);
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
@@ -216,7 +219,8 @@ public class TestSwitchConnection extends SingleEMFTestCase {
         EntityManagerFactory emf1 = null;
     
         try {
-            emf1 = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema");
+            emf1 = getEmf("openjpa.jdbc.SynchronizeMappings", "buildSchema",
+                          "openjpa.ConnectionFactoryName", defaultJndiName);
             getEm(emf1, "openjpa.ConnectionFactoryName", "jdbc/NotReal");
             fail("Expected an excepton when creating an EM with a bogus JNDI name");
         } catch (ArgumentException e) {
