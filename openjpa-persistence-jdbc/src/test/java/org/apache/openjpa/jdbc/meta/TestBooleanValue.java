@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import javax.persistence.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.jdbc.schema.Column;
 
@@ -36,14 +37,14 @@ public class TestBooleanValue extends SingleEMFTestCase {
         em.getTransaction().begin();
         em.persist(t0);
         em.getTransaction().commit();
-        Column boolCol =
-            getMapping(EntityBool.class).getTable().getColumn("dummy");
+        Column boolCol = getMapping(EntityBool.class).getTable().getColumn("dummy");
+        DBIdentifier boolColId = boolCol.getIdentifier();
         Query q =
             em.createNativeQuery("Select "
                     + ((JDBCConfiguration) emf.getConfiguration())
                         .getDBDictionaryInstance().getPlaceholderValueString(
                             boolCol)
-                    + " FROM EntityBool a UNION ALL Select a.dummy " +
+                    + " FROM EntityBool a UNION ALL Select a." + boolColId.getName()  + " " +
                     		"FROM EntityBool a");
         q.getResultList();
         em.close();

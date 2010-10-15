@@ -139,7 +139,7 @@ public class SybaseDictionary
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "ARITH_OVERFLOW", "BREAK", "BROWSE", "BULK", "CHAR_CONVERT",
             "CHECKPOINT", "CLUSTERED", "COMPUTE", "CONFIRM", "CONTROLROW",
-            "DATABASE", "DBCC", "DETERMINISTIC", "DISK DISTINCT", "DUMMY",
+            "DATABASE", "DBCC", "DETERMINISTIC", "DISK DISTINCT", "DUMMY", 
             "DUMP", "ENDTRAN", "ERRLVL", "ERRORDATA", "ERROREXIT", "EXCLUSIVE",
             "EXIT", "EXP_ROW_SIZE", "FILLFACTOR", "FUNC", "FUNCTION",
             "HOLDLOCK", "IDENTITY_GAP", "IDENTITY_INSERT", "IDENTITY_START",
@@ -157,6 +157,8 @@ public class SybaseDictionary
             "TRAN", "TRIGGER", "TRUNCATE", "TSEQUAL", "UNPARTITION", "USE",
             "USER_OPTION", "WAITFOR", "WHILE", "WRITETEXT",
         }));
+        
+        invalidColumnWordSet.addAll(Arrays.asList(new String [] { "DUMMY" } ));
 
         // Sybase does not support foreign key delete/update action NULL,
         // DEFAULT, CASCADE
