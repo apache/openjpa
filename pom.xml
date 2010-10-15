@@ -605,6 +605,7 @@
                                     </manifest>
                                     <manifestEntries>
                                         <Implementation-Build>${buildNumber}</Implementation-Build>
+                                        <Implementation-Date>${timestamp}</Implementation-Date>
                                     </manifestEntries>
                                 </archive>
                             </configuration>
