@@ -608,8 +608,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.1</version>
                     <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
+                        <source>1.6</source>
+                        <target>1.6</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
@@ -851,7 +851,7 @@
                                 <verbose>false</verbose>
                                 <maxmemory>512m</maxmemory>
                                 <links>
-                                    <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                                    <link>http://java.sun.com/j2se/6/docs/api</link>
                                     <link>http://java.sun.com/javaee/6/docs/api</link>
                                     <link>http://jakarta.apache.org/commons/collections/api-release</link>
                                 </links>
@@ -979,9 +979,9 @@
                 <configuration>
                     <show>package</show>
                     <quiet>true</quiet>
-                    <source>1.5</source>
+                    <source>1.6</source>
                     <links>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://java.sun.com/j2se/6/docs/api</link>
                         <link>http://java.sun.com/javaee/6/docs/api</link>
                         <link>http://jakarta.apache.org/commons/collections/api-release</link>
                     </links>
