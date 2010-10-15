@@ -2,18 +2,16 @@ Building Apache OpenJPA
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
-These instructions describe how to build OpenJPA from source code using the
+These instructions describe how to build OpenJPA 2.1 from source code using the
 Apache Maven 2 build tool. They are written for use from the console, and are 
-known to work on Linux and Mac OSX. They are also reported to work from Windows.
+known to work on Windows, Linux and Mac OSX.
 
 The most up to date version of these instructions may be found on the OpenJPA 
 website at http://openjpa.apache.org/building-openjpa.html
 
    1. Ensure that Java SE 6 is installed and on your path by running:
           java -version
-      OpenJPA requires Java 1.6 or later to build, but still supports using
-      Java SE 5 for runtime even though some features are only available
-      with Java SE 6.
+      OpenJPA requires Java 1.6 or later to build and for runtime.
    2. Install the build tool Apache Maven 2.2.1 or later, from:
           http://maven.apache.org/
       If it is installed correctly, typing mvn -v from the console will result
