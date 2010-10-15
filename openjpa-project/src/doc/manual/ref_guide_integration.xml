@@ -500,7 +500,7 @@ the schema tool:
             </primary>
         </indexterm>
         <para>
-OpenJPA does not provide its own JDBC connection pooling, as this should already be supplied to applications running in a Java EE application server in container managed mode.  For Java SE or applications running in application managed mode, the OpenJPA aggregate openjpa-all artifact and the binary assembly contains copies of <ulink url="http://commons.apache.org/dbcp/">Apache Commons DBCP</ulink>, which provides a robust connection pooling implementation.
+OpenJPA does not provide its own JDBC connection pooling, as this should already be supplied to applications running in a Java EE application server in container managed mode.  For Java SE or applications running in application managed mode, the OpenJPA aggregate <literal>openjpa-all.jar</literal> artifact and the binary assembly contains copies of <ulink url="http://commons.apache.org/dbcp/">Apache Commons DBCP</ulink>, which provides a robust connection pooling implementation.
         </para>
 
         <section id="ref_guide_integration_dbcp_conf">

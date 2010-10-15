@@ -53,11 +53,72 @@ driver for your database, and how to access JDBC functionality at runtime.
             </seealso>
         </indexterm>
         <para>
-OpenJPA includes its own simple <classname>javax.sql.DataSource</classname>
-implementation.  If you choose to use OpenJPA's <classname>DataSource
-</classname>, then you must specify the following properties:
+OpenJPA defines a <classname>org.apache.openjpa.jdbc.schema.DriverDataSource</classname> interface, which provides a simple <classname>javax.sql.DataSource</classname> wrapper implementation for the normal cases where <literal>openjpa.ConnectionDriverName</literal> refers to a <classname>java.sql.Driver</classname>.
+See <link linkend="openjpa.jdbc.DriverDataSource">
+<literal>openjpa.jdbc.DriverDataSource</literal></link> for the list of
+provided implementations.
         </para>
-        <itemizedlist>
+        <section id="ref_guide_dbsetup_auto">
+            <title>
+                Optional Connection Pooling
+            </title>
+            <indexterm zone="ref_guide_dbsetup_auto">
+                <primary>
+                    Pooling
+                </primary>
+                <secondary>
+                    DataSource
+                </secondary>
+            </indexterm>
+            <indexterm>
+                <primary>
+                    DBCP
+                </primary>
+                <seealso>
+                    DataSource
+                </seealso>
+            </indexterm>
+            <para>
+Starting with OpenJPA 2.1, a new <classname>org.apache.openjpa.jdbc.schema.AutoDriverDataSource</classname> is provided as the default, which will automatically
+select between the old <classname>SimpleDriverDataSource</classname> and a new
+<classname>DBCPDriverDataSource</classname> implementation based on if
+<ulink url="http://commons.apache.org/dbcp/">Apache Commons DBCP</ulink>
+has been provided on the classpath and OpenJPA is not running in a container
+managed mode or with managed transactions.  Note, that only the
+<literal>openjpa-all.jar</literal> includes Commons DBCP, so you will need to
+include the <literal>commons-dbcp.jar</literal> from the OpenJPA binary
+distribution if you are using the normal <literal>openjpa.jar</literal>.
+            </para>
+            <para>
+To disable the automatic usage of Apache Commons DBCP when it is discovered
+on the classpath, then set - 
+<literal>openjpa.jdbc.DriverDataSource=simple</literal>, which will revert
+OpenJPA to the prior behavior of using <classname>org.apache.openjpa.jdbc.schema.SimpleDriverDataSource</classname>
+            </para>
+            <para>
+To force usage of Apache Commons DBCP, which will cause a fatal exception to
+be thrown if it cannot be loaded from the classpath, then set - 
+<literal>openjpa.jdbc.DriverDataSource=dbcp</literal>, which will cause
+OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname>
+            </para>
+        </section>
+        <section id="ref_guide_dbsetup_config">
+            <title>
+                Configuring the OpenJPA DataSource
+            </title>
+            <indexterm zone="ref_guide_dbsetup_config">
+                <primary>
+                    Configure
+                </primary>
+                <secondary>
+                    DataSource
+                </secondary>
+            </indexterm>
+            <para>
+If you choose to use OpenJPA's <classname>DataSource
+</classname>, then you must specify the following properties:
+            </para>
+            <itemizedlist>
             <listitem>
                 <para>
                 <indexterm>
@@ -99,15 +160,15 @@ user.
                 </indexterm>
 <literal>openjpa.ConnectionDriverName</literal>: The JDBC driver class.
                 </para>
-            </listitem>
-        </itemizedlist>
-        <para>
+              </listitem>
+            </itemizedlist>
+            <para>
 To configure advanced features, use the following optional
 properties. The syntax of these property strings follows the syntax of OpenJPA
 plugin parameters described in <xref linkend="ref_guide_conf_plugins"/>.
-        </para>
-        <itemizedlist>
-            <listitem>
+            </para>
+            <itemizedlist>
+              <listitem>
                 <para>
                 <indexterm>
                     <primary>
@@ -124,8 +185,8 @@ is a <classname> javax.sql.DataSource</classname>, the string will be treated
 as a plugin properties string, and matched to the bean setter methods of the
 <classname>DataSource</classname> instance.
                 </para>
-            </listitem>
-            <listitem>
+              </listitem>
+              <listitem>
                 <para>
                 <indexterm>
                     <primary>
@@ -197,12 +258,12 @@ false.
                         </para>
                     </listitem>
                 </itemizedlist>
-            </listitem>
-        </itemizedlist>
-        <example id="ref_guide_dbsetup_builtin_ex">
-            <title>
+              </listitem>
+            </itemizedlist>
+            <example id="ref_guide_dbsetup_builtin_ex">
+              <title>
                 Properties for the OpenJPA DataSource
-            </title>
+              </title>
 <programlisting>
 &lt;property name="openjpa.ConnectionUserName" value="user"/&gt;
 &lt;property name="openjpa.ConnectionPassword" value="pass"/&gt;
@@ -211,8 +272,32 @@ false.
 &lt;property name="openjpa.ConnectionFactoryProperties" 
     value="PrettyPrint=true, PrettyPrintLineLength=80, PrintParameters=true"/&gt;
 </programlisting>
-        </example>
+            </example>
+        </section>
+        <section id="ref_guide_dbsetup_dbcp">
+            <title>
+                Configuring Apache Commons DBCP
+            </title>
+            <indexterm zone="ref_guide_dbsetup_dbcp">
+                <primary>
+                    DBCP
+                </primary>
+                <secondary>
+                    DataSource
+                </secondary>
+            </indexterm>
+            <para>
+Additional Commons DBCP arguments can be provided in
+<literal>openjpa.connectionProperties</literal>, such as:
+<programlisting>
+    MaxActive=10,MaxIdle=5,MinIdle=2,MaxWait=60000
+</programlisting>
+Please visit the Commons DBCP website for the entire list of
+<ulink url="http://commons.apache.org/dbcp/configuration.html">configuration options</ulink> and explanations.
+            </para>
+        </section>
     </section>
+
     <section id="ref_guide_dbsetup_thirdparty">
         <title>
             Using a Third-Party DataSource
@@ -295,6 +380,19 @@ in the previous section.
 &lt;property name="openjpa.ConnectionDriverName" value="oracle.jdbc.pool.OracleDataSource"/&gt;
 &lt;property name="openjpa.ConnectionProperties" 
     value="PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin"/&gt;
+&lt;property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/&gt;
+</programlisting>
+            <para>
+You can also force the Apache Commons DBCP BasicDataSource to be used for
+connection pooling when provided on the classpath by substituting it as the
+<literal>ConnectionDriverName</literal> and setting 
+<literal>ConnectionProperties=DriverClassName</literal> to the actual JDBC
+driver value -
+            </para>
+<programlisting>
+&lt;property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/&gt;
+&lt;property name="openjpa.ConnectionProperties" 
+    value="DriverClassName=oracle.jdbc.pool.OracleDataSource, PortNumber=1521, ServerName=saturn, DatabaseName=solarsid, DriverType=thin, MaxIdle=0"/&gt;
 &lt;property name="openjpa.ConnectionFactoryProperties" value="QueryTimeout=5000"/&gt;
 </programlisting>
         </example>

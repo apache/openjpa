@@ -3507,7 +3507,11 @@ openjpa.jdbc.DriverDataSource</literal>
 DriverDataSource</literal>
             </para>
             <para>
-<emphasis role="bold">Default: </emphasis><literal>pooling</literal>
+<emphasis role="bold">Default: </emphasis><literal>auto</literal>
+            </para>
+            <para>
+<emphasis role="bold">Possible values: </emphasis><literal>auto</literal>,
+<literal>dbcp</literal>, <literal>simple</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> The alias or full class name of
@@ -3515,7 +3519,9 @@ the
 <ulink url="../javadoc/org/apache/openjpa/jdbc/schema/DriverDataSource.html">
 <classname>org.apache.openjpa.jdbc.schema.DriverDataSource</classname></ulink>
 implementation to use to wrap JDBC Driver classes with javax.sql.DataSource
-instances.
+instances.  The <classname>org.apache.openjpa.jdbc.schema.AutoDriverDataSource</classname> implementation is the default and will select either the DBCPDriverDataSource or SimpleDriverDataSource based on if Apache Commons DBCP is available
+on the classpath.
+The <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname> implementation requires Apache Commons DBCP to be available on the classpath and uses <classname>org.apache.commons.dbcp.BasicDataSource</classname> to provide connection pooling.  
             </para>
         </section>
         <section id="openjpa.jdbc.EagerFetchMode">

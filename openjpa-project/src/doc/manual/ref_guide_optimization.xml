@@ -69,7 +69,13 @@ more work onto the server will have a negative impact on scalability.
                     </entry>
                     <entry colname="desc">
 OpenJPA's built-in datasource does not perform connection pooling or
-prepared statement caching.  Plugging in a third-party pooling datasource like <link linkend="ref_guide_integration_dbcp">Apache Commons DBCP</link>, which is included in the binary distribution and openjpa-all artifact, may
+prepared statement caching, but it can use Apache Commons DBCP for connection
+pooling if it is provided on the classpath.  Checkout the
+<link linkend="ref_guide_dbsetup_builtin">DriverDataSource</link>
+section, which describes how to use and configure Commons DBCP.
+Also, you can manually plug in a third-party pooling datasource like
+<link linkend="ref_guide_integration_dbcp">Apache Commons DBCP</link>,
+included in the binary distribution and openjpa-all artifact, which may
 drastically improve application performance.
                     </entry>
                 </row>
