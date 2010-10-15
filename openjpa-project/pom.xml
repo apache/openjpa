@@ -399,6 +399,8 @@
                                         <ant antfile="upload.xml" target="upload" inheritRefs="true">
                                             <property name="nightly.user.name" value="${nightly.user.name}" />
                                             <property name="nightly.password" value="${nightly.password}" />
+                                            <property name="nightly.keyfile" value="${nightly.keyfile}" />
+                                            <property name="nightly.passphrase" value="${nightly.passphrase}" />
                                             <property name="nightly.version" value="${nightly.version}" />
                                             <property name="project.version" value="${project.version}" />
                                         </ant>
