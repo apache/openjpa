@@ -39,7 +39,7 @@ public class PathFinder {
      *   <LI> Repeat the following:
      *   <LI> Current node is the lowest cost square on the open list
      *   <LI> Move current node to the closed list.
-     *   <LI> For each of adjacent neighbor n to this current square …
+     *   <LI> For each of adjacent neighbor n to this current square
      *   <LI> If n is not {@link Maze#isReachable(int, int) reachable} or if n is on the closed list, ignore. 
      *        Otherwise do the following.
      *   <LI> If n is not on the open list, add it to the open list. Make the current square 
