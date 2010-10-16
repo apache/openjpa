@@ -196,12 +196,6 @@ public class SybaseDictionary
     }
 
     @Override
-    public String[] getAddForeignKeySQL(ForeignKey fk) {
-        // Sybase has problems with adding foriegn keys via ALTER TABLE command
-        return new String[0];
-    }
-
-    @Override
     public String[] getCreateTableSQL(Table table) {
         if (!createIdentityColumn)
             return super.getCreateTableSQL(table);
