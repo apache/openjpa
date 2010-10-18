@@ -54,7 +54,7 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
-        ,"openjpa.Log","SQL=trace"    
+//        ,"openjpa.Log","SQL=trace"    
         );
     }
 
