@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.exps.Parameter;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
@@ -38,6 +39,7 @@ public class Param
     extends Const
     implements Parameter {
 
+    private static final Localizer _loc = Localizer.forPackage(Param.class);
     private final Object _key;
     private Class _type = null;
     private int _idx = -1;
@@ -136,6 +138,10 @@ public class Param
             pstate.sqlValue = mapping.toDataStoreValue(val,
                 mapping.getPrimaryKeyColumns(), ctx.store);
             pstate.otherLength = mapping.getPrimaryKeyColumns().length;
+        } else if (val instanceof Collection) {
+            throw new IllegalArgumentException(_loc.get(
+                "collection-param-not-allowed", _key).toString());
+            
         } else
             pstate.sqlValue = val;
     }

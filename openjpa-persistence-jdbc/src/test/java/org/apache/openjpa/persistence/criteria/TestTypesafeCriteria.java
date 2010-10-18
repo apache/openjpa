@@ -607,7 +607,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
     
     public void testParameters5() {
-        String jpql = "SELECT c FROM Customer c Where c.status IN (:coll)";
+        String jpql = "SELECT c FROM Customer c Where c.status IN :coll";
         
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Customer> c = q.from(Customer.class);
