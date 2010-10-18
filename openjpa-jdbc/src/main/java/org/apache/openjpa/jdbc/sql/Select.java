@@ -767,4 +767,6 @@ public interface Select
      * get joined table metadatas excluded for polymorphic queries
      */
     public List getExcludedJoinedTableClassMeta();
+    
+    public DBDictionary getDictionary() ; 
 }

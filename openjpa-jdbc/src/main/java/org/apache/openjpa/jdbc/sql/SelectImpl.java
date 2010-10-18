@@ -3032,6 +3032,10 @@ public class SelectImpl
     protected Selects newSelects() {
         return new Selects();
     }
+    
+    public DBDictionary getDictionary() { 
+        return _dict;
+    }
 
     /**
      * Helper class to track selected columns, with fast contains method.

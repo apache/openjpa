@@ -927,6 +927,10 @@ public class LogicalUnion
         public List getExcludedJoinedTableClassMeta() {
             return sel.getExcludedJoinedTableClassMeta();
         }
+        
+        public DBDictionary getDictionary() { 
+            return dict; 
+        }
     }
 
     /**

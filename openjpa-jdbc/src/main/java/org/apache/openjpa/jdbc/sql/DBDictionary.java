@@ -5452,4 +5452,12 @@ public class DBDictionary
     public String getMarkerForInsertUpdate(Column col, Object val) {
         return "?";
     }
+
+    public String getIsNullSQL(String colAlias, int colType)  {
+        return String.format("%s IS NULL", colAlias); 
+    }
+    
+    public String getIsNotNullSQL(String colAlias, int colType) { 
+        return String.format("%s IS NOT NULL", colAlias);
+    }
 }

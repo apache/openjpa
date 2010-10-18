@@ -459,4 +459,24 @@ public class SybaseDictionary
             }
         }
     }
+    
+    @Override
+    public String getIsNullSQL(String colAlias, int colType)  {
+        switch(colType) {
+            case Types.BLOB:
+            case Types.CLOB:
+                return String.format("datalength(%s) = 0", colAlias);
+        }
+        return super.getIsNullSQL(colAlias, colType);
+    }
+    
+    @Override
+    public String getIsNotNullSQL(String colAlias, int colType) { 
+        switch(colType) { 
+            case Types.BLOB: 
+            case Types.CLOB:
+                return String.format("datalength(%s) != 0", colAlias);
+        }
+        return super.getIsNotNullSQL(colAlias, colType);
+    }
 }

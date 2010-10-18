@@ -30,6 +30,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
@@ -243,22 +244,27 @@ public class HandlerFieldStrategy
     public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
         joins = join(joins, false);
         for (int i = 0; i < _cols.length; i++) {
-            if (i > 0)
+            if (i > 0) {
                 sql.append(" AND ");
-            sql.append(sel.getColumnAlias(_cols[i], joins)).append(" IS ").
-                appendValue(null, _cols[i]);
+            }
+            // Some databases do not allow IS NULL for every column type - let the DBDictionary decide.
+            DBDictionary dict = sel.getDictionary();
+            sql.append(dict.getIsNullSQL(sel.getColumnAlias(_cols[i], joins), _cols[i].getType()));
         }
     }
 
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
         joins = join(joins, false);
-        if (_cols.length > 1)
+        if (_cols.length > 1) {
             sql.append("(");
+        }
         for (int i = 0; i < _cols.length; i++) {
-            if (i > 0)
-                sql.append(" OR ");
-            sql.append(sel.getColumnAlias(_cols[i], joins)).
-                append(" IS NOT ").appendValue(null, _cols[i]);
+            if (i > 0) { 
+                sql.append(" OR "); 
+            }
+            // Some databases do not allow IS NOT NULL for every column type - let the DBDictionary decide.
+            DBDictionary dict = sel.getDictionary();
+            sql.append(dict.getIsNotNullSQL(sel.getColumnAlias(_cols[i], joins), _cols[i].getType()));
         }
         if (_cols.length > 1)
             sql.append(")");
