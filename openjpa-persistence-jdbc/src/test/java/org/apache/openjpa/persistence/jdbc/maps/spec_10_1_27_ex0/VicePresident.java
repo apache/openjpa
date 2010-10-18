@@ -26,6 +26,7 @@ public class VicePresident {
     @Id
     int id;
     
+    @Column(length=8)
     String name;
   
     @ManyToOne

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.spec_10_1_27_ex0;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -28,8 +29,8 @@ public class Division {
     @Id
     int id;
 
+    @Column(length=8)
     String name;
-
 
     public int getId() {
         return id;
@@ -61,4 +62,10 @@ public class Division {
         ret = ret *31 + id;
         return ret;
     }
+
+    @Override
+    public String toString() {
+        return "Division@ " + hashCode() + " [id=" + id + ", name=" + name + "]";
+    }
+    
 }

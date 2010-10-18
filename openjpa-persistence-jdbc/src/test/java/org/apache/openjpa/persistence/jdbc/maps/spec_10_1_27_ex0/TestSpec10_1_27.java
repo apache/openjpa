@@ -114,7 +114,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
-        assertTrue(d.equals(me.getKey()));
+        assertEquals(d, me.getKey());
         
         // new tests for element collection
         em.clear();
@@ -155,15 +155,23 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
     public void createObj(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
-        for (int i = 0; i < numItems; i++)
-            createItem1(em, itemId++);
-        for (int i = 0; i < numItems; i++)
-            createItem2(em, itemId++);
-        for (int i = 0; i < numCompany; i++)
-            createCompany1(em, compId++);
-        for (int i = 0; i < numCompany; i++)
-            createCompany2(em, compId++);
         tran.begin();
+        for (int i = 0; i < numItems; i++) {
+            createItem1(em, itemId++);
+            em.flush();
+        }
+        for (int i = 0; i < numItems; i++) {
+            createItem2(em, itemId++);
+            em.flush();
+        }
+        for (int i = 0; i < numCompany; i++) {
+            createCompany1(em, compId++);
+            em.flush();
+        }
+        for (int i = 0; i < numCompany; i++) {
+            createCompany2(em, compId++);
+            em.flush();
+        }
         em.flush();
         tran.commit();
         em.close();

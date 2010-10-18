@@ -122,10 +122,11 @@ public class TestSpec10_1_27_Ex4 extends SQLListenerTestCase {
     public void createObj(EntityManagerFactory emf) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
-        for (int i = 0; i < numCompany; i++)
-            createCompany(em, compId++);
         tran.begin();
-        em.flush();
+        for (int i = 0; i < numCompany; i++) {
+            createCompany(em, compId++);
+            em.flush();
+        }
         tran.commit();
         em.close();
     }
