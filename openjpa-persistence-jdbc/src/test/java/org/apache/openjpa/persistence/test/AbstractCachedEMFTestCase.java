@@ -18,9 +18,16 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
+import org.apache.openjpa.kernel.AbstractBrokerFactory;
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
@@ -81,6 +88,19 @@ public abstract class AbstractCachedEMFTestCase extends AbstractPersistenceTestC
                 // if the eldest should be removed, then try to close it first
                 if (oemf != null && oemf.isOpen()) {
                     try {
+                        // same code as AbstractPersistenceTestCase.closeAllOpenEMs()
+                        for (Broker b:((AbstractBrokerFactory)JPAFacadeHelper.toBrokerFactory(oemf)).getOpenBrokers()) {
+                            if (b != null && !b.isClosed()) {
+                                EntityManager em = JPAFacadeHelper.toEntityManager(b);
+                                if (em == null || !em.isOpen()) {
+                                    continue;
+                                }
+                                if (em.getTransaction().isActive()) {
+                                    em.getTransaction().rollback();
+                                }
+                                em.close();
+                            }
+                        }
                         oemf.close();
                     } catch (Exception e) {
                         // no-op - eat it
