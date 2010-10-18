@@ -27,11 +27,10 @@ import javax.validation.ConstraintViolationException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AllowFailure;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 
-public class TestMappedSuper extends PersistenceTestCase {
+public class TestMappedSuper extends AbstractPersistenceTestCase {
 
     /*
      * Verify constraints defined via XML on a mapped superclass are validated.
@@ -62,13 +61,8 @@ public class TestMappedSuper extends PersistenceTestCase {
             fail("Should have caught a ConstraintViolationException, but instead caught Exception=" + e);
         }
         finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            if (emf != null) {
-                clear(emf);
-                closeEMF(emf);
-            }
+            closeEM(em);
+            closeEMF(emf);
         }
     }
     

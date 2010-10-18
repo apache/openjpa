@@ -29,7 +29,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * Tests the new Bean Validation constraint support in the JPA 2.0 spec by
@@ -75,13 +75,13 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestConstraints extends PersistenceTestCase {
+public class TestConstraints extends AbstractPersistenceTestCase {
 
     private static OpenJPAEntityManagerFactorySPI emf = null;
     
     @Override
-    public void setUp() {
-        
+    public void setUp() throws Exception {
+        super.setUp();
         emf = (OpenJPAEntityManagerFactorySPI) 
         OpenJPAPersistence.createEntityManagerFactory(
                 "ConstraintPU",
@@ -89,10 +89,9 @@ public class TestConstraints extends PersistenceTestCase {
     }
     
     @Override
-    public void tearDown() {
-        if (emf != null) {
-            cleanup(emf);
-        }
+    public void tearDown() throws Exception {
+        closeEMF(emf);
+        super.tearDown();
     }
 
     /**
@@ -126,11 +125,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testNullUpdateConstraint() Part 1 of 2 failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
         
         // Part 2 - Verify that invalid properties are caught on an update
@@ -151,11 +146,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNullUpdateConstraint() Part 2 of 2 passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -194,10 +185,8 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testNullDeleteIgnored() Part 1 of 2 failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
 
         // Part 2 - Verify delete using default group does not cause Validation
@@ -227,10 +216,8 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testNullDeleteIgnored() Part 2 of 2 failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
     
@@ -267,10 +254,8 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testNullConstraintIgnored() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
@@ -302,11 +287,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNullConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -338,11 +319,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testNotNullConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -373,11 +350,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testNullNotNullConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -409,11 +382,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testAssertTrueConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -445,11 +414,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testAssertFalseConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -480,11 +445,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testAssertTrueFalseConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -516,11 +477,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDecimalMinConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -552,11 +509,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDecimalMaxConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -587,11 +540,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testDecimalMinMaxConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -623,11 +572,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testMinConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -659,11 +604,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testMaxConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -694,11 +635,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testMinMaxConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -730,11 +667,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDigitsTwoConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -766,11 +699,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDigitsFiveConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -801,11 +730,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testDigitsConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -837,11 +762,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testSizeStringConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -873,11 +794,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testSizeMapConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -908,11 +825,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testSizeConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -944,11 +857,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDatesFutureConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -980,11 +889,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testDatesPastConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -1015,11 +920,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testDatesConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -1051,11 +952,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testPatternAlphaConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -1087,11 +984,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("Caught expected ConstraintViolationException = " + e);
             getLog().trace("testPatternNumericConstraint() passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -1122,11 +1015,7 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testPatternConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
@@ -1170,11 +1059,8 @@ public class TestConstraints extends PersistenceTestCase {
                 getLog().trace("testValidFailuresConstraint() Part 1 of 2 failed");
                 fail("Caught unexpected exception = " + e);
             } finally {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                cleanup(emf);
-                em = null;
+                closeEM(em);
+                closeEMF(emf);
             }
         } catch (Exception e) {
             // unexpected
@@ -1218,11 +1104,7 @@ public class TestConstraints extends PersistenceTestCase {
                 5, cves.size());
             getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }            
     }
     
@@ -1263,24 +1145,11 @@ public class TestConstraints extends PersistenceTestCase {
             getLog().trace("testValidPassConstraint() failed");
             fail("Caught unexpected exception = " + e);
         } finally {
-            if ((em != null) && em.isOpen()) {
-                if (em.getTransaction().isActive())
-                    em.getTransaction().rollback();
-                em.close();
-            }
+            closeEM(em);
         }
     }
 
 
-    /**
-     * Helper method to remove entities and close the emf an any open em's.
-     * @param emf
-     */
-    private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
-        clear(emf);
-        closeEMF(emf);
-    }
-        
     /**
      * Internal convenience method for getting the OpenJPA logger
      * 

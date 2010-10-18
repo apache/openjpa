@@ -30,7 +30,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * Tests the Bean Validation groups support as defined in the JPA 2.0 spec
@@ -54,7 +54,7 @@ import org.apache.openjpa.persistence.test.PersistenceTestCase;
  *
  * @version $Rev$ $Date$
  */
-public class TestValidationGroups extends PersistenceTestCase {
+public class TestValidationGroups extends AbstractPersistenceTestCase {
 
     /**
      * 1a) verify validation occurs using the default validation groups
@@ -247,7 +247,8 @@ public class TestValidationGroups extends PersistenceTestCase {
             
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }        
     }
 
@@ -302,7 +303,8 @@ public class TestValidationGroups extends PersistenceTestCase {
             }            
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }        
     }
 
@@ -381,7 +383,8 @@ public class TestValidationGroups extends PersistenceTestCase {
             }
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
@@ -504,7 +507,8 @@ public class TestValidationGroups extends PersistenceTestCase {
 
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
@@ -556,7 +560,8 @@ public class TestValidationGroups extends PersistenceTestCase {
             }
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
@@ -613,7 +618,8 @@ public class TestValidationGroups extends PersistenceTestCase {
             }
         }
         finally {
-            cleanup(emf);
+            closeEM(em);
+            closeEMF(emf);
         }
     }
 
@@ -639,15 +645,6 @@ public class TestValidationGroups extends PersistenceTestCase {
                     v.getPropertyPath());
             }
         }
-    }
-
-    /**
-     * Remove entities and close the emf an any open em's.
-     * @param emf
-     */
-    private void cleanup(OpenJPAEntityManagerFactorySPI emf) {
-        clear(emf);
-        closeEMF(emf);
     }
     
     /**
