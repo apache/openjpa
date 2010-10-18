@@ -25,8 +25,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Version;
@@ -34,8 +32,8 @@ import javax.persistence.Version;
 @Entity
 public class CachedEntityStatistics {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
+    private static int simulateAutoIdGen = 0;
 
     @Version
     protected int version;
@@ -47,7 +45,7 @@ public class CachedEntityStatistics {
     Set<CachedEntityStatistics> lazyList = new HashSet<CachedEntityStatistics>();
 
     public CachedEntityStatistics() {
-
+        id = ++simulateAutoIdGen;
     }
 
     private String firstName, lastName;

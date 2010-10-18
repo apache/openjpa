@@ -18,15 +18,12 @@
  */
 package org.apache.openjpa.persistence.datacache;
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 
 import junit.framework.AssertionFailedError;
 
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.StoreCacheImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -76,7 +73,7 @@ public class TestStatistics extends SingleEMFTestCase {
      * Finding an entity from a clean should hit the L2 cache.
      */
     public void testSimpleFind() {
-        int hit = 0, eviction = 0, read = 0, write = 0;
+        int hit = 0, read = 0, write = 0;
         CachedEntityStatistics person = createData(false, false);
         em.clear();
         cache.getStatistics().reset();
@@ -179,7 +176,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     public void testPersist() {
-        int hit = 0, evict = 0, read = 0, write = 0;
+        int hit = 0, read = 0, write = 0;
 
         em = emf.createEntityManager();
         // test single
@@ -205,7 +202,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     public void testRefresh() {
-        int hit = 0, evict = 0, read = 0, write = 0;
+        int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
         em = emf.createEntityManager();
         // test single
@@ -223,7 +220,7 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     public void testMerge() {
-        int hit = 0, evict = 0, read = 0, write = 0;
+        int hit = 0, read = 0, write = 0;
         CachedEntityStatistics e = new CachedEntityStatistics();
         em = emf.createEntityManager();
         // test single
@@ -247,9 +244,6 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     CachedEntityStatistics createData(boolean lazy, boolean eager) {
-        List<CachedEntityStatistics> eagerList = null;
-        List<CachedEntityStatistics> lazyList = null;
-
         em.getTransaction().begin();
         CachedEntityStatistics p = new CachedEntityStatistics();
         if (lazy) {
