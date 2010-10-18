@@ -1139,11 +1139,11 @@ List results = query.getResultList();
                 <listitem>
                     <para> 
 The Oracle JDBC driver has significant differences between different versions. 
-It is important to use the officially supported version of the driver 
-(10.2.0.1.0), which is backward compatible with previous versions of the Oracle
+It is important to use the officially supported version of the drivers 
+(10.2.0.1.0/11.2.0.x.0), which is backward compatible with previous versions of the Oracle
 server. It can be downloaded from 
-<ulink url="http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc101040.html">
-http://www.oracle.com/technology/software/tech/java/sqlj_jdbc/htdocs/jdbc101040.html</ulink>.
+<ulink url="http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html">
+http://www.oracle.com/technetwork/database/features/jdbc/index-091264.html</ulink>.
                     </para>
                 </listitem>
                 <listitem>
@@ -1211,7 +1211,22 @@ openjpa.ConnectionRetainMode: always
 Mapping persistent attributes to <link linkend="ref_guide_xmlmapping">XML columns</link> requires
 a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database.
 Otherwise an <literal>ORA-01461: can bind a LONG value only for insert into a LONG column</literal>
-error may result.
+error may result. This limitation is removed in Oracle jdbc driver 11.2.0.x.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+If Oracle dictionary property <literal>MaxEmbeddedBlobSize</literal> or
+<literal>MaxEmbeddedClobSize</literal> is set to some limit (i.e. not -1) and embedded collection
+with blob/clob attribute is used, a 
+<literal>"org.apache.openjpa.persistence.ArgumentException:
+"x.y.z.EmbedOwner.embedCollection&lt;element:class x.y.z.EmbedValue&gt;"
+is mapped as embedded, but embedded field
+"x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable. 
+Embedded element/key/value types are limited to simple fields and direct relations to other 
+persistent types"</literal> error may result. To overcome this limitation, either use jdbc driver
+11.2.0.x.0 (or later version) or set both <literal>MaxEmbeddedBlobSize</literal> and
+<literal>MaxEmbeddedClobSize</literal> oracle dictiionary properties to -1.
                     </para>
                 </listitem>
             </itemizedlist>

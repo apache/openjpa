@@ -227,9 +227,15 @@ public class OracleDictionary
             if (metadataClassName.startsWith("oracle.")
                 || url.indexOf("jdbc:oracle:") != -1
                 || "Oracle JDBC driver".equals(driverName)) {
-                driverVendor = VENDOR_ORACLE + meta.getDriverMajorVersion()
-                    + meta.getDriverMinorVersion();
+                int jdbcMajor = meta.getDriverMajorVersion();
+                int jdbcMinor = meta.getDriverMinorVersion();
+                driverVendor = VENDOR_ORACLE + jdbcMajor + jdbcMinor;
 
+                int jdbcVersion = jdbcMajor * 1000 + jdbcMinor;
+                if( jdbcVersion >= 11002) {
+                    maxEmbeddedBlobSize = -1;
+                    maxEmbeddedClobSize = -1;
+                }
                 String productVersion = meta.getDatabaseProductVersion()
                     .split("Release ",0)[1].split("\\.",0)[0];
                 int release = Integer.parseInt(productVersion);
