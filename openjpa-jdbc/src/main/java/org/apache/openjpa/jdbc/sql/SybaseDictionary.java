@@ -40,6 +40,7 @@ import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Dictionary for Sybase.
@@ -406,6 +407,16 @@ public class SybaseDictionary
             DBIdentifierType.INDEX));
         idx.setUnique(!getBooleanFromResultSet(idxMeta, "NON_UNIQUE", "non_unique"));
         return idx;
+    }
+    
+    public boolean isFatalException(int subtype, SQLException ex) {
+        if (subtype == StoreException.LOCK) {
+            SQLException next = ex.getNextException();
+            if("JZ0TO".equals(next.getSQLState())) {
+                return false; // query timeout
+            }
+        }
+        return super.isFatalException(subtype, ex); 
     }
 
     /**
