@@ -42,7 +42,7 @@ import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
 @Entity
 public class Transition implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(length = 64)

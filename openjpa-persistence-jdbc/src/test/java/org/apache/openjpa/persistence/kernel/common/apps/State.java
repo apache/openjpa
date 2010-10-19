@@ -49,7 +49,7 @@ import org.apache.openjpa.persistence.kernel.TestIndirectRecursion;
         @FetchGroup(name = "State_IncomingTransitions", attributes = { @FetchAttribute(name = "incomingTransitions")})})
 public class State implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(length = 64)
@@ -60,7 +60,7 @@ public class State implements Serializable {
 
     @OneToMany(mappedBy = "toState", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     private List<Transition> incomingTransitions;
-    
+
     public Long getId() {
         return id;
     }
