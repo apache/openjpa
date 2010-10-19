@@ -94,6 +94,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         if (TEST_COUNT >= 9) {
             closeEMF(_pmf);
             _pmf = null;
+            _init = false;
             super.tearDown();
         }
     }
