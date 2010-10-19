@@ -32,11 +32,7 @@ import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import java.util.*;
 
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -45,15 +41,14 @@ import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.Extent;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Query;
 
 
 public class TestByteArrayAppId extends BaseJDBCTest {
     
     private static boolean _init = false;
-    private OpenJPAEntityManagerFactory _pmf = null;
-    
+    private static int TEST_COUNT = 0;
+    private static OpenJPAEntityManagerFactory _pmf = null;
     
     /** Creates a new instance of TestByteArrayAppId */
     public TestByteArrayAppId(String name) 
@@ -65,12 +60,11 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         return getCurrentPlatform() != AbstractTestCase.Platform.DB2;
     }
     
-    public void setUp()
-    throws Exception {
-        // we have to use getbytes/setbytes for byte arrays to work properly
-        _pmf =(OpenJPAEntityManagerFactory) getEmf(getProps());
-        
+    @Override
+    public void setUp() throws Exception {
+        // we have to use getbytes/setbytes for byte arrays to work properly        
         if (!_init) {
+            _pmf =(OpenJPAEntityManagerFactory) getEmf(getProps());
             initialize((JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI)
                     OpenJPAPersistence.cast(_pmf)).getConfiguration());
             _init = true;
@@ -78,7 +72,7 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         EntityManager pm = _pmf.createEntityManager();
         startTx(pm);
         
-       deleteAll(ByteArrayPKPC.class,pm);
+        deleteAll(ByteArrayPKPC.class,pm);
         endTx(pm);
         pm.close();
         pm = currentEntityManager();
@@ -90,20 +84,22 @@ public class TestByteArrayAppId extends BaseJDBCTest {
         pm.persist(testBytes);
         endTx(pm);
         pm.close();
+        TEST_COUNT++;
     }
     
     public void tearDown()
     throws Exception {
         // closing the pmf every time slows things down too much b/c
         // schema reflection is so slow on DB2
-        //	try { _pmf.close (); } catch (Exception e) {}
-        
-        super.tearDown();
+        if (TEST_COUNT >= 9) {
+            closeEMF(_pmf);
+            _pmf = null;
+            super.tearDown();
+        }
     }
     
     private void initialize(JDBCConfiguration conf)
     throws Exception {
-        
         EntityManager em= currentEntityManager();
         OpenJPAEntityManager kem = OpenJPAPersistence.cast (em);
         //JDBCConfiguration conf = (JDBCConfiguration) kem.getConfiguration();
