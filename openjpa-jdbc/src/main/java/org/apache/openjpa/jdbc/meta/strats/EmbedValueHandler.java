@@ -180,7 +180,7 @@ public abstract class EmbedValueHandler
             if (ecols.length == 0)
                 continue;
 
-            cval = (em == null) ? null : em.fetch(i);
+            cval = (em == null) ? null : getValue(embed, em, i);
             cval = embed.toEmbeddedDataStoreValue(cval, store);
             if (cols.length == 1) {
                 // rvals is empty
@@ -195,6 +195,13 @@ public abstract class EmbedValueHandler
             }
         }
         return idx;
+    }
+    
+    private Object getValue(Embeddable embed, OpenJPAStateManager sm, int idx) {
+        if (embed instanceof MaxEmbeddedLobFieldStrategy) {
+            return ((MaxEmbeddedLobFieldStrategy)embed).getValue(sm);
+        }
+        return sm.fetch(idx);
     }
 
     /**

@@ -56,9 +56,8 @@ public class MaxEmbeddedByteArrayFieldStrategy
 
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
-        byte[] b = PrimitiveWrapperArrays.toByteArray(sm.fetchObject
-            (field.getIndex()));
-        if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))
+        byte[] b = (byte[]) getValue(sm);
+         if (b == null)
             row.setBytes(field.getColumns()[0], null);
         else
             row.setBytes(field.getColumns()[0], b);
@@ -94,4 +93,12 @@ public class MaxEmbeddedByteArrayFieldStrategy
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedBlobSize;
     }
+    
+    protected Object getValue(OpenJPAStateManager sm) {
+        byte[] b = PrimitiveWrapperArrays.toByteArray(sm.fetchObject
+                (field.getIndex()));
+        if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))
+            return null;
+        return b;
+    }    
 }

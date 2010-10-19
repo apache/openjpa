@@ -52,8 +52,8 @@ public class MaxEmbeddedClobFieldStrategy
 
     protected void update(OpenJPAStateManager sm, Row row)
         throws SQLException {
-        String s = sm.fetchString(field.getIndex());
-        if (s == null || (s.length() > _maxSize && !field.getColumns()[0].isNotNull()))
+        String s = (String) getValue(sm);
+        if (s == null)
             row.setNull(field.getColumns()[0], true);
         else
             row.setString(field.getColumns()[0], s);
@@ -81,4 +81,12 @@ public class MaxEmbeddedClobFieldStrategy
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedClobSize;
     }
+    
+    protected Object getValue(OpenJPAStateManager sm) {
+        String s = sm.fetchString(field.getIndex());
+        if (s == null || (s.length() > _maxSize && !field.getColumns()[0].isNotNull())) {
+            return null;
+        }
+        return s;
+    }    
 }

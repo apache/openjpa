@@ -86,4 +86,8 @@ public class EmbedOwner {
     public Set<EmbedValue> getEmbedCollection() {
         return embedCollection;
     }
+
+    public void setEmbedCollection(Set<EmbedValue> embedCollection) {
+        this.embedCollection = embedCollection;
+    }
 }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.jdbc.annotations;
 
 import java.sql.Types;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -70,6 +71,9 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
         embed.setBlob("foobar".getBytes());
         embed.setOwner(owner);
         owner.setEmbed(embed);
+        Set<EmbedValue> embedVals = new HashSet<EmbedValue>();
+        embedVals.add(embed);
+        owner.setEmbedCollection(embedVals);
         em.persist(owner);
         int pk = owner.getPk();
         em.getTransaction().commit();

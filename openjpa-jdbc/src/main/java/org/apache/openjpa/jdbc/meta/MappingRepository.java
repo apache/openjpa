@@ -842,8 +842,14 @@ public class MappingRepository extends MetaDataRepository {
         }
 
         if (field.isSerialized()) {
-            if (_dict.maxEmbeddedBlobSize != -1)
+            if (_dict.maxEmbeddedBlobSize != -1) {
+                handler = defaultHandler(field, adapting);
+                if (handler != null) {
+                    if (installHandlers)
+                        field.setHandler(handler);
+                }
                 return new MaxEmbeddedBlobFieldStrategy();
+            }
         } else {
             // check for mapped strategy
             Object strat = mappedStrategy(field, field.getType(), adapting);
@@ -859,18 +865,36 @@ public class MappingRepository extends MetaDataRepository {
         // check for known field strategies
         if (!field.isSerialized() && (field.getType() == byte[].class
             || field.getType() == Byte[].class)) {
-            if (_dict.maxEmbeddedBlobSize != -1)
+            if (_dict.maxEmbeddedBlobSize != -1) {
+                handler = defaultHandler(field, adapting);
+                if (handler != null) {
+                    if (installHandlers)
+                        field.setHandler(handler);
+                }
                 return new MaxEmbeddedByteArrayFieldStrategy();
+            }
         } else if (!field.isSerialized()
             && (field.getType() == char[].class
             || field.getType() == Character[].class)) {
-            if (_dict.maxEmbeddedClobSize != -1 && isClob(field, false))
+            if (_dict.maxEmbeddedClobSize != -1 && isClob(field, false)) {
+                handler = defaultHandler(field, adapting);
+                if (handler != null) {
+                    if (installHandlers)
+                        field.setHandler(handler);
+                }
                 return new MaxEmbeddedCharArrayFieldStrategy();
+            }
         } else if (!field.isSerialized()) {
             FieldStrategy strat = defaultTypeStrategy(field, installHandlers,
                 adapting);
-            if (strat != null)
+            if (strat != null) {
+                handler = defaultHandler(field, adapting);
+                if (handler != null) {
+                    if (installHandlers)
+                        field.setHandler(handler);
+                }
                 return strat;
+            }
         }
 
         // check for default handler

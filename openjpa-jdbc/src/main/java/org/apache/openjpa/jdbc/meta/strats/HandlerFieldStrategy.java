@@ -60,11 +60,11 @@ public class HandlerFieldStrategy
     private static final Localizer _loc = Localizer.forPackage
         (HandlerFieldStrategy.class);
 
-    private Column[] _cols = null;
-    private ColumnIO _io = null;
-    private Object[] _args = null;
-    private boolean _load = false;
-    private boolean _lob = false;
+    protected Column[] _cols = null;
+    protected ColumnIO _io = null;
+    protected Object[] _args = null;
+    protected boolean _load = false;
+    protected boolean _lob = false;
 
     public void map(boolean adapt) {
         if (field.getHandler() == null)

@@ -46,7 +46,7 @@ import org.apache.openjpa.meta.JavaTypes;
  * @since 0.4.0
  */
 abstract class MaxEmbeddedLobFieldStrategy
-    extends AbstractFieldStrategy {
+    extends HandlerFieldStrategy {
 
     /**
      * Return the expected type of the field from {@link JavaTypes} or
@@ -95,11 +95,13 @@ abstract class MaxEmbeddedLobFieldStrategy
         tmpCol.setIdentifier(fieldName);
         tmpCol.setJavaType(getExpectedJavaType());
         tmpCol.setSize(-1);
-        Column[] cols = vinfo.getColumns(field, fieldName,
+        _cols = vinfo.getColumns(field, fieldName,
             new Column[]{ tmpCol }, field.getTable(), adapt);
-
-        field.setColumns(cols);
-        field.setColumnIO(vinfo.getColumnIO());
+        _io = vinfo.getColumnIO();
+        if (_io == null)
+            _io = field.getColumnIO();
+        field.setColumns(_cols);
+        field.setColumnIO(_io);
         field.mapConstraints(fieldName, adapt);
         field.mapPrimaryKey(adapt);
     }
@@ -266,4 +268,6 @@ abstract class MaxEmbeddedLobFieldStrategy
         Object prevValue)
         throws SQLException {
     }
+    
+    protected abstract Object getValue(OpenJPAStateManager sm);
 }

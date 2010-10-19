@@ -105,4 +105,13 @@ public class MaxEmbeddedBlobFieldStrategy
         _maxSize = dict.maxEmbeddedBlobSize;
         field.setUsesImplData(Boolean.TRUE);
     }
+    
+    protected Object getValue(OpenJPAStateManager sm) {
+        byte[] b = (byte[]) sm.getImplData(field.getIndex());
+        if (b == null || (b.length > _maxSize && !field.getColumns()[0].isNotNull()))
+            return null;
+        sm.setImplData(field.getIndex(), null);
+        DBDictionary.SerializedData dat = new DBDictionary.SerializedData(b);
+        return dat;
+    }    
 }

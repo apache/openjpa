@@ -111,4 +111,13 @@ public class MaxEmbeddedCharArrayFieldStrategy
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         _maxSize = dict.maxEmbeddedClobSize;
     }
+    
+    protected Object getValue(OpenJPAStateManager sm) {
+        char[] c = PrimitiveWrapperArrays.
+        toCharArray(sm.fetchObject(field.getIndex()));
+        if (c == null || c.length > _maxSize)
+            return null;
+        else
+            return c;
+    }
 }
