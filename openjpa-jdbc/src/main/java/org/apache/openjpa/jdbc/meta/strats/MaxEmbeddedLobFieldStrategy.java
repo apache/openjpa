@@ -238,18 +238,6 @@ abstract class MaxEmbeddedLobFieldStrategy
         return res.getObject(col, null, joins);
     }
 
-    public void appendIsNull(SQLBuffer sql, Select sel, Joins joins) {
-        joins = join(joins, false);
-        sql.append(sel.getColumnAlias(field.getColumns()[0], joins)).
-            append(" IS ").appendValue(null, field.getColumns()[0]);
-    }
-
-    public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
-        joins = join(joins, false);
-        sql.append(sel.getColumnAlias(field.getColumns()[0], joins)).
-            append(" IS NOT ").appendValue(null, field.getColumns()[0]);
-    }
-
     public Joins join(Joins joins, boolean forceOuter) {
         return field.join(joins, forceOuter, false);
     }
