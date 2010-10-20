@@ -88,7 +88,8 @@ public class TestDaytrader extends AbstractPersistenceTestCase {
      * Scenario being tested:
      *   - Creates 1000 quotes
      *   - Creates 500 user accounts w/ 10 holdings each
-     *   - 
+     *   - Perform the following 15 tasks for the first 50 user ids:
+     *     login, home, account, update, home, portfolio, sell, buy, home, portfolio, sell, buy, home, account, logout
      * @throws Exception 
      *   
      */
