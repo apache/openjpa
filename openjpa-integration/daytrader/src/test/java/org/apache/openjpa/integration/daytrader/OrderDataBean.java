@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
@@ -106,10 +107,10 @@ public class OrderDataBean implements Serializable
     private QuoteDataBean quote;
     
     // Cause sell operation failed, see JIRA DAYTRADER-63 for details.
-    //@OneToOne(fetch=FetchType.LAZY)
-    //@JoinColumn(name = "HOLDING_HOLDINGID")
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "HOLDING_HOLDINGID")
     // Cause sell operation failed, see JIRA DAYTRADER-63 for details.
-    @Transient    
+    //@Transient    
     private HoldingDataBean holding;
 
 //    @Version

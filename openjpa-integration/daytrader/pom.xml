@@ -47,7 +47,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa</artifactId>
+            <artifactId>openjpa-persistence-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- Maybe one day we can used published artifacts for this...

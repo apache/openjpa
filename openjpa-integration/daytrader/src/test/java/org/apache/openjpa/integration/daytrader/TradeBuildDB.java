@@ -43,39 +43,33 @@ import org.apache.openjpa.lib.log.Log;
  */
 public class TradeBuildDB {
 
-    private TradeConfig tCfg = new TradeConfig();
-    private TradeJPADirect trade = null;
-    private Log log = null;
-
+    private TradeAction trade = null;
+    
     /**
      * Re-create the DayTrader db tables and populate them OR just populate a 
      * DayTrader DB, logging to the provided output stream
      */
-    public TradeBuildDB(Log log, EntityManagerFactory emf) throws Exception {
-        this.log = log;
+    public TradeBuildDB(Log log, TradeAction trade) throws Exception {
+        this.trade = trade;
         // update config
-        tCfg.setRunTimeMode(TradeConfig.JPA);
-        tCfg.setLog(log);
         
         // always use TradeJPADirect mode
-        trade = new TradeJPADirect(log, emf);
 
         // removed - createDBTables
 
         // removed - Attempt to delete all of the Trade users and Trade Quotes first
         
-        // create MAX_QUOTES
-        createQuotes();
-
-        // create MAX_USERS
-        createAccounts();
     }
 
-    private void createQuotes() {
+    public void setup(int quotes, int users) {
+        createQuotes(quotes);
+        createAccounts(users);        
+    }
+    private void createQuotes(int quotes) {
         int errorCount = 0;
         String symbol, companyName;
-        log.info("TradeBuildDB.createQuotes(" + TradeConfig.getMAX_QUOTES() + ")");
-        for (int i = 0; i < TradeConfig.getMAX_QUOTES(); i++) {
+        TradeConfig.log.info("TradeBuildDB.createQuotes(" + quotes + ")");
+        for (int i = 0; i < quotes; i++) {
             symbol = "s:" + i;
             companyName = "S" + i + " Incorporated";
             try {
@@ -83,7 +77,7 @@ public class TradeBuildDB {
                     new java.math.BigDecimal(TradeConfig.rndPrice()));
             } catch (Exception e) {
                 if (errorCount++ >= 10) {
-                    log.error("createQuotes - aborting after 10 create quote errors", e);
+                    TradeConfig.log.error("createQuotes - aborting after 10 create quote errors", e);
                     throw new RuntimeException(e);
                 }
             }
@@ -91,9 +85,9 @@ public class TradeBuildDB {
 
     }
     
-    private void createAccounts() {
-        log.info("TradeBuildDB.createAccounts(" + TradeConfig.getMAX_USERS() + ")");
-        for (int i = 0; i < TradeConfig.getMAX_USERS(); i++) {
+    private void createAccounts(int users) {
+        TradeConfig.log.info("TradeBuildDB.createAccounts(" + users + ")");
+        for (int i = 0; i < users; i++) {
             String userID = "uid:" + i;
             String fullname = TradeConfig.rndFullName();
             String email = TradeConfig.rndEmail(userID);
@@ -119,10 +113,11 @@ public class TradeBuildDB {
                     quantity = TradeConfig.rndQuantity();
                     orderData = trade.buy(userID, symbol, quantity, TradeConfig.orderProcessingMode);
                 }
-                if (log.isTraceEnabled()) {
-                    log.trace("createAccounts - created " + holdings + " for userID=" + userID + " order=" + orderData);
+                if (TradeConfig.log.isTraceEnabled()) {
+                    TradeConfig.log.trace("createAccounts - created " + holdings + " for userID=" + userID + " order=" + orderData);
                 }
             } else {
+                TradeConfig.log.error("createAccounts - userID=" + userID + " already registered.");
                 throw new RuntimeException("createAccounts - userID=" + userID + " already registered.");
             }
         }

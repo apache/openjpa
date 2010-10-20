@@ -24,7 +24,6 @@ import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
@@ -68,7 +67,7 @@ public class TradeJPADirect {
 
     private static boolean initialized = false;
 
-    private static Log log = null;
+    protected static Log log = null;
     
 
     // constructor for OpenJPA junit tests
@@ -183,20 +182,13 @@ public class TradeJPADirect {
 
             entityManager.getTransaction().begin();
 
-            AccountProfileDataBean profile = entityManager.find(
-                                                               AccountProfileDataBean.class, userID);
+            AccountProfileDataBean profile = entityManager.find(AccountProfileDataBean.class, userID);
             AccountDataBean account = profile.getAccount();
-
-            QuoteDataBean quote = entityManager.find(QuoteDataBean.class,
-                                                     symbol);
-
+            QuoteDataBean quote = entityManager.find(QuoteDataBean.class, symbol);
             HoldingDataBean holding = null; // The holding will be created by this buy order
-
             order = createOrder(account, quote, holding, "buy", quantity, entityManager);
-
             // order = createOrder(account, quote, holding, "buy", quantity);
             // UPDATE - account should be credited during completeOrder
-
             BigDecimal price = quote.getPrice();
             BigDecimal orderFee = order.getOrderFee();
             BigDecimal balance = account.getBalance();
@@ -210,16 +202,14 @@ public class TradeJPADirect {
                 completeOrder(order.getOrderID(), false);
             else if (orderProcessingMode == TradeConfig.ASYNCH_2PHASE)
                 queueOrder(order.getOrderID(), true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("TradeJPADirect:buy(" + userID + "," + symbol + "," + quantity + ") --> failed", e);
             /* On exception - cancel the order */
             // TODO figure out how to do this with JPA
             if (order != null)
                 order.cancel();
-
-            entityManager.getTransaction().rollback();
-
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
             // throw new EJBException(e);
             throw new RuntimeException(e);
         } finally {
@@ -227,13 +217,10 @@ public class TradeJPADirect {
                 entityManager.close();
                 entityManager = null;
             }
-
         }
-
         // after the purchase or sell of a stock, update the stocks volume and
         // price
         updateQuotePriceVolume(symbol, TradeConfig.getRandomPriceChangeFactor(), quantity);
-
         return order;
     }
 
@@ -248,12 +235,10 @@ public class TradeJPADirect {
             if (log.isTraceEnabled())
                 log.trace("TradeJPADirect:sell - userID=" + userID + " holding=" + holdingID);
 
-            AccountProfileDataBean profile = entityManager.find(
-                                                               AccountProfileDataBean.class, userID);
+            AccountProfileDataBean profile = entityManager.find(AccountProfileDataBean.class, userID);
 
             AccountDataBean account = profile.getAccount();
-            HoldingDataBean holding = entityManager.find(HoldingDataBean.class,
-                                                         holdingID);
+            HoldingDataBean holding = entityManager.find(HoldingDataBean.class, holdingID);
 
             if (holding == null) {
                 log.error("TradeJPADirect:sell User " + userID
@@ -300,9 +285,7 @@ public class TradeJPADirect {
             // TODO figure out JPA cancel
             if (order != null)
                 order.cancel();
-
             entityManager.getTransaction().rollback();
-
             throw new RuntimeException("TradeJPADirect:sell(" + userID + "," + holdingID + ")", e);
         } finally {
             if (entityManager != null) {
@@ -319,10 +302,8 @@ public class TradeJPADirect {
     }
 
     public void queueOrder(Integer orderID, boolean twoPhase) {
-        log
-        .error("TradeJPADirect:queueOrder() not implemented for this runtime mode");
-        throw new UnsupportedOperationException(
-                                               "TradeJPADirect:queueOrder() not implemented for this runtime mode");
+        log.error("TradeJPADirect:queueOrder() not implemented for this runtime mode");
+        throw new UnsupportedOperationException("TradeJPADirect:queueOrder() not implemented for this runtime mode");
     }
 
     public OrderDataBean completeOrder(Integer orderID, boolean twoPhase)
@@ -333,43 +314,42 @@ public class TradeJPADirect {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:completeOrder - orderId=" + orderID + " twoPhase=" + twoPhase);
 
-        order = entityManager.find(OrderDataBean.class, orderID);
-        order.getQuote();
-
-        if (order == null) {
-            log.error("TradeJPADirect:completeOrder -- Unable to find Order " + orderID + " FBPK returned " + order);
-            return null;
-        }
-
-        if (order.isCompleted()) {
-            throw new RuntimeException("Error: attempt to complete Order that is already completed\n" + order);
-        }
-
-        AccountDataBean account = order.getAccount();
-        QuoteDataBean quote = order.getQuote();
-        HoldingDataBean holding = order.getHolding();
-        BigDecimal price = order.getPrice();
-        double quantity = order.getQuantity();
-
-        String userID = account.getProfile().getUserID();
-
-        if (log.isTraceEnabled())
-            log.trace("TradeJPADirect:completeOrder--> Completing Order "
-                      + order.getOrderID() + "\n\t Order info: " + order
-                      + "\n\t Account info: " + account + "\n\t Quote info: "
-                      + quote + "\n\t Holding info: " + holding);
-
-        HoldingDataBean newHolding = null;
-        if (order.isBuy()) {
-            /*
-             * Complete a Buy operation - create a new Holding for the Account -
-             * deduct the Order cost from the Account balance
-             */
-
-            newHolding = createHolding(account, quote, quantity, price, entityManager);
-        }
-
         try {
+            order = entityManager.find(OrderDataBean.class, orderID);
+            order.getQuote();
+
+            if (order == null) {
+                log.error("TradeJPADirect:completeOrder -- Unable to find orderID=" + orderID);
+                return null;
+            }
+
+            if (order.isCompleted()) {
+                throw new RuntimeException("Error: attempt to complete Order that is already completed\n" + order);
+            }
+
+            AccountDataBean account = order.getAccount();
+            QuoteDataBean quote = order.getQuote();
+            HoldingDataBean holding = order.getHolding();
+            BigDecimal price = order.getPrice();
+            double quantity = order.getQuantity();
+
+            String userID = account.getProfile().getUserID();
+
+            if (log.isTraceEnabled())
+                log.trace("TradeJPADirect:completeOrder--> Completing Order "
+                          + order.getOrderID() + "\n\t Order info: " + order
+                          + "\n\t Account info: " + account + "\n\t Quote info: "
+                          + quote + "\n\t Holding info: " + holding);
+
+            HoldingDataBean newHolding = null;
+            if (order.isBuy()) {
+                /*
+                 * Complete a Buy operation - create a new Holding for the Account -
+                 * deduct the Order cost from the Account balance
+                 */
+                newHolding = createHolding(account, quote, quantity, price, entityManager);
+            }
+
             entityManager.getTransaction().begin();
 
             if (newHolding != null) {
@@ -382,7 +362,8 @@ public class TradeJPADirect {
                  * deposit the Order proceeds to the Account balance
                  */
                 if (holding == null) {
-                    log.error("TradeJPADirect:completeOrder -- Unable to sell order " + order.getOrderID() + " holding already sold");
+                    log.error("TradeJPADirect:completeOrder -- Unable to sell order " + order.getOrderID()
+                            + ", holding already sold (null)");
                     order.cancel();
                     entityManager.getTransaction().commit();
                     return order;
@@ -394,20 +375,20 @@ public class TradeJPADirect {
             }
 
             order.setOrderStatus("closed");
-
             order.setCompletionDate(new java.sql.Timestamp(System.currentTimeMillis()));
-
+            entityManager.persist(order);
+            entityManager.getTransaction().commit();
+            
             if (log.isTraceEnabled())
                 log.trace("TradeJPADirect:completeOrder--> Completed Order "
                           + order.getOrderID() + "\n\t Order info: " + order
                           + "\n\t Account info: " + account + "\n\t Quote info: "
-                          + quote + "\n\t Holding info: " + holding);
+                          + quote + "\n\t Holding info: " + newHolding);
 
-            entityManager.getTransaction().commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            entityManager.getTransaction().rollback();
+        } catch (Exception e) {
+            log.error("TradeJPADirect:completeOrder() failed for orderID=" + orderID, e);
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
         } finally {
             if (entityManager != null) {
                 entityManager.close();
@@ -510,25 +491,24 @@ public class TradeJPADirect {
                  * with annotated query "orderejb.completeClosedOrders" defined
                  * in OrderDatabean
                  */
-                Query findaccountid = entityManager
-                                      .createNativeQuery(
-                                                        "select "
-                                                        + "a.ACCOUNTID, "
-                                                        + "a.LOGINCOUNT, "
-                                                        + "a.LOGOUTCOUNT, "
-                                                        + "a.LASTLOGIN, "
-                                                        + "a.CREATIONDATE, "
-                                                        + "a.BALANCE, "
-                                                        + "a.OPENBALANCE, "
-                                                        + "a.PROFILE_USERID "
-                                                        + "from accountejb a where a.profile_userid = ?",
-                                                        // org.apache.geronimo.samples.daytrader.beans.AccountDataBean.class);
-                                                        org.apache.openjpa.integration.daytrader.AccountDataBean.class);
+                Query findaccountid = entityManager.createNativeQuery(
+                                            "select "
+                                            + "a.ACCOUNTID, "
+                                            + "a.LOGINCOUNT, "
+                                            + "a.LOGOUTCOUNT, "
+                                            + "a.LASTLOGIN, "
+                                            + "a.CREATIONDATE, "
+                                            + "a.BALANCE, "
+                                            + "a.OPENBALANCE, "
+                                            + "a.PROFILE_USERID "
+                                            + "from accountejb a where a.profile_userid = ?",
+                                            org.apache.openjpa.integration.daytrader.AccountDataBean.class);
                 findaccountid.setParameter(1, userID);
                 AccountDataBean account = (AccountDataBean) findaccountid.getSingleResult();
                 Integer accountid = account.getAccountID();
-                Query updateStatus = entityManager.createNativeQuery("UPDATE orderejb o SET o.orderStatus = 'completed' WHERE "
-                                                                     + "o.orderStatus = 'closed' AND o.ACCOUNT_ACCOUNTID  = ?");
+                Query updateStatus = entityManager.createNativeQuery(
+                        "UPDATE orderejb o SET o.orderStatus = 'completed' WHERE "
+                        + "o.orderStatus = 'closed' AND o.ACCOUNT_ACCOUNTID  = ?");
                 updateStatus.setParameter(1, accountid.intValue());
                 updateStatus.executeUpdate();
             }
@@ -554,32 +534,23 @@ public class TradeJPADirect {
     public QuoteDataBean createQuote(String symbol, String companyName,
                                      BigDecimal price) {
         EntityManager entityManager = emf.createEntityManager();
+        QuoteDataBean quote = null;
         try {
-            QuoteDataBean quote = new QuoteDataBean(symbol, companyName, 0, price, price, price, price, 0);
+            quote = new QuoteDataBean(symbol, companyName, 0, price, price, price, price, 0);
             /*
              * managed transaction
              */
-            try {
             entityManager.getTransaction().begin();
             entityManager.persist(quote);
             entityManager.getTransaction().commit();
-            }
-            catch (Exception e) {
-                entityManager.getTransaction().rollback();
-            }
 
             if (log.isTraceEnabled())
                 log.trace("TradeJPADirect:createQuote-->" + quote);
-
-            if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
-            }
             return quote;
         } catch (Exception e) {
-            log.error("TradeJPADirect:createQuote -- exception creating Quote", e);
-            entityManager.close();
-            entityManager = null;
+            log.error("TradeJPADirect:createQuote -- exception creating Quote=" + quote, e);
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
             throw new RuntimeException(e);
         } finally {
             if (entityManager != null) {
@@ -856,14 +827,12 @@ public class TradeJPADirect {
         EntityManager entityManager = emf.createEntityManager();
 
         if (log.isTraceEnabled()) {
-            // Log.trace("TradeJPADirect:register", userID, password, fullname, address, email, creditcard, openBalance);
+            //Log.trace("TradeJPADirect:register", userID, password, fullname, address, email, creditcard, openBalance);
             log.trace("TradeJPADirect:register - userID=" + userID);
         }
         
         // Check to see if a profile with the desired userID already exists
-
         profile = entityManager.find(AccountProfileDataBean.class, userID);
-
         if (profile != null) {
             log.error("Failed to register new Account - AccountProfile with userID(" + userID + ") already exists");
             return null;
@@ -871,7 +840,8 @@ public class TradeJPADirect {
         else {
         	profile = new AccountProfileDataBean(userID, password, fullname,
                                                  address, email, creditcard);
-            account = new AccountDataBean(0, 0, null, new Timestamp(System.currentTimeMillis()), openBalance, openBalance, userID);
+            account = new AccountDataBean(0, 0, null, new Timestamp(System.currentTimeMillis()),
+                    openBalance, openBalance, userID);
             profile.setAccount(account);
             account.setProfile(profile);
             /*
@@ -884,6 +854,7 @@ public class TradeJPADirect {
                 entityManager.getTransaction().commit();
             }
             catch (Exception e) {
+                log.error("Failed to create account and profile for userId=" + userID, e);
                 entityManager.getTransaction().rollback();
             } finally {
                 entityManager.close();
@@ -910,7 +881,8 @@ public class TradeJPADirect {
         if (!TradeConfig.getPublishQuotePriceChange())
             return;
         log.error("TradeJPADirect:publishQuotePriceChange - is not implemented for this runtime mode");
-        throw new UnsupportedOperationException("TradeJPADirect:publishQuotePriceChange - is not implemented for this runtime mode");
+        throw new UnsupportedOperationException(
+            "TradeJPADirect:publishQuotePriceChange - is not implemented for this runtime mode");
     }
 
     /*
@@ -959,13 +931,15 @@ public class TradeJPADirect {
             entityManager.getTransaction().begin();
             entityManager.persist(newHolding);
             entityManager.getTransaction().commit();
+            if (log.isTraceEnabled())
+                log.trace("TradeJPADirect:createHolding(account=" + ((account == null) ? null : account.getAccountID())
+                          + " quote=" + ((quote == null) ? null : quote.getSymbol())
+                          + " quantity=" + quantity + " purchasePrice=" + purchasePrice + ")");
         }
         catch (Exception e) {
+            log.error("createHolding() failed for newHolding=" + newHolding, e);
             entityManager.getTransaction().rollback();
-        } finally {
-            entityManager.close();
         }
-
         return newHolding;
     }
 
@@ -980,9 +954,9 @@ public class TradeJPADirect {
     }
 
     public QuoteDataBean pingTwoPhase(String symbol) throws Exception {
-        log
-        .error("TradeJPADirect:pingTwoPhase - is not implemented for this runtime mode");
-        throw new UnsupportedOperationException("TradeJPADirect:pingTwoPhase - is not implemented for this runtime mode");
+        log.error("TradeJPADirect:pingTwoPhase - is not implemented for this runtime mode");
+        throw new UnsupportedOperationException(
+                "TradeJPADirect:pingTwoPhase - is not implemented for this runtime mode");
     }
 
     class quotePriceComparator implements java.util.Comparator {
