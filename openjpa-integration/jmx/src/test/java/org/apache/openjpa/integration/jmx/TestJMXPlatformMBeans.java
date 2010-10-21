@@ -83,13 +83,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         ce = oem.find(CachedEntity.class, id);
         
         assertTrue(dci.getHitCount() > 0);
-        try {
-            assertTrue(dci.getHitCount(CachedEntity.class.getName()) > 0);
-        } catch (ClassNotFoundException e) {
-            fail("CachedEntity class not found");
-        }
+        assertTrue(dci.getHitCount(CachedEntity.class.getName()) > 0);
         assertTrue(dci.getWriteCount() > 0);
-        assertTrue(dci.classNames().contains(CachedEntity.class.getName()));
+        assertTrue(dci.getCacheStatistics().classNames().contains(CachedEntity.class.getName()));
         // Thread out to do out-of-band MBean-based validation.  This could
         // have been done on the same thread, but threading out makes for a
         // more realistic test.
