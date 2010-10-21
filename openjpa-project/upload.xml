@@ -48,24 +48,27 @@
                 <include name="*.zip" />
             </fileset>
         </checksum>
-        
-        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}" trust="true">
+
+        <!-- update ${build.dir}/apache-openjpa-${project.version}/docs -->
+        <scp todir="${nightly.user.name}@${host}:${build.dir}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" trust="true" sftp="true">
             <fileset dir="target/site/tempDocs"> 
                 <include name="docs.zip"/>
             </fileset>
         </scp>
-        <!-- remove directories, hopefully this fails silently. mkdir does not and stops the process these exist.-->
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/downloads" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="rm ${build.dir}/docs.zip" trust="true" />
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="mkdir ${build.dir}/apache-openjpa-${project.version}/downloads " trust="true" />
-        
-        <scp todir="${nightly.user.name}:${nightly.password}@${host}:${build.dir}/apache-openjpa-${project.version}/downloads" trust="true">
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm ${build.dir}/docs.zip" trust="true" />
+
+        <!-- update ${build.dir}/apache-openjpa-${project.version}/downloads -->
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/downloads" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="mkdir ${build.dir}/apache-openjpa-${project.version}/downloads " trust="true" />
+        <scp todir="${nightly.user.name}@${host}:${build.dir}/apache-openjpa-${project.version}/downloads" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" trust="true">
             <fileset dir="target/site/downloads" />
         </scp>
         
-        <sshexec host="${host}" username="${nightly.user.name}" password="${nightly.password}" command="chmod -R g+w ${build.dir}/apache-openjpa-${project.version}" trust="true" />
+        <!-- update ACLs in ${build.dir}/apache-openjpa-${project.version} -->
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="find ${build.dir}/apache-openjpa-${project.version} -user ${nightly.user.name} -type d | xargs chmod 775" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="find ${build.dir}/apache-openjpa-${project.version} -user ${nightly.user.name} -type f | xargs chmod 664" trust="true" />
         
         <delete>
             <fileset dir="target/site/tempDocs" />
