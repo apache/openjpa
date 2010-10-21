@@ -29,7 +29,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestExternalValues extends SingleEMFTestCase {
 
     public void setUp() {
-        super.setUp(CLEAR_TABLES, EntityA.class);
+        super.setUp(DROP_TABLES, EntityA.class);
     }
 
     public void testExternalValues() {

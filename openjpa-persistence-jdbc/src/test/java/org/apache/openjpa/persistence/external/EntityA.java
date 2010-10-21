@@ -50,7 +50,7 @@ public class EntityA implements java.io.Serializable {
 	 * a DBDictionary property:
 	 * -Dopenjpa.jdbc.DBDictionary=derby(StoreCharsAsNumbers=false)
 	 */
-    @Column(name="USE_STREAMING", length=1)
+    @Column(name="USE_STREAMING")
     @ExternalValues({"true=T", "false=F"})
     @Type(char.class)
     private boolean _useStreaming = false;
