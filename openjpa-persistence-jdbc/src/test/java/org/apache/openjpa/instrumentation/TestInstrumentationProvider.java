@@ -203,13 +203,11 @@ public class TestInstrumentationProvider extends SingleEMFTestCase {
         assertTrue(dci.getHitCount() > 0);
         assertTrue(dci.getReadCount() > 0);
         assertTrue(dci.getWriteCount() > 0);
-        try {
-            assertTrue(dci.getHitCount(CacheableEntity.class.getName()) > 0);
-            assertTrue(dci.getReadCount(CacheableEntity.class.getName()) > 0);
-            assertTrue(dci.getWriteCount(CacheableEntity.class.getName()) > 0);
-        } catch (ClassNotFoundException e) {
-            fail("Class name based assertion failed");
-        }
+
+        assertTrue(dci.getHitCount(CacheableEntity.class.getName()) > 0);
+        assertTrue(dci.getReadCount(CacheableEntity.class.getName()) > 0);
+        assertTrue(dci.getWriteCount(CacheableEntity.class.getName()) > 0);
+
         
         closeEMF(oemf);
     }

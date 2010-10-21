@@ -19,7 +19,10 @@
 package org.apache.openjpa.instrumentation;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.Map;
+
+import org.apache.openjpa.datacache.CacheStatistics;
+import org.apache.openjpa.datacache.DataCacheManager;
 
 /**
  * Interface for providing instrumented data cache metrics and operations.
@@ -29,68 +32,63 @@ public interface DataCacheInstrument {
     /**
      * Gets number of total read requests for the given class since last reset.
      */
-    public long getReadCount(String className) throws ClassNotFoundException;
+    public long getReadCount(String className);
 
     /**
-     * Gets number of total read requests that has been found in cache for the
-     * given class since last reset.
+     * Gets number of total read requests that has been found in cache for the given class since last reset.
      */
-    public long getHitCount(String className) throws ClassNotFoundException;
+    public long getHitCount(String className);
 
     /**
      * Gets number of total write requests for the given class since last reset.
      */
-    public long getWriteCount(String className) throws ClassNotFoundException;
+    public long getWriteCount(String className);
 
     /**
      * Gets number of total read requests for the given class since start.
      */
-    public long getTotalReadCount(String className) 
-        throws ClassNotFoundException;
+    public long getTotalReadCount(String className);
 
     /**
-     * Gets number of total read requests that has been found in cache for the
-     * given class since start.
+     * Gets number of total read requests that has been found in cache for the given class since start.
      */
-    public long getTotalHitCount(String className) 
-        throws ClassNotFoundException;
+    public long getTotalHitCount(String className);
 
     /**
      * Gets number of total write requests for the given class since start.
      */
-    public long getTotalWriteCount(String className) 
-        throws ClassNotFoundException;
-       
+    public long getTotalWriteCount(String className);
+
     /**
      * Returns the name of the cache
      */
     public String getCacheName();
-    
+
     /**
      * Returns the hit count since cache statistics were last reset
      */
     public long getHitCount();
-        
+
     /**
      * Returns the read count since cache statistics were last reset
      */
     public long getReadCount();
-        
+
     /**
      * Returns the total hits since start.
      */
     public long getTotalHitCount();
-    
+
     /**
      * Returns the total reads since start.
      */
     public long getTotalReadCount();
-    
+
     /**
      * Returns the total writes since start.
      */
     public long getTotalWriteCount();
-    
+
     /**
      * Returns the write count since cache statistics were last reset
      */
@@ -100,19 +98,45 @@ public interface DataCacheInstrument {
      * Resets cache statistics
      */
     public void reset();
-    
+
     /**
      * Returns date since cache statistics collection were last reset.
      */
     public Date sinceDate();
-    
+
     /**
      * Returns date cache statistics collection started.
      */
     public Date startDate();
+
+    /**
+     * Returns the names of classes that are known to the cache and whether or not they are currently being cached.
+     */
+    public Map<String, Boolean> listKnownTypes();
+
+    /**
+     * Returns true if cache statistics are currently being calculated. False otherwise.
+     */
+    public Boolean getStatisticsEnabled();
+
+    /**
+     * 
+     * @param enable - If true, the cache will start collecting statistics. Else cache statistics will not be collected.
+     */
+    public void collectStatistics(boolean enable);
+
+    /**
+     * This method is used to enable/disable caching for the specified className.
+     */
+    public void cache(String className, boolean enable);
     
     /**
-     * Returns the names of classes currently tracked in the cache.
+     * Returns the CacheStatistics for the cache.
      */
-    public Set<String> classNames();
+    public CacheStatistics getCacheStatistics();
+    
+    /**
+     * Clears all data from the DataCache.
+     */
+    public void clear();
 }

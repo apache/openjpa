@@ -21,68 +21,64 @@ package org.apache.openjpa.instrumentation;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.datacache.CacheStatistics;
+import org.apache.openjpa.datacache.CacheStatisticsSPI;
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.datacache.DataCacheManager;
+import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.lib.instrumentation.AbstractInstrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 
 /**
- * Provides a basic instrument implementation wrapper for the data cache.  This
- * class can be extended to create a provider specific instrument for the
- * data cache.
+ * Provides a basic instrument implementation wrapper for the data cache. This class can be extended to create a
+ * provider specific instrument for the data cache.
  */
-public abstract class AbstractDataCacheInstrument extends AbstractInstrument 
-    implements DataCacheInstrument {
+public abstract class AbstractDataCacheInstrument extends AbstractInstrument implements DataCacheInstrument {
 
     /**
      * Value indicating that cache statistics are not available.
      */
     public static final long NO_STATS = -1;
 
+    private DataCacheManager _dcm = null;
     private DataCache _dc = null;
     private String _configID = null;
     private String _configRef = null;
-        
+
     public void setDataCache(DataCache dc) {
         _dc = dc;
     }
-    
+
+    public void setDataCacheManager(DataCacheManager dcm) {
+        _dcm = dcm;
+    }
+
     public void setConfigId(String cid) {
         _configID = cid;
     }
-    
+
     public void setContextRef(String cref) {
         _configRef = cref;
     }
-        
+
     public long getHitCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getHitCount();
         return NO_STATS;
     }
-    
-    public long getHitCount(String className) 
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getHitCount(clazz);
-    }
-    
+
     public long getReadCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getReadCount();
         return NO_STATS;
     }
-    
-    public long getReadCount(String className)
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getReadCount(clazz);        
-    }
-    
+
     public long getTotalHitCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -90,12 +86,6 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
-    public long getTotalHitCount(String className)
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getTotalHitCount(clazz);      
-    }
-    
     public long getTotalReadCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -103,12 +93,6 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
-    public long getTotalReadCount(String className)
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getTotalReadCount(clazz);      
-    }
-    
     public long getTotalWriteCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -116,12 +100,6 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
-    public long getTotalWriteCount(String className)
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getTotalWriteCount(clazz);      
-    }
-    
     public long getWriteCount() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
@@ -129,32 +107,26 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return NO_STATS;
     }
 
-    public long getWriteCount(String className)
-        throws ClassNotFoundException {
-        Class<?> clazz = Class.forName(className);
-        return getWriteCount(clazz);      
-    }
-
     public void reset() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
-            stats.reset();        
+            stats.reset();
     }
-    
+
     public Date sinceDate() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.since();
         return null;
     }
-    
+
     public Date startDate() {
         CacheStatistics stats = getStatistics();
         if (stats != null)
-            return stats.start();        
+            return stats.start();
         return null;
     }
-    
+
     public String getConfigId() {
         return _configID;
     }
@@ -168,7 +140,7 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
             return _dc.getName();
         return null;
     }
-    
+
     private CacheStatistics getStatistics() {
         if (_dc != null) {
             return _dc.getStatistics();
@@ -176,65 +148,80 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument
         return null;
     }
 
-    private long getWriteCount(Class<?> c) {
+    public long getWriteCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getWriteCount(c);
         return NO_STATS;
     }
-    
-    private long getTotalWriteCount(Class<?> c) {
+
+    public long getTotalWriteCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getTotalWriteCount(c);
         return NO_STATS;
     }
-    
-    private long getTotalReadCount(Class<?> c) {
+
+    public long getTotalReadCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getTotalReadCount(c);
         return NO_STATS;
     }
-    
-    private long getTotalHitCount(Class<?> c) {
+
+    public long getTotalHitCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getTotalHitCount(c);
         return NO_STATS;
     }
 
-    private long getReadCount(Class<?> c) {
+    public long getReadCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getReadCount(c);
         return NO_STATS;
     }
 
-    private long getHitCount(Class<?> c) {
+    public long getHitCount(String c) {
         CacheStatistics stats = getStatistics();
         if (stats != null)
             return stats.getHitCount(c);
         return NO_STATS;
     }
-    
-    @SuppressWarnings("unchecked")
-    public Set<String> classNames() {
-        CacheStatistics stats = getStatistics();
-        if (stats != null) {
-            Set<String> classNames = new HashSet<String>();
-            Set<Class<?>> clazzNames = stats.classNames();
-            for (Class<?> clazz : clazzNames) {
-                if (clazz != null) {
-                    classNames.add(clazz.getName());
-                }
-            }
-            return classNames;
-        }
-        return Collections.EMPTY_SET;
-    }
-    
+
     public InstrumentationLevel getLevel() {
         return InstrumentationLevel.FACTORY;
+    }
+
+    public void cache(String className, boolean enable) {
+        if (enable) {
+            _dcm.startCaching(className);
+        } else {
+            _dcm.stopCaching(className);
+        }
+    }
+
+    public Map<String, Boolean> listKnownTypes() {
+        return _dcm.listKnownTypes();
+    }
+    public void collectStatistics(boolean enable) {
+        CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
+        if (enable) {
+            stats.enable();
+        } else {
+            stats.disable();
+        }
+    }
+
+    public Boolean getStatisticsEnabled() {
+        CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
+        return stats.isEnabled();
+    }
+    public CacheStatistics getCacheStatistics() {
+        return _dc.getStatistics();
+    }
+    public void clear() {
+        _dc.clear();
     }
 }

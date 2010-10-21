@@ -65,6 +65,14 @@
             <artifactId>ant</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>sun.jconsole</groupId>
+            <artifactId>jconsole</artifactId>
+            <version>1.6.0</version>
+            <scope>system</scope>
+            <systemPath>${java.home}/../lib/jconsole.jar</systemPath>
+        </dependency>
+        
     </dependencies>
 
     <build>

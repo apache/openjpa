@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestStatistics extends SingleEMFTestCase {
     private static final boolean L2Cached = true;
     private static final boolean L1Cached = true;
-    private static final Class<?> cls = CachedEntityStatistics.class;
+    private static final String cls = CachedEntityStatistics.class.getName();
 
     Object[] p =
         new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
@@ -267,16 +267,9 @@ public class TestStatistics extends SingleEMFTestCase {
     }
 
     /**
-     * Get {hit,read,write} count for the cache across given class extent.
-     */
-    long[] snapshot(Class<?> cls) {
-        return new long[] { stats.getReadCount(cls), stats.getHitCount(cls), stats.getWriteCount(cls) };
-    }
-
-    /**
      * Assert that the passed in hit/eviction/read/write match those values collected by stats.
      */
-    private static final void assertion(Class<?> cls, int hit, int read, int write, CacheStatistics stats) {
+    private static final void assertion(String cls, int hit, int read, int write, CacheStatistics stats) {
         if (cls == null) {
             throw new RuntimeException("invalid assertion. Null class");
         } else {

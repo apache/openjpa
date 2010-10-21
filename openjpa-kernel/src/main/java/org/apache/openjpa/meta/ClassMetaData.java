@@ -155,6 +155,7 @@ public class ClassMetaData
 
     private Class<?> _type = Object.class;
     private int _hashCode = Object.class.getName().hashCode();
+    private String _typeString = Object.class.getName();
     private final Map<String,FieldMetaData> _fieldMap = new TreeMap<String,FieldMetaData>();
     private Map<String,FieldMetaData> _supFieldMap = null;
     private boolean _defSupFields = false;
@@ -259,7 +260,14 @@ public class ClassMetaData
     public Class<?> getDescribedType() {
         return _type;
     }
-
+    
+    /**
+     * The persistence capable stringified class described by this metadata.
+     */
+    public String getDescribedTypeString(){
+        return _typeString;
+    }
+    
     /**
      * Set the class described by this metadata. The type may be reset when
      * an embedded value changes its declared type.
@@ -269,7 +277,8 @@ public class ClassMetaData
             (type.getSuperclass().getName()))
             throw new MetaDataException(_loc.get("enum", type));
         _type = type;
-        _hashCode = _type.getName().hashCode();
+        _typeString = _type.getName();
+        _hashCode = _typeString.hashCode();
         if (PersistenceCapable.class.isAssignableFrom(type))
             setIntercepting(true);
     }

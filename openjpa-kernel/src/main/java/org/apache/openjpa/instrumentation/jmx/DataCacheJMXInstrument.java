@@ -33,8 +33,8 @@ import org.apache.openjpa.util.UserException;
 /**
  * A JMX-specific instrument for the data cache
  */
-public class DataCacheJMXInstrument extends AbstractDataCacheInstrument 
-    implements JMXInstrument, DataCacheJMXInstrumentMBean {
+public class DataCacheJMXInstrument extends AbstractDataCacheInstrument implements JMXInstrument,
+    DataCacheJMXInstrumentMBean {
     
     private static Localizer _loc = Localizer.forPackage(DataCacheJMXInstrument.class);
 
@@ -72,6 +72,7 @@ public class DataCacheJMXInstrument extends AbstractDataCacheInstrument
         }
         
         setDataCache(dc);
+        setDataCacheManager(dcm);
         setConfigId(conf.getId());
         setContextRef(Integer.toString(System.identityHashCode(getContext())));
     }

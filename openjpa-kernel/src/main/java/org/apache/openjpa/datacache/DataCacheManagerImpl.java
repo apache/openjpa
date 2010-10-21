@@ -21,6 +21,7 @@ package org.apache.openjpa.datacache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
@@ -28,6 +29,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.conf.ObjectValue;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ImplHelper;
 
 /**
@@ -197,5 +199,25 @@ public class DataCacheManagerImpl
         }
         // Check for @DataCache annotations
         return meta.getDataCacheName() != null;
+    }
+
+    public void startCaching(String cls) {
+        MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
+        ClassMetaData cmd = mdr.getCachedMetaData(cls);
+        _cacheable.put(cmd, Boolean.TRUE);
+    }
+
+    public void stopCaching(String cls) {
+        MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
+        ClassMetaData cmd = mdr.getCachedMetaData(cls);
+        _cacheable.put(cmd, Boolean.FALSE);
+    }
+
+    public Map<String, Boolean> listKnownTypes() {
+        Map<String, Boolean> res = new HashMap<String, Boolean>();
+        for (Entry<ClassMetaData, Boolean> entry : _cacheable.entrySet()) {
+            res.put(entry.getKey().getDescribedTypeString(), entry.getValue());
+        }
+        return res;
     }
 }

@@ -32,15 +32,6 @@ public interface CacheStatisticsSPI extends CacheStatistics {
      */
     public void newGet(Class<?> cls, boolean hit);
 
-    /**
-     * Record a new cache get.
-     * 
-     * @param oid
-     *            - The cache key.
-     * @param hit
-     *            - true for a cache hit, false otherwise
-     */
-    public void newGet(Object oid, boolean hit);
 
     /**
      * Record a new cache put.
@@ -50,13 +41,6 @@ public interface CacheStatisticsSPI extends CacheStatistics {
      */
     public void newPut(Class<?> cls);
 
-    /**
-     * Record a new cache put.
-     * 
-     * @param oid
-     *            - The cache key.
-     */
-    public void newPut(Object oid);
 
     /**
      * Enable statistics collection.

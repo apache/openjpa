@@ -18,9 +18,10 @@
  */
 package org.apache.openjpa.datacache;
 
+import java.util.Map;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
-import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.ObjectValue;
 
 /**
@@ -98,9 +99,24 @@ public interface DataCacheManager {
      * @since 2.0.0
      */
     public CacheDistributionPolicy getDistributionPolicy();
-    
+
     /**
      * Close all caches.
      */
     public void close();
+    
+    /**
+     * Stop caching the type matching the provided class name.
+     */
+    public void stopCaching(String cls);
+
+    /**
+     * Start caching the type matching the provided class name.
+     */
+    public void startCaching(String cls);
+
+    /**
+     * Returns the names of classes that are known to the cache and whether or not they are currently being cached.
+     */
+    public Map<String, Boolean> listKnownTypes();
 }

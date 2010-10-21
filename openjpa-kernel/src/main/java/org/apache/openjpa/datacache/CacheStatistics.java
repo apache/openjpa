@@ -72,37 +72,77 @@ public interface CacheStatistics extends Serializable {
 	 */
 	public long getTotalWriteCount();
 
-	/**
+    /**
+     * Gets number of total read requests for the given class since last reset.
+     * 
+     * @deprecated - should use getReadCount(String c)
+     */
+    public long getReadCount(Class<?> cls);
+  
+    /**
      * Gets number of total read requests for the given class since last reset.
 	 */
-	public long getReadCount(Class<?> c);
+	public long getReadCount(String c);
 
+    /**
+     * Gets number of total read requests that has been found in cache for the given class since last reset.
+     * 
+     * @deprecated - should use getHitCount(String c)
+     */
+    public long getHitCount(Class<?> cls);
+    
 	/**
-     * Gets number of total read requests that has been found in cache for the
-	 * given class since last reset.
-	 */
-	public long getHitCount(Class<?> c);
-
+     * Gets number of total read requests that has been found in cache for the given class since last reset.
+     */
+	public long getHitCount(String c);
+	
 	/**
      * Gets number of total write requests for the given class since last reset.
-	 */
-	public long getWriteCount(Class<?> c);
+     * 
+     * @deprecated - should use getWriteCount(String c)
+     */
+    public long getWriteCount(Class<?> cls);
 
+    /**
+     * Gets number of total write requests for the given class since last reset.
+	 */
+	public long getWriteCount(String c);
+
+	/**
+     * Gets number of total read requests for the given class since start.
+     * 
+     * @deprecated - should use getTotalReadCount(String c)
+     */
+    public long getTotalReadCount(Class<?> cls);
+    
 	/**
 	 * Gets number of total read requests for the given class since start.
 	 */
-	public long getTotalReadCount(Class<?> c);
+	public long getTotalReadCount(String c);
 
 	/**
-     * Gets number of total read requests that has been found in cache for the
-	 * given class since start.
-	 */
-	public long getTotalHitCount(Class<?> c);
+     * Gets number of total read requests that has been found in cache for the given class since start.
+     */
+    public long getTotalHitCount(String c);
+
+    /**
+     * Gets number of total read requests that has been found in cache for the given class since start.
+     * 
+     * @deprecated - should use getTotalHitCount(String c)
+     */
+    public long getTotalHitCount(Class<?> cls);
 
 	/**
-	 * Gets number of total write requests for the given class since start.
-	 */
-	public long getTotalWriteCount(Class<?> c);
+     * Gets number of total write requests for the given class since start.
+     */
+    public long getTotalWriteCount(String c);
+
+    /**
+     * Gets number of total write requests for the given class since start.
+     * 
+     * @deprecated - should use getTotalWriteCount(String c)
+     */
+    public long getTotalWriteCount(Class<?> cls);
 
 	/**
 	 * Gets the time of last reset.
@@ -125,9 +165,8 @@ public interface CacheStatistics extends Serializable {
 	public boolean isEnabled();
 	
 	/**
-	 * Returns the classes being tracked.
-	 * @return
+	 * Returns the types that are known to this cache being tracked.
 	 */
-    public Set<Class<?>> classNames();
-        
+    public Set<String> classNames();
+    
 }

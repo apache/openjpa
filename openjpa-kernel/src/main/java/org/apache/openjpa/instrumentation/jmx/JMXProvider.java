@@ -19,6 +19,7 @@
 package org.apache.openjpa.instrumentation.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -49,16 +50,18 @@ public class JMXProvider
      */
     public static final String MBEAN_DOMAIN = "org.apache.openjpa";
     
-    private MBeanServer _mbs = null;
+    private Set<MBeanServer> _mbs = null;
 
     /**
      * Register an MBean with the mbean server.
      * @param mBean
      */
     protected void registerMBean(JMXInstrument mBean) {
-        MBeanServer mbs = getMBeanServer(); 
+        Set<MBeanServer> mbs = getMBeanServer(); 
         try {
-            mbs.registerMBean(mBean, mBean.getObjectName());
+            for (MBeanServer s : mbs) {
+                s.registerMBean(mBean, mBean.getObjectName());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -68,24 +71,31 @@ public class JMXProvider
      * Returns the mbean server
      * @return
      */
-    public MBeanServer getMBeanServer() {
+    public Set<MBeanServer> getMBeanServer() {
         if (_mbs == null) {
-            _mbs = ManagementFactory.getPlatformMBeanServer();
+            _mbs =  new HashSet<MBeanServer>();
+            // Look in both of these static methods to find all MBServers. In some environments the server returned by
+            // the getPlatformMBeanServer() call isn't the one used by the runtime. Might be over kill by calling both,
+            // but it shouldn't hurt anything.
+            _mbs.addAll(MBeanServerFactory.findMBeanServer(null));
+            _mbs.add(ManagementFactory.getPlatformMBeanServer());
         }
         return _mbs;
     }
 
     @Override
     public void start() {
-       try {
-           MBeanServer mbs = getMBeanServer();
-           if (mbs == null) {
-               throw new UserException("jmx-server-failed-creation");
-           }
-           setStarted(true);
-       } catch (Throwable t) {
-           throw new UserException("jmx-server-unavailable",t);
-       }
+        Set<MBeanServer> mbs = getMBeanServer();
+        try {
+            for (MBeanServer s : mbs) {
+                if (mbs == null || mbs.size() == 0) {
+                    throw new UserException("jmx-server-failed-creation");
+                }
+            }
+            setStarted(true);
+        } catch (Throwable t) {
+            throw new UserException("jmx-server-unavailable", t);
+        }
     }
 
     /**
@@ -155,8 +165,11 @@ public class JMXProvider
      */
     public void stopInstrument(Instrument instrument, boolean force) {
         if (instrument.isStarted() || force) {
+            Set<MBeanServer> mbs = getMBeanServer();
             try {
-                getMBeanServer().unregisterMBean(((JMXInstrument)instrument).getObjectName());
+                for (MBeanServer s : mbs) {
+                    s.unregisterMBean(((JMXInstrument) instrument).getObjectName());
+                }
                 instrument.setStarted(false);
             } catch (Exception e) {
                 // If force, swallow the exception since the bean may not even

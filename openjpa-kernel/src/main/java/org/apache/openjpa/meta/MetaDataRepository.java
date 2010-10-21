@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -107,6 +108,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // cache of parsed metadata, oid class to class, and interface class
     // to metadatas
     private Map<Class<?>, ClassMetaData> _metas = new HashMap<Class<?>, ClassMetaData>();
+    private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<String, ClassMetaData>();
     private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
     private Map<Class<?>, Collection<Class<?>>> _impls =
         Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
@@ -1433,6 +1435,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _aliases.clear();
             _pawares.clear();
             _nonMapped.clear();
+            _metaStringMap.clear();
     }
     /**
      * Return the set of configured persistent classes, or null if the user did not configure any.
@@ -2455,5 +2458,23 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _logEnhancementLevel = false;
             log.info(_loc.get("down-level-entity"));
         }
+    }
+    
+    /**
+     * This method returns the ClassMetaData whose described type name matches the typeName parameter. It ONLY operates
+     * against MetaData that is currently known by this repository. Note: This method call WILL NOT resolve any
+     * metadata.
+     */
+    public ClassMetaData getCachedMetaData(String typeName) {
+        ClassMetaData cmd = _metaStringMap.get(typeName);
+        if (cmd == null) {
+            for (ClassMetaData c : getMetaDatas()) {
+                if (c.getDescribedType().getName().equals(typeName)) {
+                    _metaStringMap.put(typeName, c);
+                    return c;
+                }
+            }
+        }
+        return cmd;
     }
 }

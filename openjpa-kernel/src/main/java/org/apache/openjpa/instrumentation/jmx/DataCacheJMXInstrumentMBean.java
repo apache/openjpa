@@ -26,7 +26,6 @@ import org.apache.openjpa.instrumentation.DataCacheInstrument;
  * Note: Simple MBeans require an MBean interface matching the supplied 
  * implementation class.
  */
-public interface DataCacheJMXInstrumentMBean 
-    extends DataCacheInstrument {
+public interface DataCacheJMXInstrumentMBean extends DataCacheInstrument {
 
 }

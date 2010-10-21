@@ -33,8 +33,9 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     private static final int ARRAY_SIZE = 3;
     private long[] astat = new long[ARRAY_SIZE];
     private long[] stat = new long[ARRAY_SIZE];
-    private Map<Class<?>, long[]> stats = new HashMap<Class<?>, long[]>();
-    private Map<Class<?>, long[]> astats = new HashMap<Class<?>, long[]>();
+    private Map<String, long[]> stats = new HashMap<String, long[]>();
+    private Map<String, long[]> astats = new HashMap<String, long[]>();
+
     private Date start = new Date();
     private Date since = new Date();
     private boolean enabled = false;
@@ -68,27 +69,50 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public long getReadCount(Class<?> c) {
-        return getCount(stats, c, READ);
+        return getReadCount(c.getName());        
+    }
+    
+    public long getReadCount(String str){
+        return getCount(stats, str, READ);
     }
 
     public long getHitCount(Class<?> c) {
-        return getCount(stats, c, HIT);
+        return getHitCount(c.getName());
     }
 
+    public long getHitCount(String str) {
+        return getCount(stats, str, HIT);
+    }
+    
     public long getWriteCount(Class<?> c) {
-        return getCount(stats, c, WRITE);
+        return getWriteCount(c.getName());
+    }
+    public long getWriteCount(String str) {
+        return getCount(stats, str, WRITE);
     }
 
     public long getTotalReadCount(Class<?> c) {
-        return getCount(astats, c, READ);
+        return getTotalReadCount(c.getName());
     }
 
+    public long getTotalReadCount(String str) {
+        return getCount(astats, str, READ);        
+    }
+    
     public long getTotalHitCount(Class<?> c) {
-        return getCount(astats, c, HIT);
+        return getTotalHitCount(c.getName());   
+    }
+    
+    public long getTotalHitCount(String str) {
+        return getCount(astats, str, HIT);
     }
 
     public long getTotalWriteCount(Class<?> c) {
-        return getCount(astats, c, WRITE);
+        return getCount(astats, c.getName(), WRITE);
+    }
+    
+    public long getTotalWriteCount(String str) {
+        return getCount(astats, str, WRITE);
     }
 
     public Date since() {
@@ -109,7 +133,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
         return enabled;
     }
 
-    public Set<Class<?>> classNames() {
+    public Set<String> classNames() {
         return astats.keySet();
     }
     
@@ -129,9 +153,10 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
             return;
         }
         cls = (cls == null) ? Object.class : cls;
-        addSample(cls, READ);
+        String clsName = cls.getName();
+        addSample(clsName, READ);
         if (hit) {
-            addSample(cls, HIT);
+            addSample(clsName, HIT);
         }
     }
 
@@ -149,7 +174,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
             return;
         }
         cls = (cls == null) ? Object.class : cls;
-        addSample(cls, WRITE);
+        addSample(cls.getName(), WRITE);
     }
 
     public void newPut(Object oid) {
@@ -164,14 +189,14 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     /**
      *  Private worker methods.
      */
-    private void addSample(Class<?> c, int index) {
+    private void addSample(String c, int index) {
         stat[index]++;
         astat[index]++;
         addSample(stats, c, index);
         addSample(astats, c, index);
     }
 
-    private void addSample(Map<Class<?>, long[]> target, Class<?> c, int index) {
+    private void addSample(Map<String, long[]> target, String c, int index) {
         long[] row = target.get(c);
         if (row == null) {
             row = new long[ARRAY_SIZE];
@@ -180,7 +205,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
         target.put(c, row);
     }
 
-    private long getCount(Map<Class<?>, long[]> target, Class<?> c, int index) {
+    private long getCount(Map<String, long[]> target, String c, int index) {
         long[] row = target.get(c);
         return (row == null) ? 0 : row[index];
     }
