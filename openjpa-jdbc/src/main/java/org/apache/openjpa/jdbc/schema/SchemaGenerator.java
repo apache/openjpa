@@ -70,6 +70,8 @@ public class SchemaGenerator {
 
     private List<Listener> _listeners = null;
     private int _schemaObjects = 0;
+    
+    private Connection _conn = null;
 
     /**
      * Constructor.
@@ -296,32 +298,41 @@ public class SchemaGenerator {
         }
 
         // generate all schemas and tables
-        for (int i = 0; i < schemaMap.length; i++)
-            generateSchema((DBIdentifier) schemaMap[i][0],
-                (DBIdentifier[]) schemaMap[i][1]);
-
-        // generate pks, indexes, fks
-        DBIdentifier schemaName = DBIdentifier.NULL;
-        DBIdentifier[] tableNames;
-        for (int i = 0; i < schemaMap.length; i++) {
-            schemaName = (DBIdentifier) schemaMap[i][0];
-            tableNames = (DBIdentifier[]) schemaMap[i][1];
-
-            // estimate the number of schema objects we will need to visit
-            // in order to estimate progress total for any listeners
-            int numTables = (tableNames != null) ? tableNames.length
-                : getTables(schemaName).size();
-            _schemaObjects += numTables
-                + (_pks ? numTables : 0)
-                + (_indexes ? numTables : 0)
-                + (_fks ? numTables : 0);
-
-            if (_pks)
-                generatePrimaryKeys(schemaName, tableNames);
-            if (_indexes)
-                generateIndexes(schemaName, tableNames);
-            if (_fks)
-                generateForeignKeys(schemaName, tableNames);
+        try{ 
+            getConn(); 
+            for (int i = 0; i < schemaMap.length; i++) {
+                generateSchema((DBIdentifier) schemaMap[i][0], (DBIdentifier[]) schemaMap[i][1]);
+            }
+        
+            // generate pks, indexes, fks
+            DBIdentifier schemaName = DBIdentifier.NULL;
+            DBIdentifier[] tableNames;
+            for (int i = 0; i < schemaMap.length; i++) {
+                schemaName = (DBIdentifier) schemaMap[i][0];
+                tableNames = (DBIdentifier[]) schemaMap[i][1];
+    
+                // estimate the number of schema objects we will need to visit
+                // in order to estimate progress total for any listeners
+                int numTables = (tableNames != null) ? tableNames.length
+                    : getTables(schemaName).size();
+                _schemaObjects += numTables
+                    + (_pks ? numTables : 0)
+                    + (_indexes ? numTables : 0)
+                    + (_fks ? numTables : 0);
+    
+                if (_pks) {
+                    generatePrimaryKeys(schemaName, tableNames);
+                }
+                if (_indexes) {
+                    generateIndexes(schemaName, tableNames);
+                }
+                if (_fks) {
+                    generateForeignKeys(schemaName, tableNames);
+                }
+            }
+        }
+        finally  { 
+            closeConn(); 
         }
     }
 
@@ -352,25 +363,21 @@ public class SchemaGenerator {
         fireGenerationEvent(_loc.get("generating-schema", name));
 
         // generate tables, including columns and primary keys
-        Connection conn = _ds.getConnection();
-        DatabaseMetaData meta = conn.getMetaData();
+        DatabaseMetaData meta = _conn.getMetaData();
         try {
             if (tableNames == null)
-                generateTables(name, DBIdentifier.NULL, conn, meta);
+                generateTables(name, DBIdentifier.NULL, _conn, meta);
             else
                 for (int i = 0; i < tableNames.length; i++)
-                    generateTables(name, tableNames[i], conn, meta);
+                    generateTables(name, tableNames[i], _conn, meta);
 
-            if (_seqs)
-                generateSequences(name, DBIdentifier.NULL, conn, meta);
+            if (_seqs) {
+                generateSequences(name, DBIdentifier.NULL, _conn, meta);
+            }
         } finally {
             // some databases require a commit after metadata to release locks
             try {
-                conn.commit();
-            } catch (SQLException se) {
-            }
-            try {
-                conn.close();
+                _conn.commit();
             } catch (SQLException se) {
             }
         }
@@ -402,22 +409,17 @@ public class SchemaGenerator {
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-primaries", schemaName));
 
-        Connection conn = _ds.getConnection();
-        DatabaseMetaData meta = conn.getMetaData();
+        DatabaseMetaData meta = _conn.getMetaData();
         try {
             if (tableNames == null)
-                generatePrimaryKeys(schemaName, null, conn, meta);
+                generatePrimaryKeys(schemaName, null, _conn, meta);
             else
                 for (int i = 0; i < tableNames.length; i++)
-                    generatePrimaryKeys(schemaName, tableNames[i], conn, meta);
+                    generatePrimaryKeys(schemaName, tableNames[i], _conn, meta);
         } finally {
             // some databases require a commit after metadata to release locks
             try {
-                conn.commit();
-            } catch (SQLException se) {
-            }
-            try {
-                conn.close();
+                _conn.commit();
             } catch (SQLException se) {
             }
         }
@@ -448,22 +450,17 @@ public class SchemaGenerator {
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-indexes", schemaName));
 
-        Connection conn = _ds.getConnection();
-        DatabaseMetaData meta = conn.getMetaData();
+        DatabaseMetaData meta = _conn.getMetaData();
         try {
             if (tableNames == null)
-                generateIndexes(schemaName, null, conn, meta);
+                generateIndexes(schemaName, null, _conn, meta);
             else
                 for (int i = 0; i < tableNames.length; i++)
-                    generateIndexes(schemaName, tableNames[i], conn, meta);
+                    generateIndexes(schemaName, tableNames[i], _conn, meta);
         } finally {
             // some databases require a commit after metadata to release locks
             try {
-                conn.commit();
-            } catch (SQLException se) {
-            }
-            try {
-                conn.close();
+                _conn.commit();
             } catch (SQLException se) {
             }
         }
@@ -495,22 +492,17 @@ public class SchemaGenerator {
         throws SQLException {
         fireGenerationEvent(_loc.get("generating-all-foreigns", schemaName));
 
-        Connection conn = _ds.getConnection();
-        DatabaseMetaData meta = conn.getMetaData();
+        DatabaseMetaData meta = _conn.getMetaData();
         try {
             if (tableNames == null)
-                generateForeignKeys(schemaName, null, conn, meta);
+                generateForeignKeys(schemaName, null, _conn, meta);
             else
                 for (int i = 0; i < tableNames.length; i++)
-                    generateForeignKeys(schemaName, tableNames[i], conn, meta);
+                    generateForeignKeys(schemaName, tableNames[i], _conn, meta);
         } finally {
             // some databases require a commit after metadata to release locks
             try {
-                conn.commit();
-            } catch (SQLException se) {
-            }
-            try {
-                conn.close();
+                _conn.commit();
             } catch (SQLException se) {
             }
         }
@@ -1074,6 +1066,18 @@ public class SchemaGenerator {
 
         public int getTotal() {
             return _total;
+        }
+    }
+    
+    private void getConn() throws SQLException {
+        if (_conn == null) {
+            _conn = _ds.getConnection();
+        }
+    }
+
+    private void closeConn() throws SQLException {
+        if (_conn != null) {
+            _conn.close();
         }
     }
 }
