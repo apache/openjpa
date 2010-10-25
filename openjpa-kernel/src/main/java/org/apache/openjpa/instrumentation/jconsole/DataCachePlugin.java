@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrumentMBean;
+import org.apache.openjpa.lib.util.Localizer;
 
 import com.sun.tools.jconsole.JConsoleContext;
 import com.sun.tools.jconsole.JConsolePlugin;
@@ -39,6 +40,9 @@ import com.sun.tools.jconsole.JConsolePlugin;
  * DataCachePlugin
  */
 public class DataCachePlugin extends JConsolePlugin {
+    private static final Localizer _loc = Localizer.forPackage(DataCachePlugin.class);
+    private static final String DATACACHE_MBEAN_QUERY_STRING = "org.apache.openjpa:type=DataCache,*";
+    
     private Map<String, JPanel> _tabs;
     private Map<DataCacheJMXInstrumentMBean, DataCachePanel> _mbeanPanelMap;
 
@@ -66,10 +70,9 @@ public class DataCachePlugin extends JConsolePlugin {
             String cfgId = entry.getKey();
             String name = m.getCacheName();
 
-            // TODO -- should NLSize this tab.
             DataCachePanel panel = new DataCachePanel(m);
             String key = "DataCache-" + cfgId + "-" + name;
-            // This 'shouldn't' ever happen... but it will if we have name collisions for one reason or another.
+            // This "shouldn't" ever happen... but it will if we have name collisions for one reason or another.
             while (res.containsKey(key) == true) {
                 key = key + "_dup";
             }
@@ -90,18 +93,18 @@ public class DataCachePlugin extends JConsolePlugin {
         connections.add(ctx.getMBeanServerConnection());
         connections.addAll(MBeanServerFactory.findMBeanServer(null));
         if (connections == null || connections.size() == 0) {
-            System.err
-                .println("DataCachePlugin found zero from MBeanServerFactory.findMBeanServer(null) using default");
+            System.err.println(_loc.get("datacacheplugin.zero.mbeanconnections").getMessage());
         }
 
         for (MBeanServerConnection server : connections) {
             try {
-                ObjectName generic = new ObjectName("org.apache.openjpa:type=DataCache,*");
+                ObjectName generic = new ObjectName(DATACACHE_MBEAN_QUERY_STRING);
                 ObjectName[] objects = server.queryNames(generic, null).toArray(new ObjectName[0]);
                 if (objects == null || objects.length == 0) {
-                    System.err
-                        .println("No ObjectNames found matching 'org.apache.openjpa:type=DataCache,*' for MBeanServer "
-                            + server);
+                    String message =
+                        _loc.get("datacacheplugin.zero.mbeans", new Object[] { DATACACHE_MBEAN_QUERY_STRING, server })
+                            .getMessage();
+                    System.err.println(message);
                 }
                 for (ObjectName o : objects) {
                     DataCacheJMXInstrumentMBean bean = JMX.newMBeanProxy(server, o, DataCacheJMXInstrumentMBean.class);

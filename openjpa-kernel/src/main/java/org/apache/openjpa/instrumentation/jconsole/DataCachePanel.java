@@ -39,6 +39,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrumentMBean;
+import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * <pre>
@@ -57,6 +58,8 @@ import org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrumentMBean;
  */
 public class DataCachePanel extends JPanel {
     private static final long serialVersionUID = 8273595264174478456L;
+    private static final Localizer _loc = Localizer.forPackage(DataCachePanel.class);
+    
     private DataCacheJMXInstrumentMBean _mbean;
     private DataCacheTable _model;
     private Map<String, JCheckBox> _typesPanelMap = new ConcurrentHashMap<String, JCheckBox>();
@@ -74,18 +77,21 @@ public class DataCachePanel extends JPanel {
         add(parentTopPanel, BorderLayout.PAGE_START);
 
         // Panel for action buttons
+        String actions = _loc.get("datacachepanel.titles.actions").getMessage();
         JPanel actionsPanel = new JPanel(new GridLayout(1, 3));
-        actionsPanel.setBorder(new TitledBorder(LineBorder.createGrayLineBorder(), "Actions"));
+        actionsPanel.setBorder(new TitledBorder(LineBorder.createGrayLineBorder(), actions));
         parentTopPanel.add(actionsPanel, -1);
 
         // Create new panel for [N] children checkboxes
         // Don't add anything here yet. This will happen dynamically in updateTypesCached
+        String knownTypes = _loc.get("datacachepanel.titles.types").getMessage();
         _typesPanel = new JPanel(new GridLayout());
-        _typesPanel.setBorder(new TitledBorder(LineBorder.createGrayLineBorder(), "Currently known types"));
+        _typesPanel.setBorder(new TitledBorder(LineBorder.createGrayLineBorder(), knownTypes));
         parentTopPanel.add(_typesPanel, -1);
 
         // create enabled check box to parent
-        JCheckBox enableStatisticsCheckBox = new JCheckBox("Statistics enabled", mbean.getStatisticsEnabled());
+        String statsEnabled = _loc.get("datacachepanel.buttons.stats").getMessage();
+        JCheckBox enableStatisticsCheckBox = new JCheckBox(statsEnabled, mbean.getStatisticsEnabled());
         enableStatisticsCheckBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 boolean enable = (e.getStateChange() == ItemEvent.SELECTED);
@@ -94,7 +100,8 @@ public class DataCachePanel extends JPanel {
         });
 
         // create clear cache button
-        JButton clear = new JButton("Clear cache");
+        String clearButton = _loc.get("datacachepanel.buttons.clear").getMessage();
+        JButton clear = new JButton(clearButton);
         clear.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _mbean.clear();
@@ -102,7 +109,8 @@ public class DataCachePanel extends JPanel {
         });
 
         // create clear cache button
-        JButton reset = new JButton("Reset statistics");
+        String resetButton = _loc.get("datacachepanel.buttons.reset").getMessage();
+        JButton reset = new JButton(resetButton);
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 _mbean.reset();
@@ -155,7 +163,6 @@ public class DataCachePanel extends JPanel {
                                 // Unexpected
                                 ex.printStackTrace();
                             }
-
                         }
                     }
                 });

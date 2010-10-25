@@ -22,13 +22,19 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.openjpa.lib.util.Localizer;
+
 /**
  * DataCacheTable
  */
 public class DataCacheTable extends AbstractTableModel {
     private static final long serialVersionUID = -117710809875227870L;
-    // TODO -- should NLSize these column names
-    private String[] _cols = { "key", "reads", "hits", "writes" };
+    private static final Localizer _loc = Localizer.forPackage(DataCacheTable.class);
+    // Column names -- key, reads, hits, writes
+    private static final String[] _cols =
+        { _loc.get("datacachetable.column.key").getMessage(), _loc.get("datacachetable.column.reads").getMessage(),
+            _loc.get("datacachetable.column.hits").getMessage(), _loc.get("datacachetable.column.writes").getMessage(), };
+
     // row, col
     private Object[][] _tableData;
 
