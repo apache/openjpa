@@ -33,7 +33,8 @@ public class DataCacheTable extends AbstractTableModel {
     // Column names -- key, reads, hits, writes
     private static final String[] _cols =
         { _loc.get("datacachetable.column.key").getMessage(), _loc.get("datacachetable.column.reads").getMessage(),
-            _loc.get("datacachetable.column.hits").getMessage(), _loc.get("datacachetable.column.writes").getMessage(), };
+            _loc.get("datacachetable.column.hits").getMessage(), _loc.get("datacachetable.column.writes").getMessage() 
+        };
 
     // row, col
     private Object[][] _tableData;
