@@ -27,14 +27,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.persistence.Query;
 
+import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.instrumentation.DataCacheInstrument;
 import org.apache.openjpa.instrumentation.InstrumentationManager;
 import org.apache.openjpa.instrumentation.PreparedQueryCacheInstrument;
 import org.apache.openjpa.instrumentation.QueryCacheInstrument;
+import org.apache.openjpa.instrumentation.jmx.DataCacheJMXInstrumentMBean;
 import org.apache.openjpa.instrumentation.jmx.JMXProvider;
 import org.apache.openjpa.lib.instrumentation.Instrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
@@ -43,7 +46,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
-
+    private static String clsName = CachedEntity.class.getName();
     /**
      * Verifies data cache metrics are available through simple instrumentation.
      */
@@ -83,9 +86,9 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         ce = oem.find(CachedEntity.class, id);
         
         assertTrue(dci.getHitCount() > 0);
-        assertTrue(dci.getHitCount(CachedEntity.class.getName()) > 0);
+        assertTrue(dci.getHitCount(clsName) > 0);
         assertTrue(dci.getWriteCount() > 0);
-        assertTrue(dci.getCacheStatistics().classNames().contains(CachedEntity.class.getName()));
+        assertTrue(dci.getCacheStatistics().classNames().contains(clsName));
         // Thread out to do out-of-band MBean-based validation.  This could
         // have been done on the same thread, but threading out makes for a
         // more realistic test.
@@ -259,43 +262,35 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 Set<ObjectName> ons = mbs.queryNames(objname, null);
                 assertEquals(1, ons.size());
                 ObjectName on = ons.iterator().next();
-                // Assert data cache attributes can be accessed and are being updated through the MBean
-                long hitCount = (Long)mbs.getAttribute(on, "HitCount");
-                long readCount = (Long)mbs.getAttribute(on, "ReadCount");
-                long writeCount = (Long)mbs.getAttribute(on, "WriteCount");
-                assertTrue(hitCount > 0);
-                assertTrue(readCount > 0);
-                assertTrue(writeCount > 0);
-                // Assert data cache MBean methods can be invoked
-                Object[] parms = new Object[] { CachedEntity.class.getName() };
-                String[] sigs = new String[] { "java.lang.String" };
-                long clsHitCount = (Long)mbs.invoke(on, "getHitCount", parms, sigs);
-                long clsReadCount = (Long)mbs.invoke(on, "getReadCount", parms, sigs); 
-                long clsWriteCount = (Long)mbs.invoke(on, "getWriteCount", parms, sigs);
-                assertTrue(clsHitCount > 0);
-                assertTrue(clsReadCount > 0);
-                assertTrue(clsWriteCount > 0);
                 
+                DataCacheJMXInstrumentMBean mbean = JMX.newMBeanProxy(mbs, on, DataCacheJMXInstrumentMBean.class);
+                // Assert data cache attributes can be accessed and are being updated through the MBean
+                assertTrue(mbean.getHitCount() > 0);
+                assertTrue(mbean.getReadCount() > 0);
+                assertTrue(mbean.getWriteCount() > 0);
+                
+                // Assert data cache MBean methods can be invoked
+                assertTrue(mbean.getHitCount(clsName) > 0);
+                assertTrue(mbean.getReadCount(clsName) > 0);
+                assertTrue(mbean.getWriteCount(clsName) > 0);
+                
+                CacheStatistics stats = mbean.getCacheStatistics();
+                assertNotNull(stats);
                 // Comment out classNames portion of the test which is currently broken. 
-                // Set<String> classNames = (Set<String>)mbs.invoke(on, "classNames", null, null);
-                // assertNotNull(classNames);
-                // assertTrue(classNames.contains(CachedEntity.class.getName()));
+                 Set<String> classNames = stats.classNames();
+                 assertNotNull(classNames);
+                 assertTrue(classNames.contains(clsName));
                 
                 // Invoke the reset method and recollect stats
-                mbs.invoke(on, "reset", null, null);
-                hitCount = (Long)mbs.getAttribute(on, "HitCount");
-                readCount = (Long)mbs.getAttribute(on, "ReadCount");
-                writeCount = (Long)mbs.getAttribute(on, "WriteCount");
-                assertEquals(0, hitCount);
-                assertEquals(0, readCount);
-                assertEquals(0, writeCount);
+                mbean.reset();
 
-                clsHitCount = (Long)mbs.invoke(on, "getHitCount", parms, sigs);
-                clsReadCount = (Long)mbs.invoke(on, "getReadCount", parms, sigs); 
-                clsWriteCount = (Long)mbs.invoke(on, "getWriteCount", parms, sigs);
-                assertEquals(0, clsHitCount);
-                assertEquals(0, clsReadCount);
-                assertEquals(0, clsWriteCount);
+                assertEquals(0, mbean.getHitCount());
+                assertEquals(0, mbean.getReadCount());
+                assertEquals(0, mbean.getWriteCount());
+
+                assertEquals(0,mbean.getHitCount(clsName));
+                assertEquals(0,mbean.getReadCount(clsName));
+                assertEquals(0,mbean.getWriteCount(clsName));
             } catch (Exception e) {
                 fail("Unexpected exception: " + e);
                 return false;
