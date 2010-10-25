@@ -393,6 +393,10 @@ public class DB2Dictionary
             }
             sequenceSchemaSQL = "SEQUENCE_SCHEMA = ?";
             sequenceNameSQL = "SEQUENCE_NAME = ?";
+            // V5R4 and earlier systems do not support retrieval of generated keys
+            if (isDB2ISeriesV5R4OrEarlier()) {
+            	supportsGetGeneratedKeys = false;
+            }
             break;
         }
     }
@@ -482,6 +486,11 @@ public class DB2Dictionary
        return databaseProductName.indexOf("AS") != -1
            && (maj >=6 || (maj == 5 && min >=4));
     }
+
+    public boolean isDB2ISeriesV5R4OrEarlier() {
+        return (databaseProductName.indexOf("AS") != -1
+            && ((maj == 5 && min <=4) || maj < 5));
+     }
 
     public boolean isDB2UDBV81OrEarlier() {
         return (databaseProductVersion.indexOf("SQL") != -1 
