@@ -30,32 +30,28 @@ package org.apache.openjpa.persistence.jdbc.schema;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import javax.sql.DataSource;
+
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Seq;
-import org.apache.openjpa.lib.conf.ConfigurationProvider;
-import org.apache.openjpa.lib.conf.Configurations;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqA;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqB;
+import org.apache.openjpa.persistence.jdbc.common.apps.SeqC;
 import org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
-
+@AllowFailure(message="This test only applies to run with Oracle. This test also is not functional; disable until fix")
 public class TestClassSequenceFactory extends BaseJDBCTest{
     
-
     private static Map _sysprops = new HashMap();
     
     Broker _broker;
