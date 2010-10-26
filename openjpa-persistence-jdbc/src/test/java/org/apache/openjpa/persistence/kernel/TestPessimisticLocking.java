@@ -83,6 +83,7 @@ public class TestPessimisticLocking extends BaseKernelTest {
         return pm;
     }
 
+    @Override
     public void setUp() throws Exception {
         super.setUp(RuntimeTest1.class, RuntimeTest2.class, RuntimeTest3.class);
 
@@ -101,12 +102,16 @@ public class TestPessimisticLocking extends BaseKernelTest {
         endEm(pm);
     }
 
-    public void tearDown() {
+    @Override
+    public void tearDown() throws Exception {
         try {
-            if (_factory != null)
+            if (_factory != null) {
                 _factory.close();
+                _factory = null;
+            }
         } catch (Exception e) {
         }
+        super.tearDown();
     }
 
     /**
