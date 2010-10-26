@@ -42,6 +42,7 @@ public class TestReadOnlyNullity extends AbstractNullityTestCase {
         } else {
             skip = true;
         }
+        closeEMF(emf);
     }
 
     /**
