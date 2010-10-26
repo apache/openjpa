@@ -91,6 +91,7 @@ public class TestConstraints extends AbstractPersistenceTestCase {
     @Override
     public void tearDown() throws Exception {
         closeEMF(emf);
+        emf = null;
         super.tearDown();
     }
 
