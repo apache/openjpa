@@ -42,6 +42,7 @@ public class TestEntitiesAsKeys extends AbstractPersistenceTestCase {
     public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
+        super.tearDown();
     }
     
     public void populate() {

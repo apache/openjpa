@@ -95,7 +95,7 @@ public class TestJPQLRelationProjections
     public void tearDown()
         throws Exception {
         _factory.close();
-
+        _factory = null;
         super.tearDown();
     }
 

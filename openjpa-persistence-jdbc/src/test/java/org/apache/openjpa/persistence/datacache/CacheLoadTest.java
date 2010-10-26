@@ -65,6 +65,7 @@ public class CacheLoadTest
     @Override
     public void tearDown() throws Exception {
         closeEMF(emf);
+        emf = null;
         super.tearDown();
     }
     

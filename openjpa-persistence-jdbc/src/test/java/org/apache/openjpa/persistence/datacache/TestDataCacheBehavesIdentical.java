@@ -106,7 +106,9 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
         // HACK - need to manually close EMFs after all tests have run
         if (TEST_COUNT >= 21) {
             closeEMF(emfWithDataCache);
+            emfWithDataCache = null;
             closeEMF(emfWithoutDataCache);
+            emfWithoutDataCache = null;
             super.tearDown();            
         }
     }

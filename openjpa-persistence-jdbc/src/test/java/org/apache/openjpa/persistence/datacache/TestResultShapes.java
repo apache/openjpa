@@ -69,7 +69,7 @@ public class TestResultShapes extends AbstractTestCase {
 
     public void tearDown() throws Exception {
         _broker.close();
-
+        _broker = null;
         super.tearDown();
     }
 

@@ -80,6 +80,7 @@ public class TestMutableParameters
         throws Exception {
         try {
             _factory.close();
+            _factory = null;
         } catch (Exception e) {
         }
 

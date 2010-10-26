@@ -106,7 +106,7 @@ public class TestJPQL2ResultsAndResultClasses
     public void tearDown()
         throws Exception {
         _factory.close();
-
+        _factory = null;
         super.tearDown();
     }
 
