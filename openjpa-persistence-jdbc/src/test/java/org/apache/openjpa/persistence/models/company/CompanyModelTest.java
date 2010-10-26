@@ -37,6 +37,7 @@ public abstract class CompanyModelTest
     private static Map<Class,Class> factoryClasses;
     private Map<Class,Class> impls;
 
+    @Override
     public void setUp() {
         // make a map of the implementations based on the class names in
         // the current package of the test subclass
@@ -52,10 +53,18 @@ public abstract class CompanyModelTest
         impls.put(IPartTimeEmployee.class, localClass("PartTimeEmployee"));
         impls.put(IProduct.class, localClass("Product"));
 
-        setUp(impls.values().toArray(new Class[impls.size()]));
+        super.setUp(impls.values().toArray(new Class[impls.size()]));
         checkModel();
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        impls.clear();
+        impls = null;
+        factoryClasses = null;
+        super.tearDown();
+    }
+    
     private Class localClass(String name) {
         String pkg = getClass().getPackage().getName();
         try {
@@ -192,6 +201,7 @@ public abstract class CompanyModelTest
                 assertNotNull(obs);
 
                 persist(obs.toArray());
+                decoder.close();
             } finally {
                 factoryClasses = null;
             }
