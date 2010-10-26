@@ -68,8 +68,9 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 	public void tearDown() throws Exception {
 	    // only cleanup after the last test has run
 	    if (currentTest >= 6) {
+	        closeEMF(oemf);
+            oemf = null;
 	        super.tearDown();
-	        oemf = null;
             entityA = null;
             entityB = null;
             derivedA = null;
