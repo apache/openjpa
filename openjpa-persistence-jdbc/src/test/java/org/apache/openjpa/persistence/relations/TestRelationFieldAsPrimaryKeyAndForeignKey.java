@@ -205,5 +205,6 @@ public class TestRelationFieldAsPrimaryKeyAndForeignKey
 
 	    em.getTransaction().commit();
 	    em.close();
+	    super.tearDown();
 	}
 }
