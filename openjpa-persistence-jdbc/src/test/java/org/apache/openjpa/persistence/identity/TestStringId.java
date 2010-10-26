@@ -35,9 +35,10 @@ public class TestStringId extends AbstractPersistenceTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         closeEMF(_emf);
         _emf = null;
+        super.tearDown();
     }
 
     private void cleanup() {
