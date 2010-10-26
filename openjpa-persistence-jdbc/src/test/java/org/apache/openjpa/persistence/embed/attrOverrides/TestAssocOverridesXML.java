@@ -90,6 +90,7 @@ public class TestAssocOverridesXML  extends AbstractPersistenceTestCase{
             try {
                 if (emf1 != null)
                     cleanupEMF(emf1);
+                _sql.clear();
             } catch (Exception e) {
                 fail(e.getMessage());
             }
