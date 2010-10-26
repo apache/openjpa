@@ -148,15 +148,17 @@ public class StoreCacheImpl
     }
 
     public int hashCode() {
-        return _cache.hashCode();
+        return (_cache == null) ? 0 : _cache.hashCode();
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof StoreCacheImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
             return false;
-        return _cache.equals (((StoreCacheImpl) other)._cache);
+        if (_cache == null) 
+            return false;
+      return _cache.equals (((StoreCacheImpl) other)._cache);
 	}
 
     @SuppressWarnings("unchecked")
