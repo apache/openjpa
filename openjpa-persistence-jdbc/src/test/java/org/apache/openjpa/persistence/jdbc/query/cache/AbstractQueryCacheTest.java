@@ -67,6 +67,7 @@ public abstract class AbstractQueryCacheTest extends SingleEMFTestCase {
         if (deleteData) {
             deleteAllData();
         }
+        super.tearDown();
     }    
     
     /**
