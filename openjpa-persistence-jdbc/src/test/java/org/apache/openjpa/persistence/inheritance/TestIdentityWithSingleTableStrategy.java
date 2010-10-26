@@ -58,11 +58,6 @@ public class TestIdentityWithSingleTableStrategy extends SingleEMFTestCase {
 		em.close();
 	}
 
-	@Override
-	public void tearDown() {
-		// problem deleting table in MySQL
-	}
-
 	public void testFindAndNaviagtedEntityIdential() {
 		EntityManager em1 = emf.createEntityManager();
 		RegularUser regularUserFromFind = (RegularUser) em1.find(
