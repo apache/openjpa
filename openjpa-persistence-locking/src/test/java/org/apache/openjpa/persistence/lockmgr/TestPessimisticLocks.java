@@ -106,6 +106,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         em.persist(e1);
         em.persist(e2);
         em.getTransaction().commit();
+        em.close();
     }
 
     /*
