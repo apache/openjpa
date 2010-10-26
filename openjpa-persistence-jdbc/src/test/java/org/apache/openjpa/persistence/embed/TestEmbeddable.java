@@ -103,7 +103,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
             Embed_MappedToOne.class, Embed_MappedToOneCascadeDelete.class, 
             EntityA_Embed_MappedToOneCascadeDelete.class, EntityB2.class, 
             Book.class, Listing.class, Seller.class,
-            EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class, EntityA_Embed.class,
+            EntityA_Embed_Coll_Map.class, Embed_Coll_Map.class,
+            EntityA_Embed_Single_Coll.class, Embed_Single_Coll.class, EntityA_Embed.class,
             EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -162,6 +163,35 @@ public class TestEmbeddable extends SQLListenerTestCase {
 
     public void testEntityA_Embed_Coll_Map() {
         queryEntityA_Embed_Coll_Map();
+    }
+
+    /**
+     * Test for OJ-1793.
+     */
+    public void testEntityA_Embed_Single_Coll() {
+        EntityManager em = emf.createEntityManager();
+
+        //create an EntityA_Embed_Single_Coll and persist it.
+        EntityA_Embed_Single_Coll eesc = new EntityA_Embed_Single_Coll();
+        Embed_Single_Coll esc = new Embed_Single_Coll();
+        java.sql.Date date = java.sql.Date.valueOf("2010-10-13");
+        esc.setDate(date);
+        eesc.setEmbed(esc);
+        em.getTransaction().begin();
+        em.persist(eesc);
+        em.flush();
+        em.getTransaction().commit();
+        em.close();
+
+        //Now query the recently created EntityA_Embed_Single_Coll.  Without OJ-1793, when you query
+        //the EntityA_Embed_Single_Coll object, the issue of OJ-1793 will occur, regardless of the query
+        //string (even the simplest string will do).
+        em = emf.createEntityManager();
+        Query query1 = em.createQuery("SELECT e FROM EntityA_Embed_Single_Coll e "
+            + "where e.embed.date = '" + date + "'");
+        eesc = (EntityA_Embed_Single_Coll) query1.getSingleResult();
+        assertEquals(eesc.getEmbed().getDate().toString(), date.toString());
+        em.close();
     }
 
     public void queryEntityA_Embed_Coll_Map() {
