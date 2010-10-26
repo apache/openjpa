@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.FinderCache;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**
@@ -56,6 +57,7 @@ public class TestFinderCache extends SQLListenerTestCase {
             em.persist(cd);
         }
         em.getTransaction().commit();
+        em.close();
     }
     
     public void setUp() {
@@ -69,13 +71,14 @@ public class TestFinderCache extends SQLListenerTestCase {
     }
     
     public void testFinder() {
-        emf = createEMF("openjpa.jdbc.FinderCache", "false");
+        //closeEMF(emf);  // close EMF provided by SingleEMFTestCase
+        OpenJPAEntityManagerFactorySPI emf1 = createEMF("openjpa.jdbc.FinderCache", "false");
         run(1, Book.class, BOOK_IDS); // for warmup
-        
-        assertNull(getCache());
-
-        emf = createEMF("openjpa.jdbc.FinderCache", "true");
-        assertNotNull(getCache());
+        assertNull(getCache(emf1));
+        OpenJPAEntityManagerFactorySPI emf2 = createEMF("openjpa.jdbc.FinderCache", "true");
+        assertNotNull(getCache(emf2));
+        closeEMF(emf1);
+        closeEMF(emf2);
     }
     
     public void testSQLEventListener() {
@@ -90,6 +93,7 @@ public class TestFinderCache extends SQLListenerTestCase {
             }
         }
         assertEquals(BOOK_IDS.length*N, sql.size());
+        em.close();
     }
     
     /**
@@ -114,8 +118,8 @@ public class TestFinderCache extends SQLListenerTestCase {
         return stats.get(N/2);
     }
     
-    FinderCache getCache() {
-        return ((JDBCConfiguration) emf.getConfiguration()).
+    FinderCache getCache(OpenJPAEntityManagerFactorySPI oemf) {
+        return ((JDBCConfiguration) oemf.getConfiguration()).
                 getFinderCacheInstance();
     }
 

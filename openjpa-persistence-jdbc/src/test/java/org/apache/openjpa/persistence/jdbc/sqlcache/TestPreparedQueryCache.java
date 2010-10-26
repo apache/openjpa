@@ -47,6 +47,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 import org.apache.openjpa.persistence.jdbc.sqlcache.Employee.Category;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
  * Tests correctness and performance of queries with and without Prepared Query Cacheing.
@@ -66,7 +67,7 @@ import org.apache.openjpa.persistence.jdbc.sqlcache.Employee.Category;
  * @author Pinaki Poddar
  * 
  */
-public class TestPreparedQueryCache extends TestCase {
+public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     
     private static String RESOURCE = "META-INF/persistence.xml"; 
     private static String UNIT_NAME = "PreparedQuery";
@@ -97,13 +98,16 @@ public class TestPreparedQueryCache extends TestCase {
     
     protected static OpenJPAEntityManagerFactorySPI emf;
     protected static SQLAuditor auditor;
+    protected static int TEST_COUNT = 0;
     private OpenJPAEntityManagerSPI em;
 	
 	/**
 	 * Sets up the test suite with a statically initialized EntityManagerFactory.
 	 * Creates data once for all other tests to use.
 	 */
-	public void setUp()  {
+    @Override
+	public void setUp() throws Exception {
+        super.setUp();
         if (emf == null) {
             Properties config = new Properties();
             config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
@@ -119,6 +123,7 @@ public class TestPreparedQueryCache extends TestCase {
     		em = emf.createEntityManager();
             getPreparedQueryCache().clear();
         }
+        TEST_COUNT++;
 	}
 	
 	/**
@@ -223,9 +228,16 @@ public class TestPreparedQueryCache extends TestCase {
         em.getTransaction().commit();
 	}
 
+	@Override
 	public void tearDown() throws Exception {
-	    if (em.isOpen())
-	        em.close();
+	    closeEM(em);
+	    em = null;
+	    if (TEST_COUNT >= 50) {
+	        auditor.clear();
+	        auditor = null;
+	        closeEMF(emf);
+	        emf = null;
+	    }
 		super.tearDown();
 	}
     
