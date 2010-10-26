@@ -69,9 +69,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 					MdrTestEntity.class, "query");
 			assertNotNull(query);
 		} finally {
-			if (emf != null) {
-				emf.close();
-			}
+			closeEMF(emf);
 		}
 	}
 	
@@ -80,7 +78,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
         emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
         MetaDataRepository repo = emf.getConfiguration().getMetaDataRepositoryInstance();
         emf.createEntityManager();
-        emf.close();
+        closeEMF(emf);
         assertFalse("The PCRegistry should no longer reference the MetaDataRepository.", PCRegistry
             .removeRegisterClassListener(repo));
     }
@@ -98,9 +96,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
             
 
         } finally {
-            if (emf != null) {
-                emf.close();
-            }
+            closeEMF(emf);
         }
     }
 }
