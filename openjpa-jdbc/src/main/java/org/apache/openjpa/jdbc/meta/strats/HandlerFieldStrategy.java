@@ -310,10 +310,17 @@ public class HandlerFieldStrategy
         Object val = null;
         if (cols.length == 1) {
             col = cols[0];
-            if (fk != null)
+            if (fk != null){
                 col = fk.getColumn(col);
-            val = res.getObject(col, field.getHandler().
-                getResultArgument(field), joins);
+            }
+            
+            //OJ-1793: Get the args from the handler and first check to see if the
+            //args are null.  If they aren't null then use the first element in the args
+            //array rather than passing into 'getObject' the entire args array.  This is
+            //akin to what is done in the 'else if' leg below.
+            Object[] args = (Object[]) field.getHandler().getResultArgument(field);            
+            val = res.getObject(col, (args == null) ? null : args[0],
+                    joins);
         } else if (cols.length > 1) {
             Object[] vals = new Object[cols.length];
             Object[] args = (Object[]) field.getHandler().
