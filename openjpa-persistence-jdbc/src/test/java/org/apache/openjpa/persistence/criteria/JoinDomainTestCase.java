@@ -24,11 +24,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
-    protected static OpenJPAEntityManagerFactorySPI emf;
-    protected static SQLAuditor auditor;
+    protected static OpenJPAEntityManagerFactorySPI emf = null;
+    protected static SQLAuditor auditor = null;
 
-    protected CriteriaBuilder cb;
-    protected EntityManager em;
+    protected CriteriaBuilder cb = null;
+    protected EntityManager em = null;
 
     protected Class<?>[] getDomainClasses() {
         return new Class[]{A.class,B.class,C.class,D.class};
@@ -49,6 +49,11 @@ public abstract class JoinDomainTestCase extends AbstractCriteriaTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        if (auditor != null) {
+            auditor.clear();
+            auditor = null;
+        }
+        cb = null;
         if (em != null && em.isOpen()) {
             em.close();
             em = null;

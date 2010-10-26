@@ -53,7 +53,7 @@ public class TestTypedResults extends SingleEMFTestCase {
 
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
-             "openjpa.DynamicEnhancerAgent", "false");
+             "openjpa.DynamicEnhancementAgent", "false");
         populate();
     }
 

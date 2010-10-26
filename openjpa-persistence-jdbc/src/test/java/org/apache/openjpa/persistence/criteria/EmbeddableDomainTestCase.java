@@ -63,8 +63,8 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
     protected static OpenJPAEntityManagerFactorySPI emf = null;
     protected static SQLAuditor auditor = null;
 
-    protected CriteriaBuilder cb;
-    protected EntityManager em;
+    protected CriteriaBuilder cb = null;
+    protected EntityManager em = null;
 
     protected static Class<?>[] CLASSES =
         { Company1.class, Company2.class, Department1.class, Department2.class, Department3.class, Division.class,
@@ -94,10 +94,15 @@ public abstract class EmbeddableDomainTestCase extends AbstractCriteriaTestCase 
 
     @Override
     public void tearDown() throws Exception {
+        if (auditor != null) {
+            auditor.clear();
+            auditor = null;
+        }
         if (em != null && em.isOpen()) {
             em.close();
             em = null;
         }
+        cb = null;
         if (emf != null && emf.isOpen()) {
             emf.close();
             emf = null;
