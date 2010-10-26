@@ -45,18 +45,27 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestQueryParameters extends SingleEMFTestCase {
     private static OpenJPAEntityManagerFactorySPI oemf;
+    private static int TEST_COUNT = 0;
     private EntityManager em;
     
+    @Override
     public void setUp() {
         if (oemf == null) {
             super.setUp(SimpleEntity.class, "openjpa.DynamicEnhancementAgent", "false");
             oemf = (OpenJPAEntityManagerFactorySPI)OpenJPAPersistence.cast(emf);
         }
         em = oemf.createEntityManager();
+        TEST_COUNT++;
     }
     
-    public void tearDown() {
-        // do not close the factory
+    @Override
+    public void tearDown() throws Exception {
+        // do not close the factory until done
+        if (TEST_COUNT >= 20) {
+            closeEMF(oemf);
+            oemf = null;
+            super.tearDown();
+        }
     }
     
     public void testNamedParameterUsingReservedWord() {

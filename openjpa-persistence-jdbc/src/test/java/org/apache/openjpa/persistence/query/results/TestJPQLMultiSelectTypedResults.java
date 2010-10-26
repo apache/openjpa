@@ -52,7 +52,7 @@ public class TestJPQLMultiSelectTypedResults extends SingleEMFTestCase {
     public void setUp() throws Exception {
         setUp(CLEAR_TABLES, Order.class, Item.class, Shop.class, Producer.class,
               Person.class, Foo.class, Bar.class,
-             "openjpa.DynamicEnhancerAgent", "false");
+             "openjpa.DynamicEnhancementAgent", "false");
         populate();
     }
 
