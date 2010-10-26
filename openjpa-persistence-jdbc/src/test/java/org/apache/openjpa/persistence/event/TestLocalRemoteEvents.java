@@ -20,9 +20,11 @@ package org.apache.openjpa.persistence.event;
 
 
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 
 import org.apache.openjpa.event.SingleJVMRemoteCommitProvider;
 
+@AllowFailure(message="surefire excluded")
 public class TestLocalRemoteEvents
     extends RemoteEventBase {
 

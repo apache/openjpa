@@ -47,15 +47,18 @@ public class RemoteEventBase extends AbstractTestCase {
         super(s, "eventcactusapp");
     }
 
+    @Override
     public void setUp() {
         deleteAll(RuntimeTest1.class);
         datacatch.evictAll();
     }
 
+    @Override
     public void tearDown() throws Exception {
         ((OpenJPAEntityManagerSPI) OpenJPAPersistence
             .cast(currentEntityManager())).getConfiguration()
             .getRemoteCommitEventManager().close();
+        super.tearDown();
     }
 
     protected void doTest(Class providerClass, String classProps1,

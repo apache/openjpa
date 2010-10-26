@@ -64,9 +64,10 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         closeEMF(emf);
         emf = null;
+        super.tearDown();
     }
     
     public void testQuery() {

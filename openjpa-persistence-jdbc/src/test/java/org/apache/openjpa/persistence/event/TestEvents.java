@@ -23,6 +23,7 @@ import java.util.Collections;
 
 
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import junit.framework.AssertionFailedError;
 
@@ -32,6 +33,7 @@ import org.apache.openjpa.persistence.CallbackMode;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 
+@AllowFailure(message="surefire excluded")
 public class TestEvents
     extends AbstractTestCase {
 

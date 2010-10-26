@@ -23,6 +23,7 @@ import java.util.Map;
 
 
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.persistence.common.utils.BufferedLogFactory;
 
@@ -38,6 +39,7 @@ import org.apache.openjpa.util.OpenJPAException;
  *
  * @author Abe White
  */
+@AllowFailure(message="surefire excluded")
 public class TestOrphanedKeyAction
     extends AbstractTestCase {
 

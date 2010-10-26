@@ -27,6 +27,7 @@ import java.util.Set;
 
 
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.event.AbstractRemoteCommitProvider;
@@ -37,6 +38,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.util.Id;
 
+@AllowFailure(message="surefire excluded")
 public class TestFakeRemoteEvents extends AbstractTestCase {
 
     /*

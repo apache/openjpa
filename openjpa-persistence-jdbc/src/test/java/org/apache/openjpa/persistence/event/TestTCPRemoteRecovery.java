@@ -26,6 +26,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.event.common.apps.Duration;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
 import org.apache.openjpa.event.RemoteCommitEvent;
@@ -35,6 +36,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
+@AllowFailure(message="surefire excluded")
 public class TestTCPRemoteRecovery
     extends AbstractTestCase {
 

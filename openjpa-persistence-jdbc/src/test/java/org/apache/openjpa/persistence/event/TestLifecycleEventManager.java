@@ -22,6 +22,7 @@ package org.apache.openjpa.persistence.event;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.event.common.apps.RuntimeTest4;
+import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -37,6 +38,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  *
  * @author Abe White
  */
+@AllowFailure(message="surefire excluded")
 public class TestLifecycleEventManager
     extends AbstractTestCase {
 
