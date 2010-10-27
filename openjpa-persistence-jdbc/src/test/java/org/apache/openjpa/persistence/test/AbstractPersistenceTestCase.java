@@ -228,9 +228,7 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
             return brc;
         }
         try {
-            // clear() will also close the EMs
-            // closeAllOpenEMs(emf);
-            clear(emf);
+            closeAllOpenEMs(emf);
         } finally {
             emf.close();
             brc = !emf.isOpen();
