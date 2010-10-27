@@ -90,14 +90,17 @@ public class QueryResultCacheImpl
     }
 
     public int hashCode() {
-        return _cache.hashCode();
+        return (_cache == null) ? 0 : _cache.hashCode();
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof QueryResultCacheImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
             return false;
+        if (_cache == null)
+        	return false;
+        
         return _cache.equals(((QueryResultCacheImpl) other)._cache);
 	}
 }
