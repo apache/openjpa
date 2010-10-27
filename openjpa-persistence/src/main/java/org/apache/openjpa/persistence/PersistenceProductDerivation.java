@@ -98,6 +98,10 @@ public class PersistenceProductDerivation
     
     public static final String PREFIX = "javax.persistence"; 
     
+    // These are properties that are invalid to be configured at the provider level. 
+    private static final String[] _invalidPersistenceProperties =
+        new String[] { PREFIX + ".cache.storeMode", PREFIX + ".cache.retrieveMode" };
+    
     private static Set<String> _hints = new HashSet<String>();
     
     // Provider name to filter out PUs that don't belong to this derivation.
@@ -706,6 +710,15 @@ public class PersistenceProductDerivation
             }
             
             Log log = conf.getConfigurationLog();
+            if (log.isWarnEnabled()) {
+                Map<?, ?> props = getProperties();
+                for (String propKey : _invalidPersistenceProperties) {
+                    Object propValue = props.get(propKey);
+                    if (propValue != null) {
+                        log.warn(_loc.get("invalid-persistence-property", new Object[] { propKey, propValue }));
+                    }
+                }
+            }
             if (log.isTraceEnabled()) {
                 String src = (_source == null) ? "?" : _source;
                 log.trace(_loc.get("conf-load", src, getProperties()));
