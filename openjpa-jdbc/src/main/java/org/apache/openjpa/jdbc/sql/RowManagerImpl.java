@@ -280,7 +280,7 @@ public class RowManagerImpl
         }
 
         public int hashCode() {
-            return (table.hashCode() + sm.hashCode()) % Integer.MAX_VALUE;
+            return ((table == null) ? 0  : table.hashCode()) + ((sm == null) ? 0  : sm.hashCode()) % Integer.MAX_VALUE;
         }
 
         public boolean equals(Object other) {
