@@ -73,14 +73,17 @@ public class GeneratorImpl
     }
 
     public int hashCode() {
-        return _seq.hashCode();
+        return ((_seq == null) ? 0  : _seq.hashCode());
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof GeneratorImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
             return false;
+        if (_seq == null)
+            return false;
+
         return _seq.equals(((GeneratorImpl) other)._seq);
-	}
+    }
 }
