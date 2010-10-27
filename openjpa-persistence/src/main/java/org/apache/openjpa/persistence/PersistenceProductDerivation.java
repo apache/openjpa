@@ -188,6 +188,7 @@ public class PersistenceProductDerivation
         conf.metaFactoryPlugin.setAlias(SPEC_JPA.getName(),  PersistenceMetaDataFactory.class.getName());
         
         conf.addValue(new EntityManagerFactoryValue());
+        conf.addString("RemoteAccess");
         
         conf.readLockLevel.setAlias("optimistic", String.valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
         conf.readLockLevel.setAlias("optimistic-force-increment", String
