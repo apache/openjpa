@@ -39,6 +39,7 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.OptimisticLockException;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.QueryTimeoutException;
 import org.apache.openjpa.persistence.query.common.apps.QTimeout;
@@ -1057,9 +1058,12 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             e, eStr);
         boolean bRollback = matchesExpectedException(PersistenceException.class,
             e, eStr);
+        // 31c and 33c fail on MSSQL2005, so this is a special case to handle it
+        boolean bLockFailed = matchesExpectedException(OptimisticLockException.class,
+            e, "Unable to obtain an object lock");
         // no easy way to determine exact Exception type for all DBs
         assertTrue(test + " - UNEXPECTED Exception = " + e,
-            (bRetry || bRollback));
+            (bRetry || bRollback || bLockFailed));
         getLog().trace(test + " - Caught expected Exception = ", e);
         return bRetry;
     }
