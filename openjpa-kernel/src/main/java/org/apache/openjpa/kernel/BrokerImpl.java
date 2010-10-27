@@ -177,6 +177,7 @@ public class BrokerImpl
     // ref to producing factory and configuration
     private transient AbstractBrokerFactory _factory = null;
     private transient OpenJPAConfiguration _conf = null;
+    private transient MetaDataRepository _repo = null;
 
     // cache class loader associated with the broker
     private transient ClassLoader _loader = null;
@@ -326,8 +327,10 @@ public class BrokerImpl
         _initializeWasInvoked = true;
         _loader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
-        if (!fromDeserialization)
+        if (!fromDeserialization){
             _conf = factory.getConfiguration();
+            _repo = _conf.getMetaDataRepositoryInstance();
+        }
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -344,8 +347,7 @@ public class BrokerImpl
         if (!fromDeserialization) {
             _lifeEventManager = _conf.getLifecycleEventManagerInstance();
             _transEventManager = new TransactionEventManager();
-            int cmode = _conf.getMetaDataRepositoryInstance().
-                getMetaDataFactory().getDefaults().getCallbackMode();
+            int cmode = _repo.getMetaDataFactory().getDefaults().getCallbackMode();
             setLifecycleListenerCallbackMode(cmode);
             setTransactionListenerCallbackMode(cmode);
 
@@ -1207,8 +1209,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                getMetaData(cls, _loader, false);
+            ClassMetaData meta = _repo.getMetaData(cls, _loader, false);
             if (meta == null
                 || meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                 return null;
@@ -1231,8 +1232,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                getMetaData(cls, _loader, true);
+            ClassMetaData meta = _repo.getMetaData(cls, _loader, true);
             switch (meta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:
                 // delegate to store manager for datastore ids
@@ -1292,12 +1292,11 @@ public class BrokerImpl
 
         // find metadata for the oid
         Class<?> pcType = _store.getManagedType(oid);
-        MetaDataRepository repos = _conf.getMetaDataRepositoryInstance();
         ClassMetaData meta;
         if (pcType != null)
-            meta = repos.getMetaData(pcType, _loader, true);
+            meta = _repo.getMetaData(pcType, _loader, true);
         else
-            meta = repos.getMetaData(oid, _loader, true);
+            meta = _repo.getMetaData(oid, _loader, true);
 
         // copy the oid if needed
         if (copy && _compat.getCopyObjectIds()) {
@@ -2574,8 +2573,7 @@ public class BrokerImpl
                         setFailedObject(obj);
             }
 
-            ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                getMetaData(obj.getClass(), _loader, true);
+            ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
             fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
 
             // create id for instance
@@ -2629,8 +2627,7 @@ public class BrokerImpl
         if (pc.pcGetStateManager() != null)
             throw newDetachedException(obj, errOp);
 
-        ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-            getMetaData(obj.getClass(), _loader, true);
+        ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
         StateManagerImpl sm = newStateManagerImpl(StateManagerId.
             newInstance(this), meta);
         sm.initialize(pc, PCState.TLOADED);
@@ -3521,8 +3518,7 @@ public class BrokerImpl
 
                     if (sm == null) {
                         // manage transient instance
-                        meta = _conf.getMetaDataRepositoryInstance().
-                            getMetaData(obj.getClass(), _loader, true);
+                        meta = _repo.getMetaData(obj.getClass(), _loader, true);
 
                         sm = newStateManagerImpl
                             (StateManagerId.newInstance(this), meta);
@@ -3593,8 +3589,7 @@ public class BrokerImpl
                 _flags |= FLAG_FLUSH_REQUIRED; // version check/up
             } else if (sm == null) {
                 // manage transient instance
-                ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                    getMetaData(obj.getClass(), _loader, true);
+                ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
                 Object id = StateManagerId.newInstance(this);
                 sm = newStateManagerImpl(id, meta);
                 sm.initialize(assertPersistenceCapable(obj),
@@ -4406,8 +4401,7 @@ public class BrokerImpl
             }
         }
 
-        if (_conf.getMetaDataRepositoryInstance().getMetaData(cls,
-            getClassLoader(), false) == null)
+        if (_repo.getMetaData(cls, getClassLoader(), false) == null)
             throw new IllegalArgumentException(
                 _loc.get("no-interface-metadata", cls.getName()).getMessage());
 
@@ -4427,10 +4421,9 @@ public class BrokerImpl
             PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
             if (pc != null) {
                 if (pc.pcGetStateManager() == null) {
-                    MetaDataRepository repo = _conf.getMetaDataRepositoryInstance();
                     // If the statemanager is null the call to pcFetchObjectId always returns null. Create a new object
                     // id.
-                    return ApplicationIds.create(pc, repo.getMetaData(pc.getClass(), null, true));
+                    return ApplicationIds.create(pc, _repo.getMetaData(pc.getClass(), null, true));
                 }
                 return pc.pcFetchObjectId();
             }
@@ -4507,9 +4500,7 @@ public class BrokerImpl
             return detached.booleanValue();
 
         // last resort: instance is detached if it has a store record
-        ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-            getMetaData(ImplHelper.getManagedInstance(pc).getClass(),
-                _loader, true);
+        ClassMetaData meta = _repo.getMetaData(ImplHelper.getManagedInstance(pc).getClass(), _loader, true);
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
@@ -4694,6 +4685,7 @@ public class BrokerImpl
         // available for calls to broker.getConfiguration() during
         // StateManager deserialization
         _conf = factory.getConfiguration();
+        _repo = _conf.getMetaDataRepositoryInstance();
         
         in.defaultReadObject();
         factory.initializeBroker(_managed, _connRetainMode, this, true);
