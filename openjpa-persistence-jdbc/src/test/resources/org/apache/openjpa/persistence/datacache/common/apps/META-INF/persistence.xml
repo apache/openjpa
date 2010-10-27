@@ -48,7 +48,6 @@
 		<class>org.apache.openjpa.persistence.datacache.common.apps.CacheObjectBChild1</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest1</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.RuntimeTest2</class>
-		<class>org.apache.openjpa.persistence.datacache.common.apps.ScheduledEviction</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.SelfReferencingCacheTestObject</class>
 		<class>org.apache.openjpa.persistence.datacache.common.apps.TransactionalClassPC</class>
 	</persistence-unit>
