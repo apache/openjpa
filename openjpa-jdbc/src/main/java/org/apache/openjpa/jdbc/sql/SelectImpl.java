@@ -2285,7 +2285,7 @@ public class SelectImpl
             return ((_path == null) ? 0  : _path.hashCode()) ^ ((_key == null) ? 0  : _key.hashCode());
         }
 
-        public boolean equals_(Object other) {
+        public boolean equals(Object other) {
             if (other == null)
                 return false;
             if (other == this)
