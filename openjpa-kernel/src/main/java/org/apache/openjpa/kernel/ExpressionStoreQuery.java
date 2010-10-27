@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -778,19 +779,37 @@ public class ExpressionStoreQuery
         }
 
         public Number executeDelete(StoreQuery q, Object[] params) {
-            Number num = ((ExpressionStoreQuery) q).executeDelete(this, _meta,
-                _metas, _subs, _facts, _exps, params);
-            if (num == null)
-                return q.getContext().deleteInMemory(q, this, params);
-            return num;
+            try {
+                Number num =
+                    ((ExpressionStoreQuery) q).executeDelete(this, _meta, _metas, _subs, _facts, _exps, params);
+                if (num == null)
+                    return q.getContext().deleteInMemory(q, this, params);
+                return num;
+            } finally {
+                for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
+                    DataCache cache = cmd.getDataCache();
+                    if (cache != null) {
+                        cache.removeAll(cmd.getDescribedType(), true);
+                    }
+                }
+            }
         }
 
         public Number executeUpdate(StoreQuery q, Object[] params) {
-            Number num = ((ExpressionStoreQuery) q).executeUpdate(this, _meta,
-                _metas, _subs, _facts, _exps, params);
-            if (num == null)
-                return q.getContext().updateInMemory(q, this, params);
-            return num;
+            try {
+                Number num =
+                    ((ExpressionStoreQuery) q).executeUpdate(this, _meta, _metas, _subs, _facts, _exps, params);
+                if (num == null)
+                    return q.getContext().updateInMemory(q, this, params);
+                return num;
+            } finally {
+                for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
+                    DataCache cache = cmd.getDataCache();
+                    if (cache != null) {
+                        cache.removeAll(cmd.getDescribedType(), true);
+                    }
+                }
+            }
         }
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,

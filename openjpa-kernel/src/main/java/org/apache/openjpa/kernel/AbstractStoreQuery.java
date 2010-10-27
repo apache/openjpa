@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.Map;
 
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
@@ -121,11 +122,29 @@ public abstract class AbstractStoreQuery
         implements Executor {
 
         public Number executeDelete(StoreQuery q, Object[] params) {
-            return q.getContext().deleteInMemory(q, this, params);
+            try {
+                return q.getContext().deleteInMemory(q, this, params);
+            } finally {
+                for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
+                    DataCache cache = cmd.getDataCache();
+                    if (cache != null) {
+                        cache.removeAll(cmd.getDescribedType(), true);
+                    }
+                }
+            }
         }
 
         public Number executeUpdate(StoreQuery q, Object[] params) {
-            return q.getContext().updateInMemory(q, this, params);
+            try {
+                return q.getContext().updateInMemory(q, this, params);
+            } finally {
+                for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
+                    DataCache cache = cmd.getDataCache();
+                    if (cache != null) {
+                        cache.removeAll(cmd.getDescribedType(), true);
+                    }
+                }
+            }
         }
 
         public String[] getDataStoreActions(StoreQuery q, Object[] params,

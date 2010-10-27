@@ -46,10 +46,10 @@ public class CachedEntityStatistics {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<CachedEntityStatistics> lazyList = new HashSet<CachedEntityStatistics>();
 
+    String firstName, lastName;
+    
     public CachedEntityStatistics() {
     }
-
-    private String firstName, lastName;
 
     public int getId() {
         return id;
