@@ -2282,10 +2282,10 @@ public class SelectImpl
         }
 
         public int hashCode() {
-            return _path.hashCode() ^ _key.hashCode();
+            return ((_path == null) ? 0  : _path.hashCode()) ^ ((_key == null) ? 0  : _key.hashCode());
         }
 
-        public boolean equals(Object other) {
+        public boolean equals_(Object other) {
             if (other == null)
                 return false;
             if (other == this)
@@ -2293,6 +2293,8 @@ public class SelectImpl
             if (other.getClass() != getClass())
                 return false;
             Key k = (Key) other;
+            if (k._key == null || k._path == null || _key == null || _path == null)
+            	return false;
             return k._path.equals(_path) && k._key.equals(_key);
         }
 
