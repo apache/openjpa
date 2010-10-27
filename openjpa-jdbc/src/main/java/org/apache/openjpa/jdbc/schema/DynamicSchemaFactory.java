@@ -158,6 +158,10 @@ public class DynamicSchemaFactory
             return getColumn(name, null);
         }
 
+        public Column getColumn(DBIdentifier name, boolean create) {
+            return getColumn(name, null, create);
+        }
+
         public Column getColumn(DBIdentifier name) {
             return getColumn(name, null);
         }
@@ -172,11 +176,15 @@ public class DynamicSchemaFactory
         }
 
         public Column getColumn(DBIdentifier name, DBDictionary dict) {
+            return getColumn(name, dict, true);
+        }
+        
+        public Column getColumn(DBIdentifier name, DBDictionary dict, boolean create) {
             if (DBIdentifier.isNull(name))
                 return null;
 
             Column col = super.getColumn(name);
-            if (col != null)
+            if (col != null || !create)
                 return col;
 
             // Ensure only valid column name(s) are added to the table

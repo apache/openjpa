@@ -1528,7 +1528,7 @@ public abstract class MappingInfo
         Column tmplate = new Column();
         tmplate.setIdentifier(name);
         if (!constant) {
-            Column tcol = foreign.getColumn(targetName);
+            Column tcol = foreign.getColumn(targetName, false); 
             if (tcol == null)
                 throw new MetaDataException(_loc.get(prefix + "-bad-fktarget",
                     new Object[]{ context, targetName, name, foreign }));

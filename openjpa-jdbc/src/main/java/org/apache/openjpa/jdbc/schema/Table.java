@@ -322,6 +322,9 @@ public class Table
         return _colMap.get(DBIdentifier.toUpper(name));
     }
 
+    public Column getColumn(DBIdentifier name, boolean create) {
+        return getColumn(name);
+    }
     
     /**
      * Affirms if this table contains the column of the given name without any 
