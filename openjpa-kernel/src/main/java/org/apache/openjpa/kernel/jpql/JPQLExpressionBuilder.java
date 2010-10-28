@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
+import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -91,6 +92,7 @@ public class JPQLExpressionBuilder
     private OrderedMap<Object, Class<?>> parameterTypes;
     private int aliasCount = 0;
     private boolean inAssignSubselectProjection = false;
+    private boolean hasParameterizedInExpression = false;
 
     /**
      * Constructor.
@@ -308,7 +310,8 @@ public class JPQLExpressionBuilder
             exps.parameterTypes = parameterTypes;
 
         exps.accessPath = getAccessPath();
-
+        exps.hasInExpression = this.hasParameterizedInExpression;
+        
         return exps;
     }
 
@@ -1130,14 +1133,15 @@ public class JPQLExpressionBuilder
                 // the first child is the path
                 JPQLNode first = inIterator.next();
                 val1 = getValue(first);
-
                 while (inIterator.hasNext()) {
                     JPQLNode next = inIterator.next();
                     if (first.id == JJTTYPE && next.id == JJTTYPELITERAL)
                         val2 = getTypeLiteral(next);
                     else
                         val2 = getValue(next);
-
+                    if (val2 instanceof Parameter) {
+                        hasParameterizedInExpression = true;
+                    }
                     // special case for <value> IN (<subquery>) or
                     // <value> IN (<single value>)
                     if (useContains(not, val1, val2, node))    
@@ -1158,6 +1162,7 @@ public class JPQLExpressionBuilder
                             inExp = factory.or(inExp, factory.equal(val1, val2));
                     }
                 }
+                
 
                 // we additionally need to add in a "NOT NULL" clause, since
                 // the IN behavior that is expected by the CTS also expects

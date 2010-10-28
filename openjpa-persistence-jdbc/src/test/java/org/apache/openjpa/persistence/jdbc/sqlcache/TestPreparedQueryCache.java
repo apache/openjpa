@@ -50,7 +50,7 @@ import org.apache.openjpa.persistence.jdbc.sqlcache.Employee.Category;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 /**
- * Tests correctness and performance of queries with and without Prepared Query Cacheing.
+ * Tests correctness and performance of queries with and without Prepared Query Cache.
  *  
  * This test uses a single EntityManagerFactory initialized with fixed set of entity classes 
  * and appropriate configuration parameters for Prepared Query Cache. 
@@ -322,9 +322,12 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 
         em.clear();
         String jpql4 = "select p from Parent p where p.id < 3";
-        String jpql5 = "select p from Parent p where p.id > 6";
+        String jpql5 = "select p from Parent p where p.id > 4";
         List<Parent> parm1 = em.createQuery(jpql4).getResultList();
         List<Parent> parm2 = em.createQuery(jpql5).getResultList();
+        
+        assertTrue("Size of two result list " + parm1.size() + " and " + parm2.size() + 
+            " must not be same", parm1.size() != parm2.size());
         
         em.clear();
         String jpql6 = "select c from Child c where c.parent in ?1";
@@ -342,10 +345,11 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         List<Child> c2 = qry.getResultList();
         for (int i = 0; i < c2.size(); i++) {
             Child child = (Child) c2.get(i);
-            assertTrue(child.getParent().getId() > 6);
+            assertTrue(child.getParent().getId() > 4);
         }
         
     }
+    
     
     public void testRepeatedParameterInSubqueryInDifferentOrderSubQLast() {
         OpenJPAEntityManager em = emf.createEntityManager();
