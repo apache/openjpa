@@ -277,22 +277,22 @@ public abstract class JESTRequest implements Request {
                                 buf.append(ch);
                             else
                                 transit(ParseState.PARAM_VALUE);
-                        } else if (ch == ';') {
+                        } else if (ch == '&') {
                             transit(ParseState.PARAM_KEY);
                         } else if (isQueryKey() && isQueryChar(ch)) {
                             buf.append(ch);
                         } else {
-                            parseError(ch, i, s, true, ';', '=');
+                            parseError(ch, i, s, true, '&', '=');
                         }
                         break;
 
                     case PARAM_VALUE:
                         if (Character.isJavaIdentifierPart(ch)) {
                             buf.append(ch);
-                        } else if (ch == ';') {
+                        } else if (ch == '&') {
                             transit(ParseState.PARAM_KEY);
                         } else {
-                            parseError(ch, i, s, true, ';');
+                            parseError(ch, i, s, true, '&');
                         }
                         break;
                     default:

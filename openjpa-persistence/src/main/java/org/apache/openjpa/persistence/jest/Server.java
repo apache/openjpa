@@ -20,8 +20,11 @@
 package org.apache.openjpa.persistence.jest;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,6 +50,7 @@ public class Server implements ServerContext, Configurable, Runnable {
     private ServerSocket _listenSocket;
     protected ExecutorService _executors;
     public final static int DEFAULT_PORT = 6789;
+    protected String _host = "127.0.0.1";
     protected int _port = DEFAULT_PORT;
     protected int _range = 1;
     protected String _format = "xml";
@@ -55,6 +59,14 @@ public class Server implements ServerContext, Configurable, Runnable {
     private EntityManagerFactoryImpl _ctx;
     private static Localizer _loc = Localizer.forPackage(Server.class);
     
+    public Server() {
+        try {
+            _host = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception ex) {
+            
+        }
+
+    }
     /**
      * Sets the persistence unit context in which this server will serve requests.
      * The context must be set before operation.
@@ -110,6 +122,18 @@ public class Server implements ServerContext, Configurable, Runnable {
         _thread.interrupt();
         _thread = null;
         _executors.shutdownNow();
+    }
+    
+    public String getHost() {
+        return _host;
+    }
+    
+    public URI getURI() {
+        try {
+            return new URI("http://"+_host+":"+_port);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
     
     /**
@@ -224,7 +248,7 @@ public class Server implements ServerContext, Configurable, Runnable {
     
     public String toString() {
         if (_listenSocket == null) return "JEST Server [not strated]";
-        return "JEST Server " + _listenSocket.getInetAddress()+":"+_listenSocket.getLocalPort();
+        return "JEST Server " + getURI().toString();
     }
 
 }

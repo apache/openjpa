@@ -34,7 +34,7 @@ public class TestRequestParsing extends TestCase {
     
     public void testRequestFindImplicitParam() throws IOException {
         GETRequest req = new GETRequest();
-        req.read(Arrays.asList("/find?Person;1234"));
+        req.read(Arrays.asList("/find?Person&1234"));
         
         assertEquals("find", req.getAction());
         assertTrue(req.hasParameter("Person"));
@@ -49,7 +49,7 @@ public class TestRequestParsing extends TestCase {
     
     public void testRequestFindExplicitParam() throws IOException {
         GETRequest req = new GETRequest();
-        req.read(Arrays.asList("/find?Person;ssn=1234"));
+        req.read(Arrays.asList("/find?Person&ssn=1234"));
         
         assertEquals("find", req.getAction());
         assertTrue(req.hasParameter("Person"));
@@ -64,7 +64,7 @@ public class TestRequestParsing extends TestCase {
     
     public void testRequestQueryWithParameters() throws IOException {
         GETRequest req = new GETRequest();
-        req.read(Arrays.asList("/query?select p from Person p where p.name=:name;name=xyz;age=20"));
+        req.read(Arrays.asList("/query?select p from Person p where p.name=:name&name=xyz&age=20"));
         
         assertEquals("query", req.getAction());
         assertEquals("select p from Person p where p.name=:name", req.getParameter(0).getKey());
