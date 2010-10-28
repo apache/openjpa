@@ -152,7 +152,7 @@ public class PreparedSQLStoreQuery extends SQLStoreQuery {
          * 
          * @see PreparedQueryImpl#reparametrize(Map, org.apache.openjpa.kernel.Broker)
          */
-        public Object[] toParameterArray(StoreQuery q, Map userParams) {
+        public synchronized Object[] toParameterArray(StoreQuery q, Map userParams) {
             Object[] array = new Object[userParams.size()];
 
             Set<Map.Entry<Object,Object>> userSet = userParams.entrySet();
