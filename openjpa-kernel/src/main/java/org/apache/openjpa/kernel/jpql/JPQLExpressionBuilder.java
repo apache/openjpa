@@ -310,7 +310,7 @@ public class JPQLExpressionBuilder
             exps.parameterTypes = parameterTypes;
 
         exps.accessPath = getAccessPath();
-        exps.hasInExpression = this.hasParameterizedInExpression;
+        exps.hasParameterizedInExpression = this.hasParameterizedInExpression;
         
         return exps;
     }
