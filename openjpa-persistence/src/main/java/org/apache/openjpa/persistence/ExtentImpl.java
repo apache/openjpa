@@ -104,14 +104,17 @@ public class ExtentImpl<T>
     }
 
     public int hashCode() {
-        return _extent.hashCode();
+        return ((_extent == null) ? 0  : _extent.hashCode());
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof ExtentImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
             return false;
+        if (_extent == null)
+        	return false;
+        
         return _extent.equals(((ExtentImpl) other)._extent);
 	}
 }
