@@ -4903,8 +4903,9 @@ public class BrokerImpl
         public boolean equals(Object other) {
             if (other == this)
                 return true;
-            if (!(other instanceof StateManagerId))
+            if ((other == null) || (other.getClass() != this.getClass()))
                 return false;
+            
             StateManagerId sid = (StateManagerId) other;
             return _bhash == sid._bhash && _id == sid._id;
         }
