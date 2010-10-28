@@ -103,7 +103,7 @@ public class Server implements ServerContext, Configurable, Runnable {
             if (_thread != null)
                 return true;
             if (createServerSocket()) {
-                _thread = new Thread(this);
+                _thread = new Thread(this, "JEST-"+_port);
                 _thread.setDaemon(true);
                 _thread.start();
                 return true;
@@ -188,7 +188,7 @@ public class Server implements ServerContext, Configurable, Runnable {
             try {
                 Socket socket = _listenSocket.accept();
                 if (_log.isTraceEnabled())
-                    _log.trace(_loc.get("server-request", socket));
+                    _log.trace(_loc.get("server-request", socket.getInetAddress()+":"+socket.getPort()));
                 RequestHandler request = new RequestHandler(socket, this); 
                 _executors.submit(request);
             } catch (IOException e) {
