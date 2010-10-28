@@ -381,14 +381,17 @@ public class FetchPlanImpl
     }
     
     public int hashCode() {
-        return _fetch.hashCode();
+        return ((_fetch == null) ? 0  : _fetch.hashCode());
     }
 
     public boolean equals(Object other) {
         if (other == this)
             return true;
-        if (!(other instanceof FetchPlanImpl))
+        if ((other == null) || (other.getClass() != this.getClass()))
             return false;
+        if (_fetch == null)
+        	return false;
+        
         return _fetch.equals(((FetchPlanImpl) other)._fetch);
     }
 
