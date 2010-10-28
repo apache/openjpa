@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.openjpa.util.OpenJPAId;
 
@@ -31,10 +32,10 @@ import org.apache.openjpa.util.OpenJPAId;
 public class CacheStatisticsImpl implements CacheStatisticsSPI {
     private static final long serialVersionUID = 9014495759588003166L;
     private static final int ARRAY_SIZE = 3;
-    private long[] astat = new long[ARRAY_SIZE];
+    private long[] totalStat = new long[ARRAY_SIZE];
     private long[] stat = new long[ARRAY_SIZE];
     private Map<String, long[]> stats = new HashMap<String, long[]>();
-    private Map<String, long[]> astats = new HashMap<String, long[]>();
+    private Map<String, long[]> totalStats = new HashMap<String, long[]>();
 
     private Date start = new Date();
     private Date since = new Date();
@@ -57,15 +58,15 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public long getTotalReadCount() {
-        return astat[READ];
+        return totalStat[READ];
     }
 
     public long getTotalHitCount() {
-        return astat[HIT];
+        return totalStat[HIT];
     }
 
     public long getTotalWriteCount() {
-        return astat[WRITE];
+        return totalStat[WRITE];
     }
 
     public long getReadCount(Class<?> c) {
@@ -96,7 +97,7 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public long getTotalReadCount(String str) {
-        return getCount(astats, str, READ);        
+        return getCount(totalStats, str, READ);        
     }
     
     public long getTotalHitCount(Class<?> c) {
@@ -104,15 +105,15 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
     
     public long getTotalHitCount(String str) {
-        return getCount(astats, str, HIT);
+        return getCount(totalStats, str, HIT);
     }
 
     public long getTotalWriteCount(Class<?> c) {
-        return getCount(astats, c.getName(), WRITE);
+        return getCount(totalStats, c.getName(), WRITE);
     }
     
     public long getTotalWriteCount(String str) {
-        return getCount(astats, str, WRITE);
+        return getCount(totalStats, str, WRITE);
     }
 
     public Date since() {
@@ -134,7 +135,15 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
     }
 
     public Set<String> classNames() {
-        return astats.keySet();
+        return totalStats.keySet();
+    }
+    
+    public Map<String, long[]> toMap() {
+        Map<String, long[]> res = new HashMap<String, long[]>();
+        for(Entry<String, long[]> s  : stats.entrySet()){
+            res.put(s.getKey(), s.getValue());
+        }
+        return res;
     }
     
     /**
@@ -191,9 +200,9 @@ public class CacheStatisticsImpl implements CacheStatisticsSPI {
      */
     private void addSample(String c, int index) {
         stat[index]++;
-        astat[index]++;
+        totalStat[index]++;
         addSample(stats, c, index);
-        addSample(astats, c, index);
+        addSample(totalStats, c, index);
     }
 
     private void addSample(Map<String, long[]> target, String c, int index) {

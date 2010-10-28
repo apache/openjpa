@@ -20,6 +20,7 @@ package org.apache.openjpa.integration.jmx;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -32,7 +33,6 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.persistence.Query;
 
-import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.instrumentation.DataCacheInstrument;
 import org.apache.openjpa.instrumentation.InstrumentationManager;
 import org.apache.openjpa.instrumentation.PreparedQueryCacheInstrument;
@@ -88,7 +88,7 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
         assertTrue(dci.getHitCount() > 0);
         assertTrue(dci.getHitCount(clsName) > 0);
         assertTrue(dci.getWriteCount() > 0);
-        assertTrue(dci.getCacheStatistics().classNames().contains(clsName));
+        assertTrue(dci.getCacheStatistics().keySet().contains(clsName));
         // Thread out to do out-of-band MBean-based validation.  This could
         // have been done on the same thread, but threading out makes for a
         // more realistic test.
@@ -274,10 +274,10 @@ public class TestJMXPlatformMBeans extends AbstractPersistenceTestCase {
                 assertTrue(mbean.getReadCount(clsName) > 0);
                 assertTrue(mbean.getWriteCount(clsName) > 0);
                 
-                CacheStatistics stats = mbean.getCacheStatistics();
+                Map<String,long[]> stats = mbean.getCacheStatistics();
                 assertNotNull(stats);
                 // Comment out classNames portion of the test which is currently broken. 
-                 Set<String> classNames = stats.classNames();
+                 Set<String> classNames = stats.keySet();
                  assertNotNull(classNames);
                  assertTrue(classNames.contains(clsName));
                 

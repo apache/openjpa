@@ -132,8 +132,11 @@ public interface DataCacheInstrument {
     
     /**
      * Returns the CacheStatistics for the cache.
+     * The format for this map is:
+     *  Type(String) => Enabled(Boolean),Hit(Long),Read(Long),Write(Long)
      */
-    public CacheStatistics getCacheStatistics();
+    public Map<String, long[]> getCacheStatistics();
+    
     
     /**
      * Clears all data from the DataCache.

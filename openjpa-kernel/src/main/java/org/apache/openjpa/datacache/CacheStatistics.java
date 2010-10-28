@@ -169,4 +169,6 @@ public interface CacheStatistics extends Serializable {
 	 */
     public Set<String> classNames();
     
+    public Map<String, long[]> toMap();
+    
 }

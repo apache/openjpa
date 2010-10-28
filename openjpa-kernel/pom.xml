@@ -36,11 +36,6 @@
     <name>OpenJPA Kernel</name>
     <description>OpenJPA Kernel</description>
 
-    <properties>
-        <!-- default location of jconsole.jar on most platforms -->
-        <jconsoleHome>${java.home}/../lib</jconsoleHome>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -69,32 +64,8 @@
             <groupId>ant</groupId>
             <artifactId>ant</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>sun.jconsole</groupId>
-            <artifactId>jconsole</artifactId>
-            <version>1.6.0</version>
-            <scope>system</scope>
-            <systemPath>${jconsoleHome}/jconsole.jar</systemPath>
-        </dependency>
-        
+        </dependency>        
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>macosx</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <!-- location of jconsole.jar on MacOSX -->
-                <jconsoleHome>${java.home}/lib</jconsoleHome>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>

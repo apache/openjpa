@@ -218,8 +218,9 @@ public abstract class AbstractDataCacheInstrument extends AbstractInstrument imp
         CacheStatisticsSPI stats = (CacheStatisticsSPI) _dc.getStatistics();
         return stats.isEnabled();
     }
-    public CacheStatistics getCacheStatistics() {
-        return _dc.getStatistics();
+    
+    public Map<String, long[]> getCacheStatistics() {
+        return _dc.getStatistics().toMap();
     }
     public void clear() {
         _dc.clear();
