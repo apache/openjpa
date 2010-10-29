@@ -45,7 +45,8 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
-            </plugin>   
+            </plugin>
+
             <!-- disable creating source jars for this module -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -54,22 +55,21 @@
                     <attach>false</attach>
                 </configuration>
             </plugin>
+
             <!--
                  Need to disable jar plugin here, as it overwrites the shade
                  plugin created binary jar.
             -->
-            <!-- exclude for shade-1.4 and maven 3.0
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-jar</id>
                         <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
-            -->
+
             <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
