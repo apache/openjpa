@@ -58,6 +58,7 @@
                  Need to disable jar plugin here, as it overwrites the shade
                  plugin created binary jar.
             -->
+            <!-- exclude for shade-1.4 and maven 3.0
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -68,7 +69,7 @@
                     </execution>
                 </executions>
             </plugin>
-
+            -->
             <!-- Create our aggregate all JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
