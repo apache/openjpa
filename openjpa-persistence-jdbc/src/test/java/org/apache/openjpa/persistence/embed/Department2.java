@@ -49,6 +49,6 @@ public class Department2 {
     }
     
     public void addEmployee(Employee2 emp) {
-        empMap.put(emp.getEmpPK(), emp);
+        getEmpMap().put(emp.getEmpPK(), emp);
     }
 }

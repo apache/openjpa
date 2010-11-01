@@ -60,8 +60,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public int numEmployeesPerPhoneNumber = 1;
     public int numPhoneNumbersPerEmployee = 2;
     public int numEmployeesPerProgramManager = 2;
-    public int numEmployees = numProgramManagers
-        * numEmployeesPerProgramManager;
+    public int numEmployees = numProgramManagers * numEmployeesPerProgramManager;
     public int numPhoneNumbers = numEmployees * numPhoneNumbersPerEmployee;
     public int numDepartments = 2;
     public int numEmployeesPerDept = 2;
@@ -79,8 +78,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
     public int phoneId = 1;
     public int pmId = 1;
     public int parkingSpotId = 1;
-    public Map<Integer, PhoneNumber> phones =
-        new HashMap<Integer, PhoneNumber>();
+    public Map<Integer, PhoneNumber> phones = new HashMap<Integer, PhoneNumber>();
     public Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
 
     public void setUp() {
@@ -108,7 +106,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
-            if (dict.getClass().getName().indexOf("oracle") != -1) {
+            if (dict.getClass().getName().toLowerCase().indexOf("oracle") != -1) {
                 ((OracleDictionary)dict).useTriggersForAutoAssign = true;
             }
     }
@@ -188,7 +186,8 @@ public class TestEmbeddable extends SQLListenerTestCase {
         //string (even the simplest string will do).
         em = emf.createEntityManager();
         Query query1 = em.createQuery("SELECT e FROM EntityA_Embed_Single_Coll e "
-            + "where e.embed.date = '" + date + "'");
+            + "where e.embed.date = :wheredate");
+        query1.setParameter("wheredate", date);
         eesc = (EntityA_Embed_Single_Coll) query1.getSingleResult();
         assertEquals(eesc.getEmbed().getDate().toString(), date.toString());
         em.close();
