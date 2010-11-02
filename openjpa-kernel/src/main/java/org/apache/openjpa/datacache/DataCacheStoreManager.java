@@ -149,7 +149,7 @@ public class DataCacheStoreManager
                     mods.additions.add(new PCDataHolder(data, sm));
                     CacheStatistics stats = cache.getStatistics();
                     if (stats.isEnabled()) {
-                        ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
+                        ((CacheStatisticsSPI)stats).newPut(data.getType());
                     }
                 }
             }
@@ -188,7 +188,7 @@ public class DataCacheStoreManager
                     }
                     CacheStatistics stats = cache.getStatistics();
                     if (stats.isEnabled()) {
-                        ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
+                        ((CacheStatisticsSPI)stats).newPut(data.getType());
                     }
                 }
             }
@@ -339,7 +339,7 @@ public class DataCacheStoreManager
         // if we have a cached version update from there
         if (version != null) {
             if(stats.isEnabled()){
-                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+                ((CacheStatisticsSPI)stats).newGet(data.getType(), true);
             }
             if (!version.equals(sm.getVersion())) {
                 sm.setVersion(version);
@@ -349,7 +349,8 @@ public class DataCacheStoreManager
         }
 
         if(stats.isEnabled()){
-            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+            Class<?> cls = (data == null) ? sm.getMetaData().getDescribedType() : data.getType();
+            ((CacheStatisticsSPI) stats).newGet(cls, false);
         }
         // use data store version
         return super.syncVersion(sm, edata);
@@ -360,7 +361,7 @@ public class DataCacheStoreManager
         if (cache == null) {
             return super.initialize(sm, state, fetch, edata);
         }
-        Class<?> cls = sm.getMetaData().getDescribedType();
+
         DataCachePCData data = cache.get(sm.getObjectId());
         CacheStatistics stats = cache.getStatistics();
         boolean fromDatabase = false; 
@@ -373,14 +374,15 @@ public class DataCacheStoreManager
         } else {
             if (alreadyCached && !isLocking(fetch)) {
                 if (stats.isEnabled()) {
-                    ((CacheStatisticsSPI)stats).newGet(cls, true);
+                    ((CacheStatisticsSPI)stats).newGet(data.getType(), true);
                 }
-                sm.initialize(cls, state);
+                sm.initialize(data.getType(), state);
                 data.load(sm, fetch, edata);
             } else {
                 if (!alreadyCached) {
                     if (stats.isEnabled()) {
-                        ((CacheStatisticsSPI)stats).newGet(cls, false);
+                        // Get the classname from MetaData... but this won't be right in every case. 
+                        ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
                     }
                 }
                 fromDatabase = super.initialize(sm, state, fetch, edata);
@@ -391,10 +393,10 @@ public class DataCacheStoreManager
                            && ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached)
                             || (fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH));
         if (updateCache) {
-            if (stats.isEnabled()) {
-                ((CacheStatisticsSPI)stats).newPut(cls);
-            }
             cacheStateManager(cache, sm, data);
+            if (stats.isEnabled()) {
+                ((CacheStatisticsSPI) stats).newPut(sm.getMetaData().getDescribedType());
+            }
         }
         return fromDatabase || alreadyCached;
     }
@@ -435,12 +437,12 @@ public class DataCacheStoreManager
             return super.load(sm, fields, fetch, lockLevel, edata);
 
         CacheStatistics stats = cache.getStatistics();
-        Class<?> cls = sm.getMetaData().getDescribedType();
         DataCachePCData data = cache.get(sm.getObjectId());
         if (lockLevel == LockLevels.LOCK_NONE && !isLocking(fetch) && data != null)
             data.load(sm, fields, fetch, edata);
         if (fields.length() == 0){
             if (stats.isEnabled()) {
+                Class<?> cls = (data == null) ? sm.getMetaData().getDescribedType() : data.getType();
                 ((CacheStatisticsSPI)stats).newGet(cls, true);
             }
             return true;
@@ -509,7 +511,7 @@ public class DataCacheStoreManager
                         //### the 'data.type' access here probably needs
                         //### to be addressed for bug 511
                         if (stats.isEnabled()) {
-                            ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+                            ((CacheStatisticsSPI) stats).newGet(data.getType(), true);
                         }
                         sm.initialize(data.getType(), state);
                         data.load(sm, fetch, edata);
@@ -529,11 +531,11 @@ public class DataCacheStoreManager
                         if (fields.length() > 0){
                             unloaded = addUnloaded(sm, fields, unloaded);
                             if (stats.isEnabled()) {
-                                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+                                ((CacheStatisticsSPI)stats).newGet(data.getType(), false);
                             }
                         }else{
                             if (stats.isEnabled()) {
-                                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), true);
+                                ((CacheStatisticsSPI)stats).newGet(data.getType(), true);
                             }
                         }
                     } else{
@@ -588,7 +590,7 @@ public class DataCacheStoreManager
                     cache.update(data);
                 CacheStatistics stats = cache.getStatistics();
                 if (stats.isEnabled()) {
-                    ((CacheStatisticsSPI)stats).newPut(sm.getMetaData().getDescribedType());
+                    ((CacheStatisticsSPI)stats).newPut(data.getType());
                 }
             } finally {
                 cache.writeUnlock();
