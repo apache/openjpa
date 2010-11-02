@@ -88,7 +88,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         
         if (delimited) {
-            combined = delimit(config, rule, combined.toString());
+            combined = delimit(config, rule, combined);
         }
         
         return combined;
@@ -125,7 +125,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             }
         }
         if (delimited) {
-            combined = delimit(config, namingRule, combined.toString());
+            combined = delimit(config, namingRule, combined);
         }
         
         return combined;
