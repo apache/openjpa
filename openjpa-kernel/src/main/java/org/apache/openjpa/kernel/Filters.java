@@ -337,9 +337,9 @@ public class Filters {
         if (type == Integer.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).intValue();
         } else if (type == Float.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
-            return new Float(((Number) o).floatValue());
+            return Float.valueOf(((Number) o).floatValue());
         } else if (type == Double.class) {
-            return new Double(((Number) o).doubleValue());
+            return Double.valueOf(((Number) o).doubleValue());
         } else if (type == Long.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return ((Number) o).longValue();
         } else if (type == BigDecimal.class) {
@@ -349,11 +349,11 @@ public class Filters {
             // and Float versions, despite wanting to cast it to BigDecimal
             double dval = ((Number) o).doubleValue();
             if (Double.isNaN(dval) || Double.isInfinite(dval))
-                return new Double(dval);
+                return Double.valueOf(dval);
 
             float fval = ((Number) o).floatValue();
             if (Float.isNaN(fval) || Float.isInfinite(fval))
-                return new Float(fval);
+                return Float.valueOf(fval);
 
             return new BigDecimal(o.toString());
         } else if (type == BigInteger.class) {
@@ -512,7 +512,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return new Float(tot);
+        return Float.valueOf(tot);
     }
 
     /**
@@ -539,7 +539,7 @@ public class Filters {
             default:
                 throw new InternalException();
         }
-        return new Double(tot);
+        return Double.valueOf(tot);
     }
 
     /**
@@ -1021,7 +1021,7 @@ public class Filters {
         if (nType == Integer.class)
             return Integer.valueOf(0);
         if (nType == Double.class) 
-            return new Double(0.0);
+            return Double.valueOf(0.0);
         if (nType == Float.class) 
             return new Float(0.0);
         if (nType == Short.class) 

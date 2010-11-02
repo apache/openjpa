@@ -316,9 +316,9 @@ public class DetachedValueStateManager
             case JavaTypes.CHAR:
                 return Character.valueOf(fm.fetchCharField(field));
             case JavaTypes.DOUBLE:
-                return new Double(fm.fetchDoubleField(field));
+                return Double.valueOf(fm.fetchDoubleField(field));
             case JavaTypes.FLOAT:
-                return new Float(fm.fetchFloatField(field));
+                return Float.valueOf(fm.fetchFloatField(field));
             case JavaTypes.INT:
                 return fm.fetchIntField(field);
             case JavaTypes.LONG:

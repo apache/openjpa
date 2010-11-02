@@ -51,7 +51,7 @@ public final class FloatId
     }
 
     public Object getIdObject() {
-        return new Float(key);
+        return Float.valueOf(key);
     }
 
     public String toString() {

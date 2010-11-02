@@ -51,7 +51,7 @@ public final class DoubleId
     }
 
     public Object getIdObject() {
-        return new Double(key);
+        return Double.valueOf(key);
     }
 
     public String toString() {

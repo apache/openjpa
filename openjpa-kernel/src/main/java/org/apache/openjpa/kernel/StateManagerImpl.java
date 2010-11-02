@@ -852,9 +852,9 @@ public class StateManagerImpl
             case JavaTypes.CHAR:
                 return Character.valueOf(fetchCharField(field));
             case JavaTypes.DOUBLE:
-                return new Double(fetchDoubleField(field));
+                return Double.valueOf(fetchDoubleField(field));
             case JavaTypes.FLOAT:
-                return new Float(fetchFloatField(field));
+                return Float.valueOf(fetchFloatField(field));
             case JavaTypes.INT:
                 return fetchIntField(field);
             case JavaTypes.LONG:
@@ -983,9 +983,9 @@ public class StateManagerImpl
             case JavaTypes.CHAR:
                 return Character.valueOf(fm.fetchCharField(field));
             case JavaTypes.DOUBLE:
-                return new Double(fm.fetchDoubleField(field));
+                return Double.valueOf(fm.fetchDoubleField(field));
             case JavaTypes.FLOAT:
-                return new Float(fm.fetchFloatField(field));
+                return Float.valueOf(fm.fetchFloatField(field));
             case JavaTypes.INT:
                 return fm.fetchIntField(field);
             case JavaTypes.LONG:
@@ -2486,8 +2486,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeDoubleField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(new Double(externalVal),
-                _broker));
+            storeField(field, fmd.getFieldValue(Double.valueOf(externalVal), _broker));
     }
 
     public void storeDoubleField(int field, double curVal) {
@@ -2507,8 +2506,7 @@ public class StateManagerImpl
         if (!fmd.isExternalized())
             storeFloatField(field, externalVal);
         else
-            storeField(field, fmd.getFieldValue(new Float(externalVal),
-                _broker));
+            storeField(field, fmd.getFieldValue(Float.valueOf(externalVal), _broker));
     }
 
     public void storeFloatField(int field, float curVal) {

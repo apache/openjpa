@@ -492,9 +492,9 @@ public class DataCacheStoreManager
                 unloaded = addUnloaded(sm, null, unloaded);
         }
         
-        for (Iterator<DataCache> itr = caches.keySet().iterator(); itr.hasNext();) {
-            cache = itr.next();
-            smList = caches.get(cache);
+    for(Entry<DataCache,List<OpenJPAStateManager>> entry : caches.entrySet()){
+            cache = entry.getKey();
+            smList = entry.getValue();
             List<Object> oidList = new ArrayList<Object>(smList.size());
 
             for (OpenJPAStateManager sm : smList) {

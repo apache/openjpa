@@ -1268,7 +1268,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 mapped.add(meta);
             }
         }
-        return mapped.toArray(new ClassMetaData[]{});
+        return mapped.toArray(new ClassMetaData[mapped.size()]);
     }
     /**
      * Gets the metadata corresponding to the given persistence-aware class. Returns null, if the

@@ -295,21 +295,21 @@ public class JavaTypes {
                 if (val instanceof Double)
                     return val;
                 if (val instanceof Number)
-                    return new Double(((Number) val).doubleValue());
+                    return Double.valueOf(((Number) val).doubleValue());
                 // no break
             case DOUBLE:
                 if (val instanceof String)
-                    return new Double(val.toString());
+                    return Double.valueOf(val.toString());
                 return val;
             case FLOAT_OBJ:
                 if (val instanceof Float)
                     return val;
                 if (val instanceof Number)
-                    return new Float(((Number) val).floatValue());
+                    return Float.valueOf(((Number) val).floatValue());
                 // no break
             case FLOAT:
                 if (val instanceof String)
-                    return new Float(val.toString());
+                    return Float.valueOf(val.toString());
                 return val;
             case INT_OBJ:
                 if (val instanceof Integer)

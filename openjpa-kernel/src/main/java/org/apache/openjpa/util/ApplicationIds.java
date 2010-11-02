@@ -622,11 +622,11 @@ public class ApplicationIds {
         }
 
         public void storeFloatField(int field, float val) {
-            store(new Float(val));
+            store(Float.valueOf(val));
         }
 
         public void storeDoubleField(int field, double val) {
-            store(new Double(val));
+            store(Double.valueOf(val));
         }
 
         public void storeStringField(int field, String val) {

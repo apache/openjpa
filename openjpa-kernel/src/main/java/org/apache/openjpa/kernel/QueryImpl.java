@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections.map.LinkedMap;
@@ -1769,10 +1770,7 @@ public class QueryImpl
                 expected, paramTypes.keySet()));
         }
 
-        Iterator<Map.Entry<Object, Class<?>>> itr = paramTypes.entrySet().iterator();
-        Map.Entry<Object, Class<?>> entry;
-        for (int i = 0; itr.hasNext(); i++) {
-            entry = itr.next();
+        for (Entry<Object, Class<?>> entry : paramTypes.entrySet()) {
             if (entry.getValue().isPrimitive() 
                 && params.get(entry.getKey()) == null)
                 throw new UserException(_loc.get("null-primitive-param", entry.getKey()));

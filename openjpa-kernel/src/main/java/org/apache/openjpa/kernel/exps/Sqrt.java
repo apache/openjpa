@@ -38,6 +38,6 @@ class Sqrt
     }
 
     protected Object operate(Object o, Class c) {
-        return new Double(Math.sqrt(((Number) o).doubleValue()));
+        return Double.valueOf(Math.sqrt(((Number) o).doubleValue()));
     }
 }

@@ -199,7 +199,7 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
     private QueryKey findKey(String key) {
         QueryStatistics<QueryKey> stats = getStatistics();
         for (QueryKey qk : stats.keys()) {
-            if (qk.toString().equals(key.toString())) {
+            if (qk.toString().equals(key)) {
                 return qk;
             }
         }

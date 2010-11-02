@@ -49,8 +49,8 @@ public class ObjectIdStateManager
 
     private static final Byte ZERO_BYTE = Byte.valueOf((byte)0);
     private static final Character ZERO_CHAR = Character.valueOf((char)0);
-    private static final Double ZERO_DOUBLE = new Double(0);
-    private static final Float ZERO_FLOAT = new Float(0);
+    private static final Double ZERO_DOUBLE = Double.valueOf(0);
+    private static final Float ZERO_FLOAT = Float.valueOf(0);
     private static final Short ZERO_SHORT = Short.valueOf((short)0);
 
     private Object _oid;
@@ -483,11 +483,11 @@ public class ObjectIdStateManager
     }
 
     public void storeFloat(int field, float extVal) {
-        setValue(field, new Float(extVal), true);
+        setValue(field, Float.valueOf(extVal), true);
     }
 
     public void storeDouble(int field, double extVal) {
-        setValue(field, new Double(extVal), true);
+        setValue(field, Double.valueOf(extVal), true);
     }
 
     public void storeString(int field, String extVal) {

@@ -28,11 +28,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
-import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.AbstractExpressionVisitor;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
@@ -44,6 +43,7 @@ import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.StringContains;
+import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.exps.WildcardMatch;
@@ -409,7 +409,8 @@ public class ExpressionStoreQuery
             OrderedMap<?,Class<?>> paramTypes = getOrderedParameterTypes(q);
             Object[] arr = new Object[userParams.size()];
             int base = positionalParameterBase(userParams.keySet());
-            for (Object key : paramTypes.keySet()) {
+            for(Entry<?, Class<?>> entry : paramTypes.entrySet()){
+                Object key = entry.getKey();
                 int idx = (key instanceof Integer) 
                     ? ((Integer)key).intValue() - base 
                     : paramTypes.indexOf(key);
@@ -418,7 +419,7 @@ public class ExpressionStoreQuery
                             new Object[]{q.getContext().getQueryString(), key, 
                             userParams.size(), userParams}));
                 Object value = userParams.get(key);
-                validateParameterValue(key, value, (Class)paramTypes.get(key));
+                validateParameterValue(key, value, (Class)entry.getValue());
                 arr[idx] = value;
             }
             return arr;

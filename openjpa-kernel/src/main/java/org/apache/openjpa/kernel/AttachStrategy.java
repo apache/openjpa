@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -379,10 +380,11 @@ abstract class AttachStrategy
         try {
             return manager.getProxyManager().copyMap(orig);
         } catch (Exception e) {
-            Map map = (Map) sm.newFieldProxy(fmd.getIndex());
-            Set keys = orig.keySet();
-            for (Object key : keys) 
-                map.put(key, orig.get(key));
+            Map<Object, Object> map = (Map<Object, Object>) sm.newFieldProxy(fmd.getIndex());
+            
+            for (Entry<Object, Object> entry : ((Map<Object, Object>) orig).entrySet()) {
+                map.put(entry.getKey(), entry.getValue());
+            }
             return map;
         }
     }
