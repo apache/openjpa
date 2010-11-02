@@ -236,8 +236,9 @@ public class EntityManagerFactoryImpl
         OpenJPAEntityManagerSPI em = newEntityManagerImpl(broker);
 
         // allow setting of other bean properties of EM
-        for (Object key : props.keySet()) {
-            em.setProperty(key.toString(), props.get(key));
+        Set<Map.Entry> entrySet = props.entrySet();
+        for (Map.Entry entry : entrySet) {
+            em.setProperty(entry.getKey().toString(), entry.getValue());
         }
         if (log != null && log.isTraceEnabled()) {
             log.trace(this + " created EntityManager " + em + ".");

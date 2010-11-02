@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.persistence.FlushModeType;
@@ -48,6 +49,7 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
+import org.apache.openjpa.kernel.DistinctResultList;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -55,7 +57,6 @@ import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.QueryStatistics;
-import org.apache.openjpa.kernel.DistinctResultList;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
@@ -987,9 +988,11 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         if (_declaredParams == null) {
             _declaredParams = new HashMap<Object, Parameter<?>>();
             OrderedMap<Object,Class<?>> paramTypes = _query.getOrderedParameterTypes();
-            for (Object key : paramTypes.keySet()) {
-                Parameter<?> param = null;
-                Class<?> expectedValueType = paramTypes.get(key);
+            for(Entry<Object,Class<?>> entry : paramTypes.entrySet()){
+                Object key = entry.getKey();    
+                Class<?> expectedValueType = entry.getValue();
+                Parameter<?> param;
+
                 if (key instanceof Integer) {
                     param = new ParameterImpl((Integer)key, expectedValueType);
                 } else if (key instanceof String) {

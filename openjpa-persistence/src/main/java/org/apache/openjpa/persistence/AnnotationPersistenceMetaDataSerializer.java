@@ -18,55 +18,76 @@
  */
 package org.apache.openjpa.persistence;
 
-import org.apache.openjpa.lib.meta.SourceTracker;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.JavaVersions;
-import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.meta.*;
-import org.apache.openjpa.kernel.QueryLanguages;
-import org.apache.openjpa.util.InternalException;
-import org.apache.commons.lang.StringUtils;
-
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.io.FileWriter;
-import java.lang.reflect.Member;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Map.Entry;
 
-import serp.util.Strings;
-
-import javax.persistence.Entity;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.QueryHint;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Version;
 import javax.persistence.Transient;
-import javax.persistence.Basic;
-import javax.persistence.Embedded;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.MapKey;
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
+import javax.persistence.Version;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.JavaVersions;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataInheritanceComparator;
+import org.apache.openjpa.meta.MetaDataModes;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.Order;
+import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.meta.SequenceMetaData;
+import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.InternalException;
+
+import serp.util.Strings;
 
 //@todo: javadocs
 
@@ -1217,14 +1238,18 @@ public class AnnotationPersistenceMetaDataSerializer
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void serialize(Writer out, int flags) throws IOException {
         Map output = new HashMap();
         serialize(output, flags);
 
-        for(Object meta: output.keySet()) {
+        Set<Entry> entrySet = output.entrySet();
+        for(Entry entry : entrySet) {
+            Object meta = entry.getKey();
+            List<String> annos = (List<String>) entry.getValue();
+
             out.write("--"+meta.toString());
             out.write("\n");
-            List<String> annos = (List<String>) output.get(meta);
             for(String ann: annos) {
                 out.write("\t");
                 out.write(ann);

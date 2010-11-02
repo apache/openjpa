@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.meta;
 
+import static javax.persistence.AccessType.FIELD;
+import static javax.persistence.AccessType.PROPERTY;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -43,8 +47,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import static javax.persistence.AccessType.*;
-
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -53,6 +55,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.util.UserException;
@@ -428,11 +431,11 @@ public class SourceAnnotationHandler
         List<? extends AnnotationMirror> annos = e.getAnnotationMirrors();
         for (AnnotationMirror mirror : annos) {
             if (mirror.getAnnotationType().toString().equals(anno.getName())) {
-                Map<? extends ExecutableElement, ? extends AnnotationValue> 
-                values = mirror.getElementValues();
-                for (ExecutableElement ex : values.keySet()) {
-                    if (ex.getSimpleName().toString().equals(attr))
-                        return values.get(ex).getValue();
+                Map<? extends ExecutableElement, ? extends AnnotationValue> values = mirror.getElementValues();
+                for (Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : values.entrySet()) {
+                    if (entry.getKey().getSimpleName().toString().equals(attr)) {
+                        return entry.getValue().getValue();
+                    }
                 }
             }
         }
