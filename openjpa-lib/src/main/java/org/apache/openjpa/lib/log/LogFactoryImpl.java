@@ -277,8 +277,7 @@ public class LogFactoryImpl
             for (Iterator<Map.Entry<Object, Object>> iter =
                 opts.entrySet().iterator(); iter.hasNext();) {
                 e = iter.next();
-                _configuredLevels.put(shorten((String) e.getKey()), new Short(
-                    getLevel((String) e.getValue())));
+                _configuredLevels.put(shorten((String) e.getKey()), Short.valueOf(getLevel((String) e.getValue())));
             }
             opts.clear();
         }

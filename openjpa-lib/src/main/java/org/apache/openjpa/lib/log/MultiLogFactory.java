@@ -68,7 +68,7 @@ public class MultiLogFactory implements LogFactory {
      * Returns the delegates that this MultiLogFactory delegates messages to.
      */
     public LogFactory[] getDelegates() {
-        return (LogFactory[]) _delegates.toArray(new LogFactory[0]);
+        return (LogFactory[]) _delegates.toArray(new LogFactory[_delegates.size()]);
     }
 
     /**

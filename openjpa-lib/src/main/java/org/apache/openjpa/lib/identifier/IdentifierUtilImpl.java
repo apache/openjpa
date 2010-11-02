@@ -88,7 +88,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         
         if (delimited) {
-            combined = delimit(config, rule, combined.toString()).toString();
+            combined = delimit(config, rule, combined.toString());
         }
         
         return combined;
@@ -105,7 +105,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             delimit = true;
         }
         String name = name1 + config.getIdentifierConcatenator() + name2;
-        return delimit(config, rule, name, delimit).toString();
+        return delimit(config, rule, name, delimit);
     }
 
     public String combineNames(IdentifierConfiguration config, IdentifierRule namingRule, String[] names) {
@@ -125,7 +125,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             }
         }
         if (delimited) {
-            combined = delimit(config, namingRule, combined.toString()).toString();
+            combined = delimit(config, namingRule, combined.toString());
         }
         
         return combined;
@@ -145,7 +145,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             name2 = IdentifierUtil.EMPTY;
         }
         String name = name1 + name2;
-        return delimit(rule, name).toString();
+        return delimit(rule, name);
     }
 
     /**
@@ -414,7 +414,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         }
         tName = tName.substring(0, tName.length() - length);
         if (delimited) {
-            tName = delimit(namingRule, tName).toString();
+            tName = delimit(namingRule, tName);
         }
         return tName;
     }
@@ -477,7 +477,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
 
         name = name.substring(newStart);
         if (delimited) {
-            name = delimit(rule, name).toString();
+            name = delimit(rule, name);
         }
         return name;
     }
@@ -502,7 +502,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
         if (delimit) {
             name = removeDelimiters(config, orule, name, config.getLeadingDelimiter(), 
                 config.getTrailingDelimiter());
-            return delimit(getIdentifierConfiguration(), nrule, name, delimit).toString();
+            return delimit(getIdentifierConfiguration(), nrule, name, delimit);
         }
         return name;
     }

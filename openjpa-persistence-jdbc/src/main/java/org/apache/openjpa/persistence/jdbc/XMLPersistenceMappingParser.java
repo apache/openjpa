@@ -1401,14 +1401,12 @@ public class XMLPersistenceMappingParser
         super.addDeferredEmbeddableMetaData();
         if (_deferredMappings.size() > 0) {
             Set<Class<?>> keys = _deferredMappings.keySet();
-            Class[] classes = keys.toArray(new Class[0]);
+            Class<?>[] classes = keys.toArray(new Class[keys.size()]);
             for (int i = 0; i < classes.length; i++) {
                 try {
                     applyDeferredEmbeddableOverrides(classes[i]);
                 } catch (Exception e) {
-                    throw new MetaDataException(
-                            _loc.get("no-embeddable-metadata",
-                                classes[i].getName()), e);
+                    throw new MetaDataException(_loc.get("no-embeddable-metadata", classes[i].getName()), e);
                 }
             }
         }

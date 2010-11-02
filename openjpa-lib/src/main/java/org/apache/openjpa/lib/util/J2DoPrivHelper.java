@@ -597,7 +597,7 @@ public abstract class J2DoPrivHelper {
     public static final PrivilegedAction<Long> lengthAction(final File f) {
         return new PrivilegedAction<Long>() {
             public Long run() {
-                return new Long(f.length());
+                return Long.valueOf(f.length());
             }
         };
     }
