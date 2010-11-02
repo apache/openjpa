@@ -76,7 +76,9 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
                     ((org.apache.commons.dbcp.BasicDataSource)_dbcpClass.cast(_ds)).close();
                 }
             }
-        } catch (ClassCastException cce) {
+        } catch (Exception e) {
+            // no-op
+        } catch (Throwable t) {
             // no-op
         } finally {
             _ds = null;
