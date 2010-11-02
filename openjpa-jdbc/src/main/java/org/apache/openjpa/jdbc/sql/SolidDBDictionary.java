@@ -432,11 +432,11 @@ public class SolidDBDictionary
             break;
         case JavaTypes.FLOAT:
         case JavaTypes.FLOAT_OBJ:
-            setFloat(stmnt, idx, new Double(val).floatValue(), col);
+            setFloat(stmnt, idx, Double.valueOf(val).floatValue(), col);
             break;
         case JavaTypes.LONG:
         case JavaTypes.LONG_OBJ:
-            setLong(stmnt, idx, new Double(val).longValue(), col);
+            setLong(stmnt, idx, Double.valueOf(val).longValue(), col);
             break;
         }
     }

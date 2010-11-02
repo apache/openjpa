@@ -49,18 +49,18 @@ public class JavaSQLTypes
     public static final int TIMESTAMP = 1011;
     public static final int JDBC_DEFAULT = 1012;
 
-    private static final Byte ZERO_BYTE = new Byte((byte) 0);
-    private static final Character ZERO_CHAR = new Character((char) 0);
-    private static final Double ZERO_DOUBLE = new Double(0d);
-    private static final Float ZERO_FLOAT = new Float(0f);
-    private static final Short ZERO_SHORT = new Short((short) 0);
+    private static final Byte ZERO_BYTE = Byte.valueOf((byte) 0);
+    private static final Character ZERO_CHAR = Character.valueOf((char) 0);
+    private static final Double ZERO_DOUBLE = Double.valueOf(0d);
+    private static final Float ZERO_FLOAT = Float.valueOf(0f);
+    private static final Short ZERO_SHORT = Short.valueOf((short) 0);
     private static final BigDecimal ZERO_BIGDECIMAL = new BigDecimal(0d);
 
     private static final Byte NONZERO_BYTE = new Byte((byte) 1);
-    private static final Character NONZERO_CHAR = new Character((char) 'a');
-    private static final Double NONZERO_DOUBLE = new Double(1d);
-    private static final Float NONZERO_FLOAT = new Float(1f);
-    private static final Short NONZERO_SHORT = new Short((short) 1);
+    private static final Character NONZERO_CHAR = Character.valueOf((char) 'a');
+    private static final Double NONZERO_DOUBLE = Double.valueOf(1d);
+    private static final Float NONZERO_FLOAT = Float.valueOf(1f);
+    private static final Short NONZERO_SHORT = Short.valueOf((short) 1);
     private static final BigInteger NONZERO_BIGINTEGER = new BigInteger("1");
     private static final BigDecimal NONZERO_BIGDECIMAL = new BigDecimal(1d);
 

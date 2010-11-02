@@ -106,7 +106,7 @@ public class EnumValueHandler
         if (val == null)
             return null;
         if (_ordinal)
-            return new Integer(((Enum) val).ordinal());
+            return Integer.valueOf(((Enum) val).ordinal());
         return ((Enum) val).name();
     }
 

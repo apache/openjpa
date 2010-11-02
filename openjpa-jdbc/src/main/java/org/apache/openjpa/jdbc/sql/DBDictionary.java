@@ -536,10 +536,10 @@ public class DBDictionary
             return getBigDecimal(rs, column);
         } catch (Exception e1) {
             try {
-                return new Double(getDouble(rs, column));
+                return Double.valueOf(getDouble(rs, column));
             } catch (Exception e2) {
                 try {
-                    return new Float(getFloat(rs, column));
+                    return Float.valueOf(getFloat(rs, column));
                 } catch (Exception e3) {
                     try {
                         return getLong(rs, column);
@@ -4742,7 +4742,7 @@ public class DBDictionary
                 timeout = 0;
             } else if (timeout < 0) {
                 if (log.isWarnEnabled())
-                    log.warn(_loc.get("invalid-timeout", new Integer(timeout)));
+                    log.warn(_loc.get("invalid-timeout", Integer.valueOf(timeout)));
                 return;
             } else if (timeout > 0 && timeout < 1000) {
                 // round up to 1 sec

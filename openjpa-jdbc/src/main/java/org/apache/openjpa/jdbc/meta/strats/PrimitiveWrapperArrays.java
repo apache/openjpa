@@ -36,7 +36,7 @@ class PrimitiveWrapperArrays {
         if (vm.getType().getComponentType() == Character.class) {
             Character[] objectArray = new Character[array.length];
             for (int i = 0; i < array.length; i++)
-                objectArray[i] = new Character(array[i]);
+                objectArray[i] = Character.valueOf(array[i]);
             return objectArray;
         }
         return array;
@@ -65,7 +65,7 @@ class PrimitiveWrapperArrays {
         if (vm.getType().getComponentType() == Byte.class) {
             Byte[] objectArray = new Byte[array.length];
             for (int i = 0; i < array.length; i++)
-                objectArray[i] = new Byte(array[i]);
+                objectArray[i] = Byte.valueOf(array[i]);
             return objectArray;
         }
         return array;

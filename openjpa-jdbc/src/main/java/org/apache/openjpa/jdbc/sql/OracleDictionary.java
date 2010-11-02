@@ -517,7 +517,7 @@ public class OracleDictionary
                         new Class[]{ int.class, short.class }).
                         invoke(inner,
                             new Object[]{
-                                new Integer(idx),
+                                Integer.valueOf(idx),
                                 Class.forName
                                     ("oracle.jdbc.OraclePreparedStatement").
                                     getField("FORM_NCHAR").get(null)

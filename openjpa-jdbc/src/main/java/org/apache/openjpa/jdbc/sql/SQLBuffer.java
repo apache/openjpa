@@ -350,7 +350,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(byte b, Column col) {
-        return appendValue(new Byte(b), col);
+        return appendValue(Byte.valueOf(b), col);
     }
 
     /**
@@ -364,7 +364,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(char c, Column col) {
-        return appendValue(new Character(c), col);
+        return appendValue(Character.valueOf(c), col);
     }
 
     /**
@@ -378,7 +378,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(double d, Column col) {
-        return appendValue(new Double(d), col);
+        return appendValue(Double.valueOf(d), col);
     }
 
     /**
@@ -392,7 +392,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(float f, Column col) {
-        return appendValue(new Float(f), col);
+        return appendValue(Float.valueOf(f), col);
     }
 
     /**
@@ -434,7 +434,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(short s, Column col) {
-        return appendValue(new Short(s), col);
+        return appendValue(Short.valueOf(s), col);
     }
 
     /**

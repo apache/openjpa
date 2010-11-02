@@ -944,13 +944,13 @@ public class JDBCStoreQuery
         Object val = getValue(absVal.getValue(), ob, params, sm);
         Class c = val.getClass();
         if (c == Integer.class)
-            return new Integer(java.lang.Math.abs(((Integer) val).intValue()));
+            return Integer.valueOf(java.lang.Math.abs(((Integer) val).intValue()));
         else if (c == Float.class)
-            return new Float(java.lang.Math.abs(((Float) val).floatValue()));
+            return Float.valueOf(java.lang.Math.abs(((Float) val).floatValue()));
         else if (c == Double.class)
-            return new Double(java.lang.Math.abs(((Double) val).doubleValue()));
+            return Double.valueOf(java.lang.Math.abs(((Double) val).doubleValue()));
         else if (c == Long.class)
-            return new Long(java.lang.Math.abs(((Long) val).longValue()));
+            return Long.valueOf(java.lang.Math.abs(((Long) val).longValue()));
         throw new UnsupportedException();
     }
 
@@ -961,15 +961,13 @@ public class JDBCStoreQuery
         Object val = getValue(sqrtVal.getValue(), ob, params, sm);
         Class c = val.getClass();
         if (c == Integer.class)
-            return new Double(java.lang.Math.sqrt(((Integer) val).
-                doubleValue()));
+            return Double.valueOf(java.lang.Math.sqrt(((Integer) val).doubleValue()));
         else if (c == Float.class)
-            return new Double(java.lang.Math.sqrt(((Float) val).floatValue()));
+            return Double.valueOf(java.lang.Math.sqrt(((Float) val).floatValue()));
         else if (c == Double.class)
-            return new Double(java.lang.Math.sqrt(((Double) val).
-                doubleValue()));
+            return Double.valueOf(java.lang.Math.sqrt(((Double) val).doubleValue()));
         else if (c == Long.class)
-            return new Double(java.lang.Math.sqrt(((Long) val).doubleValue()));
+            return Double.valueOf(java.lang.Math.sqrt(((Long) val).doubleValue()));
         throw new UnsupportedException();
     }    
 

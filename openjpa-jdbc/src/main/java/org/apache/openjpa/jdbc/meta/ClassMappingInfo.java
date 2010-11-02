@@ -178,7 +178,7 @@ public class ClassMappingInfo
     public DBIdentifier[] getSecondaryTableIdentifiers() {
         if (_seconds == null)
             return new DBIdentifier[0];
-        return (DBIdentifier[]) _seconds.keySet().toArray(new DBIdentifier[]{ });
+        return (DBIdentifier[]) _seconds.keySet().toArray(new DBIdentifier[_seconds.size()]);
     }
 
     /**
