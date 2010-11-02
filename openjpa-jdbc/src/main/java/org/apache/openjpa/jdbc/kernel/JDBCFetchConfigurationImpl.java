@@ -217,7 +217,8 @@ public class JDBCFetchConfigurationImpl
             && direction != ResultSet.FETCH_FORWARD
             && direction != ResultSet.FETCH_REVERSE
             && direction != ResultSet.FETCH_UNKNOWN)
-            throw new IllegalArgumentException(_loc.get("bad-fetch-direction", Integer.valueOf(direction)).getMessage());
+            throw new IllegalArgumentException(_loc.get("bad-fetch-direction", Integer.valueOf(direction))
+                .getMessage());
 
         if (direction == DEFAULT) {
             JDBCConfiguration conf = getJDBCConfiguration();
