@@ -22,9 +22,12 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -74,7 +77,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         if (driverVendor == null) {
             if (driverName != null) {
                 if (driverName.startsWith("Microsoft SQL Server")) {
-                    // v1.1, 1.2 or 2.0 driver
+                    // v1.1, 1.2, 2.0 or 3.0 driver
                     driverVendor = VENDOR_MICROSOFT;
                     // serverMajorVersion of 8==2000, 9==2005, 10==2008
                     if (meta.getDatabaseMajorVersion() >= 9)
@@ -87,6 +90,13 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
                         // responseBuffering=adaptive
                         // and disableStatementPooling=true
                         requiresWarnings = false;
+                    }
+                    if (meta.getDatabaseMajorVersion() >= 10) {
+                        // MSSQL 2008 supports new date, time and datetime2 types
+                        // Use DATETIME2 which has 100ns vs. 3.333msec precision
+                        dateTypeName = "DATETIME2";
+                        timeTypeName = "DATETIME";
+                        timestampTypeName = "DATETIME2";
                     }
                 } else {
                     if ("NetDirect JSQLConnect".equals(driverName))
@@ -321,5 +331,4 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         return clob.getCharacterStream();
     }
 
-    
 }

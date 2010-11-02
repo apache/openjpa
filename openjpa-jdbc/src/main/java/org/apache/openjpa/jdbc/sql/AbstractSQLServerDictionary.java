@@ -79,6 +79,7 @@ public abstract class AbstractSQLServerDictionary
             "IMAGE", "TEXT", "NTEXT", "MONEY", "SMALLMONEY", "INT",
             "DOUBLE PRECISION", "DATETIME", "SMALLDATETIME",
             "EXTENDED TYPE", "SYSNAME", "SQL_VARIANT", "INDEX",
+            "DATETIME2",
         }));
     }
 
