@@ -975,6 +975,8 @@
 
                         <!-- TestEJBTransactionalClass tests nothing -->
                         <exclude>org/apache/openjpa/persistence/kernel/TestEJBTransactionalClass.java</exclude>
+                        <!-- Exclude JEST tests for now -->
+                        <exclude>org/apache/openjpa/persistence/jest/Test*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
