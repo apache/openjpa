@@ -1006,6 +1006,9 @@ public abstract class CacheTest extends AbstractTestCase {
             
             endTx(em);
 
+            // get post-persist time for sleep calculations below
+            Date persistTime = new Date();
+
             Object[] ids = new Object[4];
             ids[0] = new Id(CacheObjectE.class, em.getObjectId(e).toString());
             ids[1] = new Id(CacheObjectF.class, em.getObjectId(f).toString());
@@ -1042,26 +1045,34 @@ public abstract class CacheTest extends AbstractTestCase {
                 checkCache(cache, ids, new boolean[]{ true, true, true, true });
             } else {
                 // need to skip the test on slow systems or when using remote DB connections
-                getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(all, <500) because diff="+diff);
+                getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(all, <500) because initial diff="+diff);
             }
             
             // should cause h to be dropped (timeout=500)
             currentTime = new Date();
             diff = (currentTime.getTime() - startTime.getTime());
             sleep = 750 - diff;
-            if (sleep > 0) {
+            if (sleep < (-150)) {
+                // we already missed the window
+                getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(h=500) because sleep="+sleep);
+            } else if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing h to be dropped by waiting sleep="+sleep);
                 Thread.currentThread().sleep(sleep);
                 Thread.yield();
             } else {
                 sleep = 0;
             }
-            if ((diff + sleep) < 950) {
+
+            // recalc diff again
+            currentTime = new Date();
+            diff = (currentTime.getTime() - startTime.getTime());
+            if (sleep >= 0 && diff > 500 && diff < 950) {
                 // only h should be dropped
                 checkCache(cache, ids, new boolean[]{ true, true, true, false });
             } else {
                 // need to skip the test on slow systems or when using remote DB connections
-                getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(h=500) because diff="+(diff+sleep));
+                getLog().warn("CacheTest.timeoutsHelper() skipping checkCache(h=500) because sleep="+sleep+
+                    " and final diff="+diff);
             }
 
             // if this run has a default timeout (set to 1 sec in the test
@@ -1075,7 +1086,7 @@ public abstract class CacheTest extends AbstractTestCase {
             currentTime = new Date();
             diff = currentTime.getTime() - startTime.getTime();
             sleep = 2000 - diff;
-            if (sleep > 0) {
+            if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing f to be dropped by waiting sleep="+sleep);
                 Thread.currentThread().sleep(sleep);
                 Thread.yield();
@@ -1100,7 +1111,7 @@ public abstract class CacheTest extends AbstractTestCase {
             currentTime = new Date();
             diff = currentTime.getTime() - startTime.getTime();
             sleep = 6000 - diff;
-            if (sleep > 0) {
+            if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing g to be dropped by waiting sleep="+sleep);
                 Thread.currentThread().sleep(sleep);
                 Thread.yield();
