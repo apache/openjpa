@@ -259,6 +259,9 @@ public class DBDictionaryFactory {
             return CacheDictionary.class.getName();
         if (prod.indexOf("derby") != -1)
             return dbdictionaryPlugin.unalias("derby");
+        if (prod.indexOf("sapdb") != -1) {
+            return dbdictionaryPlugin.unalias("maxdb");
+        }
         // test h2 in a special way, because there's a decent chance the string 
         // h2 could appear in the URL of another database
         if (prod.indexOf("jdbc:h2:") != -1)
@@ -277,8 +280,6 @@ public class DBDictionaryFactory {
         if (prod.indexOf("cloudscape") != -1)
             return DBDictionary.class.getName();
         if (prod.indexOf("daffodil") != -1)
-            return DBDictionary.class.getName();
-        if (prod.indexOf("sapdb") != -1)
             return DBDictionary.class.getName();
         if (prod.indexOf("idb") != -1) // instantdb
             return DBDictionary.class.getName();

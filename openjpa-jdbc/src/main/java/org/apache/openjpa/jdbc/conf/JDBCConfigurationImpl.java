@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.schema.DriverDataSource;
 import org.apache.openjpa.jdbc.schema.SchemaFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionaryFactory;
+import org.apache.openjpa.jdbc.sql.MaxDBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.StoreContext;
@@ -218,6 +219,7 @@ public class JDBCConfigurationImpl
             "soliddb", "org.apache.openjpa.jdbc.sql.SolidDBDictionary",
             "sqlserver", "org.apache.openjpa.jdbc.sql.SQLServerDictionary",
             "sybase", "org.apache.openjpa.jdbc.sql.SybaseDictionary",
+            "maxdb", MaxDBDictionary.class.getCanonicalName(),
         };
         dbdictionaryPlugin.setAliases(aliases);
         dbdictionaryPlugin.setInstantiatingGetter("getDBDictionaryInstance");
