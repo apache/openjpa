@@ -379,13 +379,4 @@
                 value="buildSchema"/>
         </properties>
     </persistence-unit>
-    
-    <persistence-unit name="jest">
-    	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.openjpa.persistence.jest.JObject</class>
-        <properties>
-        <property name="openjpa.Log" value="Tool=Trace,SQL=WARN,Remote=TRACE"/>
-        <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
-        </properties>
-    </persistence-unit>
 </persistence>

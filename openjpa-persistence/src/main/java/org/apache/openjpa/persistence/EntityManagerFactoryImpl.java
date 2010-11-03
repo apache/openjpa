@@ -45,10 +45,10 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
-import org.apache.openjpa.persistence.jest.Server;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
+import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a
@@ -70,8 +70,7 @@ public class EntityManagerFactoryImpl
     private transient StoreCache _cache = null;
     private transient QueryResultCache _queryCache = null;
     private transient MetamodelImpl _metaModel;
-    private transient Server _remoteAccess = null;
-
+    
     /**
      * Default constructor provided for auto-instantiation.
      */
@@ -94,11 +93,10 @@ public class EntityManagerFactoryImpl
 
     /**
      * Delegate must be provided before use.
-     * Configures for Remote Access, if appropriate. 
      */
     public void setBrokerFactory(BrokerFactory factory) {
-        _factory = new DelegatingBrokerFactory(factory, PersistenceExceptions.TRANSLATOR);
-        configureRemoteAccess(getConfiguration());
+        _factory = new DelegatingBrokerFactory(factory,
+            PersistenceExceptions.TRANSLATOR);
     }
 
     public OpenJPAConfiguration getConfiguration() {
@@ -274,10 +272,6 @@ public class EntityManagerFactoryImpl
         if (log.isTraceEnabled()) {
             log.trace(this + ".close() invoked.");
         }
-        if (_remoteAccess != null) {
-            _remoteAccess.stop();
-            _remoteAccess = null;
-        }
         _factory.close();
     }
 
@@ -403,40 +397,4 @@ public class EntityManagerFactoryImpl
             }
         }
     }
-    
-    /**
-     * Configures this unit for remote access.
-     */
-    protected void configureRemoteAccess(OpenJPAConfiguration conf) {
-        Value value = conf.getValue("RemoteAccess");
-        if (value == null) {
-            return;
-        }
-        String props = value.getString();
-        if (props == null)
-            return;
-        try {
-            _remoteAccess = new Server();
-            _remoteAccess.setContext(this);
-            Configurations.configureInstance(_remoteAccess, conf, props);
-            conf.removeValue(value);
-            if (!_remoteAccess.start()) {
-                _remoteAccess = null;
-            }
-        } catch (Exception ex) {
-            Log log = _factory.getConfiguration().getLog(OpenJPAConfiguration.LOG_RUNTIME);
-            if (log != null) {
-                log.error(_loc.get("remote-start-error"), ex);
-            }
-        }
-    }
-    
-    /**
-     * Affirms if this unit is accessible remotely.
-     */
-    public boolean allowsRemoteAccess() {
-        return _remoteAccess != null;
-    }
-    
-
 }

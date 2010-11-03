@@ -113,7 +113,7 @@ public class MetamodelHelper {
      *
      */
     public static class AttributeComparator implements Comparator<Attribute<?,?>> {
-//        @Override
+        @Override
         public int compare(Attribute<?, ?> a1, Attribute<?, ?> a2) {
             Integer t1 = getAttributeTypeCode(a1);
             Integer t2 = getAttributeTypeCode(a2);

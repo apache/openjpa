@@ -78,7 +78,7 @@ public class QueryExpressions
     private Stack<Context> _contexts = null;
     public Object state;
     public ResultShape<?> shape;
-    public boolean hasParameterizedInExpression;
+    public boolean hasInExpression;
     
     /**
      * Set reference to the JPQL query contexts.
