@@ -85,6 +85,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
             setCandidate(q, Compny1.class);
         List<?> rs = q.getResultList();
         Division d = (Division) rs.get(0);
+        Division d2 = (Division) rs.get(1);
 
         em.clear();
         query = "select ENTRY(e) from Compny1 c, " +
@@ -95,8 +96,8 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         rs = q.getResultList();
         Map.Entry me = (Map.Entry) rs.get(0);
 
-        assertEquals(d, me.getKey());
-
+        assertTrue(d.equals(me.getKey()) || d2.equals(me.getKey()));
+        
         query = "select KEY(e) from Compny2 c, " +
             " in (c.orgs) e order by c.id";
         q = em.createQuery(query);
@@ -104,6 +105,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
             setCandidate(q, Compny2.class);
         rs = q.getResultList();
         d = (Division) rs.get(0);
+        d2 = (Division) rs.get(1);
 
         em.clear();
         query = "select ENTRY(e) from Compny2 c, " +
@@ -114,7 +116,7 @@ public class TestSpec10_1_27 extends SQLListenerTestCase {
         rs = q.getResultList();
         me = (Map.Entry) rs.get(0);
 
-        assertEquals(d, me.getKey());
+        assertTrue(d.equals(me.getKey()) || d2.equals(me.getKey()));
         
         // new tests for element collection
         em.clear();
