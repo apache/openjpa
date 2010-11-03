@@ -567,11 +567,11 @@ transaction.
 AutoDetach</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis> -
+<emphasis role="bold">Default:</emphasis> -    <literal>close</literal>,<literal>rollback</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>close</literal>,
-<literal>commit</literal>, <literal>nontx-read</literal>
+<literal>commit</literal>, <literal>nontx-read</literal>, <literal>rollback</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of events
