@@ -724,4 +724,10 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
             return super.toString();
         }
     }
+    
+    public boolean equals(Object other) {
+        if (toString().equals(other.toString()))
+            return true;
+        return false;
+    }
 }

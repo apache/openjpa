@@ -331,9 +331,10 @@ public class QueryCacheStoreQuery
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
             Range range) {
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
+            Object parsed = cq.getDelegate().newCompilation();
             QueryKey key = QueryKey.newInstance(cq.getContext(),
                 _ex.isPacking(q), params, _candidate, _subs, range.start, 
-                range.end);
+                range.end, parsed);
             List<Object> cached = cq.checkCache(key);
             if (cached != null)
                 return new ListResultObjectProvider(cached);

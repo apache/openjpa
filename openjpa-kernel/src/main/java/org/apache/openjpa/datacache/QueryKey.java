@@ -89,7 +89,7 @@ public class QueryKey
     private String _candidateClassName;
     private boolean _subclasses;
     private Set _accessPathClassNames;
-    private String _query;
+    private Object _query;
     private boolean _ignoreChanges;
     private Map _params;
     private long _rangeStart;
@@ -117,7 +117,7 @@ public class QueryKey
         // via API calls (candidate class, result class, etc)
         q.compile();
         return newInstance(q, false, args, q.getCandidateType(),
-            q.hasSubclasses(), q.getStartRange(), q.getEndRange());
+            q.hasSubclasses(), q.getStartRange(), q.getEndRange(), null);
     }
 
     /**
@@ -128,15 +128,15 @@ public class QueryKey
         // via API calls (candidate class, result class, etc)
         q.compile();
         return newInstance(q, false, args, q.getCandidateType(),
-            q.hasSubclasses(), q.getStartRange(), q.getEndRange());
+            q.hasSubclasses(), q.getStartRange(), q.getEndRange(), null);
     }
 
     /**
      * Return a key for the given query, or null if it is not cacheable.
      */
     static QueryKey newInstance(QueryContext q, boolean packed, Object[] args,
-        Class candidate, boolean subs, long startIdx, long endIdx) {
-        QueryKey key = createKey(q, packed, candidate, subs, startIdx, endIdx);
+        Class candidate, boolean subs, long startIdx, long endIdx, Object parsed) {
+        QueryKey key = createKey(q, packed, candidate, subs, startIdx, endIdx, parsed);
         if (key != null && setParams(key, q, args))
             return key;
         return null;
@@ -146,8 +146,8 @@ public class QueryKey
      * Return a key for the given query, or null if it is not cacheable.
      */
     static QueryKey newInstance(QueryContext q, boolean packed, Map args,
-        Class candidate, boolean subs, long startIdx, long endIdx) {
-        QueryKey key = createKey(q, packed, candidate, subs, startIdx, endIdx);
+        Class candidate, boolean subs, long startIdx, long endIdx, Object parsed) {
+        QueryKey key = createKey(q, packed, candidate, subs, startIdx, endIdx, parsed);
         if (key != null && (args == null || args.isEmpty() ||
             setParams(key, q.getStoreContext(), new HashMap(args))))
             return key;
@@ -160,7 +160,7 @@ public class QueryKey
      * class, query filter, etc.
      */
     private static QueryKey createKey(QueryContext q, boolean packed,
-        Class candidateClass, boolean subclasses, long startIdx, long endIdx) {
+        Class candidateClass, boolean subclasses, long startIdx, long endIdx, Object parsed) {
         if (candidateClass == null)
             return null;
 
@@ -245,6 +245,10 @@ public class QueryKey
         key._accessPathClassNames = accessPathClassNames;
         key._timeout = timeout;
         key._query = q.getQueryString();
+        if (key._query == null) {
+            // this can be a criteria query
+            key._query = parsed;
+        }
         key._ignoreChanges = q.getIgnoreChanges();
         key._rangeStart = startIdx;
         key._rangeEnd = endIdx;
@@ -408,7 +412,7 @@ public class QueryKey
             && _ignoreChanges == other._ignoreChanges
             && _rangeStart == other._rangeStart
             && _rangeEnd == other._rangeEnd
-            && StringUtils.equals(_query, other._query)
+            && ObjectUtils.equals(_query, other._query)
             && ObjectUtils.equals(_params, other._params);
     }
 

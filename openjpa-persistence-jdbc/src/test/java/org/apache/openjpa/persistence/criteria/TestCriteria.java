@@ -21,7 +21,12 @@ package org.apache.openjpa.persistence.criteria;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.query.DomainObject;
@@ -57,6 +62,8 @@ public class TestCriteria extends SingleEMFTestCase {
     public void setUp() {
             super.setUp(CLEAR_TABLES,
                     "openjpa.DynamicEnhancementAgent", "false",
+                    "openjpa.DataCache","true",
+                    "openjpa.QueryCache","true",
                     Account.class,
                     Address.class,
                     A.class,
@@ -231,6 +238,28 @@ public class TestCriteria extends SingleEMFTestCase {
                       " from Department d " +
                       " where d.name = 'Sales'";
         compare(jpql, d);
+    }
+    
+    public void testCount() {
+        
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        for(int i = 0;i<50;i++)
+            em.persist(new Department());
+        em.getTransaction().commit();
+        
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Department> q = cb.createQuery(Department.class);
+        Root<Department> book = q.from(Department.class);
+        TypedQuery<Department> dept = em.createQuery(q);
+        int size = dept.getResultList().size();
+
+        CriteriaQuery<Long> c = cb.createQuery(Long.class);
+        Root<?> from = c.from(Department.class);
+        c.select(cb.count(from));
+        TypedQuery<Long> query = em.createQuery(c);
+        long count = query.getSingleResult();
+        assertEquals(size, count);
     }
     
     public void testGeneralCase() {
