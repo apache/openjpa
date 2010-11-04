@@ -46,7 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class CacheMap
     implements Map {
-
+ 
     /**
      * The map for non-expired and non-pinned references.
      */
@@ -350,18 +350,19 @@ public class CacheMap
     public Object get(Object key) {
         readLock();
         try {
-            Object val = pinnedMap.get(key);
-            if (val != null)
-                return val;
-
-            val = cacheMap.get(key);
+            // Check the main map first
+            Object  val = cacheMap.get(key);
             if (val == null) {
                 // if we find the key in the soft map, move it back into
                 // the primary map
                 val = softMap.get(key);
-                if (val != null)
+                if (val != null){
                     put(key, val);
+                }else{
+                    val = pinnedMap.get(key);
+                }
             }
+           
             return val;
         } finally {
             readUnlock();
@@ -501,9 +502,7 @@ public class CacheMap
     public boolean containsKey(Object key) {
         readLock();
         try {
-            return pinnedMap.get(key) != null
-                || cacheMap.containsKey(key)
-                || softMap.containsKey(key);
+            return cacheMap.containsKey(key) || pinnedMap.get(key) != null || softMap.containsKey(key);
         } finally {
             readUnlock();
         }
@@ -512,9 +511,7 @@ public class CacheMap
     public boolean containsValue(Object val) {
         readLock();
         try {
-            return pinnedMap.containsValue(val)
-                || cacheMap.containsValue(val)
-                || softMap.containsValue(val);
+            return cacheMap.containsValue(val) || pinnedMap.containsValue(val) || softMap.containsValue(val);
         } finally {
             readUnlock();
         }
@@ -535,8 +532,7 @@ public class CacheMap
     public String toString() {
         readLock();
         try {
-            return "CacheMap:" + cacheMap.toString() + "::"
-                + softMap.toString();
+            return "CacheMap:" + cacheMap.toString() + "::" + softMap.toString();
         } finally {
             readUnlock();
         }
