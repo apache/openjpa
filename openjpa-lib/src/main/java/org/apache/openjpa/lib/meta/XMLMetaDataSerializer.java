@@ -27,10 +27,9 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
@@ -98,10 +97,10 @@ public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
         if (files == null)
             return;
 
-        // for each file, serialize objects
-        Collection<Object> fileObjs; 
-        for(File file : files.keySet()) { 
-            fileObjs = files.get(file); 
+        // for each file, serialize objects 
+        for (Entry<File, Collection<Object>> entry : files.entrySet()) {
+            File file = entry.getKey();
+            Collection<Object> fileObjs = entry.getValue(); 
             if (_log != null && _log.isInfoEnabled())
                 _log.info(_loc.get("ser-file", file));
 
