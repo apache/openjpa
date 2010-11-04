@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
@@ -459,7 +460,8 @@ public class MySQLDictionary
      */
     @Override
     public String getTypeName(Column col) {
-        if (col.getType() == Types.BLOB) {
+        // handle blobs differently, if the DBItentifierType is NULL (e.g. no column definition is set). 
+        if (col.getType() == Types.BLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
             if (col.getSize() <= 0)   // unknown size
                 return blobTypeName;  // return old default of 64KB
             else if (col.getSize() <= 255)
