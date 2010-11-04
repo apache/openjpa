@@ -36,6 +36,10 @@ release of OpenJPA, while the <link linkend="dbcompatible">Compatible Database
 Matrix</link> contains the list of databases and drivers that were tested 
 against prior releases or by OpenJPA users and may not support every feature
 of this release.
+
+The <link linked="dbunverified">Unverified Database Matrix</link> contains a 
+list of databases which have been reported to work, but have not been tested by
+the development team. 
     </para>
     </section>
 
@@ -523,6 +527,64 @@ databases that have been fully tested against this release, please refer to the
                     </entry>
                     <entry colname="drivversion">
                         5.5 (5.5)
+                    </entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+
+    </section>
+
+<section id="dbunverified">
+    <title>
+        Unverified Database Matrix
+    </title>
+    <para>
+Following is a table of the database and JDBC driver versions that have been reported
+to work with OpenJPA by the community but have not been verified by the development
+team. In some cases this is a question of availability since the developers may not
+be able to obtain a license to test, or have experience configuring these databases. 
+For the list of databases that have been fully tested against this release, please 
+refer to the <link linkend="dbsupport">Verified Database Matrix</link> section.
+    </para>
+    <table tocentry="1">
+        <title>
+            Unverified Databases and JDBC Drivers
+        </title>
+        <tgroup rowsep="1" colsep="1" align="left" cols="4">
+            <colspec colname="dbname"/>
+            <colspec colname="dbversion"/>
+            <colspec colname="drivname"/>
+            <colspec colname="drivversion"/>
+            <thead>
+                <row>
+                    <entry colname="dbname">
+                        Database Name
+                    </entry>
+                    <entry colname="dbversion">
+                        Database Version
+                    </entry>
+                    <entry colname="drivname">
+                        JDBC Driver Name
+                    </entry>
+                    <entry colname="drivversion">
+                        JDBC Driver Version
+                    </entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry colname="dbname">
+                        SAP MaxDB
+                    </entry>
+                    <entry colname="dbversion">
+                        
+                    </entry>
+                    <entry colname="drivname">
+                        
+                    </entry>
+                    <entry colname="drivversion">
+                       
                     </entry>
                 </row>
             </tbody>
