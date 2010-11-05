@@ -717,10 +717,13 @@ public class Column
                     case Types.CHAR:
                     case Types.LONGVARCHAR:
                     case Types.VARCHAR:
+                    case Types.CLOB:
+                    case Types.BLOB:
                         return true;
                      default:
                          return false;
                 }
+                
             default:
                 return type == getType();
         }
