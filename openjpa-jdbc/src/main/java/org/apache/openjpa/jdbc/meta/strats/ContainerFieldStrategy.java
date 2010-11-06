@@ -77,7 +77,7 @@ public abstract class ContainerFieldStrategy
         appendSize(sql, sel, joins);
     }
 
-    protected abstract ForeignKey getJoinForeignKey();
+    public abstract ForeignKey getJoinForeignKey();
 
     public void appendSize(SQLBuffer sql, Select sel, Joins joins) {
         DBDictionary dict = field.getMappingRepository().getDBDictionary();

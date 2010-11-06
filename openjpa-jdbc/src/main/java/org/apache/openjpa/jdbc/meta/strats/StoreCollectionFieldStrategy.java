@@ -597,7 +597,7 @@ public abstract class StoreCollectionFieldStrategy
         return loadElement(null, store, fetch, res, joins);
     }
 
-    protected ForeignKey getJoinForeignKey() {
+    public ForeignKey getJoinForeignKey() {
         return getJoinForeignKey(getDefaultElementMapping(false));
     }
     

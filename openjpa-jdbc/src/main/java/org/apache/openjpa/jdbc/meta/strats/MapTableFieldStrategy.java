@@ -182,7 +182,7 @@ public abstract class MapTableFieldStrategy
         return field.join(joins, forceOuter, true);
     }
 
-    protected ForeignKey getJoinForeignKey() {
+    public ForeignKey getJoinForeignKey() {
         return field.getJoinForeignKey();
     }
 

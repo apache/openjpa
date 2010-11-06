@@ -26,6 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
+import org.apache.openjpa.jdbc.meta.Strategy;
+import org.apache.openjpa.jdbc.meta.strats.ContainerFieldStrategy;
+import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
@@ -124,6 +128,7 @@ public class PessimisticLockManager
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
 
         List<SQLBuffer> sqls = getLockRows(dict, id, mapping, fetch, _store.getSQLFactory()); 
+        lockJoinTables(sqls, dict, id, mapping, fetch, _store.getSQLFactory());
 
         ensureStoreManagerTransaction();
         Connection conn = _store.getConnection();
@@ -162,6 +167,21 @@ public class PessimisticLockManager
         List<SQLBuffer> sqls = new ArrayList<SQLBuffer>();
         sqls.add(select.toSelect(true, fetch));
         return sqls;
+    }
+    
+    protected void lockJoinTables(List<SQLBuffer> sqls, DBDictionary dict, Object id, ClassMapping mapping,
+            JDBCFetchConfiguration fetch, SQLFactory factory) {
+        FieldMapping[] fms = mapping.getFieldMappings();
+        for (int i = 0; i < fms.length; i++) {
+            Strategy strat = fms[i].getStrategy();
+            if (strat instanceof ContainerFieldStrategy) {
+                ForeignKey fk = ((ContainerFieldStrategy)strat).getJoinForeignKey();
+                Select select = factory.newSelect();
+                select.select(fk.getColumns());
+                select.whereForeignKey(fk, id, fms[i].getDefiningMapping(), _store);
+                sqls.add(select.toSelect(true, fetch));
+            }
+        }
     }
 
     /**
