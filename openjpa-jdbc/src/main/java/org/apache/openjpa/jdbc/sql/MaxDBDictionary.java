@@ -19,8 +19,8 @@
 package org.apache.openjpa.jdbc.sql;
 
 /**
- * Database dictionary for using SAP's MaxDB Dictionary. Currently just a placeholder, the behavior does not differ from
- * <code> org.apache.openjpa.jdbc.sql.Dictionary</code>
+ * Database dictionary for using SAP's MaxDB. Currently just a placeholder, the behavior does not differ from
+ * <code>org.apache.openjpa.jdbc.sql.DBDictionary</code>
  *
  */
 public class MaxDBDictionary extends DBDictionary {
