@@ -1273,22 +1273,22 @@ openjpa.ConnectionRetainMode: always
 Mapping persistent attributes to <link linkend="ref_guide_xmlmapping">XML columns</link> requires
 a JDBC 4 compliant driver if XML strings are longer than 4000 bytes, as counted in database.
 Otherwise an <literal>ORA-01461: can bind a LONG value only for insert into a LONG column</literal>
-error may result. This limitation is removed in Oracle jdbc driver 11.2.0.x.
+error may result.
                     </para>
                 </listitem>
                 <listitem>
                     <para>
 If Oracle dictionary property <literal>MaxEmbeddedBlobSize</literal> or
 <literal>MaxEmbeddedClobSize</literal> is set to some limit (i.e. not -1) and embedded collection
-with blob/clob attribute is used, a 
+with BLOB/CLOB attribute is used, a 
 <literal>"org.apache.openjpa.persistence.ArgumentException:
 "x.y.z.EmbedOwner.embedCollection&lt;element:class x.y.z.EmbedValue&gt;"
 is mapped as embedded, but embedded field
 "x.y.z.EmbedOwner.embedCollection.x.y.z.EmbedValue.blob" is not embeddable. 
 Embedded element/key/value types are limited to simple fields and direct relations to other 
-persistent types"</literal> error may result. To overcome this limitation, either use jdbc driver
+persistent types"</literal> error may result. To overcome this limitation, either use JDBC driver
 11.2.0.x.0 (or later version) or set both <literal>MaxEmbeddedBlobSize</literal> and
-<literal>MaxEmbeddedClobSize</literal> oracle dictiionary properties to -1.
+<literal>MaxEmbeddedClobSize</literal> properties to -1.
                     </para>
                 </listitem>
             </itemizedlist>
