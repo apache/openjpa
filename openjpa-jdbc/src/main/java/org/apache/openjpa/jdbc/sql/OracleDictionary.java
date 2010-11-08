@@ -732,6 +732,9 @@ public class OracleDictionary
                 cols[i].setType(Types.VARCHAR);
             else if ("NCHAR".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.CHAR);
+            else if ("XMLTYPE".equalsIgnoreCase(typeName)) { 
+                cols[i].setXML(true);
+            }
         }
         return cols;
     }
