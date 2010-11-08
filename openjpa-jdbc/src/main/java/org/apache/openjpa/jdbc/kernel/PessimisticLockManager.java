@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.LockScopes;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
@@ -128,7 +129,8 @@ public class PessimisticLockManager
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
 
         List<SQLBuffer> sqls = getLockRows(dict, id, mapping, fetch, _store.getSQLFactory()); 
-        lockJoinTables(sqls, dict, id, mapping, fetch, _store.getSQLFactory());
+        if (ctx.getFetchConfiguration().getLockScope() == LockScopes.LOCKSCOPE_EXTENDED)
+            lockJoinTables(sqls, dict, id, mapping, fetch, _store.getSQLFactory());
 
         ensureStoreManagerTransaction();
         Connection conn = _store.getConnection();

@@ -43,6 +43,7 @@ import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
@@ -1682,8 +1683,14 @@ public class EntityManagerImpl
             LockModeType lock, boolean requiresTxn) {
         // handle properties in map first
         if (properties != null) {
-            for (Map.Entry<String, Object> entry : properties.entrySet())
-                fetch.setHint(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if (key.equals("javax.persistence.lock.scope")) {
+                    fetch.setLockScope((PessimisticLockScope)value);
+                } else
+                    fetch.setHint(key, value);
+            }
         }
         // override with the specific lockMode, if needed.
         if (lock != null && lock != LockModeType.NONE) {
