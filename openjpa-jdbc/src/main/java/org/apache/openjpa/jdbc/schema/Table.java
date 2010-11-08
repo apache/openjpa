@@ -366,6 +366,7 @@ public class Table
         copy.setSize(col.getSize());
         copy.setDecimalDigits(col.getDecimalDigits());
         copy.setAutoAssigned(col.isAutoAssigned());
+        copy.setXML(col.isXML());
         return copy;
     }
 
