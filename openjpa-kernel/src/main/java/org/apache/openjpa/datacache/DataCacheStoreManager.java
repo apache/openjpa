@@ -281,9 +281,9 @@ public class DataCacheStoreManager
 
     public boolean exists(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        CacheStatistics stats = cache.getStatistics();
+        CacheStatistics stats = (cache == null) ? null : cache.getStatistics();
         if (cache != null && !isLocking(null) && cache.contains(sm.getObjectId())){
-            if (stats.isEnabled()) {
+            if (stats != null && stats.isEnabled()) {
                 // delay this call ONLY if stats collection is enabled
                 Class<?> cls = sm.getMetaData().getDescribedType();
                 ((CacheStatisticsSPI)stats).newGet(cls, false);
@@ -291,7 +291,7 @@ public class DataCacheStoreManager
             return true;
         }
         // If isLocking(null)==true && cache.contains(..) == true... probably shouldn't count?
-        if (stats.isEnabled()) {
+        if (stats != null && stats.isEnabled()) {
             // delay this call ONLY if stats collection is enabled
             Class<?> cls = sm.getMetaData().getDescribedType();
             ((CacheStatisticsSPI)stats).newGet(cls, false);
@@ -322,14 +322,13 @@ public class DataCacheStoreManager
     public boolean syncVersion(OpenJPAStateManager sm, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
         FetchConfiguration fc = sm.getContext().getFetchConfiguration();
-        CacheStatistics stats = cache.getStatistics();
+        CacheStatistics stats = (cache == null) ? null : cache.getStatistics();
         if (cache == null || sm.isEmbedded() || fc.getCacheRetrieveMode() == DataCacheRetrieveMode.BYPASS) {
-            if(stats.isEnabled()){
-                ((CacheStatisticsSPI)stats).newGet(sm.getMetaData().getDescribedType(), false);
+            if (stats != null && stats.isEnabled()) {
+                ((CacheStatisticsSPI) stats).newGet(sm.getMetaData().getDescribedType(), false);
             }
             return super.syncVersion(sm, edata);
         }
-        
         DataCachePCData data;
         Object version = null;
         data = cache.get(sm.getObjectId());
@@ -338,7 +337,7 @@ public class DataCacheStoreManager
 
         // if we have a cached version update from there
         if (version != null) {
-            if(stats.isEnabled()){
+            if (stats != null && stats.isEnabled()) {
                 ((CacheStatisticsSPI)stats).newGet(data.getType(), true);
             }
             if (!version.equals(sm.getVersion())) {
