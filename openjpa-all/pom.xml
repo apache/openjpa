@@ -54,6 +54,7 @@
                                     <fileset dir="${basedir}/..">
                                         <include name="*/target/openjpa-*.jar" />
                                         <exclude name="*/target/openjpa-examples-*.jar" />
+                                        <exclude name="**/*test*.jar"/>
                                         <exclude name="**/*-sources.jar" />
                                         <exclude name="**/*-javadoc.jar" />
                                     </fileset>
