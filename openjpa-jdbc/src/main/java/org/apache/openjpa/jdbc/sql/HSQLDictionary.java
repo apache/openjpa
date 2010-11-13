@@ -39,16 +39,17 @@ import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
 
 /**
- * Dictionary for Hypersonic SQL database.
+ * Dictionary for HyperSQL (HSQLDB) database.
  */
-public class HSQLDictionary
-    extends DBDictionary {
+public class HSQLDictionary extends DBDictionary {
 
     /**
      * Sets whether HSQL should use "CREATED CACHED TABLE" rather than
      * "CREATE TABLE", which allows disk-based database operations.
      */
     public boolean cacheTables = false;
+
+    private int dbMajorVersion;
 
     private SQLBuffer _oneBuffer = new SQLBuffer(this).append("1");
 
@@ -80,8 +81,6 @@ public class HSQLDictionary
         rangePosition = RANGE_PRE_DISTINCT;
         supportsDeferredConstraints = false;
 
-        useGetObjectForBlobs = true;
-        blobTypeName = "VARBINARY";
         doubleTypeName = "NUMERIC";
 
         supportsNullTableForGetPrimaryKeys = true;
@@ -98,6 +97,39 @@ public class HSQLDictionary
         }));
     }
 
+    /**
+     * Determine HSQLDB version and configure itself accordingly.
+     */
+    @Override
+    public void connectedConfiguration(Connection conn) throws SQLException {
+        super.connectedConfiguration(conn);
+
+        determineHSQLDBVersion(conn) ;
+
+        if (dbMajorVersion == 1) {
+            blobTypeName = "VARBINARY";
+            useGetObjectForBlobs = true;
+        }
+    }
+
+    /**
+     * Determine HSQLDB version either by using JDBC 3 method or, if it
+     * is not available, by parsing the value returned by
+     * {@linkplain DatabaseMetaData#getDatabaseProductVersion()}.
+     */
+    protected void determineHSQLDBVersion(Connection con) throws SQLException {
+        DatabaseMetaData metaData = con.getMetaData();
+
+        if (isJDBC3) {
+            dbMajorVersion = metaData.getDatabaseMajorVersion();
+        } else {
+            // String is like "2.0.0"
+            String productVersion = metaData.getDatabaseProductVersion();
+            String[] version = productVersion.split("\\.") ;
+            dbMajorVersion = Integer.parseInt(version[0]) ;
+        }
+    }
+
     @Override
     public int getJDBCType(int metaTypeCode, boolean lob) {
         int type = super.getJDBCType(metaTypeCode, lob);
@@ -112,6 +144,9 @@ public class HSQLDictionary
 
     @Override
     public int getPreferredType(int type) {
+        if (dbMajorVersion > 1) {
+            return super.getPreferredType(type);
+        }
         switch (type) {
             case Types.CLOB:
                 return Types.VARCHAR;
