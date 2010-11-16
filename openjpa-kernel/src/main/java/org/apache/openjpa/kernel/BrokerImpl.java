@@ -287,6 +287,9 @@ public class BrokerImpl
                 "RetainState",
                 }));
     }
+    
+    private boolean _printParameters = false;
+    private static final String PRINT_PARAMETERS_CONFIG_STR = "PrintParameters";
 
     /**
      * Set the persistence manager's authentication. This is the first
@@ -378,6 +381,9 @@ public class BrokerImpl
             _instm.start(InstrumentationLevel.BROKER, this);
         }
 
+        _printParameters =
+            Boolean.parseBoolean(Configurations.parseProperties(_conf.getConnectionFactoryProperties()).getProperty(
+                PRINT_PARAMETERS_CONFIG_STR, "false"));
         // synch with the global transaction in progress, if any
         if (_factory.syncWithManagedTransaction(this, false))
             beginInternal();
@@ -4706,6 +4712,12 @@ public class BrokerImpl
         return _isSerializing;
     }
 
+    /**
+     * @return The value of openjpa.ConnectionFactoryProperties.PrintParameters. Default is false.
+     */
+    public boolean getPrintParameters() {
+        return _printParameters;
+    }
     /**
      * Transactional cache that holds soft refs to clean instances.
      */

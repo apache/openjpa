@@ -130,6 +130,7 @@ public class QueryImpl
     private transient final Collection<RemoveOnCloseResultList> _resultLists = 
         new ReferenceHashSet(ReferenceHashSet.WEAK);
 
+    private boolean _printParameters = false;
     /**
      * Construct a query managed by the given broker.
      */
@@ -140,7 +141,7 @@ public class QueryImpl
         _fc = (FetchConfiguration) broker.getFetchConfiguration().clone();
         _log = broker.getConfiguration().getLog(OpenJPAConfiguration.LOG_QUERY);
         _storeQuery.setContext(this);
-
+        _printParameters = _broker.getPrintParameters();
         if (_broker != null && _broker.getMultithreaded())
             _lock = new ReentrantLock();
     }
@@ -1195,16 +1196,19 @@ public class QueryImpl
     /**
      * Trace log that the query is executing.
      */
-    private void logExecution(int op, Map<?, ?> params) {
+    private void logExecution(int op, Map<Object, Object> params) {
         String s = _query;
         if (StringUtils.isEmpty(s))
             s = toString();
 
         String msg = "executing-query";
-        if (!params.isEmpty())
-            msg += "-with-params";
+        if (params.isEmpty() == false) {
+            msg = "executing-query-with-params";
+        }
 
-        _log.trace(_loc.get(msg, s, params));
+        // If we aren't supposed to print parameters, replace values with '?'
+        Object p = (_printParameters) ? params : "?";
+        _log.trace(_loc.get(msg, s, p));
     }
 
     /**

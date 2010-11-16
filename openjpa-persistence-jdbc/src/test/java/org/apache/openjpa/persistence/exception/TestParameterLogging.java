@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.exception;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
@@ -25,12 +27,18 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.RollbackException;
 
+import org.apache.openjpa.lib.log.AbstractLog;
+import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestParameterLogging extends AbstractPersistenceTestCase {
-
+public class TestParameterLogging extends AbstractPersistenceTestCase implements LogFactory {
     String _regex = ".*params=.*1,.*]";
-
+    private static final String ID = Integer.toString(Integer.MIN_VALUE);
+    public void tearDown() throws Exception {
+        super.tearDown();
+        messages.clear();
+    }
     /*
      * Persist the same row twice in the same transaction - will throw an exception with the failing SQL statement
      */
@@ -100,4 +108,81 @@ public class TestParameterLogging extends AbstractPersistenceTestCase {
             nested = nested.getCause();
         }
     }
+
+    public void testDefaultPrintParameters() {
+        queryCachePrintParametersLogic(null);
+    }
+    
+    public void testPrintParametersTrue() {
+        queryCachePrintParametersLogic(true);
+    }
+
+    public void testPrintParametersFalse() {
+        queryCachePrintParametersLogic(false);
+    }
+    
+    private void queryCachePrintParametersLogic(Boolean printParameters){
+        Object[] props = null;
+        if (printParameters == null) {
+            props =
+                new Object[] { PObject.class, CLEAR_TABLES, "openjpa.DataCache", "true",
+                    "openjpa.Log", "org.apache.openjpa.persistence.exception.TestParameterLogging" };
+        } else {
+            props =
+                new Object[] { PObject.class, CLEAR_TABLES, "openjpa.DataCache", "true",
+                    "openjpa.Log", "org.apache.openjpa.persistence.exception.TestParameterLogging",
+                    "openjpa.ConnectionFactoryProperties", "PrintParameters=" + printParameters.booleanValue() };
+        }
+        EntityManagerFactory emf = createEMF(props);
+        EntityManager em = emf.createEntityManager();
+        String queryStr = "SELECT c FROM PObject c WHERE c.id=:id";
+        em.createQuery(queryStr).setParameter("id", Integer.MIN_VALUE).getResultList();
+        em.createQuery(queryStr).setParameter("id", Integer.MIN_VALUE).getResultList();
+        boolean expected = (printParameters == null) ? false : printParameters.booleanValue();
+        boolean actual = false;
+        
+        // Look through all trace messages for the ID before doing asserts
+        for (String s : messages) {
+            actual |= s.contains(ID);
+        }
+        
+        assertEquals(expected, actual);
+    }
+
+    // Start LogFactory implementation
+    // This is static so both the test and the logger share
+    private static List<String> messages = new ArrayList<String>();
+    public Log getLog(String channel) {
+        return new AbstractLog() {
+
+            protected boolean isEnabled(short logLevel) {
+                return true;
+            }
+
+            @Override
+            public void trace(Object message) {
+                messages.add(message.toString());
+            }
+
+            protected void log(short type, String message, Throwable t) {
+                messages.add(message);
+            }
+            
+            @Override
+            public void error(Object message) {
+                messages.add(message.toString());
+            }
+            @Override
+            public void warn(Object message) {
+                // TODO Auto-generated method stub
+                super.warn(message.toString());
+            }
+            @Override
+            public void info(Object message) {
+                messages.add(message.toString());
+            }
+        };
+    }
+
+    // End LogFactory implementation
 }
