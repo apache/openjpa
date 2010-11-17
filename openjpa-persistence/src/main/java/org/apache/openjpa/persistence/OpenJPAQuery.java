@@ -25,9 +25,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.FlushModeType;
+import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
+import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.QueryFlushModes;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryOperations;
@@ -177,19 +179,39 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
 
     public OpenJPAQuery<X> setParameter(String name, Object value);
 
-    public OpenJPAQuery<X> setParameter(String name, Date value,
-        TemporalType temporalType);
+    public OpenJPAQuery<X> setParameter(String name, Date value, TemporalType temporalType);
 
-    public OpenJPAQuery<X> setParameter(String name, Calendar value,
-        TemporalType temporalType);
+    public OpenJPAQuery<X> setParameter(String name, Calendar value, TemporalType temporalType);
 
     public OpenJPAQuery<X> setParameter(int position, Object value);
 
-    public OpenJPAQuery<X> setParameter(int position, Date value,
-        TemporalType temporalType);
+    public OpenJPAQuery<X> setParameter(int position, Date value, TemporalType temporalType);
 
-    public OpenJPAQuery<X> setParameter(int position, Calendar value,
-        TemporalType temporalType);
+    public OpenJPAQuery<X> setParameter(int position, Calendar value, TemporalType temporalType);
+    
+    /**
+     * Sets whether the type of user-supplied bind parameter value and the type of target persistent 
+     * property they bind to are checked with strong or weak constraint.
+     * <br>
+     * The same can be set via {@link Query#setHint(String, Object) hint} without puncturing standard
+     * JPA API.
+     * 
+     * @see Filters#canConvert(Class, Class, boolean)
+     * @see Filters#convert(Object, Class, boolean)
+     * 
+     * @param hint a String or Boolean value.
+     */
+    public void setRelaxBindParameterTypeChecking(Object hint);
+    
+    /**
+     * Gets whether the type of user-supplied bind parameter value and the type of target persistent 
+     * property they bind to are checked with strong or weak constraint.
+     * 
+     * @return the booelan state. False by default, i.e. the type of a bind parameter value is checked
+     * strongly against the target property type.  
+     */
+    public boolean getRelaxBindParameterTypeChecking();
+    
 
     public OpenJPAQuery<X> setFlushMode(FlushModeType flushMode);
 
@@ -233,29 +255,25 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> addFilterListener(
-        org.apache.openjpa.kernel.exps.FilterListener listener);
+    public OpenJPAQuery<X> addFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> removeFilterListener(
-        org.apache.openjpa.kernel.exps.FilterListener listener);
+    public OpenJPAQuery<X> removeFilterListener(org.apache.openjpa.kernel.exps.FilterListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> addAggregateListener(
-        org.apache.openjpa.kernel.exps.AggregateListener listener);
+    public OpenJPAQuery<X> addAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
 
     /**
      * @deprecated cast to {@link QueryImpl} instead. This
      * method pierces the published-API boundary, as does the SPI cast.
      */
-    public OpenJPAQuery<X> removeAggregateListener(
-        org.apache.openjpa.kernel.exps.AggregateListener listener);
+    public OpenJPAQuery<X> removeAggregateListener(org.apache.openjpa.kernel.exps.AggregateListener listener);
     
     /**
      * Gets hints supported by this query.

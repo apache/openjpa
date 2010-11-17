@@ -54,6 +54,7 @@ import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.QueryStatistics;
@@ -91,7 +92,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	private String _id;
     private transient ReentrantLock _lock = null;
 	private HintHandler _hintHandler;
-
+	private boolean _relaxBindParameterTypeChecking;
+	
 	/**
 	 * Constructor; supply factory exception translator and delegate.
 	 * 
@@ -253,6 +255,20 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 			_query.setRange(start, start + max);
 		return this;
 	}
+	
+	public boolean getRelaxBindParameterTypeChecking() {
+	    return _relaxBindParameterTypeChecking;
+	}
+	
+	public void setRelaxBindParameterTypeChecking(Object value) {
+	    if (value != null) {
+	        if (value instanceof String) {
+	            _relaxBindParameterTypeChecking = "true".equalsIgnoreCase(value.toString());
+	        } else if (value instanceof Boolean) {
+                _relaxBindParameterTypeChecking = ((Boolean)value).booleanValue();
+	        }
+	    }
+	}
 
 	public OpenJPAQuery<X> compile() {
 		_em.assertNotCloseInvoked();
@@ -323,7 +339,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 */
 	public X getSingleResult() {
 		_em.assertNotCloseInvoked();
-        setHint("openjpa.hint.OptimizeResultCount", 1); // for DB2 optimization
+        setHint(QueryHints.HINT_RESULT_COUNT, 1); // for DB2 optimization
 		List result = getResultList();
 		if (result == null || result.isEmpty())
             throw new NoResultException(_loc.get("no-result", getQueryString())
@@ -1042,10 +1058,10 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      * Validates if the parameter can accept the value by its type.
      */
     void bindValue(Parameter<?> param, Object value) {
-        assertValueAssignable(param, value);
+        Object bindVal = assertValueAssignable(param, value);
         if (_boundParams == null)
             _boundParams = new HashMap<Parameter<?>, Object>();
-        _boundParams.put(param, value);
+        _boundParams.put(param, bindVal);
     }
 
     public OpenJPAQuery<X> setParameter(String name, Calendar value, TemporalType type) {
@@ -1078,15 +1094,33 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
         }
     }
 
-    void assertValueAssignable(Parameter<?> param, Object v) {
+    /**
+     * Convert the given value to match the given parameter type, if possible.
+     * 
+     * @param param a query parameter
+     * @param v a user-supplied value for the parameter
+     */
+    Object assertValueAssignable(Parameter<?> param, Object v) {
+        Class<?> expectedType = param.getParameterType();
         if (v == null) {
-            if (param.getParameterType().isPrimitive())
+            if (expectedType.isPrimitive())
                 throw new IllegalArgumentException(_loc.get("param-null-primitive", param).getMessage());
-            return;
+            return v;
         }
-        if (!Filters.canConvert(v.getClass(), param.getParameterType(), true)) {
-            throw new IllegalArgumentException(_loc.get("param-type-mismatch", new Object[]{
-                param, getQueryString(), v, v.getClass().getName(), param.getParameterType().getName()}).getMessage());
+        if (getRelaxBindParameterTypeChecking()) {
+            try {
+                return Filters.convert(v, expectedType);
+            } catch (Exception e) {
+                throw new IllegalArgumentException(_loc.get("param-type-mismatch", new Object[]{
+                    param, getQueryString(), v, v.getClass().getName(), expectedType.getName()}).getMessage());
+            }
+        } else {
+            if (!Filters.canConvert(v.getClass(), expectedType, true)) {
+                throw new IllegalArgumentException(_loc.get("param-type-mismatch", new Object[]{
+                    param, getQueryString(), v, v.getClass().getName(), expectedType.getName()}).getMessage());
+            } else {
+                return v;
+            }
         }
     }
     

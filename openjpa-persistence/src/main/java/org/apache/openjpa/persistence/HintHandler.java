@@ -150,6 +150,8 @@ public class HintHandler  {
             if (value instanceof String)
                 value = Boolean.valueOf((String) value);
             owner.setSubclasses(((Boolean) value).booleanValue());
+        } else if (QueryHints.HINT_RELAX_BIND_PARAM_TYPE_CHECK.equals(key)) {
+            owner.setRelaxBindParameterTypeChecking(value);
         } else if (QueryHints.HINT_FILTER_LISTENER.equals(key)) {
             owner.addFilterListener(Filters.hintToFilterListener(value, loader));
         } else if (QueryHints.HINT_FILTER_LISTENERS.equals(key)) {

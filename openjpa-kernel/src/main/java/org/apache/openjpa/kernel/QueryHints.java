@@ -43,8 +43,7 @@ public interface QueryHints {
      * to count number of parameters assuming that all <code>?</code> characters
      * designate a bind parameter. This assumption makes the parse faster.
      */
-    public static final String HINT_PARAM_MARKER_IN_QUERY =
-        "openjpa.hint.ParameterMarkerInQuery";
+    public static final String HINT_PARAM_MARKER_IN_QUERY = "openjpa.hint.ParameterMarkerInQuery";
     
     /**
      * A directive to invalidate any prepared SQL that might have been cached
@@ -61,8 +60,7 @@ public interface QueryHints {
      * 
      * @see #HINT_IGNORE_PREPARED_QUERY
      */
-    public static final String HINT_INVALIDATE_PREPARED_QUERY =
-        "openjpa.hint.InvalidatePreparedQuery";
+    public static final String HINT_INVALIDATE_PREPARED_QUERY = "openjpa.hint.InvalidatePreparedQuery";
     
     /**
      * A directive to ignore any prepared SQL that might have been cached
@@ -80,8 +78,7 @@ public interface QueryHints {
      * 
      * @see #HINT_INVALIDATE_PREPARED_QUERY
      */
-    public static final String HINT_IGNORE_PREPARED_QUERY =
-        "openjpa.hint.IgnorePreparedQuery";
+    public static final String HINT_IGNORE_PREPARED_QUERY = "openjpa.hint.IgnorePreparedQuery";
 
     /**
      * A directive to ignore any cached finder query for find() operation.
@@ -92,12 +89,17 @@ public interface QueryHints {
     /**
      * A directive to invalidate any cached finder query.
      */
-    public static final String HINT_INVALIDATE_FINDER = 
-        "openjpa.hint.InvalidateFinder";
+    public static final String HINT_INVALIDATE_FINDER = "openjpa.hint.InvalidateFinder";
     
     /**
      * A directive to overwrite a cached finder query by a new query. 
      */
     public static final String HINT_RECACHE_FINDER = 
         "openjpa.hint.RecacheFinder";
+    
+    /**
+     * A boolean directive to relax checking of binding parameter value and the predicate
+     * it binds to.
+     */
+    public static final String HINT_RELAX_BIND_PARAM_TYPE_CHECK = "openjpa.hint.RelaxParameterTypeChecking";
 }

@@ -328,6 +328,8 @@ public class Filters {
                 } catch (IllegalArgumentException e) {
                     
                 }
+            } else if (o instanceof String && type.isEnum()) {
+                return Enum.valueOf((Class<Enum>)type, o.toString());
             }
         }
         if (!num)
