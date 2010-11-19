@@ -595,6 +595,7 @@ public class AnnotationPersistenceMetaDataSerializer
                 case TYPE_SEQ:
                     if (isMappingMode())
                         serializeSequence((SequenceMetaData) obj);
+                    break;
                 case TYPE_QUERY:
                     serializeQuery((QueryMetaData) obj);
                     break;
