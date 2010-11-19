@@ -392,9 +392,14 @@ public class DataCacheStoreManager
                            && ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached)
                             || (fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH));
         if (updateCache) {
-            cacheStateManager(cache, sm, data);
-            if (stats.isEnabled()) {
-                ((CacheStatisticsSPI) stats).newPut(sm.getMetaData().getDescribedType());
+            // It is possible that the "cacheability" of the provided SM changed after hitting the DB. This can happen
+            // when we are operating against an Entity that is in some sort of inheritance structure.
+            cache = _mgr.selectCache(sm);
+            if (cache != null) {
+                cacheStateManager(cache, sm, data);
+                if (stats.isEnabled()) {
+                    ((CacheStatisticsSPI) stats).newPut(sm.getMetaData().getDescribedType());
+                }
             }
         }
         return fromDatabase || alreadyCached;
