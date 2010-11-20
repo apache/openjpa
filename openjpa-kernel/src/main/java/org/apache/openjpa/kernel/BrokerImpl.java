@@ -2460,12 +2460,17 @@ public class BrokerImpl
         try {
             assertWriteOperation();
 
-            for (Iterator<?> itr = objs.iterator(); itr.hasNext();) {
+            for (Object obj : objs) {
                 try {
-                    persist(itr.next(), explicit, call);
+                	if(obj == null)
+                		continue;
+                    persist0(obj, null, explicit, call);
                 } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
+                catch (RuntimeException re) {
+                    throw new GeneralException(re);
+                } 
             }
         } finally {
             endOperation();
@@ -2532,86 +2537,7 @@ public class BrokerImpl
         try {
             assertWriteOperation();
 
-            StateManagerImpl sm = getStateManagerImpl(obj, true);
-            if (!_operating.add(obj))
-                return sm;
-
-            int action = processArgument(OpCallbacks.OP_PERSIST, obj, sm, call);
-            if (action == OpCallbacks.ACT_NONE)
-                return sm;
-
-            // ACT_CASCADE
-            if ((action & OpCallbacks.ACT_RUN) == 0) {
-                if (sm != null)
-                    sm.cascadePersist(call);
-                else
-                    cascadeTransient(OpCallbacks.OP_PERSIST, obj, call,
-                        "persist");
-                return sm;
-            }
-
-            // ACT_RUN
-            PersistenceCapable pc;
-            if (sm != null) {
-                if (sm.isDetached())
-                    throw new ObjectExistsException(_loc.get
-                        ("persist-detached", Exceptions.toString(obj))).
-                        setFailedObject(obj);
-
-                if (!sm.isEmbedded()) {
-                    sm.persist();
-                    _cache.persist(sm);
-                    if ((action & OpCallbacks.ACT_CASCADE) != 0)
-                        sm.cascadePersist(call);
-                    return sm;
-                }
-
-                // an embedded field; notify the owner that the value has
-                // changed by becoming independently persistent
-                sm.getOwner().dirty(sm.getOwnerIndex());
-                _cache.persist(sm);
-                pc = sm.getPersistenceCapable();
-            } else {
-                pc = assertPersistenceCapable(obj);
-                if (pc.pcIsDetached() == Boolean.TRUE)
-                    throw new ObjectExistsException(_loc.get
-                        ("persist-detached", Exceptions.toString(obj))).
-                        setFailedObject(obj);
-            }
-
-            ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
-            fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
-
-            // create id for instance
-            if (id == null) {
-            	int idType = meta.getIdentityType();
-                if (idType == ClassMetaData.ID_APPLICATION)
-                    id = ApplicationIds.create(pc, meta);
-                else if (idType == ClassMetaData.ID_UNKNOWN)
-                    throw new UserException(_loc.get("meta-unknownid", meta));
-                else
-                    id = StateManagerId.newInstance(this);
-            }
-
-            // make sure we don't already have the instance cached
-            checkForDuplicateId(id, obj, meta);
-
-            // if had embedded sm, null it
-            if (sm != null)
-                pc.pcReplaceStateManager(null);
-
-            // create new sm
-            sm = newStateManagerImpl(id, meta);
-            if ((_flags & FLAG_ACTIVE) != 0) {
-                if (explicit)
-                    sm.initialize(pc, PCState.PNEW);
-                else
-                    sm.initialize(pc, PCState.PNEWPROVISIONAL);
-            } else
-                sm.initialize(pc, PCState.PNONTRANSNEW);
-            if ((action & OpCallbacks.ACT_CASCADE) != 0)
-                sm.cascadePersist(call);
-            return sm;
+            return persist0(obj, id, explicit, call);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
@@ -2620,6 +2546,90 @@ public class BrokerImpl
             endOperation();
         }
     }
+
+	private OpenJPAStateManager persist0(Object obj, Object id,
+			boolean explicit, OpCallbacks call) {
+		StateManagerImpl sm = getStateManagerImpl(obj, true);
+		if (!_operating.add(obj))
+		    return sm;
+
+		int action = processArgument(OpCallbacks.OP_PERSIST, obj, sm, call);
+		if (action == OpCallbacks.ACT_NONE)
+		    return sm;
+
+		// ACT_CASCADE
+		if ((action & OpCallbacks.ACT_RUN) == 0) {
+		    if (sm != null)
+		        sm.cascadePersist(call);
+		    else
+		        cascadeTransient(OpCallbacks.OP_PERSIST, obj, call,
+		            "persist");
+		    return sm;
+		}
+
+		// ACT_RUN
+		PersistenceCapable pc;
+		if (sm != null) {
+		    if (sm.isDetached())
+		        throw new ObjectExistsException(_loc.get
+		            ("persist-detached", Exceptions.toString(obj))).
+		            setFailedObject(obj);
+
+		    if (!sm.isEmbedded()) {
+		        sm.persist();
+		        _cache.persist(sm);
+		        if ((action & OpCallbacks.ACT_CASCADE) != 0)
+		            sm.cascadePersist(call);
+		        return sm;
+		    }
+
+		    // an embedded field; notify the owner that the value has
+		    // changed by becoming independently persistent
+		    sm.getOwner().dirty(sm.getOwnerIndex());
+		    _cache.persist(sm);
+		    pc = sm.getPersistenceCapable();
+		} else {
+		    pc = assertPersistenceCapable(obj);
+		    if (pc.pcIsDetached() == Boolean.TRUE)
+		        throw new ObjectExistsException(_loc.get
+		            ("persist-detached", Exceptions.toString(obj))).
+		            setFailedObject(obj);
+		}
+
+		ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
+		fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
+
+		// create id for instance
+		if (id == null) {
+			int idType = meta.getIdentityType();
+		    if (idType == ClassMetaData.ID_APPLICATION)
+		        id = ApplicationIds.create(pc, meta);
+		    else if (idType == ClassMetaData.ID_UNKNOWN)
+		        throw new UserException(_loc.get("meta-unknownid", meta));
+		    else
+		        id = StateManagerId.newInstance(this);
+		}
+
+		// make sure we don't already have the instance cached
+		checkForDuplicateId(id, obj, meta);
+
+		// if had embedded sm, null it
+		if (sm != null)
+		    pc.pcReplaceStateManager(null);
+
+		// create new sm
+		sm = newStateManagerImpl(id, meta);
+		if ((_flags & FLAG_ACTIVE) != 0) {
+		    if (explicit)
+		        sm.initialize(pc, PCState.PNEW);
+		    else
+		        sm.initialize(pc, PCState.PNEWPROVISIONAL);
+		} else
+		    sm.initialize(pc, PCState.PNONTRANSNEW);
+		if ((action & OpCallbacks.ACT_CASCADE) != 0)
+		    sm.cascadePersist(call);
+		return sm;
+	}
 
     /**
      * Temporarily manage the given instance in order to cascade the given
