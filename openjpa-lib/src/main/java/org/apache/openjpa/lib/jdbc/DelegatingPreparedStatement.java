@@ -61,6 +61,7 @@ public abstract class DelegatingPreparedStatement
         try {
             concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingPreparedStatement.class,
                     PreparedStatement.class, Connection.class);
+            concreteImpl.setAccessible(true);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

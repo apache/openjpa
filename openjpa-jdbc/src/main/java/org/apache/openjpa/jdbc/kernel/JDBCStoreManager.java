@@ -125,12 +125,16 @@ public class JDBCStoreManager
         try {
             clientConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ClientConnection.class, 
                 Connection.class);
+            clientConnectionImpl.setAccessible(true);
             refCountConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(RefCountConnection.class,
                 JDBCStoreManager.class, Connection.class);
+            refCountConnectionImpl.setAccessible(true);
             cancelStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelStatement.class,
                 JDBCStoreManager.class, Statement.class, Connection.class);
+            cancelStatementImpl.setAccessible(true);
             cancelPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelPreparedStatement.class,
                 JDBCStoreManager.class, PreparedStatement.class, Connection.class);
+            cancelPreparedStatementImpl.setAccessible(true);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

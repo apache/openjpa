@@ -99,21 +99,27 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         try {
             loggingConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(LoggingConnection.class,
                 LoggingConnectionDecorator.class, Connection.class);
+            loggingConnectionImpl.setAccessible(true);
             loggingResultSetImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingResultSet.class, 
                 LoggingConnection.class, ResultSet.class, Statement.class);
+            loggingResultSetImpl.setAccessible(true);
             loggingStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingStatement.class,
                 LoggingConnection.class, Statement.class);
+            loggingStatementImpl.setAccessible(true);
             loggingPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingPreparedStatement.class, 
                 LoggingConnection.class, PreparedStatement.class, String.class);
+            loggingPreparedStatementImpl.setAccessible(true);
             loggingCallableStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingCallableStatement.class,
                 LoggingConnection.class, CallableStatement.class, String.class);
+            loggingCallableStatementImpl.setAccessible(true);
             loggingDatabaseMetaDataImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingDatabaseMetaData.class,
                 LoggingConnection.class, DatabaseMetaData.class);
+            loggingDatabaseMetaDataImpl.setAccessible(true);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

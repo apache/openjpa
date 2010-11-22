@@ -46,6 +46,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
         try {
             configuringConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ConfiguringConnection.class, 
                     ConfiguringConnectionDecorator.class, Connection.class);
+            configuringConnectionImpl.setAccessible(true);
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
