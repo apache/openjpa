@@ -2032,7 +2032,7 @@ public class SelectImpl
         Integer i = null;
         Object key = table.getFullIdentifier().getName();
         if (pj != null && pj.path() != null)
-            key = new Key(pj.path().toString(), key);
+            key = new Key(pj.getPathStr(), key);
 
         if (_ctx != null && (_parent != null || _subsels != null || _hasSub)) {
             i = findAliasForQuery(table, pj, key, create);
@@ -2192,6 +2192,10 @@ public class SelectImpl
     }
 
     public StringBuilder path() {
+        return null;
+    }
+    
+    public String getPathStr() {
         return null;
     }
 
@@ -2551,6 +2555,10 @@ public class SelectImpl
         public StringBuilder path() {
             return null;
         }
+        
+        public String getPathStr() {
+            return null;
+        }
 
         public JoinSet joins() {
             return null;
@@ -2630,6 +2638,7 @@ public class SelectImpl
         protected String correlatedVar = null;
         protected Context context = null;
         protected Context lastContext = null;
+        protected String pathStr = null;
 
         public Select getSelect() {
             return null;
@@ -2734,7 +2743,15 @@ public class SelectImpl
                     path = new StringBuilder(str);
                 else
                     path.append('.').append(str);
+                pathStr = null;
             }
+        }
+        
+        public String getPathStr() {
+            if (pathStr == null) {
+                pathStr = path.toString();
+            }
+            return pathStr;
         }
 
         public String toString() {
@@ -3297,5 +3314,7 @@ interface PathJoins
      * @return
      */
     public Select getSelect();
+    
+    public String getPathStr();
 }
 
