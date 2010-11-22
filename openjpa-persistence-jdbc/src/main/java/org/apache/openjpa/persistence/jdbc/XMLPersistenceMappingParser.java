@@ -907,7 +907,11 @@ public class XMLPersistenceMappingParser
         if (currentParent == COLLECTION_TABLE) {
             FieldMapping fm = (FieldMapping) peekElement();
             Column col = parseColumn(attrs);
-            List<Column> colList = new ArrayList<Column>();
+            List<Column> colList = fm.getMappingInfo().getColumns();
+            if (colList.isEmpty()) {
+                colList = new ArrayList<Column>();
+                fm.getMappingInfo().setColumns(colList);
+            }
             colList.add(col);
             fm.getMappingInfo().setColumns(colList);
             return true;

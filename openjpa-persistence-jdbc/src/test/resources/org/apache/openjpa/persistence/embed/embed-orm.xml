@@ -216,6 +216,33 @@ version="2.0">
         </attributes>
     </entity>    
 
+	<entity class="org.apache.openjpa.persistence.embed.FeatureXml">
+		<table name="features" />
+		<attributes>
+			<embedded-id name="id" />
+			<element-collection name="attributes">
+				<collection-table name="qualifiers">
+					<join-column name="FEATURE_INDEX" referenced-column-name = "index"/>
+					<join-column name="FEATURE_OID" referenced-column-name="oid"  />
+				</collection-table>
+			</element-collection>
+		</attributes>
+	</entity>     
+
+	<embeddable class="org.apache.openjpa.persistence.embed.AttributeXml">
+		<attributes>
+			<basic name="name"></basic>
+			<basic name="value"></basic>
+		</attributes>
+	</embeddable>
+
+	<embeddable class="org.apache.openjpa.persistence.embed.FeatureIdXml">
+		<attributes>
+			<basic name="oid"></basic>
+			<basic name="index"></basic>
+		</attributes>
+	</embeddable>
+
     <embeddable 
         class="org.apache.openjpa.persistence.embed.attrOverrides.AddressXml" 
         access="FIELD">

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,53 @@ public class TestEmbeddableXml extends SingleEMFTestCase {
     @Override
     protected String getPersistenceUnitName() {
         return "embed-pu";
+    }
+    
+    public void testJoinColumns() {
+        createFeatureXml();
+        EntityManager em = emf.createEntityManager();
+        String jpql = "Select f from Feature f Join fetch f.attributes";
+        Query q = em.createQuery(jpql);
+        List<FeatureXml> fList = (List<FeatureXml>) q.getResultList();
+        for (FeatureXml f : fList) {
+            List<AttributeXml> aList = f.getAttributes();;
+            assertEquals(1, aList.size());
+        }
+        em.close();
+    }
+    
+    public void createFeatureXml() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        tran.begin();
+        FeatureXml f = new FeatureXml();
+        FeatureIdXml fid = new FeatureIdXml();
+        fid.setIndex(1);
+        fid.setOid("oid");
+        f.setId(fid);
+        AttributeXml a = new AttributeXml();
+        a.setName("name1");
+        a.setValue("value1");
+        List<AttributeXml> aList = new ArrayList<AttributeXml>();
+        aList.add(a);
+        f.setAttributes(aList);
+        em.persist(f);
+        
+        FeatureXml f1 = new FeatureXml();
+        FeatureIdXml fid1 = new FeatureIdXml();
+        fid1.setIndex(1);
+        fid1.setOid("oid1");
+        f1.setId(fid1);
+        AttributeXml a1 = new AttributeXml();
+        a1.setName("name1");
+        a1.setValue("value1");
+        List<AttributeXml> aList1 = new ArrayList<AttributeXml>();
+        aList1.add(a1);
+        f1.setAttributes(aList1);
+        em.persist(f1);
+        
+        tran.commit();       
+        em.close();
     }
     
     public void testEntityA_Coll_StringXml() {
