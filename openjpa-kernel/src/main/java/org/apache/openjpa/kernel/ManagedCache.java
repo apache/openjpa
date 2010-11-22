@@ -24,14 +24,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceHashSet;
 import org.apache.openjpa.util.Exceptions;
-import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
 
 /**
@@ -42,11 +40,11 @@ class ManagedCache implements Serializable {
     private static final Localizer _loc =
         Localizer.forPackage(ManagedCache.class);
 
-    private Map _main; // oid -> sm
-    private Map _conflicts = null; // conflict oid -> new sm
-    private Map _news = null; // tmp id -> new sm
-    private Collection _embeds = null; // embedded/non-persistent sms
-    private Collection _untracked = null; // hard refs to untracked sms
+    private Map<Object,StateManagerImpl> _main; // oid -> sm
+    private Map<Object,StateManagerImpl> _conflicts = null; // conflict oid -> new sm
+    private Map<Object,StateManagerImpl> _news = null; // tmp id -> new sm
+    private Collection<StateManagerImpl> _embeds = null; // embedded/non-persistent sms
+    private Collection<StateManagerImpl> _untracked = null; // hard refs to untracked sms
     private BrokerImpl broker;
 
     /**
@@ -54,7 +52,7 @@ class ManagedCache implements Serializable {
      */
     ManagedCache(BrokerImpl broker) {
         this.broker = broker;
-        _main = broker.newManagedObjectCache();
+        _main = (Map<Object, StateManagerImpl>) broker.newManagedObjectCache();
     }
 
     /**
@@ -66,7 +64,7 @@ class ManagedCache implements Serializable {
             return null;
 
         // check main cache for oid
-        StateManagerImpl sm = (StateManagerImpl) _main.get(oid);
+        StateManagerImpl sm = _main.get(oid);
         StateManagerImpl sm2;
         if (sm != null) {
             // if it's a new instance, we know it's the only match, because
@@ -78,7 +76,7 @@ class ManagedCache implements Serializable {
 
             // sm is deleted; check conflict cache
             if (_conflicts != null) {
-                sm2 = (StateManagerImpl) _conflicts.get(oid);
+                sm2 = _conflicts.get(oid);
                 if (sm2 != null)
                     return sm2;
             }
@@ -86,9 +84,9 @@ class ManagedCache implements Serializable {
 
         // at this point sm is null or deleted; check the new cache for
         // any matches. this allows us to match app id objects to new
-        // instances without permanant oids
+        // instances without permanent oids
         if (allowNew && _news != null && !_news.isEmpty()) {
-            sm2 = (StateManagerImpl) _news.get(oid);
+            sm2 = _news.get(oid);
             if (sm2 != null)
                 return sm2;
         }
@@ -101,7 +99,7 @@ class ManagedCache implements Serializable {
     public void add(StateManagerImpl sm) {
         if (!sm.isIntercepting()) {
             if (_untracked == null)
-                _untracked = new HashSet();
+                _untracked = new HashSet<StateManagerImpl>();
             _untracked.add(sm);
         }
 
@@ -116,14 +114,13 @@ class ManagedCache implements Serializable {
         // permanent oid yet
         if (sm.isNew()) {
             if (_news == null)
-                _news = new HashMap();
+                _news = new HashMap<Object,StateManagerImpl>();
             _news.put(sm.getId(), sm);
             return;
         }
 
         // initializing persistent instance; put in main cache
-        StateManagerImpl orig = (StateManagerImpl) _main.put
-            (sm.getObjectId(), sm);
+        StateManagerImpl orig = _main.put(sm.getObjectId(), sm);
         if (orig != null) {
             _main.put(sm.getObjectId(), orig);
             throw new UserException(_loc.get("dup-load", sm.getObjectId(),
@@ -140,7 +137,7 @@ class ManagedCache implements Serializable {
         // if it has a permanent oid, remove from main / conflict cache,
         // else remove from embedded/nontrans cache, and if not there
         // remove from new cache
-        Object orig;
+    	StateManagerImpl orig;
         if (sm.getObjectId() != null) {
             orig = _main.remove(id);
             if (orig != sm) {
@@ -179,14 +176,14 @@ class ManagedCache implements Serializable {
         // not be in new cache if another new instance had same id
         StateManagerImpl orig = null;
         if (_news != null) {
-            orig = (StateManagerImpl) _news.remove(id);
+            orig = _news.remove(id);
             if (orig != null && orig != sm)
                 _news.put(id, orig); // put back
         }
 
         // put in main cache, but make sure we don't replace another
         // instance with the same oid
-        orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
+        orig = _main.put(sm.getObjectId(), sm);
         if (orig != null) {
             _main.put(sm.getObjectId(), orig);
             if (!orig.isDeleted())
@@ -197,7 +194,7 @@ class ManagedCache implements Serializable {
 
             // same oid as deleted instance; put in conflict cache
             if (_conflicts == null)
-                _conflicts = new HashMap();
+                _conflicts = new HashMap<Object,StateManagerImpl>();
             _conflicts.put(sm.getObjectId(), sm);
         }
     }
@@ -210,10 +207,9 @@ class ManagedCache implements Serializable {
         // id, but it could have been in conflict cache
         StateManagerImpl orig;
         if (sm.getObjectId() == id) {
-            orig = (_conflicts == null) ? null
-                : (StateManagerImpl) _conflicts.remove(id);
+            orig = (_conflicts == null) ? null : _conflicts.remove(id);
             if (orig == sm) {
-                orig = (StateManagerImpl) _main.put(id, sm);
+                orig = _main.put(id, sm);
                 if (orig != null && !orig.isDeleted()) {
                     _main.put(sm.getObjectId(), orig);
                     throw new UserException(_loc.get("dup-oid-assign",
@@ -232,8 +228,8 @@ class ManagedCache implements Serializable {
         if (_news != null)
             _news.remove(id);
 
-        // and put into main cache now that id is asssigned
-        orig = (StateManagerImpl) _main.put(sm.getObjectId(), sm);
+        // and put into main cache now that id is assigned
+        orig = _main.put(sm.getObjectId(), sm);
         if (orig != null && orig != sm && !orig.isDeleted()) {
             // put back orig and throw error
             _main.put(sm.getObjectId(), orig);
@@ -246,7 +242,7 @@ class ManagedCache implements Serializable {
     /**
      * Return a copy of all cached persistent objects.
      */
-    public Collection copy() {
+    public Collection<StateManagerImpl> copy() {
         // proxies not included here because the state manager is always
         // present in other caches too
 
@@ -260,19 +256,18 @@ class ManagedCache implements Serializable {
         if (size == 0)
             return Collections.EMPTY_LIST;
 
-        List copy = new ArrayList(size);
-        for (Iterator itr = _main.values().iterator(); itr.hasNext();)
-            copy.add(itr.next());
+        List<StateManagerImpl> copy = new ArrayList<StateManagerImpl>(size);
+        for (StateManagerImpl sm : _main.values())
+            copy.add(sm);
         if (_conflicts != null && !_conflicts.isEmpty())
-            for (Iterator itr = _conflicts.values().iterator();
-                itr.hasNext();)
-                copy.add(itr.next());
+            for (StateManagerImpl sm : _conflicts.values())
+                copy.add(sm);
         if (_news != null && !_news.isEmpty())
-            for (Iterator itr = _news.values().iterator(); itr.hasNext();)
-                copy.add(itr.next());
+        	 for (StateManagerImpl sm : _news.values())
+                 copy.add(sm);
         if (_embeds != null && !_embeds.isEmpty())
-            for (Iterator itr = _embeds.iterator(); itr.hasNext();)
-                copy.add(itr.next());
+        	for (StateManagerImpl sm : _embeds)
+                copy.add(sm);
         return copy;
     }
 
@@ -280,7 +275,7 @@ class ManagedCache implements Serializable {
      * Clear the cache.
      */
     public void clear() {
-        _main = broker.newManagedObjectCache();
+        _main = (Map<Object, StateManagerImpl>) broker.newManagedObjectCache();
         if (_conflicts != null)
             _conflicts = null;
         if (_news != null)
@@ -303,7 +298,7 @@ class ManagedCache implements Serializable {
         if (_untracked == null)
             return;
 
-        for (Iterator iter = _untracked.iterator(); iter.hasNext(); )
-            ((StateManagerImpl) iter.next()).dirtyCheck();
+        for (StateManagerImpl sm : _untracked)
+        	sm.dirtyCheck();
     }
 }

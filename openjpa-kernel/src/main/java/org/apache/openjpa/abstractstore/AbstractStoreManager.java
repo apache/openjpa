@@ -234,7 +234,7 @@ public abstract class AbstractStoreManager
      * bulk loading APIs, overriding this method to be more clever may be
      * advantageous.
      */
-    public Collection loadAll(Collection sms, PCState state, int load,
+    public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
         FetchConfiguration fetch, Object edata) {
         return ImplHelper.loadAll(sms, this, state, load, fetch, edata);
     }
@@ -244,18 +244,16 @@ public abstract class AbstractStoreManager
      * states, and delegates to
      * {@link #flush(Collection,Collection,Collection,Collection,Collection)}.
      */
-    public Collection flush(Collection sms) {
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
         // break down state managers by state; initialize as empty lists;
         // use constants for efficiency
-        Collection pNew = new LinkedList();
-        Collection pNewUpdated = new LinkedList();
-        Collection pNewFlushedDeleted = new LinkedList();
-        Collection pDirty = new LinkedList();
-        Collection pDeleted = new LinkedList();
+        Collection<OpenJPAStateManager> pNew = new LinkedList<OpenJPAStateManager>();
+        Collection<OpenJPAStateManager> pNewUpdated = new LinkedList<OpenJPAStateManager>();
+        Collection<OpenJPAStateManager> pNewFlushedDeleted = new LinkedList<OpenJPAStateManager>();
+        Collection<OpenJPAStateManager> pDirty = new LinkedList<OpenJPAStateManager>();
+        Collection<OpenJPAStateManager> pDeleted = new LinkedList<OpenJPAStateManager>();
 
-        OpenJPAStateManager sm;
-        for (Iterator itr = sms.iterator(); itr.hasNext();) {
-            sm = (OpenJPAStateManager) itr.next();
+        for (OpenJPAStateManager sm : sms) {
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed())
                 pNew.add(sm);
             else if (sm.getPCState() == PCState.PNEW && sm.isFlushed())
@@ -472,9 +470,9 @@ public abstract class AbstractStoreManager
      * may have been in a previous flush invocation's persistentDirty list.
      * @return a collection of exceptions encountered during flushing.
      */
-    protected abstract Collection flush(Collection pNew,
-        Collection pNewUpdated, Collection pNewFlushedDeleted,
-        Collection pDirty, Collection pDeleted);
+    protected abstract Collection<Exception> flush(Collection<OpenJPAStateManager> pNew,
+        Collection<OpenJPAStateManager> pNewUpdated, Collection<OpenJPAStateManager> pNewFlushedDeleted,
+        Collection<OpenJPAStateManager> pDirty, Collection<OpenJPAStateManager> pDeleted);
 
     /**
      * Return a new configuration instance for this runtime. Configuration
@@ -498,8 +496,8 @@ public abstract class AbstractStoreManager
      * <li>{@link OpenJPAConfiguration#OPTION_DATASTORE_CONNECTION}</li>
      * </ul>
      */
-    protected Collection getUnsupportedOptions() {
-        Collection c = new HashSet();
+    protected Collection<String> getUnsupportedOptions() {
+        Collection<String> c = new HashSet<String>();
         c.add(OpenJPAConfiguration.OPTION_OPTIMISTIC);
         c.add(OpenJPAConfiguration.OPTION_ID_DATASTORE);
         c.add(OpenJPAConfiguration.OPTION_INC_FLUSH);
