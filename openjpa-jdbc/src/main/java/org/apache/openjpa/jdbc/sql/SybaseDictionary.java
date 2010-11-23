@@ -135,8 +135,7 @@ public class SybaseDictionary
         }));
 
         // reserved words specified at:
-        // http://manuals.sybase.com/onlinebooks/group-as/asg1250e/
-        // refman/@Generic__BookTextView/26603
+        // http://manuals.sybase.com/onlinebooks/group-as/asg1250e/refman/@Generic__BookTextView/26603
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "ARITH_OVERFLOW", "BREAK", "BROWSE", "BULK", "CHAR_CONVERT",
             "CHECKPOINT", "CLUSTERED", "COMPUTE", "CONFIRM", "CONTROLROW",
@@ -159,7 +158,8 @@ public class SybaseDictionary
             "USER_OPTION", "WAITFOR", "WHILE", "WRITETEXT",
         }));
         
-        invalidColumnWordSet.addAll(Arrays.asList(new String [] { "DUMMY" } ));
+        // Sybase does not allow reserved words to be used as column names. 
+        invalidColumnWordSet.addAll(reservedWordSet);
 
         // Sybase does not support foreign key delete/update action NULL,
         // DEFAULT, CASCADE
