@@ -19,12 +19,14 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Connection decorator that can configure some properties of the
@@ -46,7 +48,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
         try {
             configuringConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ConfiguringConnection.class, 
                     ConfiguringConnectionDecorator.class, Connection.class);
-            configuringConnectionImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(configuringConnectionImpl, true));
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
