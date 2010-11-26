@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.security.AccessController;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -44,6 +45,7 @@ import java.util.Calendar;
 
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Wrapper around an existing statement. Subclasses can override the
@@ -61,7 +63,7 @@ public abstract class DelegatingPreparedStatement
         try {
             concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingPreparedStatement.class,
                     PreparedStatement.class, Connection.class);
-            concreteImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(concreteImpl, true));
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

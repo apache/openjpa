@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +37,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.QueryCacheStoreQuery;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -47,7 +47,6 @@ import org.apache.openjpa.jdbc.meta.Discriminator;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
-import org.apache.openjpa.jdbc.schema.DataSourceFactory;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -76,6 +75,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -125,16 +125,16 @@ public class JDBCStoreManager
         try {
             clientConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ClientConnection.class, 
                 Connection.class);
-            clientConnectionImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(clientConnectionImpl, true));
             refCountConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(RefCountConnection.class,
                 JDBCStoreManager.class, Connection.class);
-            refCountConnectionImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(refCountConnectionImpl, true));
             cancelStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelStatement.class,
                 JDBCStoreManager.class, Statement.class, Connection.class);
-            cancelStatementImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(cancelStatementImpl, true));
             cancelPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelPreparedStatement.class,
                 JDBCStoreManager.class, PreparedStatement.class, Connection.class);
-            cancelPreparedStatementImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(cancelPreparedStatementImpl, true));
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }

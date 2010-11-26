@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.security.AccessController;
 import java.sql.Array;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -99,27 +100,27 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         try {
             loggingConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(LoggingConnection.class,
                 LoggingConnectionDecorator.class, Connection.class);
-            loggingConnectionImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingConnectionImpl, true));
             loggingResultSetImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingResultSet.class, 
                 LoggingConnection.class, ResultSet.class, Statement.class);
-            loggingResultSetImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingResultSetImpl, true));
             loggingStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingStatement.class,
                 LoggingConnection.class, Statement.class);
-            loggingStatementImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingStatementImpl, true));
             loggingPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingPreparedStatement.class, 
                 LoggingConnection.class, PreparedStatement.class, String.class);
-            loggingPreparedStatementImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingPreparedStatementImpl, true));
             loggingCallableStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingCallableStatement.class,
                 LoggingConnection.class, CallableStatement.class, String.class);
-            loggingCallableStatementImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingCallableStatementImpl, true));
             loggingDatabaseMetaDataImpl = ConcreteClassGenerator.getConcreteConstructor(
                 LoggingConnection.LoggingDatabaseMetaData.class,
                 LoggingConnection.class, DatabaseMetaData.class);
-            loggingDatabaseMetaDataImpl.setAccessible(true);
+            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingDatabaseMetaDataImpl, true));
         } catch (Exception e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -1273,7 +1274,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
                             // set the current params to the saved values
                             if (indexOfFirstFailedObject < _paramBatch.size())
-                                _params = (List) _paramBatch.get(indexOfFirstFailedObject);
+                                _params = (List<String>) _paramBatch.get(indexOfFirstFailedObject);
                         }
                     }
                     err = wrap(se, LoggingPreparedStatement.this, indexOfFirstFailedObject);
