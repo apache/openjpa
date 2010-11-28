@@ -72,13 +72,9 @@ public class HSQLDictionary extends DBDictionary {
         trimTrailingFunction = "RTRIM({0})";
         trimBothFunction = "LTRIM(RTRIM({0}))";
 
-        // HSQL 1.8.0 does support schema names in the table ("schema.table"),
-        // but doesn't support it for columns references ("schema.table.column")
-        useSchemaName = false;
         supportsSelectForUpdate = false;
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
-        rangePosition = RANGE_PRE_DISTINCT;
         supportsDeferredConstraints = false;
 
         doubleTypeName = "NUMERIC";
@@ -109,6 +105,10 @@ public class HSQLDictionary extends DBDictionary {
         if (dbMajorVersion == 1) {
             blobTypeName = "VARBINARY";
             useGetObjectForBlobs = true;
+            rangePosition = RANGE_PRE_DISTINCT;
+            // HSQL 1.8.0 does support schema names in the table ("schema.table"),
+            // but doesn't support it for columns references ("schema.table.column")
+            useSchemaName = false;
         }
     }
 
@@ -310,6 +310,13 @@ public class HSQLDictionary extends DBDictionary {
     @Override
     protected void appendSelectRange(SQLBuffer buf, long start, long end,
         boolean subselect) {
+        if (dbMajorVersion > 1) {
+            if (start != 0)
+                buf.append(" OFFSET ").appendValue(start);
+            if (end != Long.MAX_VALUE)
+                buf.append(" LIMIT ").appendValue(end - start);
+            return;
+        }
         // HSQL doesn't parameters in range
         buf.append(" LIMIT ").append(String.valueOf(start)).append(" ");
         if (end == Long.MAX_VALUE)

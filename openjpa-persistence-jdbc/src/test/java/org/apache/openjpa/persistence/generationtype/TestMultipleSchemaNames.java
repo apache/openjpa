@@ -27,6 +27,7 @@ import javax.persistence.Query;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
+import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -42,7 +43,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMultipleSchemaNames extends SingleEMFTestCase {
 
     public void setUp() {
-        // Need to skip tests on MySQL, Oracle and MS SQL Server
+        // Need to skip tests on some databases.
         // See createSchemas() comment at the bottom
         setUnsupportedDatabases(
                 MySQLDictionary.class,
@@ -415,9 +416,9 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
     }
 
     /**
-     * Create necessary schemas if running on PostgreSQL or H2 as they do
+     * Create necessary schemas if running on PostgreSQL, H2, solidDB or HSQLDB as they do
      * not create them automatically.
-     * Oracle, MySQL and MSSQL also don't create schemas automatically but
+     * Oracle, MySQL, MSSQL and Sybase also don't create schemas automatically but
      * we give up as they treat schemas in special ways.
      */
     private void createSchemas() {
@@ -425,7 +426,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         DBDictionary dict = ((JDBCConfiguration) tempEmf.getConfiguration()).getDBDictionaryInstance();
         
         if (!(dict instanceof PostgresDictionary || dict instanceof H2Dictionary || 
-            dict instanceof SolidDBDictionary)) {
+            dict instanceof SolidDBDictionary || dict instanceof HSQLDictionary)) {
             closeEMF(tempEmf);
             return;
         }
