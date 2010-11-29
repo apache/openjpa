@@ -193,6 +193,20 @@ public class TestEmbeddable extends SQLListenerTestCase {
         em.close();
     }
 
+    /**
+     * Test for OJ-1890.
+     */
+    public void testSettingEmbeddableMultipleTimesOnManagedEntity() {
+        createEntityA_Embed();
+        EntityManager em = emf.createEntityManager();
+        EntityA_Embed ee = em.find(EntityA_Embed.class, ID);
+        Embed embed = createEmbed(ID, 0);
+        ee.setEmbed(embed);
+        Embed embed1 = createEmbed(ID, 1);
+        ee.setEmbed(embed1);
+        em.close();
+    }
+
     public void queryEntityA_Embed_Coll_Map() {
         EntityManager em = emf.createEntityManager();
         String query[] = {
@@ -637,12 +651,12 @@ public class TestEmbeddable extends SQLListenerTestCase {
         a.setId(id);
         a.setName("a" + id);
         a.setAge(id);
-        Embed_Embed embed = createEmbed_Embed(em, id, 0);
+        Embed_Embed embed = createEmbed_Embed(id, 0);
         a.setEmbed(embed);
         em.persist(a);
     }
 
-    public Embed_Embed createEmbed_Embed(EntityManager em, int id, int idx) {
+    public Embed_Embed createEmbed_Embed(int id, int idx) {
         Embed_Embed embed = new Embed_Embed();
         embed.setIntVal1(id * 100 + idx * 10 + 1);
         embed.setIntVal2(id * 100 + idx * 10 + 2);
@@ -650,6 +664,26 @@ public class TestEmbeddable extends SQLListenerTestCase {
         Embed embed1 = createEmbed(id, idx);
         embed.setEmbed(embed1);
         return embed;
+    }
+
+    public void createEntityA_Embed() {
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tran = em.getTransaction();
+        createEntityA_Embed(em, ID);
+        tran.begin();
+        em.flush();
+        tran.commit();
+        em.close();
+    }
+
+    public void createEntityA_Embed(EntityManager em, int id) {
+        EntityA_Embed a = new EntityA_Embed();
+        a.setId(id);
+        a.setName("a" + id);
+        a.setAge(id);
+        Embed embed = createEmbed(id, 0);
+        a.setEmbed(embed);
+        em.persist(a);
     }
 
     public Embed createEmbed(int id, int idx) {
@@ -679,7 +713,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         a.setName("a" + id);
         a.setAge(id);
         for (int i = 0; i < numEmbeddables; i++) {
-            Embed_Embed embed = createEmbed_Embed(em, id, i);
+            Embed_Embed embed = createEmbed_Embed(id, i);
             a.addEmbed(embed);
         }
         em.persist(a);
@@ -1066,7 +1100,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
         
         em.clear();
         em.getTransaction().begin();
-        Embed_Embed embed = createEmbed_Embed(em, ID, 100);
+        Embed_Embed embed = createEmbed_Embed(ID, 100);
         a.addEmbed(embed);
         em.merge(a);
         em.getTransaction().commit();
@@ -2854,9 +2888,9 @@ public class TestEmbeddable extends SQLListenerTestCase {
         a.addCreditRating(EntityA_Embed_Complex.CreditRating.POOR);
         a.addTimestamp(new Timestamp(cal.getTimeInMillis()));
         a.addLob("lob_0");
-        a.setEmbed(createEmbed_Embed(em, numEmbeddables, 0));
+        a.setEmbed(createEmbed_Embed(numEmbeddables, 0));
         for (int i = 0; i < numEmbeddables; i++) {
-            Embed_Embed embed = createEmbed_Embed(em, id, i);
+            Embed_Embed embed = createEmbed_Embed(id, i);
             a.addEmbed(embed);
         }
         for (int i = 0; i < numEmbeddables; i++) {
