@@ -35,6 +35,7 @@ grant CodeBase "file:///${test.basedir}/-" {
     permission java.lang.RuntimePermission                          "createClassLoader";
     permission java.lang.RuntimePermission                          "getClassLoader";
     permission java.lang.RuntimePermission                          "setContextClassLoader";
+    permission java.lang.RuntimePermission                          "setSecurityManager";
     permission java.lang.RuntimePermission                          "setIO";
     permission java.lang.reflect.ReflectPermission                  "suppressAccessChecks";
     permission java.util.PropertyPermission     "*",                "read,write";
