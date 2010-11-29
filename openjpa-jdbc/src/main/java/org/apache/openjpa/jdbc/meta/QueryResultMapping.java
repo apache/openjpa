@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
 import serp.util.Strings;
@@ -60,11 +60,11 @@ public class QueryResultMapping
     private int _lineNum = 0;  
     private int _colNum = 0;  
     private int _mode = MODE_QUERY;
-    private Class _class = null;
+    private Class<?> _class = null;
     private int _idx = 0;
     private String[] _comments = null;
-    private List _colList = null;
-    private List _pcList = null;
+    private List<Object> _colList = null;  // list of column ids, typically the column name.
+    private List<PCResult> _pcList = null;
 
     private PCResult[] _pcs = null;
     private Object[] _cols = null;
@@ -87,14 +87,14 @@ public class QueryResultMapping
     /**
      * The class that defines this query result, or null if none.
      */
-    public Class getDefiningType() {
+    public Class<?> getDefiningType() {
         return _class;
     }
 
     /**
      * The class that defines this query result, or null if none.
      */
-    public void setDefiningType(Class cls) {
+    public void setDefiningType(Class<?> cls) {
         _class = cls;
     }
 
@@ -124,8 +124,9 @@ public class QueryResultMapping
      */
     public void addColumnResult(Object id) {
         _cols = null;
-        if (_colList == null)
-            _colList = new ArrayList();
+        if (_colList == null) {
+            _colList = new ArrayList<Object>();
+        }
         _colList.add(id);
     }
 
@@ -135,11 +136,12 @@ public class QueryResultMapping
     public PCResult[] getPCResults() {
         if (_pcs == null) {
             PCResult[] pcs;
-            if (_pcList == null)
+            if (_pcList == null) {
                 pcs = new PCResult[0];
-            else
-                pcs = (PCResult[]) _pcList.toArray
-                    (new PCResult[_pcList.size()]);
+            }
+            else {
+                pcs = _pcList.toArray(new PCResult[_pcList.size()]);
+            }
             _pcs = pcs;
         }
         return _pcs;
@@ -148,11 +150,12 @@ public class QueryResultMapping
     /**
      * Add a mapped persistence-capable result with the given candidate type.
      */
-    public PCResult addPCResult(Class candidate) {
+    public PCResult addPCResult(Class<?> candidate) {
         _pcs = null;
         PCResult pc = new PCResult(candidate);
-        if (_pcList == null)
-            _pcList = new ArrayList();
+        if (_pcList == null) {
+            _pcList = new ArrayList<PCResult>();
+        }
         _pcList.add(pc);
         return pc;
     }
@@ -253,24 +256,24 @@ public class QueryResultMapping
          */
         public static final String DISCRIMINATOR = "<discriminator>";
 
-        private final Class _candidate;
+        private final Class<?> _candidate;
         private ClassMapping _candidateMap = null;
-        private Map _rawMappings = null; // string->object
-        private Map _mappings = null; // list->columnmap
-        private Map _eager = null; // list->fetchinfo
+        private Map<String, Object> _rawMappings = null; 
+        private Map<List<MetaDataContext>, ColumnMap> _mappings = null;
+        private Map<List<MetaDataContext>, FetchInfo> _eager = null; 
         private FetchInfo _fetchInfo = null; // for top-level
 
         /**
          * Supply candidate type on construction.
          */
-        private PCResult(Class candidate) {
+        private PCResult(Class<?> candidate) {
             _candidate = candidate;
         }
 
         /**
          * The result candidate class.
          */
-        public Class getCandidateType() {
+        public Class<?> getCandidateType() {
             return _candidate;
         }
 
@@ -288,10 +291,11 @@ public class QueryResultMapping
          * empty array if none.
          */
         public String[] getMappingPaths() {
-            if (_rawMappings == null)
+            if (_rawMappings == null) {
                 return new String[0];
-            Collection keys = _rawMappings.keySet();
-            return (String[]) keys.toArray(new String[keys.size()]);
+            }
+            Collection<String> keys = _rawMappings.keySet();
+            return keys.toArray(new String[keys.size()]);
         }
 
         /**
@@ -313,8 +317,9 @@ public class QueryResultMapping
             _mappings = null;
             _eager = null;
             _fetchInfo = null;
-            if (_rawMappings == null)
-                _rawMappings = new HashMap();
+            if (_rawMappings == null) {
+                _rawMappings = new HashMap<String, Object>();
+            }
             _rawMappings.put(path, id);
         }
 
@@ -329,12 +334,13 @@ public class QueryResultMapping
          * @return the id or column to fetch from the result
          * (typically a column name)
          */
-        public Object map(List path, Object id, Joins joins) {
-            if (_rawMappings == null || !(id instanceof Column))
+        public Object map(List<MetaDataContext> path, Object id, Joins joins) {
+            if (_rawMappings == null || !(id instanceof Column)) {
                 return id;
+            }
 
             resolve();
-            ColumnMap cm = (ColumnMap) _mappings.get(path);
+            ColumnMap cm = _mappings.get(path);
             return (cm == null) ? id : cm.map((Column) id);
         }
 
@@ -345,16 +351,19 @@ public class QueryResultMapping
          * @param path stack of data requests (see
          * {@link org.apache.openjpa.jdbc.sql.Result#startDataRequest})
          */
-        public boolean hasEager(List path, FieldMapping field) {
-            if (_rawMappings == null)
+        public boolean hasEager(List<MetaDataContext> path, FieldMapping field) {
+            if (_rawMappings == null) {
                 return false;
+            }
 
             resolve();
-            if (path.isEmpty())
+            if (path.isEmpty()) {
                 return _fetchInfo.eager.get(field.getIndex());
-            if (_eager == null)
+            }
+            if (_eager == null) {
                 return false;
-            FetchInfo info = (FetchInfo) _eager.get(path);
+            }
+            FetchInfo info = _eager.get(path);
             return info != null && info.eager.get(field.getIndex());
         }
 
@@ -362,16 +371,19 @@ public class QueryResultMapping
          * Return the field indexes to exclude when loading data for the
          * given path.
          */
-        public BitSet getExcludes(List path) {
-            if (_rawMappings == null)
+        public BitSet getExcludes(List<MetaDataContext> path) {
+            if (_rawMappings == null) {
                 return null;
+            }
 
             resolve();
-            if (path.isEmpty())
-                return _fetchInfo.excludes;
-            if (_eager == null)
+            if (path.isEmpty()) {
+                return _fetchInfo.excludes; 
+            }
+            if (_eager == null) {
                 return null;
-            FetchInfo info = (FetchInfo) _eager.get(path);
+            }
+            FetchInfo info = _eager.get(path);
             return (info == null) ? null : info.excludes;
         }
 
@@ -379,17 +391,15 @@ public class QueryResultMapping
          * Resolve internal datastructures from raw mappings.
          */
         private synchronized void resolve() {
-            if (_rawMappings == null || _mappings != null)
+            if (_rawMappings == null || _mappings != null) {
                 return;
+            }
 
-            _mappings = new HashMap();
+            _mappings = new HashMap<List<MetaDataContext>, ColumnMap>();
             _fetchInfo = new FetchInfo(getCandidateTypeMapping());
 
-            Map.Entry entry;
-            for (Iterator itr = _rawMappings.entrySet().iterator();
-                itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
-                resolveMapping((String) entry.getKey(), entry.getValue());
+            for(Map.Entry<String, Object>  entry : _rawMappings.entrySet()) { 
+                resolveMapping(entry.getKey(), entry.getValue());
             }
         }
 
@@ -399,7 +409,7 @@ public class QueryResultMapping
         private void resolveMapping(String path, Object id) {
             // build up path to second-to-last token
             String[] tokens = Strings.split(path, ".", 0);
-            List rpath = new ArrayList(tokens.length);
+            List<MetaDataContext> rpath = new ArrayList<MetaDataContext>(tokens.length);
             ClassMapping candidate = getCandidateTypeMapping();
             FieldMapping fm = null;
             for (int i = 0; i < tokens.length - 1; i++) {
@@ -447,7 +457,7 @@ public class QueryResultMapping
                     // otherwise, record that we have an eager result
                     Column fkCol = fm.getForeignKey().getColumn(col);
                     if (fkCol != null)
-                        addComplexColumnMapping(fm, new ArrayList(rpath),
+                        addComplexColumnMapping(fm, new ArrayList<MetaDataContext>(rpath),
                             fkCol, id);
                     else {
                         recordEager(candidate, rpath, fm);
@@ -467,7 +477,7 @@ public class QueryResultMapping
         /**
          * Create an appropriate column mapping for the given field.
          */
-        private void addComplexColumnMapping(FieldMapping fm, List rpath,
+        private void addComplexColumnMapping(FieldMapping fm, List<MetaDataContext> rpath,
             Column col, Object id) {
             if (fm.getColumns().length == 1)
                 _mappings.put(rpath, new SingleColumnMap(id));
@@ -495,20 +505,20 @@ public class QueryResultMapping
          * Record that there may be eager data for the given field at the given
          * path.
          */
-        private void recordEager(ClassMapping candidate, List path,
+        private void recordEager(ClassMapping candidate, List<MetaDataContext> path,
             FieldMapping fm) {
             if (path.size() == 1) {
                 _fetchInfo.eager.set(fm.getIndex());
                 _fetchInfo.excludes.clear(fm.getIndex());
             } else {
                 // record at previous path
-                List copy = new ArrayList(path.size() - 1);
+                List<MetaDataContext> copy = new ArrayList<MetaDataContext>(path.size() - 1);
                 for (int i = 0; i < copy.size(); i++)
                     copy.add(path.get(i));
 
                 if (_eager == null)
-                    _eager = new HashMap();
-                FetchInfo info = (FetchInfo) _eager.get(copy);
+                    _eager = new HashMap<List<MetaDataContext>, FetchInfo>();
+                FetchInfo info = _eager.get(copy);
                 if (info == null) {
                     info = new FetchInfo(candidate);
                     _eager.put(copy, info);
@@ -521,17 +531,17 @@ public class QueryResultMapping
         /**
          * Record that the field at the given path is included in the results.
          */
-        private void recordIncluded(ClassMapping candidate, List path,
+        private void recordIncluded(ClassMapping candidate, List<MetaDataContext> path,
             FieldMapping fm) {
             if (path.isEmpty())
                 _fetchInfo.excludes.clear(fm.getIndex());
             else {
                 if (_eager == null)
-                    _eager = new HashMap();
-                FetchInfo info = (FetchInfo) _eager.get(path);
+                    _eager = new HashMap<List<MetaDataContext>, FetchInfo>();
+                FetchInfo info = _eager.get(path);
                 if (info == null) {
                     info = new FetchInfo(candidate);
-                    _eager.put(new ArrayList(path), info);
+                    _eager.put(new ArrayList<MetaDataContext>(path), info);
                 }
                 info.excludes.clear(fm.getIndex());
             }
@@ -603,7 +613,7 @@ public class QueryResultMapping
     private static class MultiColumnMap
         implements ColumnMap {
 
-        private final List _cols;
+        private final List<Column> _cols;
         private final Object[] _ids;
 
         public MultiColumnMap(Column[] cols) {
