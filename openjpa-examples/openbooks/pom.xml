@@ -170,9 +170,9 @@
                                             <target name="generate-source" />
                                         </ant>
                                         <copy todir="${basedir}/target">
-                                            <fileset dir="${basedir}" includes="index.html"/>
-                                            <fileset dir="${basedir}" includes="*.txt"/>
-                                            <fileset dir="${basedir}" includes="run.*"/>
+                                            <fileset dir="${basedir}" includes="index.html" />
+                                            <fileset dir="${basedir}" includes="*.txt" />
+                                            <fileset dir="${basedir}" includes="run.*" />
                                         </copy>
                                     </tasks>
                                 </configuration>

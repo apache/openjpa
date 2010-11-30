@@ -110,16 +110,16 @@
                                     <arg line="-c ${basedir}/.." />
                                 </exec>
                                 # Write the svn info to a temp file 
-                                <echo file="pcenhancer.revision.file"/> 
+                                <echo file="pcenhancer.revision.file" /> 
                                 <exec output="pcenhancer.revision.file" failonerror="false" failifexecutionfails="false" executable="svn" append="false">
                                     <arg line="info ../openjpa-kernel/src/main/java/org/apache/openjpa/enhance/PCEnhancer.java" />
                                 </exec>
 
                                 # Remove all spaces so we can have a proper key
-                                <replace file="pcenhancer.revision.file" token=" " value=""/>
+                                <replace file="pcenhancer.revision.file" token=" " value="" />
                                 # Load the property file
-                                <property prefix="pcenhancer" file="pcenhancer.revision.file"/>
-                                <delete file="pcenhancer.revision.file"/>
+                                <property prefix="pcenhancer" file="pcenhancer.revision.file" />
+                                <delete file="pcenhancer.revision.file" />
 								
                                 <property name="subversion.revision" value="unknown" />
                                 <property name="pcenhancer.LastChangedRev" value="-1" />
