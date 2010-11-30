@@ -622,19 +622,52 @@
                         <useFile>false</useFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>
-                        <systemPropertyVariables>
-                            <openjpa.Log>${openjpa.Log}</openjpa.Log>
-                            <openjpa.DynamicEnhancementAgent>${openjpa.DynamicEnhancementAgent}</openjpa.DynamicEnhancementAgent>
-                            <openjpa.ConnectionDriverName>${connection.driver.name}</openjpa.ConnectionDriverName>
-                            <openjpa.ConnectionURL>${connection.url}</openjpa.ConnectionURL>
-                            <openjpa.ConnectionUserName>${connection.username}</openjpa.ConnectionUserName>
-                            <openjpa.ConnectionPassword>${connection.password}</openjpa.ConnectionPassword>
-                            <openjpa.ConnectionProperties>${dbcp.args}</openjpa.ConnectionProperties>
-                            <derby.stream.error.file>target/derby.log</derby.stream.error.file>
-                            <derby.locks.deadlockTimeout>${derby.locks.deadlockTimeout}</derby.locks.deadlockTimeout>
-                            <derby.locks.waitTimeout>${derby.locks.waitTimeout}</derby.locks.waitTimeout>
-                            <tests.openjpa.allowfailure>${tests.openjpa.allowfailure}</tests.openjpa.allowfailure> 
-                        </systemPropertyVariables>
+                    <systemProperties>
+                        <property>
+                            <name>openjpa.Log</name>
+                            <value>${openjpa.Log}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.DynamicEnhancementAgent</name>
+                            <value>${openjpa.DynamicEnhancementAgent}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionDriverName</name>
+                            <value>${connection.driver.name}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionURL</name>
+                            <value>${connection.url}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionUserName</name>
+                            <value>${connection.username}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionPassword</name>
+                            <value>${connection.password}</value>
+                        </property>
+                        <property>
+                            <name>derby.stream.error.file</name>
+                            <value>target/derby.log</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.deadlockTimeout</name>
+                            <value>${derby.locks.deadlockTimeout}</value>
+                        </property>
+                        <property>
+                            <name>derby.locks.waitTimeout</name>
+                            <value>${derby.locks.waitTimeout}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.ConnectionProperties</name>
+                            <value>${dbcp.args}</value>
+                        </property>
+                        <property>
+                            <name>tests.openjpa.allowfailure</name>
+                            <value>${tests.openjpa.allowfailure}</value>
+                        </property>
+                    </systemProperties>
                     </configuration>
                 </plugin>
                 <plugin>
