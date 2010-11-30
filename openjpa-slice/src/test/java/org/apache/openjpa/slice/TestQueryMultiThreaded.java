@@ -218,8 +218,8 @@ public class TestQueryMultiThreaded extends SliceTestCase {
     }
     
     public void testHeavyLoad() {
-        Thread[] threads = new Thread[1000];
-        for (int i = 0; i < 1000; i++) {
+        Thread[] threads = new Thread[800];
+        for (int i = 0; i < 800; i++) {
             Runnable r = new Runnable() {
                 public void run() {
                     EntityManager em = emf.createEntityManager();
