@@ -170,12 +170,9 @@
                                             <target name="generate-source" />
                                         </ant>
                                         <copy todir="${basedir}/target">
-                                            <fileset dir="${basedir}"
-                                                includes="index.html"/>
-                                            <fileset dir="${basedir}"
-                                                includes="*.txt"/>
-                                            <fileset dir="${basedir}"
-                                                includes="run.*"/>
+                                            <fileset dir="${basedir}" includes="index.html"/>
+                                            <fileset dir="${basedir}" includes="*.txt"/>
+                                            <fileset dir="${basedir}" includes="run.*"/>
                                         </copy>
                                     </tasks>
                                 </configuration>
@@ -224,8 +221,7 @@
                                         <echo>Launching OpenBooks</echo>
                                         <property name="openjpa.version" value="${project.version}" />
                                         <property name="maven.repos" value="${settings.localRepository}" />
-                                        <ant antfile="run.xml"
-                                            dir="${basedir}/target">
+                                        <ant antfile="run.xml" dir="${basedir}/target">
                                             <target name="run" />
                                         </ant>
                                     </tasks>
