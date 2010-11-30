@@ -5460,4 +5460,9 @@ public class DBDictionary
     public String getIsNotNullSQL(String colAlias, int colType) { 
         return String.format("%s IS NOT NULL", colAlias);
     }
+    
+    public String getIdentityColumnName() {
+        return null;       
+    }
+
 }

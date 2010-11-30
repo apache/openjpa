@@ -479,4 +479,10 @@ public class SybaseDictionary
         }
         return super.getIsNotNullSQL(colAlias, colType);
     }
+
+    @Override
+    public String getIdentityColumnName() {
+        return identityColumnName;       
+    }
+
 }

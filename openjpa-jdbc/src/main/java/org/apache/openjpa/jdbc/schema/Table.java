@@ -364,6 +364,21 @@ public class Table
         return _colMap.containsKey(sName);
     }
 
+    public boolean containsColumn(Column col) {
+        DBIdentifier colName = col.getIdentifier();
+        if (DBIdentifier.isNull(colName) || _colMap == null) {
+            return false;
+        }
+        DBIdentifier sName = DBIdentifier.toUpper(colName);
+        Collection<Column> coll = _colMap.values();
+        for (Column column : coll) {
+            if (column.getIdentifier().equals(sName))
+                return true; 
+        }
+        
+        return false;
+    }
+
     /**
      * Add a column to the table.
      * @deprecated

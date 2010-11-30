@@ -807,10 +807,11 @@ public class SchemaTool {
                     continue;
 
                 dbCols = dbTable.getColumns();
-                for (int k = 0; k < dbCols.length; k++)
-                    if (tabs[j].getColumn(dbCols[k].getIdentifier()) == null)
+                for (int k = 0; k < dbCols.length; k++) {
+                    if (!dbCols[k].getIdentifier().getName().equals(_dict.getIdentityColumnName()) &&
+                        !tabs[j].containsColumn(dbCols[k]))
                         continue tables;
-
+                }
                 drops.add(tabs[j]);
             }
         }
