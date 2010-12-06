@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -437,8 +436,13 @@ public class DataCacheStoreManager
     public boolean load(OpenJPAStateManager sm, BitSet fields,
         FetchConfiguration fetch, int lockLevel, Object edata) {
         DataCache cache = _mgr.selectCache(sm);
-        if (cache == null || sm.isEmbedded() || bypass(fetch, StoreManager.FORCE_LOAD_NONE))
-            return super.load(sm, fields, fetch, lockLevel, edata);
+
+        boolean found = false;
+        if (cache == null || sm.isEmbedded() || bypass(fetch, StoreManager.FORCE_LOAD_NONE)) {
+            found = super.load(sm, fields, fetch, lockLevel, edata);
+            updateDataCache(found, sm, fetch);
+            return found;
+        }
 
         CacheStatistics stats = cache.getStatistics();
         DataCachePCData data = cache.get(sm.getObjectId());
@@ -454,20 +458,59 @@ public class DataCacheStoreManager
 
         // load from store manager; clone the set of still-unloaded fields
         // so that if the store manager decides to modify it it won't affect us
-        if (!super.load(sm, (BitSet) fields.clone(), fetch, lockLevel, edata))
-            return false;
-        if (_ctx.getPopulateDataCache()) {
-            cacheStateManager(cache, sm, data);
-        }
-        return true;
+        found = super.load(sm, (BitSet) fields.clone(), fetch, lockLevel, edata);
 
+        // Get new instance of cache after DB load since it may have changed
+        updateDataCache(found, sm, fetch);
+
+        return found;
+    }
+
+    /**
+     * Updates or inserts and item into the data cache.  If storeMode=USE and not in the cache,
+     * the item is inserted.  If storeMode=REFRESH the item is inserted, updated, or if found=false, 
+     * removed from the cache.
+     * @param found whether the entity was found by the store manager
+     * @param sm the state manager
+     * @param fetch fetch configuration
+     */
+    private void updateDataCache(boolean found, OpenJPAStateManager sm, FetchConfiguration fetch) {
+
+        if (!_ctx.getPopulateDataCache() || sm == null || fetch.getCacheStoreMode() == DataCacheStoreMode.BYPASS) {
+            return;
+        }
+
+        DataCache cache = _mgr.selectCache(sm);
+        if (cache == null) {
+            return;
+        }
+
+        DataCachePCData data = cache.get(sm.getObjectId());
+        boolean alreadyCached = data != null;
+
+        if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached) ||
+             fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
+            // If not found in the DB and the item is in the cache, and not locking remove the item
+            if (!found && data != null && !isLocking(fetch)) {
+                cache.remove(sm.getObjectId());
+                return;
+            }
+            // Update or insert the item into the cache
+            if (found) {
+                cacheStateManager(cache, sm, data);
+                CacheStatistics stats = cache.getStatistics();
+                if (stats.isEnabled()) {
+                    ((CacheStatisticsSPI) stats).newPut(sm.getMetaData().getDescribedType());
+                }
+            }
+        }
     }
 
     public Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, PCState state, int load,
-    		FetchConfiguration fetch, Object edata) {
-    	if (bypass(fetch, load)) {
-    	    return super.loadAll(sms, state, load, fetch, edata);
-    	}
+        FetchConfiguration fetch, Object edata) {
+        if (bypass(fetch, load)) {
+            return super.loadAll(sms, state, load, fetch, edata);
+        }
 
         Map<OpenJPAStateManager, BitSet> unloaded = null;
         List<OpenJPAStateManager> smList = null;
