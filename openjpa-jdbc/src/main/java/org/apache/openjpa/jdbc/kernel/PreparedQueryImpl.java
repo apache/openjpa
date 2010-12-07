@@ -19,6 +19,7 @@
 
 package org.apache.openjpa.jdbc.kernel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,7 +80,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     private Class<?>[] _projTypes;
 
     // Position of the user defined parameters in the _params list
-    private Map<Object, int[]>    _userParamPositions;
+    private Map<Object, Integer[]>    _userParamPositions;
     private Map<Integer, Object> _template;
     private SelectImpl select;
 
@@ -326,7 +327,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         Set<Map.Entry<Object,Object>> userSet = user.entrySet();
         for (Map.Entry<Object,Object> userEntry : userSet) {
             Object key = userEntry.getKey();
-            int[] indices = _userParamPositions.get(key);
+            Integer[] indices = _userParamPositions.get(key);
             if (indices == null || indices.length == 0)
                 throw new UserException(_loc.get("uparam-no-pos", key, this));
             Object val = userEntry.getValue();
@@ -361,7 +362,7 @@ public class PreparedQueryImpl implements PreparedQuery {
      * @param broker used to obtain the primary key values
      */
     private void setPersistenceCapableParameter(Map<Integer,Object> result, 
-        Object pc, int[] indices, Broker broker) {
+        Object pc, Integer[] indices, Broker broker) {
         JDBCStore store = (JDBCStore)broker.getStoreManager()
             .getInnermostDelegate();
         MappingRepository repos = store.getConfiguration()
@@ -389,7 +390,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
     
     private void setCollectionValuedParameter(Map<Integer,Object> result, 
-        Collection values, int[] indices, Object param, Broker broker) {
+        Collection values, Integer[] indices, Object param, Broker broker) {
         int n = values.size();
         Object[] array = values.toArray();
         if (n > indices.length || indices.length%n != 0) {
@@ -415,20 +416,17 @@ public class PreparedQueryImpl implements PreparedQuery {
      * key. A user parameter key may appear more than once.
      */
     void setUserParameterPositions(List list) {
-        _userParamPositions = new HashMap<Object, int[]>();
+        _userParamPositions = new HashMap<Object, Integer[]>();
+        List<Integer> positions = new ArrayList<Integer>();
         for (int i = 1; list != null && i < list.size(); i += 2) {
             Object key = ((Parameter)list.get(i)).getParameterKey();
-            int p = (Integer)list.get(i-1);
-            int[] positions = _userParamPositions.get(key);
-            if (positions == null) {
-                positions = new int[]{p};
-            } else {
-                int[] temp = new int[positions.length+1];
-                System.arraycopy(positions, 0, temp, 0, positions.length);
-                temp[positions.length] = p;
-                positions = temp;
+            positions.clear();
+            for (int j = 1; j < list.size(); j += 2) {
+                Object other = ((Parameter)list.get(j)).getParameterKey();
+                if (key.equals(other))
+                    positions.add((Integer)list.get(j-1));
             }
-            _userParamPositions.put(key, positions);
+            _userParamPositions.put(key, positions.toArray(new Integer[positions.size()]));
         }
     }
     
