@@ -309,8 +309,12 @@ class SingleFieldManager
             // works on external value
             if ((immediate || fmd.isEmbeddedPC())
                 && fmd.getCascadeDelete() == ValueMetaData.CASCADE_IMMEDIATE) {
-                if (fmd.isEmbeddedPC() && deref)
-                    dereferenceEmbedDependent(_broker.getStateManagerImpl(objval, false));
+                if (fmd.isEmbeddedPC() && deref) {
+                    StateManagerImpl sm = _broker.getStateManagerImpl(objval, false);
+                    if (sm != null) {
+                        dereferenceEmbedDependent(sm);
+                    }
+                }
                 delete(fmd, objval, call);
             }
             else if (fmd.getCascadeDelete() == ValueMetaData.CASCADE_AUTO)
