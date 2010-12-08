@@ -72,6 +72,10 @@ public abstract class AbstractStoreQuery
         return null;
     }
 
+    public Object getCompilation() {
+        return null;
+    }
+
     public void populateFromCompilation(Object comp) {
     }
 

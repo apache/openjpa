@@ -154,6 +154,10 @@ public class ExpressionStoreQuery
         return _parser.parse(ctx.getQueryString(), this);
     }
 
+    public Object getCompilation() {
+        return _parsed;
+    }
+    
     public void populateFromCompilation(Object comp) {
         _parser.populate(comp, this);
     }
