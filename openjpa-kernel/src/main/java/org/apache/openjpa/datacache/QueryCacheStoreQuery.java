@@ -262,6 +262,10 @@ public class QueryCacheStoreQuery
         return _query.newCompilation();
     }
 
+    public Object getCompilation() {
+        return _query.getCompilation();
+    }
+
     public void populateFromCompilation(Object comp) {
         _query.populateFromCompilation(comp);
     }
@@ -331,7 +335,7 @@ public class QueryCacheStoreQuery
         public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
             Range range) {
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
-            Object parsed = cq.getDelegate().newCompilation();
+            Object parsed = cq.getDelegate().getCompilation();
             QueryKey key = QueryKey.newInstance(cq.getContext(),
                 _ex.isPacking(q), params, _candidate, _subs, range.start, 
                 range.end, parsed);

@@ -90,6 +90,11 @@ public interface StoreQuery
      * Create a new compilation for this query. May be null.
      */
     public Object newCompilation();
+    
+    /**
+     * Get the current compilation for this query. If it is null, do not create. 
+     */
+    public Object getCompilation();
 
     /**
      * Populate internal data from compilation.
