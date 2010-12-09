@@ -33,8 +33,8 @@ public class NoneLockManager
         sm.setLock(Boolean.TRUE);
     }
 
-    public void lock(OpenJPAStateManager sm, int level, int timeout,
-        Object context, boolean postLockVersionCheck) {
+    public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
+        Object context) {
         sm.setLock(Boolean.TRUE);
     }
 

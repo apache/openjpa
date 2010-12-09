@@ -3011,7 +3011,7 @@ public class BrokerImpl
                         }
                         int level = _fc.getReadLockLevel();
                         int timeout = _fc.getLockTimeout();
-                        _lm.lock(sm, level, timeout, null, false);
+                        _lm.refreshLock(sm, level, timeout, null);
                         sm.readLocked(level, level);
                     } else if (assertPersistenceCapable(obj).pcIsDetached()
                         == Boolean.TRUE)
@@ -3083,7 +3083,7 @@ public class BrokerImpl
                 }
                 int level = _fc.getReadLockLevel();
                 int timeout = _fc.getLockTimeout();
-                _lm.lock(sm, level, timeout, null, false);
+                _lm.refreshLock(sm, level, timeout, null);
                 sm.readLocked(level, level);
                 fireLifecycleEvent(sm.getManagedInstance(), null,
                     sm.getMetaData(), LifecycleEvent.AFTER_REFRESH);
