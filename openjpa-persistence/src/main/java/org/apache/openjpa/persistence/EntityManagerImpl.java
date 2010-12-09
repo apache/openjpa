@@ -761,7 +761,8 @@ public class EntityManagerImpl
         assertValidAttchedEntity(REFRESH, entity);
 
         _broker.assertWriteOperation();
-        configureCurrentFetchPlan(pushFetchPlan(), properties, mode, true);
+        configureCurrentCacheModes(pushFetchPlan(), properties);
+        configureCurrentFetchPlan(getFetchPlan(), properties, mode, true);
         DataCacheRetrieveMode rmode = getFetchPlan().getCacheRetrieveMode();
         if (DataCacheRetrieveMode.USE.equals(rmode) || rmode == null) {
             getFetchPlan().setCacheRetrieveMode(DataCacheRetrieveMode.BYPASS);
