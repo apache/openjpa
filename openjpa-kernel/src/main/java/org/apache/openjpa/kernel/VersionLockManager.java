@@ -31,6 +31,7 @@ public class VersionLockManager
 
     private boolean _versionCheckOnReadLock = true;
     private boolean _versionUpdateOnWriteLock = true;
+    private boolean _refreshing = false;
 
     /**
      * Returns the given instance's lock level, assuming that the state's
@@ -67,10 +68,20 @@ public class VersionLockManager
      */
     public void lock(OpenJPAStateManager sm, int level, int timeout,
         Object sdata) {
-        lock(sm, level, timeout, sdata, true);
+        commonLock(sm, level, timeout, sdata, !_refreshing);
     }
     
-    public void lock(OpenJPAStateManager sm, int level, int timeout,
+    public void refreshLock(OpenJPAStateManager sm, int level, int timeout,
+            Object sdata) {
+    	try {
+        	_refreshing = true;
+    		commonLock(sm, level, timeout, sdata, false);
+    	} finally {
+        	_refreshing = false;    		
+    	}
+    }
+
+    private void commonLock(OpenJPAStateManager sm, int level, int timeout,
             Object sdata, boolean postLockVersionCheck) {
         if (level == LOCK_NONE)
             return;
