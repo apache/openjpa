@@ -82,6 +82,7 @@
                                     <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
                                     <include>org.apache.openjpa:openjpa-xmlstore</include>
                                     <include>org.apache.openjpa:openjpa-slice</include>
+                                    <include>org.apache.openjpa:openjpa-jest</include>
                                 </includes>
                             </artifactSet>
                             <!-- OpenJPA unique META-INF setup -->
@@ -213,6 +214,11 @@
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-slice</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa-jest</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
