@@ -28,7 +28,7 @@
 <!--   errors will result.                                                  -->
 <!-- ====================================================================== -->
 
-<project name="OpenBooks.JEE.WAS" default="package">
+<project name="OpenBooks.JEE.WAS">
 	
 	<!-- WebSphere Application Server task definitions -->
   	<taskdef name="wsUninstallApp" classname="com.ibm.websphere.ant.tasks.UninstallApplication"/>
