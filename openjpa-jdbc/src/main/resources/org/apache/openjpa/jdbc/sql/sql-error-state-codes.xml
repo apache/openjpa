@@ -112,7 +112,7 @@
 	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">
 		<lock></lock>
 		<referential-integrity>-9</referential-integrity>
-		<object-exists>23000</object-exists>
+		<object-exists>23000,23505</object-exists>
 		<object-not-found></object-not-found>
 		<optimistic></optimistic>
 		<query></query>

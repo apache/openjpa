@@ -231,17 +231,22 @@ public class HSQLDictionary extends DBDictionary {
 
     @Override
     protected String getSequencesSQL(String schemaName, String sequenceName) {
+        return getSequencesSQL(DBIdentifier.newSchema(schemaName), DBIdentifier.newSequence(sequenceName));
+    }
+
+    @Override
+    protected String getSequencesSQL(DBIdentifier schemaName, DBIdentifier sequenceName) {
         StringBuilder buf = new StringBuilder();
         buf.append("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM ").
             append("INFORMATION_SCHEMA.SYSTEM_SEQUENCES");
-        if (schemaName != null || sequenceName != null)
+        if (!DBIdentifier.isNull(schemaName) || !DBIdentifier.isNull(sequenceName))
             buf.append(" WHERE ");
-        if (schemaName != null) {
+        if (!DBIdentifier.isNull(schemaName)) {
             buf.append("SEQUENCE_SCHEMA = ?");
-            if (sequenceName != null)
+            if (!DBIdentifier.isNull(sequenceName))
                 buf.append(" AND ");
         }
-        if (sequenceName != null)
+        if (!DBIdentifier.isNull(sequenceName))
             buf.append("SEQUENCE_NAME = ?");
         return buf.toString();
     }
@@ -262,6 +267,14 @@ public class HSQLDictionary extends DBDictionary {
     @Override
     public Column[] getColumns(DatabaseMetaData meta, String catalog,
         String schemaName, String tableName, String columnName, Connection conn)
+        throws SQLException {
+        return getColumns(meta, DBIdentifier.newCatalog(catalog), DBIdentifier.newSchema(schemaName),
+            DBIdentifier.newTable(tableName), DBIdentifier.newColumn(columnName), conn);
+    }
+
+    @Override
+    public Column[] getColumns(DatabaseMetaData meta, DBIdentifier catalog,
+            DBIdentifier schemaName, DBIdentifier tableName, DBIdentifier columnName, Connection conn)
         throws SQLException {
         Column[] cols = super.getColumns(meta, catalog, schemaName, tableName,
             columnName, conn);

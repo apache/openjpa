@@ -91,7 +91,7 @@ users, but may not support every feature of this release, please refer to the
                         Apache Derby Embedded JDBC Driver
                     </entry>
                     <entry colname="drivversion">
-                        Same as DB Version
+                        Same as Database Version
                     </entry>
                 </row>
                 <row>
@@ -344,7 +344,7 @@ databases that have been fully tested against this release, please refer to the
                         H2
                     </entry>
                     <entry colname="drivversion">
-                        1.1.118
+                        Same as Database Version
                     </entry>
                 </row>
                 <row>
@@ -352,13 +352,13 @@ databases that have been fully tested against this release, please refer to the
                         <link linkend="dbsupport_hypersonic">Hypersonic Database Engine</link>
                     </entry>
                     <entry colname="dbversion">
-                        1.8.0
+                        1.8.0, 2.0.1 RC2
                     </entry>
                     <entry colname="drivname">
                         Hypersonic
                     </entry>
                     <entry colname="drivversion">
-                        1.8.0
+                        Same as Database Version
                     </entry>
                 </row>
                 <row>
