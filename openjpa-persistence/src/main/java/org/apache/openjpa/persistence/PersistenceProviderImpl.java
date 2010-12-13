@@ -40,6 +40,7 @@ import org.apache.openjpa.enhance.PCEnhancerAgent;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -101,6 +102,11 @@ public class PersistenceProviderImpl
             
             // Create appropriate LifecycleEventManager
             loadValidator(factory);
+            
+            if (conf.getConnectionRetainModeConstant() == ConnectionRetainModes.CONN_RETAIN_ALWAYS) {
+                // warn about EMs holding on to connections.
+                _log.warn(_loc.get("retain-always", conf.getId()));
+            }
             
             OpenJPAEntityManagerFactory emf = JPAFacadeHelper.toEntityManagerFactory(factory);
             if (_log.isTraceEnabled()) {
@@ -195,6 +201,11 @@ public class PersistenceProviderImpl
                 } else {
                     _log.warn(_loc.get("transformer-registration-error", pui));
                 }
+            }
+            
+            if (conf.getConnectionRetainModeConstant() == ConnectionRetainModes.CONN_RETAIN_ALWAYS) {
+                // warn about container managed EMs holding on to connections.
+                _log.warn(_loc.get("cm-retain-always",conf.getId()));
             }
 
             // Create appropriate LifecycleEventManager
