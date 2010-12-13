@@ -537,6 +537,10 @@ public class PersistenceProductDerivation
                 rsrc, name, pinfo.getPersistenceProviderClassName()).
                 getMessage(), getClass().getName(), rsrc);
         }
+
+        // Process jar-file references after confirming OpenJPA is the desired JPA provider.
+        pinfo.processJarFileNames();
+
         cp.addProperties(pinfo.toOpenJPAProperties());
         cp.setSource(pinfo.getPersistenceXmlFileUrl().toString());
         return Boolean.TRUE;
