@@ -37,6 +37,10 @@
         For JPA 2.0 -
             -Ptck2-profile
 
+    For the JPA 2.0 TCK, the default level used will be the latest available,
+    but you can also test against prior levels by setting:
+        -Dtck2.level=20091209
+
     To run a specific package of tests, use the "jpatck.pkg.dir" system
     property to specify the parent directory of the tests you want to run.
     E.g.:
@@ -79,6 +83,7 @@
 
     <properties>
         <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
+        <tck2.level>20101205</tck2.level>
     </properties>
 
     <build>
@@ -132,7 +137,7 @@
                         <property name="tck.base" value="${basedir}/target/tck" />
                         <property name="tck.dir" value="${tck.base}/jpatck" />
                         <property name="LOCAL_M2_REPO" value="${settings.localRepository}" />
-                        <ant antfile="${basedir}/tck2.xml">
+                        <ant antfile="${basedir}/tck2-${tck2.level}.xml">
                             <target name="init" />
                         </ant>
                     </tasks>
@@ -179,7 +184,7 @@
                             <path refid="maven.compile.classpath" />
                         </path>
 
-                        <ant antfile="${basedir}/tck2.xml" inheritRefs="true">
+                        <ant antfile="${basedir}/tck2-${tck2.level}.xml" inheritRefs="true">
                             <target name="run-tck" />
                         </ant>
                     </tasks>
