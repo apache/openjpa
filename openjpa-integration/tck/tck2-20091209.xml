@@ -22,9 +22,9 @@
     This ANT build file is used to run the JPA 2.0 TCK. It assumes that you have
     the TCK, config  and patches zip files located at:
 
-        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Jun-2010.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Jun-2010_config.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Jun-2010_patches.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009_config.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_09-Dec-2009_patches.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" and "tck_patches.zip" system property.
@@ -45,8 +45,6 @@
 -->
 <project name="JPA2TCK" default="run-tck">
 
-    <!-- Import ant-contrib for If/then/else support -->
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
 
     <!--
         Target:  init
@@ -55,7 +53,7 @@
                       then extracts them.
      -->
     <target name="init">
-        <property name="tck.level" value="jpatck-2.0_15-Jun-2010" />
+        <property name="tck.level" value="jpatck-2.0_09-Dec-2009" />
         <property name="tck.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}.zip" />
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
@@ -203,11 +201,10 @@ databaseName=${db.name}
         Macro for the TCK harness launcher
     -->
     <macrodef name="tsant">
-        <attribute name="dir" default="${tck.dir}/src" />
         <attribute name="buildfile" />
         <attribute name="target" />
         <sequential>
-            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
+            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
                 <arg value="-emacs" />
                 <arg value="-buildfile" />
                 <arg value="@{buildfile}" />
@@ -223,8 +220,8 @@ databaseName=${db.name}
                 <env key="ANT_HOME" value="${tck.dir}/tools/ant" />
                 <sysproperty key="ant.home" value="${tck.dir}/tools/ant" />
 
-                <!--
                 <sysproperty key="pkg.dir" value="${jpatck.pkg.dir}" />
+                <!--
                 <sysproperty key="test" value="${jpatck.test}" />
                 -->
 
@@ -283,8 +280,9 @@ databaseName=${db.name}
                       all other setup steps have been performed.
      -->
     <target name="run-tck">
-        <echo>Running JPA 2.0 TCK tests</echo>
+        <echo>Running Sun JPA 2.0 TCK - w/o Pluggability tests</echo>
         <echo>Init must have been called before running this target!</echo>
+        <property name="jpatck.pkg.dir" value="com" />
         <property name="tck.log" value="${tck.base}/openjpa-tck.log" />
         <property name="provider.properties" value="${openjpa.properties}" />
 
@@ -294,14 +292,23 @@ databaseName=${db.name}
             <param name="cp.property" value="${OPENJPA_CLASSPATH}" />
         </antcall>
 
+        <!-- Need to exclude Pluggability tests from a normal run,
+            due to the need for Toplink.
+        -->
+        <echo append="false" file="${tck.dir}/bin/ts.jtx">
+
+## exclude pluggability tests for normal OpenJPA runs
+com/sun/ts/tests/pluggability/contracts/Client.java#createContainerEntityManagerFactory_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getManagedClassNames_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getPersistenceProviderClassName_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getPersistenceUnitName_from_standalone
+com/sun/ts/tests/pluggability/contracts/Client.java#getTransactionType_from_standalone
+
+        </echo>
+
         <!-- backup our updated ts.jte for later debugging -->
         <copy overwrite="true"
             file="${tck.dir}/bin/ts.jte" tofile="${tck.base}/ts.jte.tck" />
-
-        <!-- HACK - rebuild jpatck/dist jars for persistence.xml fixes -->
-        <echo>Calling TCK build.all</echo>
-        <tsant buildfile="${tck.dir}/bin/build.xml" target="build.all" />
-        <echo>TCK build.all returned result=${tsant.result}</echo>
 
         <!-- first initialize the database -->
         <echo>Calling TCK initdb.xml</echo>
@@ -309,24 +316,56 @@ databaseName=${db.name}
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
         <!-- now run the TCK -->
-        <if>
-            <isset property="jpatck.pkg.dir" />
-        <then>
-            <echo>Calling TCK build.xml for pkg.dir=${jpatck.pkg.dir}</echo>
-            <property name="dir" value="${tck.dir}/src/${jpatck.pkg.dir}" />
-            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" />
-        </then>
-        <else>
-            <echo>Calling TCK build.xml for ALL tests</echo>
-            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" />
-        </else>
-        </if>
-
+        <echo>Calling TCK build.xml</echo>
+        <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
         <echo>TCK build.xml returned result=${tsant.result}</echo>
 
         <!-- archive the results and check for test failures -->
         <antcall target="zip-artifacts">
             <param name="results.name" value="tck" />
+        </antcall> 
+    </target>
+
+
+    <!--
+        Target:  run-pluggability
+        Description:  This runs just the pluggability bucket, which requires
+                      us to add the toplink provider on the classpath
+     -->
+    <target name="run-pluggability">
+        <echo>Running Sun JPA 2.0 TCK - only Pluggability tests</echo>
+        <echo>Init must have been called before running this target!</echo>
+        <property name="jpatck.pkg.dir" value="com/sun/ts/tests/pluggability" />
+        <property name="tck.log" value="${tck.base}/openjpa-pluggability.log" />
+        <property name="provider.properties" value="${toplink.properties}" />
+
+        <!-- call TCK setup with above run specific properties set -->
+        <fail unless="TOPLINK_CLASSPATH">The TOPLINK_CLASSPATH was not provided and needs to point to the required Toplink, OpenJPA and Derby runtime jars.</fail>
+        <antcall target="setup">
+            <param name="cp.property" value="${TOPLINK_CLASSPATH}" />
+        </antcall>
+
+        <!-- backup our updated ts.jte for later debugging -->
+        <copy overwrite="true"
+            file="${tck.dir}/bin/ts.jte" tofile="${tck.base}/ts.jte.pluggability" />
+
+        <!-- Restore any exclude file that was provided in the zip file -->
+        <copy overwrite="true"
+            file="${tck.dir}/bin/ts.jtx.orig" tofile="${tck.dir}/bin/ts.jtx" />
+
+        <!-- first initialize the database -->
+        <echo>Calling TCK initdb.xml</echo>
+        <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
+        <echo>TCK initdb.xml returned result=${tsant.result}</echo>
+
+        <!-- now run the TCK -->
+        <echo>Calling TCK build.xml</echo>
+        <tsant buildfile="${tck.dir}/bin/build.xml" target="runclient" />
+        <echo>TCK build.xml returned result=${tsant.result}</echo>
+
+        <!-- archive the results and check for test failures -->
+        <antcall target="zip-artifacts">
+            <param name="results.name" value="pluggability" />
         </antcall> 
     </target>
 
