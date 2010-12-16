@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -1099,5 +1100,21 @@ public class DB2Dictionary
     public void updateClob(Select sel, JDBCStore store, Reader reader)
         throws SQLException {
         //NO-OP
+    }
+    
+    /**
+     * Set the given date value as a parameter to the statement.
+     */
+    public void setDate(PreparedStatement stmnt, int idx, Date val, Column col)
+        throws SQLException {
+        // When column metadata is not available, DB2 on z/OS does not like the value produced
+        // by the default dictionary - java.util.Date is converted to java.sql.Timestamp.
+        if (db2ServerType == db2ZOSV8xOrLater) {
+            if (col == null && val != null && "java.util.Date".equals(val.getClass().getName())) {
+                setDate(stmnt, idx, new java.sql.Date(val.getTime()), null, col);
+                return;
+            }
+        }
+        super.setDate(stmnt, idx, val, col);
     }
 }
