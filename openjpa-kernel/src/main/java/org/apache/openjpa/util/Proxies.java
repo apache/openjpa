@@ -127,8 +127,15 @@ public class Proxies {
             ClassMetaData meta = null;          // if null, no proxies?
             boolean useDSFForUnproxy = false;   // default to false for old 1.0 behavior
 
-            // DetachedStateMnager has no context or metadata, so we can't get configuration settings
-            if (!proxy.getOwner().isDetached()) {
+            // Don't rely on sm.isDetached() method because if we are serializing an attached Entity
+            // the sm will still be a StateManagerImpl, but isDetached() will return true.
+
+            // Using a DetachedStateManager, so use the new flag since there is no context or
+            // metadata
+            if (sm instanceof DetachedStateManager) {
+                useDSFForUnproxy = ((DetachedStateManager) sm).getUseDSFForUnproxy();
+            } else{
+                // DetachedStateManager has no context or metadata, so we can't get configuration settings
                 Compatibility compat = null;
                 meta = sm.getMetaData();
                 if (meta != null) {
@@ -142,9 +149,6 @@ public class Proxies {
                     // new 2.0 behavior of using DetachedStateField to determine unproxy during serialization
                     useDSFForUnproxy = !compat.getIgnoreDetachedStateFieldForProxySerialization();
                 }
-            } else {
-                // Using a DetachedStateManager, so use the new flag since there is no context or metadata
-                useDSFForUnproxy = ((DetachedStateManager)sm).getUseDSFForUnproxy();
             }
             
             if (useDSFForUnproxy) {
