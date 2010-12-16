@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence.proxy.entities;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
@@ -28,6 +29,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
@@ -36,6 +38,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 @SuppressWarnings("serial")
@@ -53,7 +58,10 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
     private List<IPayout> payouts = new ArrayList<IPayout>();
     private List<IRider> riders = new ArrayList<IRider>();
     private List<IPayor> payors = new ArrayList<IPayor>();
+    private List<String> comments;
+    private Date approvedAt;
     
+    private Annuity previousAnnuity;
     public Annuity(){
     }
 
@@ -134,7 +142,27 @@ public class Annuity extends AnnuityPersistebleObject implements IAnnuity {
         this.riders = riders;
     }
 
-    
-    
-    
+    @ElementCollection
+    public List<String> getComments() {
+        return comments;
+    }
+    public void setComments(List<String> comments) {
+        this.comments = comments;
+    }
+
+    @Temporal(TemporalType.DATE)
+    public Date getApprovedAt() {
+        return approvedAt;
+    }
+    public void setApprovedAt(Date approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    @OneToOne
+    public Annuity getPreviousAnnuity() {
+        return previousAnnuity;
+    }
+    public void setPreviousAnnuity(Annuity previousAnnuity) {
+        this.previousAnnuity = previousAnnuity;
+    }
 }

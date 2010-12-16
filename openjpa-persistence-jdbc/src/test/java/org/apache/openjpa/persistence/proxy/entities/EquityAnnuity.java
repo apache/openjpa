@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.proxy.entities;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -48,12 +49,22 @@ public class EquityAnnuity extends Annuity implements IEquityAnnuity {
 		return indexRate;
 	}
 
-	public void setIndexRate(Double indexRate) {
-		this.indexRate = indexRate;
-		if (this.indexRate != null) {
-			DecimalFormat df = new DecimalFormat("#.##");
-			this.indexRate= new Double(df.format(indexRate));
-		}
-	}
+    public void setIndexRate(Double indexRate) {
+        if (indexRate != null) {
+            DecimalFormat df = new DecimalFormat("#.##");
+            try
+            {
+                // parse back via the DateFormat because countries might use ',' as comma separator
+                this.indexRate= df.parse(df.format(indexRate)).doubleValue();
+            }
+            catch (ParseException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            this.indexRate = null;
+        }
+    }
 
 }

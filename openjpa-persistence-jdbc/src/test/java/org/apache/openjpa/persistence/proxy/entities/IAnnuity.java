@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.proxy.entities;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IAnnuity extends IAnnuityObject {
@@ -45,5 +46,13 @@ public interface IAnnuity extends IAnnuityObject {
 	
 	public abstract List<IPayor> getPayors();
 	public abstract void setPayors(List<IPayor> payors);
-	
+
+    public abstract List<String> getComments();
+    public abstract void setComments(List<String> comments);
+
+    public abstract Date getApprovedAt();
+    public void setApprovedAt(Date approvedAt);
+
+    public Annuity getPreviousAnnuity();
+    public void setPreviousAnnuity(Annuity previousAnnuity);
 }
