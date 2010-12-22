@@ -18,33 +18,25 @@
  */
 package org.apache.openjpa.persistence.detach;
 
-import java.io.Serializable;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
 @Entity
-public class IntVersionEntity implements Serializable {
-    
+public class IntegerVersionEntity {
+
     @Id
     private int id;
     private String name;
-    
+
     @Version
-    private int version;
-    
+    private Integer version;
+
     public int getVersion() {
         return version;
     }
 
-    @OneToOne(cascade=CascadeType.PERSIST, fetch=FetchType.EAGER)
-    private TimestampVersionEntity e2;
-    
-    public IntVersionEntity(int id) {
+    public IntegerVersionEntity(int id) {
         this.id = id;
     }
 
@@ -62,20 +54,5 @@ public class IntVersionEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public TimestampVersionEntity getE2() {
-        return e2;
-    }
-
-    public void setE2(TimestampVersionEntity e2) {
-        this.e2 = e2;
-    }
-
-    public IntVersionEntity() {
-    }
-    
-    public void printE2() {
-        System.out.println("e2 - " + e2);
     }
 }

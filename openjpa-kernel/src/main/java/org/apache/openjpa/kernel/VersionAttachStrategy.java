@@ -18,12 +18,15 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -31,10 +34,9 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ApplicationIds;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OptimisticException;
-import org.apache.openjpa.util.ImplHelper;
-import org.apache.openjpa.event.LifecycleEvent;
 
 /**
  * Handles attaching instances using version and primary key fields.
@@ -175,9 +177,29 @@ class VersionAttachStrategy
      */
     private void compareVersion(StateManagerImpl sm, PersistenceCapable pc) {
         Object version = pc.pcGetVersion();
-        if (version == null)
+        // In the event that the version field is a primitive and it is the types default value, we can't differentiate
+        // between a value that was set to be the default, and one that defaulted to that value.
+        if (version != null 
+                && JavaTypes.isPrimitiveDefault(version, sm.getMetaData().getVersionField().getTypeCode())) {
+            Field pcVersionInitField = null;
+            try {
+                pcVersionInitField = pc.getClass().getDeclaredField("pcVersionInit");
+                Object pcField = Reflection.get(pc, pcVersionInitField);
+                if (pcField != null) {
+                    boolean bool = (Boolean) pcField;
+                    if (bool == false) {
+                        // If this field if false, that means that the pcGetVersion returned a default value rather than
+                        // and actual value.
+                        version = null;
+                    }
+                }
+            } catch (Exception e) {
+                // Perhaps this is an Entity that was enhanced before the pcVersionInit field was added. 
+            }
+        }
+        if (version == null) {
             return;
-
+        }
         // don't need to load unloaded fields since its implicitly
         // a single field value
         StoreManager store = sm.getBroker().getStoreManager();

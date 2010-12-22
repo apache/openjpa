@@ -435,4 +435,31 @@ public class JavaTypes {
             Array.set(array, idx, itr.next ());
 		return array;
 	}
+    
+    /**
+     * Determine whether or not the provided Object value is the default for the provided typeCode.
+     * 
+     * For example: If o = Integer(0) and typeCode = JavaTypes.INT, this method will return true.
+     */
+    public static boolean isPrimitiveDefault(Object o, int typeCode) {
+        switch (typeCode) {
+            case BOOLEAN:
+                return ((Boolean) o).equals(Boolean.FALSE) ? true : false;
+            case BYTE:
+                return ((Byte) o) == 0 ? true : false;
+            case SHORT:
+                return ((Short) o) == 0 ? true : false;
+            case INT:
+                return ((Integer) o) == 0 ? true : false;
+            case LONG:
+                return ((Long) o) == 0L ? true : false;
+            case FLOAT:
+                return ((Float) o) == 0.0F ? true : false;
+            case CHAR:
+                return ((Character) o) == '\u0000' ? true : false;
+            case DOUBLE:
+                return ((Double) o) == 0.0d ? true : false;
+        }
+        return false;
+    }
 }
