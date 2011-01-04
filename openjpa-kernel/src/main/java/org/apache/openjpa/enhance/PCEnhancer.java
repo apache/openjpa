@@ -3261,15 +3261,14 @@ public class PCEnhancer {
                 ifins.setTarget(code.nop());
                 // if (pcVersionInit != false)
                 // return true
-                // else return false;
+                // else return null; //  (returning null because we don't know the correct answer)
                 loadManagedInstance(code, false);
                 getfield(code, null, VERSION_INIT_STR);
                 ifins = code.ifeq();
                 code.getstatic().setField(Boolean.class, "TRUE", Boolean.class);
                 code.areturn();
                 ifins.setTarget(code.nop());
-                code.getstatic().setField(Boolean.class, "FALSE", Boolean.class);
-                
+                code.constant().setNull();                
             }
             code.areturn();
             return false;
