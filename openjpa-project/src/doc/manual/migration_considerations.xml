@@ -346,19 +346,19 @@
     </section>
 	<section id="jpa_2.1">
         <title>
-            JPA 2.1
+            OpenJPA 2.1.0
         </title>
         <section id="jpa_2.1_changes_in_behavior">
         	<title>Internal Behavioral Differences</title>
         	<para>
-	The following sections indicate behavior that has changed from the 2.0
-	release to the 2.1 release.
+	The following sections indicate behavior that has changed from the OpenJPA 2.0.x
+	release to the OpenJPA 2.1.0 release.
         	</para>
         	<section id="finder_cache_statistics">
         		<title>FinderCache CacheStatistics</title>
         		<para>
-	In the 2.0 release CacheStatistics were collected by default. In the
-	2.1 release collection of statistics is disabled by default. The
+	In the OpenJPA 2.0.x release CacheStatistics were collected by default. In the
+	OpenJPA 2.1.0 release collection of statistics is disabled by default. The
 	following property enables statistics collection.
 	<programlisting>
 &lt;property name="openjpa.jdbc.FinderCache" value="true(EnableStats=true)"/&gt;
