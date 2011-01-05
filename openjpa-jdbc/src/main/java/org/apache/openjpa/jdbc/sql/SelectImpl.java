@@ -2319,6 +2319,7 @@ public class SelectImpl
         implements PathJoins {
 
         private SelectImpl _sel = null;
+        private Map<Column, Object> cachedColumnAlias_ = null;
 
         // position in selected columns list where we expect the next load
         private int _pos = 0;
@@ -2399,8 +2400,15 @@ public class SelectImpl
             // we key directly on objs and join-less cols, or on the alias
             // for cols with joins
             PathJoins pj = getJoins(joins);
-            if (pj != null && pj.path() != null)
-                obj = getColumnAlias((Column) obj, pj);
+            if (pj != null && pj.path() != null) {
+                Object columnAlias = getColumnAlias((Column) obj, pj);
+                if (joins == null) {
+                    if (cachedColumnAlias_ == null)
+                        cachedColumnAlias_ = new HashMap<Column, Object>();
+                    cachedColumnAlias_.put((Column) obj, columnAlias);
+                }
+                return columnAlias != null && _sel._selects.contains(columnAlias);
+            }
             return obj != null && _sel._selects.contains(obj);
         }
 
@@ -2449,7 +2457,13 @@ public class SelectImpl
             if (pj != null && pj.path() != null) {
                 Column col = (Column) obj;
                 pk = (col.isPrimaryKey()) ? Boolean.TRUE : Boolean.FALSE;
-                obj = getColumnAlias(col, pj);
+                if (joins == null && cachedColumnAlias_ != null) {
+                    obj = cachedColumnAlias_.get(col);
+                    if (obj == null)
+                        obj = getColumnAlias(col, pj);
+                } else {
+                    obj = getColumnAlias(col, pj);
+                }
                 if (obj == null)
                     throw new SQLException(col.getTable() + ": "
                         + pj.path() + " (" + _sel._aliases + ")");
