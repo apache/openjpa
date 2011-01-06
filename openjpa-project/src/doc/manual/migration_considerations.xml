@@ -354,17 +354,6 @@
 	The following sections indicate behavior that has changed from the OpenJPA 2.0.x
 	release to the OpenJPA 2.1.0 release.
         	</para>
-        	<section id="finder_cache_statistics">
-        		<title>FinderCache CacheStatistics</title>
-        		<para>
-	In the OpenJPA 2.0.x release CacheStatistics were collected by default. In the
-	OpenJPA 2.1.0 release collection of statistics is disabled by default. The
-	following property enables statistics collection.
-	<programlisting>
-&lt;property name="openjpa.jdbc.FinderCache" value="true(EnableStats=true)"/&gt;
-	</programlisting>    		
-        		</para>
-        	</section>
         </section>
 	</section>    
 </appendix>
