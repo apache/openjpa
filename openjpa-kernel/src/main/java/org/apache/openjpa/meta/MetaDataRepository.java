@@ -51,6 +51,7 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -311,10 +312,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return;
         }
 
+
         MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
             .getClassLoaderAction(MetaDataRepository.class)));
+        // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
+        // we need to add that loader to the chain of classloaders
+        ClassResolver resolver = _conf.getClassResolverInstance();
+        if (resolver != null) {
+            ClassLoader cl = resolver.getClassLoader(null, null);
+            if (cl != null) {
+                multi.addClassLoader(cl);
+            }
+        }
 
         Set<String> classes = getPersistentTypeNames(false, multi);
         if (classes == null || classes.size() == 0) {
