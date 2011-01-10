@@ -131,7 +131,7 @@ public abstract class AbstractStoreQuery
             } finally {
                 for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
                     DataCache cache = cmd.getDataCache();
-                    if (cache != null) {
+                    if (cache != null && cache.getEvictOnBulkUpdate()) {
                         cache.removeAll(cmd.getDescribedType(), true);
                     }
                 }
@@ -144,7 +144,7 @@ public abstract class AbstractStoreQuery
             } finally {
                 for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
                     DataCache cache = cmd.getDataCache();
-                    if (cache != null) {
+                    if (cache != null && cache.getEvictOnBulkUpdate()) {
                         cache.removeAll(cmd.getDescribedType(), true);
                     }
                 }

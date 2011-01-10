@@ -304,4 +304,9 @@ public interface DataCache
      * Returns number of read/write request and cache hit ratio data.
      */
     public CacheStatistics getStatistics();
+    
+    /**
+     * Returns whether the the cache needs to be updated when bulk updates as executed. Defaults to true.
+     */
+    public boolean getEvictOnBulkUpdate();
 }

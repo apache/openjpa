@@ -345,6 +345,18 @@ to evict values from the cache every 120 minutes.
 true(EvictionSchedule='+120')
 </programlisting>
             </para>
+            <example id="bulk_update_evict_cache">
+                <title>
+                    Bulk updates and cache eviction
+                </title>
+                <para>
+For the example, setting EvictOnBulkUpdate to false will tell OpenJPA to not evict from the DataCache when executing
+and UPDATE or DELETE statement. The default for the value is true.                
+                </para>
+                <para> 
+<programlisting>&lt;property name="openjpa.DataCache" value="true(EvictOnBulkUpdate=false)"/&gt;</programlisting>
+                </para>
+            </example>             
 <section id="ref_guide_cache_distribution">
    <title>Distributing instances across cache partitions</title>
             <para>
@@ -371,7 +383,7 @@ as follows:
 &lt;property name="openjpa.DataCache" value="partitioned(PartitionType=concurrent,partitions=
                 '(name=a,cacheSize=100),(name=b,cacheSize=200)')"/&gt;
 </programlisting>
-            </example>
+            </example>           
 </section>
             <para>
 The distribution policy is configured by a full-qualified class name that implements 
