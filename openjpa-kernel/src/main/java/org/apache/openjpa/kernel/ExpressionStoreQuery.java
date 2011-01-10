@@ -793,7 +793,7 @@ public class ExpressionStoreQuery
             } finally {
                 for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
                     DataCache cache = cmd.getDataCache();
-                    if (cache != null) {
+                    if (cache != null && cache.getEvictOnBulkUpdate()) {
                         cache.removeAll(cmd.getDescribedType(), true);
                     }
                 }
@@ -810,7 +810,7 @@ public class ExpressionStoreQuery
             } finally {
                 for (ClassMetaData cmd : getAccessPathMetaDatas(q)) {
                     DataCache cache = cmd.getDataCache();
-                    if (cache != null) {
+                    if (cache != null && cache.getEvictOnBulkUpdate()) {
                         cache.removeAll(cmd.getDescribedType(), true);
                     }
                 }

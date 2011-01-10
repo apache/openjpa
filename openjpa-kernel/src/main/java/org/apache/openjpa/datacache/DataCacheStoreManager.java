@@ -117,7 +117,7 @@ public class DataCacheStoreManager
         DataCache cache;
         for (Class<?> cls : classes) {
             cache = mdr.getMetaData(cls, loader, false).getDataCache();
-            if (cache != null)
+            if (cache != null && cache.getEvictOnBulkUpdate())
                 cache.removeAll(cls, false);
         }
     }

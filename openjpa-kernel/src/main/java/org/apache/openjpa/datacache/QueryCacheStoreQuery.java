@@ -380,7 +380,7 @@ public class QueryCacheStoreQuery
 
             // evict from the data cache
             for (int i = 0; i < cmd.length; i++) {
-                if (cmd[i].getDataCache() != null)
+                if (cmd[i].getDataCache() != null && cmd[i].getDataCache().getEvictOnBulkUpdate())
                     cmd[i].getDataCache().removeAll(
                         cmd[i].getDescribedType(), true);
             }

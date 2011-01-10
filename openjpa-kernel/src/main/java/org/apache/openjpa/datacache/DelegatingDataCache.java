@@ -381,4 +381,14 @@ public class DelegatingDataCache
             throw translate(re);
         }
     }
+    
+    public boolean getEvictOnBulkUpdate() {
+        if (_cache == null)
+            return false;
+        try {
+            return _cache.getEvictOnBulkUpdate();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

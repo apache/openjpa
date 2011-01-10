@@ -21,10 +21,14 @@ package org.apache.openjpa.persistence.datacache;
 import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
     Object[] props = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class, "openjpa.DataCache", "true" };
+    Object[] noEvictProps = new Object[] { CLEAR_TABLES, CachedEntityStatistics.class
+        , "openjpa.DataCache", "true(EvictOnBulkUpdate=false)" };
 
     public void setUp() throws Exception {
         super.setUp(props);
@@ -85,7 +89,58 @@ public class TestBulkUpdatesDataCacheEviction extends SingleEMFTestCase {
             em.close();
         }
     }
+    
+    public void testUpdateNoEvict(){
+        OpenJPAEntityManagerFactorySPI emf = createNamedEMF(getPersistenceUnitName(), noEvictProps);
+        Cache cache = emf.getCache();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        try {
+            CachedEntityStatistics e = createEntity(em);
+            assertTrue(cache.contains(CachedEntityStatistics.class, e.getId()));
+            em.clear();
 
+            String update = "UPDATE CachedEntityStatistics s SET s.firstName = :name WHERE s.id = :id";
+            String name = "name_" + System.currentTimeMillis();
+            // execute update, this should result in a cache eviction
+            em.getTransaction().begin();
+            assertEquals(1, em.createQuery(update).setParameter("name", name).setParameter("id", e.getId())
+                .executeUpdate());
+            em.getTransaction().commit();
+            assertTrue(cache.contains(CachedEntityStatistics.class, e.getId()));
+
+            CachedEntityStatistics postUpdate = em.find(CachedEntityStatistics.class, e.getId());
+            assertNotEquals(name, postUpdate.getFirstName());
+        }finally{
+            emf.close();
+        }
+    }
+
+    public void testDeleteNoEvict() throws Exception {
+        OpenJPAEntityManagerFactorySPI emf = createNamedEMF(getPersistenceUnitName(), noEvictProps);
+        Cache cache = emf.getCache();
+        OpenJPAEntityManagerSPI em = emf.createEntityManager();
+        try {
+            CachedEntityStatistics e = createEntity(em);
+            assertTrue(cache.contains(CachedEntityStatistics.class, e.getId()));
+            em.clear();
+
+            String delete = "DELETE FROM CachedEntityStatistics s WHERE s.id = :id";
+            // execute update, this should NOT result in a cache eviction
+            em.getTransaction().begin();
+            assertEquals(1, em.createQuery(delete).setParameter("id", e.getId()).executeUpdate());
+            em.getTransaction().commit();
+            assertTrue(cache.contains(CachedEntityStatistics.class, e.getId()));
+
+            em.clear();
+            
+            CachedEntityStatistics postUpdate = em.find(CachedEntityStatistics.class, e.getId());
+            assertNotNull(postUpdate);
+
+        } finally {
+            em.close();
+        }
+    }
+    
     private CachedEntityStatistics createEntity(EntityManager em) {
         em.getTransaction().begin();
         CachedEntityStatistics e = new CachedEntityStatistics();

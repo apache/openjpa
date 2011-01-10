@@ -80,7 +80,8 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     private String _schedule = null;
     protected Set<String> _includedTypes = new HashSet<String>();
     protected Set<String> _excludedTypes = new HashSet<String>();
-
+    protected boolean _evictOnBulkUpdate = true;
+    
     public String getName() {
         return _name;
     }
@@ -540,5 +541,13 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public DataCache selectCache(OpenJPAStateManager sm) {
         return this;
+    }
+    
+    public boolean getEvictOnBulkUpdate(){
+        return _evictOnBulkUpdate;
+    }
+    
+    public void setEvictOnBulkUpdate(boolean b){
+        _evictOnBulkUpdate = b;
     }
 }
