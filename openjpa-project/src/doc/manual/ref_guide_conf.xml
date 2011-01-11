@@ -567,7 +567,7 @@ transaction.
 AutoDetach</literal>
             </para>
             <para>
-<emphasis role="bold">Default:</emphasis> -    <literal>close</literal>,<literal>rollback</literal>
+<emphasis role="bold">Default:</emphasis> - null
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>close</literal>,
@@ -575,7 +575,9 @@ AutoDetach</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of events
-when managed instances will be automatically detached.
+when managed instances will be automatically detached. When using the OpenJPA EntityManager this defaults to 
+<literal>close</literal>, and <literal>rollback</literal> per the JPA spec. If you need to change this setting, you
+need to set it directly on an instantiated EntityManager.
             </para>
         </section>
         <section id="openjpa.BrokerFactory">
