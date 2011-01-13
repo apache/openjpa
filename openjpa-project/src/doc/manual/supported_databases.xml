@@ -622,6 +622,23 @@ of DESCSTAT, DB2 metadata tables must be recreated by running the DSNTIJMS job.
 See DB2 for z/OS documentation for additional information.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+When using LOBs with persistent attributes of a streaming data type (e.g. 
+<literal>java.io.InputStream</literal>) in the case of very large lob, DB2 JCC 
+driver will automatically use progressive streaming to retrieve the Lob data. 
+With progressiveStreaming, the inputStream retrieved must be fully materialized 
+before the next iteration of call to rs.next(). By default
+this will result in a LobClosedException when OpenJPA processes the InputStream.
+                    </para>
+                    <para>
+To work around this condition you may force fullyMaterializedLobData to true in 
+the connection URL as shown below :
+<programlisting>
+openjpa.ConnectionURL: jdbc:db2://localhost:50000/demodb:fullyMaterializeLobData=true;progressiveStreaming=NO 
+</programlisting> 
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
