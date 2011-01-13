@@ -717,8 +717,8 @@ See DB2 for z/OS documentation for additional information.
 When using LOBs with persistent attributes of a streaming data type (e.g. 
 <literal>java.io.InputStream</literal>) in the case of very large lob, DB2 JCC 
 driver will automatically use progressive streaming to retrieve the Lob data. 
-With progressiveStreaming, the inputStream retrieved (see red below) must be
-fully materialized before the next iteration of call to rs.next(). By default
+With progressiveStreaming, the inputStream retrieved must be fully materialized
+before the next iteration of call to rs.next(). By default
 this will result in a LobClosedException when OpenJPA processes the InputStream.
                     </para>
                     <para>
