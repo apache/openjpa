@@ -19,7 +19,6 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * Static String constants
@@ -29,21 +28,10 @@ import org.apache.openjpa.lib.util.Localizer;
  */
 public interface Constants {
     /**
-     * Command Qualifiers
+     * Common Command Qualifiers
      */
     public static final String QUALIFIER_FORMAT      = "format";
     public static final String QUALIFIER_PLAN        = "plan";
-    public static final String QUALIFIER_MAXRESULT   = "max";
-    public static final String QUALIFIER_FIRSTRESULT = "first";
-    public static final String QUALIFIER_NAMED       = "named";
-    public static final String QUALIFIER_SINGLE      = "single";
-    
-    /**
-     * Command Arguments
-     */
-    public static final String ARG_QUERY    = "q";
-    public static final String ARG_TYPE     = "type";
-
     
     /**
      * Mime Types
@@ -54,14 +42,6 @@ public interface Constants {
     public static final String MIME_TYPE_XML   = "text/xml";
     public static final String MIME_TYPE_JSON  = "application/json";
      
-    public static final String CONTEXT_ROOT  = "/";
-    public static final String JEST_TEMPLATE  = "jest.html";
-    
-    /**
-     * Servlet initialization parameters
-     */
-    public static final String INIT_PARA_UNIT       = "persistence.unit";
-    public static final String INIT_PARA_STANDALONE = "standalone";
    
     /**
      * Dojo Toolkit URL and Themes
@@ -123,18 +103,11 @@ public interface Constants {
     /**
      * JEST resources
      */
-//    public static final String JEST_STYLESHEET         = "jest.css";
-//    public static final String JEST_SCRIPT_INSTANCES   = "instances.js";
-//    public static final String JEST_SCRIPT_DOMAIN      = "model.js";
     public static final String JEST_INSTANCE_XSD       = "jest-instance.xsd";
     
     static final String JAXP_SCHEMA_SOURCE      = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     static final String JAXP_SCHEMA_LANGUAGE    = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     
-    /**
-     * Common instances
-     */
-    public static final Localizer _loc = Localizer.forPackage(JESTContext.class);
     public static final String NULL_VALUE          = "null";
 
 

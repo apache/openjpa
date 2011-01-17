@@ -19,7 +19,28 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import static org.apache.openjpa.persistence.jest.Constants.*;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_ID;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_KEY_TYPE;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_MEMBER_TYPE;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_NAME;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_NULL;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_TYPE;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_VALUE_TYPE;
+import static org.apache.openjpa.persistence.jest.Constants.ATTR_VERSION;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_DESCRIPTION;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_ENTRY;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_ENTRY_KEY;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_ENTRY_VALUE;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_INSTANCE;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_MEMBER;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_NULL_REF;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_REF;
+import static org.apache.openjpa.persistence.jest.Constants.ELEMENT_URI;
+import static org.apache.openjpa.persistence.jest.Constants.JEST_INSTANCE_XSD;
+import static org.apache.openjpa.persistence.jest.Constants.MIME_TYPE_XML;
+import static org.apache.openjpa.persistence.jest.Constants.NULL_VALUE;
+import static org.apache.openjpa.persistence.jest.Constants.ROOT_ELEMENT_INSTANCE;
+import static org.apache.openjpa.persistence.jest.Constants.ROOT_ELEMENT_MODEL;
 
 import java.io.BufferedReader;
 import java.io.CharArrayWriter;
@@ -29,15 +50,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,12 +63,10 @@ import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -64,6 +78,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -88,6 +103,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
     private static final DocumentBuilder _builder;
     private static final Transformer     _transformer;
     private static final String EMPTY_TEXT = " ";
+    protected static Localizer _loc = Localizer.forPackage(XMLFormatter.class);
     
     static {
         try {
@@ -166,7 +182,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
     
     @Override
     public Document writeOut(Collection<OpenJPAStateManager> objs, Metamodel model, String title, String desc, 
-        URI uri, OutputStream out) throws IOException {
+        String uri, OutputStream out) throws IOException {
         Document doc = encode(objs, model);
         decorate(doc, title, desc, uri);
         write(doc, out);
@@ -174,7 +190,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
     }
     
     @Override
-    public Document writeOut(Metamodel model, String title, String desc, URI uri, OutputStream out) 
+    public Document writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) 
         throws IOException {
         Document doc = encode(model);
         decorate(doc, title, desc, uri);
@@ -182,11 +198,11 @@ public class XMLFormatter implements ObjectFormatter<Document> {
         return doc;
     }
     
-    Document decorate(Document doc, String title, String desc, URI uri) {
+    Document decorate(Document doc, String title, String desc, String uri) {
         Element root = doc.getDocumentElement();
         Element instance = (Element)root.getElementsByTagName(ELEMENT_INSTANCE).item(0);
         Element uriElement = doc.createElement(ELEMENT_URI);
-        uriElement.setTextContent(uri == null ? NULL_VALUE : uri.toString());
+        uriElement.setTextContent(uri == null ? NULL_VALUE : uri);
         Element descElement = doc.createElement(ELEMENT_DESCRIPTION);
         descElement.setTextContent(desc == null ? NULL_VALUE : desc);
         root.insertBefore(uriElement, instance);
@@ -338,7 +354,7 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                         encodeNull(child);
                         break;
                     }
-                    Set<Map.Entry> entries = ((Map)value).entrySet();
+                    Set<Map.Entry<?,?>> entries = ((Map)value).entrySet();
                     boolean basicKey   = fmd.getElement().getTypeMetaData() == null;
                     boolean basicValue = fmd.getValue().getTypeMetaData() == null;
                     for (Map.Entry<?,?> e : entries) {

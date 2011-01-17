@@ -19,8 +19,6 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import java.net.URI;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -60,7 +58,7 @@ public interface JPAServletContext {
      * Get the requested URI. 
      * @return
      */
-    public URI getRequestURI();
+    public String getRequestURI();
     
     /**
      * Resolve the given alias to meta-data of the persistent type.

@@ -27,7 +27,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
@@ -77,7 +76,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
     }
     
     public JSON writeOut(Collection<OpenJPAStateManager> sms, Metamodel model, String title, String desc, 
-        URI uri, OutputStream out) throws IOException {
+        String uri, OutputStream out) throws IOException {
         JSON json = encode(sms,model);
         out.write(json.toString().getBytes());
         return json;
@@ -290,7 +289,7 @@ public class JSONObjectFormatter implements ObjectFormatter<JSON> {
     }
 
     @Override
-    public JSON writeOut(Metamodel model, String title, String desc, URI uri, OutputStream out) throws IOException {
+    public JSON writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

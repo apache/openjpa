@@ -19,13 +19,7 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import static org.apache.openjpa.persistence.jest.Constants.INIT_PARA_UNIT;
-import static org.apache.openjpa.persistence.jest.Constants.INIT_PARA_STANDALONE;
-import static org.apache.openjpa.persistence.jest.Constants._loc;
-
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.Persistence;
 import javax.servlet.ServletConfig;
@@ -36,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
@@ -67,9 +62,17 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 @SuppressWarnings("serial")
 public class JESTServlet extends HttpServlet  {
+    /**
+     * Servlet initialization parameter monikers
+     */
+    public static final String INIT_PARA_UNIT       = "persistence.unit";
+    public static final String INIT_PARA_STANDALONE = "standalone";
+    
+    
     private String _unit;
     private boolean _debug;
     private OpenJPAEntityManagerFactory _emf;
+    protected static Localizer _loc = Localizer.forPackage(JESTServlet.class);
     
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -80,6 +83,7 @@ public class JESTServlet extends HttpServlet  {
             throw new ServletException(_loc.get("no-persistence-unit-param").toString());
         }
         boolean standalone = "true".equalsIgnoreCase(config.getInitParameter(INIT_PARA_STANDALONE));
+        System.err.println("Standalone Deployment Mode " + standalone);
         if (standalone) {
             createPersistenceUnit();
         }
@@ -111,19 +115,24 @@ public class JESTServlet extends HttpServlet  {
     
     protected void createPersistenceUnit() throws ServletException {
         try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("openjpa.EntityManagerFactoryPool", true);
-            _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit, map));
+            System.err.println("Creating Standalone Persistent Unit  " + _unit + ":" + _emf);
+            _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit));
+            System.err.println("Created Standalone Persistent Unit  " + _unit + ":" + _emf);
         } catch (Exception e) {
-            throw new ServletException(_loc.get("no-persistence-unit").toString(), e);
+            System.err.println("Can not creating Standalone Persistent Unit  " + _unit);
+            e.printStackTrace();
+            throw new ServletException(_loc.get("no-persistence-unit-standalone", _unit).toString(), e);
         } 
     }
+    
     protected boolean findPersistenceUnit() {
         if (_emf == null) {
+            System.err.println("Discovering auxiliary Persistent Unit  " + _unit);
             BrokerFactory bf = AbstractBrokerFactory.getPooledFactoryForKey(_unit);
             if (bf != null) {
                 _emf = (OpenJPAEntityManagerFactory)bf.getUserObject(JPAFacadeHelper.EMF_KEY);
             }
+            System.err.println("Discovered auxiliary Persistent Unit  " + _unit + ":" + _emf);
         }
         return _emf != null;
     }

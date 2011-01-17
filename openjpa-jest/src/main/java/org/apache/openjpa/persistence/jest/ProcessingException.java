@@ -89,6 +89,7 @@ public class ProcessingException extends RuntimeException {
         Document xml = formatter.createXML("Request URI: " + uri, t);
         try {
             formatter.write(xml, response.getOutputStream());
+            response.sendError(_errorCode);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Request URI: " + uri, e);

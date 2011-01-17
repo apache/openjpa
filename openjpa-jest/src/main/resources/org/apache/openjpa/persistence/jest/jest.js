@@ -281,7 +281,7 @@ function Command_toURI() {
 			var key   = getNodeValue(pair[0]);
 			var value = getNodeValue(pair[1]);
 			if (key != null && value != null) {
-				args = args.concat(args.length == 0 ? '' : '&').concat(key).concat('=').concat(value);
+				args = args.concat(args.length == 0 ? '' : '&').concat(key).concat('=').concat(escape(value));
 			}
 		}
 	}

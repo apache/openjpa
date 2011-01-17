@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jest;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
@@ -93,7 +92,7 @@ public interface ObjectFormatter<T> {
      * @throws IOException
      */
     public T writeOut(Collection<OpenJPAStateManager> objs, Metamodel model,
-        String title, String desc, URI uri, OutputStream out) throws IOException;
+        String title, String desc, String uri, OutputStream out) throws IOException;
     
     /**
      * Encodes the given domain model, then write it into the given output stream.
@@ -103,5 +102,5 @@ public interface ObjectFormatter<T> {
      * 
      * @throws IOException
      */
-    public T writeOut(Metamodel model, String title, String desc, URI uri, OutputStream out) throws IOException;
+    public T writeOut(Metamodel model, String title, String desc, String uri, OutputStream out) throws IOException;
 }

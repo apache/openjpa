@@ -19,18 +19,12 @@
 
 package org.apache.openjpa.persistence.jest;
 
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static org.apache.openjpa.persistence.jest.Constants.CONTEXT_ROOT;
 
-import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -68,6 +62,9 @@ public class JESTContext implements JPAServletContext {
     public static final Localizer _loc = Localizer.forPackage(JESTContext.class);
     private static final String ONE_YEAR_FROM_NOW; 
     public static final char QUERY_SEPARATOR = '?'; 
+    public static final String CONTEXT_ROOT  = "/";
+    public static final String JEST_TEMPLATE  = "jest.html";
+    
     
     /**
      * Registers known commands in a {@link PrototypeFactory registry}.
@@ -123,17 +120,13 @@ public class JESTContext implements JPAServletContext {
     /**
      * 
      */
-    public URI getRequestURI() {
+    public String getRequestURI() {
         StringBuffer buf = _request.getRequestURL();
         String query = _request.getQueryString();
-        if (query != null) {
+        if (!isEmpty(query)) {
             buf.append(QUERY_SEPARATOR).append(query);
         }
-        try {
-            return new URI(buf.toString());
-        } catch (URISyntaxException e) {
-            throw new ProcessingException(this, _loc.get("bad-uri", _request.getRequestURL()), HTTP_INTERNAL_ERROR);
-        }
+        return buf.toString();
         
     }
     
@@ -236,13 +229,16 @@ public class JESTContext implements JPAServletContext {
         if (in == null) { // try again as a relative path
             if (rsrc.startsWith(CONTEXT_ROOT)) {
                 in = getClass().getResourceAsStream(rsrc.substring(1));
-                if (in == null) {
-                    throw new ProcessingException(this, _loc.get("resource-not-found", rsrc), HTTP_NOT_FOUND);
-                }
+            } 
+            if (in == null) {
+                throw new ProcessingException(this, _loc.get("resource-not-found", rsrc), HTTP_NOT_FOUND);
             }
         }
         try {
             String mimeType = _request.getSession().getServletContext().getMimeType(rsrc);
+            if (mimeType == null) {
+                mimeType = "application/text";
+            }
             _response.setContentType(mimeType);
             OutputStream out = _response.getOutputStream();
             if (mimeType.startsWith("image/")) {
@@ -262,13 +258,7 @@ public class JESTContext implements JPAServletContext {
             throw new ProcessingException(this, e, _loc.get("resource-not-found", rsrc), HTTP_NOT_FOUND);
         }
     }
-    
-
-    
-    private void log(String s) {
-        log((short)-1, s);
-    }
-    
+       
     public void log(short level, String message) {
         switch (level) {
             case Log.INFO:  _log.info(message); break;
@@ -289,6 +279,10 @@ public class JESTContext implements JPAServletContext {
      */
     boolean isContextRoot(String path) {
         return (path == null || CONTEXT_ROOT.equals(path));
+    }
+    
+    boolean isEmpty(String s) {
+        return s == null || s.trim().length() == 0;
     }
     
     /**
@@ -320,7 +314,7 @@ public class JESTContext implements JPAServletContext {
                 "${dojo.theme}",    Constants.DOJO_THEME,
                 
             };
-            InputStream in = getClass().getResourceAsStream(Constants.JEST_TEMPLATE);
+            InputStream in = getClass().getResourceAsStream(JEST_TEMPLATE);
             CharArrayWriter out = new CharArrayWriter();
             new TokenReplacedStream().replace(in, out, tokens);
             _rootResource = out.toString();

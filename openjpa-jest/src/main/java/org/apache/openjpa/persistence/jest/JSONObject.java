@@ -128,12 +128,19 @@ public class JSONObject implements JSON {
         return new StringBuilder().append(QUOTE).append(o.toString()).append(QUOTE);
     }
     
+    /**
+     * An array of objects. Members can be JSON too.
+     *  
+     * @author Pinaki Poddar
+     *
+     */
     public static class Array implements JSON {
         private List<Object> _members = new ArrayList<Object>();
         
         public void add(Object o) {
             _members.add(o);
         }
+        
         public String toString() {
             return asString(0).toString();
         }
@@ -143,11 +150,11 @@ public class JSONObject implements JSON {
             StringBuilder tab = JSONObject.newIndent(indent+1);
             for (Object o : _members) {
                 if (buf.length() > 1) buf.append(MEMBER_SEPARATOR);
-                buf.append(NEWLINE);
+                buf.append(NEWLINE).append(tab);
                 if (o instanceof JSON)
-                    buf.append(tab).append(((JSON)o).asString(indent+1));
+                    buf.append(((JSON)o).asString(indent+1));
                 else 
-                    buf.append(tab).append(o);
+                    buf.append(o);
             }
             buf.append(NEWLINE)
                .append(JSONObject.newIndent(indent))
@@ -157,6 +164,13 @@ public class JSONObject implements JSON {
         }
     }
     
+    /**
+     * A map whose key or value can be JSON.
+     * A map is encoded as JSON as an array of entries. Each entry is a key value pair separated with :
+     * 
+     * @author Pinaki Poddar
+     *
+     */
     public static class KVMap implements JSON {
         private Map<Object,Object> _entries = new LinkedHashMap<Object,Object>();
         
@@ -172,19 +186,21 @@ public class JSONObject implements JSON {
             StringBuilder buf = new StringBuilder().append(ARRAY_START);
             StringBuilder tab = JSONObject.newIndent(indent+1);
             for (Map.Entry<Object, Object> e : _entries.entrySet()) {
-                if (buf.length()>1) buf.append(MEMBER_SEPARATOR);
-                buf.append(NEWLINE);
+                if (buf.length() > 1) buf.append(MEMBER_SEPARATOR);
+                buf.append(NEWLINE).append(tab);
                 Object key = e.getKey();
-                if (key instanceof JSON)
-                    buf.append(tab).append(((JSON)key).asString(indent+1));
-                else 
-                    buf.append(tab).append(key);
+                if (key instanceof JSON) {
+                    buf.append(((JSON)key).asString(indent+1));
+                } else { 
+                    buf.append(key);
+                }
                 buf.append(VALUE_SEPARATOR);
                 Object value = e.getValue();
-                if (value instanceof JSON)
+                if (value instanceof JSON) {
                     buf.append(((JSON)value).asString(indent+2));
-                else 
+                } else {
                     buf.append(value);
+                }
                 
             }
             buf.append(NEWLINE)

@@ -34,7 +34,6 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.persistence.meta.Members;
-import static org.apache.openjpa.persistence.jest.Constants.*;
 
 /**
  * @author Pinaki Poddar

@@ -22,7 +22,6 @@ package org.apache.openjpa.persistence.jest;
 import static org.apache.openjpa.persistence.jest.Constants.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.util.Iterator;
 import java.util.Map;
@@ -51,6 +50,7 @@ public class PropertiesCommand extends AbstractCommand {
 
     @Override
     public void process() throws ProcessingException, IOException {
+        JPAServletContext ctx = getExecutionContext();
         HttpServletResponse response = ctx.getResponse();
         response.setContentType(MIME_TYPE_XML);
         

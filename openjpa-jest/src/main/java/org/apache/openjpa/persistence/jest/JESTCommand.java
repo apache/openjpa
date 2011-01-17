@@ -63,25 +63,20 @@ public interface JESTCommand {
     public static enum Format {xml, json};
     
     /**
+     * Get the execution context of this command.
+     * 
+     * @return the execution context. never null.
+     */
+    public JPAServletContext getExecutionContext();
+
+    /**
      * Parse the given request to populate qualifiers and parameters of this command.
      * A command can interpret and consume certain path segments or parameters of the
      * original request. During {@link #process(ServletRequest, ServletResponse, JPAServletContext) processing}
      * phase, the parameters and qualifiers are accessed from the parsed command itself rather than
-     * from the 
+     * from the original HTTP request.
      */
     public void parse() throws ProcessingException;
-    
-    /**
-     * Accessors for this command's arguments and qualifiers. 
-     * @return
-     * @exception IllegalStateException if accessed prior to parsing.
-     */
-    public Map<String,String> getArguments();
-    public String getArgument(String key);
-    public boolean hasArgument(String key);
-    public Map<String,String> getQualifiers();
-    public String getQualifier(String key);
-    public boolean hasQualifier(String key);
     
     /**
      * Process the given request and write the output on to the given response in the given context.
@@ -89,4 +84,53 @@ public interface JESTCommand {
      * 
      */
     public void process() throws ProcessingException, IOException;
+    
+
+    /**
+     * Get this command's arguments. 
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public Map<String,String> getArguments();
+    
+    /**
+     * Get the value of this command's argument of the given name. 
+     * 
+     * @return null if the argument does not exist.
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public String getArgument(String key);
+    
+    
+    /**
+     * Affirm this command contains an argument of the given name. 
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public boolean hasArgument(String key);
+
+    /**
+     * Get this command's qualifiers. 
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public Map<String,String> getQualifiers();
+    
+    /**
+     * Get the value of this command's qualifier of the given name. 
+     * 
+     * @return null if the qualifier does not exist.
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public String getQualifier(String key);
+    
+    /**
+     * Affirm this command contains an qualifier of the given name. 
+     * 
+     * @exception IllegalStateException if accessed prior to parsing.
+     */
+    public boolean hasQualifier(String key);
+    
 }

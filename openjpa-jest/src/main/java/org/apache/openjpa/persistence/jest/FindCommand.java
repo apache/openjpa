@@ -18,7 +18,6 @@
  */
 
 package org.apache.openjpa.persistence.jest;
-import static org.apache.openjpa.persistence.jest.Constants.*;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -28,8 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.persistence.EntityManager;
 
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -42,6 +39,7 @@ import org.apache.openjpa.util.ApplicationIds;
  *
  */
 class FindCommand extends AbstractCommand {
+    private static final String ARG_TYPE = "type";
     private static final List<String> _mandatoryArgs   = Arrays.asList(ARG_TYPE);
     private static final List<String> _validQualifiers = Arrays.asList("format", "plan");
     
@@ -65,6 +63,7 @@ class FindCommand extends AbstractCommand {
 
     @Override
     public void process() throws ProcessingException {
+        JPAServletContext ctx = getExecutionContext();
         OpenJPAEntityManager em = ctx.getPersistenceContext();
         String type = getMandatoryArgument(ARG_TYPE);
         ClassMetaData meta = ctx.resolve(type);

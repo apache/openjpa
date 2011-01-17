@@ -22,7 +22,6 @@ package org.apache.openjpa.persistence.jest;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static org.apache.openjpa.persistence.jest.Constants.QUALIFIER_FORMAT;
 import static org.apache.openjpa.persistence.jest.Constants.QUALIFIER_PLAN;
-import static org.apache.openjpa.persistence.jest.Constants._loc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
@@ -53,24 +53,31 @@ import org.apache.openjpa.persistence.OpenJPAQuery;
  *
  */
 abstract class AbstractCommand implements JESTCommand {
-    public static final char EQUAL = '=';
-    public static final String PATH_SEPARATOR = "/";
+    public static final char EQUAL                    = '=';
+    public static final String PATH_SEPARATOR         = "/";
     public static final Collection<String> EMPTY_LIST = Collections.emptySet();
     protected ObjectFormatter<?> _formatter;
-    protected static PrototypeFactory<Format,ObjectFormatter<?>> _ff = 
-        new PrototypeFactory<Format,ObjectFormatter<?>>();
 
     private Map<String, String> _qualifiers = new HashMap<String, String>();
     private Map<String, String> _args = new HashMap<String, String>();
     private Map<String, String> _margs = new HashMap<String, String>();
-    protected final JPAServletContext ctx;
+    protected final JPAServletContext _ctx;
+    
+    private static PrototypeFactory<Format,ObjectFormatter<?>> _formatterFactory = 
+        new PrototypeFactory<Format,ObjectFormatter<?>>();
+    protected static Localizer _loc = Localizer.forPackage(AbstractCommand.class);
     
     static {
-        _ff.register(Format.xml,  XMLFormatter.class);
-        _ff.register(Format.json, JSONObjectFormatter.class);
+        _formatterFactory.register(Format.xml,  XMLFormatter.class);
+        _formatterFactory.register(Format.json, JSONObjectFormatter.class);
     }
+    
     protected AbstractCommand(JPAServletContext ctx) {
-        this.ctx = ctx;
+        _ctx = ctx;
+    }
+    
+    public JPAServletContext getExecutionContext() {
+        return _ctx;
     }
     
     public String getMandatoryArgument(String key) {
@@ -123,7 +130,7 @@ abstract class AbstractCommand implements JESTCommand {
      * The qualifiers and arguments are immutable after parse.
      */
     public void parse() throws ProcessingException {
-        HttpServletRequest request = ctx.getRequest();
+        HttpServletRequest request = _ctx.getRequest();
         String path = request.getPathInfo();
         if (path != null) {
             path = path.substring(1);
@@ -198,27 +205,27 @@ abstract class AbstractCommand implements JESTCommand {
      * Called post-parse to validate this command has requisite qualifiers and arguments.
      */
     protected void validate() {
-        HttpServletRequest request = ctx.getRequest();
+        HttpServletRequest request = _ctx.getRequest();
         Collection<String> validQualifiers = getValidQualifiers();
         for (String key : _qualifiers.keySet()) {
             if (!validQualifiers.contains(key)) {
-                throw new ProcessingException(ctx,_loc.get("parse-invalid-qualifier", this, key, validQualifiers),
+                throw new ProcessingException(_ctx,_loc.get("parse-invalid-qualifier", this, key, validQualifiers),
                     HTTP_BAD_REQUEST);
             }
         }
         Collection<String> mandatoryArgs = getMandatoryArguments();
         for (String key : mandatoryArgs) {
             if (request.getParameter(key) == null) {
-                throw new ProcessingException(ctx, _loc.get("parse-missing-mandatory-argument", this, key,  
+                throw new ProcessingException(_ctx, _loc.get("parse-missing-mandatory-argument", this, key,  
                     request.getParameterMap().keySet()), HTTP_BAD_REQUEST);
             }
         }
         if (_args.size() < getMinimumArguments()) {
-            throw new ProcessingException(ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
+            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
                 getMinimumArguments()), HTTP_BAD_REQUEST);
         }
         if (_args.size() > getMaximumArguments()) {
-            throw new ProcessingException(ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
+            throw new ProcessingException(_ctx, _loc.get("parse-less-argument", this, _args.keySet(),  
                 getMinimumArguments()), HTTP_BAD_REQUEST);
         }
     }
@@ -245,14 +252,14 @@ abstract class AbstractCommand implements JESTCommand {
                 try {
                     format = Format.valueOf(rformat);
                 } catch (Exception e) {
-                    throw new ProcessingException(ctx, _loc.get("format-not-supported", new Object[]{format, 
-                        ctx.getRequest().getPathInfo(), _ff.getRegisteredKeys()}), HTTP_BAD_REQUEST);
+                    throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format, 
+                        _ctx.getRequest().getPathInfo(), _formatterFactory.getRegisteredKeys()}), HTTP_BAD_REQUEST);
                 }
             }
-            _formatter = _ff.newInstance(format);
+            _formatter = _formatterFactory.newInstance(format);
             if (_formatter == null) {
-                throw new ProcessingException(ctx, _loc.get("format-not-supported", new Object[]{format, 
-                    ctx.getRequest().getPathInfo(), _ff.getRegisteredKeys()}), HTTP_BAD_REQUEST);
+                throw new ProcessingException(_ctx, _loc.get("format-not-supported", new Object[]{format, 
+                    _ctx.getRequest().getPathInfo(), _formatterFactory.getRegisteredKeys()}), HTTP_BAD_REQUEST);
             }
         }
         return _formatter;
@@ -279,7 +286,7 @@ abstract class AbstractCommand implements JESTCommand {
     protected void pushFetchPlan(Object target) {
         if (!hasQualifier(QUALIFIER_PLAN))
             return;
-        OpenJPAEntityManager em = ctx.getPersistenceContext();
+        OpenJPAEntityManager em = _ctx.getPersistenceContext();
         FetchPlan plan = em.pushFetchPlan();
         BrokerImpl broker = (BrokerImpl)JPAFacadeHelper.toBroker(em);
         if (target instanceof OpenJPAEntityManager) {
@@ -302,7 +309,7 @@ abstract class AbstractCommand implements JESTCommand {
     protected void popFetchPlan(boolean finder) {
         if (!hasQualifier(QUALIFIER_PLAN))
             return;
-        OpenJPAEntityManager em = ctx.getPersistenceContext();
+        OpenJPAEntityManager em = _ctx.getPersistenceContext();
         BrokerImpl broker = (BrokerImpl)JPAFacadeHelper.toBroker(em);
         if (finder) {
             broker.setCacheFinderQuery(false);

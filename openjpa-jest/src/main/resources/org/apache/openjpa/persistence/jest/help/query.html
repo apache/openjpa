@@ -27,6 +27,14 @@ Specify a JPQL query or name of a pre-defined NamedQuery.
 Both queries can accept query bind parameters. The type of the parameters are guessed by JEST
 from the string you specify in this web form. 
 <p>
+<b>NOTE:</b> If you use special characters such as '%' in the query, use them as binding parameter value.
+For example, <b>do not</b> use query as<br>
+<tt>select m from Movie m where m.title like '%CHINA%'</tt>
+Instead use<br>
+<tt>select m from Movie m where m.title like :title</tt>
+<br>
+and then set the value of named parameter <tt>title</tt> to <tt>%CHINA%</tt>
+<p>
 If using named query, check the Named Query Box.
 </body>
 </html>

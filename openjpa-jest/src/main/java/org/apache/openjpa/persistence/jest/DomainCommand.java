@@ -24,9 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.openjpa.persistence.jest.Constants.ARG_TYPE;
-import static org.apache.openjpa.persistence.jest.Constants._loc;
-
 /**
  * Marshals a JPA meta-model in the configured format to the response output stream.
  * 
@@ -53,8 +50,12 @@ class DomainCommand extends AbstractCommand {
     }
     
     public void process() throws ProcessingException, IOException {
-        getObjectFormatter().writeOut(ctx.getPersistenceContext().getMetamodel(), 
+        JPAServletContext ctx = getExecutionContext();
+        ObjectFormatter<?> formatter = getObjectFormatter();
+        ctx.getResponse().setContentType(formatter.getMimeType());
+        formatter.writeOut(ctx.getPersistenceContext().getMetamodel(), 
             _loc.get("domain-title").toString(), _loc.get("domain-desc").toString(), ctx.getRequestURI(), 
             ctx.getResponse().getOutputStream());
+        
     }
 }
