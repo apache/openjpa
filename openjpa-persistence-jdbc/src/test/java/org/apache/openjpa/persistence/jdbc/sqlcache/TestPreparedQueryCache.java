@@ -241,38 +241,6 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 		super.tearDown();
 	}
     
-    public void testCollectionValuedParams() {
-        OpenJPAEntityManager em = emf.createEntityManager();
-        String jpql = "select c.name from Department c where c.name in (:names) order by c.name";
-        List<String> params = new ArrayList<String>();
-        for (int i = 0; i < DEPARTMENT_NAMES.length; i++)
-            params.add(DEPARTMENT_NAMES[i]);
-
-        List<String> rs = null;
-        List<String> rs2 = null;
-        try {
-            rs = (List<String>) em.createQuery(jpql).setParameter("names", params).getResultList();
-        } catch (Exception e) {
-            // as expected - syntax for collection valued parameter should be :names;
-        }
-        assertNull(rs);
-
-        try {
-            rs2 = (List<String>) em.createQuery(jpql).setParameter("names", params).getResultList();
-        } catch (Exception e) {
-            // as expected - syntax for collection valued parameter should be :names;
-        }
-        assertNull(rs2);
-
-        String jpql2 = "select c.name from Company c where c.name in :names order by c.name";
-        List<String> params2 = new ArrayList<String>();
-        for (int i = 0; i < COMPANY_NAMES.length; i++)
-            params2.add(COMPANY_NAMES[i]);
-        rs = (List<String>) em.createQuery(jpql2).setParameter("names", params2).getResultList();
-        rs2 = (List<String>) em.createQuery(jpql2).setParameter("names", params2).getResultList();
-        assertEquals(rs.size(), rs2.size());
-    }
-
     public void testCollectionValuedParameterOfEntities() {
         OpenJPAEntityManager em = emf.createEntityManager();
         String jpql1 = "select d from Department d where d.name in ('Marketing', 'Sales') order by d.name";

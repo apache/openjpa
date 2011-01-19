@@ -138,10 +138,6 @@ public class Param
             pstate.sqlValue = mapping.toDataStoreValue(val,
                 mapping.getPrimaryKeyColumns(), ctx.store);
             pstate.otherLength = mapping.getPrimaryKeyColumns().length;
-        } else if (val instanceof Collection) {
-            throw new IllegalArgumentException(_loc.get(
-                "collection-param-not-allowed", _key).toString());
-            
         } else
             pstate.sqlValue = val;
     }
