@@ -115,7 +115,7 @@ public class JESTServlet extends HttpServlet  {
     
     protected void createPersistenceUnit() throws ServletException {
         try {
-            System.err.println("Creating Standalone Persistent Unit  " + _unit + ":" + _emf);
+            System.err.println("Creating Standalone Persistent Unit  " + _unit);
             _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit));
             System.err.println("Created Standalone Persistent Unit  " + _unit + ":" + _emf);
         } catch (Exception e) {
