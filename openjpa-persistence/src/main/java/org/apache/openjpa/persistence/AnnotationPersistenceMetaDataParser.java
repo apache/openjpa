@@ -1021,9 +1021,9 @@ public class AnnotationPersistenceMetaDataParser
      * A and B. Both A and B must be declared in the same Class.
      * <br>
      * Call {@link #parseFetchAttribute(ClassMetaData,
-     * org.apache.openjpa.meta.FetchGroup, FetchAttribute) only after the
+     * org.apache.openjpa.meta.FetchGroup, FetchAttribute)} only after the
      * bi-links have been established, because a field f will not only add the
-     * fetch group A which explictly includes f to its custom fetch groups but
+     * fetch group A which explicitly includes f to its custom fetch groups but
      * also will also add any fetch group B that includes A.
      */
     private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
