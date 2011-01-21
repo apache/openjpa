@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,8 +33,14 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
 
 /**
- * Captures fetch group metadata.
+ * Captures fetch group meta-data.
+ *  
+ * Fetch Group is identified and referred by its immutable name.
+ * Fetch Group can nest other groups. The nested group reference is the name of the nested group.
+ * 
+ * Defines two <em>standard</em> fetch group named <tt>default</tt> and <tt>all</tt>. 
  */
+@SuppressWarnings("serial")
 public class FetchGroup 
     implements Serializable {
 
@@ -69,20 +74,21 @@ public class FetchGroup
      */
     static final FetchGroup ALL = new FetchGroup(NAME_ALL, false);
 
-    private static final Localizer _loc = Localizer.forPackage
-        (FetchGroup.class);
+    private static final FieldMetaData[] EMPTY_FIELD_ARRAY = {}; 
+    private static final Localizer _loc = Localizer.forPackage(FetchGroup.class);
 
-    private final String _name;
+    private final String        _name;
     private final ClassMetaData _meta;
-    private final boolean _readOnly;
-    private List _includes;
-    private Set  _containedBy;
-    private Map _depths;
-    private Boolean _postLoad;
+    private final boolean       _readOnly;
+    private List<String>        _includes;
+    private Set<String>         _containedBy;
+    private Map<FieldMetaData,Number> _depths;
+    private Boolean             _postLoad;
 
     /**
      * Constructor; supply immutable name.
      *
+     * @param cm class meta data that owns this group. Can be null for standard groups.
      * @param name must not by null or empty.
      */
     FetchGroup(ClassMetaData cm, String name) {
@@ -92,7 +98,7 @@ public class FetchGroup
     }
 
     /**
-     * Internal constructor for builtin fetch groups.
+     * Internal constructor for built-in fetch groups.
      */
     private FetchGroup(String name, boolean postLoad) {
         _meta = null;
@@ -105,23 +111,22 @@ public class FetchGroup
      * Copy state from the given fetch group.
      */
     void copy(FetchGroup fg) {
-        if (fg._includes != null)
-            for (Iterator itr = fg._includes.iterator(); itr.hasNext();)
-                addDeclaredInclude((String) itr.next());
-        if (fg._containedBy != null) 
-        	this._containedBy = new HashSet(fg._containedBy);
-        
-        if (fg._depths != null) {
-            Map.Entry entry;
-            for (Iterator itr = fg._depths.entrySet().iterator(); 
-                itr.hasNext();) {
-                entry = (Map.Entry) itr.next();
-                setRecursionDepth((FieldMetaData) entry.getKey(), ((Number) 
-                    entry.getValue()).intValue());
+        if (fg._includes != null) {
+            for (String included : fg._includes) {
+                addDeclaredInclude(included);
             }
         }
-        if (fg._postLoad != null)
+        if (fg._containedBy != null) {
+        	this._containedBy = new HashSet<String>(fg._containedBy);
+        }
+        if (fg._depths != null) {
+            for (Map.Entry<FieldMetaData,Number> entry : fg._depths.entrySet()) { 
+                setRecursionDepth(entry.getKey(), entry.getValue().intValue());
+            }
+        }
+        if (fg._postLoad != null) {
             _postLoad = fg._postLoad;
+        }
     }
 
     /**
@@ -140,7 +145,7 @@ public class FetchGroup
         if (StringUtils.isEmpty(fgName))
             throw new MetaDataException(_loc.get("null-include-fg", this));
         if (_includes == null)
-            _includes = new ArrayList();
+            _includes = new ArrayList<String>();
         if (!_includes.contains(fgName))
             _includes.add(fgName);
     }
@@ -158,12 +163,13 @@ public class FetchGroup
         if (_includes != null) {
             if (_includes.contains(fgName))
                 return true;
-            if (recurse && _meta!=null) {
+            if (recurse && _meta !=null) {
                 FetchGroup fg;
-                for (Iterator i = _includes.iterator(); i.hasNext();) {
-                    fg = _meta.getFetchGroup((String) i.next());
-                    if (fg != null && fg.includes(fgName, true))
+                for (String included : _includes) {
+                    fg = _meta.getFetchGroup(included);
+                    if (fg != null && fg.includes(fgName, true)) {
                         return true;
+                    }
                 }
             }
         }
@@ -182,7 +188,7 @@ public class FetchGroup
     /**
      * Adds this receiver as one of the included fetch groups of the given
      * parent. 
-     * The parent fecth group will include this receiver as a side-effect of
+     * The parent fetch group will include this receiver as a side-effect of
      * this call.
      * 
      * @see #includes(String, boolean)
@@ -194,7 +200,7 @@ public class FetchGroup
     public boolean addContainedBy(FetchGroup parent) {
     	parent.addDeclaredInclude(this.getName());
     	if (_containedBy==null)
-    		_containedBy = new HashSet();
+    		_containedBy = new HashSet<String>();
     	return _containedBy.add(parent.getName());
     }
     
@@ -205,9 +211,10 @@ public class FetchGroup
      * @see #addContainedBy(FetchGroup)
      * @since 1.1.0
      */
-    public Set getContainedBy() {
-    	return (_containedBy == null) ? Collections.EMPTY_SET :
-            Collections.unmodifiableSet(_containedBy);
+    public Set<String> getContainedBy() {
+        if (_containedBy == null)
+            return Collections.emptySet();
+    	return Collections.unmodifiableSet(_containedBy);
     }
 
     /**
@@ -215,8 +222,7 @@ public class FetchGroup
      */
     public String[] getDeclaredIncludes() {
         // only used during serialization; no need to cache
-        return (_includes == null) ? new String[0]
-            : (String[]) _includes.toArray(new String[_includes.size()]);
+        return (_includes == null) ? new String[0] : _includes.toArray(new String[_includes.size()]);
     }
 
     /**
@@ -230,7 +236,7 @@ public class FetchGroup
             throw new MetaDataException(_loc.get("invalid-fg-depth", _name, fm, 
                 depth));
         if (_depths == null)
-            _depths = new HashMap();
+            _depths = new HashMap<FieldMetaData, Number>();
         _depths.put(fm, depth);
     }
 
@@ -248,7 +254,7 @@ public class FetchGroup
      * 0 if none.
      */
     public int getDeclaredRecursionDepth(FieldMetaData fm) {
-        Number depth = (_depths == null) ? null : (Number) _depths.get(fm);
+        Number depth = (_depths == null) ? null : _depths.get(fm);
         return (depth == null) ? 0 : depth.intValue();
     }
 
@@ -256,7 +262,7 @@ public class FetchGroup
      * Helper to find recursion depth recursively in our includes.
      */
     private Number findRecursionDepth(FieldMetaData fm) { 
-        Number depth = (_depths == null) ? null : (Number) _depths.get(fm);
+        Number depth = (_depths == null) ? null : _depths.get(fm);
         if (depth != null)
             return depth;
 
@@ -275,11 +281,10 @@ public class FetchGroup
 
         // find largest included depth
         FetchGroup fg;
-        for (Iterator itr = _includes.iterator(); itr.hasNext();) {
-            fg = _meta.getFetchGroup((String) itr.next());
+        for (String included : _includes) {
+            fg = _meta.getFetchGroup(included);
             depth = (fg == null) ? null : fg.findRecursionDepth(fm);
-            if (depth != null && (max == null 
-                || depth.intValue() > max.intValue()))
+            if (depth != null && (max == null || depth.intValue() > max.intValue()))
                 max = depth;
         }
         return max;
@@ -291,9 +296,8 @@ public class FetchGroup
     public FieldMetaData[] getDeclaredRecursionDepthFields() {
         // used in serialization only; no need to cache
         if (_depths == null)
-            return new FieldMetaData[0];
-         return (FieldMetaData[]) _depths.keySet().toArray
-            (new FieldMetaData[_depths.size()]);
+            return EMPTY_FIELD_ARRAY;
+         return _depths.keySet().toArray(new FieldMetaData[_depths.size()]);
     } 
 
     /**
@@ -326,8 +330,8 @@ public class FetchGroup
         if (_includes == null)
             return false;
         FetchGroup fg;
-        for (Iterator itr = _includes.iterator(); itr.hasNext();) {
-            fg = _meta.getFetchGroup((String) itr.next());
+        for (String included : _includes) {
+            fg = _meta.getFetchGroup(included);
             if (fg != null && fg.isPostLoad())
                 return true;
         }
@@ -342,23 +346,20 @@ public class FetchGroup
     }
 
     /**
-     * Resolve and validate fetch group metadata.
+     * Resolve and validate fetch group meta-data.
      */
     public void resolve() {
         if (_includes == null)
             return;
 
         // validate includes
-        String name;
         FetchGroup fg;
-        for (Iterator itr = _includes.iterator(); itr.hasNext();) {
-            name = (String) itr.next();
+        for (String name : _includes) {
             if (name.equals(_name))
                 throw new MetaDataException(_loc.get("cyclic-fg", this, name));
             fg = _meta.getFetchGroup(name);
             if (fg == null)
-                throw new MetaDataException(_loc.get("bad-fg-include", this,
-                    name));
+                throw new MetaDataException(_loc.get("bad-fg-include", this, name));
             if (fg.includes(_name, true))
                 throw new MetaDataException(_loc.get("cyclic-fg", this, name));
         }

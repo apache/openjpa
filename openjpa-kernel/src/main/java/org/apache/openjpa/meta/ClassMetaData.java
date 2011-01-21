@@ -2295,36 +2295,36 @@ public class ClassMetaData
      * Return the fetch groups declared explicitly in this type.
      */
     public FetchGroup[] getDeclaredFetchGroups() {
-        if (_fgs == null)
-            _fgs = (_fgMap == null) ? EMPTY_FETCH_GROUP_ARRAY : (FetchGroup[])
-                _fgMap.values().toArray(new FetchGroup[_fgMap.size()]); 
+        if (_fgs == null) {
+            _fgs = (_fgMap == null) ? EMPTY_FETCH_GROUP_ARRAY : _fgMap.values().toArray(new FetchGroup[_fgMap.size()]); 
+        }
         return _fgs;
     }
 
     /**
-     * Return all fetch groups for this type, including superclass groups.
+     * Return all fetch groups for this type, including superclass groups but excluding the standard groups
+     * such as "default" or "all".
      */
     public FetchGroup[] getCustomFetchGroups() {
         if (_customFGs == null) {
             // map fetch groups to names, allowing our groups to override super
             Map<String,FetchGroup> fgs = new HashMap<String,FetchGroup>();
             ClassMetaData sup = getPCSuperclassMetaData();
-            if (sup != null)
-            {
+            if (sup != null) {
                 FetchGroup[] supFGs = sup.getCustomFetchGroups();
-                for (int i = 0; i < supFGs.length; i++)
+                for (int i = 0; i < supFGs.length; i++) {
                     fgs.put(supFGs[i].getName(), supFGs[i]);
+                }
             }
             FetchGroup[] decs = getDeclaredFetchGroups();
-            for (int i = 0; i < decs.length; i++)
+            for (int i = 0; i < decs.length; i++) {
                 fgs.put(decs[i].getName(), decs[i]);
-            
+            }
             // remove standard groups
             fgs.remove(FetchGroup.NAME_DEFAULT);
             fgs.remove(FetchGroup.NAME_ALL);
 
-            _customFGs = (FetchGroup[]) fgs.values().toArray
-                (new FetchGroup[fgs.size()]);
+            _customFGs = fgs.values().toArray(new FetchGroup[fgs.size()]);
         }
         return _customFGs;
     }
@@ -2338,7 +2338,7 @@ public class ClassMetaData
      * receiver or any of its superclasses. Otherwise null.
      */
     public FetchGroup getFetchGroup(String name) {
-        FetchGroup fg = (_fgMap == null) ? null : (FetchGroup) _fgMap.get(name);
+        FetchGroup fg = (_fgMap == null) ? null : _fgMap.get(name);
         if (fg != null)
             return fg;
         ClassMetaData sup = getPCSuperclassMetaData();
@@ -2363,7 +2363,7 @@ public class ClassMetaData
     		throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (_fgMap == null)
             _fgMap = new HashMap<String,FetchGroup>();
-        FetchGroup fg = (FetchGroup) _fgMap.get(name);
+        FetchGroup fg = _fgMap.get(name);
         if (fg == null) {
         	fg = new FetchGroup(this, name);
         	_fgMap.put(name, fg);
