@@ -177,6 +177,21 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
     }
 
 
+    /**
+     * Derby tests run with a DerbyDictionary-specific property, so clear it out here.
+     * Otherwise, all tests except testDerbyDynamicSchema will fail.
+     */
+    @Override
+    protected OpenJPAEntityManagerFactorySPI createEMF(Object... props) {
+        int propsLength = props.length;
+        Object[] newProps = new Object[propsLength + 2];
+        System.arraycopy(props, 0, newProps, 0, propsLength);
+        newProps[propsLength] = "openjpa.jdbc.DBDictionary";
+        newProps[propsLength + 1] = "";
+        return super.createEMF(newProps);
+    }
+
+
     private void validateTableName(OpenJPAEntityManagerFactorySPI emf) {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();

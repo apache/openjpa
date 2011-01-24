@@ -86,6 +86,7 @@
                 <connection.url>jdbc:hsqldb:mem:openjpa20-hsqldb-database</connection.url>
                 <connection.username>sa</connection.username>
                 <connection.password />
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -111,6 +112,7 @@
                 <connection.url>${openjpa.mysql.url}</connection.url>
                 <connection.username>${openjpa.mysql.username}</connection.username>
                 <connection.password>${openjpa.mysql.password}</connection.password>
+                <jdbc.DBDictionary />
                 <!-- DBCP overrides for MySQL testing -->
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
@@ -139,6 +141,7 @@
                 <connection.url>${openjpa.postgresql.url}</connection.url>
                 <connection.username>${openjpa.postgresql.username}</connection.username>
                 <connection.password>${openjpa.postgresql.password}</connection.password>
+                <jdbc.DBDictionary />
                 <!-- DBCP overrides -->
                 <dbcp.maxIdle>0</dbcp.maxIdle>
                 <dbcp.minIdle>0</dbcp.minIdle>
@@ -199,6 +202,7 @@
                 <connection.url>${openjpa.mssql.url}</connection.url>
                 <connection.username>${openjpa.mssql.username}</connection.username>
                 <connection.password>${openjpa.mssql.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>
@@ -240,6 +244,7 @@
                 <connection.url>${openjpa.sqlserver.url}</connection.url>
                 <connection.username>${openjpa.sqlserver.username}</connection.username>
                 <connection.password>${openjpa.sqlserver.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -266,6 +271,7 @@
                 <connection.url>${openjpa.sybase.url}</connection.url>
                 <connection.username>${openjpa.sybase.username}</connection.username>
                 <connection.password>${openjpa.sybase.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -286,6 +292,7 @@
                 <connection.url>${openjpa.sybase.url}</connection.url>
                 <connection.username>${openjpa.sybase.username}</connection.username>
                 <connection.password>${openjpa.sybase.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -312,6 +319,7 @@
                 <connection.url>${openjpa.ingres.url}</connection.url>
                 <connection.username>${openjpa.ingres.username}</connection.username>
                 <connection.password>${openjpa.ingres.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -346,6 +354,7 @@
                 <connection.url>${openjpa.custom.url}</connection.url>
                 <connection.username>${openjpa.custom.username}</connection.username>
                 <connection.password>${openjpa.custom.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -393,6 +402,7 @@
                 <connection.url>${openjpa.custom.url}</connection.url>
                 <connection.username>${openjpa.custom.username}</connection.username>
                 <connection.password>${openjpa.custom.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
 
@@ -465,6 +475,7 @@
                 <connection.url>${openjpa.db2.url}</connection.url>
                 <connection.username>${openjpa.db2.username}</connection.username>
                 <connection.password>${openjpa.db2.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>
@@ -597,6 +608,7 @@
                 <connection.url>${openjpa.ids.url}</connection.url>
                 <connection.username>${openjpa.ids.username}</connection.username>
                 <connection.password>${openjpa.ids.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>
@@ -664,6 +676,7 @@
                 <connection.url>${openjpa.oracle.url}</connection.url>
                 <connection.username>${openjpa.oracle.username}</connection.username>
                 <connection.password>${openjpa.oracle.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>
@@ -708,6 +721,7 @@
                 <connection.url>${openjpa.soliddb.url}</connection.url>
                 <connection.username>${openjpa.soliddb.username}</connection.username>
                 <connection.password>${openjpa.soliddb.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>

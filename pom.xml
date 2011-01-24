@@ -367,6 +367,8 @@
                 <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
                 <connection.username />
                 <connection.password />
+                <!-- Tests are much faster without shutting derby down at the end of each test. -->
+                <jdbc.DBDictionary>ShutdownOnClose=false</jdbc.DBDictionary>
             </properties>
         </profile>
 
@@ -395,6 +397,8 @@
                 <connection.url>jdbc:derby:memory:openjpa-derby-inmem-database;create=true</connection.url>
                 <connection.username />
                 <connection.password />
+                <!-- Tests are much faster without shutting derby down at the end of each test. -->
+                <jdbc.DBDictionary>ShutdownOnClose=false</jdbc.DBDictionary>
             </properties>
         </profile>
 
@@ -437,6 +441,7 @@
                 <connection.url>${openjpa.derbynet.url}</connection.url>
                 <connection.username>${openjpa.derbynet.username}</connection.username>
                 <connection.password>${openjpa.derbynet.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
         </profile>
     </profiles>
@@ -647,6 +652,10 @@
                         <property>
                             <name>openjpa.ConnectionPassword</name>
                             <value>${connection.password}</value>
+                        </property>
+                        <property>
+                            <name>openjpa.jdbc.DBDictionary</name>
+                            <value>${jdbc.DBDictionary}</value>
                         </property>
                         <property>
                             <name>derby.stream.error.file</name>
