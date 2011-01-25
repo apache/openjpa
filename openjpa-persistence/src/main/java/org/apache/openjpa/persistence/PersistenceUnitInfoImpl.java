@@ -81,6 +81,7 @@ public class PersistenceUnitInfoImpl
     private List<String> _mappingFileNames;
     private List<String> _entityClassNames;
     private List<URL> _jarFiles;
+    private List<String> _jarFileNames;
     private String _jtaDataSourceName;
     private DataSource _jtaDataSource;
     private String _nonJtaDataSourceName;
@@ -219,6 +220,30 @@ public class PersistenceUnitInfoImpl
     }
 
     public void addJarFileName(String name) {
+        // Defer searching the classpath for jar files referenced by the jar-file element until after
+        // the XML has been parsed and it has been confirmed that OpenJPA is the desired JPA provider.
+
+        if (_jarFileNames == null) {
+            _jarFileNames = new ArrayList<String>();
+        }
+        _jarFileNames.add(name);
+    }
+
+    /**
+     * Process jar-file elements. An IllegalArgumentException may be thrown if the jar file does not exist in the
+     * classpath.
+     */
+    public void processJarFileNames() {
+        if (_jarFileNames != null) {
+            for (String name : _jarFileNames) {
+                validateJarFileName(name);
+            }
+
+            _jarFileNames.clear();
+        }
+    }
+    
+    public void validateJarFileName(String name) {
         MultiClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         loader.addClassLoader(getClass().getClassLoader());
