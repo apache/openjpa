@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.util.UserException;
 
 import serp.util.Strings;
 
@@ -69,6 +70,8 @@ public class Options extends TypedProperties {
         { int.class, Integer.class, Integer.valueOf(0) },
         { long.class, Long.class, Long.valueOf(0L) },
         { short.class, Short.class, Short.valueOf((short) 0) }, };
+    
+    private static Localizer _loc = Localizer.forPackage(Options.class);
 
     /**
      * Default constructor.
@@ -105,7 +108,7 @@ public class Options extends TypedProperties {
 
         String key = null;
         String value = null;
-        List remainder = new LinkedList();
+        List<String> remainder = new LinkedList<String>();
         for (int i = 0; i < args.length + 1; i++) {
             if (i == args.length || args[i].startsWith("-")) {
                 key = trimQuote(key);
@@ -129,7 +132,7 @@ public class Options extends TypedProperties {
                 remainder.add(args[i]);
         }
 
-        return (String[]) remainder.toArray(new String[remainder.size()]);
+        return remainder.toArray(new String[remainder.size()]);
     }
 
     /**
@@ -175,8 +178,7 @@ public class Options extends TypedProperties {
         // set all defaults that have no explicit value
         Map.Entry entry = null;
         if (defaults != null) {
-            for (Iterator itr = defaults.entrySet().iterator(); itr.hasNext();)
-            {
+            for (Iterator itr = defaults.entrySet().iterator(); itr.hasNext();) {
                 entry = (Map.Entry) itr.next();
                 if (!containsKey(entry.getKey()))
                     setInto(obj, entry);
@@ -235,8 +237,7 @@ public class Options extends TypedProperties {
             invoke(match[0], match[1], values);
             return true;
         } catch (Throwable t) {
-            throw new ParseException(obj + "." + entry.getKey()
-                + " = " + entry.getValue(), t);
+            throw new ParseException(obj + "." + entry.getKey() + " = " + entry.getValue(), t);
         }
     }
 
@@ -302,7 +303,7 @@ public class Options extends TypedProperties {
             return false;
 
         // unfortunately we can't use bean properties for setters; any
-        // setter with more than 1 arg is ignored; calc setter and getter
+        // setter with more than 1 argument is ignored; calculate setter and getter
         // name to look for
         String[] find = Strings.split(key, ".", 2);
         String base = StringUtils.capitalize(find[0]);
@@ -410,7 +411,7 @@ public class Options extends TypedProperties {
      * Converts the given string into an object of the given type, or its
      * wrapper type if it is primitive.
      */
-    private Object stringToObject(String str, Class type) throws Exception {
+    private Object stringToObject(String str, Class<?> type) throws Exception {
         // special case for null and for strings
         if (str == null || type == String.class)
             return str;
@@ -429,27 +430,27 @@ public class Options extends TypedProperties {
         if (type.isPrimitive())
             for (int i = 0; i < _primWrappers.length; i++)
                 if (type == _primWrappers[i][0])
-                    return stringToObject(str, (Class) _primWrappers[i][1]);
+                    return stringToObject(str, (Class<?>) _primWrappers[i][1]);
 
         // look for a string constructor
         Exception err = null;
         try {
-            Constructor cons = type.getConstructor
-                (new Class[]{ String.class });
+            Constructor<?> cons = type.getConstructor(new Class[]{ String.class });
             if (type == Boolean.class && "t".equalsIgnoreCase(str))
                 str = "true";
             return cons.newInstance(new Object[]{ str });
         } catch (Exception e) {
-            err = e;
+            err = new UserException(_loc.get("conf-no-constructor", str, type), e);
         }
 
-        // special case: the arg value is a subtype name and a new instance
+        // special case: the argument value is a subtype name and a new instance
         // of that type should be set as the object
-        Class subType = null;
+        Class<?> subType = null;
         try {
             subType = Class.forName(str);
         } catch (Exception e) {
-            throw err;
+            err = e;
+            throw new UserException(_loc.get("conf-no-type", str, type), e);
         }
         if (!type.isAssignableFrom(subType))
             throw err;
