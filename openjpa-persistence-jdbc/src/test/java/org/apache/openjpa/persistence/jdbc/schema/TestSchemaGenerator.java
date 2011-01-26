@@ -42,7 +42,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
-
 import java.lang.annotation.Annotation;
 import junit.framework.*;
 import javax.persistence.EntityManager;
@@ -53,71 +52,26 @@ import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
+public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
 
-public class TestSchemaGenerator
-        extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {
-        
+    @Override
+    protected String getPersistenceUnitName() {
+        // TODO Auto-generated method stub
+        return "TestConv";
+    }
+
     /** Creates a new instance of TestSchemaGenerator */
-    public TestSchemaGenerator(String name) 
-    {
-    	super(name);
+    public TestSchemaGenerator(String name) {
+        super(name);
     }
-    
-    public void DBMetadataTest()
-    throws Exception {
-        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory)
-        getEmf();
-        //FIXME jthomas
-        
-        //ClassMapping cm = (ClassMapping) KodoJDOHelper.getMetaData
-        //    (pmf, RuntimeTest1.class);
-        ClassMapping cm =null;
-        JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        
-        DataSource ds = (DataSource) conf.getDataSource2(null);
-        Connection c = ds.getConnection();
-        DatabaseMetaData meta = c.getMetaData();
-        DBDictionary dict = conf.getDBDictionaryInstance();
-        
-        String schema = cm.getTable().getSchema().getName();
-        Table[] tables = dict.getTables(meta, c.getCatalog(), schema,
-                cm.getTable().getName(), c);
-        assertEquals(1, tables.length);
-        
-        Column[] columns = dict.getColumns(meta, c.getCatalog(), schema,
-                cm.getTable().getName(), null, c);
-        for (int i = 0; i < columns.length; i++)
-            System.out.println("### " + columns[i].getName());
-    }
-    
-    public void testSchemaGen()
-    throws Exception {
-        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory)
-        getEmf();
+
+    public void testSchemaGen() throws Exception {
+        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory) getEmf();
         OpenJPAEntityManager pm = pmf.createEntityManager();
-        JDBCConfiguration con =
-            (JDBCConfiguration) ((OpenJPAEntityManagerSPI) pm)
-            .getConfiguration();
-        DBDictionary dict = con.getDBDictionaryInstance();
-        MappingRepository repos = con.getMappingRepositoryInstance();
-        ClassMapping cm = repos.getMapping(RuntimeTest1.class,
-                pm.getClassLoader(), true);
-        String schemas = cm.getTable().getSchema().getName();
-        if (schemas == null)
-            schemas = "";
-        schemas += "." + cm.getTable().getName();
-        
-        Map props=new HashMap();
-        props.put("openjpa.jdbc.Schemas", schemas);
-        
-        OpenJPAEntityManagerFactory kpmf =(OpenJPAEntityManagerFactory)
-                getEmf(props);
-        JDBCConfiguration conf =
-            (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) kpmf)
-            .getConfiguration();
-        
+        JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pmf).getConfiguration();
+
         StringWriter sw = new StringWriter();
-        
+
         SchemaTool.Flags flags = new SchemaTool.Flags();
         flags.writer = sw;
         flags.primaryKeys = true;
@@ -125,10 +79,9 @@ public class TestSchemaGenerator
         flags.indexes = true;
         flags.openjpaTables = true;
         flags.action = SchemaTool.ACTION_REFLECT;
-        
-        SchemaTool.run(conf, new String[0], flags,
-                getClass().getClassLoader());
-        
+
+        SchemaTool.run(conf, new String[0], flags, getClass().getClassLoader());
+
         sw.flush();
         String data = sw.toString();
         assertTrue(data.length() > 0);

@@ -926,7 +926,6 @@
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestPerClassSequenceFactory.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestSchema.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestSchemaClone.java</exclude>
-                        <exclude>org/apache/openjpa/persistence/jdbc/schema/TestSchemaGenerator.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestSequenceGeneratorEnsureCapacityCall.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestXMLSchemaParser.java</exclude>
                         <exclude>org/apache/openjpa/persistence/jdbc/schema/TestXMLSchemaSerializer.java</exclude>
