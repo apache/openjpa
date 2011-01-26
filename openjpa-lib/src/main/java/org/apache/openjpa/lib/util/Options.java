@@ -33,7 +33,6 @@ import java.util.Properties;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.util.UserException;
 
 import serp.util.Strings;
 
@@ -440,7 +439,7 @@ public class Options extends TypedProperties {
                 str = "true";
             return cons.newInstance(new Object[]{ str });
         } catch (Exception e) {
-            err = new UserException(_loc.get("conf-no-constructor", str, type), e);
+            err = new ParseException(_loc.get("conf-no-constructor", str, type), e);
         }
 
         // special case: the argument value is a subtype name and a new instance
@@ -450,13 +449,12 @@ public class Options extends TypedProperties {
             subType = Class.forName(str);
         } catch (Exception e) {
             err = e;
-            throw new UserException(_loc.get("conf-no-type", str, type), e);
+            throw new ParseException(_loc.get("conf-no-type", str, type), e);
         }
         if (!type.isAssignableFrom(subType))
             throw err;
         try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(subType));
+            return AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(subType));
         } catch (PrivilegedActionException pae) {
             throw pae.getException();
         }
