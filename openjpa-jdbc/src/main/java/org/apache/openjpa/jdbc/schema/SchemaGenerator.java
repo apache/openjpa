@@ -267,59 +267,52 @@ public class SchemaGenerator {
      * {@link #generatePrimaryKeys}, and {@link #generateForeignKeys}
      * automatically.
      */
-    public void generateSchemas(DBIdentifier[] schemasAndTables)
-        throws SQLException {
+    public void generateSchemas(DBIdentifier[] schemasAndTables) throws SQLException {
         fireGenerationEvent(_loc.get("generating-schemas"));
-
-        Object[][] schemaMap;
-        if (schemasAndTables == null || schemasAndTables.length == 0)
-            schemaMap = _allowed;
-        else
-            schemaMap = parseSchemasList(schemasAndTables);
-
-        if (schemaMap == null) {
-            generateSchema(DBIdentifier.NULL, (DBIdentifier[])null);
-
-            // estimate the number of schema objects we will need to visit
-            // in order to estimate progress total for any listeners
-            int numTables = getTables(null).size();
-            _schemaObjects += numTables
-                + (_pks ? numTables : 0)
-                + (_indexes ? numTables : 0)
-                + (_fks ? numTables : 0);
-
-            if (_pks)
-                generatePrimaryKeys(DBIdentifier.NULL, null);
-            if (_indexes)
-                generateIndexes(DBIdentifier.NULL, null);
-            if (_fks)
-                generateForeignKeys(DBIdentifier.NULL, null);
-            return;
-        }
-
         // generate all schemas and tables
-        try{ 
-            getConn(); 
+        try {
+            getConn();
+            Object[][] schemaMap;
+            if (schemasAndTables == null || schemasAndTables.length == 0)
+                schemaMap = _allowed;
+            else
+                schemaMap = parseSchemasList(schemasAndTables);
+
+            if (schemaMap == null) {
+                generateSchema(DBIdentifier.NULL, (DBIdentifier[]) null);
+
+                // estimate the number of schema objects we will need to visit
+                // in order to estimate progress total for any listeners
+                int numTables = getTables(null).size();
+                _schemaObjects +=
+                    numTables + (_pks ? numTables : 0) + (_indexes ? numTables : 0) + (_fks ? numTables : 0);
+
+                if (_pks)
+                    generatePrimaryKeys(DBIdentifier.NULL, null);
+                if (_indexes)
+                    generateIndexes(DBIdentifier.NULL, null);
+                if (_fks)
+                    generateForeignKeys(DBIdentifier.NULL, null);
+                return;
+            }
+
             for (int i = 0; i < schemaMap.length; i++) {
                 generateSchema((DBIdentifier) schemaMap[i][0], (DBIdentifier[]) schemaMap[i][1]);
             }
-        
+
             // generate pks, indexes, fks
             DBIdentifier schemaName = DBIdentifier.NULL;
             DBIdentifier[] tableNames;
             for (int i = 0; i < schemaMap.length; i++) {
                 schemaName = (DBIdentifier) schemaMap[i][0];
                 tableNames = (DBIdentifier[]) schemaMap[i][1];
-    
+
                 // estimate the number of schema objects we will need to visit
                 // in order to estimate progress total for any listeners
-                int numTables = (tableNames != null) ? tableNames.length
-                    : getTables(schemaName).size();
-                _schemaObjects += numTables
-                    + (_pks ? numTables : 0)
-                    + (_indexes ? numTables : 0)
-                    + (_fks ? numTables : 0);
-    
+                int numTables = (tableNames != null) ? tableNames.length : getTables(schemaName).size();
+                _schemaObjects +=
+                    numTables + (_pks ? numTables : 0) + (_indexes ? numTables : 0) + (_fks ? numTables : 0);
+
                 if (_pks) {
                     generatePrimaryKeys(schemaName, tableNames);
                 }
@@ -330,9 +323,8 @@ public class SchemaGenerator {
                     generateForeignKeys(schemaName, tableNames);
                 }
             }
-        }
-        finally  { 
-            closeConn(); 
+        } finally {
+            closeConn();
         }
     }
 

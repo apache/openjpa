@@ -27,31 +27,17 @@
  */
 package org.apache.openjpa.persistence.jdbc.kernel;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
-import javax.management.IntrospectionException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-
-
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class BaseJDBCTest
