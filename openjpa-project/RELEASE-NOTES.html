@@ -17,9 +17,9 @@ specific language governing permissions and limitations
 under the License. 
 --> 
 <html>
-<title>Release Notes for Apache OpenJPA 2.1.0-SNAPSHOT</title>
+<title>Release Notes for Apache OpenJPA 2.2.0-SNAPSHOT</title>
 <body>
-<h1>Release Notes for Apache OpenJPA 2.1.0-SNAPSHOT</h1>
+<h1>Release Notes for Apache OpenJPA 2.2.0-SNAPSHOT</h1>
 <p>
 <ul>
   <li><a href="#Overview">Overview</a></li>
@@ -30,7 +30,8 @@ under the License.
   <li><a href="#Notice">Notice</a></li>
   <li><a href="#ReleaseNotes">Release Notes</a></li>
   <ul>
-    <li><a href="#210">2.1.0-SNAPSHOT</a></li>
+    <li><a href="#220">2.2.0-SNAPSHOT</a></li>
+    <li><a href="#210">2.1.0</a></li>
     <li><a href="#201">2.0.1</a></li>
     <li><a href="#200">2.0.0</a></li>
     <li><a href="#200beta3">2.0.0 Beta 3</a></li>
@@ -49,140 +50,18 @@ under the License.
 
 <P>
    The Apache OpenJPA community is proud to release a SNAPSHOT distribution of
-   OpenJPA 2.1.0. This distribution is based on the final JSR 317 Java
+   OpenJPA 2.2.0. This distribution is based on the final JSR 317 Java
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
-   while remaining backwards compatiable with prior releases based on the
+   while remaining backwards compatible with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
-   (Enterprise JavaBeans 3.0). Included in this release are many enhancements,
-   fixes, and new functionality; giving developers access to all the new
-   features of JPA 2.0, including:
+   (Enterprise JavaBeans 3.0).
 </P>
-
-<ul>
-<li>
-     Access Types - expanded to allow specification on a per-persistent type
-     basis or on individual attributes.
-</li>
-<li>
-     Embeddables - expanded to include collections of embeddables, nested
-     embeddables, and embeddables containing relationships to other entities.
-</li>
-<li>
-     Enhanced Map Collections - expanded to support ElementCollection and new
-     annotations for MapKeyColumn, MapKeyClass and MapKeyJoinColumn
-</li>
-<li>
-     Derived Identities - enables the ID of an entity to be derived from
-     another entity, which provides for parent-to-dependent relationships
-</li>
-<li>
-     Query API - methods to get typed query parameters and results, supported
-     and in-effect hints and lock mode getter/setter
-</li>
-<li>
-     Locking - official support for Pessimistic locking (included in prior
-     OpenJPA releases) along with LockModeType properties and hint
-</li>
-<li>
-     JPQL Updates -
-     <ul>
-     <li>
-         Embeddables support for path expressions to nested Embeddables and
-         Embeddables with relationships
-     </li>
-     <li>
-         Enhanced Map Collection support for ElementCollection and new query
-         expressions for KEY, ENTRY, VALUE
-     </li>
-     <li>
-         Support for CASE and TYPE expressions along with IN expressions for
-         Collection parameters
-     </li>
-     <li>
-         Support for native date/time/timestamp literals
-     </li>
-     <li>
-         Support for INDEX expressions on an OrderColumn
-     </li>
-     </ul>
-</li>
-<li>
-     L2 Cache -
-     <ul>
-     <li>
-         Provides cache operations such as entity eviction and cache mode
-         behaviors to use, bypass or refresh items
-     </li>
-     <li>
-         Per-entity annotation to specify whether an entity should be cached
-     </li>
-     </ul>
-</li>
-<li>
-     Bean Validation - supports using a JSR 303 implementation for entity
-     validation for persist and remove operations
-</li>
-<li>
-     Metamodel API -
-     <ul>
-     <li>
-         Provides API to dynamically retrieve metamodel information for a
-         persistence unit
-     </li>
-     <li>
-         Used with Criteria API to generate and execute type safe queries
-     </li>
-     <li>
-         Supports dynamic or static generation of the metamodel
-     </li>
-     </ul>
-</li>
-<li>
-     Criteria API -
-     <ul>
-     <li>
-         Provides programmatic construction of queries using an object based
-         query graph
-     </li>
-     <li>
-         Operates on Metamodel objects to provide compile-time type safety
-         enforcement
-     </li>
-     </ul>
-</li>
-<li>
-     EntityManagerFactory API - updated for new L2 Cache, Properties, Criteria
-     and Metamodel APIs
-</li>
-<li>
-     EntityManager API - updated for new Query and Query Result APIs, Hints,
-     Properties, LockModeType, and Detach
-</li>
-<li>
-     OSGi - support for the Persistence Unit Service Specification 1.0 in 
-     the OSGi Service Platform Release 4 Enterprise Version 4.2 specifications
-     has been provided by integration with the Apache Aries JPA module
-</li>
-<li>
-     And many more...
-</li>
-</ul>
-</p>
-
-<p>This SNAPSHOT distribution is based upon the contributions provided in
-development iterations after the 2.0.0 release, as defined in the 
-OpenJPA 2.1 Roadmap at:
-<a href="http://openjpa.apache.org/jpa-21-roadmap.html">http://openjpa.apache.org/jpa-21-roadmap.html</a></p>
-
-<p>The OpenJPA 2.1 Roadmap contains a complete list of implemented features and
-feature summaries, including what is on deck for future iterations.</p>
 
 <p>Additional information on the OpenJPA project may be found at the project web site: <a href="http://openjpa.apache.org">http://openjpa.apache.org</a></p>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
-<P>In normal usage, OpenJPA requires Java 5 or higher and a relational 
-database of some sort.  The metamodel generation and annotation processing
-features require Java SE 6 or higher.
+<P>OpenJPA requires Java 6 or higher and a relational 
+database of some sort.
 </p>
 
 <h2><a name="Documentation"></a>Documentation</h2>
@@ -191,8 +70,8 @@ online product manual. You can find the manual for the current release as well
 as older releases of OpenJPA at 
 <a href="http://openjpa.apache.org/documentation.html">
 http://openjpa.apache.org/documentation.html</a></p>
-<p>If you can't find what you're looking for in the manual or would like more
-clarification you please post to the OpenJPA development mailing list.
+<p>If you can't find what you are looking for in the manual or would like more
+clarification, please post to the OpenJPA development mailing list.
 Information on all of the OpenJPA mailing lists may be found here:
 <a href="http://openjpa.apache.org/mailing-lists.html">
 http://openjpa.apache.org/mailing-lists.html</a></p>
@@ -207,12 +86,15 @@ http://openjpa.apache.org/mailing-lists.html</a></p>
     <li> Detailed and constructive feedback </li>
     <li> Articles and whitepapers </li>
 </ul></p>
-<p>How do I Contribute?
+<p>How do I contribute?
 <ul>
     <li> To discuss Apache OpenJPA topics check out the mailing lists. </li>
     <li> Informal discussion also occurs on the #openjpa IRC channel on 
          freenode.net. </li>
-    <li> Bugs and other issues can be posted on the project JIRA. </li>
+    <li> Bugs and other issues can be posted on
+         <a href="https://issues.apache.org/jira/browse/OPENJPA">
+         the issue tracker</a>.
+     </li>
 </ul>
 </p>
 
@@ -239,7 +121,7 @@ under the License.</p>
 in each release of OpenJPA.</P>
 
 <h2><a name="Notice"></a>Notice</h2>
-<p>Copyright 2006,2010 The Apache Software Foundation
+<p>Copyright 2006,2011 The Apache Software Foundation
 <BR>This product includes software developed at The Apache Software Foundation (http://www.apache.org/).</p>
 <P>Apache OpenJPA includes the persistence and orm schemas from the JPA specifications.
 <BR>Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
@@ -255,7 +137,11 @@ in each release of OpenJPA.</P>
 <h2><a name="ReleaseNotes">Release Notes</h2>
 
 <hr>
-<h3><a name="210">OpenJPA 2.1.0-SNAPSHOT</h3>
+<h3><a name="220">OpenJPA 2.2.0-SNAPSHOT</h3>
+<h4>TBD...</h4>
+
+<hr>
+<h3><a name="210">OpenJPA 2.1.0</h3>
 <h4>TBD...</h4>
 
 <hr>
@@ -1402,11 +1288,12 @@ in each release of OpenJPA.</P>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.2.2/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.2.2 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.2.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.2.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.1.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.1.0 RELEASE-NOTES.html</a></li>
+  <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.4/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.4 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/1.0.3/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 1.0.3 RELEASE-NOTES.html</a></li>
 </ul></p>
  
 <hr>
-<p>Copyright (C) 2006,2010 Apache Software Foundation. Licensed under Apache License 2.0.<br>
+<p>Copyright (C) 2006,2011 Apache Software Foundation. Licensed under Apache License 2.0.<br>
 Apache, the Apache feather logo and OpenJPA are trademarks of Apache Software Foundation.<br>
 </body>
 </html>

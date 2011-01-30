@@ -1,4 +1,4 @@
-Apache OpenJPA 2.1.0-SNAPSHOT
+Apache OpenJPA 2.2.0-SNAPSHOT
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -21,68 +21,12 @@ Content
 Overview
 --------
    The Apache OpenJPA community is proud to release a SNAPSHOT distribution of
-   OpenJPA 2.1.0. This distribution is based on the final JSR 317 Java 
+   OpenJPA 2.2.0. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
-   while remaining backwards compatiable with prior releases based on the
+   while remaining backwards compatible with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
-   (Enterprise JavaBeans 3.0). Included in this release are many enhancements,
-   fixes, and new functionality; giving developers access to all the new
-   features of JPA 2.0, including:
-
-   * Access Types - expanded to allow specification on a per-persistent type
-     basis or on individual attributes.
-   * Embeddables - expanded to include collections of embeddables, nested
-     embeddables, and embeddables containing relationships to other entities.
-   * Enhanced Map Collections - expanded to support ElementCollection and new
-     annotations for MapKeyColumn, MapKeyClass and MapKeyJoinColumn
-   * Derived Identities - enables the ID of an entity to be derived from
-     another entity, which provides for parent-to-dependent relationships
-   * Query API - methods to get typed query parameters and results, supported
-     and in-effect hints and lock mode getter/setter
-   * Locking - official support for Pessimistic locking (included in prior
-     OpenJPA releases) along with LockModeType properties and hint
-   * JPQL Updates -
-      ** Embeddables support for path expressions to nested Embeddables and
-         Embeddables with relationships
-      ** Enhanced Map Collection support for ElementCollection and new query
-         expressions for KEY, ENTRY, VALUE
-      ** Support for CASE and TYPE expressions along with IN expressions for
-         Collection parameters
-      ** Support for native date/time/timestamp literals
-      ** Support for INDEX expressions on an OrderColumn
-   * L2 Cache -
-      ** Provides cache operations such as entity eviction and cache mode
-         behaviors to use, bypass or refresh items
-      ** Per-entity annotation to specify whether an entity should be cached
-   * Bean Validation - supports using a JSR 303 implementation for entity
-     validation for persist and remove operations
-   * Metamodel API -
-      ** Provides API to dynamically retrieve metamodel information for a
-         persistence unit
-      ** Used with Criteria API to generate and execute type safe queries
-      ** Supports dynamic or static generation of the metamodel
-   * Criteria API -
-      ** Provides programmatic construction of queries using an object based
-         query graph
-      ** Operates on Metamodel objects to provide compile-time type safety
-         enforcement
-   * EntityManagerFactory API - updated for new L2 Cache, Properties, Criteria
-     and Metamodel APIs
-   * EntityManager API - updated for new Query and Query Result APIs, Hints,
-     Properties, LockModeType, and Detach
-   * OSGi - support for the Persistence Unit Service Specification 1.0 in 
-     the OSGi Service Platform Release 4 Enterprise Version 4.2 specifications
-     has been provided by integration with the Apache Aries JPA module
-   * And many more...
-
-   This SNAPSHOT distribution is based upon the contributions provided in
-   development iterations after the 2.0.0 release, as defined in the 
-   OpenJPA 2.1 Roadmap at:
-      http://openjpa.apache.org/jpa-21-roadmap.html
-
-   The OpenJPA 2.1 Roadmap contains a complete list of implemented features and
-   feature summaries, including what is on deck for future iterations.
-
+   (Enterprise JavaBeans 3.0).
+   
    Additional information on the OpenJPA project may be found at the project
    web site:
       http://openjpa.apache.org
@@ -110,7 +54,7 @@ License
 
 Notices
 -------
-   Copyright 2006,2010 The Apache Software Foundation.
+   Copyright 2006,2011 The Apache Software Foundation.
    Apache, the Apache feather logo and OpenJPA are trademarks of
    The Apache Software Foundation.
 
@@ -131,9 +75,8 @@ Notices
 
 Prerequisites
 -------------
-   In normal usage, OpenJPA requires Java SE 5 or higher and a relational 
-   database of some sort.  The metamodel generation and annotation processing
-   features require Java SE 6 or higher.
+   OpenJPA requires Java SE 6 or higher and a relational 
+   database of some sort.
 
 
 Documentation
@@ -143,8 +86,8 @@ Documentation
    well as older releases of OpenJPA at
        http://openjpa.apache.org/documentation.html
 
-   If you can't find what you're looking for in the manual or would like more
-   clarification you please post to the OpenJPA development mailing list.
+   If you can't find what you are looking for in the manual or would like more
+   clarification, please post to the OpenJPA development mailing list.
    Information on all of the OpenJPA mailing lists may be found here:
        http://openjpa.apache.org/mailing-lists.html
 
@@ -161,14 +104,21 @@ Getting Involved
         * Detailed and constructive feedback
         * Articles and whitepapers
 
-   How do I Contribute?
+   How do I contribute?
         * To discuss Apache OpenJPA topics check out the mailing lists.
         * Informal discussion also occurs on the #openjpa IRC channel on
           freenode.net.
-        * Bugs and other issues can be posted on the project JIRA.
+        * Bugs and other issues can be posted on the issue tracker at
+          https://issues.apache.org/jira/browse/OPENJPA
 
 
-Included Changes in OpenJPA 2.1.0-SNAPSHOT
+Included Changes in OpenJPA 2.2.0-SNAPSHOT
+------------------------------------------
+
+    * TBD
+
+
+Included Changes in OpenJPA 2.1.0
 ------------------------------------------
 
     * TBD
