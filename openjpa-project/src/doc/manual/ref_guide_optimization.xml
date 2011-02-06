@@ -123,7 +123,7 @@ or deletes.
 Manipulating various parameters of the Java Virtual Machine (such as hotspot 
 compilation modes and the maximum memory) can result in performance 
 improvements. For more details about optimizing the JVM execution environment, 
-please see <ulink url="http://java.sun.com/docs/hotspot/HotSpotFAQ.html"/>.
+please see <ulink url="http://www.oracle.com/technetwork/java/hotspotfaq-138619.html"/>.
                     </entry>
                 </row>
                 <row>

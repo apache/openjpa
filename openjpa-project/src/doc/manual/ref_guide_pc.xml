@@ -386,7 +386,7 @@ java -javaagent:/home/dev/openjpa/lib/openjpa.jar=addDefaultConstructor=false co
 	</title>          
 	<para>
 		If a javaagent is not provided via the command line and 
-		OpenJPA is running on the Sun 1.6 SDK or IBM 1.6 JDK (SR8+), OpenJPA
+		OpenJPA is running on the Oracle 1.6 SDK or IBM 1.6 JDK (SR8+), OpenJPA
 		will attempt to dynamically load the Enhancer that was 
 		mentioned in the previous section. This support is 
 		provided as an ease of use feature and it is not recommended

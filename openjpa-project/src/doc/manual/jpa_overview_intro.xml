@@ -35,8 +35,8 @@
             JPA
         </primary>
     </indexterm>
-The Java Persistence API (JPA) is a specification from
-Sun Microsystems for the persistence of Java objects to any relational
+The Java Persistence API (JPA) is a specification
+for the persistence of Java objects to any relational
 datastore. JPA requires J2SE 1.5 (also referred to as "Java 5") or
 higher, as it makes heavy use of new Java language features such as annotations
 and generics. This document provides an overview of JPA. Unless

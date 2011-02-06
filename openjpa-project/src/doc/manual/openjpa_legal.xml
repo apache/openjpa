@@ -93,12 +93,10 @@ The openjpa-all aggregate JAR includes software developed by the:
         <section id="openjpa_legal_copyright_apache">
             <title>Apache</title>
             <para>
-Copyright (C) 2006,2010 The Apache Software Foundation.
+Copyright (C) 2006,2011 The Apache Software Foundation.
             </para>
             <para>
 Apache, OpenJPA and the Apache feather logo are trademarks of Apache Software Foundation.
-Java and all Java-based trademarks and logos are trademarks of Sun Microsystems, Inc. in the United States, other countries, or both.
-Other names may be trademarks of their respective owners.
             </para>
         </section>
         <section id="openjpa_legal_copyright_serp">
@@ -138,6 +136,10 @@ OpenJPA includes software written by Miroslav Nachev.
             </para>
             <para>
 OpenJPA uses test code written by Charles Tillman.
+            </para>
+            <para>
+Oracle and Java are registered trademarks of Oracle and/or its affiliates.
+Other names may be trademarks of their respective owners.
             </para>
         </section>
     </section>

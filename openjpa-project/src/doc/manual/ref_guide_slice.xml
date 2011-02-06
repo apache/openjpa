@@ -136,11 +136,11 @@
             <para>
             To confine queries to a subset of slices via setting query hints can be considered
             intrusive to existing application. The alternative means of targeting queries is to 
-            a configure a <emphasis>Query Target Policy</emphasis>. This policy is configured 
+            configure a <emphasis>Query Target Policy</emphasis>. This policy is configured 
             via plug-in property <classname>openjpa.slice.QueryTargetPolicy</classname>. The
-            plug-in property is fully-qualified class name an implementation
+            plug-in property is fully-qualified class name of an implementation
             for <classname>org.apache.openjpa.slice.QueryTargetPolicy</classname> interface.
-            This interface contract allows an user application to target a query select a subset 
+            This interface contract allows a user application to target a query to a subset 
             of slices based on the query and its bound parameters. The query target policy is consulted
             only when no explicit target hint is set on the query. By default, the policy 
             executes a query on all available slices.  
@@ -152,7 +152,6 @@
             by primary key. This finder target policy is consulted
             only when no explicit target hint is set on the current fetch plan. By default, the policy 
             executes a query on all available slices to find an instance by its primary key.    
-            To confine queries to a subset of slices via setting query hints can be considered
             </para>
          </section>
 		

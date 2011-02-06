@@ -2531,7 +2531,7 @@ HAVING</literal> clause.
             </para>
             <para>
 State-fields that are mapped in serialized form or as
-lobs may not be portably used in conditional expressions. <note><para> The
+LOBs may not be portably used in conditional expressions. <note><para> The
 implementation is not expected to perform such query operations involving such
 fields in memory rather than in the database.
                     </para>
@@ -3614,7 +3614,7 @@ the groups, null values are treated as the same for grouping purposes.
              <para>
 Grouping
 by an entity is permitted. In this case, the entity must contain no serialized
-state fields or lob-valued state fields that are eagerly fetched.
+state fields or LOB-valued state fields that are eagerly fetched.
              </para>
              <para>
 Grouping by embeddables is not supported.
