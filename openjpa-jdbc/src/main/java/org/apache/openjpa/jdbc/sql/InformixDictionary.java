@@ -27,6 +27,8 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
@@ -393,12 +395,61 @@ public class InformixDictionary
         // SQL State of IX000 is a general purpose Informix error code
         // category, so only return Boolean.TRUE if we match SQL Codes
         // recoverable = Boolean.FALSE;
-        if ((subtype == StoreException.LOCK && ex.getErrorCode() == -154) 
+        if ((subtype == StoreException.LOCK && checkNestedErrorCodes(ex, "IX000", -154)) 
           ||(subtype == StoreException.QUERY && ex.getErrorCode() == -213)) {
             return false;
         }
         
         return super.isFatalException(subtype, ex);
+    }
+
+    /**
+     * Specialized matchErrorState method for Informix.  Informix exceptions are
+     * typically nested multiple levels deep.  Correct determination of the exception type requires
+     * inspection of nested exceptions to determine the root cause. A list of Informix (IDS v10) error codes
+     * can be found here:
+     * 
+     * http://publib.boulder.ibm.com/infocenter/idshelp/v10/index.jsp?topic=/com.ibm.em.doc/errors_ids100.html
+     * 
+     * @param errorStates classification of SQL error states by their specific nature. The keys of the
+     * map represent one of the constants defined in {@link StoreException}. The value corresponding to
+     * a key represent the set of SQL Error States representing specific category of database error. 
+     * This supplied map is sourced from <code>sql-error-state-codes.xml</xml> and filtered the
+     * error states for the current database.
+     * 
+     * @param ex original SQL Exception as raised by the database driver.
+     * 
+     * @return A constant indicating the category of error as defined in {@link StoreException}.
+     */
+    protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
+        // Informix SQLState IX000 is a general SQLState that applies to many possible conditions
+        // If the underlying cause is also an IX000 with error code: 
+        // -107 ISAM error: record is locked. || -154 ISAM error: Lock Timeout Expired.
+        // the exception type is LOCK.
+        if (checkNestedErrorCodes(ex, "IX000", -107, -154)) {
+           return StoreException.LOCK;
+        }
+        return super.matchErrorState(errorStates, ex);
+    }
+    
+    private boolean checkNestedErrorCodes(SQLException ex, String sqlState, int...errorCodes) {
+        SQLException cause = ex;
+        int level = 0;
+        // Query at most 5 exceptions deep to prevent infinite iteration exception loops
+        // Typically, the root exception is at level 3.
+        while (cause != null && level < 5) {
+            String errorState = cause.getSQLState();
+            if (sqlState == null || sqlState.equals(errorState)) {
+                for (int ec : errorCodes) {
+                    if (cause.getErrorCode() == ec) {
+                        return true;
+                    }
+                }
+            }
+            cause = cause.getNextException();
+            level++;
+        }
+        return false;
     }
 }
 
