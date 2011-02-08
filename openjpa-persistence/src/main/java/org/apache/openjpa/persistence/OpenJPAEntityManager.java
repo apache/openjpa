@@ -505,34 +505,63 @@ public interface OpenJPAEntityManager
     public void refreshAll();
 
     /**
-     * Evict the given object.
+     * <P> Evict the given object.</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
+     * @param pc A persistent class which will be evicted
      */
     public void evict(Object pc);
 
     /**
-     * Evict the given objects.
+     * <P>Evict the given objects.</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
+     * @param pcs The persistent classes which will be evicted
      */
     public void evictAll(Object... pcs);
 
     /**
-     * Evict the given objects.
+     * <P>Evict the given objects.</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
+     * @param pcs A collection of persistent classes which will be evicted. 
      */
     public void evictAll(Collection pcs);
 
     /**
-     * Evict all clean objects.
+     * <P>Evict all clean objects.</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
      */
     public void evictAll();
 
     /**
-     * Evict all persistent-clean and persistent-nontransactional
-     * instances in the extent of the given class (including subclasses).
+     * <P>Evict all persistent-clean and persistent-nontransactional
+     * instances in the extent of the given class (including subclasses).</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
+     * @param cls All clean instances of this class will be evicted. 
      */
     public void evictAll(Class cls);
 
     /**
-     * Evict all persistent-clean and persistent-nontransactional
-     * instances in the given {@link Extent}.
+     * <P>Evict all persistent-clean and persistent-nontransactional
+     * instances in the given {@link Extent}.</P>
+     * <P> Eviction acts as a hint to the persistence provider, and indicates that the persistent object is no longer
+     * needed by the application and may be garbage collected. It does not remove the object from the L1 cache and only
+     * affects objects which are managed and unmodified. 
+     * </P>
+     * @param extent Extend which contains the persistent classes to evict. 
      */
     public void evictAll(Extent extent);
 
