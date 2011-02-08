@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import javax.persistence.spi.PersistenceProvider;
 
+import org.apache.openjpa.ee.OSGiManagedRuntime;
 import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -50,12 +51,17 @@ public class PersistenceActivator implements BundleActivator {
         Hashtable<String, String> props = new Hashtable<String, String>();
         props.put(PERSISTENCE_PROVIDER_ARIES, OSGI_PERSISTENCE_PROVIDER);
         svcReg = ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
+        
+        OSGiManagedRuntime.registerServiceListener(ctx);
     }
 
     /* (non-Javadoc)
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext ctx) throws Exception {
+        
+        OSGiManagedRuntime.deregisterServiceListener(ctx);
+        
         if (svcReg != null) {
             svcReg.unregister();
             svcReg = null;

@@ -65,6 +65,14 @@
             <artifactId>ant</artifactId>
             <scope>provided</scope>
         </dependency>        
+        <!-- for osgi ManagedRuntime implementation, -->
+        <!-- we pull in OSGi core at the same level as Apache Aries -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
