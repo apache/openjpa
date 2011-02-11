@@ -1999,9 +1999,25 @@ public class StateManagerImpl
                     case JavaTypes.ARRAY:
                     case JavaTypes.COLLECTION:
                     case JavaTypes.MAP:
-                    case JavaTypes.PC:
                     case JavaTypes.PC_UNTYPED:
                         break;
+                    case JavaTypes.PC:
+                        if (_meta.getField(field).isPrimaryKey()) {
+                            // this field is a derived identity
+                            //if (newVal != null && newVal.equals(curVal))
+                            //    return;
+                            //else {
+                                if (curVal != null && newVal != null && 
+                                    curVal instanceof PersistenceCapable && newVal instanceof PersistenceCapable) {
+                                    PersistenceCapable curPc = (PersistenceCapable) curVal;
+                                    PersistenceCapable newPc = (PersistenceCapable) newVal;
+                                    if (curPc.pcFetchObjectId().equals(newPc.pcFetchObjectId()))
+                                        return;
+                                    
+                                }
+                            //}
+                        } else     
+                            break;
                     default:
                         if (newVal != null && newVal.equals(curVal))
                             return;
