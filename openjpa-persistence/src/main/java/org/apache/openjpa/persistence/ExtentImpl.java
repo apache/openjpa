@@ -40,8 +40,7 @@ public class ExtentImpl<T>
     /**
      * Constructor; supply delegate.
      */
-    public ExtentImpl(EntityManagerImpl em,
-        org.apache.openjpa.kernel.Extent extent) {
+    public ExtentImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Extent<T> extent) {
         _em = em;
         _extent = new DelegatingExtent(extent,
             PersistenceExceptions.getRollbackTranslator(em));
@@ -50,7 +49,7 @@ public class ExtentImpl<T>
     /**
      * Delegate.
      */
-    public org.apache.openjpa.kernel.Extent getDelegate() {
+    public org.apache.openjpa.kernel.Extent<T> getDelegate() {
         return _extent.getDelegate();
     }
 

@@ -53,7 +53,7 @@ public class InMemoryExpressionFactory
     private static final Object UNIQUE = new Object();
 
     // list of unbound variables in this query
-    private List _unbounds = null;
+    private List<UnboundVariable> _unbounds = null;
 
     /**
      * Tests whether the given candidate matches the given type and this
@@ -90,8 +90,8 @@ public class InMemoryExpressionFactory
             return exp.evaluate(candidate, candidate, ctx, params);
 
         // grab the extent for this variable
-        UnboundVariable var = (UnboundVariable) _unbounds.get(i);
-        Iterator itr = ctx.extentIterator(var.getType(), true, null, false);
+        UnboundVariable var = _unbounds.get(i);
+        Iterator<Object> itr = ctx.extentIterator(var.getType(), true, null, false);
         try {
             // if the extent was empty, then alias the variable to null
             if (!itr.hasNext()) {
@@ -191,7 +191,7 @@ public class InMemoryExpressionFactory
             return exp.evaluate(group, ctx, params);
 
         // grab the extent for this variable
-        UnboundVariable var = (UnboundVariable) _unbounds.get(i);
+        UnboundVariable var = _unbounds.get(i);
         Extent extent = ctx.getBroker().newExtent(var.getType(), true);
         Iterator itr = extent.iterator();
         try {
@@ -533,7 +533,7 @@ public class InMemoryExpressionFactory
     public Value newUnboundVariable(String name, Class type) {
         UnboundVariable var = new UnboundVariable(type);
         if (_unbounds == null)
-            _unbounds = new ArrayList(3);
+            _unbounds = new ArrayList<UnboundVariable>(3);
         _unbounds.add(var);
         return var;
     }

@@ -28,7 +28,7 @@ import java.util.List;
  * @author Abe White
  * @author Patrick Linskey
  */
-public interface Extent {
+public interface Extent<T> {
 
     /**
      * Return the (mutable) fetch configuration for this extent.
@@ -52,12 +52,12 @@ public interface Extent {
      * work correctly, but if the extent represents a large data set, this
      * method may be quite slow and may consume quite a bit of memory.
      */
-    public List list();
+    public List<T> list();
 
     /**
      * Return an iterator over the extent members.
      */
-    public Iterator iterator();
+    public Iterator<T> iterator();
 
     /**
      * The broker that generated the extent.
@@ -67,7 +67,7 @@ public interface Extent {
     /**
      * The class of extent elements.
      */
-    public Class getElementType();
+    public Class<T> getElementType();
 
     /**
      * Whether the extent includes subclasses.

@@ -44,13 +44,13 @@ import org.apache.openjpa.util.OpenJPAException;
  * @author Patrick Linskey
  * @nojavadoc
  */
-public class ExtentImpl
-    implements Extent {
+public class ExtentImpl<T>
+    implements Extent<T> {
 
     private static final ClassMetaData[] EMPTY_METAS = new ClassMetaData[0];
 
     private final Broker _broker;
-    private final Class _type;
+    private final Class<T> _type;
     private final boolean _subs;
     private final FetchConfiguration _fc;
     private final ReentrantLock _lock;
@@ -66,7 +66,7 @@ public class ExtentImpl
      * @param type the candidate class
      * @param subs whether subclasses are included in the extent
      */
-    ExtentImpl(Broker broker, Class type, boolean subs,
+    ExtentImpl(Broker broker, Class<T> type, boolean subs,
         FetchConfiguration fetch) {
         _broker = broker;
         _type = type;
@@ -95,9 +95,9 @@ public class ExtentImpl
         _ignore = ignoreChanges;
     }
 
-    public List list() {
-        List list = new ArrayList();
-        Iterator itr = iterator();
+    public List<T> list() {
+        List<T> list = new ArrayList<T>();
+        Iterator<T> itr = iterator();
         try {
             while (itr.hasNext())
                 list.add(itr.next());
@@ -107,7 +107,7 @@ public class ExtentImpl
         }
     }
 
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
         _broker.assertNontransactionalRead();
         CloseableIterator citr = null;
         try {
@@ -169,7 +169,7 @@ public class ExtentImpl
         return _broker;
     }
 
-    public Class getElementType() {
+    public Class<T> getElementType() {
         return _type;
     }
 
@@ -215,13 +215,13 @@ public class ExtentImpl
     /**
      * Closeable iterator.
      */
-    private static interface CloseableIterator
-        extends Closeable, Iterator {
+    private static interface CloseableIterator<T>
+        extends Closeable, Iterator<T> {
 
         /**
          * Set the extent to remove self from on close.
          */
-        public void setRemoveOnClose(ExtentImpl extent);
+        public void setRemoveOnClose(ExtentImpl<T> extent);
     }
 
     /**
@@ -231,7 +231,7 @@ public class ExtentImpl
         extends IteratorChain
         implements CloseableIterator {
 
-        private ExtentImpl _extent = null;
+        private ExtentImpl<?> _extent = null;
         private boolean _closed = false;
 
         public boolean hasNext() {
@@ -342,7 +342,7 @@ public class ExtentImpl
             if (!_broker.isNew(o))
                 return false;
 
-            Class type = o.getClass();
+            Class<?> type = o.getClass();
             if (!_subs && type != _type)
                 return false;
             if (_subs && !_type.isAssignableFrom(type))
