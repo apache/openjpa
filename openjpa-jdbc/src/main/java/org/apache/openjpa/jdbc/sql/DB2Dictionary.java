@@ -343,8 +343,11 @@ public class DB2Dictionary
             supportsLockingWithInnerJoin = true;
             supportsLockingWithOuterJoin = true;
             forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
-            if (maj >=9)
+            
+            if (maj >=9) { 
+                maxIndexNameLength=128;
                 supportsXMLColumn = true;
+            }
         }
 
         // platform specific settings
