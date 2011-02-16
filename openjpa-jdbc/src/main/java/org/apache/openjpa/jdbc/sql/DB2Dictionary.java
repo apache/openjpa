@@ -344,8 +344,7 @@ public class DB2Dictionary
             supportsLockingWithOuterJoin = true;
             forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
             
-            if (maj >=9) { 
-                maxIndexNameLength=128;
+            if (maj >= 9) {
                 supportsXMLColumn = true;
             }
         }

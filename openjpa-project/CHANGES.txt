@@ -247,7 +247,6 @@ Bug
     * [OPENJPA-1923] - Allow flexible (non-standard) syntax for collection-valued parameters in IN() expresseion of  JPQL query
     * [OPENJPA-1935] - Informix lock exceptions are not mapped properly by OpenJPA
     * [OPENJPA-1938] - Typo of time data type in SQLServerdictionary for MSSQL 2008
-    * [OPENJPA-1939] - index identifier max length for DB2 v9 is 128. 
 
 Improvement
 -----------
