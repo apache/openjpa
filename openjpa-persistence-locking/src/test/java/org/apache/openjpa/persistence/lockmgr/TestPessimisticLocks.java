@@ -40,6 +40,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.InformixDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.LockTimeoutException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -396,14 +397,14 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         String firstName1 = (String) q1.getSingleResult();
         //Expected sql for Derby is:
         //SELECT t0.firstName FROM Employee t0 WHERE (t0.id = CAST(? AS BIGINT)) FOR UPDATE WITH RR
-        String SQL1 = toString(sql);
+        String SQL1 = getLastSQL(sql);
         
         // run the second time
         resetSQL();
         Query q2 = em.createQuery(jpql);
         q2.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         String firstName2 = (String) q2.getSingleResult();
-        String SQL2 = toString(sql);
+        String SQL2 = getLastSQL(sql);
         assertEquals(SQL1, SQL2);
         em.getTransaction().commit();
     }
@@ -422,10 +423,18 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
         // Only run this test on DB2 and Derby for now.  It could cause
         // the test to hang on other platforms.
         if (!(dict instanceof DerbyDictionary ||
-              dict instanceof DB2Dictionary)) {
+              dict instanceof DB2Dictionary ||
+              dict instanceof InformixDictionary)) {
             return;
         }
         
+        // Informix currently requires the lock timeout to be set directly on the dictionary
+        if (dict instanceof InformixDictionary) {
+            InformixDictionary ifxDict = (InformixDictionary)((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+            ifxDict.lockModeEnabled = true;
+            ifxDict.lockWaitSeconds = 5;
+        }
+
         EntityManager em = emf.createEntityManager();
         
         resetSQL();
@@ -459,8 +468,11 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             Map<String,Object> props = new HashMap<String,Object>();
             // This property does not have any effect on Derby for the locking
             // condition produced by this test.  Instead, Derby uses the 
-            // lock timeout value specified in the config (pom.xml)
-            props.put("javax.persistence.lock.timeout", 5000);
+            // lock timeout value specified in the config (pom.xml).  On Informix,
+            // the dictionary level timeout (set above) will be used.
+            if (!(dict instanceof InformixDictionary)) {
+                props.put("javax.persistence.lock.timeout", 5000);
+            }
             em.getTransaction().begin();
             getLog().trace("Main: refresh with force increment");
             em.refresh(ve, LockModeType.PESSIMISTIC_FORCE_INCREMENT, props);  

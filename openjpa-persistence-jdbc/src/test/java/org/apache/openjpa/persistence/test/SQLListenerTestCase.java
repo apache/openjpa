@@ -221,6 +221,16 @@ public abstract class SQLListenerTestCase
     		buf.append(s).append("\r\n");
     	return buf.toString();
     }
+    
+    /**
+     * Returns the last SQL executed or the empty string if the list is
+     * empty.
+    */ 
+    public String getLastSQL(List<String> list) {
+        if (list != null && list.size() > 0)
+            return list.get(list.size() -1);
+        return "";
+    }
 
     public enum SQLAssertType {
         SQL, NotSQL, ContainsSQL, AllSQLInOrder, AllExactSQLInOrder, 

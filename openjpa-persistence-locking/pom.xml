@@ -594,6 +594,74 @@
             </repositories>
         </profile>
 
+        <!-- Profile for testing Informix with the Informix JDBC Driver -->
+        <profile>
+            <!--
+                Example Informix profile. You can use this profile if you:
+                1) have the Informix JDBC artifacts installed in a local repo and 
+                supply the URL:
+                  -Dids.maven.repo=http://my.local.repo
+                2) have a copy of the Informix driver and run the following
+                commands :
+                    mvn install:install-file -Dfile=${path to ifxjdbc.jar} \
+                                             -DgroupId=com.informix \
+                                             -DartifactId=informix-driver \ 
+                                             -Dversion=3.70 \
+                                             -Dpackaging=jar
+
+                You must also set the following properties:
+                    -Dopenjpa.ids.url=jdbc:informix-sqli://<HOST>:<PORT>:informixserver=<INFORMIXSERVER>;database=<DBNAME>
+                    -Dopenjpa.ids.username=<ids_uid>
+                    -Dopenjpa.ids.password=<ids_pwd>
+
+                Optionally, you can override the default Informix groupId,
+                artifactIds and version by also supplying the following
+                properties:
+                    -Dids.groupid=com.informix
+                    -Dids.driver.artifactid=informix-driver
+                    -Dids.version=3.70
+            -->
+            <id>test-ids-informix</id>
+            <activation>
+                <property>
+                    <name>test-ids-informix</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${ids.groupid}</groupId>
+                    <artifactId>${ids.driver.artifactid}</artifactId>
+                    <version>${ids.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <ids.maven.repo>http://not.a.real.repository</ids.maven.repo>
+                <ids.groupid>com.informix</ids.groupid>
+                <ids.driver.artifactid>informix-driver</ids.driver.artifactid>
+                <ids.version>3.70</ids.version>
+                <connection.driver.name>com.informix.jdbc.IfxDriver</connection.driver.name>
+                <connection.url>${openjpa.ids.url}</connection.url>
+                <connection.username>${openjpa.ids.username}</connection.username>
+                <connection.password>${openjpa.ids.password}</connection.password>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>ids.repository</id>
+                    <name>Informix Repository</name>
+                    <url>${ids.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
         <!-- Profile for testing with Oracle DB -->
         <profile>
             <!-- 

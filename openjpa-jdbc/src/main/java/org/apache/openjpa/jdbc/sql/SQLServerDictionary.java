@@ -22,13 +22,9 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.Calendar;
-import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -95,7 +91,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
                         // MSSQL 2008 supports new date, time and datetime2 types
                         // Use DATETIME2 which has 100ns vs. 3.333msec precision
                         dateTypeName = "DATETIME2";
-                        timeTypeName = "DATETIME";
+                        timeTypeName = "DATETIME2";
                         timestampTypeName = "DATETIME2";
                     }
                 } else {
@@ -262,7 +258,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
     }
 
     private void appendXmlValue(SQLBuffer buf, FilterValue val) {
-        Class rc = Filters.wrap(val.getType());
+        Class<?> rc = Filters.wrap(val.getType());
         int type = getJDBCType(JavaTypes.getTypeCode(rc), false);
         boolean isXmlAttribute = (val.getXmlMapping() == null)
             ? false : val.getXmlMapping().isXmlAttribute();

@@ -245,7 +245,8 @@ Bug
     * [OPENJPA-1911] - InvalidStateException is thrown when merge an entity with derived identiy
     * [OPENJPA-1918] - MetaDataRepository.preload() ignores class loader returned by PersistenceUnitInfo.getClassLoader()
     * [OPENJPA-1923] - Allow flexible (non-standard) syntax for collection-valued parameters in IN() expresseion of  JPQL query
-
+    * [OPENJPA-1935] - Informix lock exceptions are not mapped properly by OpenJPA
+    * [OPENJPA-1938] - Typo of time data type in SQLServerdictionary for MSSQL 2008
 
 Improvement
 -----------

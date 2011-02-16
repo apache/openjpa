@@ -143,20 +143,20 @@
                     enhancement and at runtime.
                 </para>
             </section>
-            <section id="setParameters">
+            <section id="setParameter">
                 <title>
-                    Query.setParameteres()
+                    Query.setParameter()
                 </title>
                 <!-- See OPENJPA-1213 for details. -->
                 <para>
-                    The Query interface setParameters() method behavior has
-                    changed to throw an IllegalArgumentException if more
-                    parameter substitutions are supplied than defined in the
-                    createQuery() or createNamedQuery() call, as required by
-                    the JPA2 specification.
-                    OpenJPA 1.2.x and prior versions would silently ignore the
-                    supplied parameter substitutions and allow the Query to be
-                    processed.
+                    The Query interface setParameter() method behavior has
+                    changed to throw an IllegalArgumentException (as required 
+                    by the JPA specification) if more parameter substitutions 
+                    are supplied than defined in the createQuery(), 
+                    createNamedQuery(), or createNativeQuery() invocation.
+                    OpenJPA 1.2.x and prior versions silently ignored these
+                    extraneous parameter substitutions and allowed the Query
+                    to be processed.
                 </para>
             </section>
             <section id="serialization">
