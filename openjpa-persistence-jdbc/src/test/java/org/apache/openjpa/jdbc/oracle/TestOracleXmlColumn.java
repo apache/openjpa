@@ -30,9 +30,9 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
+import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
-public class TestOracleXmlColumn extends PersistenceTestCase {
+public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
 
     private static String xmlData =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> "
