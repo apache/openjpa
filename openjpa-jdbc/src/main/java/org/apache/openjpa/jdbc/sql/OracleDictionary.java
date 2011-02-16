@@ -771,26 +771,30 @@ public class OracleDictionary
         ResultSet rs = null;
         try {
             int idx = 1;
-            if (!DBIdentifier.isNull(schemaName))
+            if (!DBIdentifier.isNull(schemaName)) {
                 setString(stmnt, idx++, convertSchemaCase(schemaName), null);
-            if (!DBIdentifier.isNull(tableName))
-                setString(stmnt, idx++, convertSchemaCase(tableName), null);
+            }
+            if (!DBIdentifier.isNull(tableName)) {
+                setString(stmnt, idx++, convertSchemaCase(tableName.getUnqualifiedName()), null);
+            }
             setTimeouts(stmnt, conf, false);
             rs = stmnt.executeQuery();
-            List pkList = new ArrayList();
-            while (rs != null && rs.next())
+            List<PrimaryKey> pkList = new ArrayList<PrimaryKey>();
+            while (rs != null && rs.next()) {
                 pkList.add(newPrimaryKey(rs));
-            return (PrimaryKey[]) pkList.toArray
-                (new PrimaryKey[pkList.size()]);
+            }
+            return pkList.toArray(new PrimaryKey[pkList.size()]);
         } finally {
             if (rs != null)
                 try {
                     rs.close();
                 } catch (Exception e) {
+                    // ignore cleanup exception
                 }
             try {
                 stmnt.close();
             } catch (Exception e) {
+                // ignore cleanup exception
             }
         }
     }
