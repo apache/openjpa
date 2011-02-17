@@ -280,9 +280,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         } catch (Exception e1) {
             logger.error(_loc.get("mmg-process-error", e.getQualifiedName()), e1);
             return false;
-        } finally {
-
-        }
+        } 
     }
     
     private void annotate(SourceCode source, String originalClass) {
