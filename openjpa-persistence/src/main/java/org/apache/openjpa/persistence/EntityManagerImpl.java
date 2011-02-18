@@ -163,10 +163,14 @@ public class EntityManagerImpl
     }
 
     public FetchPlan pushFetchPlan() {
+		return pushFetchPlan(null);
+    }
+
+    public FetchPlan pushFetchPlan(FetchConfiguration fc) {
         assertNotCloseInvoked();
         _broker.lock();
         try {
-            _broker.pushFetchConfiguration();
+            _broker.pushFetchConfiguration(fc);
             return getFetchPlan();
         } finally {
             _broker.unlock();

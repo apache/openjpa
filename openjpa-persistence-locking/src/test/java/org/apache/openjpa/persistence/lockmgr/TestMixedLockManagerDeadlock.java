@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.lockmgr;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -28,12 +29,14 @@ import javax.persistence.LockModeType;
  */
 public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     private DBType dbType;
+    private HashMap<DBType,Class<?>[]> expWriteLockExClasses;
     
     public void setUp() {
         setSupportedDatabases(
+                org.apache.openjpa.jdbc.sql.DB2Dictionary.class,
                 org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
                 org.apache.openjpa.jdbc.sql.OracleDictionary.class,
-                org.apache.openjpa.jdbc.sql.DB2Dictionary.class);
+                org.apache.openjpa.jdbc.sql.SQLServerDictionary.class);
         if (isTestsDisabled()) {
             return;
         }
@@ -41,6 +44,12 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
         );
+        expWriteLockExClasses = new HashMap<DBType,Class<?>[]>();
+        expWriteLockExClasses.put(DBType.db2, null);
+        expWriteLockExClasses.put(DBType.derby, ExpectingOptimisticLockExClass);
+        expWriteLockExClasses.put(DBType.oracle, null);
+        expWriteLockExClasses.put(DBType.sqlserver, ExpectingOptimisticLockExClass);
+
         commonSetUp();
         EntityManager em = emf.createEntityManager();
         dbType = getDBType(em);
@@ -49,8 +58,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     /* ======== Find dead lock exception test ============*/
     public void testFindDeadLockException() {
         commonFindTest("testFindDeadLockException", LockModeType.READ, null); 
-        commonFindTest("testFindDeadLockException", LockModeType.WRITE, dbType == DBType.oracle ? null
-                : ExpectingOptimisticLockExClass);
+        commonFindTest("testFindDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
         commonFindTest("testFindDeadLockException", LockModeType.PESSIMISTIC_WRITE, ExpectingAnyLockExClass);
     }
 
@@ -73,7 +81,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
             {Act.FindWithLock, 2, t1Lock},                        
             
             {Act.WaitAllChildren},
-            {Act.TestException, 1, t1Exceptions},
+            {Act.TestException, -1, t1Exceptions}, // test t1Exceptions in any thread
             {Act.RollbackTx}
         };
         Object[][] thread1 = {
@@ -94,10 +102,8 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
     /* ======== named query dead lock exception test ============*/
     public void testNamedQueryDeadLockException() {
         commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.READ, null);
-        commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.WRITE, dbType == DBType.oracle ? null
-                : ExpectingOptimisticLockExClass);
-//      commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.PESSIMISTIC_FORCE_INCREMENT,
-//      ExpectingAnyLockExClass);
+        commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.WRITE, expWriteLockExClasses.get(dbType));
+        commonNamedQueryTest("testNamedQueryDeadLockException", LockModeType.PESSIMISTIC_FORCE_INCREMENT, ExpectingAnyLockExClass);
     }
 
     private void commonNamedQueryTest( String testName, 
@@ -119,7 +125,7 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
             {Act.NamedQueryWithLock, "findEmployeeById", 2, t1Lock, "openjpa.hint.IgnorePreparedQuery", true},                        
             
             {Act.WaitAllChildren},
-            {Act.TestException, 1, t1Exceptions},
+            {Act.TestException, -1, t1Exceptions},
 
             {Act.RollbackTx},
             {Act.CloseEm}

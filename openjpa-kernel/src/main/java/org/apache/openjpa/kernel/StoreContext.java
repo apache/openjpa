@@ -74,6 +74,15 @@ public interface StoreContext {
     public FetchConfiguration pushFetchConfiguration();
 
     /**
+     * Pushes the fetch configuration argument onto a stack, and makes the new configuration
+     * the active one.
+     *
+     * @since 2.1.1
+     * @return the new fetch configuration
+     */
+    public FetchConfiguration pushFetchConfiguration(FetchConfiguration fc);
+
+    /**
      * Pops the fetch configuration from the top of the stack, making the
      * next one down the active one. This returns void to avoid confusion,
      * since fetch configurations tend to be used in method-chaining

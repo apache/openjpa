@@ -271,6 +271,12 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
         for (Broker b : ((AbstractBrokerFactory) JPAFacadeHelper.toBrokerFactory(emf)).getOpenBrokers()) {
             if (b != null && !b.isClosed()) {
                 EntityManager em = JPAFacadeHelper.toEntityManager(b);
+                if( em.getTransaction().isActive() ) {
+                	try {
+						em.getTransaction().rollback();
+					} catch (Exception e) {
+					}
+                }
                 closeEM(em);
             }
         }

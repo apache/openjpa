@@ -455,10 +455,14 @@ public class BrokerImpl
     }
 
     public FetchConfiguration pushFetchConfiguration() {
+		return pushFetchConfiguration(null);
+    }
+
+    public FetchConfiguration pushFetchConfiguration(FetchConfiguration fc) {
         if (_fcs == null)
             _fcs = new LinkedList<FetchConfiguration>();
         _fcs.add(_fc);
-        _fc = (FetchConfiguration) _fc.clone();
+        _fc = (FetchConfiguration) (fc != null ? fc : _fc).clone();
         return _fc;
     }
 

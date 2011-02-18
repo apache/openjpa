@@ -47,7 +47,7 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
-		<lock>1204,1205,1222,HY008</lock>
+		<lock>1204,1205,1222,HY008,40001</lock>
 		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
