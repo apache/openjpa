@@ -684,41 +684,93 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                             }
                         }
                     }
-                    String testExClass = null;
-                    Throwable curThrowable = null;
                     int threadId = threadToRun;
                     if (args.length > 1) {
                         threadId = (Integer) args[1];
                     }
-                    TestThread exThread = threads.get(threadId);
-                    curThrowable = exThread.throwable;
-                    testExClass = processException(curAction, curThrowable);
+                    if( threadId != -1 ) {
+                    	// test exception on a specific thread
+                        String testExClass = null;
+                        Throwable curThrowable = null;
+                        boolean exMatched = false;
+                        TestThread exThread = threads.get(threadId);
+                        curThrowable = exThread.throwable;
+                        testExClass = processException(exThread, curAction, curThrowable);
 
-                    boolean exMatched = false;
-                    if (expectedExceptions != null
-                        && expectedExceptions.size() > 0) {
-                        for (Class<?> expectedException :
-                            expectedExceptions) {
-                            if (matchExpectedException(curAct, expectedException,
-                                curThrowable)) {
+                        if (expectedExceptions != null
+                            && expectedExceptions.size() > 0) {
+                            for (Class<?> expectedException :
+                                expectedExceptions) {
+                                if (matchExpectedException(curAct, expectedException,
+                                    curThrowable)) {
+                                    exMatched = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (curThrowable == null) {
                                 exMatched = true;
-                                break;
                             }
                         }
+                        if (!exMatched) {
+                            log.trace(testExClass);
+                            if (curThrowable != null) {
+                                logStack(curThrowable);
+                            }
+                        }
+                        assertTrue(curAct + ":Expecting=" + expectedExceptions
+                            + ", Testing=" + testExClass, exMatched);
+                        exThread.throwable = null;
                     } else {
-                        if (curThrowable == null) {
-                            exMatched = true;
-                        }
+                    	// test exception in any thread; used for deadlock exception testing since db server
+                    	// decides on which thread to terminate if deadlock is detected.
+                        if (expectedExceptions == null || expectedExceptions.size() == 0) {
+                        	// Expecting no exception in all threads.
+                        	boolean noExMatched = true;
+							String aTestExClass = "[";
+							for (TestThread aThread : threads) {
+								Throwable aThrowable = aThread.throwable;
+								aTestExClass += processException(aThread, curAction, aThrowable) + ", ";
+							    if (aThrowable != null) {
+							    	noExMatched = false;
+		                            log.trace(aTestExClass);
+	                                logStack(aThrowable);
+		                            aThread.throwable = null;
+							    }
+							}
+	                        assertTrue(curAct + ":Expecting=[no exception]"
+	                                + ", Testing=" + aTestExClass + ']', noExMatched);
+						} else {
+                        	// Expecting any exception in any threads.
+							boolean aMatched = false;
+							String aTestExClass = "[";
+							for (TestThread aThread : threads) {
+								Throwable aThrowable = aThread.throwable;
+								aTestExClass += processException(aThread, curAction, aThrowable) + ", ";
+
+								for (Class<?> anExpectedException : expectedExceptions) {
+									if (matchExpectedException(curAct,
+											anExpectedException, aThrowable)) {
+										aMatched = true;
+										break;
+									}
+								}
+								if (aMatched) {
+									break;
+								} else {
+		                            if (aThrowable != null) {
+		                                logStack(aThrowable);
+			                            aThread.throwable = null;
+		                            }
+								}
+							}
+	                        if (!aMatched) {
+	                            log.trace(aTestExClass);
+	                        }
+	                        assertTrue(curAct + ":Expecting=" + expectedExceptions
+	                            + ", Testing=" + aTestExClass + "]", aMatched);
+						}
                     }
-                    if (!exMatched) {
-                        log.trace(testExClass);
-                        if (curThrowable != null) {
-                            logStack(curThrowable);
-                        }
-                    }
-                    assertTrue(curAct + ":Expecting=" + expectedExceptions
-                        + ", Testing=" + testExClass, exMatched);
-                    exThread.throwable = null;
                     break;
 
                 case WaitAllChildren:
@@ -855,7 +907,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     log.trace("finally: commit completed");
                 }
                 } catch(Exception finalEx) {
-                    String failStr = processException(curAction, finalEx);
+                    String failStr = processException(thisThread, curAction, finalEx);
                     log.trace("Fincally:" + failStr);
                 }
             }
@@ -881,11 +933,11 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         return lockMode;
     }
 
-    private String processException(Act curAction, Throwable t) {
-        String failStr = "Caught exception: none";
+    private String processException(TestThread thread, Act curAction, Throwable t) {
+        String failStr = "[" + thread.threadToRun + "] Caught exception: none";
         if (t != null) {
             getLog().trace(
-                "Caught exception: " + t.getClass().getName() + ":" + t);
+            		"[" + thread.threadToRun + "] Caught exception: " + t.getClass().getName() + ":" + t);
             logStack(t);
             Throwable rootCause = t.getCause();
             failStr = "Failed on action '" + curAction + "' with exception "

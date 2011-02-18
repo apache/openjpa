@@ -137,10 +137,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, hints);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Throwable e) {            
-            if (!dict.supportsLockingWithMultipleTables)
-                assertError(e, PessimisticLockException.class);
-            else 
-                assertError(e, LockTimeoutException.class);
+            assertError(e, PessimisticLockException.class, LockTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -206,10 +203,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             em2.find(Employee.class, 2, LockModeType.PESSIMISTIC_READ, map);
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
-            if (!dict.supportsLockingWithMultipleTables)
-                assertError(e, PessimisticLockException.class);
-            else
-                assertError(e, LockTimeoutException.class);
+            assertError(e, PessimisticLockException.class, LockTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -276,10 +270,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             assertTrue("Test department name = 'D20'", q.get(0).getName().equals("D10")
                     || q.get(0).getName().equals("D20"));
         } catch (Exception ex) {
-            if (!dict.supportsLockingWithMultipleTables)
-                fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
-            else
-                assertError(ex, QueryTimeoutException.class);
+            assertError(ex, QueryTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -304,10 +295,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             List<Employee> q = query.getResultList();
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
-            if (!dict.supportsLockingWithMultipleTables)
-                assertError(e, PessimisticLockException.class);
-            else
-                assertError(e, QueryTimeoutException.class);
+            assertError(e, PessimisticLockException.class, QueryTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -342,10 +330,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             assertEquals("Expected 1 element with department id=20", q.size(), 1);
             assertEquals("Test department name = 'D20'", q.get(0).getName(), "D20");
         } catch (Exception ex) {
-            if (!dict.supportsLockingWithMultipleTables)
-                fail("Caught unexpected " + ex.getClass().getName() + ":" + ex.getMessage());
-            else 
-                assertError(ex, QueryTimeoutException.class);
+            assertError(ex, QueryTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -370,10 +355,7 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
             List<?> q = query.getResultList();
             fail("Unexcpected find succeeded. Should throw a PessimisticLockException.");
         } catch (Exception e) {
-            if (!dict.supportsLockingWithMultipleTables)
-                assertError(e, PessimisticLockException.class);
-            else 
-                assertError(e, QueryTimeoutException.class);
+            assertError(e, PessimisticLockException.class, QueryTimeoutException.class);
         } finally {
             if (em1.getTransaction().isActive())
                 em1.getTransaction().rollback();
@@ -505,12 +487,22 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
      * @param expeceted
      *            type of the exception
      */
-    void assertError(Throwable actual, Class<? extends Throwable> expected) {
-        if (!expected.isAssignableFrom(actual.getClass())) {
-            actual.printStackTrace();
-            throw new AssertionFailedError(actual.getClass().getName() + " was raised but expected "
-                    + expected.getName());
-        }
+    void assertError(Throwable actual, Class<? extends Throwable> ... expected) {
+		boolean matched = false;
+		String expectedNames = "";
+		for (Class<? extends Throwable> aExpected : expected) {
+			expectedNames += aExpected.getName() + ", ";
+			if (aExpected.isAssignableFrom(actual.getClass())) {
+				matched = true;
+			}
+		}
+		if (!matched) {
+			actual.printStackTrace();
+			throw new AssertionFailedError(actual.getClass().getName()
+					+ " was raised but expecting one of the following: ["
+					+ expectedNames.substring(0, expectedNames.length() - 2) + "]");
+		}
+
         Object failed = getFailedObject(actual);
         assertNotNull("Failed object is null", failed);
         assertNotEquals("null", failed);

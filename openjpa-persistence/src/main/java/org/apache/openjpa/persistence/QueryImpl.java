@@ -316,22 +316,26 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	
 	public List getResultList() {
 		_em.assertNotCloseInvoked();
-		Object ob = execute();
-		if (ob instanceof List) {
-			List ret = (List) ob;
-			if (ret instanceof ResultList) {
-			    RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
-			    if (_query.isDistinct()) {
-			        return new DistinctResultList((ResultList) ret, trans);
+		boolean queryFetchPlanUsed = pushQueryFetchPlan();
+		try {
+		    Object ob = execute();
+		    if (ob instanceof List) {
+			    List ret = (List) ob;
+			    if (ret instanceof ResultList) {
+			        RuntimeExceptionTranslator trans = PersistenceExceptions.getRollbackTranslator(_em);
+			        if (_query.isDistinct()) {
+			            return new DistinctResultList((ResultList) ret, trans);
+			        } else {
+			            return new DelegatingResultList((ResultList) ret, trans);
+			        }
 			    } else {
-			        return new DelegatingResultList((ResultList) ret, trans);
+				    return ret;
 			    }
-			} else {
-				return ret;
-			}
+		    }
+		    return Collections.singletonList(ob);
+		} finally {
+			popQueryFetchPlan(queryFetchPlanUsed);
 		}
-
-		return Collections.singletonList(ob);
 	}
 
 	/**
@@ -340,18 +344,45 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	public X getSingleResult() {
 		_em.assertNotCloseInvoked();
         setHint(QueryHints.HINT_RESULT_COUNT, 1); // for DB2 optimization
-		List result = getResultList();
-		if (result == null || result.isEmpty())
-            throw new NoResultException(_loc.get("no-result", getQueryString())
-                    .getMessage());
-		if (result.size() > 1)
-            throw new NonUniqueResultException(_loc.get("non-unique-result",
-                    getQueryString(), result.size()).getMessage());
+		boolean queryFetchPlanUsed = pushQueryFetchPlan();
 		try {
-		    return (X)result.get(0);
-		} catch (Exception e) {
-            throw new NoResultException(_loc.get("no-result", getQueryString())
-                .getMessage());
+		    List result = getResultList();
+		    if (result == null || result.isEmpty())
+                throw new NoResultException(_loc.get("no-result", getQueryString())
+                        .getMessage());
+		    if (result.size() > 1)
+                throw new NonUniqueResultException(_loc.get("non-unique-result",
+                        getQueryString(), result.size()).getMessage());
+		    try {
+		        return (X)result.get(0);
+		    } catch (Exception e) {
+                throw new NoResultException(_loc.get("no-result", getQueryString())
+                    .getMessage());
+		    }
+		} finally {
+			popQueryFetchPlan(queryFetchPlanUsed);
+		}
+	}
+
+	private boolean pushQueryFetchPlan() {
+		boolean fcPushed = false;
+		if (_fetch != null && _hintHandler != null) {
+			switch (_fetch.getReadLockMode()) {
+			case PESSIMISTIC_READ:
+			case PESSIMISTIC_WRITE:
+			case PESSIMISTIC_FORCE_INCREMENT:
+				// push query fetch plan to em if pessisimistic lock and any
+				// hints are set
+				_em.pushFetchPlan(((FetchPlanImpl)_fetch).getDelegate());
+				fcPushed = true;
+			}
+		}
+		return fcPushed;
+	}
+
+	private void popQueryFetchPlan(boolean queryFetchPlanUsed) {
+		if (queryFetchPlanUsed) {
+			_em.popFetchPlan();
 		}
 	}
 

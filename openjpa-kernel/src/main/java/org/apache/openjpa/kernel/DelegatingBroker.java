@@ -154,6 +154,14 @@ public class DelegatingBroker
         }
     }
 
+    public FetchConfiguration pushFetchConfiguration(FetchConfiguration fc) {
+        try {
+            return _broker.pushFetchConfiguration(fc);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
     public void popFetchConfiguration() {
         try {
             _broker.popFetchConfiguration();

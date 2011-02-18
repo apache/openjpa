@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 <!-- ======================================================================= -->
 <!-- Lists SQL Error State codes for specific type of faults per database    -->
@@ -47,7 +47,7 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.SQLServerDictionary">
-		<lock>1204,1205,1222,HY008</lock>
+		<lock>1204,1205,1222,HY008,40001</lock>
 		<referential-integrity>544,2601,2627,8114,8115</referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
