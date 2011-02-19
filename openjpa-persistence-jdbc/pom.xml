@@ -677,6 +677,7 @@
                 <connection.url>${openjpa.ids.url}</connection.url>
                 <connection.username>${openjpa.ids.username}</connection.username>
                 <connection.password>${openjpa.ids.password}</connection.password>
+                <jdbc.DBDictionary />
             </properties>
             <repositories>
                 <repository>
