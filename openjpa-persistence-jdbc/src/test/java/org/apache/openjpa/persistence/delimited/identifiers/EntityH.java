@@ -36,21 +36,21 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="entity h", schema="delim id2")
-@SecondaryTable(name="h sec join table", schema="delim id2",
-    pkJoinColumns=@PrimaryKeyJoinColumn(name="entity h",
-        referencedColumnName="h id"))
+@Table(name="entity ha", schema="delim id2")
+@SecondaryTable(name="ha sec join table", schema="delim id2",
+    pkJoinColumns=@PrimaryKeyJoinColumn(name="entity ha",
+        referencedColumnName="ha id"))
 public class EntityH {
     @Id
-    @Column(name="h id")
+    @Column(name="ha id")
     private int id;
     private String name;
     
-    @Column(table="h sec join table")
+    @Column(table="ha sec join table")
     private String secName;
     
     @ManyToMany
-    @JoinTable(name="h i", schema="delim id2")
+    @JoinTable(name="ha i", schema="delim id2")
     private Collection<EntityI> entityIs = new HashSet<EntityI>();
     
     @OneToOne
@@ -58,7 +58,7 @@ public class EntityH {
     private EntityI2 entityI2;
     
     @ManyToMany
-    @JoinTable(name="map3 join table", schema="delim id2")
+    @JoinTable(name="map3a join table", schema="delim id2")
     @MapKeyJoinColumn(name="map_ei3", referencedColumnName="entityI3 id")
     Map<EntityI3,EntityI4> map = new HashMap<EntityI3,EntityI4>();
     
