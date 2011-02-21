@@ -118,7 +118,7 @@ public class DB2Dictionary
         }));
         systemSchemas = "SYSCAT,SYSIBM,SYSSTAT,SYSIBMADM,SYSTOOLS";
         maxConstraintNameLength = 18;
-        maxIndexNameLength = 18;
+        maxIndexNameLength = 128;
         maxColumnNameLength = 30;
         supportsDeferredConstraints = false;
         supportsDefaultDeleteAction = false;
@@ -345,7 +345,6 @@ public class DB2Dictionary
             forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
             
             if (maj >=9) { 
-                maxIndexNameLength=128;
                 supportsXMLColumn = true;
             }
         }
