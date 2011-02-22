@@ -34,7 +34,7 @@ import javax.persistence.Version;
     @NamedQuery(name = "findEmployeeById", 
         query = "SELECT c FROM LockEmployee c WHERE c.id = :id"),
     @NamedQuery(name = "findEmployeeByIdWithLock", 
-        query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.PESSIMISTIC_READ),
+        query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.PESSIMISTIC_WRITE),
     @NamedQuery(name = "findEmployeeByIdWithNoLock", 
         query = "SELECT c FROM LockEmployee c WHERE c.id = :id", lockMode = LockModeType.NONE) })
 @Entity

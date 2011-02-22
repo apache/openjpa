@@ -39,7 +39,6 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
         super.setUp(CLEAR_TABLES, LockEmployee.class, 
             "openjpa.LockManager", "pessimistic"
             );
-         lockClause = getForUpdateClause();
     }
 
     /*
@@ -47,6 +46,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
      */
     public void testForUpdateClausePresentInNamedQueryWithLockMode() {
         EntityManager em = emf.createEntityManager();
+        lockClause = getForUpdateClause();
         em.getTransaction().begin();
         assertClausePresentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithLock").setParameter("id", 0));
         em.getTransaction().rollback();
@@ -65,6 +65,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     public void testForUpdateClausePresentInQueryWithDefault() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+        lockClause = getForUpdateClause();
         assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeById").setParameter("id", 0));
         assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeById").setParameter("id", 0));
         
@@ -83,7 +84,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     public void testForUpdateClauseAbsentInQueryWithFetchPlanNoneLockMode() {
         OpenJPAEntityManagerSPI em = emf.createEntityManager();
         em.getTransaction().begin();
-        
+        lockClause = getForUpdateClause();        
         OpenJPAQuery<?> q = em.createNamedQuery("findEmployeeById").setParameter("id", 0); 
         FetchPlan fp = q.getFetchPlan();
         fp.setReadLockMode(LockModeType.NONE);
@@ -104,6 +105,7 @@ public class TestOptimisticNamedQueryLockMode extends SQLListenerTestCase {
     public void testForUpdateClauseAbsentInQueryWithExplictNoLock() {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+        lockClause = getForUpdateClause();
         assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
         assertClauseAbsentInSQL(lockClause, em.createNamedQuery("findEmployeeByIdWithNoLock").setParameter("id", 0));
         em.getTransaction().commit();
