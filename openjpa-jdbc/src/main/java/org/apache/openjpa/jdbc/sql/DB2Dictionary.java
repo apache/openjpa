@@ -85,6 +85,7 @@ public class DB2Dictionary
     protected static final String forReadOnlyClause = "FOR READ ONLY";
     protected static final String defaultSequenceSQL 
         = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
+    static final String SYSDUMMY = "SYSIBM.SYSDUMMY1";
 
     protected String databaseProductName = "";
     protected String databaseProductVersion = "";
@@ -278,7 +279,7 @@ public class DB2Dictionary
         Statement stmnt = null;	
         ResultSet rs =null;
         try {
-            String str = "SELECT CURRENT SCHEMA FROM SYSIBM.SYSDUMMY1";
+            String str = "SELECT CURRENT SCHEMA FROM " + SYSDUMMY;
             stmnt = conn.createStatement();
             rs = stmnt.executeQuery(str);
             if (rs.next()) {
@@ -352,16 +353,13 @@ public class DB2Dictionary
         // platform specific settings
         switch (db2ServerType) {
         case db2UDBV82OrLater:
-            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
-                + "SYSIBM.SYSDUMMY1";
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM " + SYSDUMMY;
             break;
         case  db2ZOSV8xOrLater:
             // DB2 Z/OS 
             characterColumnSize = 255;
-            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
-                + "SYSIBM.SYSDUMMY1";
-            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
-                + "SYSIBM.SYSDUMMY1";
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM " + SYSDUMMY;
+            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM " + SYSDUMMY;
             // allow users to set a non default sequenceSQL. 
             if (defaultSequenceSQL.equals(sequenceSQL)){            	
 	            sequenceSQL = "SELECT SCHEMA AS SEQUENCE_SCHEMA, "
@@ -380,10 +378,8 @@ public class DB2Dictionary
             break;
         case db2ISeriesV5R3OrEarlier:
         case db2ISeriesV5R4OrLater:
-            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM "
-                + "SYSIBM.SYSDUMMY1";
-            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM "
-                + "SYSIBM.SYSDUMMY1";
+            lastGeneratedKeyQuery = "SELECT IDENTITY_VAL_LOCAL() FROM " + SYSDUMMY;
+            nextSequenceQuery = "SELECT NEXTVAL FOR {0} FROM " + SYSDUMMY;
             validationSQL = "SELECT DISTINCT(CURRENT TIMESTAMP) FROM "
                 + "QSYS2.SYSTABLES";
             // allow users to set a non default sequenceSQL.
