@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Comparator;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -263,15 +264,26 @@ public abstract class ColumnVersionStrategy
         // typically if one version column is in the result, they all are, so
         // optimize by checking for the first one before doing any real work
         Column[] cols = vers.getColumns();
-        if (!res.contains(cols[0]))
+        if (!res.contains(cols[0])) {
             return null;
+        }
 
         Object version = populateFromResult(res);
+        
+        // we know the version column was part of the result - safe to initialize to 1.
+        if(version == null) { 
+            if (sm.getMetaData().getVersionField().getDeclaredTypeCode() == JavaTypes.DATE) {
+                version = new Timestamp(1);
+            } else {
+                version = new Long(1);
+            }
+        }
 
         // OPENJPA-662 Allow a null StateManager because this method may just be
         // invoked to get the result of projection query
-        if (sm != null)
+        if (sm != null) {
         	sm.setVersion(version);
+        }
         return version;
     }
 
