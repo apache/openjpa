@@ -131,6 +131,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>${test.jvm.arguments}</argLine>
+                    <excludes>
+                        <exclude>**/TestQueryMultiThreaded.java</exclude>
+                    </excludes>
                     <systemProperties>
                         <property>
                             <name>openjpa.Log</name>
