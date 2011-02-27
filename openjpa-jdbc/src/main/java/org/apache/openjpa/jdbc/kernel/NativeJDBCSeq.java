@@ -45,16 +45,16 @@ import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
-
 ///////////////////////////////////////////////////////////
 // NOTE: Do not change property names; see SequenceMetaData
 // and SequenceMapping for standard property names.
 ////////////////////////////////////////////////////////////
 
 /**
- * {@link JDBCSeq} implementation that uses a database sequences
+ * {@link JDBCSeq} implementation that uses a database sequence
  * to generate numbers.
+ * Supports allocation (caching). In order for allocation to work properly, the database sequence must be defined
+ * with INCREMENT BY value equal to allocate * increment.
  *
  * @see JDBCSeq
  * @see AbstractJDBCSeq
@@ -73,14 +73,11 @@ public class NativeJDBCSeq
     private DBIdentifier _seqName = DBIdentifier.newSequence("OPENJPA_SEQUENCE");
     private int _increment = 1;
     private int _initial = 1;
-    private int _allocate = 0;
+    private int _allocate = 50;
     private Sequence _seq = null;
     private String _select = null;
-
-    // for deprecated auto-configuration support
-    private String _format = null;
-    private DBIdentifier _tableName = DBIdentifier.newTable("DUAL");
-    private boolean _subTable = false;
+    private long _nextValue = 0;
+    private long _maxValue = -1;
 
     private DBIdentifier _schema = DBIdentifier.NULL;
         
@@ -97,15 +94,6 @@ public class NativeJDBCSeq
      */
     public void setSequence(String seqName) {
         _seqName = DBIdentifier.newSequence(seqName);
-    }
-
-    /**
-     * @deprecated Use {@link #setSequence}. Retained for
-     * backwards-compatibility for auto-configuration.
-     */
-    @Deprecated
-    public void setSequenceName(String seqName) {
-        setSequence(seqName);
     }
 
     /**
@@ -150,23 +138,6 @@ public class NativeJDBCSeq
         _increment = increment;
     }
 
-    /**
-     * @deprecated Retained for backwards-compatibility for auto-configuration.
-     */
-    @Deprecated
-    public void setTableName(String table) {
-        _tableName = DBIdentifier.newTable(table);
-    }
-
-    /**
-     * @deprecated Retained for backwards-compatibility for auto-configuration.
-     */
-    @Deprecated
-    public void setFormat(String format) {
-        _format = format;
-        _subTable = true;
-    }
-
     @Override
     public void addSchema(ClassMapping mapping, SchemaGroup group) {
         // sequence already exists?
@@ -204,28 +175,43 @@ public class NativeJDBCSeq
         buildSequence();
 
         DBDictionary dict = _conf.getDBDictionaryInstance();
-        if (_format == null) {
-            _format = dict.nextSequenceQuery;
-            if (_format == null)
-                throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
+        String format = dict.nextSequenceQuery;
+        if (format == null) {
+            throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
         }
-        if (DBIdentifier.isNull(_tableName))
-            _tableName = DBIdentifier.newTable("DUAL");
 
         String name = dict.getFullName(_seq);
-        Object[] subs = (_subTable) ? new Object[]{ name, _tableName }
-            : new Object[]{ name };
-        _select = MessageFormat.format(_format, subs);
+        // Increment step is needed for Firebird which uses non-standard sequence fetch syntax.
+        // Use String.valueOf to get rid of possible locale-specific number formatting.
+        _select = MessageFormat.format(format, new Object[]{name, String.valueOf(_allocate * _increment)});
         
         type = dict.nativeSequenceType;
     }
     
     @Override
-    protected Object nextInternal(JDBCStore store, ClassMapping mapping)
+    protected synchronized Object nextInternal(JDBCStore store, ClassMapping mapping)
+        throws SQLException {
+        if (_nextValue < _maxValue) {
+            return _nextValue++;
+        }
+
+        allocateInternal(0, store, mapping);
+        return _nextValue++;
+    }
+
+    /**
+     * Allocate additional sequence values.
+     * @param additional ignored - the allocation size is fixed and determined by allocate and increment properties. 
+     * @param store used to obtain connection
+     * @param mapping ignored
+     */
+    @Override
+    protected synchronized void allocateInternal(int additional, JDBCStore store, ClassMapping mapping)
         throws SQLException {
         Connection conn = getConnection(store);
         try {
-            return getSequence(conn);
+            _nextValue = getSequence(conn);
+            _maxValue = _nextValue + _allocate * _increment;
         } finally {
             closeConnection(conn);
         }
@@ -300,9 +286,7 @@ public class NativeJDBCSeq
         try {
             stmnt = conn.prepareStatement(_select);
             dict.setTimeouts(stmnt, _conf, false);
-            synchronized(this) {
-                rs = stmnt.executeQuery();
-            }
+            rs = stmnt.executeQuery();
             if (rs.next())
                 return rs.getLong(1);
 
@@ -327,13 +311,12 @@ public class NativeJDBCSeq
      *  Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The
-     * path or resource name of a OpenJPA properties file containing
-     * information such as the license key	and connection data as
+     * path or resource name of an OpenJPA properties file containing
+     * information such as connection data as
      * outlined in {@link JDBCConfiguration}. Optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the OpenJPA {@link JDBCConfiguration} can be set by
-     * using their	names and supplying a value. For example:
-     * <code>-licenseKey adslfja83r3lkadf</code></li>
+     * using their names and supplying a value.</li>
      * </ul>
      *  The various actions are as follows.
      * <ul>
@@ -373,7 +356,7 @@ public class NativeJDBCSeq
     }
 
     /**
-     * Run the tool. Return false if an invalid option was given.
+     * Run the tool. Returns false if an invalid option was given.
      */
     public static boolean run(JDBCConfiguration conf, String[] args,
         String action)

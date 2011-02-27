@@ -3400,8 +3400,8 @@ public class DBDictionary
         buf.append(seqName);
         if (seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
-        if (seq.getIncrement() > 1)
-            buf.append(" INCREMENT BY ").append(seq.getIncrement());
+        if ((seq.getIncrement() > 1) || (seq.getAllocate() > 1))
+            buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
         return new String[]{ buf.toString() };
     }
 
@@ -4359,7 +4359,7 @@ public class DBDictionary
         }
     }
     
-    /*
+    /**
      * Combines partial foreign keys into singular key
      */
     protected ForeignKey combineForeignKey(Map<FKMapKey, ForeignKey> fkMap,
@@ -5252,8 +5252,8 @@ public class DBDictionary
     }
     
     /**
-     * Validate that the given name is no longer than given maximum length.
-     * If the given name is indeed longer then raises an UserException with the 
+     * Validate that the given name is not longer than given maximum length.
+     * If the given name is indeed longer then raises a UserException with the 
      * given message key otherwise returns the same name.
      */
     final String checkNameLength(String name, int length, String msgKey) {

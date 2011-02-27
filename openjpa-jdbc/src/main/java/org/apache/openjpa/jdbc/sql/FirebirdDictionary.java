@@ -59,11 +59,6 @@ public class FirebirdDictionary
     protected String createSequenceSQLFB15 = "CREATE GENERATOR {0}";
     protected String createSequenceSQLFB20 = "CREATE SEQUENCE {0}";
     protected String dropSequenceSQLFB15 = "DROP GENERATOR ";
-    protected String nextSequenceQueryFB15 =
-        "SELECT GEN_ID({0}, 1) FROM RDB$DATABASE";
-    protected String nextSequenceQueryFB20 =
-        "SELECT NEXT VALUE FOR {0} FROM RDB$DATABASE";
-
     protected String alterSequenceSQL = alterSequenceSQLFB20;
     protected String createSequenceSQL = createSequenceSQLFB20;
 
@@ -98,7 +93,9 @@ public class FirebirdDictionary
 
         supportsMultipleNontransactionalResultSets = false;
 
-        nextSequenceQuery = nextSequenceQueryFB20;
+        // On Firebird 2 the recommended syntax is "SELECT NEXT VALUE FOR {0} FROM RDB$DATABASE".
+        // However, that syntax allows incrementing the sequence value by 1 only.
+        nextSequenceQuery = "SELECT GEN_ID({0}, {1}) FROM RDB$DATABASE";
         sequenceSQL =
             "SELECT NULL AS SEQUENCE_SCHEMA, RDB$GENERATOR_NAME "
                 + "AS SEQUENCE_NAME FROM RDB$GENERATORS "
@@ -176,7 +173,6 @@ public class FirebirdDictionary
             trimBothFunction = "LTRIM(RTRIM({0}))";
             alterSequenceSQL = alterSequenceSQLFB15;
             createSequenceSQL = createSequenceSQLFB15;
-            nextSequenceQuery = nextSequenceQueryFB15;
         }
     }
 
