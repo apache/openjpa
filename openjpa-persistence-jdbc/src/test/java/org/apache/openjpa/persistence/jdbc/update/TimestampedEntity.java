@@ -18,13 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.update;
 
-import java.sql.Timestamp;
-
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Version;
 
 /**
  * An entity using a Timestamp as Version field.
@@ -35,31 +30,7 @@ import javax.persistence.Version;
  */
 @Entity
 @Table(name="TSENTITY1")
-public class TimestampedEntity {
-	@Id
-	@GeneratedValue
-	private long id;
-	
-	private String name;
-	
-	@Version
-	private Timestamp version;
-	
+public class TimestampedEntity extends BaseTimestampedEntity{
 
-	public long getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public Timestamp getVersion() {
-	    return version;
-	}
 
 }

@@ -19,9 +19,15 @@
 package org.apache.openjpa.persistence.jdbc.update;
 
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.Version;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -34,7 +40,15 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestTimestampVersion extends SingleEMFTestCase {
 	public void setUp() {
-		super.setUp(CLEAR_TABLES, TimestampedEntity.class, NumericVersionedEntity.class);
+        super.setUp(CLEAR_TABLES, TimestampedEntity.class, NumericVersionedEntity.class, BaseTimestampedEntity.class);
+    }
+	public void testQueryOnVersion() {
+	    EntityManager em = emf.createEntityManager();
+	    String pql = "SELECT s FROM TimestampedEntity s WHERE s.version < :endDate";
+        Query queryObj = em.createQuery(pql);
+        Timestamp t1 = new Timestamp((new Date()).getTime());
+        queryObj.setParameter("endDate", t1);
+        List<TimestampedEntity> scenarioList = queryObj.getResultList();
 	}
 
     public void testBulkUpdateOnTimestampedVersion() {
@@ -47,7 +61,7 @@ public class TestTimestampVersion extends SingleEMFTestCase {
         
         try {
             // delay to ensure the new timestamp exceeds the timer's resolution.
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
         }
 

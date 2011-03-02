@@ -2140,7 +2140,8 @@ public class DBDictionary
         if (augmentUpdates) {
             Path path = (Path) updateParams.keySet().iterator().next();
             FieldMapping fm = (FieldMapping) path.last();
-            ClassMapping meta = fm.getDeclaringMapping();
+            
+            ClassMapping meta = fm.getDefiningMapping();
             Map<Column,?> updates = meta.getVersion().getBulkUpdateValues();
             for (Map.Entry e : updates.entrySet()) {
                 Column col = (Column) e.getKey();
