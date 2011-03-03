@@ -227,7 +227,7 @@ databaseName=${db.name}
                             <attribute name="buildfile" />
                             <attribute name="target" />
                             <sequential>
-                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
+                                <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="true" dir="${tck.dir}/src" append="true" output="${tck.log}" timeout="14400000" resultproperty="tsant.result">
                                     <arg value="-emacs" />
                                     <arg value="-buildfile" />
                                     <arg value="@{buildfile}" />
