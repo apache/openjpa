@@ -938,7 +938,7 @@ public abstract class CacheTest extends AbstractTestCase {
     }
 
     public void testTimeouts1() throws Exception {
-        timeoutsTest1(1);
+        timeoutsTest1(30);
     }
 
     public void timeoutsTest1(int tries) throws Exception {
@@ -1061,7 +1061,7 @@ public abstract class CacheTest extends AbstractTestCase {
                 getLog().warn("CacheTest.timeoutsHelper() skipping sleep for checkCache(h=500) because sleep="+sleep);
             } else if (sleep > 10) {
                 getLog().info("CacheTest.timeoutsHelper() testing h to be dropped by waiting sleep="+sleep);
-                Thread.currentThread().sleep(sleep);
+                Thread.currentThread().sleep(700);
                 Thread.yield();
             } else {
                 sleep = 0;
