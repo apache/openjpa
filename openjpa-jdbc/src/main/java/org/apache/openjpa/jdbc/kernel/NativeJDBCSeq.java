@@ -192,11 +192,15 @@ public class NativeJDBCSeq
     protected synchronized Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
         if (_nextValue < _maxValue) {
-            return _nextValue++;
+            long result = _nextValue;
+            _nextValue += _increment;
+            return result;
         }
 
         allocateInternal(0, store, mapping);
-        return _nextValue++;
+        long result = _nextValue;
+        _nextValue += _increment;
+        return result;
     }
 
     /**
