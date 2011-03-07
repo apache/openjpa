@@ -23,7 +23,7 @@
     </title>
     <section id="jpa_2.0">
         <title>
-            JPA 2.0
+            OpenJPA 2.0.0
         </title>
         <section id="jpa_2.0_incompatibilities">
             <title>
@@ -344,16 +344,68 @@
             </section>
         </section>
     </section>
-	<section id="jpa_2.1">
+    <section id="jpa_2.2">
         <title>
-            OpenJPA 2.1.0
+            OpenJPA 2.2.0
         </title>
-        <section id="jpa_2.1_changes_in_behavior">
-        	<title>Internal Behavioral Differences</title>
-        	<para>
-	The following sections indicate behavior that has changed from the OpenJPA 2.0.x
-	release to the OpenJPA 2.1.0 release.
-        	</para>
+        <section id="jpa_2.2_incompatibilities">
+            <title>Incompatibilities</title>
+       	    <para>
+                The following sections indicate changes that are incompatible
+                between OpenJPA 2.1.x releases and the 2.2.0 release.
+            </para>
+            <section id="jpa_2.2_allocationSize">
+                <title>
+                    allocationSize Property of Sequence Generator
+                </title>
+                <!-- See OPENJPA-1376 for details. -->
+                <para>
+                    In previous releases, specifying the <literal>allocationSize</literal> property of
+                    <link linkend="jpa_overview_mapping_sequence_seqgen">sequence generator</link>
+                    affected only sequence definition in the database. During
+                    schema creation, the <literal>INCREMENT BY</literal> clause of
+                    <literal>CREATE SEQUENCE</literal> statement always
+                    had a value of 1 and on DB2, Oracle and PostgreSQL databases a <literal>CACHE</literal> clause
+                    was added with the value of <literal>allocationSize</literal> property. Such a statement caused
+                    sequence values being cached in the database. Starting with OpenJPA 2.2.0,
+                    sequence values are cached in the jvm memory and the <literal>allocationSize</literal>
+                    property determines size of that cache. The <literal>CACHE</literal> clause is no longer used,
+                    instead the <literal>INCREMENT BY</literal> clause gets its value equal to the
+                    <literal>allocationSize</literal> property. Such a strategy reduces the number of database roundtrips
+                    required for retrieving sequence values considerably.
+                </para>
+                <para>
+                    In order for the existing applications to work with OpenJPA
+                    2.2.0, you have to manually recreate or redefine sequences, specifying
+                    the correct <literal>INCREMENT BY</literal> value and, possibly, correct initial sequence value.
+                    Note that the default value of the <literal>allocationSize</literal> property is 50 and that
+                    value is used if the property is not specified.
+                </para>
+                <para>
+                    The requirement for sequence modification applies to all databases that support sequences, regardless of
+                    the <literal>CACHE</literal> clause being supported. The only excpetion is Firebird database -
+                    since with this database the increment step is determined during sequence
+                    value fetch, no migration activity is needed.
+                </para>
+                <para>
+                    To maintain the old behavior of sequence generator in OpenJPA 2.2.0, you can:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                Set the <literal>allocationSize</literal> property value to 1.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Additionally, if the <literal>CACHE</literal> clause has to be emitted in sequence definition,
+                                this can be accomplished by overriding the
+                                <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DBDictionary.html#getCreateSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence)">
+                                <methodname>DBDictionary.getCreateSequenceSQL</methodname></ulink> method.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </section>
         </section>
-	</section>    
+    </section>
 </appendix>
