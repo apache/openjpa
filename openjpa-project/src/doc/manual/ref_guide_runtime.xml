@@ -1661,8 +1661,11 @@ properties:
                     </listitem>
                     <listitem>
                         <para>
-<literal>Allocate</literal>: Some database can allocate values in-memory to
-service subsequent sequence requests faster.
+<literal>Allocate</literal>: The number of values to allocate on each database
+trip. Defaults to 50, meaning the class will set aside the next 50 numbers each
+time it accesses the sequence, which in turn means it only has to make a
+database trip to get new sequence numbers once every 50 sequence number
+requests.
                         </para>
                     </listitem>
                 </itemizedlist>
