@@ -115,6 +115,13 @@
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
         </properties>
+        
+    </persistence-unit>   
+    <persistence-unit name="arrays">
+        <mapping-file>META-INF/arrays-orm.xml</mapping-file>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+        </properties>
     </persistence-unit>
 
 </persistence>

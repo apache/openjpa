@@ -569,7 +569,6 @@ public class XMLPersistenceMappingParser
                         break;
                     }
                     // else no break
-                case JavaTypes.COLLECTION:
                 case JavaTypes.MAP:
                     fm.getElementMapping().getValueInfo().setColumns(_cols);
                     break;
