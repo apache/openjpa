@@ -28,7 +28,6 @@
      pom.xml -->
 
 <module name="Checker">
-    <module name="NewlineAtEndOfFile"/>
     <module name="TreeWalker">
         <module name="LineLength">
         <property name="max" value="120"/>
