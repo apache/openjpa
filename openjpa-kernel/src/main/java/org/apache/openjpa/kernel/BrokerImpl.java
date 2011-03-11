@@ -2468,7 +2468,7 @@ public class BrokerImpl
                 try {
                 	if(obj == null)
                 		continue;
-                    persistInternal(obj, null, explicit, call);
+                    persistInternal(obj, null, explicit, call, true);
                 } catch (UserException ue) {
                     exceps = add(exceps, ue);
                 }
@@ -2534,6 +2534,16 @@ public class BrokerImpl
      */
     public OpenJPAStateManager persist(Object obj, Object id, boolean explicit,
         OpCallbacks call) {
+        return persist(obj, id, explicit, call, true);
+    }
+
+    /**
+     * Persist the given object.  Indicate whether this was an explicit persist
+     * (PNEW) or a provisonal persist (PNEWPROVISIONAL).
+     * See {@link Broker} for details on this method.
+     */
+    public OpenJPAStateManager persist(Object obj, Object id, boolean explicit,
+        OpCallbacks call, boolean fireEvent) {
         if (obj == null)
             return null;
 
@@ -2541,7 +2551,7 @@ public class BrokerImpl
         try {
             assertWriteOperation();
 
-            return persistInternal(obj, id, explicit, call);
+            return persistInternal(obj, id, explicit, call, fireEvent);
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
@@ -2551,7 +2561,8 @@ public class BrokerImpl
         }
     }
 
-    private OpenJPAStateManager persistInternal(Object obj, Object id, boolean explicit, OpCallbacks call) {
+    private OpenJPAStateManager persistInternal(Object obj, Object id, boolean explicit, OpCallbacks call, 
+        boolean fireEvent) {
         StateManagerImpl sm = getStateManagerImpl(obj, true);
         if (!_operating.add(obj)) {
             return sm;
@@ -2603,7 +2614,9 @@ public class BrokerImpl
         }
 
         ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
-        fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
+        if (fireEvent) {
+            fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
+        }
 
         // create id for instance
         if (id == null) {

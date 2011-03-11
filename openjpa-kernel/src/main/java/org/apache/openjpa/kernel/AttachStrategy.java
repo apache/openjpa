@@ -93,7 +93,7 @@ abstract class AttachStrategy
             newInstance = pc.pcNewInstance(null, appId, false);
 
         return (StateManagerImpl) manager.getBroker().persist
-            (newInstance, appId, explicit, manager.getBehavior());
+            (newInstance, appId, explicit, manager.getBehavior(), !manager.getCopyNew());
     }
 
     /**
