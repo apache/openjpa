@@ -45,7 +45,7 @@ public class DelegatingQuery
 
     private final Query _query;
     private final DelegatingQuery _del;
-    private final RuntimeExceptionTranslator _trans;
+    private final transient RuntimeExceptionTranslator _trans;
 
     /**
      * Constructor; supply delegate.
