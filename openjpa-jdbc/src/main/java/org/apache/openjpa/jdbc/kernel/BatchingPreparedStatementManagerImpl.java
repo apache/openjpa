@@ -214,6 +214,12 @@ public class BatchingPreparedStatementManagerImpl extends
                       throw SQLExceptions.getStore(se, ps, _dict);
                   }
                   else{
+                      if(_batchedRows.size() == 0) { 
+                          if(_log.isTraceEnabled()) { 
+                              _log.trace("No batched rows found. The failed object may not be reliable"); 
+                          }
+                          throw SQLExceptions.getStore(se, ps, _dict);
+                      }
                       throw SQLExceptions.getStore(se, ((RowImpl)(_batchedRows.get(index))).getFailedObject(), _dict);
                   }                    
                 }
