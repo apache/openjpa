@@ -64,7 +64,7 @@ public class PreparedStatementManagerImpl
     protected transient Log _log = null;
 
     // track exceptions
-    protected final Collection _exceptions = new LinkedList();
+    protected final Collection<Exception> _exceptions = new LinkedList<Exception>();
 
     /**
      * Constructor. Supply connection.
@@ -77,7 +77,7 @@ public class PreparedStatementManagerImpl
             _log = store.getConfiguration().getLog(JDBCConfiguration.LOG_JDBC);
     }
 
-    public Collection getExceptions() {
+    public Collection<Exception> getExceptions() {
         return _exceptions;
     }
 
