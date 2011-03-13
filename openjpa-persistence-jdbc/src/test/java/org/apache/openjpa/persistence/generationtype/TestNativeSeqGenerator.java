@@ -27,7 +27,6 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
     OpenJPAEntityManager em;
     JDBCConfiguration conf;
     DBDictionary dict;
-    boolean supportsNativeSequence = false;
     
     EntityE2 entityE2;
     
@@ -37,10 +36,14 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         assertNotNull(emf);
         conf = (JDBCConfiguration) emf.getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        supportsNativeSequence = dict.nextSequenceQuery != null;       
+        boolean supportsNativeSequence = dict.nextSequenceQuery != null;       
+        setTestsDisabled(!supportsNativeSequence);
         if (supportsNativeSequence) {
             em = emf.createEntityManager();
             assertNotNull(em);
+        } else {
+            getLog().trace(this + " is disabled because " + dict.getClass().getSimpleName() +
+                " does not support native sequences.");
         }
     }
     
@@ -49,10 +52,6 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
     }
     
     public void testGetIdGeneratorSeqGen() {
-        if (!supportsNativeSequence) {
-            System.out.println("Does not support native sequence");
-            return;
-        }
         createEntityE2();
         em.getTransaction().begin();
         em.persist(entityE2);
@@ -60,6 +59,34 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         int genId = entityE2.getId();        
         int nextId = (int)((Long)em.getIdGenerator(EntityE2.class).next()).longValue();
         assertTrue("Next value should depend on previous genid", nextId >= genId + 1);
+        em.close();
+    }
+
+    /**
+     * Asserts native sequence generator allocates values in memory
+     * and requests sequence values from database only when necessary.
+     * @since 2.2.0
+     */
+    public void testAllocationSize() {
+        // Turn off statement batching for easier INSERT counting.
+        dict.setBatchLimit(0);
+        em.getTransaction().begin();
+        resetSQL();
+        for (int i = 0; i < 51; i++) {
+            createEntityE2();
+            em.persist(entityE2);
+        }
+        em.getTransaction().commit();
+
+        // Since allocationSize has a default of 50, we expect 2 sequence fetches and 51 INSERTs.
+        assertEquals("53 statements should be executed.", 53, getSQLCount());
+        String[] statements = new String[53];
+        statements[0] = ".*";
+        statements[1] = ".*";
+        for (int i = 2; i < 53; i++) {
+            statements[i] = "INSERT .*";
+        }
+        assertAllExactSQLInOrder(statements);
         em.close();
     }
 }
