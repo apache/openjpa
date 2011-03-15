@@ -153,7 +153,8 @@
         <class>org.apache.openjpa.integration.validation.ConstraintPattern</class>
         <class>org.apache.openjpa.integration.validation.Person</class>
         <class>org.apache.openjpa.integration.validation.Address</class> 
-        <class>org.apache.openjpa.integration.validation.Book</class>       
+        <class>org.apache.openjpa.integration.validation.Book</class>
+        <class>org.apache.openjpa.integration.validation.Publisher</class>
         <validation-mode>AUTO</validation-mode>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings" 
