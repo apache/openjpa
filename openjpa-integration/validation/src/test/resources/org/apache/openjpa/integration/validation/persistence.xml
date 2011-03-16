@@ -100,6 +100,28 @@
         </properties>        
     </persistence-unit>
 
+    <persistence-unit name="no-pre-persist-default-validation-group">
+        <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
+        <validation-mode>CALLBACK</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/>
+            <property name="javax.persistence.validation.group.pre-persist"
+                value=""/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="no-pre-update-default-validation-group">
+        <class>org.apache.openjpa.integration.validation.DefGrpEntity</class>
+        <validation-mode>CALLBACK</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" 
+                value="buildSchema"/>
+            <property name="javax.persistence.validation.group.pre-update"
+                value=""/>
+        </properties>
+    </persistence-unit>
+
     <persistence-unit name="non-default-validation-group">
         <class>org.apache.openjpa.integration.validation.NonDefGrpEntity</class>
         <validation-mode>CALLBACK</validation-mode>

@@ -43,6 +43,12 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  *     the default group.
  * 1d) Verify validation for constraints using non-default validation groups 
  *     does not occur.
+ * 1e) PrePersist does not validate with no validation group defined.
+ * 1f) PreUpdate does not validate when no validation group defined.
+ * 1g) PreUpdate only called when a pre-update validation group defined 
+ *     (ie. per-persist and pre-remove are disabled).
+ * 1h) PrePersist only called when pre-persist validation group defined
+ *     (ie. per-persist and pre-remove are disabled).
  *    
  * Verify validation occurs when specific validation groups are specified:
  * 2a) Specify a non-default group for all lifecycle events.
@@ -103,6 +109,182 @@ public class TestValidationGroups extends AbstractPersistenceTestCase {
      */
     public void testSpecifiedDefaultPreRemoveFlush() {
         verifySpecifiedDefaultPreRemove(false);
+    }
+    
+    /** 
+     * 1e) PrePersist does not validate with no validation group defined.
+     */
+    public void testPersistNoValidationGroup() {
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "no-pre-persist-default-validation-group",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+        assertNotNull(emf);
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            DefGrpEntity dge = new DefGrpEntity();
+            dge.setDgName(null);  // If default group was enabled for pre-persist, this would cause a CVE.
+            try {
+                em.getTransaction().begin();
+                em.persist(dge);
+                em.getTransaction().commit();
+            } catch (ConstraintViolationException e) {
+                fail("A ConstraintViolationException should not have been thrown " +
+                "on pre-persist");
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+        } finally {
+            closeEM(em);
+            closeEMF(emf);
+        }
+    }
+    
+    /**
+     *  1f) PreUpdate does not validate when no validation group defined.
+     */
+    public void testUpdateNoValidationGroup() {
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "no-pre-update-default-validation-group",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+        assertNotNull(emf);
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            DefGrpEntity dge = new DefGrpEntity();
+            dge.setDgName("NotNull");
+            try {
+                em.getTransaction().begin();
+                em.persist(dge);
+                em.getTransaction().commit();
+            } catch (ConstraintViolationException e) {
+                fail("A ConstraintViolationException should not have been thrown " +
+                "on pre-persist");
+            } 
+            try {
+                em.getTransaction().begin();
+                dge.setDgName(null);
+                em.getTransaction().commit();
+            } catch (ConstraintViolationException e) {
+                fail("A ConstraintViolationException should not have been thrown " +
+                "on pre-update");
+            } finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+        } finally {
+            closeEM(em);
+            closeEMF(emf);
+        }
+    }
+
+    /** 
+     * 1g) PreUpdate only called when a pre-update validation group defined 
+     *     (ie. per-persist and pre-remove are disabled).
+     */
+    public void testUpdateOnlyValidationGroup() {
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "no-pre-persist-default-validation-group",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+        assertNotNull(emf);
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            DefGrpEntity dge = new DefGrpEntity();
+            dge.setDgName(null);  // If default group enabled for pre-persist, this would cause a CVE.
+            try {
+                em.getTransaction().begin();
+                em.persist(dge);
+                em.getTransaction().commit();
+            } catch (ConstraintViolationException e) {
+                fail("A ConstraintViolationException should not have been thrown " +
+                "on pre-persist");
+            } 
+            try {
+                em.getTransaction().begin();
+                dge.setDgName("NotNull");
+                dge.setDgName(null);
+                em.getTransaction().commit();
+                fail("A ConstraintViolationException should have been thrown " +
+                "on pre-update");
+            } catch (ConstraintViolationException e) {
+                // expected
+            } 
+            finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+        } finally {
+            closeEM(em);
+            closeEMF(emf);
+        }
+    }
+    /**
+     *  1h) PrePersist only called when pre-persist validation group defined
+     *      (ie. per-persist and pre-remove are disabled).
+     */
+    public void testPersistOnlyValidationGroup() {
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI) 
+        OpenJPAPersistence.createEntityManagerFactory(
+                "no-pre-update-default-validation-group",
+                "org/apache/openjpa/integration/validation/persistence.xml");
+        assertNotNull(emf);
+
+        OpenJPAEntityManager em = emf.createEntityManager();
+        assertNotNull(em);
+        try {
+            DefGrpEntity dge = new DefGrpEntity();
+            dge.setDgName(null);
+            try {
+                em.getTransaction().begin();
+                em.persist(dge);
+                em.getTransaction().commit();
+                fail("A ConstraintViolationException should have been thrown " +
+                "on pre-persist");
+            } catch (ConstraintViolationException e) {
+                // Expected
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+            // Fix the entity, persist with no CVE
+            try {
+                em.getTransaction().begin();
+                dge.setDgName("NotNull");
+                em.getTransaction().commit();
+            } catch (Exception e) {
+                fail("An Exception should not have been thrown " +
+                "on update");
+            }
+            // Update the entity with null value, should not case a CVE
+            try {
+                em.getTransaction().begin();
+                dge.setDgName(null);
+                em.getTransaction().commit();
+            } catch (ConstraintViolationException e) {
+                fail("A ConstraintViolationException should not have been thrown " +
+                "on pre-update");
+            } 
+            finally {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+            }
+            
+        } finally {
+            closeEM(em);
+            closeEMF(emf);
+        }
     }
     
     /**

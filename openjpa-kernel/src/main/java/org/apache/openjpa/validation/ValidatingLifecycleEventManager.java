@@ -75,7 +75,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         if (_validator == null) {            
             return super.hasUpdateListeners(source, meta);
         }
-        return _validator.validating(source, LifecycleEvent.BEFORE_PERSIST) ||
+        return _validator.validating(source, LifecycleEvent.BEFORE_UPDATE) ||
             super.hasUpdateListeners(source, meta);
     }
 
@@ -84,7 +84,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         if (_validator == null) {            
             return super.hasPersistListeners(source, meta);
         }
-        return _validator.validating(source, LifecycleEvent.BEFORE_UPDATE) ||
+        return _validator.validating(source, LifecycleEvent.BEFORE_PERSIST) ||
             super.hasPersistListeners(source, meta);        
     }
 
