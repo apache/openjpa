@@ -3627,10 +3627,18 @@ that apply to grouping items.
             <para>
 If there is no <literal>GROUP BY</literal> clause and the <literal>HAVING
 </literal> clause is used, the result is treated as a single group, and the
-select list can only consist of aggregate functions. When a query declares a
-<literal>HAVING</literal> clause, it must always also declare a <literal>GROUP
-BY</literal> clause.
+select list can only consist of aggregate functions.
+The use of <literal>HAVING</literal> in the absence of
+<literal>GROUP BY</literal> is not required to be supported by a JPA implementation.
+Portable applications should not rely on <literal>HAVING</literal> without the use of
+<literal>GROUP BY</literal>.
             </para>
+            <note>
+                <para>
+OpenJPA supports the use of <literal>HAVING</literal> in the absence of
+<literal>GROUP BY</literal> if the underlying database supports it.
+                </para>
+            </note>
             <para>
 Examples:
             </para>
