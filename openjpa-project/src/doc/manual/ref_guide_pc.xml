@@ -1013,7 +1013,7 @@ using <literal>IDENTITY</literal> generation:
 Your database must support auto-increment / identity columns, or some equivalent
 (see <xref linkend="ref_guide_dbsetup_dbsupport_oracle"/> for how to
 configure a combination of triggers and sequences to fake auto-increment support
-in Oracle).
+in Oracle database).
                     </para>
                 </listitem>
                 <listitem>

@@ -1634,7 +1634,7 @@ tool runs. However, you can manually manipulate the table through the class'
 <ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/NativeJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.NativeJDBCSeq</classname></ulink>.
 Many databases have a concept of "native sequences" - a built-in mechanism for
-obtaining incrementing numbers. For example, in Oracle, you can create a
+obtaining incrementing numbers. For example, in Oracle database, you can create a
 database sequence with a statement like <literal>CREATE SEQUENCE MYSEQUENCE
 </literal>. Sequence values can then be atomically obtained and incremented
 with the statement <literal>SELECT MYSEQUENCE.NEXTVAL FROM DUAL</literal>.

@@ -345,7 +345,7 @@
       </para>
       <para>
       The order of the names is significant when no <classname>openjpa.slice.Master</classname> 
-      property is not specified. Then the persistence unit is scanned to find
+      property is not specified. The persistence unit is then scanned to find
       all configured slice names and they are ordered alphabetically.  
       </para>
       
@@ -439,8 +439,8 @@ public interface DistributionPolicy {
         cascaded relationships. Hence user-defined policy has to only decide the
         database for the root instance that is the explicit argument to 
         <methodname>EntityManager.persist()</methodname> call.
-        Slice will ensure that all other related instances that gets persisted by cascade
-        is assigned to the same database slice as that of the root instance.
+        Slice will ensure that all other related instances that get persisted by cascade
+        are assigned to the same database slice as that of the root instance.
         However, the user-defined distribution policy must return the
         same slice identifier for the instances that are logically related but
         not cascaded for persist. 
@@ -450,8 +450,8 @@ public interface DistributionPolicy {
     <section id="replication_policy">
        <title>Implement ReplicationPolicy interface</title>
 		<para>
-			The entities that are annotated with <classname>@Replicated</classname> 
-			annotation can be stored in multiple slices as identical copies.
+			The entities that are enumerated in <classname>openjpa.slice.ReplicatedTypes</classname>
+			property can be stored in multiple slices as identical copies.
         Specify the implementation class of <classname>ReplicationPolicy</classname> in configuration as
         <programlisting> 
          <![CDATA[ <property name="openjpa.slice.ReplicationPolicy" value="com.acme.foo.MyReplicationPolicy"/>]]>
@@ -508,7 +508,7 @@ the JDBC connection URL of a slice.
 			 for persistence instances automatically or from a specific database 
 			 sequence. For such primary key value generation strategy where 
 			 a database instance is required, Slice uses a designated slice 
-			 referred as <emphasis>master</emphasis> slice. 
+			 referred to as <emphasis>master</emphasis> slice. 
 		 </para>
          <para>
 			 The master slice can be specified explicitly via 
