@@ -183,7 +183,7 @@ public class OpenJPAConfigurationImpl
     private final StoreFacadeTypeRegistry _storeFacadeRegistry = new StoreFacadeTypeRegistry();
     private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
     private Map<String, Object> _peMap; //contains persistence environment-specific info    
-
+    private boolean _allowSetLifeCycleEventManager = true;
     /**
      * Default constructor. Attempts to load global properties.
      */
@@ -1739,7 +1739,17 @@ public class OpenJPAConfigurationImpl
     }
 
     public void setLifecycleEventManager(String lem) {
-        lifecycleEventManager.setString(lem);
+        if (_allowSetLifeCycleEventManager) {
+            _allowSetLifeCycleEventManager = false;
+            // Only allow this to be called once even if the configuration is frozen. This can happen if a configuration
+            // is eagerly initialized and validation is being used.
+            lifecycleEventManager.setDynamic(true);
+            lifecycleEventManager.setString(lem);
+            lifecycleEventManager.setDynamic(false);
+        } else {
+            // If the configuration is frozen this will result in a warning message and/or an exception.
+            lifecycleEventManager.setString(lem);
+        }
     }
 
     public boolean getDynamicEnhancementAgent() {
