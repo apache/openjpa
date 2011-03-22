@@ -34,7 +34,9 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
-            EmbedOwner.class, EmbedValue.class, CLEAR_TABLES);
+            EmbedOwner.class, EmbedValue.class, CLEAR_TABLES
+            , "openjpa.Log","SQL=trace","openjpa.ConnectionFactoryProperties","printParameters=true"    
+        );
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -191,5 +193,39 @@ public class TestVersion extends SingleEMFTestCase {
         assertTrue(NoneVersionStrategy.getInstance() !=
             cls.getVersion().getStrategy());
         assertEquals(1, cls.getVersion().getColumns().length);
+    }
+    
+    public void testNullInitialVersion() {
+        EntityManager em = emf.createEntityManager();
+        EntityManager em2 = emf.createEntityManager();
+        try {
+            AnnoTest1 e = new AnnoTest1(System.currentTimeMillis());
+            em.getTransaction().begin();
+            em.persist(e);
+            em.createQuery("UPDATE AnnoTest1 a SET a.version=null where a.pk=:pk").setParameter("pk", e.getPk())
+                .executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+             em = emf.createEntityManager();
+            
+            em.getTransaction().begin();
+            em2.getTransaction().begin();
+            
+            AnnoTest1 e2 = em2.find(AnnoTest1.class, e.getPk());
+            e = em.find(AnnoTest1.class, e.getPk());
+            
+            e.setBasic(1);
+            em.getTransaction().commit();
+
+            e2 = em2.find(AnnoTest1.class, e.getPk());
+            em2.refresh(e2);
+
+            assertEquals(1, e2.getBasic());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
     }
 }

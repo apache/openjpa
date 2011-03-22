@@ -131,7 +131,7 @@ public class StateManagerImpl
     // the managing persistence manager and lifecycle state
     private transient BrokerImpl _broker; // this is serialized specially
     private PCState _state = PCState.TRANSIENT;
-
+    
     // the current and last loaded version indicators, and the lock object
     private Object _version = null;
     private Object _loadVersion = null;
@@ -3069,7 +3069,8 @@ public class StateManagerImpl
             // always be set after the first state load or set (which is why
             // we do this even if no fields were loaded -- could be that this
             // method is being called after a field is set)
-            if (_loadVersion == null && (_meta == null || _meta.getVersionField() != null)) {
+            FieldMetaData versionMeta = _meta !=null ? _meta.getVersionField() : null;
+            if (_loadVersion == null && (versionMeta != null && !_loaded.get(versionMeta.getIndex()))) {
                 syncVersion(sdata);
                 ret = ret || _loadVersion != null;
             }

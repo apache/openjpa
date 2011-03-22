@@ -41,7 +41,7 @@ public class AnnoTest1 {
 
     @Version
     @Column(name = "ANNOVER")
-    protected int version;
+    protected Integer version;
 
     @Basic
     protected int basic;
