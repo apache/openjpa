@@ -3069,7 +3069,10 @@ public class StateManagerImpl
             // always be set after the first state load or set (which is why
             // we do this even if no fields were loaded -- could be that this
             // method is being called after a field is set)
-            if (_loadVersion == null && (_meta == null || _meta.getVersionField() != null)) {
+            // If the _loadVersion field is null AND the version field has been loaded, skip calling sync version.
+            // This indicates that the DB has a null value for the version column. 
+            FieldMetaData versionMeta = _meta != null ? _meta.getVersionField() : null;
+            if (_loadVersion == null && (versionMeta != null && !_loaded.get(versionMeta.getIndex()))) {
                 syncVersion(sdata);
                 ret = ret || _loadVersion != null;
             }

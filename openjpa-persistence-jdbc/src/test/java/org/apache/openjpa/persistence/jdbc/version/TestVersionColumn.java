@@ -53,7 +53,8 @@ public class TestVersionColumn extends SQLListenerTestCase {
         assertNotNull("No results found", results);
         assertFalse("No results found", results.isEmpty());
         for (IntVersion iv : results) {
-            assertEquals("Version should be initialized to 1, was: " + iv.getVersion(), 1, iv.getVersion());
+            assertEquals("Version should be initialized to 0, was: " + iv.getVersion(), 0, iv.getVersion());
+            em.find(IntVersion.class, iv.getId());
         }
 
         assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
@@ -80,7 +81,8 @@ public class TestVersionColumn extends SQLListenerTestCase {
         assertNotNull("No results found", results);
         assertFalse("No results found", results.isEmpty());
         for (TimestampVersion iv : results) {
-            assertEquals("Version should be initialized to 1" + iv.getVersion(), new Timestamp(1), iv.getVersion());
+            assertEquals("Version should be initialized to null, was: " + iv.getVersion(), null, iv.getVersion());
+            em.find(TimestampVersion.class, iv.getId());
         }
 
         assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
@@ -107,8 +109,10 @@ public class TestVersionColumn extends SQLListenerTestCase {
         assertNotNull("No results found", results);
         assertFalse("No results found", results.isEmpty());
         for (ShortVersion iv : results) {
-            assertEquals("Version should be initialized to 1" + iv.getVersion(), 1, iv.getVersion());
+            assertEquals("Version should be initialized to 0, was" + iv.getVersion(), 0, iv.getVersion());
+            em.find(ShortVersion.class, iv.getId());
         }
+
 
         assertEquals("Unexpected number of SQL statements: " + getSQLCount(), 1, getSQLCount());
 

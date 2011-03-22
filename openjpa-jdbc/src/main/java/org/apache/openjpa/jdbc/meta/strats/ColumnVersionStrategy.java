@@ -270,15 +270,6 @@ public abstract class ColumnVersionStrategy
 
         Object version = populateFromResult(res);
         
-        // we know the version column was part of the result - safe to initialize to 1.
-        if(version == null) { 
-            if (sm.getMetaData().getVersionField().getDeclaredTypeCode() == JavaTypes.DATE) {
-                version = new Timestamp(1);
-            } else {
-                version = new Long(1);
-            }
-        }
-
         // OPENJPA-662 Allow a null StateManager because this method may just be
         // invoked to get the result of projection query
         if (sm != null) {
