@@ -1571,7 +1571,7 @@ public class FieldMetaData
                         _factMethod = getDeclaredType().getConstructor
                             (new Class[]{ getType() });
                     else
-                        _factMethod = findMethod(_factName);
+                    	_factMethod = findMethodByNameAndType(_factName, getType());
                 } catch (OpenJPAException ke) {
                     throw ke;
                 } catch (Exception e) {
@@ -1597,6 +1597,22 @@ public class FieldMetaData
      * @return the method for invocation
      */
     private Method findMethod(String method) {
+    	return findMethodByNameAndType(method, null);
+    }
+    
+    /**
+     * Find the method for the specified name and type. Possible forms are:
+     * <ul>
+     * <li>toExternalString</li>
+     * <li>MyFactoryClass.toExternalString</li>
+     * <li>com.company.MyFactoryClass.toExternalString</li>
+     * </ul>
+     *
+     * @param method the name of the method to locate
+     * @param type The type of the parameter which will pass the object from the database.
+     * @return the method for invocation
+     */
+    private Method findMethodByNameAndType(String method, Class<?> type) {
         if (StringUtils.isEmpty(method))
             return null;
 
@@ -1629,7 +1645,12 @@ public class FieldMetaData
                 if (Modifier.isStatic(methods[i].getModifiers())
                     && (params.length == 1 || (params.length == 2
                     && isStoreContextParameter(params[1]))))
-                    return methods[i];
+                	
+                	if (type == null) {
+                		return methods[i];
+                	} else if (isConvertibleToByMethodInvocationConversion(type, params[0])) {
+                		return methods[i];
+                	}
                 if (!Modifier.isStatic(methods[i].getModifiers())
                     && (params.length == 0 || (params.length == 1
                     && isStoreContextParameter(params[0]))))
@@ -1640,6 +1661,131 @@ public class FieldMetaData
         return null;
     }
 
+	/**
+	 * Test if the {@code sourceType} is convertible to the {@code destType}.
+	 * Convertible follows the rules in Java Language Specification, 3rd Ed, s5.3 and means that:
+	 * <ul>
+	 * <li>{@code sourceType} and {@code destType} are the same type (identity conversion)</li>
+	 * <li>For primitive types: that {@code sourceType} can be widened into {@code destType} 
+	 * or that {@code sourceType} can be boxed into a class assignable to {@code destType}.</li>
+	 * <li>For non-primitive types: that the {@code sourceType} can be unboxed into a primitive
+	 *  that is the same as, or can be widened into,
+	 * {@code destType} or {@code sourceType} can be assigned to {@code destType}.</li> 
+	 * 
+	 * @return True iff the conditions above are true.
+	 */
+	private boolean isConvertibleToByMethodInvocationConversion(Class<?> sourceType, Class<?> destType) {
+		// Note that class.isAssignableFrom is a widening reference conversion test
+		if (sourceType.isPrimitive()) {
+			return isConvertibleToByIdentityPrimitiveConversion(sourceType, destType) 
+				|| isConvertibleToByWideningPrimitive(sourceType, destType) 
+				|| destType.isAssignableFrom(box(sourceType));
+		} else {
+			// Note that unbox will return null if the sourceType is not a wrapper.  
+			// The identity primitive conversion and widening primitive handle this.
+			return isConvertibleToByIdentityPrimitiveConversion(unbox(sourceType), destType) 
+			|| isConvertibleToByWideningPrimitive(unbox(sourceType), destType) 
+			|| destType.isAssignableFrom(sourceType);
+		}
+	}
+	
+	/**
+	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.8 
+	 */
+	private Class<?> unbox(Class<?> sourceType) {
+		if (sourceType == java.lang.Boolean.class) {
+			return java.lang.Boolean.TYPE;
+		} else if (sourceType == java.lang.Byte.class) {
+			return java.lang.Byte.TYPE;
+		} else if (sourceType == java.lang.Short.class) {
+			return java.lang.Short.TYPE;
+		} else if (sourceType == java.lang.Character.class) {
+			return java.lang.Character.TYPE;
+		} else if (sourceType == java.lang.Integer.class) {
+			return java.lang.Integer.TYPE;
+		} else if (sourceType == java.lang.Long.class) {
+			return java.lang.Long.TYPE;
+		} else if (sourceType == java.lang.Float.class) {
+			return java.lang.Float.TYPE;
+		} else if (sourceType == java.lang.Double.class) {
+			return java.lang.Double.TYPE;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @return The results of unboxing {@code sourceType} following Java Language Specification, 3rd Ed, s5.1.7 
+	 */
+	private Class<?> box(Class<?> sourceType) {
+		if (sourceType.isPrimitive()) {
+			if (sourceType == java.lang.Boolean.TYPE) {
+				return java.lang.Boolean.class;
+			} else if (sourceType == java.lang.Byte.TYPE) {
+				return java.lang.Byte.class;
+			} else if (sourceType == java.lang.Short.TYPE) {
+				return java.lang.Short.class;
+			} else if (sourceType == java.lang.Character.TYPE) {
+				return java.lang.Character.class;
+			} else if (sourceType == java.lang.Integer.TYPE) {
+				return java.lang.Integer.class;
+			} else if (sourceType == java.lang.Long.TYPE) {
+				return java.lang.Long.class;
+			} else if (sourceType == java.lang.Float.TYPE) {
+				return java.lang.Float.class;
+			} else if (sourceType == java.lang.Double.TYPE) {
+				return java.lang.Double.class;
+			} 
+			return null;  // Should never be reached because all primitives are accounted for above.
+		} else {
+			throw new IllegalArgumentException("Cannot box a type that is not a primitive.");
+		}
+	}
+	
+	/**
+	 * @return true iff {@sourceType} can be converted by a widening primitive conversion
+	 *  following Java Language Specification, 3rd Ed, s5.1.2 
+	 */
+	private boolean isConvertibleToByWideningPrimitive(Class<?> sourceType, Class<?> destType) {
+		// Widening conversion following Java Language Specification, s5.1.2.
+		if (sourceType == java.lang.Byte.TYPE) {
+			return destType == java.lang.Short.TYPE ||
+			    destType == java.lang.Integer.TYPE ||
+			    destType == java.lang.Long.TYPE ||
+			    destType == java.lang.Float.TYPE ||
+			    destType == java.lang.Double.TYPE;
+		} else if (sourceType == java.lang.Short.TYPE) {
+			return destType == java.lang.Integer.TYPE ||
+				destType == java.lang.Long.TYPE ||
+				destType == java.lang.Float.TYPE ||
+				destType == java.lang.Double.TYPE;
+		} else if (sourceType == java.lang.Character.TYPE) {
+			return destType == java.lang.Integer.TYPE || 
+			  	destType == java.lang.Long.TYPE || 
+			  	destType == java.lang.Float.TYPE || 
+			  	destType == java.lang.Double.TYPE;
+		} else if (sourceType == java.lang.Integer.TYPE) {
+			return destType == java.lang.Long.TYPE ||
+			  	destType == java.lang.Float.TYPE ||
+			  	destType == java.lang.Double.TYPE;
+		} else if (sourceType == java.lang.Long.TYPE) {
+			return destType == java.lang.Float.TYPE ||
+			  	destType == java.lang.Double.TYPE;
+		} else if (sourceType == java.lang.Float.TYPE) {
+			return destType == java.lang.Double.TYPE;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true iff the sourceType is a primitive that can be converted to 
+	 * destType using an identity conversion - i.e. sourceType and destType are the same type.
+	 * following Java Language Specification, 3rd Ed, s5.1.1 
+	 */
+	private boolean isConvertibleToByIdentityPrimitiveConversion(Class<?> sourceType, Class<?> destType) {
+		return sourceType != null && sourceType.isPrimitive() && sourceType == destType;
+	}
+	
     /**
      * Return true if the given type is a store context type; we can't
      * use the standard <code>isAssignableFrom</code> because of classloader
