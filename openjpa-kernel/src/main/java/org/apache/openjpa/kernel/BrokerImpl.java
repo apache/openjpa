@@ -2581,7 +2581,7 @@ public class BrokerImpl
             }
 
             // make sure we don't already have the instance cached
-            checkForDuplicateId(id, obj);
+            checkForDuplicateId(id, obj, meta);
 
             // if had embedded sm, null it
             if (sm != null)
@@ -4952,7 +4952,11 @@ public class BrokerImpl
     /** 
      * This method makes sure we don't already have the instance cached
      */
-    protected void checkForDuplicateId(Object id, Object obj) {
+    protected void checkForDuplicateId(Object id, Object obj, ClassMetaData meta) {
+        FieldMetaData[] pks = meta.getPrimaryKeyFields();
+        if (pks != null && pks.length == 1 && pks[0].getValueStrategy() == ValueStrategies.AUTOASSIGN) {
+            return;
+        }
         StateManagerImpl other = getStateManagerImplById(id, false);
         if (other != null && !other.isDeleted() && !other.isNew())
             throw new ObjectExistsException(_loc.get("cache-exists",
