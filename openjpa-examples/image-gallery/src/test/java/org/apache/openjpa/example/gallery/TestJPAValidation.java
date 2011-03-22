@@ -102,7 +102,7 @@ public class TestJPAValidation extends junit.framework.TestCase {
             System.out.println("validation exception upon removal");
             img.setType(null);
             em.remove(img);
-            em.getTransaction().commit();
+            em.getTransaction().commit(); // never gets this far...  fails on the remove()
             fail();
         }  catch (ConstraintViolationException cve) {
             // Rollback the active transaction and handle the exception
