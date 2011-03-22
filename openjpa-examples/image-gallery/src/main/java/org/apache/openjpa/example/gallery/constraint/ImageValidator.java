@@ -58,7 +58,7 @@ public class ImageValidator implements ConstraintValidator<ImageConstraint, Imag
         String fileName = value.getFileName();
         ImageType type = value.getType();
         
-        // Verify the GIF type is correct5, has the correct extension and
+        // Verify the GIF type is correct, has the correct extension and
         // the data header is either GIF87 or GIF89
         if (allowedTypes.contains(ImageType.GIF) &&
             type == ImageType.GIF &&
