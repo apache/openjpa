@@ -204,7 +204,9 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         if (active && !roundEnv.processingOver()) {
             Set<? extends Element> elements = roundEnv.getRootElements();
             for (Element e : elements) {
-                process((TypeElement) e);
+                if (e instanceof TypeElement) {
+                    process((TypeElement) e);
+                }
             }
         }
         return true;
