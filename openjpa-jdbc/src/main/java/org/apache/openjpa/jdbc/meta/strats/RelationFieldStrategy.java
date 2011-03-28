@@ -566,7 +566,7 @@ public class RelationFieldStrategy
         Object oid = null;
         if (relMapping.isMapped()) {
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
-                field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
+            		field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
         } else {
             Column[] cols = field.getColumns();
             if (relMapping.getIdentityType() == ClassMapping.ID_DATASTORE) {

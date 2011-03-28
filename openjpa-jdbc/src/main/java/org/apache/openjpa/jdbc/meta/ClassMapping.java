@@ -172,6 +172,7 @@ public class ClassMapping
         FieldMapping fm;
         Joinable join;
         int pkIdx;
+        boolean canReadDiscriminator = true;        
         boolean isNullPK = true;
         for (int i = 0; i < pks.length; i++) {
             // we know that all pk column join mappings use primary key fields,
@@ -180,7 +181,7 @@ public class ClassMapping
             join = assertJoinable(pks[i]);
             fm = getFieldMapping(join.getFieldIndex());
             pkIdx = fm.getPrimaryKeyIndex();
-
+            canReadDiscriminator &= isSelfReference(fk, join.getColumns()); 
             // could have already set value with previous multi-column joinable
             if (vals[pkIdx] == null) {
                 res.startDataRequest(fm);
@@ -197,8 +198,13 @@ public class ClassMapping
         // the oid data is loaded by the base type, but if discriminator data
         // is present, make sure to use it to construct the actual oid instance
         // so that we get the correct app id class, etc
+        
+        // Discriminator refers to the row but the vals[] may hold data that
+        // refer to another row. Then there is little point reading the disc
+        // value
+
         ClassMapping dcls = cls;
-        if (subs) {
+        if (subs && canReadDiscriminator) {
             res.startDataRequest(cls.getDiscriminator());
             try {
                 Class dtype = cls.getDiscriminator().getClass(store, cls, res);
@@ -216,6 +222,15 @@ public class ClassMapping
                 subs);
         }
         return oid;
+    }
+    
+    boolean isSelfReference(ForeignKey fk, Column[] cols) {
+    	if (fk == null)
+    		return true;
+    	for (Column col : cols)
+    		if (fk.getColumn(col) != col)
+    			return false;
+    	return true;
     }
 
     /**
