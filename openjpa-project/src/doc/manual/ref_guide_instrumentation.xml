@@ -91,7 +91,7 @@
             -Dcom.sun.management.jmxremote.port=&lt;port&gt;.
             For example:
             <programlisting>
-            java -cp openjpa-all-2.1.0.jar:myApplication.jar -Dcom.sun.management.jmxremote.authenticate=false
+            java -cp openjpa-all-2.2.0.jar:myApplication.jar -Dcom.sun.management.jmxremote.authenticate=false
             -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=8888 com.my.app.Main
             </programlisting>
             </para>

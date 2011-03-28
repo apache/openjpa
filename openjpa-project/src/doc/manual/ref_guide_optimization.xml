@@ -61,7 +61,7 @@ more work onto the server will have a negative impact on scalability.
                 <row>
                     <entry colname="name">
                         <emphasis role="bold">
-                            Use a Connection Pool
+                            Use a connection pool
                         </emphasis>
                         <para>
 <emphasis>performance, scalability</emphasis>
@@ -70,7 +70,7 @@ more work onto the server will have a negative impact on scalability.
                     <entry colname="desc">
 OpenJPA's built-in datasource does not perform connection pooling or
 prepared statement caching, but it can use Apache Commons DBCP for connection
-pooling if it is provided on the classpath.  Checkout the
+pooling if it is provided on the classpath.  Check out the
 <link linkend="ref_guide_dbsetup_builtin">DriverDataSource</link>
 section, which describes how to use and configure Commons DBCP.
 Also, you can manually plug in a third-party pooling datasource like

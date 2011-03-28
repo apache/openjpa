@@ -491,12 +491,12 @@ emf = Persistence.createEntityManagerFactory("example", props);</programlisting>
             </example>
             </para>
                 <section id="ref_guide_dbsetup_setDSPerEM">
-                <title>Using different datasources for each EntityManager</title> 
+                <title>Using different DataSources for each EntityManager</title> 
                 <para>
 The JPA specification allows the DataSource (ConnectionFactory) to be specified on the 
-EntityManagerFactory.OpenJPA extends this support and allows each EntityManager to override the 
+EntityManagerFactory. OpenJPA extends this support and allows each EntityManager to override the 
 DataSource from the EntityManagerFactory. It's expected that the EntityManagerFactory will also be 
-configured with a valid jta / nonJta DataSource. The DataSource configured on the 
+configured with a valid JTA / Non-JTA DataSource. The DataSource configured on the 
 EntityManagerFactory will be used to obtain a DBDictionary and (rarely) to gather some information
 about the database in use (e.g. version, JDBC driver version). 
                 </para>
@@ -506,7 +506,7 @@ about the database in use (e.g. version, JDBC driver version).
                     <itemizedlist>
                         <listitem><para>The <literal>openjpa.DBDictionary</literal> property must be
                         used to ensure the correct DBDictionary is used.</para></listitem>
-                        <listitem><para>OpenJPA will always attempt to obtain a datasource from JNDI
+                        <listitem><para>OpenJPA will always attempt to obtain a DataSource from JNDI
                         based on the configuration for the EntityManagerFactory. When a JNDI name is
                         specified on the EntityManager this lookup happens slightly earlier than 
                         normal. If the lookup fails the JNDI name provided at EntityManager creation
@@ -540,7 +540,7 @@ about the database in use (e.g. version, JDBC driver version).
                             individual entities.</para></listitem>
                             <listitem>
                                 <para>The DataSource (ConnectionFactory) name may only be 
-                                specified when the EntityManager is created. The datasource 
+                                specified when the EntityManager is created. The DataSource 
                                 may not be switched while an EntityManager is in use.
                                 </para>
                             </listitem>
@@ -568,7 +568,7 @@ about the database in use (e.g. version, JDBC driver version).
                     <para>
                     The same logic applies if a Non-JTA DataSource is not available when the 
                     EntityManager is created. OpenJPA will not fall back to the configured 
-                    non-JTA DataSource.
+                    Non-JTA DataSource.
                     </para>
                 </section>
             </section>

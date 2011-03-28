@@ -3186,7 +3186,7 @@ SavepointManager
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>in-mem</literal>,
-<literal>jdbc</literal>, <literal>oracle</literal>
+<literal>jdbc</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A plugin string (see

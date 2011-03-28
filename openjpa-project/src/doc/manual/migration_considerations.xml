@@ -320,7 +320,7 @@
                     application characteristics, this default QueryCache
                     enablement actually could negate much of the potential
                     gains achieved by using the DataCache.  Thus, the default
-                    value for the openjpa.QueryCache property will now by
+                    value for the openjpa.QueryCache property is now
                     <emphasis><literal>false</literal></emphasis>.
                 </para>
                 <para>
@@ -383,7 +383,7 @@
                 </para>
                 <para>
                     The requirement for sequence modification applies to all databases that support sequences, regardless of
-                    the <literal>CACHE</literal> clause being supported. The only excpetion is Firebird database -
+                    the <literal>CACHE</literal> clause being supported. The only exception is Firebird database -
                     since with this database the increment step is determined during sequence
                     value fetch, no migration activity is needed.
                 </para>
