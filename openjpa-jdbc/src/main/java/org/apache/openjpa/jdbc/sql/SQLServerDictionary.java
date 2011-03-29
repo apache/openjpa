@@ -71,13 +71,21 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         String driverName = meta.getDriverName();
         String url = meta.getURL();
         if (driverVendor == null) {
+            // serverMajorVersion of 8==2000, 9==2005, 10==2008
+            if (meta.getDatabaseMajorVersion() >= 9)
+                setSupportsXMLColumn(true);
+            if (meta.getDatabaseMajorVersion() >= 10) {
+                // MSSQL 2008 supports new date, time and datetime2 types
+                // Use DATETIME2 which has 100ns vs. 3.333msec precision
+                dateTypeName = "DATETIME2";
+                timeTypeName = "DATETIME2";
+                timestampTypeName = "DATETIME2";
+                datePrecision = MICRO / 10;
+            }
             if (driverName != null) {
                 if (driverName.startsWith("Microsoft SQL Server")) {
                     // v1.1, 1.2, 2.0 or 3.0 driver
                     driverVendor = VENDOR_MICROSOFT;
-                    // serverMajorVersion of 8==2000, 9==2005, 10==2008
-                    if (meta.getDatabaseMajorVersion() >= 9)
-                        setSupportsXMLColumn(true);
                     if (meta.getDriverMajorVersion() >= 2) {
                         // see http://blogs.msdn.com/jdbcteam/archive/2007/05/\
                         // 02/what-is-adaptive-response-buffering-and-why-\
@@ -86,13 +94,6 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
                         // responseBuffering=adaptive
                         // and disableStatementPooling=true
                         requiresWarnings = false;
-                    }
-                    if (meta.getDatabaseMajorVersion() >= 10) {
-                        // MSSQL 2008 supports new date, time and datetime2 types
-                        // Use DATETIME2 which has 100ns vs. 3.333msec precision
-                        dateTypeName = "DATETIME2";
-                        timeTypeName = "DATETIME2";
-                        timestampTypeName = "DATETIME2";
                     }
                 } else {
                     if ("NetDirect JSQLConnect".equals(driverName))
