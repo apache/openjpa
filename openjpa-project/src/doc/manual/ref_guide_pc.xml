@@ -274,14 +274,14 @@ class load error, simply re-compile and re-enhance the offending classes.
                 </tertiary>
             </indexterm>
             <para>
-The Java EE 5 specification includes hooks to automatically enhance JPA entities
-when they are deployed into a container. Thus, if you are using a Java EE
-5-compliant application server, OpenJPA will enhance your entities automatically
+The Java EE specification includes hooks to automatically enhance JPA entities
+when they are deployed into a container. Thus, if you are using a Java EE-compliant application server,
+OpenJPA will enhance your entities automatically
 at runtime. Note that if you prefer build-time enhancement, OpenJPA's runtime
 enhancer will correctly recognize and skip pre-enhanced classes.
             </para>
             <para>
-If your application server does not support the Java EE 5 enhancement hooks,
+If your application server does not support the Java EE enhancement hooks,
 consider using the build-time enhancement described above, or the more general
 runtime enhancement described in the next section.
             </para>
@@ -454,7 +454,7 @@ state tracking, depending on the execution environment.
             <itemizedlist>
                 <listitem><para>
 <emphasis>Deploy-time enhancement</emphasis>: if you are running your
-application inside a Java EE 5 container, or another environment that supports
+application inside a Java EE container, or another environment that supports
 the JPA container contract, then OpenJPA will automatically perform class
 transformation at deploy time.
                 </para></listitem>
@@ -497,14 +497,14 @@ notifications when you read or write persistent data.
                 <para>
                 <note>
 Runtime Unenhanced Classes has some known limitations which are discussed below
-and documented in JIRA issues on the OpenJPA website. As a result this option is
+and documented in JIRA issue tracker on the OpenJPA website. As a result this option is
 disabled by default. Support for this method of automatic enhancement may be 
-enabled via the<xref linkend="openjpa.RuntimeUnenhancedClasses">
-openjpa.RuntimeUnenhancedClasses configuration </xref>option.
+enabled via the <xref linkend="openjpa.RuntimeUnenhancedClasses">
+openjpa.RuntimeUnenhancedClasses configuration </xref> option.
                 </note>
                 </para>
                 <para>
-To enable Runtime Unenhanced Classes for a specific persistence unit add the following property to persistence.xml :
+To enable Runtime Unenhanced Classes for a specific persistence unit, add the following property to persistence.xml:
 <programlisting>
 <![CDATA[<properties> 
     . . .

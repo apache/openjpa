@@ -122,7 +122,7 @@ and <classname>Broker</classname>s.
                 </tertiary>
             </indexterm>
             <para>
-Outside of a Java EE 5 application server or other JPA persistence container
+Outside of a Java EE application server or other JPA persistence container
 environment, the default OpenJPAEntityManager implementation automatically
 closes itself during instance finalization. This guards against accidental
 resource leaks that may occur if a developer fails to explicitly close

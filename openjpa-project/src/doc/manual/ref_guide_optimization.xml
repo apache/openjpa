@@ -601,7 +601,7 @@ collection of results can speed up data loading by orders of magnitude.
                         </para>
                     </entry>
                     <entry colname="desc">
-Outside of a Java EE 5 application server or other JPA persistence container,
+Outside of a Java EE application server or other JPA persistence container,
 OpenJPA's EntityManagers use finalizers to ensure that resources
 get cleaned up. If you are properly managing your resources, this finalization
 is not necessary, and will introduce unneeded synchronization, leading to

@@ -136,10 +136,7 @@ a distributed environment, as caches in different JVMs or created from different
             <para>
 To enable the basic single-factory cache set the
 <link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
-property to <literal>true</literal>, and set the
-<link linkend="openjpa.RemoteCommitProvider"><literal>
-openjpa.RemoteCommitProvider</literal></link> property to <literal>sjvm
-</literal>:
+property to <literal>true</literal>:
             </para>
             <example id="ref_guide_cache_conf_sjvm">
                 <title>
@@ -147,7 +144,6 @@ openjpa.RemoteCommitProvider</literal></link> property to <literal>sjvm
                 </title>
 <programlisting>
 &lt;property name="openjpa.DataCache" value="true"/&gt;
-&lt;property name="openjpa.RemoteCommitProvider" value="sjvm"/&gt;
 </programlisting>
             </example>
             <para>
@@ -186,7 +182,7 @@ scalable as the default map.
             </para>
             <example id="ref_guide_cache_conf_lru">
                 <title>
-                    Data Cache Size
+                    Lru Cache
                 </title>
 <programlisting>
 &lt;property name="openjpa.DataCache" value="true(Lru=true)"/&gt;
@@ -237,19 +233,20 @@ public class Employee {
                 <secondary>exclusions</secondary>
             </indexterm>
             Entities may be explicitly excluded from the cache by providing a 
-            list of fully qualified class names in the ExcludedTypes argument. 
-            The entities provided via ExcludedTypes will not be cached 
-            regardless of the @DataCache annotation. 
+            list of fully qualified class names in the <literal>ExcludedTypes</literal> argument. 
+            The entities provided via <literal>ExcludedTypes</literal> will not be cached 
+            regardless of the <classname>DataCache</classname> annotation. 
             </para>
             <example id="ex_exclude_types_from_cache">
                 <title>
                     Excluding entities
                 </title>
                 <para>
-                    Exclude entities foo.bar.Person and foo.bar.Employee from the cache. 
-                    <programlisting>
+                    Exclude entities <classname>foo.bar.Person</classname> and
+                    <classname>foo.bar.Employee</classname> from the cache. 
+<programlisting>
 &lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
-                    </programlisting>
+</programlisting>
                 </para>
             </example>
 
@@ -258,10 +255,9 @@ public class Employee {
                 <primary>caching</primary>
                 <secondary>inclusions</secondary>
             </indexterm>
-            Entities may be explicitly included from the cache by providing a
-            list of fully qualified class names in the Types argument.
-            The entities provided via ExcludedTypes will not cached regardless
-            of the @DataCache annotation. Any entities which are not included 
+            Entities may be explicitly included in the cache by providing a
+            list of fully qualified class names in the <literal>Types</literal> argument.
+            Any entities which are not included
             in this list will not be cached. 
             </para>
             <example id="ex_include_types_in_cache">
@@ -269,10 +265,10 @@ public class Employee {
                     Including entities
                 </title>
                 <para>
-                    Include only entity foo.bar.FullTimeEmployee from the cache. 
-                    <programlisting>
+                    Include only entity <classname>foo.bar.FullTimeEmployee</classname> in the cache.
+<programlisting>
 &lt;property name="openjpa.DataCache" value="true(Types=foo.bar.FullTimeEmployee)"/&gt;
-                    </programlisting>
+</programlisting>
                 </para>
             </example>
             <para>
@@ -337,8 +333,8 @@ format of this property is a <literal>+</literal> followed by the number of minu
 between each time that the cache should be evicted.
             </para>
             <para>            
-For example, the following openjpa.DataCache setting schedules the default cache 
-to evict values from the cache every 120 minutes.            
+For example, the following <literal>openjpa.DataCache</literal> setting schedules the default cache
+to evict values from the cache every 120 minutes.
             </para>
             <para>            
 <programlisting>
@@ -350,8 +346,8 @@ true(EvictionSchedule='+120')
                     Bulk updates and cache eviction
                 </title>
                 <para>
-For the example, setting EvictOnBulkUpdate to false will tell OpenJPA to not evict from the DataCache when executing
-and UPDATE or DELETE statement. The default for the value is true.                
+Setting <literal>EvictOnBulkUpdate</literal> to <literal>false</literal> will tell OpenJPA to not evict from the DataCache when executing
+an UPDATE or DELETE statement. The default for the value is <literal>true</literal>.
                 </para>
                 <para> 
 <programlisting>&lt;property name="openjpa.DataCache" value="true(EvictOnBulkUpdate=false)"/&gt;</programlisting>

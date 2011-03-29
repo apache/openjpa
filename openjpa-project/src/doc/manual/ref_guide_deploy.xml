@@ -72,7 +72,7 @@ bound to JNDI as well.
                 EntityManager Injection
             </title>
             <para>
-Java EE 5 application servers allow you to <emphasis>inject</emphasis> 
+Java EE application servers allow you to <emphasis>inject</emphasis> 
 entity managers into your session beans using the <literal>PersistenceContext
 </literal> annotation.  See your application server documentation for details.
             </para>

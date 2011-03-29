@@ -91,13 +91,13 @@ distribution if you are using the normal <literal>openjpa.jar</literal>.
             </para>
             <para>
 To disable the automatic usage of Apache Commons DBCP when it is discovered
-on the classpath, then set - 
+on the classpath, set
 <literal>openjpa.jdbc.DriverDataSource=simple</literal>, which will revert
 OpenJPA to the prior behavior of using <classname>org.apache.openjpa.jdbc.schema.SimpleDriverDataSource</classname>
             </para>
             <para>
 To force usage of Apache Commons DBCP, which will cause a fatal exception to
-be thrown if it cannot be loaded from the classpath, then set - 
+be thrown if it cannot be loaded from the classpath, set
 <literal>openjpa.jdbc.DriverDataSource=dbcp</literal>, which will cause
 OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</classname>
             </para>
@@ -115,8 +115,8 @@ OpenJPA to use <classname>org.apache.openjpa.jdbc.schema.DBCPDriverDataSource</c
                 </secondary>
             </indexterm>
             <para>
-If you choose to use OpenJPA's <classname>DataSource
-</classname>, then you must specify the following properties:
+If you choose to use OpenJPA's <classname>DataSource</classname>,
+then you must specify the following properties:
             </para>
             <itemizedlist>
             <listitem>
@@ -560,9 +560,9 @@ about the database in use (e.g. version, JDBC driver version).
                 <section id="ref_guide_dbsetup_setDSError">
                     <title>Error handling</title>
                     <para>
-                    If a JTA DataSource is not available when the EntityManager is created an 
-                    <link linkend=""><literal>ArgumentException</literal></link> will be thrown.
-                    The EntityManager will not fall back on the JTA DataSource defined in the 
+                    If a JTA DataSource is not available when the EntityManager is created, an 
+                    <literal>IllegalArgumentException</literal> will be thrown.
+                    The EntityManager will not fall back to the JTA DataSource defined in the 
                     configuration. 
                     </para> 
                     <para>

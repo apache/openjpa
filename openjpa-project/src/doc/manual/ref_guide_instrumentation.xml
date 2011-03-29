@@ -62,7 +62,6 @@
             &lt;property name="openjpa.DataCache" value="true(EnableStatistics=true)"/&gt;
             &lt;property name="openjpa.QueryCache" value="true(EnableStatistics=true)"/&gt;
             &lt;property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"/&gt;
-            &lt;property name="openjpa.RemoteCommitProvider" value="sjvm"/&gt;
 
             &lt;!--  Enable jmx provider and instruments for Data, Query, and QuerySQL caches --&gt;
             &lt;property name="openjpa.Instrumentation" value="jmx(Instrument='DataCache,QueryCache,QuerySQLCache')"/&gt;

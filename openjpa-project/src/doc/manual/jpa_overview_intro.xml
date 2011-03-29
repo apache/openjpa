@@ -35,11 +35,9 @@
             JPA
         </primary>
     </indexterm>
-The Java Persistence API (JPA) is a specification
+The Java Persistence 2.0 API (JPA 2.0) is a specification
 for the persistence of Java objects to any relational
-datastore. JPA requires J2SE 1.5 (also referred to as "Java 5") or
-higher, as it makes heavy use of new Java language features such as annotations
-and generics. This document provides an overview of JPA. Unless
+datastore. This document provides an overview of JPA 2.0. Unless
 otherwise noted, the information presented applies to all JPA implementations.
     </para>
     <note>
@@ -55,7 +53,7 @@ see the <link linkend="ref_guide_intro">Reference Guide</link>.
         <para>
 This document is intended for developers who want to learn about JPA
 in order to use it in their applications. It assumes that you have a strong
-knowledge of object-oriented concepts and Java, including Java 5 annotations and
+knowledge of object-oriented concepts and Java, including annotations and
 generics. It also assumes some experience with relational databases and the
 Structured Query Language (SQL).
         </para>
