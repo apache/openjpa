@@ -186,13 +186,21 @@ abstract class AttachStrategy
                 Object frmpc = fetchObjectField(i);
                 if (frmpc == null && !nullLoaded)
                     return false;
+
                 OpenJPAStateManager tosm = manager.getBroker().getStateManager
                     (sm.fetchObjectField(i));
                 PersistenceCapable topc = (tosm == null) ? null
                     : tosm.getPersistenceCapable();
                 if (frmpc != null || topc != null) {
-                    if (fmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE)
-                        frmpc = getReference(manager, frmpc, sm, fmd);
+                    if (fmd.getCascadeAttach() == ValueMetaData.CASCADE_NONE) {
+                        // Use the attached copy of the object, if available
+                        PersistenceCapable cpy = manager.getAttachedCopy(frmpc);
+                        if (cpy != null) {
+                            frmpc = cpy;
+                        } else {
+                        	frmpc = getReference(manager, frmpc, sm, fmd);
+                        }
+                    }
                     else {
                         PersistenceCapable intopc = topc;
                         if (!fmd.isEmbeddedPC() && frmpc != null && topc != null

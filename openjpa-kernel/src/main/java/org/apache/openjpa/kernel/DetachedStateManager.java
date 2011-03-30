@@ -244,8 +244,15 @@ public class DetachedStateManager
                 case JavaTypes.PC:
                 case JavaTypes.PC_UNTYPED:
                     if (fields[i].getCascadeAttach() == ValueMetaData
-                        .CASCADE_NONE)
-                        objval = getReference(manager, objval, sm, fields[i]);
+                        .CASCADE_NONE) {
+                        // Use the attached copy of the object, if available
+                        PersistenceCapable cpy = manager.getAttachedCopy(objval);
+                        if (cpy != null) {
+                            objval = cpy;
+                        } else {
+                        	objval = getReference(manager, objval, sm, fields[i]);
+                        }
+                    } 
                     else {
                         PersistenceCapable toPC = null;
                         if (objval != null && fields[i].isEmbeddedPC())
