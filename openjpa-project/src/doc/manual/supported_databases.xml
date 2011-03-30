@@ -1051,6 +1051,15 @@ When reading LOB data from the database, the Microsoft SQL Server driver will
 actually load all the data into memory at the same time.
                     </para>
                 </listitem>
+                <listitem>
+                    <para>
+The SQL Server 2008 DATETIME2 data type supports 7 digits sub-second precision.
+When DataDirect JDBC driver is used with SQL Server 2008, setTimestamp method call with
+a java.sql.Timestamp argument of more than 3 digits precision in a prepared statement
+will result in truncation. This may cause loss of data precision or
+optimistic lock exception if an entity uses Timestamp type as version field.
+                    </para>
+                </listitem>
             </itemizedlist>
         </section>
     </section>
