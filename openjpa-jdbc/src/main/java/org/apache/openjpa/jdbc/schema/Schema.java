@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.schema;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -127,7 +128,7 @@ public class Schema
         } else
             tab = new Table(name, this);
         if (_tableMap == null)
-            _tableMap = new TreeMap();
+            _tableMap = Collections.synchronizedMap(new TreeMap());
         _tableMap.put(name.toUpperCase(), tab);
         _tables = null;
         return tab;
@@ -203,7 +204,7 @@ public class Schema
         } else
             seq = new Sequence(name, this);
         if (_seqMap == null)
-            _seqMap = new TreeMap();
+            _seqMap = Collections.synchronizedMap(new TreeMap());
         _seqMap.put(name.toUpperCase(), seq);
         _seqs = null;
         return seq;
