@@ -209,7 +209,7 @@ public class DB2Dictionary
 
         // ... and finish the cast
         if (toCast) {
-            Class c = ((Lit) val).getType();
+            Class<?> c = ((Lit) val).getType();
             int javaTypeCode = JavaTypes.getTypeCode(c);
             int jdbcTypeCode = getJDBCType(javaTypeCode, false);
             String typeName = getTypeName(jdbcTypeCode);
@@ -689,7 +689,7 @@ public class DB2Dictionary
     private void appendXmlComparison1(SQLBuffer buf, String op, 
             FilterValue lhs, FilterValue rhs) {
         boolean castrhs = false;
-        Class rc = Filters.wrap(rhs.getType());
+        Class<?> rc = Filters.wrap(rhs.getType());
         int type = 0;
         if (rhs.isConstant()) {
             type = getJDBCType(JavaTypes.getTypeCode(rc), false);
@@ -1117,5 +1117,13 @@ public class DB2Dictionary
             }
         }
         super.setDate(stmnt, idx, val, col);
+    }
+
+    public int getDB2MajorVersion() {
+        return maj;
+    }
+
+    public int getDB2MinorVersion() {
+        return min;
     }
 }

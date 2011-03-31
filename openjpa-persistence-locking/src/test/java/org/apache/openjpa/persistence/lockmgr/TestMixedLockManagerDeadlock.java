@@ -24,6 +24,9 @@ import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 
+import org.apache.openjpa.jdbc.sql.DB2Dictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+
 /**
  * Test EntityManager find/namedQuery deadlock exceptions.
  */
@@ -44,15 +47,22 @@ public class TestMixedLockManagerDeadlock extends SequencedActionsTest {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"
         );
-        expWriteLockExClasses = new HashMap<DBType,Class<?>[]>();
-        expWriteLockExClasses.put(DBType.db2, null);
-        expWriteLockExClasses.put(DBType.derby, ExpectingOptimisticLockExClass);
-        expWriteLockExClasses.put(DBType.oracle, null);
-        expWriteLockExClasses.put(DBType.sqlserver, ExpectingOptimisticLockExClass);
-
         commonSetUp();
         EntityManager em = emf.createEntityManager();
         dbType = getDBType(em);
+
+        DBDictionary dict = getDBDictionary();
+		Class<?>[] expDB2ExClass = ExpectingOptimisticLockExClass;
+		if (DB2Dictionary.class.isAssignableFrom(dict.getClass())) {
+			DB2Dictionary db2dict = (DB2Dictionary) dict;
+			if ((db2dict.getDB2MajorVersion() * 100 + db2dict.getDB2MinorVersion()) > 905)
+				expDB2ExClass = null;
+		}
+        expWriteLockExClasses = new HashMap<DBType,Class<?>[]>();
+        expWriteLockExClasses.put(DBType.db2, expDB2ExClass);
+        expWriteLockExClasses.put(DBType.derby, ExpectingOptimisticLockExClass);
+        expWriteLockExClasses.put(DBType.oracle, null);
+        expWriteLockExClasses.put(DBType.sqlserver, ExpectingOptimisticLockExClass);
     }
 
     /* ======== Find dead lock exception test ============*/
