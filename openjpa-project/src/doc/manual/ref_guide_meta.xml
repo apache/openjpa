@@ -136,6 +136,9 @@ scanned for annotated JPA entities.
         	
 	        <title>Metadata Repository</title>
 	        <example id="ref_guide_meta_repo">
+            <title>
+                Setting the Preload Property on Metadata Repository
+            </title>
 <programlisting>
 &lt;property name="openjpa.MetaDataRepository" value="Preload=true"/&gt;
 </programlisting>

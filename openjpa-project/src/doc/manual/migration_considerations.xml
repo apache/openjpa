@@ -37,7 +37,7 @@
                 use of compatibility options.  If your application uses a
                 version 1.0 persistence.xml, compatibility options will be set
                 appropriately to maintain backward compatibility.  OpenJPA 2.0
-                applications using a version 2.0 persistence.xml and require
+                applications using a version 2.0 persistence.xml and requiring
                 OpenJPA 1.x.x compatibility may need to configure the
                 appropriate compatibility options to get the desired behavior.
             </para>
@@ -90,7 +90,7 @@
                                 In the 1.x.x release, the detach operation
                                 is recursively cascaded to all referenced
                                 entities. In 2.0, the detach operation is
-                                only cascade to those entities for which
+                                only cascaded to those entities for which
                                 Cascade=detach has been specified.
                             </para>
                         </listitem>
@@ -98,7 +98,7 @@
                 </para>
                 <para>
                     Applications that use a 1.0 persistence.xml will
-                    automatically maintain OpenJPA 1.0 behavior.  It is
+                    automatically maintain OpenJPA 1.x.x behavior.  It is
                     possible for a version 2.0 application to revert back to
                     the 1.x.x behavior for some of these items by setting the
                     openjpa.Compatibility property as follows:
@@ -179,7 +179,7 @@
                     on the classpath (both client and server containers);
                     when entities are deserialized the OpenJPA runtime must
                     be the exact same revision as used to serialize the
-                    entities due to the $proxy classes using dynamically
+                    entities due to the proxy classes using dynamically
                     generated serialVersionUID values.
                 </para>
                 <para>
@@ -227,10 +227,10 @@
             </title>
             <!-- See OPENJPA-1223 and OPENJPA-1163 for details. -->
             <para>
-                The default behavior of openJPA in tracking collections is that
+                The default behavior of OpenJPA in tracking collections is that
                 if the number of modifications to the collection exceeds the
-                current number of elements in collection then openJPA will
-                disable tracking the collections.  Added a Compatibility
+                current number of elements in collection then OpenJPA will
+                disable tracking the collections. OpenJPA 2.0 added a compatibility
                 property to disable turning off the collection tracking.
             </para>
             <para>

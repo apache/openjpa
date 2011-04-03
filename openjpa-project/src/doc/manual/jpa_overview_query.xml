@@ -359,7 +359,7 @@ SELECT x FROM Magazine x inner join x.articles y WHERE y.authorName = 'John Doe'
             </title>
             <para>
 Similar to relation traversal, nested embeddable objects can be traversed using Java-like syntax.
-For example, if the <classname>Compony</classname> class has a field named "address" of 
+For example, if the <classname>Company</classname> class has a field named "address" of 
 an embeddable type <classname>Address</classname>, 
 and the <classname>Address</classname> has a field named "geocode" of
 an embeddable type <classname>Geocode</classname>,
@@ -375,7 +375,7 @@ entity. Modifications to these embeddable instances are not allowed.
                 </para>
             </note>
             <para>
-Traverse into embeddable's state field is also allowed as shown in the following query:
+Traversal into embeddable's state field is also allowed as shown in the following query:
             </para>
 <programlisting>
 SELECT c.address.geocode.latitude FROM Company c WHERE c.name = 'Random House'
@@ -944,6 +944,9 @@ openjpa.*
                 	</listitem>
             	</itemizedlist>
                 <example id="multi-hints-example">
+                <title>
+                    Setting Multiple Similar Query Hints
+                </title>
 <programlisting>
 ...
 Query q = em.createQuery(.....);
@@ -1897,7 +1900,7 @@ used as identification variables or result variables.
                 <note>
                     <para>
 It is recommended that other SQL reserved 
-words also not be as identification variables in queries because they may be 
+words also not be used as identification variables in queries because they may be 
 used as reserved identifiers in future releases of the specification.  
                     </para>
                 </note>
@@ -2238,7 +2241,7 @@ the <literal>FROM</literal> clause and a join condition in the <literal>WHERE
                </para>
                <para>
 The main use case for this generalized style of join is when a join condition does not involve
-a foreign key relationship that is mapped to an entity relationship. For Example,
+a foreign key relationship that is mapped to an entity relationship, for example:
                 </para>
 <programlisting>SELECT c FROM Customer c, Employee e WHERE c.hatsize = e.shoesize</programlisting>
                 <para>
@@ -2579,7 +2582,7 @@ WHERE c.name = 'Smith'
 AND o.submissionDate &lt; {d '2008-12-31'}
             </programlisting>
             <para>
-Date, time, and timestamp literals are passed as it to the JDBC driver
+Date, time, and timestamp literals are passed as is to the JDBC driver
 in use.
             </para>
             <para>
