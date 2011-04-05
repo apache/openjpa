@@ -26,6 +26,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 @Entity
@@ -45,6 +46,9 @@ public class EagerEntity {
 
     @ElementCollection(fetch=FetchType.EAGER)
     private List<EagerEmbed> eagerEmbedColl;
+
+    @OneToMany(fetch=FetchType.EAGER)
+    private List<EagerEntity> eagerSelf;
     
     @Transient
     private String transField;
