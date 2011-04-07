@@ -373,7 +373,7 @@ public class DBDictionary
     public String nameConcatenator = "_";
     public String delimitedCase = SCHEMA_CASE_PRESERVE;
     public String catalogSeparator = ".";
-    private String defaultSchemaName = null;
+    protected String defaultSchemaName = null;
     private String conversionKey = null;
        
     // Naming utility and naming rules

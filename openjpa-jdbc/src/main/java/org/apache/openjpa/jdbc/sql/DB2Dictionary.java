@@ -34,6 +34,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import javax.sql.DataSource;
+
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -268,26 +270,6 @@ public class DB2Dictionary
         super.connectedConfiguration(conn);
 
         DatabaseMetaData metaData = conn.getMetaData();
-        Statement stmnt = null;	
-        ResultSet rs =null;
-        try {
-            String str = "SELECT CURRENT SCHEMA FROM " + SYSDUMMY;
-            stmnt = conn.createStatement();
-            rs = stmnt.executeQuery(str);
-            if (rs.next()) {
-                String currSchema = rs.getString(1);
-                if (currSchema != null)
-                    setDefaultSchemaName(currSchema.trim());
-            }
-        } catch (SQLException e) {
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("can_not_get_current_schema", e.getMessage()));
-        } finally {
-            if (rs != null)
-                rs.close();
-            if (stmnt != null)
-                stmnt.close();
-        }
 
         String driverName = metaData.getDriverName();
         if (driverName != null && driverName.startsWith("IBM DB2"))
@@ -1114,5 +1096,80 @@ public class DB2Dictionary
 
     public int getDB2MinorVersion() {
         return min;
+    }
+    
+    public String getDefaultSchemaName()  {
+        if (defaultSchemaName == null) {
+            Connection conn = null;
+            Statement stmnt = null;
+            ResultSet rs = null;
+            try {
+                String str = "SELECT CURRENT SCHEMA FROM " + SYSDUMMY;
+                conn = getConnection(); 
+                stmnt = conn.createStatement();
+                rs = stmnt.executeQuery(str);
+                if (rs.next()) {
+                    String currSchema = rs.getString(1);
+                    if (currSchema != null) {
+                        setDefaultSchemaName(currSchema.trim());
+                    }
+                }
+            } catch (SQLException e) {
+                if (log.isTraceEnabled()) {
+                    log.trace(_loc.get("can_not_get_current_schema", e.getMessage()));
+                }
+            } finally {
+                if (rs != null) {
+                    try {
+                        rs.close();
+                    } catch (SQLException se) {
+                        // ignore
+                    }
+                }
+
+                if (stmnt != null) {
+                    try {
+                        stmnt.close();
+                    } catch (SQLException se) {
+                        // ignore
+                    }
+                }
+                if (conn != null) { 
+                    try { 
+                        conn.close(); 
+                    }
+                    catch(SQLException se) { 
+                        // ignore
+                    }
+                }
+            }
+        }
+        return defaultSchemaName;
+    }
+
+    /**
+     * Obtain a connection from the configuration. Tries to use the jta-data-source first but falls back on the
+     * non-jta-data-source if no jta-data-source has been defined.
+     * 
+     * In practice this method is only called by getDefaultSchemaName which in turn is only used by the schema tool.
+     * 
+     * @throws SQLException If neither datasource is available.
+     * @return A connection which may be used to obtain the default schema name. Callers do not need to check for null. 
+     */
+    private Connection getConnection() throws SQLException {
+        // try to obtain a connection from the primary datasource 
+        DataSource ds = conf.getDataSource(null);
+        
+        if(ds == null) {
+            // use datasource 2 if available
+            ds = conf.getDataSource2(null);
+        }
+        
+        if (ds != null) {
+            return ds.getConnection();
+        }
+        
+        // throw
+        throw new SQLException("Unable to obtain a datasource");
     }
 }
