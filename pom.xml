@@ -159,6 +159,7 @@
         <module>openjpa-examples</module>
         <module>openjpa-integration</module>
         <module>openjpa-all</module>
+        <module>openjpa-tools</module>
     </modules>
 
     <profiles>
