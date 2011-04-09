@@ -65,7 +65,7 @@ simply reflecting on the persistent class.
             annotations
         </primary>
     </indexterm>
-Persistence metadata is specified using either the Java 5 annotations defined in
+Persistence metadata is specified using either the Java annotations defined in
 the <literal>javax.persistence</literal> package, XML mapping files, or a
 mixture of both. In the latter case, XML declarations override conflicting
 annotations. If you choose to use XML metadata, the XML files must be available

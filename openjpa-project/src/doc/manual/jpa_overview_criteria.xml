@@ -38,7 +38,7 @@
         </see>
     </indexterm>
     <para>
-    JPA 2.0 Specification introduces a new API to define queries dynamically
+    JPA 2.0 specification introduces a new API to define queries dynamically
     via construction of an object-based 
     <classname>javax.persistence.CriteriaQuery</classname> instance, rather
     than string-based approach used in JPQL (Java Persistence Query Language).
@@ -116,7 +116,7 @@ Root&lt;Order&gt; order = customer.join(customer.get(Customer_.orders));
     <section>
     <title>Executing a CriteriaQuery</title>
     <para>
-    A CriteriaQuery is executed in a similar fashion of a string-based JPQL
+    A CriteriaQuery is executed in a similar fashion to a string-based JPQL
     query via the EntityManager and Query interfaces.
     <programlisting>
 EntityManager em = ...
@@ -130,12 +130,6 @@ List result = query.getResultList();
     </para>
     
     <para>
-    The JPA 2.0 Specification on Criteria API can be found at 
-    <ulink url="http://jcp.org/aboutJava/communityprocess/pr/jsr317/index.html">
-    public draft</ulink>.
-    </para>
-    <para>
-    
     <ulink url="http://www.ibm.com/developerworks/java/library/j-typesafejpa/">A developerworks article</ulink>
     explains details and further usage of Criteria API and its OpenJPA extensions.  
     </para>
@@ -145,18 +139,18 @@ List result = query.getResultList();
     <title>Extension to Criteria API</title>
     <para>
     Criteria API has provided an alternative means to string-based JPQL to 
-    execute a query. However, JPA 2.0 Specification has not explicitly specified 
+    execute a query. However, JPA 2.0 specification has not explicitly specified 
     any equivalence between a dynamically constructed CriteriaQuery and
     a JPQL string. OpenJPA provides a mechanism to convert a CriteriaQuery to
     an equivalent JPQL query string via the extended OpenJPACriteriaQuery API.
     <programlisting>
-    	public interface OpenJPACriteriaQuery extends CriteriaQuery {
-		/**
-	 	 * Gets equivalent JPQL String for the given CriteriaQuery.
- 		*/
-		public String toCQL();
-	}
-	</programlisting>
+public interface OpenJPACriteriaQuery extends CriteriaQuery {
+    /**
+     * Gets equivalent JPQL String for the given CriteriaQuery.
+     */
+    public String toCQL();
+}
+    </programlisting>
     
     </para>
     </section>
@@ -197,7 +191,7 @@ The Annotation Processor recognizes the following options specified in the comma
                -Aopenjpa.naming=class name : fully-qualified name of a class implementing 
                <code>org.apache.openjpa.meta.MetaDataFactory</code> that determines
 the name of a meta-class given the name of the original persistent Java entity class. Defaults to
-<code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends a underscore character
+<code>org.apache.openjpa.persistence.PersistenceMetaDataFactory</code> which appends an underscore character
 (<code>_</code>) to the original Java class name. 
              </para>
         </listitem>
@@ -205,7 +199,7 @@ the name of a meta-class given the name of the original persistent Java entity c
 			<para>
                -Aopenjpa.header=&lt;url&gt; : A url whose content will appear as comment header to the generated file(s). 
                Recognizes special value <code>ASL</code> for Apache Source License header as comment. 
-               By default, adds a OpenJPA proprietary text as comment block.
+               By default, adds an OpenJPA proprietary text as comment block.
              </para>
         </listitem>
     </itemizedlist>

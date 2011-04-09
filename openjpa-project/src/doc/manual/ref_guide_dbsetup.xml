@@ -3909,7 +3909,7 @@ the operation will fail.
         		Delimited Identifiers Support
         	</title>
         	<para>
-OpenJPA provides support for delimited identifiers as defined in the 2.0 JPA specification. 
+OpenJPA provides support for delimited identifiers as defined in the JPA 2.0 specification.
 Identifiers can either be automatically delimited or individually manually
 delimited. To have OpenJPA automatically delimit identifiers, add the
 <literal>&lt;delimited-identifiers/&gt;</literal> tag

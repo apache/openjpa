@@ -303,7 +303,7 @@ java org.apache.openjpa.enhance.ApplicationIdTool -cf.spaceBeforeParen true -cf.
         <para>
 Because OpenJPA is a highly customizable environment, many configuration
 properties relate to the creation and configuration of system plugins. Plugin
-properties have a syntax very similar to that of Java 5 annotations. They allow
+properties have a syntax very similar to that of Java annotations. They allow
 you to specify both what class to use for the plugin and how to configure the
 public fields or bean properties of the instantiated plugin instance. The
 easiest way to describe the plugin syntax is by example:
@@ -396,8 +396,8 @@ default JDBC store.
         </para>
         
         <para>
-Few of the properties recognized by OpenJPA have been standardized in JPA 2.0 
-Specification using equivalent names. These properties can be specified either
+A few of the properties recognized by OpenJPA have been standardized in JPA 2.0 
+specification using equivalent names. These properties can be specified either
 by the JPA standard key or equivalent OpenJPA key. Specifying the same key once
 as JPA standard key and again as equivalent OpenJPA key in the same configuration, 
 however, is not allowed. The following table lists these standard JPA properties 
@@ -4234,7 +4234,7 @@ implementation is
         <para>
 The default behavior of certain OpenJPA API methods can evolve to align with the behaviors
 defined in JPA specification. To maintain backward compatibility, OpenJPA allows configuration
-options such that while the default behavior changes to align with current JPA Specification, the
+options such that while the default behavior changes to align with current JPA specification, the
 previous behaviors can always be emulated. 
 		</para>
 		<para>
@@ -4253,13 +4253,13 @@ JPA 2.0 <literal>detach()</literal> semantics does not require a dirty instance 
 before detach.        
 		</para>
 		<para>
-A user application running with OpenJPA that is compliant to a specific version of JPA of specification,
-the older behavior can be emulated by configuring OpenJPA Compatibility options.
+A user application running with OpenJPA that is compliant to a specific version of JPA specification
+can emulate the older behavior by configuring OpenJPA compatibility options.
 For example, <literal>openjpa.Compatibility=FlushBeforeDetach=false,CopyOnDetach=true</literal>
-will emulate the older behavior of detach even when running with OpenJPA that are
-compliant to JPA 2.0 Specification.  The configuration can also be set to a different version of the specification.
+will emulate the older behavior of detach even when running with OpenJPA that is
+compliant to JPA 2.0 specification.  The configuration can also be set to a different version of the specification.
 For example, <literal>openjpa.Specification="JPA 1.0"</literal> configuration setting will emulate
-default OpenJPA behavior as it were for JPA Specification version 1.0. Setting via
+default OpenJPA behavior as it were for JPA specification version 1.0. Setting
 <literal>openjpa.Specification</literal> is a shorthand for more fine-grained control available via
 <literal>openjpa.Compatibility</literal>.    
   

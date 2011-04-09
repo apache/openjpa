@@ -2286,7 +2286,7 @@ default fetch group or in any other active fetch groups to the set of
 fields that will be eagerly loaded from the database.
             </para>
             <para>
-JPA <classname>FetchPlan</classname> methods:
+OpenJPA <classname>FetchPlan</classname> methods:
             </para>
 <programlisting>
 public FetchPlan addField(String field);
@@ -2318,7 +2318,6 @@ publisher</literal>.
             </para>
             
             <para>
-            <title>Extended Path Lookup</title>
 To include the fields defined in a super class by the subclass or to distinguish
 between fields that are defined in <emphasis>both</emphasis> super- and subclass,
 set <literal>setExtendedPathLookup(boolean)</literal> on <literal>FetchPlan

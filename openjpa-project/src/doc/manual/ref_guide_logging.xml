@@ -278,7 +278,7 @@ For example, when loading an application that uses OpenJPA, a message like the
 following will be sent to the <literal>openjpa.Runtime</literal> channel:
         </para>
 <programlisting>
-2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 0.9.7
+2107  INFO   [main] openjpa.Runtime - Starting OpenJPA 2.2.0
 </programlisting>
         <para>
 The default logging system accepts the following parameters:

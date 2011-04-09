@@ -882,7 +882,7 @@ To specify an isolation level, specify a hint name of &quot;openjpa.FetchPlan.Is
                     Other Fetchplan Hints
                 </title>
                 <para>
-Any property of  an OpenJPA FetchPlan can be changed using a hint by using a name of the form &quot;openjpa.FetchPlan.&quot;&lt;property name&gt;.Valid property names include :
+Any property of  an OpenJPA FetchPlan can be changed using a hint by using a name of the form &quot;openjpa.FetchPlan.&quot;&lt;property name&gt;. Valid property names include:
 <classname>MaxFetchDepth</classname>, <classname>FetchBatchSize</classname>, <classname>LockTimeOut</classname>, <classname>EagerFetchMode</classname>, <classname>SubclassFetchMode</classname> and <classname>Isolation</classname>.
                 </para>
             </section>

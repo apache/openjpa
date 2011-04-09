@@ -50,8 +50,8 @@
                     The OpenJPAEntityManagerFactory interface getProperties()
                     method was changed to return a Map instead of a
                     Properties object. This change was made in order to
-                    support the getProperties() method defined in the 2.0
-                    JPA specification.
+                    support the getProperties() method defined in the
+                    JPA 2.0 specification.
                 </para>
             </section>
             <section id="migration_detach_behavior">

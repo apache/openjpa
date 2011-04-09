@@ -446,7 +446,7 @@ public PersistenceUnitUtil getPersistenceUnitUtil();
 </programlisting>
         <para>
 The <classname>EntityManagerFactory</classname> method 
-<methodname>getPersistenceUnitUtil</methodname> to provide access to a 
+<methodname>getPersistenceUnitUtil</methodname> provides access to a 
 <classname>PersistenceUnitUtil</classname> utility. <classname>PersistenceUnitUtil</classname>
 can be used to obtain the identity of a managed object and determine the load
 state of the entity or one of its attributes.  If the object is not
@@ -461,7 +461,7 @@ if (puUtil.getIdentifier(deptEntity) == null) {
     throw new Exception("Identity is not valid.");
 }
 if (!puUtil.isLoaded(deptEntity, "employees")) {
-    throw new Exception("Employees not loaded.")
+    throw new Exception("Employees not loaded.");
 }
 </programlisting>
         </para>
