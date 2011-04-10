@@ -1182,7 +1182,7 @@ optionally collected as
 <programlisting>
   &lt;property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"&gt;
 </programlisting>
-The <ulink url="../javadoc/org/apache/openjpa/kerenl/QueryStatistics.html">
+The <ulink url="../javadoc/org/apache/openjpa/kernel/QueryStatistics.html">
 <code>QueryStatistics</code></ulink> can be accessed via <code>PreparedQueryCache.getStatistics()</code>.
 
 </para>

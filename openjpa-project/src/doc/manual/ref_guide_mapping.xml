@@ -2653,7 +2653,7 @@ The default fetch type is EAGER but can be changed to LAZY by using:
 The entity property class is required to have
 JAXB binding annotations. You can generate property class from an XML schema by using
 the <literal>xjc</literal> generator from the
-<ulink url="https://jaxb.dev.java.net/">JAXB reference implementation</ulink>.
+<ulink url="http://jaxb.java.net/">JAXB reference implementation</ulink>.
 The <literal>xjc</literal> will generate the
 class along with the required annotations. Ensure that <classname>@XmlRootElement</classname>
 appears in the root class. In some cases this annotation needs to be added manually.
@@ -2662,8 +2662,9 @@ appears in the root class. In some cases this annotation needs to be added manua
 The entity property class is required to have getter and setter methods for all its
 fields. By default, the <literal>xjc</literal> will not generate setter
 methods for collections but you can force it to do so by using the
-<ulink url="https://jaxb2-commons.dev.java.net/collection-setter-injector/">collection
-setter injector plugin</ulink>.
+<ulink url="http://confluence.highsource.org/display/J2B/Setters+Plugin">
+setters plugin</ulink>
+or collection setter injector plugin.
               </para>
               <para>
 The JAXB jar files must be on the application classpath (jaxb-api.jar,
@@ -3105,7 +3106,7 @@ OpenJPA recognizes the following class extensions.
                 <para>
 This extension specifies how to eagerly fetch subclass state. It overrides the
 global <link linkend="openjpa.jdbc.SubclassFetchMode"><literal>
-openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the JPA
+openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the OpenJPA
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/SubclassFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.SubclassFetchMode</classname>
 </ulink> annotation to a value from the
@@ -3225,12 +3226,12 @@ OpenJPA recognizes the following field extensions.
                 <para>
 This extension specifies how to eagerly fetch related objects. It overrides the
 global <link linkend="openjpa.jdbc.EagerFetchMode"><literal>
-openjpa.jdbc.EagerFetchMode</literal></link> property. Set the JPA
+openjpa.jdbc.EagerFetchMode</literal></link> property. Set the OpenJPA
 <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/EagerFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchMode</classname>
 </ulink> annotation to a value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/EagerFetchType.html">
-<classname>org.apache.openjpa.persistence.jdbc.EagerFetchType</classname>
+<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/FetchMode.html">
+<classname>org.apache.openjpa.persistence.jdbc.FetchMode</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
 <literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
  for a discussion of eager fetching.

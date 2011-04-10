@@ -1726,8 +1726,8 @@ classes. See <xref linkend="ref_guide_cache_conf"/> for details.
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDetachState()">
-<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getDetachState
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfigurationImpl.html#getDetachState()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfigurationImpl.getDetachState
 </methodname></ulink>
             </para>
             <para>
@@ -2327,8 +2327,8 @@ for an object lock before throwing an exception, or -1 for no limit. See
             </para>
             <para>
 <emphasis role="bold">Configuration API:</emphasis>
-<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getLog()">
-<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getLog</methodname>
+<ulink url="../javadoc/org/apache/openjpa/lib/conf/Configuration.html#getLog()">
+<methodname>org.apache.openjpa.lib.conf.Configuration.getLog</methodname>
 </ulink>
             </para>
             <para>

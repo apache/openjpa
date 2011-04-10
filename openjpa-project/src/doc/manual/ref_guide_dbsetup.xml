@@ -3860,8 +3860,8 @@ special handling to be able to store unicode values. Setting this property to
 one of these types, and if so, will attempt to correctly configure the statement
 using the <methodname> OraclePreparedStatement.setFormOfUse</methodname>. For
 more details, see the Oracle
-<ulink url="http://www.oracle.com/technology/sample_code/tech/java/codesnippet/jdbc/nchar/readme.html">
-Readme For NChar</ulink>. Note that this can only work if OpenJPA is able to
+<ulink url="http://download.oracle.com/docs/cd/B19306_01/server.102/b14225/ch7progrunicode.htm#i1006858">
+JDBC Programming with Unicode</ulink>. Note that this can only work if OpenJPA is able to
 access the underlying <classname>OraclePreparedStatement</classname> instance,
 which may not be possible when using some third-party datasources. If OpenJPA
 detects that this is the case, a warning will be logged.
