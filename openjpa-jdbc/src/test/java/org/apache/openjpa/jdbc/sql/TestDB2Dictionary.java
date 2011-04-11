@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -35,12 +36,13 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     final Connection mockConnection = mock(Connection.class);
     final ResultSet mockRS = mock(ResultSet.class);
     final DataSource mockDS = mock(DataSource.class);
+    final DatabaseMetaData mockMetaData = mock(DatabaseMetaData.class);
 
     final StoreContext sc = null;
     final String schema = "abcd";
-    
+
     /*
-     * When DS1 is non null we should get a connection and use it to obtain the schema name. 
+     * When DS1 is non null we should get a connection and use it to obtain the schema name.
      */
     public void testGetDefaultSchemaNameDS1() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
@@ -48,7 +50,7 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         // an exception will be thrown and the test will fail.
         checking(new Expectations() {
             {
-                // Wiring, make sure the appropriate mocks are created.                
+                // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
                 will(returnValue(mockDS));
 
@@ -83,9 +85,9 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         assertNotNull(dict);
         assertEquals(schema, dict.getDefaultSchemaName());
     }
-    
+
     /*
-     * When ds1 is null, fallback to ds2 
+     * When ds1 is null, fallback to ds2
      */
     public void testGetDefaultSchemaNameDS2() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
@@ -93,10 +95,10 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         // an exception will be thrown and the test will fail.
         checking(new Expectations() {
             {
-                // Wiring, make sure the appropriate mocks are created.                
+                // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
                 will(returnValue(null));
-                
+
                 oneOf(mockConfiguration).getDataSource2(with(equal(sc)));
                 will(returnValue(mockDS));
 
@@ -130,10 +132,10 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         dict.setConfiguration(mockConfiguration);
         assertNotNull(dict);
         assertEquals(schema, dict.getDefaultSchemaName());
-    }    
-    
+    }
+
     /*
-     * When ds1 is null, fallback to ds2 
+     * When ds1 is null, fallback to ds2
      */
     public void testGetDefaultSchemaNameNoDS() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
@@ -144,7 +146,7 @@ public class TestDB2Dictionary extends MockObjectTestCase {
                 // both datasources are null for this test.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
                 will(returnValue(null));
-                
+
                 oneOf(mockConfiguration).getDataSource2(with(equal(sc)));
                 will(returnValue(null));
 
@@ -157,9 +159,9 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         assertNotNull(dict);
         assertEquals(null, dict.getDefaultSchemaName());
     }
-    
+
     /*
-     * TestWhitespace trim 
+     * TestWhitespace trim
      */
     public void testGetDefaultSchemaNameTrimmed() throws Exception {
         final String schema2 = "abcd     ";
@@ -168,7 +170,7 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         // an exception will be thrown and the test will fail.
         checking(new Expectations() {
             {
-                // Wiring, make sure the appropriate mocks are created.                
+                // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
                 will(returnValue(mockDS));
 
@@ -202,5 +204,32 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         dict.setConfiguration(mockConfiguration);
         assertNotNull(dict);
         assertEquals(schema2.trim(), dict.getDefaultSchemaName());
+    }
+
+    /*
+     * Verifies that the ConnectedConfiguration method only uses the DBMetaData to determine the correct behavior.
+     */
+    public void testConnectedConfigurationOnlyUsesMetaData() throws Exception {
+        checking(new Expectations() {
+            {
+                // No activity on the connection other than getting the metadata. 
+                allowing(mockConnection).getMetaData();
+                will(returnValue(mockMetaData));
+
+                // anything on the configuration or DBMetaData is fair game. 
+                allowing(mockMetaData); 
+                allowing(mockConfiguration);
+            }
+        });
+
+        DB2Dictionary dict = new DB2Dictionary();
+        
+        // skip all the meta data resolution code. 
+        dict.db2ServerType=DB2Dictionary.db2UDBV82OrLater;
+        dict.maj=9;
+        
+        dict.setConfiguration(mockConfiguration);
+        assertNotNull(dict);
+        dict.connectedConfiguration(mockConnection);
     }
 }
