@@ -26,6 +26,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.util.Options;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -89,7 +90,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
             FileUtils.mkdir(getEntityClasses().getAbsolutePath());
         }
 
-        List entities = findEntityClassFiles();
+        List<File> entities = findEntityClassFiles();
 
         enhance(entities);
     }
@@ -117,7 +118,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      * @param files class file resources to enhance.
      * @throws MojoExecutionException if the enhancer encountered a failure
      */
-    private void enhance(List files) throws MojoExecutionException {
+    private void enhance(List<File> files) throws MojoExecutionException {
         Options opts = getOptions();
 
         // list of input files

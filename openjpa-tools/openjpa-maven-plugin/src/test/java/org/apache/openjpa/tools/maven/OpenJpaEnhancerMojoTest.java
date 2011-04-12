@@ -42,7 +42,7 @@ public class OpenJpaEnhancerMojoTest extends AbstractMojoTestCase {
       assertNotNull( mojo );
       
       mojo.classes = new File( getBasedir(), "target/test-classes/" );
-      mojo.compileClasspathElements = new ArrayList();
+      mojo.compileClasspathElements = new ArrayList<String>();
       mojo.compileClasspathElements.add( mojo.classes.getAbsolutePath() );
       
       mojo.execute();

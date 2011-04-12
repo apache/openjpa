@@ -19,10 +19,15 @@
 package org.apache.openjpa.tools.maven;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.persistence.Entity;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.plexus.util.FileUtils;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -31,14 +36,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.persistence.Entity;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Processes Application model classes and generate the DDL by running the 
@@ -78,7 +76,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
             FileUtils.mkdir(getEntityClasses().getAbsolutePath());
         }
 
-        List entities = findEntityClassFiles();
+        List<File> entities = findEntityClassFiles();
 
         mappingTool(entities);
     }
@@ -90,7 +88,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
      * @param files class file resources to map.
      * @throws MojoExecutionException if the MappingTool detected an error
      */
-    private void mappingTool(List files) throws MojoExecutionException {
+    private void mappingTool(List<File> files) throws MojoExecutionException {
         extendRealmClasspath();
 
         Options opts = getOptions();
@@ -126,23 +124,20 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
      * @param files List with classPath Files; non persistence classes will be removed
      * @param opts  filled configuration Options
      */
-    private void filterPersistenceCapable(List files, Options opts) {
+    private void filterPersistenceCapable(List<File> files, Options opts) {
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         Configurations.populateConfiguration(conf, opts);
         MetaDataRepository repo = conf.newMetaDataRepositoryInstance();
         ClassArgParser cap = repo.getMetaDataFactory().newClassArgParser();
 
-        Iterator fileIt = files.iterator();
-        while (fileIt.hasNext()) {
-            File classPath = (File) fileIt.next();
-
-            Class[] classes = cap.parseTypes(classPath.getAbsolutePath());
+        for(File classPath : files) { 
+            Class<?>[] classes = cap.parseTypes(classPath.getAbsolutePath());
 
             if (classes == null) {
                 getLog().info("Found no classes for " + classPath.getAbsolutePath());
             } else {
                 for (int i = 0; i < classes.length; i++) {
-                    Class cls = classes[i];
+                    Class<?> cls = classes[i];
 
                     if (cls.getAnnotation(Entity.class) != null) {
                         getLog().debug("Found @Entity in class " + classPath);
@@ -151,7 +146,6 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
                                 + PersistenceCapable.class.getName());
                     } else {
                         getLog().debug("Removing non-entity class " + classPath);
-                        fileIt.remove();
                     }
                 }
             }
@@ -163,9 +157,9 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
      * @param cls the Class to check
      * @return <code>true</code> if the given Class cls implements the interface {@link PersistenceCapable}
      */
-    private boolean implementsPersistenceCapable(Class cls) {
+    private boolean implementsPersistenceCapable(Class<?> cls) {
         boolean isPersistenceCapable = false;
-        Class[] interfaces = cls.getInterfaces();
+        Class<?>[] interfaces = cls.getInterfaces();
         for (int i = 0; i < interfaces.length; i++) {
             if (interfaces[i].getName().equals(PersistenceCapable.class.getName())) {
                 isPersistenceCapable = true;

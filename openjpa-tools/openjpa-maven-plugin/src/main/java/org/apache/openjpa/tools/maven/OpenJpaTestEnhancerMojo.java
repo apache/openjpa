@@ -43,7 +43,7 @@ public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
      * @required
      * @readonly
      */
-    protected List testClasspathElements;
+    protected List<String> testClasspathElements;
 
     /**
      * This is where compiled test classes go.
@@ -70,7 +70,7 @@ public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
      *
      * @return List of classpath elements for the test phase
      */
-    protected List getClasspathElements() {
+    protected List<String> getClasspathElements() {
         return testClasspathElements;
     }
 

@@ -25,16 +25,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.FileUtils;
-
 import org.apache.openjpa.lib.util.Options;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Base class for  OpenJPA maven tasks.
@@ -141,7 +139,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * @required
      * @readonly
      */
-    protected List compileClasspathElements;
+    protected List<String> compileClasspathElements;
     
     /**
      * Setting this parameter to <code>true</code> will force
@@ -199,7 +197,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * This function retrieves the injected classpath elements for the current mojo.
      * @return List of classpath elements for the compile phase
      */
-    protected List getClasspathElements() 
+    protected List<String> getClasspathElements() 
     {
         return compileClasspathElements;
     }
@@ -278,11 +276,10 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     protected void extendRealmClasspath() 
         throws MojoExecutionException 
     { 
-        List urls = new ArrayList();
+        List<URL> urls = new ArrayList<URL>();
 
-        for ( Iterator itor = getClasspathElements().iterator(); itor.hasNext(); )
-        {
-            File pathElem = new File( (String) itor.next() );
+        for(String fileName: getClasspathElements()) { 
+            File pathElem = new File(fileName);
             try
             {
                 URL url = pathElem.toURI().toURL();
@@ -310,13 +307,13 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * @throws MojoExecutionException if there was an error scanning class file
      *             resources.
      */
-    protected List findEntityClassFiles() throws MojoExecutionException 
+    protected List<File> findEntityClassFiles() throws MojoExecutionException 
     {
-        List files = new ArrayList();
+        List<File> files = new ArrayList<File>();
     
         try
         {
-            files = FileUtils.getFiles( getEntityClasses(), includes, excludes );
+            files = (List<File>) FileUtils.getFiles( getEntityClasses(), includes, excludes );
         }
         catch ( IOException e )
         {
@@ -331,12 +328,12 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * @param files List of files
      * @return the paths of the given files as String[]
      */
-    protected String[] getFilePaths( List files ) 
+    protected String[] getFilePaths( List<File> files ) 
     {
         String[] args = new String[ files.size() ];
         for ( int i = 0; i < files.size(); i++ )
         {
-            File file = (File) files.get( i );
+            File file = files.get( i );
     
             args[ i ] = file.getAbsolutePath();
         }
