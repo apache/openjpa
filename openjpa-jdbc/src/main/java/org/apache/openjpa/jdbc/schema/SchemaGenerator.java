@@ -1068,8 +1068,10 @@ public class SchemaGenerator {
     }
 
     private void closeConn() throws SQLException {
-        if (_conn != null) {
-            _conn.close();
+        if (_conn != null ) {
+            if(! _conn.isClosed()) {
+                _conn.close();
+            }
         }
     }
 }
