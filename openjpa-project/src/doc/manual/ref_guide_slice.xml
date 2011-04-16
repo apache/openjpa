@@ -601,7 +601,7 @@ the JDBC connection URL of a slice.
       This plug-in property determines the policy for transaction commit 
       across multiple slices. The value of this property is a fully-qualified 
       class name that implements 
-      <ulink url="http://java.sun.com/javaee/6/api/javax/transaction/TransactionManager.html">
+      <ulink url="http://java.sun.com/javaee/6/docs/api/javax/transaction/TransactionManager.html">
       <classname>javax.transaction.TransactionManager</classname> 
       </ulink> interface. 
       </para>
