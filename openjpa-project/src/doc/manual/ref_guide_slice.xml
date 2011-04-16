@@ -555,7 +555,7 @@ the JDBC connection URL of a slice.
         for database operations such as query or flush on individual slices. 
         The value of the property is a 
         fully-qualified class name that implements 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ExecutorService.html">
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ExecutorService.html">
         <classname>java.util.concurrent.ExecutorService</classname>
         </ulink> interface.  
         Two pre-defined pools can be chosen via their aliases namely 
@@ -563,7 +563,7 @@ the JDBC connection URL of a slice.
         </para>
         <para>
         The pre-defined alias <classname>cached</classname> activates a 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/Executors.html#newCachedThreadPool()">cached thread pool</ulink>. 
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/Executors.html#newCachedThreadPool()">cached thread pool</ulink>. 
         A cached thread pool creates new threads as needed, but will reuse 
         previously constructed threads when they are available. This pool 
         is suitable in scenarios that execute many short-lived asynchronous tasks.
@@ -573,23 +573,23 @@ the JDBC connection URL of a slice.
         </para>
         <para>
         The <classname>fixed</classname> alias activates a 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool(int)">fixed thread pool</ulink>.
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool(int)">fixed thread pool</ulink>.
         The fixed thread pool can be further parameterized with 
         <classname>CorePoolSize</classname>, <classname>MaximumPoolSize</classname>, 
         <classname>KeepAliveTime</classname> and <classname>RejectedExecutionHandler</classname>. 
         The meaning of these parameters are described in 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html">JavaDoc</ulink>.
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html">JavaDoc</ulink>.
         The users can exercise finer control on thread pool behavior via these
         parameters.
         By default, the core pool size is <classname>10</classname>, maximum pool size is
         also <classname>10</classname>, keep alive time is <classname>60</classname> seconds and 
         rejected execution is 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.AbortPolicy.html">aborted</ulink>.
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.AbortPolicy.html">aborted</ulink>.
         </para>
         <para>
         Both of the pre-defined aliases can be parameterized with a fully-qualified
         class name that implements 
-        <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadFactory.html">
+        <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ThreadFactory.html">
         <classname>java.util.concurrent.ThreadFactory</classname>
         </ulink> interface.
         </para>
