@@ -658,7 +658,7 @@ Returns the level at which the given object is currently locked.
             </para>
             <para>
 In addition to the standard
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/EntityManager.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
 <methodname>EntityManager.lock(Object, LockModeType)</methodname></ulink>
 method, the
 <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">

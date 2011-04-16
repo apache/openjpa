@@ -1069,7 +1069,7 @@ lifecycle events and their corresponding method markers are:
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PrePersist.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PrePersist.html">
 <classname>PrePersist</classname></ulink>: Methods marked with this annotation
 will be invoked before an object is persisted. This could be used for assigning
 primary key values to persistent objects. This is equivalent to the XML element
@@ -1086,7 +1086,7 @@ tag <literal>pre-persist</literal>.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PostPersist.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PostPersist.html">
 <classname>PostPersist</classname></ulink>: Methods marked with this annotation
 will be invoked after an object has transitioned to the persistent state. You
 might want to use such methods to update a screen after a new row is added. This
@@ -1103,7 +1103,7 @@ is equivalent to the XML element tag <literal>post-persist</literal>.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PostLoad.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PostLoad.html">
 <classname>PostLoad</classname></ulink>: Methods marked with this annotation
 will be invoked after all eagerly fetched fields of your class have been loaded
 from the datastore. No other persistent fields can be accessed in this method.
@@ -1125,7 +1125,7 @@ data structure.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PreUpdate.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PreUpdate.html">
 <classname>PreUpdate</classname></ulink>: Methods marked with this annotation
 will be invoked just the persistent values in your objects are flushed to the
 datastore. This is equivalent to the XML element tag <literal>
@@ -1149,7 +1149,7 @@ persistent fields with information cached in non-persistent data.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PostUpdate.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PostUpdate.html">
 <classname>PostUpdate</classname></ulink>: Methods marked with this annotation
 will be invoked after changes to a given instance have been stored to the
 datastore. This is useful for clearing stale data cached at the application
@@ -1166,7 +1166,7 @@ layer. This is equivalent to the XML element tag <literal>post-update</literal>.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PreRemove.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PreRemove.html">
 <classname>PreRemove</classname></ulink>: Methods marked with this annotation
 will be invoked before an object transactions to the deleted state. Access to
 persistent fields is valid within this method. You might use this method to
@@ -1185,7 +1185,7 @@ pre-remove</literal>.
                             lifecycle callbacks
                         </seealso>
                     </indexterm>
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/PostRemove.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/PostRemove.html">
 <classname>PostRemove</classname></ulink>: Methods marked with this annotation
 will be invoked after an object has been marked as to be deleted. This is
 equivalent to the XML element tag <literal>post-remove</literal>.

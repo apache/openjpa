@@ -37,7 +37,7 @@
 The diagram above presents an overview of the <classname>EntityManager
 </classname> interface. For a complete treatment of the <classname>
 EntityManager</classname> API, see the
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/EntityManager.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
 Javadoc</ulink> documentation. Methods whose parameter signatures consist of 
 an ellipsis (...) are overloaded to take multiple parameter types.
     </para>
@@ -515,7 +515,7 @@ public void lock(Object entity, LockModeType mode);
             </seealso>
         </indexterm>
 This method locks the given entity using the named mode. The
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/LockModeType.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/LockModeType.html">
 <classname>javax.persistence.LockModeType</classname></ulink> enum defines two
 modes:
         </para>
@@ -916,7 +916,7 @@ The <classname>EntityManager</classname>'s <literal>FlushMode</literal> property
 controls whether to flush transactional changes before executing queries. This
 allows the query results to take into account changes you have made during the
 current transaction. Available
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/FlushModeType.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/FlushModeType.html">
 <classname>javax.persistence.FlushModeType</classname></ulink> constants are:
         </para>
         <itemizedlist>

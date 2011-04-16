@@ -68,7 +68,7 @@ additional utility methods.
 Within a container, you will typically use <emphasis>injection</emphasis> to
 access an <classname>EntityManagerFactory</classname>. Applications operating
 outside of a container, however, can use the
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/Persistence.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/Persistence.html">
 <classname>Persistence</classname></ulink> class to obtain <classname>
 EntityManagerFactory</classname> objects in a vendor-neutral fashion.
     </para>
@@ -456,7 +456,7 @@ transaction management.
                 <para>
 <literal>provider</literal>: If you are using a third-party JPA vendor, this
 element names its implementation of the
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/spi/PersistenceProvider.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/spi/PersistenceProvider.html">
 <classname>PersistenceProvider</classname></ulink> bootstrapping interface.
                 </para>
                 <note>

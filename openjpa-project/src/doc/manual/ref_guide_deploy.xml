@@ -139,7 +139,7 @@ global transactions.
         <para>
 You can override the global transaction mode setting when you obtain an
 <classname>EntityManager</classname> using the 
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/EntityManagerFactory.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManagerFactory.html">
 <classname>EntityManagerFactory</classname></ulink>'s
 <methodname>createEntityManager(Map props)</methodname> method.  Simply set the
 <literal>openjpa.TransactionMode</literal> key of the given <classname>Map

@@ -74,7 +74,7 @@ public Query createQuery(String jpql);
 </programlisting>
             <para>
 The
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/EntityManager.html">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
 <methodname>EntityManager.createQuery</methodname></ulink> method creates a
 <classname>Query</classname> instance from a given JPQL string.
             </para>
@@ -83,7 +83,7 @@ public List getResultList();
 </programlisting>
             <para>
 Invoking
-<ulink url="http://java.sun.com/javaee/6/docs/api/javax/persistence/Query.html#getResultList()">
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/Query.html#getResultList()">
 <methodname>Query.getResultList</methodname></ulink> executes the query and
 returns a <classname>List</classname> containing the matching objects. The
 following example executes our <classname>Magazine</classname> query above:
