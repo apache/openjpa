@@ -33,7 +33,7 @@
     includes a default instrumentation provider for JMX Platform MBeans.  MBean-based instruments
     are provided for the data cache, query cache, and query SQL cache.  When enabled,
     JMX-based remote monitoring tools such as 
-    <ulink url="http://download-llnw.oracle.com/javase/1.5.0/docs/tooldocs/share/jconsole.html"> 
+    <ulink url="http://download.oracle.com/javase/6/docs/technotes/tools/share/jconsole.html"> 
     <classname>JConsole</classname></ulink> can be used to monitor various
     metrics tracked by OpenJPA's caches by accessing MBeans registered under domain 
     <classname>org.apache.openjpa</classname>.  Additionally, custom applications can gather metrics by using the 

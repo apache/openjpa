@@ -454,7 +454,7 @@ support, logging will proceed through Java's built-in logging provided by the
 <ulink url="http://download.oracle.com/javase/6/docs/api/java/util/logging/package-summary.html">
 java.util.logging</ulink> package. For details on configuring the built-in
 logging system, please see the
-<ulink url="http://java.sun.com/javase/6/docs/technotes/guides/logging/overview.html">
+<ulink url="http://download.oracle.com/javase/6/docs/technotes/guides/logging/overview.html">
 Java Logging Overview</ulink>.
             </para>
             <para>
