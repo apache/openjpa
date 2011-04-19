@@ -494,53 +494,6 @@ whose <link linkend="jpa_overview_meta_cascade">cascades</link> include
                 </para>
             </listitem>
         </itemizedlist>
-<programlisting>
-public void lock(Object entity, LockModeType mode);
-</programlisting>
-        <para>
-        <indexterm>
-            <primary>
-                EntityManager
-            </primary>
-            <secondary>
-                lock
-            </secondary>
-        </indexterm>
-        <indexterm>
-            <primary>
-                locking
-            </primary>
-            <seealso>
-                EntityManager
-            </seealso>
-        </indexterm>
-This method locks the given entity using the named mode. The
-<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/LockModeType.html">
-<classname>javax.persistence.LockModeType</classname></ulink> enum defines two
-modes:
-        </para>
-        <itemizedlist>
-            <listitem>
-                <para>
-<literal>READ</literal>: Other transactions may concurrently read the object,
-but cannot concurrently update it.
-                </para>
-            </listitem>
-            <listitem>
-                <para>
-<literal>WRITE</literal>: Other transactions cannot concurrently read or write
-the object. When a transaction is committed that holds WRITE locks on any
-entities, those entities will have their version incremented even if the entities
-themselves did not change in the transaction.
-                </para>
-            </listitem>
-        </itemizedlist>
-        <note>
-            <para>
-OpenJPA has additional APIs for controlling object locking. See
-<xref linkend="ref_guide_locking"/> in the Reference Guide for details.
-            </para>
-        </note>
         <para>
 The following diagram illustrates the lifecycle of an entity with respect to the
 APIs presented in this section.
@@ -1024,6 +977,113 @@ language. For relational databases, this is the Structured Query Language (SQL).
 <xref linkend="jpa_overview_sqlquery"/> elaborates on JPA's
 native query support.
         </para>
+    </section>
+    <section id="jpa_overview_em_locking">
+        <title>
+            Entity Locking
+        </title>
+        <indexterm zone="jpa_overview_em_locking">
+            <primary>
+                EntityManager
+            </primary>
+            <secondary>
+                locking
+            </secondary>
+        </indexterm>
+<programlisting>
+public void lock(Object entity, LockModeType mode);
+</programlisting>
+        <para>
+        <indexterm>
+            <primary>
+                EntityManager
+            </primary>
+            <secondary>
+                lock
+            </secondary>
+        </indexterm>
+        <indexterm>
+            <primary>
+                locking
+            </primary>
+            <seealso>
+                EntityManager
+            </seealso>
+        </indexterm>
+This method locks the given entity using the named mode. The
+<ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/LockModeType.html">
+<classname>javax.persistence.LockModeType</classname></ulink> enum defines eight
+modes:
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>
+<literal>OPTIMISTIC</literal>: Optimistic locking.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>OPTIMISTIC_FORCE_INCREMENT</literal>: Optimistic locking.
+When a transaction is committed, the entity's version column
+will be incremented even if the entity's state did not change in the transaction.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>PESSIMISTIC_READ</literal>: Pessimistic locking. Other transactions
+may concurrently read the entity, but cannot concurrently update it.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>PESSIMISTIC_WRITE</literal>: Pessimistic locking. Other transactions
+cannot concurrently read or write the entity.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>PESSIMISTIC_FORCE_INCREMENT</literal>: Pessimistic locking. Other transactions
+cannot concurrently read or write the entity. 
+When a transaction is committed, the entity's version column
+will be incremented even if the entity's state did not change in the transaction.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>READ</literal>: A synonym for <literal>OPTIMISTIC</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>WRITE</literal>: A synonym for <literal>OPTIMISTIC_FORCE_INCREMENT</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+<literal>NONE</literal>: No locking is performed.
+                </para>
+            </listitem>
+        </itemizedlist>
+        <note>
+        <itemizedlist>
+            <listitem>
+                <para>
+OpenJPA differentiates between <literal>PESSIMISTIC_READ</literal> and
+<literal>PESSIMISTIC_WRITE</literal> lock modes only with DB2 databases.
+While running with other databases, there is no distinction between these
+two modes because
+<literal>PESSIMISTIC_READ</literal> lock mode
+is upgraded to <literal>PESSIMISTIC_WRITE</literal>.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+OpenJPA has additional APIs for controlling entity locking. See
+<xref linkend="ref_guide_locking"/> in the Reference Guide for details.
+                </para>
+            </listitem>
+        </itemizedlist>
+        </note>
     </section>
     <section id="jpa_overview_em_properties">
 		<title>
