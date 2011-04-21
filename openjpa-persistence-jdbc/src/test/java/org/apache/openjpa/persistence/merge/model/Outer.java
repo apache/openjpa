@@ -34,7 +34,7 @@ import javax.persistence.Table;
 public class Outer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id = null;
 
     private String name = null;
