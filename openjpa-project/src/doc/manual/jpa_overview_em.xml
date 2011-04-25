@@ -84,6 +84,11 @@ Cache management.
         </listitem>
         <listitem>
             <para>
+Entity locking.
+            </para>
+        </listitem>
+        <listitem>
+            <para>
 Closing.
             </para>
         </listitem>
@@ -990,6 +995,10 @@ native query support.
                 locking
             </secondary>
         </indexterm>
+        <para>
+In the area of concurrency control, the JPA specification supports
+optimistic and pessimistic locking.
+        </para>
 <programlisting>
 public void lock(Object entity, LockModeType mode);
 </programlisting>
@@ -1064,6 +1073,20 @@ will be incremented even if the entity's state did not change in the transaction
                 </para>
             </listitem>
         </itemizedlist>
+        <para>
+Entities can also be locked at the time when entity state gets loaded from the datastore.
+This is achieved by supplying a lock mode to the respective versions of
+<methodname>find</methodname> and <methodname>refresh</methodname> methods.
+If an entity state is to be loaded by a query, a lock mode can be passed to the
+<methodname>Query.setLockMode</methodname> and <methodname>TypedQuery.setLockMode</methodname>
+methods.
+        </para>
+<programlisting>
+public LockModeType getLockMode(Object entity);
+</programlisting>
+        <para>
+Returns the lock mode currently held by the given entity.
+        </para>
         <note>
         <itemizedlist>
             <listitem>
