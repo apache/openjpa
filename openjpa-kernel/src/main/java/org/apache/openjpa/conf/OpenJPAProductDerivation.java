@@ -39,5 +39,5 @@ public interface OpenJPAProductDerivation extends ProductDerivation {
      * alias to a broker factory class name.  Replace anything previously 
      * under the desired keys.
      */
-    public void putBrokerFactoryAliases(Map aliases);
+    public void putBrokerFactoryAliases(Map<String, String> aliases);
 }

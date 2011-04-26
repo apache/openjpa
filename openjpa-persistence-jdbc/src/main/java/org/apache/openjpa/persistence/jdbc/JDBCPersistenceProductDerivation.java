@@ -48,7 +48,7 @@ public class JDBCPersistenceProductDerivation
     implements OpenJPAProductDerivation {
     
     
-    public void putBrokerFactoryAliases(Map m) {
+    public void putBrokerFactoryAliases(Map<String,String> m) {
     }
 
     public int getType() {

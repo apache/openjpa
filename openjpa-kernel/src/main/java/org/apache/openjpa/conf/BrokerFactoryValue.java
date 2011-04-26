@@ -44,22 +44,19 @@ public class BrokerFactoryValue
 
     private static final String[] _aliases;
     static {
-        Map aliases = new HashMap();
-        aliases.put("abstractstore", 
-            AbstractStoreBrokerFactory.class.getName());
+        Map<String, String> aliases = new HashMap<String, String>();
+        aliases.put("abstractstore", AbstractStoreBrokerFactory.class.getName());
         ProductDerivation[] ds = ProductDerivations.getProductDerivations();
         for (int i = 0; i < ds.length; i++) {
             if (ds[i] instanceof OpenJPAProductDerivation)
-                ((OpenJPAProductDerivation) ds[i]).putBrokerFactoryAliases
-                    (aliases);
+                ((OpenJPAProductDerivation) ds[i]).putBrokerFactoryAliases(aliases);
         }
 
         _aliases = new String[aliases.size() * 2];
         int i = 0;
-        for (Iterator iter = aliases.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry e = (Map.Entry) iter.next();
-            _aliases[i++] = (String) e.getKey();
-            _aliases[i++] = (String) e.getValue();
+        for(Map.Entry<String, String>e : aliases.entrySet()) {
+            _aliases[i++] = e.getKey();
+            _aliases[i++] = e.getValue();
         }
     }
 

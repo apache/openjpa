@@ -43,7 +43,7 @@ public class JDBCProductDerivation extends AbstractProductDerivation
 
     public static final String PREFIX = "openjpa.jdbc"; 
     
-    public void putBrokerFactoryAliases(Map m) {
+    public void putBrokerFactoryAliases(Map<String,String> m) {
         m.put("jdbc", JDBCBrokerFactory.class.getName());
     }
 

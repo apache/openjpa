@@ -153,7 +153,7 @@ public class PersistenceProductDerivation
 		_providerImplName = PersistenceProviderImpl.class.getName();
 	}
     
-    public void putBrokerFactoryAliases(Map m) {
+    public void putBrokerFactoryAliases(Map<String, String> m) {
     }
 
     public int getType() {
