@@ -37,6 +37,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
 
     private OpenJPAConfiguration _conf = null;
     private Validator _validator = null;
+    protected boolean _validationEnabled = true;
 
     /**
      * Constructor which accepts a reference to the validator to use.  If null,
@@ -118,7 +119,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         
         // If a validator is provided and the source object should be validated,
         // validate it and return any exceptions
-        if (_validator != null && _validator.validating(source, type)) {
+        if (_validationEnabled && _validator != null && _validator.validating(source, type)) {
             ValidationException vex = _validator.validate(source, type);
             if (vex != null) {
                 if (evx == null || evx.length == 0) {
@@ -136,5 +137,15 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
             }
         }
         return evx;
+    }
+
+    public boolean isValidationEnabled() {
+        return _validationEnabled;
+    }
+
+    public boolean setValidationEnabled(boolean enabled) {
+        boolean val = _validationEnabled;
+        _validationEnabled = enabled;
+        return val;
     }
 }

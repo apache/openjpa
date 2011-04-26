@@ -210,4 +210,16 @@
         </properties>
     </persistence-unit>
     
+    <!-- ============================================================ -->
+    <!-- Persistence unit for testing ConstraintViolation object      -->
+    <persistence-unit name="ConstraintViolationTestPU">
+        <class>org.apache.openjpa.integration.validation.Image</class>
+        <class>org.apache.openjpa.integration.validation.Location</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <validation-mode>CALLBACK</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+        </properties>
+    </persistence-unit>
+
 </persistence>

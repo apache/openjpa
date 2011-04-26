@@ -96,6 +96,7 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.WrappedException;
+import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
 
 /**
  * Concrete {@link Broker}. The broker handles object-level behavior,
@@ -2759,7 +2760,18 @@ public class BrokerImpl
                 throw newDetachedException(obj, "delete");
             if ((action & OpCallbacks.ACT_CASCADE) != 0) {
                 if (!sm.isEmbedded() || !sm.getDereferencedEmbedDependent()) {
-                    sm.cascadeDelete(call);
+                    if (ValidatingLifecycleEventManager.class.isAssignableFrom(_lifeEventManager.getClass())) {
+                        ValidatingLifecycleEventManager _validatingLCEventManager = 
+                            (ValidatingLifecycleEventManager) _lifeEventManager;
+                        boolean saved = _validatingLCEventManager.setValidationEnabled(false);
+                        try {
+                            sm.cascadeDelete(call);
+                        } finally {
+                            _validatingLCEventManager.setValidationEnabled(saved);
+                        }
+                    } else {
+                        sm.cascadeDelete(call);
+                    }
                 }
             }
             sm.delete();
