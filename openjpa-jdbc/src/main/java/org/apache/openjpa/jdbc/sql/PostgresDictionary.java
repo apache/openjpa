@@ -37,7 +37,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
@@ -75,6 +77,8 @@ public class PostgresDictionary
 
     private Method dbcpGetDelegate;
     private Method connectionUnwrap;
+    
+    protected Set<String> _timestampTypes = new HashSet<String>(); 
 
     static {
         try {
@@ -220,6 +224,10 @@ public class PostgresDictionary
             "THEN", "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", 
             "USING", "VERBOSE", "WHEN", "WHERE",
         }));
+        
+        _timestampTypes.add("ABSTIME");
+        _timestampTypes.add("TIMESTAMP");
+        _timestampTypes.add(timestampTypeName.toUpperCase()); // handle user configured timestamp types.
     }
 
     @Override
@@ -792,7 +800,7 @@ public class PostgresDictionary
             try {
                 Method m = obj.getClass().getMethod("getType", (Class[]) null);
                 Object type = m.invoke(obj, (Object[]) null);
-                if (((String) type).equalsIgnoreCase(timestampTypeName)) {
+                if(_timestampTypes.contains(((String) type).toUpperCase())) { 
                     return rs.getTimestamp(column);
                 }
             } catch (Throwable t) {
@@ -1033,3 +1041,4 @@ public class PostgresDictionary
         }
     }
 }
+
