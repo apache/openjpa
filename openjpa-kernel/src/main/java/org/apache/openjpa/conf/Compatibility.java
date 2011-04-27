@@ -66,6 +66,7 @@ public class Compatibility {
     private boolean _isNonDefaultMappingAllowed = false;
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
+    private boolean _checkDatabaseForCascadePersistToDetachedEntity = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -534,5 +535,27 @@ public class Compatibility {
      */
     public void setReloadOnDetach(boolean reloadOnDetach) {
         _reloadOnDetach = reloadOnDetach;
-    }       
+    }      
+    
+    /**
+     * Whether OpenJPA will check the database for an Entity when cascading a persist to another Entity. This property
+     * only applies for the case where we are trying to cascade a persist to an Entity which doesn't have a StateManager
+     * and we can't determine if it is detached. 
+     *   
+     * @since 2.1.x
+     */
+    public boolean getCheckDatabaseForCascadePersistToDetachedEntity(){
+        return _checkDatabaseForCascadePersistToDetachedEntity;
+    }
+    
+    /**
+     * Whether OpenJPA will check the database for an Entity when cascading a persist to another Entity. This property
+     * only applies for the case where we are trying to cascade a persist to an Entity which doesn't have a StateManager
+     * and we can't determine if it is detached. 
+     *   
+     * @since 2.1.x
+     */
+    public void setCheckDatabaseForCascadePersistToDetachedEntity(boolean b){
+        _checkDatabaseForCascadePersistToDetachedEntity = b;
+    }
 }

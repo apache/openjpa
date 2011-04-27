@@ -4539,8 +4539,20 @@ public class BrokerImpl
             return (ImplHelper.toPersistenceCapable(obj, _conf)).pcIsDeleted();
         return false;
     }
-
     public boolean isDetached(Object obj) {
+        return isDetached(obj, true);
+    }
+
+    /**
+     * This method makes a best effort to determine if the provided object is detached.
+     * 
+     * @param obj
+     * @param find
+     *            - If true, as a last resort this method will check whether or not the provided object exists in the
+     *            DB. If it is in the DB, the provided object is detached.
+     * @return - True if the provided obj is detached, false otherwise.
+     */
+    public boolean isDetached(Object obj, boolean find) {
         if (!(ImplHelper.isManageable(obj)))
             return false;
 
@@ -4556,6 +4568,9 @@ public class BrokerImpl
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
+        if(!find){
+            return false;
+        }
         return find(oid, null, EXCLUDE_ALL, null, 0) != null;
     }
 

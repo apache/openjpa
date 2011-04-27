@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -49,22 +50,22 @@ import org.apache.openjpa.util.UserException;
  * FieldManager type used to hold onto a single field value and then
  * dispense it via the fetch methods. The manager can also perform actions
  * on the held field.
- *
- * @author Abe White
  */
-class SingleFieldManager
-    extends TransferFieldManager
-    implements Serializable {
+class SingleFieldManager extends TransferFieldManager implements Serializable {
+    private static final long serialVersionUID = -6205985063476549150L;
 
     private static final Localizer _loc = Localizer.forPackage
         (SingleFieldManager.class);
 
     private final StateManagerImpl _sm;
     private final BrokerImpl _broker;
-
+    private final boolean _checkDbOnCascadePersist; 
+    
     public SingleFieldManager(StateManagerImpl sm, BrokerImpl broker) {
         _sm = sm;
         _broker = broker;
+        _checkDbOnCascadePersist =
+            _broker.getConfiguration().getCompatibilityInstance().getCheckDatabaseForCascadePersistToDetachedEntity();
     }
 
     /**
@@ -756,16 +757,16 @@ class SingleFieldManager
     /**
      * Perform pre flush operations on the given object.
      */
-    private void preFlushPC(ValueMetaData vmd, Object obj, boolean logical,
-        OpCallbacks call) {
+    private void preFlushPC(ValueMetaData vmd, Object obj, boolean logical, OpCallbacks call) {
         if (obj == null)
             return;
 
         OpenJPAStateManager sm;        
 
         if (vmd.getCascadePersist() == ValueMetaData.CASCADE_NONE) {
-            if (!_broker.isDetachedNew() && _broker.isDetached(obj))
+            if (!_broker.isDetachedNew() && _broker.isDetached(obj, _checkDbOnCascadePersist)) {
                 return; // allow but ignore
+            }
 
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isPersistent()) {
@@ -782,8 +783,9 @@ class SingleFieldManager
             }
         } else {
             if (vmd.getCascadePersist() == ValueMetaData.CASCADE_IMMEDIATE) {
-                if (!_broker.isDetachedNew() && _broker.isDetached(obj))
+                if (!_broker.isDetachedNew() && _broker.isDetached(obj, _checkDbOnCascadePersist)) {
                     return; // allow but ignore
+                }
             }        	
             sm = _broker.getStateManager(obj);
             if (sm == null || !sm.isProvisional()) { 
