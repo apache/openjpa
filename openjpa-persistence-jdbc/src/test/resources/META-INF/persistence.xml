@@ -385,4 +385,11 @@
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
         </properties>
     </persistence-unit>
+	<persistence-unit name="to-one-xml-override">
+		<mapping-file>org/apache/openjpa/persistence/xml/toone-orm.xml
+		</mapping-file>
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
+	</persistence-unit>
 </persistence>
