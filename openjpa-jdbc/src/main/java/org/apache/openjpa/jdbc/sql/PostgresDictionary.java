@@ -194,7 +194,6 @@ public class PostgresDictionary
         supportsLockingWithDistinctClause = false;
         supportsQueryTimeout = false;
         supportsLockingWithOuterJoin = false;
-        supportsNullTableForGetImportedKeys = true;
 
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "ABORT", "ACL", "AGGREGATE", "APPEND", "ARCHIVE", "ARCH_STORE",
