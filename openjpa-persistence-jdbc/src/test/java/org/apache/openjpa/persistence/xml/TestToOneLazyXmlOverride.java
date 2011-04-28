@@ -35,29 +35,28 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
 
     public void testToManyLazyOverride() {
         EntityManager em = emf.createEntityManager();
-        try{
-        em.getTransaction().begin();
-        XmlOverrideToOneEntity x = new XmlOverrideToOneEntity();
-        x.setOtherM2O(x);
-        x.setOtherO2O(x);
-        em.persist(x);
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().begin();
+            XmlOverrideToOneEntity x = new XmlOverrideToOneEntity();
+            x.setOtherM2O(x);
+            x.setOtherO2O(x);
+            em.persist(x);
+            em.getTransaction().commit();
 
-        em.clear();
-        resetSQL();
+            em.clear();
+            resetSQL();
 
-        em.find(XmlOverrideToOneEntity.class, x.getId());
-        for (String lastSql : sql) {
-            // Make sure we don't have any joins!
-            assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
-                + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
-        }
-        }finally{
-            if(em.getTransaction().isActive()){
+            em.find(XmlOverrideToOneEntity.class, x.getId());
+            for (String lastSql : sql) {
+                // Make sure we don't have any joins!
+                assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
+                    + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             em.close();
-            }
         }
     }
 }
