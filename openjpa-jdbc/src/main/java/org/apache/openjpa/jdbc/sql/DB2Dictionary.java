@@ -94,6 +94,7 @@ public class DB2Dictionary
     protected int min = 0;
     
     private int defaultBatchLimit = 100;
+    public boolean appendExtendedExceptionText = true;
     
     public DB2Dictionary() {
         platform = "DB2";
@@ -555,10 +556,10 @@ public class DB2Dictionary
         return "";
     }
 
-    public OpenJPAException newStoreException(String msg, SQLException[] causes,
-        Object failed) {
-        if (causes != null && causes.length > 0)
+    public OpenJPAException newStoreException(String msg, SQLException[] causes, Object failed) {
+        if (appendExtendedExceptionText == true && causes != null && causes.length > 0) {
             msg = appendExtendedExceptionMsg(msg, causes[0]);
+        }
         return super.newStoreException(msg, causes, failed);
     }
 
