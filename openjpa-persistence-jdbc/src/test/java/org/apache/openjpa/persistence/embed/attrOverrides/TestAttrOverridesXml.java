@@ -55,12 +55,6 @@ public class TestAttrOverridesXml extends SQLListenerTestCase {
         return "embed-pu";
     }
     
-    @AllowFailure(message=
-        "Multi-level embedding" + 
-        "JPA 2.0 Access Style " + 
-        "XML Metadata "         + 
-        "Attribute Override "   +  
-        " is not yet supported")
     public void testAttrOverride1() {
         sql.clear();
     	createObj1();
