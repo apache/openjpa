@@ -122,7 +122,7 @@ public class MySQLDictionary
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
             "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
             "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED", 
-            "ZEROFILL",
+            "ZEROFILL", "INDEX", 
         }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
@@ -146,6 +146,7 @@ public class MySQLDictionary
             "STARTING", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION",
             "UNIQUE", "UNSIGNED", "UPDATE", "USAGE", "USING", "VALUES",
             "VARCHAR", "VARYING", "WHEN", "WHERE", "WITH", "WRITE", "ZEROFILL",
+            "INDEX", 
         }));
 
         // MySQL requires double-escape for strings
