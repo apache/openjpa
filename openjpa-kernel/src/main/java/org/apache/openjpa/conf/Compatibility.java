@@ -67,6 +67,7 @@ public class Compatibility {
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
     private boolean _checkDatabaseForCascadePersistToDetachedEntity = false;
+    private boolean _overrideContextClassloader = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -557,5 +558,23 @@ public class Compatibility {
      */
     public void setCheckDatabaseForCascadePersistToDetachedEntity(boolean b){
         _checkDatabaseForCascadePersistToDetachedEntity = b;
+    }
+
+    /**
+     * Whether to temporally override the thread's Context Classloader when processing
+     * ORM XML documents to avoid deadlock potential with certain Classloader hierarchy
+     * configurations.  Defaults to false.
+     */
+    public boolean getOverrideContextClassloader() {
+        return _overrideContextClassloader;
+    }
+
+    /**
+     * Whether to temporally override the thread's Context Classloader when processing
+     * ORM XML documents to avoid deadlock potential with certain Classloader hierarchy
+     * configurations.  Defaults to false.
+     */
+    public void setOverrideContextClassloader(boolean overrideContextClassloader) {
+        _overrideContextClassloader = overrideContextClassloader;
     }
 }
