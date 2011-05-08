@@ -334,6 +334,7 @@ public class ExpressionStoreQuery
             QueryExpressions exps = assertQueryExpression();    
             ValidateGroupingExpressionVisitor.validate(q.getContext(), exps); 
         }
+        
 
         public void getRange(StoreQuery q, Object[] params, Range range) {
             QueryExpressions exps = assertQueryExpression();
@@ -490,7 +491,7 @@ public class ExpressionStoreQuery
         public boolean isPacking(StoreQuery q) {
             return false;
         }
-
+        
         /**
          * Throws an exception if select or having clauses contain 
          * non-aggregate, non-grouped paths.

@@ -82,3 +82,4 @@ public class JPQLParser
         return JPQLParser.LANG_JPQL;
     }
 }
+

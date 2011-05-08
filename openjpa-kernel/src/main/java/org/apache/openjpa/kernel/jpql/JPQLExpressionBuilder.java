@@ -45,7 +45,6 @@ import org.apache.openjpa.kernel.QueryOperations;
 import org.apache.openjpa.kernel.ResultShape;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.kernel.exps.AbstractExpressionBuilder;
-import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.kernel.exps.Expression;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
@@ -311,7 +310,10 @@ public class JPQLExpressionBuilder
 
         exps.accessPath = getAccessPath();
         exps.hasInExpression = this.hasParameterizedInExpression;
-        
+
+        // verify parameters are consistent. 
+        validateParameters();
+
         return exps;
     }
 
@@ -2465,5 +2467,23 @@ public class JPQLExpressionBuilder
 			return this.query;
 		}
 	}
+    
+    
+    // throws an exception if there are numeric parameters which do not start with 1. 
+    private void validateParameters() {
+        if(parameterTypes == null || parameterTypes.isEmpty()) { 
+            return;
+        }
+        
+        Object firstKey = parameterTypes.keySet().iterator().next();
+        if (firstKey != null) { // paranoia
+            if (firstKey instanceof Number) {
+                if (!parameterTypes.keySet().contains(1)) {
+                    throw new UserException(_loc.get("missing-positional-parameter", resolver.getQueryContext()
+                        .getQueryString(), parameterTypes.keySet().toString()));
+                }
+            }
+        }
+    }
 }
 

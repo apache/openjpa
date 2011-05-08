@@ -18,8 +18,14 @@
  */
 package org.apache.openjpa.persistence.jpql.functions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.kernel.jpql.JPQLExpressionBuilder;
+import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.common.apps.Address;
 import org.apache.openjpa.persistence.common.apps.CompUser;
 import org.apache.openjpa.persistence.common.apps.FemaleUser;
@@ -127,10 +133,20 @@ public class TestSetParameter extends SingleEMFTestCase {
           .executeUpdate();
         em.getTransaction().commit();
         assertEquals(1, count);
-        
-        
     }
-
+    
+    public void testMissingFirstPositionalParameter() {
+        EntityManager em = emf.createEntityManager();
+        String query = "UPDATE CompUser e set e.name= ?2, e.age = ?4 " + "WHERE e.userid = ?3";
+        try {
+            em.createQuery(query);
+            fail("Did not get UserException with invalid JPQL query");
+        } catch (ArgumentException ae) {
+            // expected
+        }
+        em.close();
+    }
+    
     public CompUser createUser(String name, String cName, int age,
         boolean isMale) {
         CompUser user = null;
