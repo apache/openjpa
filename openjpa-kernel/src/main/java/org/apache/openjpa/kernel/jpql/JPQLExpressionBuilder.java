@@ -2469,19 +2469,36 @@ public class JPQLExpressionBuilder
 	}
     
     
-    // throws an exception if there are numeric parameters which do not start with 1. 
+    // throws an exception if there are numeric parameters which do not start with 1.
     private void validateParameters() {
-        if(parameterTypes == null || parameterTypes.isEmpty()) { 
+        if (parameterTypes == null || parameterTypes.isEmpty()) {
             return;
         }
-        
-        Object firstKey = parameterTypes.keySet().iterator().next();
-        if (firstKey != null) { // paranoia
-            if (firstKey instanceof Number) {
-                if (!parameterTypes.keySet().contains(1)) {
-                    throw new UserException(_loc.get("missing-positional-parameter", resolver.getQueryContext()
+
+        boolean numericParms = false;
+        boolean namedParms = false;
+
+        for (Object key : parameterTypes.keySet()) {
+
+            if (key instanceof Number) {
+                if (namedParms) {
+                    throw new UserException(_loc.get("mixed-parameter-types", resolver.getQueryContext()
                         .getQueryString(), parameterTypes.keySet().toString()));
                 }
+                numericParms = true;
+            } else {
+                if (numericParms) {
+                    throw new UserException(_loc.get("mixed-parameter-types", resolver.getQueryContext()
+                        .getQueryString(), parameterTypes.keySet().toString()));
+                }
+                namedParms = true;
+            }
+        }
+
+        if (numericParms) {
+            if (!parameterTypes.keySet().contains(1)) {
+                throw new UserException(_loc.get("missing-positional-parameter", resolver.getQueryContext()
+                    .getQueryString(), parameterTypes.keySet().toString()));
             }
         }
     }

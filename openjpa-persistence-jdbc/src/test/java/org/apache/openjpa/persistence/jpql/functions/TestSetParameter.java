@@ -145,6 +145,18 @@ public class TestSetParameter extends SingleEMFTestCase {
             // expected
         }
         em.close();
+    }   
+    
+    public void testMixedParameterTypesParameter() {
+        EntityManager em = emf.createEntityManager();
+        String query = "UPDATE CompUser e set e.name= :name, e.age = ?1 " + "WHERE e.userid = ?3";
+        try {
+            em.createQuery(query);
+            fail("Did not get UserException with invalid JPQL query");
+        } catch (ArgumentException ae) {
+            // expected
+        }
+        em.close();
     }
     
     public CompUser createUser(String name, String cName, int age,
