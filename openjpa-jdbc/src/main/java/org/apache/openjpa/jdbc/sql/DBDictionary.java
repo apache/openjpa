@@ -337,6 +337,7 @@ public class DBDictionary
     public boolean supportsNullTableForGetImportedKeys = false;
     public boolean useGetBestRowIdentifierForPrimaryKeys = false;
     public boolean requiresAutoCommitForMetaData = false;
+    public boolean tableLengthIncludesSchema = false; 
 
     // auto-increment
     public int maxAutoAssignNameLength = 31;
@@ -3317,7 +3318,9 @@ public class DBDictionary
      */
     public String[] getCreateTableSQL(Table table) {
         StringBuilder buf = new StringBuilder();
-        String tableName = checkNameLength(getFullIdentifier(table, false), maxTableNameLength, "long-table-name");
+        String tableName =
+            checkNameLength(getFullIdentifier(table, false), maxTableNameLength, "long-table-name",
+                tableLengthIncludesSchema);
         buf.append("CREATE TABLE ").append(tableName);
         if (supportsComments && table.hasComment()) {
             buf.append(" ");
@@ -5272,7 +5275,7 @@ public class DBDictionary
      * @param msgKey    message identifier for the exception.
      * @param qualified If true the qualified name of the DBIdentifier will be used. 
      * 
-     * @throws @{link UserException} with the given message key if the given name is indeed longer.
+     * @throws {@link UserException} with the given message key if the given name is indeed longer.
      * @return the same name.
      */
     final String checkNameLength(DBIdentifier identifier, int length, String msgKey) {
@@ -5288,7 +5291,7 @@ public class DBDictionary
      * @param msgKey    message identifier for the exception.
      * @param qualified If true the qualified name of the DBIdentifier will be used. 
      * 
-     * @throws @{link UserException} with the given message key if the given name is indeed longer.
+     * @throws {@link UserException} with the given message key if the given name is indeed longer.
      * @return the same name.
      */
     final String checkNameLength(DBIdentifier identifier, int length, String msgKey, boolean qualified) {
