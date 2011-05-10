@@ -178,8 +178,9 @@ public class Table
     /**
      * Set the name of the table. This method can only be called on tables
      * that are not part of a schema.
-     * @deprecated (use setIdentifier(DBIdentifier) instead.
+     * @deprecated use setIdentifier(DBIdentifier) instead.
      */
+    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newTable(name));
     }

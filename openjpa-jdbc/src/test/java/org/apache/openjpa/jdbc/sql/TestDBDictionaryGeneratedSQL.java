@@ -52,7 +52,7 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
             dict.getCreateTableSQL(table);
             fail("Expected a UserException");
         } catch (UserException ue) {
-            // expected - check message incase a different UserException is thrown.
+            // expected - check message in case a different UserException is thrown.
             assertTrue(ue.getMessage().contains("Table name \"NameIsTooLong\""));
         }
     }
@@ -83,7 +83,7 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
             dict.getCreateTableSQL(table);
             fail("Expected a UserException");
         } catch (UserException ue) {
-            // expected - check message incase a different UserException is thrown.
+            // expected - check message in case a different UserException is thrown.
             assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
         } 
     }
