@@ -1471,11 +1471,14 @@ public class XMLPersistenceMetaDataParser
     protected void parseOneToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        if (val == null) {
-            fmd.setInDefaultFetchGroup(true);
-        } else {
-            fmd.setInDefaultFetchGroup("EAGER".equals(val));
-        }
+        boolean dfg = (val != null && val.equals("LAZY")) ? false : true;
+        
+        // We need to toggle the DFG explicit flag here because this is used for an optimization when selecting an
+        // Entity with lazy fields. 
+        fmd.setDefaultFetchGroupExplicit(true);
+        fmd.setInDefaultFetchGroup(dfg);
+        fmd.setDefaultFetchGroupExplicit(false);
+        
         val = attrs.getValue("target-entity");
         if (val != null)
             fmd.setTypeOverride(AnnotationPersistenceMetaDataParser.toOverrideType(classForName(val)));
@@ -1495,11 +1498,14 @@ public class XMLPersistenceMetaDataParser
     protected void parseManyToOne(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String val = attrs.getValue("fetch");
-        if (val == null) {
-            fmd.setInDefaultFetchGroup(true);
-        } else {
-            fmd.setInDefaultFetchGroup("EAGER".equals(val));
-        }
+        boolean dfg = (val != null && val.equals("LAZY")) ? false : true;
+        
+        // We need to toggle the DFG explicit flag here because this is used for an optimization when selecting an
+        // Entity with lazy fields. 
+        fmd.setDefaultFetchGroupExplicit(true);
+        fmd.setInDefaultFetchGroup(dfg);
+        fmd.setDefaultFetchGroupExplicit(false);
+        
         val = attrs.getValue("target-entity");
         if (val != null)
             fmd.setTypeOverride(AnnotationPersistenceMetaDataParser.toOverrideType(classForName(val)));

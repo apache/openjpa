@@ -19,12 +19,16 @@
  */
 package org.apache.openjpa.persistence.xml;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 @Entity
 public class XmlOverrideToOneEntity {
@@ -32,12 +36,17 @@ public class XmlOverrideToOneEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
 
-    @OneToOne 
+    @OneToOne
+    @JoinColumn(name="o2o")
     XmlOverrideToOneEntity otherO2O;
 
     @ManyToOne
+    @JoinColumn(name="m2o")
     XmlOverrideToOneEntity otherM2O;
-
+    
+    @Version
+    int version;
+    
     public long getId() {
         return id;
     }

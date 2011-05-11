@@ -25,8 +25,10 @@
 	<entity name="XmlOverrideToOneEntity" class="XmlOverrideToOneEntity">
 		<attributes>
 			<many-to-one name="otherM2O" fetch="LAZY">
+				<join-column name="m2o"/>
 			</many-to-one>
 			<one-to-one name="otherO2O" fetch="LAZY">
+				<join-column name="o2o"/>
 			</one-to-one>
 		</attributes>
 	</entity>

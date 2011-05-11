@@ -47,11 +47,17 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
             resetSQL();
 
             em.find(XmlOverrideToOneEntity.class, x.getId());
-            for (String lastSql : sql) {
-                // Make sure we don't have any joins!
-                assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
-                    + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
-            }
+
+            assertTrue(sql.size() == 1);
+            String lastSql = sql.get(0);
+            // Make sure we don't have any joins!
+            assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
+                + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
+
+            // Make sure that we selected lazy join columns.
+            assertTrue(lastSql.contains("o2o"));
+            assertTrue(lastSql.contains("m2o"));
+
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
