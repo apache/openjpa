@@ -58,6 +58,14 @@ Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
         <exec dir="${basedir}/reversemapping" executable="ant${platform.script.ext}"/>
     </target>
 
+    <!-- OPENJPA-1996: The build of derby that ships with the OpenJPA build has an
+         incompatibility with MacOS X.  This can be resolved by leveraging the Derby
+         build that ships with MacOS X in the /usr/share/derby directory. -->
+    <condition property="derby.loc" value="/usr/share/derby">
+       <os family="mac"/>
+    </condition>
+    <property name="derby.loc" value="${root}"/>
+    
     <path id="classpath"
         description="The classpath to use for compiling and running">
         <pathelement path="${parent}"/>
@@ -70,6 +78,9 @@ Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
         -->
         <fileset dir="${root}">
             <include name="openjpa-all-*.jar"/>
+            <!-- <include name="lib/derby*.jar"/> -->
+        </fileset>
+        <fileset dir="${derby.loc}">
             <include name="lib/derby*.jar"/>
         </fileset>
     </path>
