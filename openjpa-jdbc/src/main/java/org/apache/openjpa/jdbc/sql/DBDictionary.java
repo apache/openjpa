@@ -337,6 +337,7 @@ public class DBDictionary
     public boolean supportsNullTableForGetImportedKeys = false;
     public boolean useGetBestRowIdentifierForPrimaryKeys = false;
     public boolean requiresAutoCommitForMetaData = false;
+    public boolean tableLengthIncludesSchema = false; 
 
     // auto-increment
     public int maxAutoAssignNameLength = 31;
@@ -3316,8 +3317,9 @@ public class DBDictionary
      */
     public String[] getCreateTableSQL(Table table) {
         StringBuilder buf = new StringBuilder();
-        String tableName = checkNameLength(getFullName(table, false), 
-                maxTableNameLength, "long-table-name");
+        String tableName =
+            checkNameLength(getFullIdentifier(table, false), maxTableNameLength, "long-table-name",
+                tableLengthIncludesSchema);
         buf.append("CREATE TABLE ").append(tableName);
         if (supportsComments && table.hasComment()) {
             buf.append(" ");
@@ -5257,9 +5259,48 @@ public class DBDictionary
      * given message key otherwise returns the same name.
      */
     final String checkNameLength(String name, int length, String msgKey) {
-        if (name.length() > length)
-            throw new UserException(_loc.get(msgKey, name, name.length(), 
-                    length));
+        if (name.length() > length) {
+            throw new UserException(_loc.get(msgKey, name, name.length(), length));
+        }
+        return name;
+    }
+    
+    /**
+     * Validate that the given name is not longer than given maximum length. Uses the unqualified name
+     * from the supplied {@link DBIdentifier} by default..
+     * 
+     * @param identifer The database identifier to check.
+     * @param length    Max length for this type of identifier
+     * @param msgKey    message identifier for the exception.
+     * @param qualified If true the qualified name of the DBIdentifier will be used. 
+     * 
+     * @throws {@link UserException} with the given message key if the given name is indeed longer.
+     * @return the same name.
+     */
+    final String checkNameLength(DBIdentifier identifier, int length, String msgKey) {
+        return checkNameLength(identifier, length, msgKey, false);
+    }
+
+    /**
+     * Validate that the given name is not longer than given maximum length. Conditionally uses the unqualified name
+     * from the supplied {@link DBIdentifier}.
+     * 
+     * @param identifer The database identifier to check.
+     * @param length    Max length for this type of identifier
+     * @param msgKey    message identifier for the exception.
+     * @param qualified If true the qualified name of the DBIdentifier will be used. 
+     * 
+     * @throws {@link UserException} with the given message key if the given name is indeed longer.
+     * @return the same name.
+     */
+    final String checkNameLength(DBIdentifier identifier, int length, String msgKey, boolean qualified) {
+        // always return the input name, 
+        String name = toDBName(identifier);
+        String compareName = qualified ? name : toDBName(identifier.getUnqualifiedName());
+        
+        if (compareName.length() > length) {
+            throw new UserException(_loc.get(msgKey, name, name.length(), length));
+        }
         return name;
     }
 

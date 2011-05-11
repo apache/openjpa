@@ -178,12 +178,18 @@ public class Table
     /**
      * Set the name of the table. This method can only be called on tables
      * that are not part of a schema.
-     * @deprecated
+     * @deprecated use {@link #setIdentifier(DBIdentifier)} instead.
      */
+    @Deprecated
     public void setName(String name) {
         setIdentifier(DBIdentifier.newTable(name));
     }
 
+    /**
+     * Set the name of the table. This method can only be called on tables which are not part of a schema. 
+     * @param name The name of the table. 
+     * @throws IllegalStateException if {@link #getSchema()} does not return null. 
+     */
     public void setIdentifier(DBIdentifier name) {
         if (getSchema() != null)
             throw new IllegalStateException();
