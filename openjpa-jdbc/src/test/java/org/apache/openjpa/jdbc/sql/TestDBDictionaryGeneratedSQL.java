@@ -42,6 +42,7 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
         });
         
         DBDictionary dict = new DBDictionary();
+        dict.tableLengthIncludesSchema=false; 
         dict.setConfiguration(mockConfiguration);
         dict.maxTableNameLength = 10;
 
@@ -73,6 +74,7 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
         
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
+        dict.tableLengthIncludesSchema=false; 
         dict.maxTableNameLength = 10;
 
         Table table = new Table();
@@ -103,6 +105,7 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
         
         DBDictionary dict = new DBDictionary();
         dict.setConfiguration(mockConfiguration);
+        dict.tableLengthIncludesSchema=false; 
         dict.maxTableNameLength = 12;
 
         Table table = new Table();
