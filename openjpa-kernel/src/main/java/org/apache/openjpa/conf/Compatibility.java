@@ -58,6 +58,7 @@ public class Compatibility {
     private boolean _flushBeforeDetach = true;
     private boolean _reorderMetaDataResolution = false;
     private boolean _reloadOnDetach = true;
+    private boolean _overrideContextClassloader = false;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -318,6 +319,23 @@ public class Compatibility {
         _reloadOnDetach = reloadOnDetach;
     }   
 
+    /**
+     * Whether to temporally override the thread's Context Classloader when processing
+     * ORM XML documents to avoid deadlock potential with certain Classloader hierarchy
+     * configurations.  Defaults to false.
+     */
+    public boolean getOverrideContextClassloader() {
+        return _overrideContextClassloader;
+    }
+
+    /**
+     * Whether to temporally override the thread's Context Classloader when processing
+     * ORM XML documents to avoid deadlock potential with certain Classloader hierarchy
+     * configurations.  Defaults to false.
+     */
+    public void setOverrideContextClassloader(boolean overrideContextClassloader) {
+        _overrideContextClassloader = overrideContextClassloader;
+    }
     
 
 }
