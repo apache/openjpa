@@ -75,8 +75,6 @@ public class IngresDictionary extends DBDictionary {
         datePrecision = DBDictionary.NANO;
 
         // Schema Metadata
-        supportsNullTableForGetImportedKeys = true;
-        supportsNullTableForGetImportedKeys = true;
         supportsNullTableForGetIndexInfo = true;
         supportsNullTableForGetPrimaryKeys = true;
         tableTypes = "TABLE,VIEW,SYSTEM TABLE";
