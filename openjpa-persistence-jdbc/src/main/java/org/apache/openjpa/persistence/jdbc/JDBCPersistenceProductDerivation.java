@@ -116,7 +116,7 @@ public class JDBCPersistenceProductDerivation
     static {
         _hints.add("openjpa.FetchPlan.EagerFetchMode");
         _hints.add("openjpa.FetchPlan.FetchDirection");
-        _hints.add("openjpa.FetchPlan.TransactionIsolation");
+        _hints.add("openjpa.FetchPlan.Isolation");
         _hints.add("openjpa.FetchPlan.JoinSyntax");
         _hints.add("openjpa.FetchPlan.LRSSize");
         _hints.add("openjpa.FetchPlan.ResultSetType");
