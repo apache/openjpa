@@ -24,9 +24,10 @@ import javax.persistence.Query;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.kernel.QueryHints;
-import org.apache.openjpa.persistence.HintHandler;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.IsolationLevel;
+import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -38,7 +39,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  */
 public class TestQueryHints extends SingleEMFTestCase {
     EntityManager em;
-    OpenJPAQuery query;
+    OpenJPAQuery<?> query;
     
     public void setUp() {
        super.setUp((Object[])null);
@@ -140,8 +141,6 @@ public class TestQueryHints extends SingleEMFTestCase {
         goodValue = "false";
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
-        assertEquals(false, query.getFetchPlan().getDelegate().getHint(
-                supportedKey));
     }
     
     public void testJPAHintSetsFetchPlan() {
@@ -169,6 +168,24 @@ public class TestQueryHints extends SingleEMFTestCase {
         }
     }
     
+    /**
+     * Verifies a valid fetchplan isolation level hint can be set and retrieved.
+     */
+    public void testFetchPlanIsolation() {
+        query.setHint("openjpa.FetchPlan.Isolation", "SERIALIZABLE");
+        assertTrue(query.getHints().containsKey("openjpa.FetchPlan.Isolation"));
+        assertEquals(IsolationLevel.SERIALIZABLE, ((JDBCFetchPlan)query.getFetchPlan()).getIsolation());
+    }
+
+    /**
+     * Verifies an invalid fetchplan isolation level hint is ignored.
+     */
+    public void testInvalidFetchPlanIsolation() {
+        query.setHint("openjpa.FetchPlan.TransactionIsolation", "SERIALIZABLE");
+        assertFalse(query.getHints().containsKey("openjpa.FetchPlan.TransactionIsolation"));
+        assertNotEquals(IsolationLevel.SERIALIZABLE, ((JDBCFetchPlan)query.getFetchPlan()).getIsolation());        
+    }
+
     void assertSupportedHint(String hint, boolean contains) {
         if (contains)
             assertTrue("Expected supported hint [" + hint + "]",
