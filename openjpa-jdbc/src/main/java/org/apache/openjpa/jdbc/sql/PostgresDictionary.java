@@ -426,15 +426,26 @@ public class PostgresDictionary
         // sequence is owned.  This is not perfect, but considerably better than
         // considering all sequences suffixed with _seq are db owned.
         String[][] namePairs = buildNames(strName);
-        try {
-            for (int i = 0; i < namePairs.length; i++) {
-                if (queryOwnership(conn, namePairs[i], schema)) {
-                    return true;
+        
+        if(namePairs != null) { // unable to parse strName. 
+            try {
+                for (int i = 0; i < namePairs.length; i++) {
+                    if (queryOwnership(conn, namePairs[i], schema)) {
+                        return true;
+                    }
                 }
+            } catch (Throwable t) {
+                if (log.isWarnEnabled())
+                    log.warn(_loc.get("psql-owned-seq-warning"), t);
+                return isOwnedSequence(strName);
             }
-        } catch (Throwable t) {
-            if (log.isWarnEnabled())
-                log.warn(_loc.get("psql-owned-seq-warning"), t);
+        } else { 
+            if(log.isTraceEnabled()) { 
+                log.trace(String.format("Unable to query ownership for sequence %s using the connection. " +
+                		"Falling back to simpler detection based on the name", 
+                    name.getName()));
+            }
+            
             return isOwnedSequence(strName);
         }
         return false;
@@ -496,7 +507,8 @@ public class PostgresDictionary
      * names can contain underscores so permutations of these names must be 
      * produced for ownership verification.
      * @param strName
-     * @return
+     * @return If strName cannot be split into three or more parts null will be returned.
+     *  Otherwise a String[][] of the potential sequence names will be returned.
      */
     private String[][] buildNames(String strName) {
         // split the sequence name into components
@@ -504,6 +516,10 @@ public class PostgresDictionary
         String[] parts = Normalizer.splitName(strName, "_");
         
         if (parts == null || parts.length < 3) {
+            if(log.isTraceEnabled()) { 
+                log.trace(String.format("Unable to parse sequences from %s. Found %s parts. Returning null", 
+                    strName, parts == null ? 0 : parts.length));
+            }
             return null;
         }
         // Simple and most common case
