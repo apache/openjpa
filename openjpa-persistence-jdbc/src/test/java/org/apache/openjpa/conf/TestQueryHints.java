@@ -141,6 +141,8 @@ public class TestQueryHints extends SingleEMFTestCase {
         goodValue = "false";
         query.setHint(supportedKey, goodValue);
         assertTrue(query.getHints().containsKey(supportedKey));
+        assertEquals(false, query.getFetchPlan().getDelegate().getHint(
+                supportedKey));
     }
     
     public void testJPAHintSetsFetchPlan() {
