@@ -733,12 +733,18 @@ public class AnnotationPersistenceMetaDataParser
      */
     private ClassMetaData getMetaData() {
         ClassMetaData meta = getRepository().getCachedMetaData(_cls);
-        if (meta != null &&
-            ((isMetaDataMode() && (meta.getSourceMode() & MODE_META) != 0) ||
-                (isMappingMode() &&
-                    (meta.getSourceMode() & MODE_MAPPING) != 0))) {
-            if (_log.isWarnEnabled())
+        if (meta != null
+            && ((isMetaDataMode() 
+                && (meta.getSourceMode() & MODE_META) != 0) 
+                || (isMappingMode() && (meta.getSourceMode() & MODE_MAPPING) != 0) ) ) {
+            if (_log.isWarnEnabled()) {
                 _log.warn(_loc.get("dup-metadata", _cls.getName()));
+            }
+            if(_log.isTraceEnabled()) { 
+                _log.trace(String.format(
+                    "MetaData originally obtained from file: %s under mode :%d with scope %s, and type :%d",
+                    meta.getSourceName(), meta.getSourceMode(), meta.getSourceScope(), meta.getSourceType()));
+            }
             return null;
         }
 
@@ -746,7 +752,8 @@ public class AnnotationPersistenceMetaDataParser
             meta = getRepository().addMetaData(_cls, getAccessCode(_cls));
             meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
-            meta.setSource(getSourceFile(), SourceTracker.SRC_ANNOTATIONS);
+            meta.setSource(getSourceFile(), SourceTracker.SRC_ANNOTATIONS, getSourceFile() == null ? ""
+                : getSourceFile().getPath());
         }
         return meta;
     }
@@ -1825,7 +1832,7 @@ public class AnnotationPersistenceMetaDataParser
             }
 
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-                SourceTracker.SRC_ANNOTATIONS);
+                SourceTracker.SRC_ANNOTATIONS, getSourceFile() == null ? "" : getSourceFile().getPath());
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())
@@ -1902,7 +1909,7 @@ public class AnnotationPersistenceMetaDataParser
                 meta.addHint(hint.name(), hint.value());
 
             meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
-                SourceTracker.SRC_ANNOTATIONS);
+                SourceTracker.SRC_ANNOTATIONS, getSourceFile() == null ? "" : getSourceFile().getPath());
             if (isMetaDataMode())
                 meta.setSourceMode(MODE_META);
             else if (isMappingMode())

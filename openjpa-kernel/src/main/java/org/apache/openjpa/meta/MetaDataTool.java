@@ -175,7 +175,7 @@ public class MetaDataTool
                 && fmds[i].getDeclaredType() != Object.class)
                 fmds[i].setDeclaredTypeCode(JavaTypes.PC);
         }
-        meta.setSource(_file, meta.getSourceType());
+        meta.setSource(_file, meta.getSourceType(), _file == null ? "" : _file.getPath());
         _flush = true;
     }
 
@@ -205,7 +205,7 @@ public class MetaDataTool
                 output = new HashMap();
                 File tmp = new File("openjpatmp");
                 for (int i = 0; i < metas.length; i++)
-                    metas[i].setSource(tmp, metas[i].getSourceType());
+                    metas[i].setSource(tmp, metas[i].getSourceType(), tmp.getPath());
             }
             if (!mdf.store(metas, new QueryMetaData[0],
                 new SequenceMetaData[0], MODE_META, output))
