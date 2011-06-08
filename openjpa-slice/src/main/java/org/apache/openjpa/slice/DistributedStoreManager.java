@@ -23,6 +23,13 @@ import java.util.Map;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.slice.jdbc.SliceStoreManager;
 
+/**
+ * A specialized {@link StoreManager Store Manager} that encapsulates multiple concrete Store Managers
+ * using Distributed Template (or Composite) Design Pattern.  
+ * 
+ * @author Pinaki Poddar
+ *
+ */
 public interface DistributedStoreManager extends StoreManager {
     /**
      * Adds the given slice with the given properties. This newly added slice

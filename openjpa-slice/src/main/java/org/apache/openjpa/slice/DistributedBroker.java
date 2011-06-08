@@ -22,7 +22,9 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.slice.jdbc.TargetFetchConfiguration;
 
 /**
- * Extension to Broker to allow access to virtual data store.
+ * Extension to Broker to allow access to {@link DistributedStoreManager virtual data store}.
+ * The broker manages a single persistence context like a normal {@link Broker}, but the
+ * context holds data from multiple databases. 
  * 
  * @author Pinaki Poddar
  *

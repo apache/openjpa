@@ -26,10 +26,18 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  * A configuration for multiple data stores, each referred as <em>slice</em>.
  * This configuration allows each underlying slice be configured with its
  * own specific configuration properties such as JDBC Driver or connection
- * user/password etc. <br>
- * This configuration also extends by adding a {@link DistributionPolicy 
- * DistributionPolicy} that governs how new instances be distributed
+ * user/password etc. 
+ * <br>
+ * This configuration also extends by several policy plugins. A policy plugin 
+ * is an user implementation of a specific policy interface. A policy implementation 
+ * is invoked by Slice runtime.
+ * <br>
+ * Slice recognizes following policies 
+ * <LI> {@link DistributionPolicy Distribution Policy} governs how new instances be distributed
  * among the slices.
+ * <LI> {@link ReplicationPolicy Replication Policy} maintains the same instance in multiple slices.
+ * <LI> {@link QueryTargetPolicy Query Target Policy} narrows the slices for a query execution.
+ * <LI> {@link FinderTargetPolicy Finder Target Policy} narrows the slices for primary key based lookup 
  * 
  * @author Pinaki Poddar 
  *
