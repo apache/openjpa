@@ -3136,7 +3136,8 @@ should be ignored.
 should be ignored.
                     </para>
                 </listitem>
-                <listitem id="DBDictionary.TableForUpdateClause">
+
+                    <listitem id="DBDictionary.TableForUpdateClause">
                     <para>
                     <indexterm>
                         <primary>
@@ -3159,6 +3160,22 @@ each table alias in queries that obtain pessimistic locks.
 Defaults to <literal>null</literal>.
                     </para>
                 </listitem>
+
+                <listitem id="DBDictionary.tableLengthIncludesSchema">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            SQL
+                        </primary>
+                        <secondary>
+                           tableLengthIncludesSchema 
+                        </secondary>
+                    </indexterm>
+                    <literal>tableLengthIncludesSchema</literal>: Whether the max length for a table name includes the table's schema.
+                    Defaults to <literal>false</literal>.
+                </para>
+                </listitem>
+               
                 <listitem id="DBDictionary.TableTypes">
                     <para>
                     <indexterm>
