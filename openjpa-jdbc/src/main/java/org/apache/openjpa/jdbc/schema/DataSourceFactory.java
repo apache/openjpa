@@ -81,7 +81,7 @@ public class DataSourceFactory {
         String props = (factory2) ? conf.getConnection2Properties()
             : conf.getConnectionProperties();
         try {
-            Class driverClass;
+            Class<?> driverClass;
             try {
                 driverClass = Class.forName(driver, true, loader);
             } catch (ClassNotFoundException cnfe) {
@@ -146,7 +146,7 @@ public class DataSourceFactory {
             newDecoratingDataSource(ds);
         try {
             // add user-defined decorators
-            List decorators = new ArrayList();
+            List<ConnectionDecorator> decorators = new ArrayList<ConnectionDecorator>();
             decorators.addAll(Arrays.asList(conf.
                 getConnectionDecoratorInstances()));
 
@@ -161,7 +161,7 @@ public class DataSourceFactory {
 
             // ask the DriverDataSource to provide any additional decorators
             if (ds instanceof DriverDataSource) {
-                List decs = ((DriverDataSource) ds).
+                List<ConnectionDecorator> decs = ((DriverDataSource) ds).
                     createConnectionDecorators();
                 if (decs != null)
                     decorators.addAll(decs);
@@ -198,11 +198,10 @@ public class DataSourceFactory {
         Connection conn = null;
 
         try {
-            // add the dictionary as a warning handler on the logging
-            // decorator
+            // add the dictionary as a warning handler on the logging decorator
             ConnectionDecorator cd;
-            for (Iterator itr = ds.getDecorators().iterator(); itr.hasNext();) {
-                cd = (ConnectionDecorator) itr.next();
+            for (Iterator<ConnectionDecorator> itr = ds.getDecorators().iterator(); itr.hasNext();) {
+                cd = itr.next();
                 if (cd instanceof LoggingConnectionDecorator)
                     ((LoggingConnectionDecorator) cd).setWarningHandler(dict);
             }

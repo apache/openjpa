@@ -23,6 +23,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 
 /**
  * A DataSource that allows additional configuration options to be set
@@ -101,8 +102,7 @@ public interface DriverDataSource
     /**
      * Provide any built-in decorators; may be null.
      */
-    @SuppressWarnings("unchecked")
-    public List createConnectionDecorators();
+    public List<ConnectionDecorator> createConnectionDecorators();
 
     /**
      * Initialize self and dictionary once available.
