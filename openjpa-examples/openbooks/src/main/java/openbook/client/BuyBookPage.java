@@ -183,7 +183,7 @@ public final class BuyBookPage extends JPanel {
             JButton searchButton = new JButton("Search", Images.SEARCH);
             searchButton.setHorizontalTextPosition(SwingConstants.LEADING);
             ShowCodeAction showCode = Demo.getInstance().new ShowCodeAction();
-            showCode.setPage("Dynamic Query", "openbook/server/OpenBookServiceImpl.java.html#buildQuery");
+            showCode.setPage("Dynamic Query", "server/OpenBookServiceImpl.java.html#buildQuery");
             JButton viewCodeButton = new JButton(showCode);
             
             JPanel buttonPanel = new JPanel();
