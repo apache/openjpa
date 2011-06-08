@@ -364,6 +364,8 @@ public class Filters {
             return Short.valueOf(((Number) o).shortValue());
         } else if (type == Byte.class && allowNumericConversion(o.getClass(), type, strictNumericConversion)) {
             return Byte.valueOf(((Number) o).byteValue());
+        } else if (type == Character.class) {
+        	return (char) ((Number) o).intValue();
         } else if (!strictNumericConversion) {
             return ((Number) o).intValue();
         } else {
