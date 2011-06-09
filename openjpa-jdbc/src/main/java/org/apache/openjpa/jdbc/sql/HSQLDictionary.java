@@ -91,6 +91,10 @@ public class HSQLDictionary extends DBDictionary {
             "SAVEPOINT", "TEMP", "TEXT", "TRIGGER", "TINYINT",
             "VARBINARY", "VARCHAR_IGNORECASE",
         }));
+        
+        fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
+            "TEXT"
+        }));
     }
 
     /**

@@ -71,7 +71,7 @@ public class DerbyDictionary
         supportsComments = true;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
-            "BIGINT", "INTEGER",
+            "BIGINT", "INTEGER", "TEXT"
         }));
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "BOOLEAN", "CALL", "ENDEXEC", "EXPLAIN", "FUNCTION",
