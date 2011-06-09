@@ -123,7 +123,11 @@ public abstract class StoreCollectionFieldStrategy
      * By default, assumes the structure is a collection.
      */
     protected void add(JDBCStore store, Object coll, Object obj) {
-        ((Collection) coll).add(obj);
+       	Class<?> elemClazz = field.getElement().getDeclaredType();
+       	if( elemClazz == null || obj == null || 
+            elemClazz.isAssignableFrom(obj.getClass())) {
+            ((Collection) coll).add(obj);
+       	}
     }
 
     /**
