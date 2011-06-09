@@ -93,6 +93,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     private transient ReentrantLock _lock = null;
 	private HintHandler _hintHandler;
 	private boolean _relaxBindParameterTypeChecking;
+	final private boolean _convertPositionalParams;
 	
 	/**
 	 * Constructor; supply factory exception translator and delegate.
@@ -101,19 +102,21 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 * @param ret Exception translator for this query
 	 * @param query The underlying "kernel" query.
 	 */
-	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
-		_em = em;
-		_query = new DelegatingQuery(query, ret);
-		_lock = new ReentrantLock();
-	}
+	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query,
+        boolean convertPositionalParams) {
+        _em = em;
+        _query = new DelegatingQuery(query, ret);
+        _lock = new ReentrantLock();
+        _convertPositionalParams = convertPositionalParams;
+    }
 
 	/**
 	 * Constructor; supply factory and delegate.
 	 * 
 	 * @deprecated
 	 */
-	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
-		this(em, null, query);
+	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query, boolean convertPositionalParams) {
+		this(em, null, query, convertPositionalParams);
 	}
 
 	/**
@@ -677,6 +680,10 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      * parameter of the query or if the argument is of incorrect type
      */    
     public OpenJPAQuery<X> setParameter(int pos, Object value) {
+        if (_convertPositionalParams == true) {
+            return setParameter("_"+String.valueOf(pos), value);
+        }
+        
         _query.assertOpen();
         _em.assertNotCloseInvoked();
         _query.lock();
@@ -868,6 +875,9 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      * the same parameter position is bound already.
      */
     public <T> Parameter<T> getParameter(int pos, Class<T> type) {
+        if (_convertPositionalParams == true) {
+            return getParameter("_"+String.valueOf(pos), type);
+        }
         Parameter<?> param = getParameter(pos);
         if (param.getParameterType().isAssignableFrom(type))
             throw new IllegalArgumentException(param + " does not match the requested type " + type);
@@ -944,6 +954,9 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
      * @throws IllegalArgumentException if the parameter with the given position does not exist
      */
     public Parameter<?> getParameter(int pos) {
+        if(_convertPositionalParams == true){
+            return getParameter("_"+String.valueOf(pos));
+        }
         Parameter<?> param = getDeclaredParameters().get(pos);
         if (param == null)
             throw new IllegalArgumentException(_loc.get("param-missing-pos", 

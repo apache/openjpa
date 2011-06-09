@@ -69,6 +69,7 @@ public class Compatibility {
     private boolean _checkDatabaseForCascadePersistToDetachedEntity = false;
     private boolean _overrideContextClassloader = true;
     private boolean _parseAnnotationsForQueryMode = true;
+    private boolean _convertPositionalParametersToNamed = false;    
     
     /**
      * Whether to require exact identity value types when creating object
@@ -330,6 +331,14 @@ public class Compatibility {
     public boolean getIgnoreDetachedStateFieldForProxySerialization() {
         return _ignoreDetachedStateFieldForProxySerialization;
     }
+    
+    public boolean getConvertPositionalParametersToNamed() {
+        return _convertPositionalParametersToNamed;
+    }
+
+    public void setConvertPositionalParametersToNamed(boolean c) {
+        _convertPositionalParametersToNamed = c;
+    }    
 
     /**
      * Whether OpenJPA should flush changes before detaching or serializing an
