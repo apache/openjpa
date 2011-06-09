@@ -2038,7 +2038,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Create a new query metadata instance.
      */
     protected QueryMetaData newQueryMetaData(Class<?> cls, String name) {
-        QueryMetaData meta = new QueryMetaData(name);
+        QueryMetaData meta =
+            new QueryMetaData(name, _conf.getCompatibilityInstance().getConvertPositionalParametersToNamed());
         meta.setDefiningType(cls);
         return meta;
     }

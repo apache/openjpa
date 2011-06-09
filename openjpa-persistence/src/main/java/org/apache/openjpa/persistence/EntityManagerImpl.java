@@ -113,7 +113,8 @@ public class EntityManagerImpl
     private EntityManagerFactoryImpl _emf;
     private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
-
+    private boolean _convertPositionalParams = false;
+    
     public EntityManagerImpl() {
         // for Externalizable
     }
@@ -129,6 +130,9 @@ public class EntityManagerImpl
         _emf = factory;
         _broker = new DelegatingBroker(broker, _ret);
         _broker.setImplicitBehavior(this, _ret);
+        
+        _convertPositionalParams =
+            factory.getConfiguration().getCompatibilityInstance().getConvertPositionalParametersToNamed();
     }
 
     /**
@@ -977,6 +981,10 @@ public class EntityManagerImpl
     public OpenJPAQuery createQuery(String language, String query) {
         assertNotCloseInvoked();
         try {
+            // We need
+            if (query != null && _convertPositionalParams && JPQLParser.LANG_JPQL.equals(language)) {
+                query = query.replaceAll("[\\?]", "\\:_");
+            }
             String qid = query;
             PreparedQuery pq = JPQLParser.LANG_JPQL.equals(language)
                 ? getPreparedQuery(qid) : null;
@@ -1017,11 +1025,10 @@ public class EntityManagerImpl
                 _broker.getClassLoader(), true);
             String qid = meta.getQueryString();
             
-            PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage())
-                ? getPreparedQuery(qid) : null;
-            org.apache.openjpa.kernel.Query del = (pq == null || !pq.isInitialized())
-                ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
-                : _broker.newQuery(pq.getLanguage(), pq);
+            PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage()) ? getPreparedQuery(qid) : null;
+            org.apache.openjpa.kernel.Query del =
+                (pq == null || !pq.isInitialized()) ? _broker.newQuery(meta.getLanguage(), meta.getQueryString())
+                    : _broker.newQuery(pq.getLanguage(), pq);
             
             if (pq != null) {
                 pq.setInto(del);
@@ -1060,7 +1067,8 @@ public class EntityManagerImpl
     }
 
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
-        return new QueryImpl<T>(this, _ret, kernelQuery);
+        return new QueryImpl<T>(this, _ret, kernelQuery, _convertPositionalParams
+            && !kernelQuery.getLanguage().equals(QueryLanguages.LANG_SQL));
     }
 
     /**

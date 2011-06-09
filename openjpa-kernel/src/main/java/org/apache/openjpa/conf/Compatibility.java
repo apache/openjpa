@@ -66,6 +66,7 @@ public class Compatibility {
     private boolean _isNonDefaultMappingAllowed = false;
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
+    private boolean _convertPositionalParametersToNamed = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -327,6 +328,14 @@ public class Compatibility {
     public boolean getIgnoreDetachedStateFieldForProxySerialization() {
         return _ignoreDetachedStateFieldForProxySerialization;
     }
+    
+    public boolean getConvertPositionalParametersToNamed() {
+        return _convertPositionalParametersToNamed;
+    }
+
+    public void setConvertPositionalParametersToNamed(boolean c) {
+        _convertPositionalParametersToNamed = c;
+    }    
 
     /**
      * Whether OpenJPA should flush changes before detaching or serializing an

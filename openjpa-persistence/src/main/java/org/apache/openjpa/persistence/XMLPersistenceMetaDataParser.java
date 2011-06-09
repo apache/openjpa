@@ -1672,8 +1672,8 @@ public class XMLPersistenceMetaDataParser
 
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);
-        meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(JPQLParser.LANG_JPQL);
+        meta.setQueryString(attrs.getValue("query"));
         String lockModeStr = attrs.getValue("lock-mode");
         LockModeType lmt = processNamedQueryLockModeType(log, lockModeStr, name);
         if (lmt != null) {
@@ -1775,8 +1775,8 @@ public class XMLPersistenceMetaDataParser
 
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);
-        meta.setQueryString(attrs.getValue("query"));
         meta.setLanguage(QueryLanguages.LANG_SQL);
+        meta.setQueryString(attrs.getValue("query"));
         String val = attrs.getValue("result-class");
         if (val != null) {
             Class<?> type = classForName(val);

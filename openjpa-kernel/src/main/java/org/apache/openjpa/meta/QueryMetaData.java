@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.xml.Commentable;
 
@@ -58,12 +60,13 @@ public class QueryMetaData
     private String _resultSetMappingName;
     private int _lineNum;  
     private int _colNum;  
-
+    private boolean _convertPositionalParametersToNamed;
     /**
      * Construct with the given name.
      */
-    protected QueryMetaData(String name) {
+    protected QueryMetaData(String name, boolean convertPositionalParametersToNamed) {
         _name = name;
+        _convertPositionalParametersToNamed = convertPositionalParametersToNamed;
     }
 
     /**
@@ -154,6 +157,9 @@ public class QueryMetaData
      * The full query string, or null if none.
      */
     public void setQueryString(String query) {
+        if (query != null && _convertPositionalParametersToNamed && JPQLParser.LANG_JPQL.equals(_language)) {
+            query = query.replaceAll("[\\?]", "\\:_");
+        }
         _query = query;
     }
 

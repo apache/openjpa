@@ -1815,8 +1815,8 @@ public class AnnotationPersistenceMetaDataParser
                 continue;
             }
             meta = getRepository().addQueryMetaData(_cls, query.name());
-            meta.setQueryString(query.query());
             meta.setLanguage(JPQLParser.LANG_JPQL);
+            meta.setQueryString(query.query());
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
             LockModeType lmt = processNamedQueryLockModeType(query);
@@ -1888,8 +1888,8 @@ public class AnnotationPersistenceMetaDataParser
             }
 
             meta = getRepository().addQueryMetaData(null, query.name());
-            meta.setQueryString(query.query());
             meta.setLanguage(QueryLanguages.LANG_SQL);
+            meta.setQueryString(query.query());
             Class<?> res = query.resultClass();
             if (ImplHelper.isManagedType(getConfiguration(), res))
                 meta.setCandidateType(res);
