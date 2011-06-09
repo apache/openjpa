@@ -68,6 +68,7 @@ public class Compatibility {
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
     private boolean _checkDatabaseForCascadePersistToDetachedEntity = false;
     private boolean _overrideContextClassloader = true;
+    private boolean _parseAnnotationsForQueryMode = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -576,5 +577,26 @@ public class Compatibility {
      */
     public void setOverrideContextClassloader(boolean overrideContextClassloader) {
         _overrideContextClassloader = overrideContextClassloader;
+    }
+    
+    /**
+     * Whether OpenJPA will scan every persistent class in an XML mapping file for annotations prior to executing a 
+     * query. In practice this scan is rarely needed, but the option to enable it is present for compatibility with 
+     * prior releases.
+     * @since 2.0.2
+     * @return true if the annotations should be re-parsed when resolving MetaData in MODE_QUERY.  
+     */
+    public boolean getParseAnnotationsForQueryMode() {
+        return _parseAnnotationsForQueryMode;
+    }
+
+    /**
+     * Whether OpenJPA will scan every persistent class in an XML mapping file for annotations prior to executing a 
+     * query. In practice this scan is rarely needed, but the option to enable it is present for compatibility with 
+     * prior releases.
+     * @since 2.0.2
+     */
+    public void setParseAnnotationsForQueryMode(boolean parseAnnotationsForQueryMode) {
+        _parseAnnotationsForQueryMode = parseAnnotationsForQueryMode;
     }
 }
