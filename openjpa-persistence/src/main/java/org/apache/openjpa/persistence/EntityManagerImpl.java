@@ -1067,8 +1067,7 @@ public class EntityManagerImpl
     }
 
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
-        return new QueryImpl<T>(this, _ret, kernelQuery, _convertPositionalParams
-            && !kernelQuery.getLanguage().equals(QueryLanguages.LANG_SQL));
+        return new QueryImpl<T>(this, _ret, kernelQuery);
     }
 
     /**
