@@ -45,6 +45,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.ParameterExpression;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.DelegatingQuery;
@@ -93,7 +94,7 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
     private transient ReentrantLock _lock = null;
 	private HintHandler _hintHandler;
 	private boolean _relaxBindParameterTypeChecking;
-	final private boolean _convertPositionalParams;
+	private boolean _convertPositionalParams;
 	
 	/**
 	 * Constructor; supply factory exception translator and delegate.
@@ -102,12 +103,18 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 * @param ret Exception translator for this query
 	 * @param query The underlying "kernel" query.
 	 */
-	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query,
-        boolean convertPositionalParams) {
+	public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
         _em = em;
         _query = new DelegatingQuery(query, ret);
         _lock = new ReentrantLock();
-        _convertPositionalParams = convertPositionalParams;
+        if(query.getLanguage() == QueryLanguages.LANG_SQL) { 
+            _convertPositionalParams = false; 
+        }
+        else { 
+            Compatibility compat  = query.getStoreContext().getConfiguration().getCompatibilityInstance(); 
+            _convertPositionalParams = compat.getConvertPositionalParametersToNamed();    
+        }
+        
     }
 
 	/**
@@ -115,8 +122,8 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
 	 * 
 	 * @deprecated
 	 */
-	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query, boolean convertPositionalParams) {
-		this(em, null, query, convertPositionalParams);
+	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
+		this(em, null, query);
 	}
 
 	/**
