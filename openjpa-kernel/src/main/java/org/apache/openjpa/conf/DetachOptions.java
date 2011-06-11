@@ -35,6 +35,7 @@ public abstract class DetachOptions
     private boolean _access = true;
     
     private boolean _liteAutoDetach = false;
+    private boolean _detachProxyFields = true;
 
     /**
      * The {@link DetachState} constant.
@@ -141,6 +142,24 @@ public abstract class DetachOptions
      */
     public boolean getLiteAutoDetach() {
         return (getDetachState() & DETACH_LOADED) == 1 && _liteAutoDetach;
+    }
+    
+    /**
+     * Whether to detach proxy fields.
+     */
+    public void setDetachProxyFields(boolean b) {
+        _detachProxyFields = b;
+    }
+    
+    /**
+     * Whether to detach proxy fields.
+     */
+    public boolean getDetachProxyFields() {
+        // This property can only be set to false when using lite auto detach.
+        if(!_liteAutoDetach){
+            return true;
+        }
+        return _detachProxyFields;
     }
 
     /**
