@@ -21,6 +21,7 @@ package org.apache.openjpa.kernel;
 import java.io.ObjectStreamException;
 import java.security.AccessController;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -622,7 +623,9 @@ public abstract class AbstractBrokerFactory
                 Map.Entry<?,?> entry;
                 for (Iterator<Map.Entry<String,Object>> itr = props.entrySet().iterator(); itr.hasNext();) {
                     entry = itr.next();
-                    buf.append(entry.getKey()).append(": ").append(entry.getValue());
+                    Object value = entry.getValue();
+                    buf.append(entry.getKey()).append(": ")
+                       .append(value != null && value.getClass().isArray() ? Arrays.toString((Object[])value) : value);
                     if (itr.hasNext())
                         buf.append(lineSep);
                 }
