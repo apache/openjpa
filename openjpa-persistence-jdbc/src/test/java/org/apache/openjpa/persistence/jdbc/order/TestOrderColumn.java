@@ -44,7 +44,8 @@ public class TestOrderColumn extends SingleEMFTestCase {
     private Student[] students = new Student[12];
     
     public void setUp() {
-        super.setUp(DROP_TABLES,
+        super.setUp(
+//            DROP_TABLES,
                 Person.class, Player.class, BattingOrder.class,
                 Trainer.class, Game.class, Inning.class,
                 Course.class, Student.class,
@@ -865,14 +866,14 @@ public class TestOrderColumn extends SingleEMFTestCase {
 
         // Query and verify the result
         String queryString = "SELECT INDEX(w) FROM Course c JOIN c.waitList w" +
-            " WHERE c.name = :cname";
+            " WHERE c.name = :cname ORDER BY w";
         Query qry = em.createQuery(queryString);
         qry.setParameter("cname", "Course A");
         List rlist = qry.getResultList();       
         assertNotNull(rlist);
-        assertEquals(rlist.size(), 2);
-        assertEquals(rlist.get(0), 0L);
-        assertEquals(rlist.get(1), 1L);
+        assertEquals(2, rlist.size());
+        assertEquals(0l, rlist.get(0));
+        assertEquals(1l, rlist.get(1));
 
         queryString = "SELECT INDEX(w) FROM Course c JOIN c.waitList w" +
             " WHERE c.name = :cname AND w.name = 'Student11'";
