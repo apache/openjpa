@@ -98,7 +98,7 @@ public class SQLStoreQuery
     /**
      * Executes the filter as a SQL query.
      */
-    protected static class SQLExecutor
+    public static class SQLExecutor
         extends AbstractExecutor {
 
         private final ClassMetaData _meta;

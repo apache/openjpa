@@ -41,6 +41,7 @@ import org.apache.openjpa.jdbc.kernel.ConnectionInfo;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
+import org.apache.openjpa.jdbc.kernel.SQLStoreQuery;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -437,7 +438,18 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
      * Construct a distributed query to be executed against all the slices.
      */
     public StoreQuery newQuery(String language) {
+    	if (QueryLanguages.LANG_SQL.equals(language)) {
+    		DistributedSQLStoreQuery ret = new DistributedSQLStoreQuery(this);
+            for (SliceStoreManager slice : _slices) {
+                ret.add(slice.newQuery(language));
+            }
+            return ret;
+    	}
         ExpressionParser parser = QueryLanguages.parserForLanguage(language);
+        if (parser == null) {
+    		throw new UnsupportedOperationException("Language [" + language + "] not supported");
+        } 
+
         DistributedStoreQuery ret = new DistributedStoreQuery(this, parser);
         for (SliceStoreManager slice : _slices) {
             ret.add(slice.newQuery(language));
