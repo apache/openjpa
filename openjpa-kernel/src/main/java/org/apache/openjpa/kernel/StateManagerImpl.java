@@ -2896,7 +2896,7 @@ public class StateManagerImpl
      * <B>Note:</B> Proxying is bypassed if AutoDetach option is set to {@link AutoDetach#DETACH_NONE}.
      */
     void proxyFields(boolean reset, boolean replaceNull) {
-    	if (getBroker().getAutoDetach() != AutoDetach.DETACH_NONE)
+    	if (getBroker().getAutoDetach() == AutoDetach.DETACH_NONE)
             return;
         // we only replace nulls if the runtime can't differentiate between
         // null and empty containers.  we replace nulls in this case to
