@@ -45,7 +45,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
     
     public void setUp() {
         super.setUp(
-//            DROP_TABLES,
+                CLEAR_TABLES,
                 Person.class, Player.class, BattingOrder.class,
                 Trainer.class, Game.class, Inning.class,
                 Course.class, Student.class,
