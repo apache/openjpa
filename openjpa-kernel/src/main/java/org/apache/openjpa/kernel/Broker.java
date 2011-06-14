@@ -183,20 +183,27 @@ public interface Broker
     /**
      * Bit flags marked in {@link AutoDetach} which indicate when persistent
      * managed objects should be automatically detached in-place.
+     * <br>
+     * {@link AutoDetach#DETACH_NONE} is exclusive i.e. can not be specified 
+     * with any other option. 
      */
     public void setAutoDetach(int flags);
 
     /**
      * Bit flags marked in {@link AutoDetach} which indicate when persistent
      * managed objects should be automatically detached in-place.
+     * <br>
+     * {@link AutoDetach#DETACH_NONE} is exclusive i.e. can not be specified 
+     * with any other option. 
+     * 
      */
     public void setAutoDetach(int flag, boolean on);
     
     /**
-     * Retrieve the current properties for this broker Some of these properties
+     * Retrieve the current properties for this broker. Some of these properties
      * may have been changed from the original configuration.
      * 
-     * @return the changed properties
+     * @return the set of properties currently used by this broker.
      * 
      * @since 2.0.0
      */

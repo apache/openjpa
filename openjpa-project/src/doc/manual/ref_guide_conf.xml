@@ -571,13 +571,21 @@ AutoDetach</literal>
             </para>
             <para>
 <emphasis role="bold">Possible values: </emphasis><literal>close</literal>,
-<literal>commit</literal>, <literal>nontx-read</literal>, <literal>rollback</literal>
+<literal>commit</literal>, <literal>nontx-read</literal>, <literal>rollback</literal>, <literal>none</literal>
             </para>
             <para>
 <emphasis role="bold">Description:</emphasis> A comma-separated list of events
 when managed instances will be automatically detached. When using the OpenJPA EntityManager this defaults to 
 <literal>close</literal>, and <literal>rollback</literal> per the JPA spec. If you need to change this setting, you
 need to set it directly on an instantiated EntityManager.
+
+<para>
+<literal>none</literal> option is exclusive. It can not be specified with any other option.
+<literal>none</literal> option implies that managed objects will not be detached from the persistence context,
+the second-class object fields such as collections or date will <emphasis>not</emphasis> be proxied unlike normal
+circumstances. This option is relevant for specific use cases where the user application would not refer to the
+managed objects after the transaction and/or the context ends e.g. typical batch insertion scenario.  
+</para>
             </para>
         </section>
         <section id="openjpa.BrokerFactory">
