@@ -43,24 +43,4 @@ public interface AutoDetach {
      * Detach context on failed transaction commit / rollback.
      */
     public static final int DETACH_ROLLBACK = 2 << 3;
-    
-    /**
-     * Never Detach. Useful for batch loading where user application is not
-     * concerned about the referenced objects after the persistent operation.
-     */
-    public static final int DETACH_NONE = 2 << 4;
-    
-    /**
-     * Available integer values of AutoDetach options.
-     */
-	public static final int[] values = {DETACH_NONE, DETACH_CLOSE, DETACH_COMMIT, DETACH_NONTXREAD, 
-			DETACH_ROLLBACK};
-	
-    /**
-     * Available user-visible names of AutoDetach options.
-     * Order corresponds to integer values of the options.  
-     */
-	public static final String[] names = {"NONE", "CLOSE", "COMMIT", "NON-TX-READ", "ROLLBACK"};
-
-    
 }

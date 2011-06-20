@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -619,27 +618,18 @@ public class BrokerImpl
         return _autoDetach;
     }
 
-    /**
-     * Sets automatic detachment option. 
-     * <br>
-     * If the given flag contains {@link AutoDetach#DETACH_NONE} option,
-     * then no other option can be specified.  
-     */
     public void setAutoDetach(int detachFlags) {
         assertOpen();
-        assertAutoDetachValue(detachFlags);
         _autoDetach = detachFlags;
     }
 
     public void setAutoDetach(int detachFlag, boolean on) {
         assertOpen();
-        assertAutoDetachValue(on ? _autoDetach | detachFlag : _autoDetach & ~detachFlag);
         if (on)
             _autoDetach |= detachFlag;
         else
             _autoDetach &= ~detachFlag;
     }
-    
 
     public int getDetachState() {
         return _detachState;
@@ -1827,10 +1817,12 @@ public class BrokerImpl
 
             // make sure the runtime supports it
             if (!_conf.supportedOptions().contains(OpenJPAConfiguration.OPTION_INC_FLUSH))
-                throw new UnsupportedException(_loc.get("incremental-flush-not-supported"));
+                throw new UnsupportedException(_loc.get
+                    ("incremental-flush-not-supported"));
             if (_savepoints != null && !_savepoints.isEmpty()
                 && !_spm.supportsIncrementalFlush())
-                throw new UnsupportedException(_loc.get("savepoint-flush-not-supported"));
+                throw new UnsupportedException(_loc.get
+                    ("savepoint-flush-not-supported"));
 
             try {
                 flushSafe(FLUSH_INC);
@@ -5189,28 +5181,5 @@ public class BrokerImpl
     protected boolean isFlushing() {
         return ((_flags & FLAG_FLUSHING) != 0);
     }
-    
-    /**
-     * Asserts consistencey of given automatic detachment option value.
-     */
-    private void assertAutoDetachValue(int value) {
-    	if (((value & AutoDetach.DETACH_NONE) != 0) && (value != AutoDetach.DETACH_NONE)) {
-    		throw new UserException(_loc.get("detach-none-exclusive", toAutoDetachString(value)));
-    	}
-    }
-    
-    /**
-     * Generates a user-readable String from the given integral value of AutoDetach options.
-     */
-    private String toAutoDetachString(int value) {
-    	List<String> result = new ArrayList<String>();
-    	for (int i = 0; i < AutoDetach.values.length; i++) {
-    		if ((value & AutoDetach.values[i]) != 0) {
-    			result.add(AutoDetach.names[i]);
-    		}
-    	}
-    	return Arrays.toString(result.toArray(new String[result.size()]));
-    }
-
 
 }

@@ -37,7 +37,6 @@ public class TestLibService extends SingleEMFTestCase
     public EntityManager getTransactionalEntityManager() {
         // return a transactionally scoped entity manager
         OpenJPAEntityManager em = emf.createEntityManager();
-        txScope.remove(AutoDetachType.NONE);
         em.setAutoDetach(txScope);
         return em;
     }
