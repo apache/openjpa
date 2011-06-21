@@ -599,14 +599,11 @@ about the database in use (e.g. version, JDBC driver version).
         </indexterm>
         <para>
 The JPA standard defines how to access JDBC connections from enterprise beans.
-OpenJPA also provides APIs to access an <classname>EntityManager</classname>'s
-connection, or to retrieve a connection directly from the <classname>
+OpenJPA also provides APIs to retrieve a connection directly from the <classname>
 EntityManagerFactory</classname>'s <classname>DataSource</classname>.
         </para>
         <para>
-The 
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
-<methodname>OpenJPAEntityManager.getConnection</methodname></ulink> method
+The <methodname>EntityManager.unwrap(java.sql.Connection.class)</methodname> method
 returns an <classname>EntityManager</classname>'s connection. If the <classname>
 EntityManager</classname> does not already have a connection, it will obtain
 one. The returned connection is only guaranteed to be transactionally consistent
@@ -624,13 +621,14 @@ connection is not released if a datastore transaction is in progress.
                 Using the EntityManager's Connection
             </title>
 <programlisting>
-import java.sql.*;
-import org.apache.openjpa.persistence.*;
+import java.sql.Connection;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 ...
 
-OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
-Connection conn = (Connection) kem.getConnection();
+EntityManager em = emf.createEntityManager();
+Connection conn = (Connection) em.unwrap(java.sql.Connection.class);
 
 // do JDBC stuff
 

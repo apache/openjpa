@@ -30,6 +30,7 @@ import java.io.ObjectStreamClass;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -1660,11 +1661,16 @@ public class EntityManagerImpl
      * that is not wrapped by this receiver.  
      */
     public <T> T unwrap(Class<T> cls) {
-        Object[] delegates = new Object[]{_broker.getInnermostDelegate(),
-            _broker.getDelegate(), _broker, this};
-        for (Object o : delegates) {
-            if (cls != null && cls != Object.class && cls.isInstance(o))
-                return (T)o;
+        if (cls != null && cls != Object.class) {
+            Object[] delegates = new Object[] { _broker.getInnermostDelegate(), _broker.getDelegate(), _broker, this };
+            for (Object o : delegates) {
+                if (cls.isInstance(o))
+                    return (T) o;
+            }
+            // Only call getConnection() once we are certain that is the type that we need to unwrap.
+            if (cls.isAssignableFrom(Connection.class)) {
+                return (T) getConnection();
+            }
         }
         // Set this transaction to rollback only (as per spec) here because the raised exception 
         // does not go through normal exception translation pathways

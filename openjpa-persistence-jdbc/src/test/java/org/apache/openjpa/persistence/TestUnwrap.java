@@ -45,7 +45,7 @@ public class TestUnwrap extends SingleEMFTestCase {
             org.apache.openjpa.kernel.Query.class,
             org.apache.openjpa.kernel.QueryImpl.class
         };
-        for (Class c : validCasts) {
+        for (Class<?> c : validCasts) {
             Object unwrapped = query.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
@@ -69,6 +69,24 @@ public class TestUnwrap extends SingleEMFTestCase {
             Object unwrapped = em.unwrap(c);
             assertTrue(c.isInstance(unwrapped));
         }
+        em.close();
+    }
+    
+    /**
+     * Tests a EntityManager can be unwrapped as an instance of a series of 
+     * class or interface. 
+     */
+    public void testValidOtherUnwrap() {
+        EntityManager em = emf.createEntityManager();
+        
+        Class<?>[] validCasts = new Class[] {
+            java.sql.Connection.class
+        };
+        for (Class<?> c : validCasts) {
+            Object unwrapped = em.unwrap(c);
+            assertTrue(c.isInstance(unwrapped));
+        }
+        
         em.close();
     }
     
