@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +48,8 @@ public class DepthFirstAnalysis {
         (DepthFirstAnalysis.class);
 
     private final Graph _graph;
-    private final Map _nodeInfo = new HashMap();
-    private Comparator _comp;
+    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<Object, NodeInfo>();
+    private Comparator<Object> _comp;
 
     /**
      * Constructor.  Performs the analysis on the given graph and caches
@@ -60,18 +59,16 @@ public class DepthFirstAnalysis {
         _graph = graph;
 
         // initialize node infos
-        Collection nodes = graph.getNodes();
-        for (Iterator itr = nodes.iterator(); itr.hasNext();)
-            _nodeInfo.put(itr.next(), new NodeInfo());
+        Collection<Object> nodes = graph.getNodes();
+        for (Object node : nodes)
+            _nodeInfo.put(node, new NodeInfo());
 
         // visit all nodes -- see intro to algo's book
         NodeInfo info;
-        Object node;
-        for (Iterator itr = nodes.iterator(); itr.hasNext();) {
-            node = itr.next();
-            info = (NodeInfo) _nodeInfo.get(node);
+        for (Object node : nodes) {
+            info = _nodeInfo.get(node);
             if (info.color == NodeInfo.COLOR_WHITE)
-                visit(graph, node, info, 0, new LinkedList());
+                visit(graph, node, info, 0, new LinkedList<Edge>());
         }
     }
 
@@ -79,21 +76,17 @@ public class DepthFirstAnalysis {
      * Visit a node.  See Introduction to Algorithms book for details.
      */
     private int visit(Graph graph, Object node, NodeInfo info, int time, 
-        List path) {
+        List<Edge> path) {
         // discover node
         info.color = NodeInfo.COLOR_GRAY;
 
         // explore all vertices from that node depth first
-        Collection edges = graph.getEdgesFrom(node);
-        Edge edge;
-        Object other;
-        NodeInfo otherInfo;
+        Collection<Edge> edges = graph.getEdgesFrom(node);
         int maxChildTime = time - 1;
         int childTime;
-        for (Iterator itr = edges.iterator(); itr.hasNext();) {
-            edge = (Edge) itr.next();
-            other = edge.getOther(node);
-            otherInfo = (NodeInfo) _nodeInfo.get(other);
+        for (Edge edge : edges) {
+        	Object other = edge.getOther(node);
+        	NodeInfo otherInfo = _nodeInfo.get(other);
             if (otherInfo.color == NodeInfo.COLOR_WHITE) {
                 // undiscovered node; recurse into it
                 path.add(edge);
@@ -109,7 +102,7 @@ public class DepthFirstAnalysis {
                 childTime = otherInfo.finished;
                 edge.setType(Edge.TYPE_FORWARD);
                 // find the cycle including this edge
-                List cycle = new LinkedList();
+                List<Edge> cycle = new LinkedList<Edge>();
                 cycle.add(edge);
                 if (cycleForForwardEdge(graph, other, node, cycle)) {
                     edge.setCycle(cycle);
@@ -128,7 +121,7 @@ public class DepthFirstAnalysis {
      * Set the comparator that should be used for ordering groups of nodes
      * with the same dependencies.
      */
-    public void setNodeComparator(Comparator comp) {
+    public void setNodeComparator(Comparator<Object> comp) {
         _comp = comp;
     }
 
@@ -141,9 +134,9 @@ public class DepthFirstAnalysis {
      * is possible, though this method will still return the correct order
      * as if edges creating the cycles did not exist.
      */
-    public List getSortedNodes() {
-        Map.Entry[] entries = (Map.Entry[]) _nodeInfo.entrySet().
-            toArray(new Map.Entry[_nodeInfo.size()]);
+    public List<Object> getSortedNodes() {
+        Map.Entry<Object,NodeInfo>[] entries = 
+        	_nodeInfo.entrySet().toArray(new Map.Entry[_nodeInfo.size()]);
         Arrays.sort(entries, new NodeInfoComparator(_comp));
         return new NodeList(entries);
     }
@@ -153,23 +146,21 @@ public class DepthFirstAnalysis {
      * discover all edges that cause cycles in the graph by passing it
      * the {@link Edge#TYPE_BACK} or {@link Edge#TYPE_FORWARD} edge type.
      */
-    public Collection getEdges(int type) {
-        Collection typed = null;
-        Edge edge;
-        Object node;
-        for (Iterator nodes = _graph.getNodes().iterator(); nodes.hasNext();) {
-            node = nodes.next();
-            for (Iterator itr = _graph.getEdgesFrom(node).iterator();
-                itr.hasNext();) {
-                edge = (Edge) itr.next();
+    public Collection<Edge> getEdges(int type) {
+        Collection<Edge> typed = null;
+        for (Object node : _graph.getNodes()) {
+            for (Edge edge : _graph.getEdgesFrom(node)) {
                 if (edge.getType() == type) {
                     if (typed == null)
-                        typed = new ArrayList();
+                        typed = new ArrayList<Edge>();
                     typed.add(edge);
                 }
             }
         }
-        return (typed == null) ? Collections.EMPTY_LIST : typed;
+        if(typed == null ) { 
+            typed = Collections.emptyList();
+        }
+        return typed; 
     }
 
     /**
@@ -177,7 +168,7 @@ public class DepthFirstAnalysis {
      * the graph walk, or -1 if the node is not part of the graph.
      */
     public int getFinishedTime(Object node) {
-        NodeInfo info = (NodeInfo) _nodeInfo.get(node);
+        NodeInfo info = _nodeInfo.get(node);
         if (info == null)
             return -1;
         return info.finished;
@@ -191,9 +182,9 @@ public class DepthFirstAnalysis {
      * @param pos Index of the first edge in path continuing the cycle
      * @return Cycle starting with a type {@link Edge#TYPE_BACK} edge
      */
-    private List buildCycle(Edge backEdge, List path, int pos) {
+    private List<Edge> buildCycle(Edge backEdge, List<Edge> path, int pos) {
         int length = path != null ? path.size() - pos : 0;
-        List cycle = new ArrayList(length + 1);
+        List<Edge> cycle = new ArrayList<Edge>(length + 1);
         cycle.add(0, backEdge);
         for (int i = 0; i < length; i++) {
             cycle.add(i + 1, path.get(pos + i));
@@ -209,12 +200,11 @@ public class DepthFirstAnalysis {
      * @param path Path consisting of edges to the edge's starting node
      * @return Cycle starting with a type {@link Edge#TYPE_BACK} edge
      */
-    private List cycleForBackEdge(Edge edge, List path) {
+    private List<Edge> cycleForBackEdge(Edge edge, List<Edge> path) {
         if (edge.getType() != Edge.TYPE_BACK) {
             return null;
         }
         
-        List cycle;
         int pos = 0;
         if (path != null && !edge.getFrom().equals(edge.getTo())) {
             // Not a single edge loop
@@ -225,7 +215,7 @@ public class DepthFirstAnalysis {
                 _loc.get("edge-no-loop", edge).getMessage();
             path = null;
         }
-        cycle = buildCycle(edge, path, pos); 
+        List<Edge> cycle = buildCycle(edge, path, pos); 
         assert (cycle != null): _loc.get("cycle-null", edge).getMessage();
         return cycle;
     }
@@ -242,11 +232,10 @@ public class DepthFirstAnalysis {
      * the <code>path</code> parameter.
      */
     private boolean cycleForForwardEdge(Graph graph, Object node,
-        Object cycleTo, List path) {                   
+        Object cycleTo, List<Edge> path) {                   
         boolean found = false;
-        Collection edges = graph.getEdgesFrom(node);
-        for (Iterator itr = edges.iterator(); !found && itr.hasNext();) {
-            Edge edge = (Edge) itr.next();
+        Collection<Edge> edges = graph.getEdgesFrom(node);
+        for (Edge edge : edges) {
             Object other = edge.getOther(node);
             // Single edge loops are ignored
             if (!node.equals(other)) {
@@ -275,11 +264,11 @@ public class DepthFirstAnalysis {
      * @param path Continuous list of graph edges.
      * @return Edge index if found, -1 otherwise.
      */
-    private int findNodeInPath(Object node, List path) {
+    private int findNodeInPath(Object node, List<Edge> path) {
         int pos = -1;
         if (path != null) {
             for (int i = 0; i < path.size(); i++) {
-                if (((Edge)path.get(i)).getFrom().equals(node)) {
+                if ( path.get(i).getFrom().equals(node)) {
                     pos = i;
                 }
             }
@@ -297,10 +286,9 @@ public class DepthFirstAnalysis {
         }
         // b) there might be forward edges
         // make sure these don't indicate cycles
-        Collection edges = getEdges(Edge.TYPE_FORWARD);
+        Collection<Edge> edges = getEdges(Edge.TYPE_FORWARD);
         if (!edges.isEmpty()) {
-            for (Iterator itr = edges.iterator(); itr.hasNext();) {
-                Edge edge = (Edge) itr.next();
+            for (Edge edge : edges) {
                 if (edge.getCycle() != null)  {
                     return false;
                 }
@@ -310,22 +298,20 @@ public class DepthFirstAnalysis {
     }
     
     /**
-     * Comparator for toplogically sorting entries in the node info map.
+     * Comparator for topologically sorting entries in the node info map.
      */
     private static class NodeInfoComparator
-        implements Comparator {
+        implements Comparator<Map.Entry<Object,NodeInfo>> {
 
-        private final Comparator _subComp;
+        private final Comparator<Object> _subComp;
 
-        public NodeInfoComparator(Comparator subComp) {
+        public NodeInfoComparator(Comparator<Object> subComp) {
             _subComp = subComp;
         }
 
-        public int compare(Object o1, Object o2) {
-            Map.Entry e1 = (Map.Entry) o1;
-            Map.Entry e2 = (Map.Entry) o2;
-            NodeInfo n1 = (NodeInfo) e1.getValue();
-            NodeInfo n2 = (NodeInfo) e2.getValue();
+        public int compare(Map.Entry<Object,NodeInfo> e1, Map.Entry<Object,NodeInfo> e2) {
+            NodeInfo n1 = e1.getValue();
+            NodeInfo n2 = e2.getValue();
 
             // sort by finished order
             int ret = n1.finished - n2.finished;
@@ -339,11 +325,11 @@ public class DepthFirstAnalysis {
      *	List of node-to-nodeinfo entries that exposes just the nodes.
      */
     private static class NodeList
-        extends AbstractList {
+        extends AbstractList<Object> {
 
-        private final Map.Entry[] _entries;
+        private final Map.Entry<Object, NodeInfo>[] _entries;
 
-        public NodeList(Map.Entry[] entries) {
+        public NodeList(Map.Entry<Object, NodeInfo>[] entries) {
             _entries = entries;
         }
 

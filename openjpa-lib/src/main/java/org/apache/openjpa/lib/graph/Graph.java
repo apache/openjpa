@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class Graph {
      * Map each node to list of edges from that node.
      * Using a LinkedHashMap to ensure order of iterator processing.
      */ 
-    private final Map _nodes = new LinkedHashMap();
+    private final Map<Object, Collection<Edge>> _nodes = new LinkedHashMap<Object, Collection<Edge>>();
 
     /**
      * Clear the graph.
@@ -59,7 +58,7 @@ public class Graph {
     /**
      * Return a view of all nodes in the graph.
      */
-    public Collection getNodes() {
+    public Collection<Object> getNodes() {
         return _nodes.keySet();
     }
 
@@ -82,9 +81,9 @@ public class Graph {
     public boolean removeNode(Object node) {
         boolean rem = containsNode(node);
         if (rem) {
-            Collection edges = getEdgesTo(node);
-            for (Iterator itr = edges.iterator(); itr.hasNext();)
-                removeEdge((Edge) itr.next());
+            Collection<Edge> edges = getEdgesTo(node);
+            for (Edge edge : edges)
+                removeEdge( edge);
             _nodes.remove(node);
         }
         return rem;
@@ -93,13 +92,11 @@ public class Graph {
     /**
      * Return all edges in the graph.
      */
-    public Collection getEdges() {
-        Collection all = new HashSet();
-        Collection edges;
-        for (Iterator itr = _nodes.values().iterator(); itr.hasNext();) {
-            edges = (Collection) itr.next();
-            if (edges != null)
-                all.addAll(edges);
+    public Collection<Edge> getEdges() {
+        Collection<Edge> all = new HashSet<Edge>();
+        for (Collection<Edge> edges : _nodes.values()) {
+        	if (edges != null)
+        		all.addAll(edges);
         }
         return all;
     }
@@ -107,35 +104,34 @@ public class Graph {
     /**
      * Return all the edges from a particular node.
      */
-    public Collection getEdgesFrom(Object node) {
-        Collection edges = (Collection) _nodes.get(node);
-        return (edges == null) ? Collections.EMPTY_LIST : edges;
+    public Collection<Edge> getEdgesFrom(Object node) {
+        Collection<Edge> edges = _nodes.get(node);
+        if(edges == null ) {
+            edges = Collections.emptyList();
+        }
+        return edges; 
     }
 
     /**
      * Return all the edges to a particular node.
      */
-    public Collection getEdgesTo(Object node) {
-        Collection edges = getEdges();
-        Collection to = new ArrayList();
-        Edge edge;
-        for (Iterator itr = edges.iterator(); itr.hasNext();) {
-            edge = (Edge) itr.next();
-            if (edge.isTo(node))
-                to.add(edge);
-        }
-        return to;
+    public Collection<Edge> getEdgesTo(Object node) {
+    	Collection<Edge> edges = getEdges();
+    	Collection<Edge> to = new ArrayList<Edge>();
+    	for (Edge edge : edges) {
+    		if (edge.isTo(node))
+    			to.add(edge);
+    	}
+    	return to;
     }
 
     /**
      * Return all the edges from one node to another.
      */
-    public Collection getEdges(Object from, Object to) {
-        Collection edges = getEdgesFrom(from);
-        Collection matches = new ArrayList(edges.size());
-        Edge edge;
-        for (Iterator itr = edges.iterator(); itr.hasNext();) {
-            edge = (Edge) itr.next();
+    public Collection<Edge> getEdges(Object from, Object to) {
+        Collection<Edge> edges = getEdgesFrom(from);
+        Collection<Edge> matches = new ArrayList<Edge>(edges.size());
+        for (Edge edge : edges) {
             if (edge.isTo(to))
                 matches.add(edge);
         }
@@ -151,17 +147,17 @@ public class Graph {
         if (!containsNode(edge.getFrom()))
             throw new IllegalArgumentException(edge.getFrom().toString());
 
-        Collection from = (Collection) _nodes.get(edge.getFrom());
+        Collection<Edge> from = _nodes.get(edge.getFrom());
         if (from == null) {
-            from = new ArrayList(3);
+            from = new ArrayList<Edge>(3);
             _nodes.put(edge.getFrom(), from);
         }
         from.add(edge);
 
         if (!edge.isDirected() && !edge.getFrom().equals(edge.getTo())) {
-            Collection to = (Collection) _nodes.get(edge.getTo());
+            Collection<Edge> to = _nodes.get(edge.getTo());
             if (to == null) {
-                to = new ArrayList(3);
+                to = new ArrayList<Edge>(3);
                 _nodes.put(edge.getTo(), to);
             }
             to.add(edge);
@@ -174,12 +170,12 @@ public class Graph {
      * @return true if the edge was removed, false if not in the graph
      */
     public boolean removeEdge(Edge edge) {
-        Collection edges = (Collection) _nodes.get(edge.getFrom());
+        Collection<Edge> edges = _nodes.get(edge.getFrom());
         if (edges == null)
             return false;
         boolean rem = edges.remove(edge);
         if (rem && !edge.isDirected()) {
-            edges = (Collection) _nodes.get(edge.getTo());
+            edges = _nodes.get(edge.getTo());
             if (edges != null)
                 edges.remove(edge);
         }
@@ -191,12 +187,10 @@ public class Graph {
      *	last traversal.
      */
     public void clearTraversal() {
-        Collection edges;
-        for (Iterator vals = _nodes.values().iterator(); vals.hasNext();) {
-            edges = (Collection) vals.next();
-            if (edges != null)
-                for (Iterator ed = edges.iterator(); ed.hasNext();)
-                    ((Edge) ed.next()).clearTraversal ();
-		}
-	}
+    	for (Collection<Edge> edges : _nodes.values()) {
+    		if (edges != null)
+    			for (Edge edge : edges)
+    				edge.clearTraversal();
+    	}
+    }
 }

@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.graph;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +43,9 @@ import java.util.Set;
 public class BreadthFirstWalk {
 
     private final Graph _graph;
-    private final Set _visitors = new HashSet();
-    private final List _queue = new LinkedList();
-    private final Map _nodeInfo = new HashMap();
+    private final Set<GraphVisitor> _visitors = new HashSet<GraphVisitor>();
+    private final List<Object> _queue = new LinkedList<Object>();
+    private final Map<Object, NodeInfo> _nodeInfo = new HashMap<Object, NodeInfo>();
 
     public BreadthFirstWalk(Graph graph) {
         _graph = graph;
@@ -59,15 +58,13 @@ public class BreadthFirstWalk {
         _queue.clear();
         _nodeInfo.clear();
 
-        Collection nodes = _graph.getNodes();
-        for (Iterator itr = nodes.iterator(); itr.hasNext();)
-            _nodeInfo.put(itr.next(), new NodeInfo());
+        Collection<Object> nodes = _graph.getNodes();
+        for (Object node: nodes)
+            _nodeInfo.put(node, new NodeInfo());
 
-        Object node;
         NodeInfo info;
-        for (Iterator itr = nodes.iterator(); itr.hasNext();) {
-            node = itr.next();
-            info = (NodeInfo) _nodeInfo.get(node);
+        for (Object node : nodes){
+            info = _nodeInfo.get(node);
             if (info.color == NodeInfo.COLOR_WHITE)
                 enqueue(node, info);
             processQueue();
@@ -78,23 +75,16 @@ public class BreadthFirstWalk {
      * Process the queue to see what data needs to be obtained.
      */
     private void processQueue() {
-        Object node;
-        Object other;
-        NodeInfo info;
-        NodeInfo otherInfo;
-        Collection edges;
-        Edge edge;
         while (_queue.size() > 0) {
-            node = _queue.remove(0);
-            info = (NodeInfo) _nodeInfo.get(node);
+        	Object node = _queue.remove(0);
+            NodeInfo info = _nodeInfo.get(node);
             visit(node, info);
 
-            edges = _graph.getEdgesFrom(node);
-            for (Iterator itr = edges.iterator(); itr.hasNext();) {
-                edge = (Edge) itr.next();
+            Collection<Edge> edges = _graph.getEdgesFrom(node);
+            for (Edge edge : edges) {
                 edgeVisited(edge);
-                other = edge.getOther(node);
-                otherInfo = (NodeInfo) _nodeInfo.get(other);
+                Object other = edge.getOther(node);
+                NodeInfo otherInfo = _nodeInfo.get(other);
                 if (otherInfo.color == NodeInfo.COLOR_WHITE)
                     enqueue(other, otherInfo);
             }
@@ -108,8 +98,8 @@ public class BreadthFirstWalk {
     protected void enqueue(Object node, NodeInfo info) {
         _queue.add(node);
         info.color = NodeInfo.COLOR_GRAY;
-        for (Iterator i = _visitors.iterator(); i.hasNext();)
-            ((GraphVisitor) i.next()).nodeSeen(node);
+        for (GraphVisitor visitor : _visitors)
+        	visitor.nodeSeen(node);
     }
 
     /**
@@ -117,16 +107,16 @@ public class BreadthFirstWalk {
      */
     protected void visit(Object node, NodeInfo info) {
         info.color = NodeInfo.COLOR_BLACK;
-        for (Iterator i = _visitors.iterator(); i.hasNext();)
-            ((GraphVisitor) i.next()).nodeVisited(node);
+        for (GraphVisitor visitor : _visitors)
+        	visitor.nodeVisited(node);
     }
 
     /**
      * An edge is seen.  Notify visitors.
      */
     protected void edgeVisited(Edge edge) {
-        for (Iterator i = _visitors.iterator(); i.hasNext();)
-            ((GraphVisitor) i.next()).edgeVisited(edge);
+    	for (GraphVisitor visitor : _visitors)
+    		visitor.edgeVisited(edge);
     }
 
     /**
