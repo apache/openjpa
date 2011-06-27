@@ -3917,6 +3917,39 @@ the operation will fail.
             </itemizedlist>
         </section>
         
+        <section id="ref_guide_dbsetup_dbsupport_db2">
+            <title>
+                DB2 Properties
+            </title>
+            <indexterm zone="ref_guide_dbsetup_dbsupport_db2">
+                <primary>
+                    DB2
+                </primary>
+                <seealso>
+                    DBDictionary
+                </seealso>
+            </indexterm>
+            <para>
+The <literal>db2</literal> dictionary understands the following additional
+properties:
+            </para>
+            <itemizedlist>
+                <listitem id="DB2Dictionary.AppendExtendedExceptionText">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DB2
+                        </primary>
+                        <secondary>
+                            AppendExtendedExceptionText
+                        </secondary>
+                    </indexterm>
+<literal>AppendExtendedExceptionText</literal>: If false, OpenJPA will not call back to the database to 
+get extended exception text.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </section>        
         <section id="ref_guide_dbsetup_dbsupport_delim_id">
         	<title>
         		Delimited Identifiers Support
