@@ -70,18 +70,14 @@ public class TestM2MInDataCache extends SingleEMFTestCase {
         em.close();
 
         em = emf.createEntityManager();
-        try {
-            M2MEntityE e1a = em.find(M2MEntityE.class, 1);
-            Map entityf1 = e1a.getEntityF();
-            M2MEntityE e2a = em.find(M2MEntityE.class, 2);
-            Map entityf2 = e2a.getEntityF();
-            M2MEntityF f1a = em.find(M2MEntityF.class, 10);
-            Map entitye1 = f1a.getEntityE();
-            M2MEntityF f2a = em.find(M2MEntityF.class, 20);
-            Map entitye2 = f2a.getEntityE();
-        } catch (Exception e) {
-            fail("Fail to get a Map field when DataCache is on");
-        }
+        M2MEntityE e1a = em.find(M2MEntityE.class, 1);
+        Map entityf1 = e1a.getEntityF();
+        M2MEntityE e2a = em.find(M2MEntityE.class, 2);
+        Map entityf2 = e2a.getEntityF();
+        M2MEntityF f1a = em.find(M2MEntityF.class, 10);
+        Map entitye1 = f1a.getEntityE();
+        M2MEntityF f2a = em.find(M2MEntityF.class, 20);
+        Map entitye2 = f2a.getEntityE();
         em.close();
     }
 }
