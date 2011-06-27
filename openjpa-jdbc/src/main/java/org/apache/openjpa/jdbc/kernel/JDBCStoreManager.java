@@ -459,7 +459,7 @@ public class JDBCStoreManager
                 }
                 Object coll =  owner.fetchObject(fms[i].getIndex());
                 if (coll instanceof Map)
-                    coll = ((Map)coll).values();
+                    coll = ((Map<?,?>)coll).values();
                 if (coll instanceof Collection<?> && 
                     ((Collection<?>) coll).size() > 0) {
                     // Found eagerly loaded collection.
@@ -594,7 +594,7 @@ public class JDBCStoreManager
 
         Union union = _sql.newUnion(mappings.length);
         union.setExpectedResultCount(1, false);
-        if (fetch.getSubclassFetchMode(mapping) != fetch.EAGER_JOIN)
+        if (fetch.getSubclassFetchMode(mapping) != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
         union.select(new Union.Selector() {
             public void select(Select sel, int i) {
@@ -823,7 +823,7 @@ public class JDBCStoreManager
 
         ResultObjectProvider[] rops = null;
         final JDBCFetchConfiguration jfetch = (JDBCFetchConfiguration) fetch;
-        if (jfetch.getSubclassFetchMode(mapping) != jfetch.EAGER_JOIN)
+        if (jfetch.getSubclassFetchMode(mapping) != EagerFetchModes.EAGER_JOIN)
             rops = new ResultObjectProvider[mappings.length];
 
         try {
@@ -1232,15 +1232,15 @@ public class JDBCStoreManager
         int mode;
         for (int i = 0; i < fms.length; i++) {
             mode = fms[i].getEagerFetchMode();
-            if (mode == fetch.EAGER_NONE)
+            if (mode == EagerFetchModes.EAGER_NONE)
                 continue;
             if (!requiresSelect(fms[i], sm, fields, fetch))
                 continue;
 
             // try to select with join first
-            jtype = (fms[i].getNullValue() == fms[i].NULL_EXCEPTION) 
-                ? sel.EAGER_INNER : sel.EAGER_OUTER;
-            if (mode != fetch.EAGER_PARALLEL && !fms[i].isEagerSelectToMany()
+            jtype = (fms[i].getNullValue() == FieldMetaData.NULL_EXCEPTION) 
+                ? Select.EAGER_INNER : Select.EAGER_OUTER;
+            if (mode != EagerFetchModes.EAGER_PARALLEL && !fms[i].isEagerSelectToMany()
                 && fms[i].supportsSelect(sel, jtype, sm, this, fetch) > 0
                 && sel.eagerClone(fms[i], jtype, false, 1) != null)
                 continue;
@@ -1252,8 +1252,8 @@ public class JDBCStoreManager
             // to use a to-many join also.  currently we limit eager
             // outer joins to non-LRS, non-ranged selects that don't already
             // have an eager to-many join
-            if ((hasJoin || mode == fetch.EAGER_JOIN 
-                || (mode == fetch.DEFAULT && sm != null))
+            if ((hasJoin || mode == EagerFetchModes.EAGER_JOIN 
+                || (mode == FetchConfiguration.DEFAULT && sm != null))
                 && fms[i].isEagerSelectToMany()
                 && !inEagerJoin
                 && !sel.hasEagerJoin(true)
@@ -1268,8 +1268,8 @@ public class JDBCStoreManager
             }
 
             // finally, try parallel
-            if (eager == fetch.EAGER_PARALLEL
-                && (sels = fms[i].supportsSelect(sel, sel.EAGER_PARALLEL, sm,
+            if (eager == EagerFetchModes.EAGER_PARALLEL
+                && (sels = fms[i].supportsSelect(sel, Select.EAGER_PARALLEL, sm,
                 this, fetch)) != 0)
                 sel.eagerClone(fms[i], Select.EAGER_PARALLEL, 
                     fms[i].isEagerSelectToMany(), sels);
@@ -1372,7 +1372,7 @@ public class JDBCStoreManager
                 seld = Math.max(fseld, seld);
             } else if (optSelect(fms[i], sel, sm, fetch)) {
                 fseld = fms[i].select(sel, sm, this, 
-                	fetch.traverseJDBC(fms[i]), fetch.EAGER_NONE);
+                	fetch.traverseJDBC(fms[i]), EagerFetchModes.EAGER_NONE);
 
                 // don't upgrade seld to > 0 based on these fields, since
                 // they're not in the calculated field set
@@ -1412,10 +1412,10 @@ public class JDBCStoreManager
     private boolean optSelect(FieldMapping fm, Select sel,
         OpenJPAStateManager sm, JDBCFetchConfiguration fetch) {
         return !fm.isInDefaultFetchGroup() 
-            && !fm.isDefaultFetchGroupExplicit()
+             && !fm.isDefaultFetchGroupExplicit()
             && (sm == null || sm.getPCState() == PCState.TRANSIENT 
             || !sm.getLoaded().get(fm.getIndex()))
-            && fm.supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, fetch) > 0;
+            && fm.supportsSelect(sel, Select.TYPE_TWO_PART, sm, this, fetch) > 0;
     }
 
     /**
@@ -1458,7 +1458,7 @@ public class JDBCStoreManager
             	if (fetch.requiresFetch(fms[j]) != FetchConfiguration.FETCH_LOAD
                     && ((!fms[j].isInDefaultFetchGroup() 
                     && fms[j].isDefaultFetchGroupExplicit())
-                    || fms[j].supportsSelect(sel, sel.TYPE_TWO_PART, sm, this, 
+                    || fms[j].supportsSelect(sel, Select.TYPE_TWO_PART, sm, this, 
                     fetch) <= 0)) 
             		continue;
 
@@ -1472,10 +1472,8 @@ public class JDBCStoreManager
                 }
 
                 // if can select with tables already selected, do it
-                if (fms[j].supportsSelect(sel, sel.TYPE_JOINLESS, sm, this,
-                    fetch) > 0)
-                    fms[j].select(sel, null, this, fetch.traverseJDBC(fms[j]),
-                        fetch.EAGER_NONE);
+                if (fms[j].supportsSelect(sel, Select.TYPE_JOINLESS, sm, this, fetch) > 0)
+                    fms[j].select(sel, null, this, fetch.traverseJDBC(fms[j]), EagerFetchModes.EAGER_NONE);
             }
         }
     }
