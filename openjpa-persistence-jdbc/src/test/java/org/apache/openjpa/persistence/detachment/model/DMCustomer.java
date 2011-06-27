@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.detachment.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -26,6 +27,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 @Entity 
@@ -44,6 +47,9 @@ public class DMCustomer {
             private List<DMCustomerInventory> customerInventories =
                 new ArrayList<DMCustomerInventory>();
 
+    @Temporal(TemporalType.TIMESTAMP)
+    Calendar cal;
+    
     public DMCustomer() {
     }
 
@@ -78,5 +84,11 @@ public class DMCustomer {
     public void setCustomerInventories(
             List<DMCustomerInventory> customerInventories) {
         this.customerInventories = customerInventories;
+    }
+    public void setCal(Calendar c){
+        cal = c;
+    }
+    public Calendar getCal(){
+        return cal;
     }
 }

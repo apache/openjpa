@@ -18,25 +18,89 @@
  */
 package org.apache.openjpa.persistence.detachment;
 
+import java.util.Calendar;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.detachment.model.DMCustomer;
 import org.apache.openjpa.persistence.detachment.model.DMCustomerInventory;
 import org.apache.openjpa.persistence.detachment.model.DMItem;
+import org.apache.openjpa.util.Proxy;
 
 public class TestDetachLite extends TestDetach {
+    Object[] props =
+        new Object[] { "openjpa.DetachState", "loaded(LiteAutoDetach=true)", DMCustomer.class,
+            DMCustomerInventory.class, DMItem.class, CLEAR_TABLES };
+
     public void setUp() {
-        super.setUp(
-            "openjpa.DetachState", "loaded(LiteAutoDetach=true)", 
-            DMCustomer.class, DMCustomerInventory.class, DMItem.class, 
-            CLEAR_TABLES
-            );
+        super.setUp(props);
 
         Compatibility compat = emf.getConfiguration().getCompatibilityInstance();
         compat.setCopyOnDetach(false);
         compat.setFlushBeforeDetach(false);
         em = emf.createEntityManager();
         root = createData();
+    }
+
+    public void testLeaveProxy() {
+        Object[] p = props;
+        p[1] = "loaded(LiteAutoDetach=true,DetachProxyFields=false)";
+        EntityManagerFactory iemf = createEMF(p);
+        try {
+            DMCustomer dc = new DMCustomer();
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(System.currentTimeMillis());
+            dc.setCal(cal);
+
+            EntityManager iem = iemf.createEntityManager();
+            try {
+                iem.getTransaction().begin();
+                iem.persist(dc);
+                iem.getTransaction().commit();
+                Calendar beforeDetachCal = dc.getCal();
+                iem.clear();
+                Calendar afterDetachCal = dc.getCal();
+
+                assertTrue(beforeDetachCal instanceof Proxy);
+                assertTrue(afterDetachCal instanceof Proxy);
+            } finally {
+                if (iem.getTransaction().isActive()) {
+                    iem.getTransaction().rollback();
+                }
+                iem.close();
+            }
+
+        } finally {
+            iemf.close();
+        }
+    }
+
+    public void testProxyClear() {
+        DMCustomer dc = new DMCustomer();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(System.currentTimeMillis());
+        dc.setCal(cal);
+
+        EntityManager iem = emf.createEntityManager();
+        try {
+            iem.getTransaction().begin();
+            iem.persist(dc);
+            iem.getTransaction().commit();
+            Calendar beforeDetachCal = dc.getCal();
+            iem.clear();
+            Calendar afterDetachCal = dc.getCal();
+
+            assertTrue(beforeDetachCal instanceof Proxy);
+            assertFalse(afterDetachCal instanceof Proxy);
+        } finally {
+            if (iem.getTransaction().isActive()) {
+                iem.getTransaction().rollback();
+            }
+            iem.close();
+        }
     }
 
     public void testCloseDetach() {

@@ -257,7 +257,7 @@ public class BrokerImpl
     private LifecycleEventManager _lifeEventManager = null;
     private int _lifeCallbackMode = 0;
 
-    private transient DetachManagerLite _dmLite = new DetachManagerLite();
+    private transient DetachManagerLite _dmLite;
     
     private transient boolean _initializeWasInvoked = false;
     private transient boolean _fromWriteBehindCallback = false;
@@ -381,6 +381,7 @@ public class BrokerImpl
             _instm.start(InstrumentationLevel.BROKER, this);
         }
 
+        _dmLite = new DetachManagerLite(_conf);
         _printParameters =
             Boolean.parseBoolean(Configurations.parseProperties(_conf.getConnectionFactoryProperties()).getProperty(
                 PRINT_PARAMETERS_CONFIG_STR, "false"));
@@ -3430,7 +3431,7 @@ public class BrokerImpl
             _transAdditions.clear();
         }
         if (_dmLite == null) {
-            _dmLite = new DetachManagerLite();
+            _dmLite = new DetachManagerLite(_conf);
         }
         _dmLite.detachAll(states);
     }

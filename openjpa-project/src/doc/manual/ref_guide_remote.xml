@@ -373,6 +373,21 @@ When merging a detached Entity back into the persistence context any lazily load
                 </itemizedlist>
                         </para>
                     </listitem>
+                    <listitem>                    
+                        <para>
+<literal>DetachProxyFields</literal>: <emphasis role="bold">This option is ONLY valid when used in conjunction with the <literal>LiteAutoDetach</literal> 
+DetachState setting.</emphasis> When detaching the persistence context, all proxies will be left in place. Note, that 
+all <literal>Large Result Sets</literal> will be removed.
+                        </para>
+                        <itemizedlist>
+                            <listitem>
+                            <literal>true(default)</literal>: All proxies will be removed and LRS fields will be removed. 
+                        	</listitem>
+                            <listitem>
+                            <literal>false</literal>: All proxies will be left in place and LRS fields will be removed. 
+                        	</listitem>                        	
+                        </itemizedlist>                                                    
+                    </listitem>                
                 </itemizedlist>
                 <example id="ref_guide_detach_graph_confex">
                     <title>
