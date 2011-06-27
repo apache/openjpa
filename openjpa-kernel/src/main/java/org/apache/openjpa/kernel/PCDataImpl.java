@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.util.BitSet;
+import java.util.Map;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -168,8 +169,13 @@ public class PCDataImpl
                 continue;
 
             fmd = sm.getMetaData().getField(i);
-            if (!isLoaded(i))
+            boolean loading = false; 
+            if(sm.getContext() != null && sm.getContext() instanceof BrokerImpl) { 
+                loading = ((BrokerImpl) sm.getContext()).isLoading(sm.getObjectId());
+            }
+            if (!isLoaded(i) || loading) { // prevent reentrant calls. 
                 loadIntermediate(sm, fmd);
+            }
             else {
                 loadField(sm, fmd, fetch, context);
                 loadImplData(sm, fmd);

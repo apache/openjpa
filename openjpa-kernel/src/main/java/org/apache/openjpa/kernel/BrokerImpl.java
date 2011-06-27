@@ -1167,6 +1167,13 @@ public class BrokerImpl
         }
     }
 
+    public boolean isLoading(Object o) { 
+        if(_loading == null ) {
+            return false; 
+        }
+        return _loading.containsKey(o); 
+    }
+
     private boolean hasFlushed() {
         return (_flags & FLAG_FLUSHED) != 0;
     }
