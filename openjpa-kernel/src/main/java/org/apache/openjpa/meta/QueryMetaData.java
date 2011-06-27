@@ -60,6 +60,7 @@ public class QueryMetaData
     private String _resultSetMappingName;
     private int _lineNum;  
     private int _colNum;  
+    private String _srcName;
     private boolean _convertPositionalParametersToNamed;
     /**
      * Construct with the given name.
@@ -274,10 +275,11 @@ public class QueryMetaData
         return _srcType;
     }
 
-    public void setSource(File file, Object scope, int srcType) {
+    public void setSource(File file, Object scope, int srcType, String srcName) {
         _file = file;
         _scope = scope;
         _srcType = srcType;
+        _srcName = srcName;
     }
 
     public String getResourceName() {
@@ -298,5 +300,9 @@ public class QueryMetaData
 
     public void setColNumber(int colNum) {
         _colNum = colNum;
+    }
+    
+    public String getSourceName() {
+        return _srcName;
     }
 }
