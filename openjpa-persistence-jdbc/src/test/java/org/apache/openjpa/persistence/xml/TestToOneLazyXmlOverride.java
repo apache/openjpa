@@ -24,27 +24,27 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
     @Override
-    public void setUp() throws Exception {
-        super.setUp(CLEAR_TABLES, XmlOverrideToOneEntity.class);
-    }
+        public void setUp() throws Exception {
+            super.setUp(CLEAR_TABLES, XmlOverrideToOneEntity.class);
+        }
 
     @Override
-    protected String getPersistenceUnitName() {
-        return "to-one-xml-override";
-    }
+        protected String getPersistenceUnitName() {
+            return "to-one-xml-override";
+        }
 
     public void testToManyLazyOverride() {
         EntityManager em = emf.createEntityManager();
         try{
-        em.getTransaction().begin();
-        XmlOverrideToOneEntity x = new XmlOverrideToOneEntity();
-        x.setOtherM2O(x);
-        x.setOtherO2O(x);
-        em.persist(x);
-        em.getTransaction().commit();
+            em.getTransaction().begin();
+            XmlOverrideToOneEntity x = new XmlOverrideToOneEntity();
+            x.setOtherM2O(x);
+            x.setOtherO2O(x);
+            em.persist(x);
+            em.getTransaction().commit();
 
-        em.clear();
-        resetSQL();
+            em.clear();
+            resetSQL();
 
             em.find(XmlOverrideToOneEntity.class, x.getId());
 
@@ -52,7 +52,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
             String lastSql = sql.get(0);
             // Make sure we don't have any joins!
             assertFalse("Shouldn't have found any instances of join or JOIN in last sql, but did. Last SQL = "
-                + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
+                    + lastSql, lastSql.contains("join") || lastSql.contains("JOIN"));
 
             // Make sure that we selected lazy join columns.
             assertTrue(lastSql.contains("o2o"));
@@ -63,7 +63,7 @@ public class TestToOneLazyXmlOverride extends SQLListenerTestCase {
                 em.getTransaction().rollback();
             }
             em.close();
-            }
         }
     }
 }
+
