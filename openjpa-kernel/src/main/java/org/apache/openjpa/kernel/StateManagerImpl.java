@@ -113,12 +113,12 @@ public class StateManagerImpl
         (StateManagerImpl.class);
 
     // information about the instance
-    private transient PersistenceCapable _pc = null;
-    private transient ClassMetaData _meta = null;
-    private BitSet _loaded = null;
-    private BitSet _dirty = null;
-    private BitSet _flush = null;
-    private int _flags = 0;
+    protected transient PersistenceCapable _pc = null;
+    protected transient ClassMetaData _meta = null;
+    protected BitSet _loaded = null;
+    protected BitSet _dirty = null;
+    protected BitSet _flush = null;
+    protected int _flags = 0;
 
     // id is the state manager identity; oid is the persistent identity.  oid
     // may be null for embedded and transient-transactional objects or new
@@ -145,8 +145,8 @@ public class StateManagerImpl
     private FieldManager _fm = null;
 
     // impldata; field impldata and intermediate data share the same array
-    private Object _impl = null;
-    private Object[] _fieldImpl = null;
+    protected Object _impl = null;
+    protected Object[] _fieldImpl = null;
 
     // information about the owner of this instance, if it is embedded
     private StateManagerImpl _owner = null;
@@ -788,7 +788,7 @@ public class StateManagerImpl
     /**
      * Return the data from the proper index of the extra field data array.
      */
-    private synchronized Object getExtraFieldData(int field, boolean isLoaded) {
+    protected synchronized Object getExtraFieldData(int field, boolean isLoaded) {
         // only return the field data if the field is in the right loaded
         // state; otherwise we might return intermediate for impl data or
         // vice versa
