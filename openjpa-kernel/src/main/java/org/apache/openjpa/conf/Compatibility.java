@@ -67,6 +67,7 @@ public class Compatibility {
     private boolean _reorderMetaDataResolution = true;
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
+    private boolean _parseAnnotationsForQueryMode = true;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -556,4 +557,25 @@ public class Compatibility {
     public void setReloadOnDetach(boolean reloadOnDetach) {
         _reloadOnDetach = reloadOnDetach;
     }       
+
+    /**
+     * Whether OpenJPA will scan every persistent class in an XML mapping file for annotations prior to executing a 
+     * query. In practice this scan is rarely needed, but the option to enable it is present for compatibility with 
+     * prior releases.
+     * @since 2.0.2
+     * @return true if the annotations should be re-parsed when resolving MetaData in MODE_QUERY.  
+     */
+    public boolean getParseAnnotationsForQueryMode() {
+        return _parseAnnotationsForQueryMode;
+    }
+
+    /**
+     * Whether OpenJPA will scan every persistent class in an XML mapping file for annotations prior to executing a 
+     * query. In practice this scan is rarely needed, but the option to enable it is present for compatibility with 
+     * prior releases.
+     * @since 2.0.2
+     */
+    public void setParseAnnotationsForQueryMode(boolean parseAnnotationsForQueryMode) {
+        _parseAnnotationsForQueryMode = parseAnnotationsForQueryMode;
+    }
 }
