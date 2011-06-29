@@ -5075,4 +5075,8 @@ public class BrokerImpl
         }
         return _store.isCached(oids, loaded);
     };
+
+    protected boolean isFlushing() {
+        return ((_flags & FLAG_FLUSHING) != 0);
+    }
 }
