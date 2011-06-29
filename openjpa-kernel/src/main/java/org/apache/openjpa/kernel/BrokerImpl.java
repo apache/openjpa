@@ -1965,8 +1965,10 @@ public class BrokerImpl
         try {
             if (flush) {
                 // call pre store on all currently transactional objs
-                for (Iterator itr = transactional.iterator(); itr.hasNext();)
-                    ((StateManagerImpl) itr.next()).beforeFlush(reason, _call);
+                for (Iterator itr = transactional.iterator(); itr.hasNext();) {
+                	StateManagerImpl sm = (StateManagerImpl) itr.next();
+                    sm.beforeFlush(reason, _call);
+                }
                 flushAdditions(transactional, reason);
             }
 
@@ -4803,5 +4805,9 @@ public class BrokerImpl
         if (other != null && !other.isDeleted() && !other.isNew())
             throw new ObjectExistsException(_loc.get("cache-exists",
                 obj.getClass().getName(), id)).setFailedObject(obj);
+    }
+    
+    protected boolean isFlushing() {
+    	return ((_flags & FLAG_FLUSHING) != 0);
     }
 }
