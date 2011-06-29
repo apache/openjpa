@@ -381,11 +381,10 @@ public abstract class AbstractCFMetaDataFactory
             if (queries[i].getSourceMode() == MODE_QUERY
                 || (mode & queries[i].getSourceMode()) == 0)
                 continue;
-            if (queries[i].getSourceFile() == null) {
-                File defaultFile = defaultSourceFile(queries[i], clsNames);
-                queries[i].setSource(defaultFile, queries[i].getSourceScope(), queries[i].getSourceType(),
-                    defaultFile == null ? "" : defaultFile.getPath());
-            }
+            if (queries[i].getSourceFile() == null)
+                queries[i].setSource(defaultSourceFile(queries[i],
+                    clsNames), queries[i].getSourceScope(),
+                    queries[i].getSourceType());
             if ((AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(queries[i].getSourceFile())))
                 .booleanValue()) {
@@ -424,11 +423,9 @@ public abstract class AbstractCFMetaDataFactory
         for (int i = 0; i < queries.length; i++) {
             if (queries[i].getSourceMode() != MODE_QUERY)
                 continue;
-            if (queries[i].getSourceFile() == null) {
-                File defaultFile = defaultSourceFile(queries[i], clsNames);
-                queries[i].setSource(defaultFile, queries[i].getSourceScope(), queries[i].getSourceType(),
-                    defaultFile == null ? "" : defaultFile.getPath());
-            }
+            if (queries[i].getSourceFile() == null)
+                queries[i].setSource(defaultSourceFile(queries[i], clsNames),
+                    queries[i].getSourceScope(), queries[i].getSourceType());
             if ((AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(queries[i].getSourceFile())))
                 .booleanValue()) {
@@ -525,8 +522,7 @@ public abstract class AbstractCFMetaDataFactory
      * Set the current source file of the given metadata.
      */
     protected void setSourceFile(ClassMetaData meta, File sourceFile) {
-        meta.setSource(sourceFile, meta.getSourceType(), sourceFile != null ? 
-            sourceFile.getPath() : "");
+        meta.setSource(sourceFile, meta.getSourceType());
     }
 
     /**

@@ -871,20 +871,12 @@ public class XMLPersistenceMetaDataParser
             && ((isMetaDataMode() && (meta.getSourceMode() & MODE_META) != 0)
             || (isMappingMode() && (meta.getSourceMode() & MODE_MAPPING) != 0)))
         {
-            if(isDuplicateClass(meta)) { 
-                if (log.isWarnEnabled()) {
-                    log.warn(_loc.get("dup-metadata", _cls, getSourceName()));
-                }
-                if(log.isTraceEnabled()) { 
-                    log.trace(String.format(
-                        "MetaData originally obtained from source: %s under mode: %d with scope: %s, and type: %d",
-                        meta.getSourceName(), meta.getSourceMode(), meta.getSourceScope(), meta.getSourceType()));
-                }
-            }
+            if (log.isWarnEnabled())
+                log.warn(_loc.get("dup-metadata", _cls, getSourceName()));
             _cls = null;
             return false;
         }
-        
+
         int access = AccessCode.UNKNOWN;
         if (meta == null) {
             int accessCode = toAccessType(attrs.getValue("access"));
@@ -904,20 +896,17 @@ public class XMLPersistenceMetaDataParser
             meta.setSourceMode(MODE_NONE);
 
             // parse annotations first so XML overrides them
-            if (_parser != null) {
+            if (_parser != null)
                 _parser.parse(_cls);
-            }
         }
         access = meta.getAccessType();
 
         boolean mappedSuper = "mapped-superclass".equals(elem);
         boolean embeddable = "embeddable".equals(elem);
-
         if (isMetaDataMode()) {
-            Locator locator = getLocation().getLocator();
-            meta.setSource(getSourceFile(), SourceTracker.SRC_XML, locator != null ? locator.getSystemId() : "" );
+            meta.setSource(getSourceFile(), SourceTracker.SRC_XML);
             meta.setSourceMode(MODE_META, true);
-        
+            Locator locator = getLocation().getLocator();
             if (locator != null) {
                 meta.setLineNumber(locator.getLineNumber());
                 meta.setColNumber(locator.getColumnNumber());
@@ -1708,7 +1697,7 @@ public class XMLPersistenceMetaDataParser
         Object cur = currentElement();
         Object scope = (cur instanceof ClassMetaData)
             ? ((ClassMetaData) cur).getDescribedType() : null;
-        meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML, locator == null ? "" : locator.getSystemId());
+        meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         if (isMetaDataMode())
             meta.setSourceMode(MODE_META);
         else if (isMappingMode())
@@ -1791,9 +1780,8 @@ public class XMLPersistenceMetaDataParser
             log.trace(_loc.get("parse-native-query", name));
 
         QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
-        if (meta != null && isDuplicateQuery(meta) ) {
+        if (meta != null && log.isWarnEnabled())
             log.warn(_loc.get("override-query", name, currentLocation()));
-        }
 
         meta = getRepository().addQueryMetaData(null, name);
         meta.setDefiningType(_cls);
@@ -1813,9 +1801,10 @@ public class XMLPersistenceMetaDataParser
             meta.setResultSetMappingName(val);
 
         Object cur = currentElement();
-        Object scope = (cur instanceof ClassMetaData) ? ((ClassMetaData) cur).getDescribedType() : null;
+        Object scope = (cur instanceof ClassMetaData)
+            ? ((ClassMetaData) cur).getDescribedType() : null;
+        meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML);
         Locator locator = getLocation().getLocator();
-        meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML, locator == null ? "" : locator.getSystemId());
         if (locator != null) {
             meta.setLineNumber(locator.getLineNumber());
             meta.setColNumber(locator.getColumnNumber());
@@ -2192,48 +2181,5 @@ public class XMLPersistenceMetaDataParser
 
     protected String normalizeCatalogName(String catName) {
         return catName;
-    }
-
-    /**
-     * Determines whether the ClassMetaData has been resolved more than once. Compares the current sourceName and
-     * linenumber to the ones used to originally resolve the metadata.
-     * 
-     * @param meta The ClassMetaData to inspect.
-     * @return true if the source was has already been resolved from a different location. Otherwise return false
-     */
-    protected boolean isDuplicateClass(ClassMetaData meta) {
-        if (!StringUtils.equals(getSourceName(), meta.getSourceName())) {
-            return true;
-        }
-
-        if (getLineNum() != meta.getLineNumber()) {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Determines whether the QueryMetaData has been resolved more than once.
-     * @param meta QueryMetaData that has already been resolved. 
-     * @return true if the QueryMetaData was defined in a different place - e.g. another line in orm.xml.
-     */
-    protected boolean isDuplicateQuery(QueryMetaData meta) { 
-        if(! StringUtils.equals(getSourceName(), meta.getSourceName())) {
-            return true;
-        }
-        if(getLineNum() != meta.getLineNumber()) { 
-            return true;
-        }
-        return false; 
-            
-    }
-    
-    private int getLineNum() { 
-        int lineNum = 0;
-        Locator loc = getLocation().getLocator();
-        if(loc != null ) {
-            lineNum = loc.getLineNumber();
-        }
-        return lineNum;
     }
 }

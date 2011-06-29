@@ -145,7 +145,6 @@ public class ClassMetaData
     private final ValueMetaData _owner;
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
     private File _srcFile = null;
-    private String _srcName = null;
     private int _srcType = SRC_OTHER;
     private int _lineNum = 0;  
     private int _colNum = 0;  
@@ -2404,10 +2403,9 @@ public class ClassMetaData
         return _srcType;
     }
 
-    public void setSource(File file, int srcType, String srcName) {
+    public void setSource(File file, int srcType) {
         _srcFile = file;
         _srcType = srcType;
-        _srcName = srcName;
     }
 
     public String getResourceName() {
@@ -2758,10 +2756,6 @@ public class ClassMetaData
         if (_cacheEnabled != null)
             return _cacheEnabled;
         return getPCSuperclassMetaData() != null ?  getPCSuperclassMetaData().getCacheEnabled() : null; 
-    }
-    
-    public String getSourceName(){
-        return _srcName; 
     }
 }
 

@@ -529,12 +529,11 @@ public class MappingTool
             if (_mappingWriter != null) {
                 output = new HashMap<File, String>();
                 File tmp = new File("openjpatmp");
-                for (int i = 0; i < mappings.length; i++) {
-                    mappings[i].setSource(tmp, SourceTracker.SRC_OTHER, "openjpatmp");
-                }
-                for (int i = 0; i < queries.length; i++) {
-                    queries[i].setSource(tmp, queries[i].getSourceScope(), SourceTracker.SRC_OTHER, "openjpatmp");
-                }
+                for (int i = 0; i < mappings.length; i++)
+                    mappings[i].setSource(tmp, SourceTracker.SRC_OTHER);
+                for (int i = 0; i < queries.length; i++)
+                    queries[i].setSource(tmp, queries[i].getSourceScope(),
+                        SourceTracker.SRC_OTHER);
                 for (int i = 0; i < seqs.length; i++)
                     seqs[i].setSource(tmp, seqs[i].getSourceScope(),
                         SourceTracker.SRC_OTHER);
@@ -709,7 +708,7 @@ public class MappingTool
                 && fmds[i].getDeclaredType() != Object.class)
                 fmds[i].setDeclaredTypeCode(JavaTypes.PC);
         }
-        meta.setSource(_file, meta.getSourceType(), _file == null ? "": _file.getPath() );
+        meta.setSource(_file, meta.getSourceType());
         meta.setResolve(MODE_META, true);
     }
 
