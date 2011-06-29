@@ -26,7 +26,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCascadePersist extends SingleEMFTestCase {
     @Override
     public void setUp() throws Exception {
-        setUp(DROP_TABLES, CascadePersistEntity.class, "openjpa.Log", "SQL=trace");
+        setUp(DROP_TABLES, CascadePersistEntity.class);
     }
 
     public void testCascadePersistToDetachedFailure() {
@@ -46,10 +46,8 @@ public class TestCascadePersist extends SingleEMFTestCase {
         em.persist(cpe2);
         try {
             em.getTransaction().commit();
+            // If running CheckDatabaseForCascadePersistToDetachedEntity=false we will expect an exception. 
         } catch (RollbackException re) {
-            // We expect this failure because we are trying to cascade a persist to an existing Entity. Changing
-            // CheckDatabaseForCascadePersistToDetachedEntity=true would avoid this exception and revert back to pre
-            // 2.2.x behavior.
         }
     }
 

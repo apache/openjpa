@@ -67,7 +67,7 @@ public class Compatibility {
     private boolean _reloadOnDetach = false;
     private boolean _ignoreDetachedStateFieldForProxySerialization = false;
     private boolean _convertPositionalParametersToNamed = false;
-    private boolean _checkDatabaseForCascadePersistToDetachedEntity = false;
+    private boolean _checkDatabaseForCascadePersistToDetachedEntity = true;
     
     /**
      * Whether to require exact identity value types when creating object
