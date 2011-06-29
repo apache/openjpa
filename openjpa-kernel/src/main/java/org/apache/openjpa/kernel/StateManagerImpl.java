@@ -113,12 +113,12 @@ public class StateManagerImpl
         (StateManagerImpl.class);
 
     // information about the instance
-    protected transient PersistenceCapable _pc = null;
-    protected transient ClassMetaData _meta = null;
-    protected BitSet _loaded = null;
-    protected BitSet _dirty = null;
-    protected BitSet _flush = null;
-    protected int _flags = 0;
+    private transient PersistenceCapable _pc = null;
+    private transient ClassMetaData _meta = null;
+    private BitSet _loaded = null;
+    private BitSet _dirty = null;
+    private BitSet _flush = null;
+    private int _flags = 0;
 
     // id is the state manager identity; oid is the persistent identity.  oid
     // may be null for embedded and transient-transactional objects or new
@@ -145,7 +145,7 @@ public class StateManagerImpl
     private FieldManager _fm = null;
 
     // impldata; field impldata and intermediate data share the same array
-    protected Object _impl = null;
+    private Object _impl = null;
     protected Object[] _fieldImpl = null;
 
     // information about the owner of this instance, if it is embedded
