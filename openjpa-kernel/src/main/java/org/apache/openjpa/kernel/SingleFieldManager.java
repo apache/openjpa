@@ -52,10 +52,7 @@ import org.apache.openjpa.util.UserException;
  * on the held field.
  */
 class SingleFieldManager extends TransferFieldManager implements Serializable {
-    private static final long serialVersionUID = -6205985063476549150L;
-
-    private static final Localizer _loc = Localizer.forPackage
-        (SingleFieldManager.class);
+    private static final Localizer _loc = Localizer.forPackage(SingleFieldManager.class);
 
     private final StateManagerImpl _sm;
     private final BrokerImpl _broker;
