@@ -308,6 +308,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
     	for (Field mf : mfields) {
             try {
                 ParameterizedType mfType = getParameterziedType(mf);
+                if (mfType == null) {
+                	continue;
+                }
     	        Attribute<? super X, ?> f = type.getAttribute(mf.getName());
     	        Class<?> fClass = f.getJavaType();
     	       java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
@@ -334,12 +337,18 @@ public class MetamodelImpl implements Metamodel, Resolver {
     
     /**
      * Gets the parameterized type of the given field after validating. 
+     * 
+     * @return the field's type as a parameterized type. If the field
+     * is not parameterized type (that can happen for non-canonical 
+     * metamodel or weaving process introducing synthetic fields),
+     * returns null.
      */
     ParameterizedType getParameterziedType(Field mf) {
         java.lang.reflect.Type t = mf.getGenericType();
         if (t instanceof ParameterizedType == false) {
-            throw new IllegalStateException(_loc.get("meta-field-not-param", 
+        	repos.getLog().warn(_loc.get("meta-field-not-param", 
             mf.getDeclaringClass(), mf.getName(), toTypeName(t)).getMessage());
+        	return null;
         }
         ParameterizedType mfType = (ParameterizedType)t;
         java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
@@ -367,9 +376,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
         java.lang.reflect.Type[] args = pType.getActualTypeArguments();
         StringBuilder tmp = new StringBuilder(pType.getRawType().toString());
         for (int i = 0; i < args.length; i++) {
-            tmp.append((i == 0) ? "<" : ",");
+            tmp.append((i == 0) ? '<' : ',');
             tmp.append(toTypeName(args[i]));
-            tmp.append((i == args.length-1) ? ">" : "");
+            if (i == args.length-1) tmp.append('>');
         }
         return tmp.toString();
     }
