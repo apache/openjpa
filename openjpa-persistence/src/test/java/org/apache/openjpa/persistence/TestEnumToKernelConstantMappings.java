@@ -171,11 +171,13 @@ public class TestEnumToKernelConstantMappings
 
         assertEquals(EnumSet.allOf(AutoDetachType.class),
             AutoDetachType.toEnumSet(
-                AutoDetach.DETACH_CLOSE
+            		  AutoDetach.DETACH_NONE
+                    | AutoDetach.DETACH_CLOSE
                     | AutoDetach.DETACH_COMMIT
                     | AutoDetach.DETACH_NONTXREAD
                     | AutoDetach.DETACH_ROLLBACK));
-        assertEquals(AutoDetach.DETACH_CLOSE
+        assertEquals( AutoDetach.DETACH_NONE
+        		    | AutoDetach.DETACH_CLOSE
                     | AutoDetach.DETACH_COMMIT
                     | AutoDetach.DETACH_NONTXREAD
                     | AutoDetach.DETACH_ROLLBACK,

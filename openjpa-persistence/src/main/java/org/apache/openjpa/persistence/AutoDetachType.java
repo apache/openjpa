@@ -30,6 +30,7 @@ import org.apache.openjpa.kernel.AutoDetach;
  * @published
  */
 public enum AutoDetachType {
+    NONE(AutoDetach.DETACH_NONE),
     CLOSE(AutoDetach.DETACH_CLOSE),
     COMMIT(AutoDetach.DETACH_COMMIT),
     NON_TRANSACTIONAL_READ(AutoDetach.DETACH_NONTXREAD),
@@ -43,6 +44,8 @@ public enum AutoDetachType {
 
     public static EnumSet<AutoDetachType> toEnumSet(int autoDetach) {
         EnumSet<AutoDetachType> types = EnumSet.noneOf(AutoDetachType.class);
+        if ((autoDetach & AutoDetach.DETACH_NONE) != 0) 
+        	types.add(NONE);
         if ((autoDetach & AutoDetach.DETACH_CLOSE) != 0)
             types.add(CLOSE);
         if ((autoDetach & AutoDetach.DETACH_COMMIT) != 0)

@@ -617,20 +617,27 @@ public class BrokerImpl
     public int getAutoDetach() {
         return _autoDetach;
     }
-
+    /**
+     * Sets automatic detachment option.
+     * <br>
+     * If the given flag contains {@link AutoDetach#DETACH_NONE} option,
+     * then no other option can be specified.
+     */
     public void setAutoDetach(int detachFlags) {
-        assertOpen();
-        _autoDetach = detachFlags;
+         assertOpen();
+         assertAutoDetachValue(detachFlags);
+         _autoDetach = detachFlags;
     }
 
     public void setAutoDetach(int detachFlag, boolean on) {
-        assertOpen();
-        if (on)
-            _autoDetach |= detachFlag;
-        else
-            _autoDetach &= ~detachFlag;
+         assertOpen();
+         assertAutoDetachValue(on ? _autoDetach | detachFlag : _autoDetach & ~detachFlag);
+         if (on)
+             _autoDetach |= detachFlag;
+         else
+             _autoDetach &= ~detachFlag;
     }
-
+ 
     public int getDetachState() {
         return _detachState;
     }
@@ -5188,5 +5195,28 @@ public class BrokerImpl
     protected boolean isFlushing() {
         return ((_flags & FLAG_FLUSHING) != 0);
     }
-
+    
+    
+    
+        /**
+         * Asserts consistencey of given automatic detachment option value.
+         */
+        private void assertAutoDetachValue(int value) {
+           if (((value & AutoDetach.DETACH_NONE) != 0) && (value != AutoDetach.DETACH_NONE)) {
+                   throw new UserException(_loc.get("detach-none-exclusive", toAutoDetachString(value)));
+           }
+        }
+    
+        /**
+         * Generates a user-readable String from the given integral value of AutoDetach options.
+         */
+        private String toAutoDetachString(int value) {
+           List<String> result = new ArrayList<String>();
+           for (int i = 0; i < AutoDetach.values.length; i++) {
+                   if ((value & AutoDetach.values[i]) != 0) {
+                           result.add(AutoDetach.names[i]);
+                   }
+           }
+           return Arrays.toString(result.toArray(new String[result.size()]));
+        }
 }

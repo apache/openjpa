@@ -1833,7 +1833,15 @@ public class EntityManagerImpl
                 return null;
             } else {
                 return Strings.parse((String) value, targetType);
-            }
+            } 
+        } else if (value instanceof AutoDetachType) {
+        	EnumSet<AutoDetachType> autoDetachFlags = EnumSet.noneOf(AutoDetachType.class);
+        	autoDetachFlags.add((AutoDetachType)value);
+        	return autoDetachFlags;
+        } else if (value instanceof AutoDetachType[]) {
+        	EnumSet<AutoDetachType> autoDetachFlags = EnumSet.noneOf(AutoDetachType.class);
+        	autoDetachFlags.addAll(Arrays.asList((AutoDetachType[])value));
+        	return autoDetachFlags;
         }
         return value;
     }

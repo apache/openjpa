@@ -43,4 +43,12 @@ public interface AutoDetach {
      * Detach context on failed transaction commit / rollback.
      */
     public static final int DETACH_ROLLBACK = 2 << 3;
+    
+    /**
+     * Do not detach at all. Skips proxying second-class containers.
+     */
+    public static final int DETACH_NONE = 2 << 4;
+    
+    public static final String[] names = {"CLOSE", "COMMIT", "NONTXREAD", "ROLLBACK", "NONE"};
+    public static final int[] values = {DETACH_CLOSE, DETACH_COMMIT, DETACH_NONTXREAD, DETACH_ROLLBACK, DETACH_NONE};
 }
