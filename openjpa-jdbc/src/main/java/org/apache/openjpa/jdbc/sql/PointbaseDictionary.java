@@ -103,20 +103,16 @@ public class PointbaseDictionary
     }
 
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         // SUBSTRING in Pointbase is of the form:
         // SELECT SUBSTRING(SOME_COLUMN FROM 1 FOR 5)
         buf.append("SUBSTRING(");
         str.appendTo(buf);
         buf.append(" FROM ");
         start.appendTo(buf);
-        buf.append(" + 1");
-        if (end != null) {
+        if (length != null) {
             buf.append(" FOR ");
-            end.appendTo(buf);
-            buf.append(" - (");
-            start.appendTo(buf);
-            buf.append(")");
+            length.appendTo(buf);
         }
         buf.append(")");
     }
@@ -130,9 +126,9 @@ public class PointbaseDictionary
             substring(buf, str, start, null);
         else
             str.appendTo(buf);
-        buf.append(") - 1");
+        buf.append(")");
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1 + ");
             start.appendTo(buf);
         }
         buf.append(")");

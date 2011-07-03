@@ -829,12 +829,12 @@ public class DB2Dictionary
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
             FilterValue start) {
         if (find.getValue() != null) { // non constants
-            buf.append("(LOCATE(CAST((");
+            buf.append("LOCATE(CAST((");
             find.appendTo(buf);
             buf.append(") AS VARCHAR(1000)), ");
         } else {
             // this is a constant
-            buf.append("(LOCATE(");
+            buf.append("LOCATE(");
             find.appendTo(buf);
             buf.append(", ");
         }
@@ -846,16 +846,16 @@ public class DB2Dictionary
             str.appendTo(buf);
         }
         if (start != null) {
-            if (start.getValue() == null) {
+            if (start.getValue() != null) {
                 buf.append(", CAST((");
                 start.appendTo(buf);
-                buf.append(") AS INTEGER) + 1");
+                buf.append(") AS INTEGER)");
             } else {
                 buf.append(", ");
                 start.appendTo(buf);
             }
         }
-        buf.append(") - 1)");
+        buf.append(")");
     }
     
     /** 

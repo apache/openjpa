@@ -69,21 +69,21 @@ public class JDataStoreDictionary
 
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         buf.append("SUBSTRING(");
         str.appendTo(buf);
         buf.append(" FROM (");
         start.appendTo(buf);
-        buf.append(" + 1) FOR (");
-        if (end == null) {
+        buf.append(") FOR (");
+        if (length == null) {
             buf.append("CHAR_LENGTH(");
             str.appendTo(buf);
             buf.append(")");
         } else
-            end.appendTo(buf);
+            length.appendTo(buf);
         buf.append(" - (");
         start.appendTo(buf);
-        buf.append(")))");
+        buf.append(" - 1)))");
     }
 
     @Override
@@ -96,9 +96,9 @@ public class JDataStoreDictionary
             substring(buf, str, start, null);
         else
             str.appendTo(buf);
-        buf.append(") - 1");
+        buf.append(")");
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1 + ");
             start.appendTo(buf);
         }
         buf.append(")");

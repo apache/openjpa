@@ -345,16 +345,15 @@ public class HSQLDictionary extends DBDictionary {
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("(LOCATE(");
+        buf.append("LOCATE(");
         find.appendTo(buf);
         buf.append(", ");
         str.appendTo(buf);
         if (start != null) {
-            buf.append(", (");
+            buf.append(", ");
             start.appendTo(buf);
-            buf.append(" + 1)");
         }
-        buf.append(") - 1)");
+        buf.append(")");
     }
 
     @Override

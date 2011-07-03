@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.kernel.exps;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.openjpa.meta.ClassMetaData;
@@ -332,8 +330,9 @@ public interface ExpressionFactory {
     public Value abs(Value num);
 
     /**
-     * Return a value representing the {@link String#indexOf} function on
+     * Return a value representing the indexOf (LOCATE in JPQL) function on
      * the given target with the given args.
+     * The optional second argument is one-based.
      */
     public Value indexOf(Value str, Value args);
 
@@ -349,9 +348,9 @@ public interface ExpressionFactory {
     public Value sqrt(Value num);
 
     /**
-     * Return a value representing the {@link String#substring} function on
-     * the given target with the given args. As with {@link String#substring},
-     * the start index is zero-based, and the second argument is the end index.
+     * Return a value representing the substring function on
+     * the given target with the given args. Unlike as with {@link String#substring},
+     * the start index is one-based, and the second argument is the length.
      */
     public Value substring(Value str, Value args);
 

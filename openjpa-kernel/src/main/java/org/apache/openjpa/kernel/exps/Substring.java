@@ -53,12 +53,12 @@ class Substring
         Object arg = _args.eval(candidate, orig, ctx, params);
         if (arg instanceof Object[]) {
             Object[] args = (Object[]) arg;
-            int start = ((Number) args[0]).intValue();
-            int end = ((Number) args[1]).intValue();
+            int start = ((Number) args[0]).intValue() - 1;
+            int length = ((Number) args[1]).intValue();
             String string = str == null ? "" : str.toString();
-            return string.substring(start, Math.min(end, string.length()));
+            return string.substring(start, Math.min(start + length, string.length()));
         }
-        return str.toString().substring(((Number) arg).intValue());
+        return str.toString().substring(((Number) arg).intValue() - 1);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

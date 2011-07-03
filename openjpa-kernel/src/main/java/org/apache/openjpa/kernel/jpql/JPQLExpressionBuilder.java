@@ -1304,18 +1304,22 @@ public class JPQLExpressionBuilder
                 return factory.concat(val1, val2);
 
             case JJTSUBSTRING:
-                if (node.children.length == 3) {
-                    val1 = getValue(child(node, 0, 3));
-                    val2 = getValue(child(node, 1, 3));
-                    JPQLNode child3 = child(node, 2, 3);
-                    if (child3.id == JJTINTEGERLITERAL)
+                // Literals are forced to be Integers because PostgreSQL rejects Longs in SUBSTRING parameters.
+                // This however does not help if an expression like 1+1 is passed as parameter.
+                val1 = getValue(firstChild(node));
+                JPQLNode child2 = secondChild(node);
+                if (child2.id == JJTINTEGERLITERAL) {
+                    val2 = getIntegerValue(child2);
+                } else {
+                    val2 = getValue(child2);
+                }
+                if (node.getChildCount() == 3) {
+                    JPQLNode child3 = thirdChild(node);
+                    if (child3.id == JJTINTEGERLITERAL) {
                         val3 = getIntegerValue(child3);
-                    else
+                    } else {
                         val3 = getValue(child3);
-                    
-                } else if (node.children.length == 2) {
-                    val1 = getValue(child(node, 0, 2));
-                    val2 = getValue(child(node, 1, 2));
+                    }
                 }
                 setImplicitType(val1, TYPE_STRING);
                 setImplicitType(val2, Integer.TYPE);
@@ -1325,12 +1329,11 @@ public class JPQLExpressionBuilder
                 return convertSubstringArguments(factory, val1, val2, val3);
 
             case JJTLOCATE:
-                // as with SUBSTRING (above), the semantics for LOCATE differ
-                // from ExpressionFactory.indexOf in that LOCATE uses a
-                // 0-based index, and indexOf uses a 1-based index
                 Value locatePath = getValue(firstChild(node));
                 Value locateSearch = getValue(secondChild(node));
                 Value locateFromIndex = null;
+                // Literals are forced to be Integers because PostgreSQL rejects Longs in POSITION parameters.
+                // This however does not help if an expression like 1+1 is passed as parameter.
                 if (node.getChildCount() > 2) { // optional start index arg
                     JPQLNode child3 = thirdChild(node);
                     if (child3.id == JJTINTEGERLITERAL) {
@@ -1342,16 +1345,11 @@ public class JPQLExpressionBuilder
                 setImplicitType(locateSearch, TYPE_STRING);
 
                 if (locateFromIndex != null)
-                    setImplicitType(locateFromIndex, TYPE_STRING);
+                    setImplicitType(locateFromIndex, Integer.TYPE);
 
-                return factory.add(factory.indexOf(locateSearch,
+                return factory.indexOf(locateSearch,
                     locateFromIndex == null ? locatePath
-                        : factory.newArgumentList(locatePath,
-                        factory.subtract(locateFromIndex,
-                            factory.newLiteral(1,
-                                Literal.TYPE_NUMBER)))),
-                    factory.newLiteral(1,
-                        Literal.TYPE_NUMBER));
+                        : factory.newArgumentList(locatePath, locateFromIndex));
 
             case JJTAGGREGATE:
                 // simply pass-through while asserting a single child
@@ -1461,14 +1459,6 @@ public class JPQLExpressionBuilder
      * Converts JPQL substring() function to OpenJPA ExpressionFactory 
      * substring() arguments.
      * 
-     * The semantics of the JPQL substring() function are that arg2 is the 
-     * 1-based start index, and arg3 is the length of the string to be return.
-     * This is different than the semantics of the ExpressionFactory's 
-     * substring(), which matches the Java language (0-based start index,
-     * arg2 is the end index): we perform the translation by adding one to the 
-     * first argument, and then adding the first argument to the second  
-     * argument to get the endIndex.
-     * 
      * @param val1 the original String
      * @param val2 the 1-based start index as per JPQL substring() semantics
      * @param val3 the length of the returned string as per JPQL semantics
@@ -1476,35 +1466,10 @@ public class JPQLExpressionBuilder
      */
     public static Value convertSubstringArguments(ExpressionFactory factory, 
     		Value val1, Value val2, Value val3) {
-        Value start = null;
-        Value end = null;
-        if (val2 instanceof Literal && 
-            (val3 == null || val3 instanceof Literal)) {
-            // optimize SQL for the common case of two literals
-            long jpqlStart = ((Number) ((Literal) val2).getValue())
-                .longValue();
-            start = factory.newLiteral(Long.valueOf(jpqlStart - 1),
-                Literal.TYPE_NUMBER);
-            if (val3 != null) {
-            	long length = ((Number) ((Literal) val3).getValue())
-                    .longValue();
-            long endIndex = length + (jpqlStart - 1);
-            end = factory.newLiteral(Long.valueOf(endIndex),
-                Literal.TYPE_NUMBER);
-            }
-        } else {
-            start = factory.subtract(val2, factory.newLiteral
-                (1, Literal.TYPE_NUMBER));
-            if (val3 != null)
-            end = factory.add(val3,
-                (factory.subtract(val2, factory.newLiteral
-                    (1, Literal.TYPE_NUMBER))));
-        }
         if (val3 != null)
-            return factory.substring(val1, factory.newArgumentList(start, end));
+            return factory.substring(val1, factory.newArgumentList(val2, val3));
         else
-            return factory.substring(val1, start);
-    	
+            return factory.substring(val1, val2);
     }
     private void assertQueryExtensions(String clause) {
         OpenJPAConfiguration conf = resolver.getConfiguration();

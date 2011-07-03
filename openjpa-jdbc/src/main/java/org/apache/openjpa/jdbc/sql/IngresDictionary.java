@@ -260,7 +260,6 @@ public class IngresDictionary extends DBDictionary {
      *            - a query value representing the start index, or null to 
      *            start at the beginning
      */
-
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
@@ -273,10 +272,10 @@ public class IngresDictionary extends DBDictionary {
         else
             str.appendTo(buf);
         
-        buf.append(")) - 1");
+        buf.append("))");
 
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1 + ");
             start.appendTo(buf);
         }
         buf.append(")");
@@ -291,30 +290,24 @@ public class IngresDictionary extends DBDictionary {
      */
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         buf.append(substringFunctionName).append("(");
         str.appendTo(buf);
         buf.append(", ");
         if (start.getValue() instanceof Number) {
-            long startLong = toLong(start);
-            buf.append(Long.toString(startLong + 1));
+            buf.append(Long.toString(toLong(start)));
         } else {
             buf.append("(CAST ((");
             start.appendTo(buf);
-            buf.append(" + 1) AS INTEGER))");
+            buf.append(") AS INTEGER))");
         }
-        if (end != null) {
+        if (length != null) {
             buf.append(", ");
-            if (start.getValue() instanceof Number
-                && end.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                long endLong = toLong(end);
-                buf.append(Long.toString(endLong - startLong));
+            if (length.getValue() instanceof Number) {
+                buf.append(Long.toString(toLong(length)));
             } else {
-                buf.append("(CAST (");
-                end.appendTo(buf);
-                buf.append(" - (");
-                start.appendTo(buf);
+                buf.append("(CAST ((");
+                length.appendTo(buf);
                 buf.append(") AS INTEGER))");
             }
         }

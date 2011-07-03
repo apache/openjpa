@@ -73,7 +73,7 @@ public abstract class AbstractDB2Dictionary
 
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("(LOCATE(CAST((");
+        buf.append("LOCATE(CAST((");
         find.appendTo(buf);
         buf.append(") AS VARCHAR(").append(Integer.toString(varcharCastLength))
             .append(")), CAST((");
@@ -83,37 +83,32 @@ public abstract class AbstractDB2Dictionary
         if (start != null) {
             buf.append(", CAST((");
             start.appendTo(buf);
-            buf.append(") AS INTEGER) + 1");
+            buf.append(") AS INTEGER)");
         }
-        buf.append(") - 1)");
+        buf.append(")");
     }
 
+    @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         buf.append("SUBSTR(CAST((");
         str.appendTo(buf);
         buf.append(") AS VARCHAR(").append(Integer.toString(varcharCastLength))
             .append(")), ");
         if (start.getValue() instanceof Number) {
-            long startLong = toLong(start);
-            buf.append(Long.toString(startLong + 1));
+            buf.append(Long.toString(toLong(start)));
         } else {
             buf.append("CAST((");
             start.appendTo(buf);
-            buf.append(") AS INTEGER) + 1");
+            buf.append(") AS INTEGER)");
         }
-        if (end != null) {
+        if (length != null) {
             buf.append(", ");
-            if (start.getValue() instanceof Number
-                && end.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                long endLong = toLong(end);
-                buf.append(Long.toString(endLong - startLong));
+            if (length.getValue() instanceof Number) {
+                buf.append(Long.toString(toLong(length)));
             } else {
                 buf.append("CAST((");
-                end.appendTo(buf);
-                buf.append(") AS INTEGER) - CAST((");
-                start.appendTo(buf);
+                length.appendTo(buf);
                 buf.append(") AS INTEGER)");
             }
         }

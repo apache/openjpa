@@ -127,16 +127,16 @@ public class Substring
         BinaryOpExpState bstate = (BinaryOpExpState) state;
         FilterValue str = new FilterValueImpl(sel, ctx, bstate.state1, _val1);
         FilterValue start;
-        FilterValue end = null;
+        FilterValue length = null;
         if (_val2 instanceof Args) {
             FilterValue[] filts = ((Args) _val2).newFilterValues(sel, ctx, 
                 bstate.state2);
             start = filts[0];
-            end = filts[1];
+            length = filts[1];
         } else
             start = new FilterValueImpl(sel, ctx, bstate.state2, _val2);
 
-        ctx.store.getDBDictionary().substring(sql, str, start, end);
+        ctx.store.getDBDictionary().substring(sql, str, start, length);
     }
 
     public void acceptVisit(ExpressionVisitor visitor) {

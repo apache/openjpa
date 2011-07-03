@@ -402,28 +402,26 @@ public class FirebirdDictionary
      * Parameters are inlined because neither parameter binding nor expressions
      * are accepted by Firebird here. As a result, an
      * {@link UnsupportedException} is thrown when something else than a
-     * constant is used in <code>start</code> or <code>end</code>.
+     * constant is used in <code>start</code> or <code>length</code>.
      */
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         buf.append(substringFunctionName).append("(");
         str.appendTo(buf);
         buf.append(" FROM ");
         if (start.getValue() instanceof Number) {
             long startLong = toLong(start);
-            buf.append(Long.toString(startLong + 1));
+            buf.append(Long.toString(startLong));
         } else {
             throw new UnsupportedException(_loc.get("function-not-supported",
                 getClass(), substringFunctionName + " with non-constants"));
         }
-        if (end != null) {
+        if (length != null) {
             buf.append(" FOR ");
-            if (start.getValue() instanceof Number
-                && end.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                long endLong = toLong(end);
-                buf.append(Long.toString(endLong - startLong));
+            if (length.getValue() instanceof Number) {
+                long lengthLong = toLong(length);
+                buf.append(Long.toString(lengthLong));
             } else {
                 throw new UnsupportedException(_loc.get(
                     "function-not-supported", getClass(), substringFunctionName

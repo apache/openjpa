@@ -570,13 +570,10 @@ class Expressions {
             Value locateSearch = path.toValue(factory, q);
             Value locateFromIndex = (from == null ? null : Expressions.toValue(from, factory, q));
             Value locatePath = Expressions.toValue(pattern, factory, q);
-            
-            return factory.add(factory.indexOf(locateSearch,
-                    locateFromIndex == null ? locatePath
-                        : factory.newArgumentList(locatePath,
-                            factory.subtract(locateFromIndex, 
-                                             factory.newLiteral(Integer.valueOf(1), Literal.TYPE_NUMBER)))),
-                                             factory.newLiteral(Integer.valueOf(1), Literal.TYPE_NUMBER));
+
+            return factory.indexOf(locateSearch,
+                locateFromIndex == null ? locatePath
+                    : factory.newArgumentList(locatePath, locateFromIndex));
         }
         
         public void acceptVisit(CriteriaExpressionVisitor visitor) {

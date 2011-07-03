@@ -2745,37 +2745,30 @@ public class DBDictionary
 
     /**
      * Invoke this database's substring function.
+     * Numeric parameters are inlined if possible. This is to handle grouping by SUBSTRING -
+     * most databases do not allow parameter binding in this case.
      *
      * @param buf the SQL buffer to write the substring invocation to
      * @param str a query value representing the target string
      * @param start a query value representing the start index
-     * @param end a query value representing the end index, or null for none
+     * @param length a query value representing the length of substring, or null for none
      */
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
+        FilterValue length) {
         buf.append(substringFunctionName).append("(");
         str.appendTo(buf);
         buf.append(", ");
         if (start.getValue() instanceof Number) {
-            long startLong = toLong(start);
-            buf.append(Long.toString(startLong + 1));
+            buf.append(Long.toString(toLong(start)));
         } else {
-            buf.append("(");
             start.appendTo(buf);
-            buf.append(" + 1)");
         }
-        if (end != null) {
+        if (length != null) {
             buf.append(", ");
-            if (start.getValue() instanceof Number
-                && end.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                long endLong = toLong(end);
-                buf.append(Long.toString(endLong - startLong));
+            if (length.getValue() instanceof Number) {
+                buf.append(Long.toString(toLong(length)));
             } else {
-                end.appendTo(buf);
-                buf.append(" - (");
-                start.appendTo(buf);
-                buf.append(")");
+                length.appendTo(buf);
             }
         }
         buf.append(")");
@@ -2803,9 +2796,9 @@ public class DBDictionary
             str.appendTo(buf);
         buf.append("), (");
         find.appendTo(buf);
-        buf.append(")) - 1");
+        buf.append("))");
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1  + ");
             start.appendTo(buf);
         }
         buf.append(")");

@@ -232,9 +232,9 @@ public class H2Dictionary extends DBDictionary {
             substring(buf, str, start, null);
         else
             str.appendTo(buf);
-        buf.append(") - 1");
+        buf.append(")");
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1 + ");
             start.appendTo(buf);
         }
         buf.append(")");

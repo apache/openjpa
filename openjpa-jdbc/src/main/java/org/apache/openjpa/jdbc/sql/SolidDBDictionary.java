@@ -317,20 +317,17 @@ public class SolidDBDictionary
     
     @Override
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-            FilterValue end) {
-        if (end != null) {
-            super.substring(buf, str, start, end);
+            FilterValue length) {
+        if (length != null) {
+            super.substring(buf, str, start, length);
         } else {
             buf.append(substringFunctionName).append("(");
             str.appendTo(buf);
             buf.append(", ");
             if (start.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                buf.append(Long.toString(startLong + 1));
+                buf.append(Long.toString(toLong(start)));
             } else {
-                buf.append("(");
                 start.appendTo(buf);
-                buf.append(" + 1)");
             }
             buf.append(", ");
             if (start.getValue() instanceof Number) {
@@ -350,22 +347,15 @@ public class SolidDBDictionary
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("(LOCATE(");
+        buf.append("LOCATE(");
         find.appendTo(buf);
         buf.append(", ");
         str.appendTo(buf);
         if (start != null) {
             buf.append(", ");
-            if (start.getValue() instanceof Number) {
-                long startLong = toLong(start);
-                buf.append(Long.toString(startLong + 1));
-            } else {
-                buf.append("(");
-                start.appendTo(buf);
-                buf.append(" + 1)");
-            }
+            start.appendTo(buf);
         }
-        buf.append(") - 1)");
+        buf.append(")");
     }
    
     @Override

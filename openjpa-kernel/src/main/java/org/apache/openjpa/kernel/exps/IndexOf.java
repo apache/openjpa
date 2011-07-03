@@ -22,6 +22,7 @@ import org.apache.openjpa.kernel.StoreContext;
 
 /**
  * Find the index of one string within another.
+ * Index is 1-based.
  *
  * @author Abe White
  */
@@ -55,9 +56,9 @@ class IndexOf
         if (arg instanceof Object[]) {
             Object[] args = (Object[]) arg;
             idx = str.toString().indexOf(args[0].toString(),
-                ((Number) args[1]).intValue());
+                ((Number) args[1]).intValue() - 1) + 1;
         } else
-            idx = str.toString().indexOf(arg.toString());
+            idx = str.toString().indexOf(arg.toString()) + 1;
         return idx;
     }
 

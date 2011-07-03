@@ -120,23 +120,20 @@ public abstract class AbstractSQLServerDictionary
     }
 
     public void substring(SQLBuffer buf, FilterValue str, FilterValue start,
-        FilterValue end) {
-        if (end != null)
-            super.substring(buf, str, start, end);
+        FilterValue length) {
+        if (length != null)
+            super.substring(buf, str, start, length);
         else {
-            // ### it would be good to change this logic as in DBDictionary to
-            // ### simplify the generated SQL
             buf.append("SUBSTRING(");
             str.appendTo(buf);
             buf.append(", ");
             start.appendTo(buf);
-            buf.append(" + 1, ");
-            buf.append("LEN(");
+            buf.append(", LEN(");
             str.appendTo(buf);
             buf.append(")");
             buf.append(" - (");
             start.appendTo(buf);
-            buf.append("))");
+            buf.append(" - 1))");
         }
     }
 
@@ -149,9 +146,9 @@ public abstract class AbstractSQLServerDictionary
             substring(buf, str, start, null);
         else
             str.appendTo(buf);
-        buf.append(") - 1");
+        buf.append(")");
         if (start != null) {
-            buf.append(" + ");
+            buf.append(" - 1 + ");
             start.appendTo(buf);
         }
         buf.append(")");
