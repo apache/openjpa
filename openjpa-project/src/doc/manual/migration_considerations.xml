@@ -406,6 +406,33 @@
                     </itemizedlist>
                 </para>
             </section>
+            <section id="jpa_2.2_metamodelArrays">
+                <title>
+                    MetaModel attributes for Arrays  
+                </title>
+                <!-- See OPENJPA-2025 for details. -->
+                <para>
+                    In previous releases OpenJPA's MetaModel implementation generated a ListAttribute for every array. This behavior is correct if the array 
+                    is annotated as a PersistentCollection, but not correct for un-annotated arrays (e.g. byte[], char[]). In OpenJPA 2.2.0 this behavior was corrected 
+                    so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute. 
+                </para>
+                <para>
+                    If youre application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and
+                    do not use the @PersistentCollection annotation with those fields you will need to update your application to use OpenJPA 2.2.0.
+                </para>
+                <para> In order for the existing applications to work with OpenJPA you may: 
+                    <itemizedlist>
+                        <listitem>
+                            <para> Regenerate the canonical metamodel classes</para>
+                        </listitem>
+                        <listitem>
+                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>true</literal>in persistence.xml 
+                                <programlisting> &lt;property name="openjpa.Compatibility" value="UseListAttributeForArrays=true"/&gt;</programlisting>
+                            </para>
+                        </listitem>
+                    </itemizedlist>    
+                </para>
+            </section>
         </section>
     </section>
 </appendix>

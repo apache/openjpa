@@ -220,6 +220,8 @@ public class FieldMetaData
     private boolean _isElementCollection = false;
     private int _associationType;
 
+    private boolean _persistentCollection = false; 
+
     /**
      * Constructor.
      *
@@ -2379,6 +2381,14 @@ public class FieldMetaData
     
     public void setAssociationType(int type) {
         _associationType = type;
+    }
+
+    public boolean isPersistentCollection() {
+        return _persistentCollection;
+    }
+
+    public void setPersistentCollection(boolean persistentCollection) {
+        _persistentCollection = persistentCollection;
     }
     
 }
