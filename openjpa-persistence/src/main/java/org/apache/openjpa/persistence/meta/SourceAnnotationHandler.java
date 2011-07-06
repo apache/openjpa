@@ -548,6 +548,10 @@ public class SourceAnnotationHandler
     	return getDeclaredTypeName(mirror, true);
     }
     
+    String getDeclaredTypeName(TypeMirror mirror, boolean box) {
+        return getDeclaredTypeName(mirror, box, false);
+    }
+    
      /**
      * Get the element name of the class the given mirror represents. If the
      * mirror is primitive then returns the corresponding boxed class name.
@@ -556,12 +560,17 @@ public class SourceAnnotationHandler
      * <code>java.util.Set&lt;java.lang.String&gt;</code> this method will 
      * return <code>java.util.Set</code>.
      */
-    String getDeclaredTypeName(TypeMirror mirror, boolean box) {
+    String getDeclaredTypeName(TypeMirror mirror, boolean box, boolean persistentCollection) {
         if (mirror == null || mirror.getKind() == TypeKind.NULL || mirror.getKind() == TypeKind.WILDCARD)
             return "java.lang.Object";
     	if (mirror.getKind() == TypeKind.ARRAY) {
-    		TypeMirror comp = ((ArrayType)mirror).getComponentType();
-    		return getDeclaredTypeName(comp, false);
+    	    if(persistentCollection) { 
+    	        TypeMirror comp = ((ArrayType)mirror).getComponentType();
+    	        return getDeclaredTypeName(comp, false);
+    	    }
+    	    else { 
+    	        return mirror.toString();
+    	    }
     	}
     	mirror = box ? box(mirror) : mirror;
     	if (isPrimitive(mirror))
