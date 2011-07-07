@@ -848,11 +848,6 @@ In order to use many of JPQL functions with Firebird 1.5, Interbase UDFs
 have to be available in the database.
                     </para>
                 </listitem>
-                <listitem>
-                    <para>
-<literal>LOCATE</literal> JPQL function is not supported.
-                    </para>
-                </listitem>
             </itemizedlist>
         </section>
     </section>

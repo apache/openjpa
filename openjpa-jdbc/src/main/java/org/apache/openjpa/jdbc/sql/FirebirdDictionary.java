@@ -384,16 +384,26 @@ public class FirebirdDictionary
     }
 
     /**
-     * Throw {@link UnsupportedException}. Firebird in version earlier than 2.1
-     * has no suitable function. Firebird 2.1 has the <code>POSITION</code>
-     * function but using it here results in errors like "data type unknown" or
-     * "expression evaluation not supported".
+     * On Firebird 2.1 return <code>POSITION(&lt;find&gt;, &lt;str&gt; [, &lt;start&gt;])<code>.
+     * On older versions throw {@link UnsupportedException} - no suitable function exists.
      */
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        throw new UnsupportedException(_loc.get("function-not-supported",
-            getClass(), "LOCATE"));
+        if (firebirdVersion < FB_VERSION_21) {
+            throw new UnsupportedException(_loc.get("function-not-supported", getClass(), "LOCATE"));
+        }
+        buf.append("POSITION(");
+        find.appendTo(buf);
+        buf.append(", ");
+        str.appendTo(buf);
+        if (start != null) {
+            buf.append(", ");
+            buf.append("CAST(");
+            start.appendTo(buf);
+            buf.append(" AS INTEGER)");
+        }
+        buf.append(")");
     }
 
     /**
