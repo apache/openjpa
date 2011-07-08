@@ -241,6 +241,16 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     }
    
 
+    /* Allows direct recording of a statement parameter for logging purposes,
+    * provided the prepared statement implements LoggingPreparedStatement.
+    */
+   public static void logStatementParameter(PreparedStatement stmnt, int index, String type, Object val) {
+       if (stmnt instanceof LoggingConnection.LoggingPreparedStatement) {
+           LoggingConnection.LoggingPreparedStatement lcstmnt = (LoggingConnection.LoggingPreparedStatement) stmnt;
+           lcstmnt.setLogParameter(index, type, val);
+       }
+   }
+    
     /**
      * Interface that allows customization of what to do when
      * {@link SQLWarning}s occur.
@@ -253,7 +263,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     /**
      * Logging connection.
      */
-    private class LoggingConnection extends DelegatingConnection {
+    protected class LoggingConnection extends DelegatingConnection {
 
         public LoggingConnection(Connection conn) throws SQLException {
             super(conn);
@@ -821,7 +831,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
-        private class LoggingPreparedStatement
+        protected class LoggingPreparedStatement
             extends DelegatingPreparedStatement {
 
             private final String _sql;
