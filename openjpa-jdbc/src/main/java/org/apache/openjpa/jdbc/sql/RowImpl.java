@@ -754,8 +754,10 @@ public class RowImpl
             buf.append(_cols[i]);
             if (_types[i] == RAW)
                 buf.append(" = ").append(_vals[i]);
-            else
-                buf.append(" = ?");
+            else {
+                buf.append(" = ");
+                buf.append(dict.getMarkerForInsertUpdate(_cols[i], _vals[i]));
+            }
             hasVal = true;
         }
 
@@ -785,7 +787,7 @@ public class RowImpl
             if (_types[i] == RAW)
                 vals.append(_vals[i]);
             else
-                vals.append("?");
+                vals.append(dict.getMarkerForInsertUpdate(_cols[i], _vals[i]));
             hasVal = true;
         }
 
