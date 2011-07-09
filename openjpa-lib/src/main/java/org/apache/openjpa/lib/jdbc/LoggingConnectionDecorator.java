@@ -278,6 +278,17 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     }
 
     /**
+     * Allows direct recording of a statement parameter for logging purposes,
+     * provided the prepared statement implements LoggingPreparedStatement.
+     */
+    public static void logStatementParameter(PreparedStatement stmnt, int index, String type, Object val) {
+        if (stmnt instanceof LoggingPreparedStatement) {
+            LoggingPreparedStatement lcstmnt = (LoggingPreparedStatement) stmnt;
+            lcstmnt.setLogParameter(index, type, val);
+        }
+    }
+
+    /**
      * Interface that allows customization of what to do when
      * {@link SQLWarning}s occur.
      */
@@ -1477,7 +1488,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                     setLogParameter(index, "(short) " + val);
             }
 
-            private void setLogParameter(int index, String type, Object val) {
+            protected void setLogParameter(int index, String type, Object val) {
                 if (shouldTrackParameters())
                     setLogParameter(index, "(" + type + ") " + val);
             }

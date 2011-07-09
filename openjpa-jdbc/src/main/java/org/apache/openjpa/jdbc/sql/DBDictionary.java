@@ -5211,6 +5211,18 @@ public class DBDictionary
     }
     
     /**
+     * Return parameter marker for INSERT and UPDATE statements.
+     * Usually it is <code>?</code> but some database-specific types might require customization.
+     * 
+     * @param col column definition
+     * @param val value to be inserted/updated
+     * @return parameter marker
+    */
+    public String getMarkerForInsertUpdate(Column col, Object val) {
+       return "?";
+    }    
+    
+    /**
      * Validate that the given name is no longer than given maximum length.
      * If the given name is indeed longer then raises an UserException with the 
      * given message key otherwise returns the same name.
