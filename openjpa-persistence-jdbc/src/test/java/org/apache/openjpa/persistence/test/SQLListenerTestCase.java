@@ -35,7 +35,6 @@ public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
     private static String _nl = System.getProperty("line.separator");
     protected List<String> sql = new ArrayList<String>();
-    protected int sqlCount;
     
     @Override
     public void setUp(Object... props) {
@@ -98,17 +97,17 @@ public abstract class SQLListenerTestCase
      * Gets the number of SQL issued since last reset.
      */
     public int getSQLCount() {
-    	return sqlCount;
+    	return sql.size();
     }
     
     /**
      * Resets SQL count.
      * @return number of SQL counted since last reset.
      */
-    public int resetSQLCount() {
-    	int tmp = sqlCount;
-    	sqlCount = 0;
-    	return tmp;
+    public int resetSQL() {
+        int tmp = sql.size();
+        sql.clear();
+        return tmp;
     }
 
     public String toString(List<String> list) {
@@ -125,7 +124,6 @@ public abstract class SQLListenerTestCase
         public void beforeExecuteStatement(JDBCEvent event) {
             if (event.getSQL() != null && sql != null) {
                 sql.add(event.getSQL());
-                sqlCount++;
             }
 		}
 	}
@@ -140,6 +138,46 @@ public abstract class SQLListenerTestCase
         }
 
         if (hits != expected.length) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
+
+    /**
+     * Confirm the list of expected SQL expressions have been executed in the
+     * exact number and order specified.
+     * 
+     * @param expected
+     *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
+     */
+    public void assertAllExactSQLInOrder(String... expected) {
+        assertSQLInOrder(true, expected);
+    }
+
+    private void assertSQLInOrder(boolean exact, String... expected) {
+        boolean match = false;
+        int sqlSize = sql.size();
+        if (expected.length <= sqlSize) {
+            int hits = 0;
+            for (String executedSQL : sql) {
+                if (executedSQL.matches(expected[hits])) {
+                    if (++hits == expected.length)
+                        break;
+                }
+            }
+            match = hits == (exact ? sqlSize : expected.length);
+        }
+
+        if (!match) {
             StringBuilder sb = new StringBuilder();
             sb.append("Did not find SQL in expected order : ").append(_nl);
             for (String s : expected) {

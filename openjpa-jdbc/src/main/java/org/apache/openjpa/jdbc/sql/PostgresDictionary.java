@@ -311,11 +311,15 @@ public class PostgresDictionary
 
     public String[] getCreateSequenceSQL(Sequence seq) {
         String[] sql = super.getCreateSequenceSQL(seq);
-        if (seq.getAllocate() > 1)
+        
+        if (seq.getAllocate() > 1 && useNativeSequenceCache){
             sql[0] += " CACHE " + seq.getAllocate();
+        }
+        
         return sql;
     }
 
+    
     protected boolean supportsDeferredUniqueConstraints() {
         // Postgres only supports deferred foreign key constraints.
         return false;
