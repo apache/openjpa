@@ -203,13 +203,16 @@ public class DB2Dictionary
             selectSQL.append(")");
         }
     }
-
-    public String[] getCreateSequenceSQL(Sequence seq) {
-        String[] sql = super.getCreateSequenceSQL(seq);
-        if (seq.getAllocate() > 1)
-            sql[0] += " CACHE " + seq.getAllocate();
-        return sql;
-    }
+    
+    public String[] getCreateSequenceSQL(Sequence seq) {    
+    	String[] sql = super.getCreateSequenceSQL(seq);
+    	
+    	if (seq.getAllocate() > 1 && useNativeSequenceCache){    	
+    		sql[0] += " CACHE " + seq.getAllocate();
+    	}
+    	
+    	return sql;
+    }   
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
         StringBuffer buf = new StringBuffer();

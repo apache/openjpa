@@ -1656,8 +1656,9 @@ table name. Defaults to 128.
                     </indexterm>
 <literal>NextSequenceQuery</literal>: A SQL string for obtaining a native
 sequence value. May use a placeholder of <literal>{0}</literal> for the variable
-sequence name. Defaults to a database-appropriate value.  For example, 
-<literal>"SELECT {0}.NEXTVAL FROM DUAL"</literal> for Oracle.
+sequence name and <literal>{1}</literal> for sequence increment.
+Defaults to a database-appropriate value. For example, 
+<literal>"SELECT {0}.NEXTVAL FROM DUAL"</literal> for Oracle database.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.NullTypeName">
