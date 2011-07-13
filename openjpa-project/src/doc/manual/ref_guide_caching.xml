@@ -435,9 +435,9 @@ import javax.persistence.Cache;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 . . .
-EntityManagerFactory em = 
+EntityManagerFactory emf = 
     Persistence.createEntityManagerFactory("myPersistenceUnit");
-Cache cache = em.getCache();
+Cache cache = emf.getCache();
 . . .
         </programlisting>
     </example>
@@ -446,7 +446,7 @@ Cache cache = em.getCache();
         <title>Using the javax.persistence.Cache interface</title>
         <programlisting>
 // Check whether the cache contains an entity with a provided ID
-Cache cache = em.getCache();
+Cache cache = emf.getCache();
 boolean contains = cache.contains(MyEntity.class, entityID);
 
 // evict a specific entity from the cache
