@@ -3764,8 +3764,8 @@ and Clob values larger than 4000 bytes to be used if OpenJPA is used
 with a Java 6.0 JRE along with a JDBC 4.0 Oracle driver (e.g. ojdbc6.jar).
 It is expected that this property will be used in conjunction with
 <literal>XMLValueHandler</literal>, see <xref linkend="ref_guide_xmlmapping"/>.
-That is, it is expected that the XML field in question will be annotated with
-the <literal>XMLValueHandler</literal> annotation.  This allows a user to
+That is, it is expected that the XML field in question will be annotated with
+the <literal>XMLValueHandler</literal> annotation.  This allows a user to
 indicate that OpenJPA should use JAXB class metadata to perform the to/from 
 database value retrieval and storage.  In addition, using this strategy 
 indicates there is an XMLType used to store the value in the database.  However,
