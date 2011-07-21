@@ -1740,6 +1740,9 @@ a sequence name in the <literal>SequenceGenerator.sequenceName</literal> attribu
 </programlisting>
         </example>
         <para>
+<!-- OPENJPA-1343: It seems that this only works with the time and 
+sjvm aliases. This due to an issue that was brought up in OPENJPA-1642
+Custom sequences may or may not work depending on their nature.-->
 OpenJPA maintains a <emphasis>system</emphasis> sequence to generate datastore
 identity values for classes that do not declare a specific datastore identity
 strategy. You can configure the system sequence through the
@@ -1752,7 +1755,7 @@ configuration property. This property accepts a plugin string describing a
                 System Sequence Configuration
             </title>
 <programlisting>
-&lt;property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/&gt;
+&lt;property name="openjpa.Sequence" value="time(Increment=100)"/&gt;
 </programlisting>
         </example>
         <para>
