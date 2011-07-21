@@ -174,7 +174,7 @@ public class PostgresDictionary
         useSetStringForClobs = true;
         bitTypeName = "BOOL";
         smallintTypeName = "SMALLINT";
-        realTypeName = "FLOAT8";
+        realTypeName = "FLOAT4";
         tinyintTypeName = "SMALLINT";
         binaryTypeName = "BYTEA";
         blobTypeName = "BYTEA";
