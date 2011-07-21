@@ -1315,9 +1315,9 @@ for a JPQL query.
 <itemizedlist>
 	<listitem>A user application can disable Prepared SQL Cache
 	for entire lifetime of a persistence context by invoking the following
-	method on OpenJPA's EntityManager interface:
+	method on OpenJPA's EntityManager SPI interface:
 	<programlisting>
-	<methodname>OpenJPAEntityManager.setQuerySQLCache(boolean)</methodname> 
+	<methodname>OpenJPAEntityManagerSPI.setQuerySQLCache(boolean)</methodname> 
 	</programlisting>
 	</listitem>
 	<listitem>
