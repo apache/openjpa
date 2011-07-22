@@ -101,12 +101,12 @@
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.H2Dictionary">
-		<lock>HYT00</lock>
-		<referential-integrity>22003,22012,22025,23000,23002,23003</referential-integrity>
-		<object-exists>23001</object-exists>
+		<lock>HYT00,57014</lock>
+		<referential-integrity>22001,22003,22012,22018,22025,23502,23503,23506,23507,23513,23000,23002,23003</referential-integrity>
+		<object-exists>23001,23505</object-exists>
 		<object-not-found>02000</object-not-found>
 		<optimistic></optimistic>
-		<query>90031</query>
+		<query>90031,57014</query>
 	</dictionary>
 	
 	<dictionary class="org.apache.openjpa.jdbc.sql.HSQLDictionary">

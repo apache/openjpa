@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.meta.JavaTypes;
+import org.apache.openjpa.util.StoreException;
 
 /**
  * Dictionary for H2 ({@link http://www.h2database.com}).
@@ -64,6 +65,9 @@ public class H2Dictionary extends DBDictionary {
 
         supportsNullTableForGetPrimaryKeys = true;
         supportsNullTableForGetIndexInfo = true;
+
+        supportsLockingWithOuterJoin = false;
+        supportsLockingWithInnerJoin = false;
 
         reservedWordSet.addAll(Arrays.asList(new String[] {
             "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS",
@@ -238,5 +242,15 @@ public class H2Dictionary extends DBDictionary {
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    @Override
+    public boolean isFatalException(int subtype, SQLException ex) {
+        int errorCode = ex.getErrorCode();
+        if ((subtype == StoreException.QUERY || subtype == StoreException.LOCK) 
+            && (57014 == errorCode || 50200 == errorCode)) {
+            return false;
+        }
+        return super.isFatalException(subtype, ex);
     }
 }
