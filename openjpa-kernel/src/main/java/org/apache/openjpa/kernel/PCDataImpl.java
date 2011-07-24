@@ -18,10 +18,11 @@
  */
 package org.apache.openjpa.kernel;
 
+import java.security.AccessController;
 import java.util.BitSet;
-import java.util.Map;
 
 import org.apache.openjpa.datacache.DataCache;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 
@@ -36,7 +37,8 @@ public class PCDataImpl
     extends AbstractPCData {
 
     private final Object _oid;
-    private final Class<?> _type;
+    private transient Class<?> _type;
+    private String _typeStr;
     private final String _cache;
     private final Object[] _data;
     private final BitSet _loaded;
@@ -54,6 +56,7 @@ public class PCDataImpl
     public PCDataImpl(Object oid, ClassMetaData meta, String name) {
         _oid = oid;
         _type = meta.getDescribedType();
+        _typeStr = _type.getName();
         _cache = name;
 
         int len = meta.getFields().length;
@@ -66,7 +69,20 @@ public class PCDataImpl
     }
 
     public Class<?> getType() {
+        if (_type == null) {
+            ClassLoader ccl = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            try {
+                _type = ccl.loadClass(_typeStr);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return _type;
+    }
+    
+    public void setType(Class<?> t){
+        _type = t;
+        _typeStr = t.getName();
     }
 
     public BitSet getLoaded() {
