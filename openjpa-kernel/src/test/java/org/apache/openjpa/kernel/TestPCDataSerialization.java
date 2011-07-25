@@ -22,6 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import junit.framework.TestCase;
 
@@ -29,11 +32,15 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.DynamicStorage;
 import org.apache.openjpa.enhance.DynamicStorageGenerator;
+import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.IntId;
 import org.apache.openjpa.util.OpenJPAId;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.omg.CORBA.portable.InvokeHandler;
 
 /**
  * This test ensures that we can stream a PCData and OpenJPAId to a client which may not have the Entities on it's
@@ -147,10 +154,23 @@ public class TestPCDataSerialization extends TestCase {
     }
 
     @SuppressWarnings("serial")
-    class DummyMetaDataRepository extends MetaDataRepository {
+    class DummyMetaDataRepository extends MetaDataRepository implements InvocationHandler {
+        OpenJPAConfiguration _conf;
+
+        public DummyMetaDataRepository() {
+            _conf =
+                (OpenJPAConfiguration) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                    new Class[] { OpenJPAConfiguration.class }, this);
+        }
+
         @Override
         public OpenJPAConfiguration getConfiguration() {
-            return new OpenJPAConfigurationImpl();
+            return _conf;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            return null;
         }
     }
 }
