@@ -856,9 +856,12 @@ public class XMLPersistenceMetaDataParser
         }
 
         if (_mode == MODE_QUERY) {
-            if (_parser != null)
-                _parser.parse(_cls);
-            return true;
+            if(_conf.getCompatibilityInstance().getParseAnnotationsForQueryMode()) { 
+                if (_parser != null) {
+                    _parser.parse(_cls); 
+                }
+                return true;
+            }
         }
 
         Log log = getLog();
