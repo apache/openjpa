@@ -191,16 +191,14 @@ public class InstrumentationFactory {
             if (log.isTraceEnabled() == true) {
                 log.trace(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath());
             }
-            if (JavaVendors.getCurrentVendor().isIBM()) {
-                // If we're on an IBM SDK, then remove /jre off of java.home and try again.
-                if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
-                    javaHomeFile = javaHomeFile.getParentFile();
-                    toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-                    if (toolsJarFile.exists() == false) {
-                        if (log.isTraceEnabled() == true) {
-                            log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
-                                toolsJarFile.getAbsolutePath());
-                        }
+            // If we're on an IBM SDK, then remove /jre off of java.home and try again.
+            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
+                javaHomeFile = javaHomeFile.getParentFile();
+                toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
+                if (toolsJarFile.exists() == false) {
+                    if (log.isTraceEnabled() == true) {
+                        log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
+                            toolsJarFile.getAbsolutePath());
                     }
                 }
             } else if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0) {
