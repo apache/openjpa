@@ -112,7 +112,7 @@ Please traverse to a sub-directory, like hellojpa, and run "ant" from there.
     <target name="compile" depends="pre-compile"
         description="Compile the example java files">
         <javac srcdir="${parent}" classpathref="classpath"
-            debug="yes" includes="${example}/**.java"/>
+            debug="yes" includes="${example}/**.java" includeAntRuntime="false" />
     </target>
 
     <!-- this target can be overridden by the sub-build -->
