@@ -56,7 +56,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
-
 import serp.util.Numbers;
 
 /**
@@ -929,12 +928,15 @@ public class OracleDictionary
             sql[create.length + i] = (String) seqs.get(i);
         return sql;
     }
-
-    public String[] getCreateSequenceSQL(Sequence seq) {
-        String[] sql = super.getCreateSequenceSQL(seq);
-        if (seq.getAllocate() > 1)
-            sql[0] += " CACHE " + seq.getAllocate();
-        return sql;
+    
+    public String[] getCreateSequenceSQL(Sequence seq) {    
+    	String[] sql = super.getCreateSequenceSQL(seq);
+    	
+    	if (seq.getAllocate() > 1 && useNativeSequenceCache){
+    		sql[0] += " CACHE " + seq.getAllocate();
+    	}
+    	
+    	return sql;    	
     }
 
     protected String getSequencesSQL(String schemaName, String sequenceName) {
