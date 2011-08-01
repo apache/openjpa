@@ -334,9 +334,8 @@ public class DBDictionary
     public String sequenceNameSQL = null;
     // most native sequences can be run inside the business transaction
     public int nativeSequenceType= Seq.TYPE_TRANSACTIONAL;
-    public boolean useNativeSequenceCache = true;
 
-	protected JDBCConfiguration conf = null;
+    protected JDBCConfiguration conf = null;
     protected Log log = null;
     protected boolean connected = false;
     protected boolean isJDBC3 = false;
@@ -3158,14 +3157,8 @@ public class DBDictionary
         buf.append(getFullName(seq));
         if (seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
-        
-        if (seq.getIncrement() > 1 && useNativeSequenceCache){
-        	buf.append(" INCREMENT BY ").append(seq.getIncrement());
-        }
-        else if ((seq.getIncrement() > 1) || (seq.getAllocate() > 1)){
-            buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
-        }
-        
+        if (seq.getIncrement() > 1)
+            buf.append(" INCREMENT BY ").append(seq.getIncrement());
         return new String[]{ buf.toString() };
     }
 

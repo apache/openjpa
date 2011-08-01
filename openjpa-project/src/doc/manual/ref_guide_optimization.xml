@@ -295,7 +295,8 @@ it can become a factor.
                     </entry>
                     <entry colname="desc">
 For applications that perform large bulk inserts, the retrieval of sequence 
-numbers can be a bottleneck. Increasing sequence allocation sizes can reduce or eliminate 
+numbers can be a bottleneck.  Increasing sequence increments and using 
+table-based rather than native database sequences can reduce or eliminate 
 this bottleneck. In some cases, implementing your own sequence factory can 
 further optimize sequence number retrieval.
                     </entry>

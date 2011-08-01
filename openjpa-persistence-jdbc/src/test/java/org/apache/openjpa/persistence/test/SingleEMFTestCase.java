@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.test;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 /**
@@ -124,9 +123,4 @@ public abstract class SingleEMFTestCase
     public int count(Class c) {
     	return count(c.getSimpleName());
     }
-    
-    protected Log getLog() {
-        return emf.getConfiguration().getLog("Tests");
-    }
-    
 }
