@@ -3373,35 +3373,6 @@ on database configuration, e.g. encoding. This property defines the maximum size
 CLOB to persist with the embedded method. Defaults to 4000 characters.
                     </para>
                 </listitem>
-                <listitem id="OracleDictionary.SupportsSetClob">
-                    <para>
-<literal>SupportsSetClob</literal>: If true, OpenJPA will attempt to use a
-Reader-based JDBC 4.0 method to set Clob or XML data.  This allows XMLType
-and Clob values larger than 4000 bytes to be used if OpenJPA is used
-with a Java 6.0 JRE along with a JDBC 4.0 Oracle driver (e.g. ojdbc6.jar).
-It is expected that this property will be used in conjunction with
-<literal>XMLValueHandler</literal>, see <xref linkend="ref_guide_xmlmapping"/>.
-That is, it is expected that the XML field in question will be annotated with
-the <literal>XMLValueHandler</literal> annotation.  This allows a user to
-indicate that OpenJPA should use JAXB class metadata to perform the to/from 
-database value retrieval and storage.  In addition, using this strategy 
-indicates there is an XMLType used to store the value in the database.  However,
-it is possible for a user to use the <literal>SupportsSetClob</literal> and
-managing their own XML string, mapped to a string field.  In this case,
-additional actions need to be taken.  First, the XML field will need to be
-annotated with the <literal>Lob</literal> annotation.  Second, the
-<literal>MaxEmbeddedClobSize</literal> dictionary property will need to be
-set to -1.  Finally, a user may need to set the
-<literal>openjpa.jdbc.SchemaFactory</literal> property to <literal>native</literal>,
-see <xref linkend="ref_guide_schema_info_factory"/>.
-This property is necessary to allow OpenJPA to detect the XML column type.  While 
-a user may have an XMLType specified in the column definition, OpenJPA cannot count 
-on this data to detect whether the column is really an XML column in the 
-database.  (The table could have been created manually with separate DDL instead 
-of using OpenJPA's mapping tool).  By enabling OpenJPA's native schema factory 
-the database column type can be detected as XMLType.
-                    </para>
-                </listitem>
                 <listitem id="OracleDictionary.UseSetFormOfUseForUnicode">
                     <para>
 <literal>UseSetFormOfUseForUnicode</literal>: Prior to Oracle 10i, statements

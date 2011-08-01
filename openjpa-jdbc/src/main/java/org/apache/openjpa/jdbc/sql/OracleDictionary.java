@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -48,10 +46,8 @@ import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingDatabaseMetaData;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
@@ -75,14 +71,6 @@ public class OracleDictionary
     private static Blob EMPTY_BLOB = null;
     private static Clob EMPTY_CLOB = null;
 
-    private Method _setClob = null;    
-    private Boolean _isJDBC4 = null;
-
-    /**
-     * Type constructor for XML column, used in INSERT and UPDATE statements.
-    */
-    public String xmlTypeMarker = "XMLType(?)";
-    
     private static final Localizer _loc = Localizer.forPackage
         (OracleDictionary.class);
 
@@ -111,14 +99,6 @@ public class OracleDictionary
      */
     public boolean useSetFormOfUseForUnicode = true;
 
-    /**
-     * If true, OpenJPA will attempt to use a Reader-based JDBC 4.0 method to 
-     * set Clob or XML data.  This allows XMLType and Clob values larger than 4000 bytes
-     * to be used if OpenJPA is used with a Java 6.0 JRE along with a JDBC 4.0 Oracle
-     * driver (ojdbc6.jar).
-     */
-    public boolean supportsSetClob = false;
-    
     // some oracle drivers have problems with select for update; warn the
     // first time locking is attempted
     private boolean _checkedUpdateBug = false;
@@ -232,11 +212,7 @@ public class OracleDictionary
                 }
                     // select of an xml column requires ".getStringVal()"
                     // suffix. eg. t0.xmlcol.getStringVal()
-                if (!supportsSetClob) {
                     getStringVal = ".getStringVal()";
-                } else {
-                	getStringVal = ".getClobVal()";
-                }
             } else if (metadataClassName.startsWith("com.ddtek.")
                 || url.indexOf("jdbc:datadirect:oracle:") != -1
                 || "Oracle".equals(driverName)) {
@@ -547,75 +523,6 @@ public class OracleDictionary
             super.setNull(stmnt, idx, Types.NULL, col);
         else
             super.setNull(stmnt, idx, colType, col);
-    }
-
-    @Override
-    public void setClobString(PreparedStatement stmnt, int idx, String val,
-        Column col)
-        throws SQLException {
-        if (!useSetStringForClobs && supportsSetClob) {
-            // If the JRE and underlying driver support JDBC, reflectively call
-            // the JDBC setClob method which supports streams larger than 4000 bytes.
-            if (val != null && supportsJDBC4(stmnt.getConnection())) {
-                if (setClob(stmnt, idx, val)) {
-                    return;
-                }
-            }
-        }
-        super.setClobString(stmnt, idx, val, col);
-    }
-
-    /**
-     * This method reflectively calls the JDBC 4 setClob method which takes a
-     * reader as a parameter.  This allows support for clobs and XML values larger than 4000 bytes.
-     * @param stmnt
-     * @param idx
-     * @param val
-     * @return
-     */
-    private boolean setClob(PreparedStatement stmnt, int idx, String val) {
-        if (_setClob == null) {
-            try {
-                _setClob = PreparedStatement.class.getMethod(
-                           "setClob", int.class, Reader.class, long.class);
-                if (_setClob == null) {
-                    return false;
-                }
-            } catch (Throwable t) {
-                log.warn(_loc.get("oracle-set-clob-unsupported"), t);
-                return false;
-            }
-        }
-        try {
-            PreparedStatement inner = stmnt;
-            PreparedStatement outer = stmnt;
-            if (stmnt instanceof DelegatingPreparedStatement) {
-                inner = (PreparedStatement) ((DelegatingPreparedStatement)stmnt).getInnermostDelegate();
-                outer = (PreparedStatement) ((DelegatingPreparedStatement)stmnt).getDelegate();
-            }
-            _setClob.invoke(inner, new Object[] { idx, new StringReader(val), (long)val.length() } );
-            // Direct invocation of setClob on the Oracle driver bypasses OpenJPA's built-in
-            // parameter logging via decorators.  Log the parameter directly.
-            LoggingConnectionDecorator.logStatementParameter(outer, idx, "Clob", val);
-        } catch (Throwable t) {         
-            log.warn(_loc.get("oracle-set-clob-failed"), t);
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * Oracle requires special handling of XML column.
-     * Unless the value length is less or equal to 4000 bytes,
-     * the parameter marker must be decorated with type constructor.
-    */
-    @Override
-    public String getMarkerForInsertUpdate(Column col, Object val) {
-       if (col.isXML() && val != RowImpl.NULL) {
-          return xmlTypeMarker;
-       }
-       return super.getMarkerForInsertUpdate(col, val);
     }
 
     public String getClobString(ResultSet rs, int column)
@@ -1218,37 +1125,4 @@ public class OracleDictionary
         }
         return updateSuccessCnt;
     }
-    
-    /**
-     * Attempts to reflectively call a local JDBC4 method to determine whether 
-     * JDBC 4.0 is supported in the runtime environment.  This requires JDK 1.6,
-     * DBCP 1.4, and an Oracle JDK 1.6/JDBC 4.0 driver (ojdbc6.jar).
-    */
-    protected boolean supportsJDBC4(Connection conn) {
-        if (_isJDBC4 != null) {
-            return _isJDBC4;
-        }
-        if (_driverBehavior != BEHAVE_ORACLE) {
-            _isJDBC4 = false;
-            return _isJDBC4;
-        }
-        try {
-            Connection inner = conn;
-            if (conn instanceof DelegatingConnection) {
-                inner = ((DelegatingConnection)conn).getInnermostDelegate();
-            }
-            Method getClientInfo = Connection.class.getMethod(
-                "getClientInfo", new Class[0]);
-            getClientInfo.invoke(inner, new Object[0]);
-            _isJDBC4 = true;
-        } catch (Throwable t) {
-            if (t instanceof SQLException) {
-                // OK, we are on JDBC 4.
-               _isJDBC4 = true;
-            } else {
-                _isJDBC4 = false;
-            }
-        }
-        return _isJDBC4;
-     }
 }

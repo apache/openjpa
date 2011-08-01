@@ -4568,16 +4568,4 @@ public class DBDictionary
     public void deleteStream(JDBCStore store, Select sel) throws SQLException {
         // Do nothing
     }
-    
-    /**
-     * Return parameter marker for INSERT and UPDATE statements.
-     * Usually it is <code>?</code> but some database-specific types might require customization.
-     * 
-     * @param col column definition
-     * @param val value to be inserted/updated
-     * @return parameter marker
-    */
-    public String getMarkerForInsertUpdate(Column col, Object val) {
-       return "?";
-    }
 }
