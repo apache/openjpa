@@ -46,7 +46,7 @@ import javax.persistence.Table;
             query="select s from simple s where s.name = ?1"),
     @NamedQuery(name="FindAll", query="select s from simple s"),
     @NamedQuery(name="SelectWithPositionalParameterNonOneStart",
-        query="select a from simple a where a.id=?900 and a.name=?2")
+        query="select a from simple a where a.id=?900 and a.name=?2 and a.value=?54"),
 })
 
 @NamedNativeQueries( { 
