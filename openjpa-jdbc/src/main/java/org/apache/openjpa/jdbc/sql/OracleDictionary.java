@@ -997,12 +997,15 @@ public class OracleDictionary
     }
 
     @Override
-    public String[] getCreateSequenceSQL(Sequence seq) {
-        String[] sql = super.getCreateSequenceSQL(seq);
-        if (seq.getAllocate() > 1)
-            sql[0] += " CACHE " + seq.getAllocate();
-        return sql;
-    }
+    public String[] getCreateSequenceSQL(Sequence seq) {    
+    	String[] sql = super.getCreateSequenceSQL(seq);
+    	
+    	if (seq.getAllocate() > 1 && useNativeSequenceCache){
+    		sql[0] += " CACHE " + seq.getAllocate();
+    	}
+    	
+    	return sql;    	
+     }
     
     /**
      * Return the preferred {@link Types} constant for the given

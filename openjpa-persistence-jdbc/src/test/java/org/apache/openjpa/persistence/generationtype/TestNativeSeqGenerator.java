@@ -62,4 +62,34 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         assertTrue("Next value should depend on previous genid", nextId >= genId + 1);
         em.close();
     }
+
+    /**
+     * Asserts native sequence generator allocates values in memory
+     * and requests sequence values from database only when necessary.
+     */
+    public void testAllocationSize() {
+        //Run this test only if the user has elected to not use the Native Sequence Cache.
+    	if (supportsNativeSequence && !dict.useNativeSequenceCache){
+	        // Turn off statement batching for easier INSERT counting.
+	        dict.setBatchLimit(0);
+	        em.getTransaction().begin();
+	        resetSQL();
+	        for (int i = 0; i < 51; i++) {
+	            createEntityE2();
+	            em.persist(entityE2);
+	        }
+	        em.getTransaction().commit();
+	
+	        // Since allocationSize has a default of 50, we expect 2 sequence fetches and 51 INSERTs.
+	        assertEquals("53 statements should be executed.", 53, getSQLCount());
+	        String[] statements = new String[53];
+	        statements[0] = ".*";
+	        statements[1] = ".*";
+	        for (int i = 2; i < 53; i++) {
+	            statements[i] = "INSERT .*";
+	        }
+	        assertAllExactSQLInOrder(statements);
+	        em.close();
+    	}
+    }
 }
