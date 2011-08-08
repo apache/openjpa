@@ -433,6 +433,17 @@
                     </itemizedlist>    
                 </para>
             </section>
+            <section id="SupportsSetClob">
+                <title>
+                    supportsSetClob property.  
+                </title>
+                <!-- See OPENJPA-1691 for details. -->
+                <para>
+                    In the OpenJPA 2.1.x release, code was added to OpenJPA to allow the setting of Clob or XML data larger than 4000 bytes.  This functionality
+                    was eventually back ported to previous releases, and enabeld by the supportsSetClob property on the OracleDictionary.  Setting this property 
+                    has no effect in 2.1.x and later releases and any occurrence of it should be removed.
+                </para>
+            </section>            
         </section>
     </section>
 </appendix>

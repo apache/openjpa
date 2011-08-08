@@ -104,6 +104,25 @@ public class OracleDictionary
      * configure statements that it detects are operating on unicode fields.
      */
     public boolean useSetFormOfUseForUnicode = true;
+    
+    /**
+     * This variable was used prior to 2.1.x to indicate that OpenJPA should attempt to use
+     * a Reader-based JDBC 4.0 method to set Clob or XML data.  It allowed XMLType and 
+     * Clob values larger than 4000 bytes to be used.  For 2.1.x+, code was added to allow
+     * said functionality by default (see OPENJPA-1691).  For forward compatibility, this 
+     * variable should not be removed.
+     */
+    @Deprecated
+    public boolean supportsSetClob = false;  
+    
+    /**
+     * If a user sets the previous variable (supportsSetClob) to true, we should log a
+     * warning indicating that the variable no longer has an effect due to the code changes
+     * of OPENJPA-1691.  We only want to log the warning once per instance, thus this
+     * variable will be used to indicate if the warning should be printed or not.  
+     */
+    @Deprecated
+    private boolean logSupportsSetClobWarning = true;
 
     /**
      * Type constructor for XML column, used in INSERT and UPDATE statements.
@@ -572,6 +591,20 @@ public class OracleDictionary
     public void setClobString(PreparedStatement stmnt, int idx, String val,
         Column col)
         throws SQLException {
+    	
+    	//We need a place to detect if the user is setting the 'supportsSetClob' property.
+    	//While in previous releases this property had meaning, it is no longer useful
+    	//given the code added via OPENJPA-1691.  As such, we need to warn user's the
+    	//property no longer has meaning.  While it would be nice to have a better way
+    	//to detect if the supportsSetClob property has been set, the best we can do
+    	//is detect the variable in this code path as this is the path a user's code
+    	//would go down if they are still executing code which actually made use of
+    	//the support provided via setting supportsSetClob.
+    	if (supportsSetClob && logSupportsSetClobWarning){
+    		log.warn(_loc.get("oracle-set-clob-warning"));
+    		logSupportsSetClobWarning=false;
+    	}
+
         if (col.isXML()) {
             if (isJDBC4) {
                 // This JDBC 4 method handles values longer than 4000 bytes.
