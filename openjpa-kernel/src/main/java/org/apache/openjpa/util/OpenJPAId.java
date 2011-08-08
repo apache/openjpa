@@ -19,9 +19,7 @@
 package org.apache.openjpa.util;
 
 import java.io.Serializable;
-import java.security.AccessController;
 
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -31,17 +29,16 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
  * @author Steve Kim
  */
 @SuppressWarnings("serial")
-public abstract class OpenJPAId implements Comparable, Serializable {
+public abstract class OpenJPAId
+    implements Comparable, Serializable {
     public static final char TYPE_VALUE_SEP = '-';
     
     // cache the types' generated hash codes
     private static ConcurrentReferenceHashMap _typeCache =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
-    private transient Class<?> _type;
-    private String _typeStr;
-    
-    protected boolean _subs = true;
+    protected Class type;
+    protected boolean subs = true;
 
     // type hash is based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
@@ -50,31 +47,20 @@ public abstract class OpenJPAId implements Comparable, Serializable {
     protected OpenJPAId() {
     }
 
-    protected OpenJPAId(Class<?> type) {
-        _type = type;
-        _typeStr = type.getName();
-        
+    protected OpenJPAId(Class type) {
+        this.type = type;
     }
 
-    protected OpenJPAId(Class<?> type, boolean subs) {
-        _type = type;
-        _typeStr = type.getName();
-        _subs = subs;
+    protected OpenJPAId(Class type, boolean subs) {
+        this.type = type;
+        this.subs = subs;
     }
 
     /**
      * Return the persistent class which this id instance represents.
      */
-    public final Class<?> getType() {
-        if (_type == null) {
-            ClassLoader ccl = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-            try {
-                _type = ccl.loadClass(_typeStr);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return _type;
+    public Class getType() {
+        return type;
     }
 
     /**
@@ -82,22 +68,22 @@ public abstract class OpenJPAId implements Comparable, Serializable {
      * Defaults to true.
      */
     public boolean hasSubclasses() {
-        return _subs;
+        return subs;
     }
 
     /**
      * Set the exact type of the described instance once it is known.
      */
-    public void setManagedInstanceType(Class<?> type) {
+    public void setManagedInstanceType(Class type) {
         setManagedInstanceType(type, false);
     }
 
     /**
      * Set the exact type of the described instance once it is known.
      */
-    public void setManagedInstanceType(Class<?> type, boolean subs) {
-        _type = type;
-        _subs = subs;
+    public void setManagedInstanceType(Class type, boolean subs) {
+        this.type = type;
+        this.subs = subs;
     }
 
     /**
@@ -121,16 +107,16 @@ public abstract class OpenJPAId implements Comparable, Serializable {
      */
     public int hashCode() {
         if (_typeHash == 0) {
-            Integer typeHashInt = (Integer) _typeCache.get(getType());
+            Integer typeHashInt = (Integer) _typeCache.get(type);
             if (typeHashInt == null) {
-                Class<?> base = getType();
-                Class<?> superclass = base.getSuperclass();
+                Class base = type;
+                Class superclass = base.getSuperclass();
                 while (superclass != null && superclass != Object.class) {
                     base = base.getSuperclass();
                     superclass = base.getSuperclass();
                 }
                 _typeHash = base.hashCode();
-                _typeCache.put(getType(), Integer.valueOf(_typeHash));
+                _typeCache.put(type, Integer.valueOf(_typeHash));
             } else {
                 _typeHash = typeHashInt.intValue();
             }
@@ -145,12 +131,12 @@ public abstract class OpenJPAId implements Comparable, Serializable {
             return false;
 
         OpenJPAId id = (OpenJPAId) o;
-        return idEquals(id)
-            && (id.getType().isAssignableFrom(getType()) || (_subs && getType().isAssignableFrom(id.getType())));
+        return idEquals(id) && (id.type.isAssignableFrom(type)
+            || (subs && type.isAssignableFrom(id.type)));
     }
 
     public String toString() {
-        return getType().getName() + TYPE_VALUE_SEP + getIdObject();
+        return type.getName() + TYPE_VALUE_SEP + getIdObject();
     }
 
     public int compareTo(Object other) {
@@ -158,6 +144,6 @@ public abstract class OpenJPAId implements Comparable, Serializable {
             return 0;
         if (other == null)
             return 1;
-        return ((Comparable) getIdObject()).compareTo(((OpenJPAId) other).getIdObject());
-    }
+        return ((Comparable) getIdObject()).compareTo(((OpenJPAId) other).getIdObject ());
+	}
 }

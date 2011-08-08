@@ -84,7 +84,7 @@ public final class Id
         else {
             int dash = str.indexOf(TYPE_VALUE_SEP);
             try {
-                setManagedInstanceType(Class.forName(str.substring(0, dash), true, loader));
+                type = Class.forName(str.substring(0, dash), true, loader);
             } catch (Throwable t) {
                 throw new UserException(_loc.get("string-id", str), t);
             }
