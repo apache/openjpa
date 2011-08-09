@@ -1660,6 +1660,7 @@ public class EntityManagerImpl
      * @exception if the given class is null, generic <code>Object.class</code> or a class
      * that is not wrapped by this receiver.  
      */
+    @SuppressWarnings("unchecked")
     public <T> T unwrap(Class<T> cls) {
         if (cls != null && cls != Object.class) {
             Object[] delegates = new Object[] { _broker.getInnermostDelegate(), _broker.getDelegate(), _broker, this };
@@ -1669,7 +1670,13 @@ public class EntityManagerImpl
             }
             // Only call getConnection() once we are certain that is the type that we need to unwrap.
             if (cls.isAssignableFrom(Connection.class)) {
-                return (T) getConnection();
+                Object o = getConnection();
+                if(Connection.class.isInstance(o)){
+                    return (T) o;   
+                }else{
+                    // Try and cleanup if  aren't going to return the connection back to the caller.
+                    ImplHelper.close(o);
+                }
             }
         }
         // Set this transaction to rollback only (as per spec) here because the raised exception 
