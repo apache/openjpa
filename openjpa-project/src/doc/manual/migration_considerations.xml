@@ -444,6 +444,20 @@
                     has no effect in 2.1.x and later releases and any occurrence of it should be removed.
                 </para>
             </section>            
+            <section id="UseNativeSequenceCache">
+                <title>
+                    useNativeSequenceCache property.  
+                </title>
+                <!-- See OPENJPA-1376 for details. -->
+                <para>
+                    In the OpenJPA 2.2.x release, code was added which changed the way sequences were generated, please see 
+                    <xref linkend="jpa_2.2_allocationSize"/> for details.  This functionality was eventually back ported 
+                    to previous releases, and enabeld by the useNativeSequenceCache property on the DBDictionary.  Setting this property 
+                    has no effect in 2.2.x and later releases and any occurrence of it should be removed.  If previous behavior is
+                    desired (i.e. useNativeSequenceCache=true), please see the details described in section 
+                    <xref linkend="jpa_2.2_allocationSize"/>.
+                </para>
+            </section>            
         </section>
     </section>
 </appendix>

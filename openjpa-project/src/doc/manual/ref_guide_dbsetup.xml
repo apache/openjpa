@@ -3419,6 +3419,27 @@ ResultSet.getString</methodname> will be used to obtain clob data rather than
                             UseSchemaName
                         </secondary>
                     </indexterm>
+<literal>UseNativeSequenceCache</literal>: This property was used in 
+2.1.x and prior releases to indicate (when set to false) that OpenJPA 
+should not use the CACHE clause when getting a native sequence; instead 
+the INCREMENT BY clause gets its value equal to the allocationSize 
+property.  Post 2.1.x, code was added to allow said functionality by 
+default (see OPENJPA-1376).  
+For forward compatibility, this property still remains, however it has 
+been deprecated and will eventually be removed.  Setting this property 
+has no effect and any occurrence of it should be removed.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseNativeSequenceCache">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Sequence
+                        </primary>
+                        <secondary>
+                            UseNativeSequenceCache
+                        </secondary>
+                    </indexterm>
 <literal>UseSchemaName</literal>: If <literal>false</literal>, then avoid
 including the schema name in table name references. Defaults to <literal>true
 </literal>.

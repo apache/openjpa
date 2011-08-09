@@ -351,6 +351,26 @@ public class DBDictionary
     public String sequenceNameSQL = null;
     // most native sequences can be run inside the business transaction
     public int nativeSequenceType= Seq.TYPE_CONTIGUOUS;
+    
+    /**
+     * This variable was used in 2.1.x and prior releases to indicate that 
+     * OpenJPA should not use the CACHE clause when getting a native 
+     * sequence; instead the INCREMENT BY clause gets its value equal to the 
+     * allocationSize property.  Post 2.1.x, code was added to allow
+     * said functionality by default (see OPENJPA-1376).  For forward 
+     * compatibility, this variable should not be removed.
+     */
+    @Deprecated
+    public boolean useNativeSequenceCache = true;    
+    
+    /**
+     * If a user sets the previous variable (useNativeSequenceCache) to false, we should log a
+     * warning indicating that the variable no longer has an effect due to the code changes
+     * of OPENJPA-1376.  We only want to log the warning once per instance, thus this
+     * variable will be used to indicate if the warning should be printed or not.  
+     */
+    @Deprecated
+    private boolean logNativeSequenceCacheWarning = true;    
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;
@@ -3388,6 +3408,19 @@ public class DBDictionary
     public String[] getCreateSequenceSQL(Sequence seq) {
         if (nextSequenceQuery == null)
             return null;
+        
+    	//We need a place to detect if the user is setting the 'useNativeSequenceCache' property.
+    	//While in previous releases this property had meaning, it is no longer useful
+    	//given the code added via OPENJPA-1327.  As such, we need to warn user's the
+    	//property no longer has meaning.  While it would be nice to have a better way
+    	//to detect if the useNativeSequenceCache property has been set, the best we can do
+    	//is detect the variable in this code path as this is the path a user's code
+    	//would go down if they are still executing code which actually made use of
+    	//the support provided via setting useNativeSequenceCache.
+    	if (!useNativeSequenceCache && logNativeSequenceCacheWarning){
+    		log.warn(_loc.get("sequence-cache-warning"));
+    		logNativeSequenceCacheWarning=false;
+    	}        
 
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE SEQUENCE ");
