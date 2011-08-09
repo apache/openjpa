@@ -387,7 +387,28 @@
         the driver <classname>com.mysql.jdbc.Driver</classname> as 
         specified by <classname>openjpa.ConnectionDriverName</classname> 
         property value.
-      </para>
+    </para>
+
+        <para>
+            A connection pool may also be used with Slice by using the <literal>openjpa.ConnectionProperties</literal> property.
+            For example to use commons-dbcp with Derby you might use the following properties : 
+            <programlisting> 
+                <![CDATA[<property name="openjpa.BrokerFactory" value="slice"/>
+                <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
+                <property name="openjpa.slice.Names" value="One,Two"/>
+                <property name="openjpa.slice.Master" value="Two"/>
+ 
+                <property name="openjpa.slice.One.ConnectionProperties" value="Url=jdbc:derby:target/database/openjpa-slice1;create=true, DriverClassName=org.apache.derby.jdbc.EmbeddedDriver"/>
+                <property name="openjpa.slice.Two.ConnectionProperties" value="Url=jdbc:derby:target/database/openjpa-slice2;create=true, DriverClassName=org.apache.derby.jdbc.EmbeddedDriver"/>
+ 
+                <property name="openjpa.jdbc.DBDictionary" value="derby"/>]]>
+            </programlisting>
+            <note>
+                <para>
+                    Be aware that you need to set the DBDictionary when using commons-dbcp.
+                </para>
+            </note>
+        </para>
     </section>
      
     <section id="distribution_policy">
