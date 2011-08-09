@@ -3301,6 +3301,23 @@ ResultSet.getString</methodname> will be used to obtain clob data rather than
 <methodname>ResultSet.getCharacterStream</methodname>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.UseNativeSequenceCache">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            Sequence
+                        </primary>
+                        <secondary>
+                            UseNativeSequenceCache
+                        </secondary>
+                    </indexterm>
+<literal>UseNativeSequenceCache</literal>: This property is used 
+to indicate (when set to false) that OpenJPA should not use the 
+CACHE clause when getting a native sequence; instead 
+the INCREMENT BY clause gets its value equal to the allocationSize 
+property.
+                    </para>
+                </listitem>                
                 <listitem id="DBDictionary.UseSchemaName">
                     <para>
                     <indexterm>
