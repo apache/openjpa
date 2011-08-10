@@ -790,6 +790,12 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
                 // ensure generated IDs get assigned properly
                 if (!logical)
                     ((StateManagerImpl)sm).assignObjectId(false, true);
+                
+                // Call preFetch on this and any related persistent fields.
+                // This will ensure IDs get assigned to those that need them.
+                if (_broker.isFlushing()) {
+                    ((StateManagerImpl)sm).preFlush(logical, call);
+                }
             }
         }
 

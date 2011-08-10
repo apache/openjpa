@@ -5165,4 +5165,9 @@ public class BrokerImpl
     public void setAllowReferenceToSiblingContext(boolean allow) {
         _allowReferenceToSiblingContext = allow;
     }
+    
+    protected boolean isFlushing() {
+        return ((_flags & FLAG_FLUSHING) != 0);
+    }
+
 }
