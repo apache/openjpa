@@ -337,7 +337,7 @@ public class DBDictionary
     public boolean supportsNullTableForGetImportedKeys = false;
     public boolean useGetBestRowIdentifierForPrimaryKeys = false;
     public boolean requiresAutoCommitForMetaData = false;
-    public boolean tableLengthIncludesSchema = true; 
+    public boolean tableLengthIncludesSchema = false; 
 
     // auto-increment
     public int maxAutoAssignNameLength = 31;
