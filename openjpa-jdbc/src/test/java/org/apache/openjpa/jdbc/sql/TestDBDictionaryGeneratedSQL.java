@@ -113,6 +113,64 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
         assertEquals(1, sqls.length);
         assertTrue(sqls[0].contains("NameIsRight"));
         assertTrue(sqls[0].contains("IAmASchema"));
-    }    
+    }
+    
+    public void testOverrideProperty() {
+        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
+        
+        checking(new Expectations() {
+            {
+                allowing(mockConfiguration).getIdentifierUtilInstance();
+                will(returnValue(idImpl)); 
 
+                allowing(mockConfiguration);
+            }
+        });
+        
+        DBDictionary dict = new DBDictionary();
+        dict.setConfiguration(mockConfiguration);
+        dict.tableLengthIncludesSchema=true;
+        dict.maxTableNameLength = 12;
+
+        Table table = new Table();
+        table.setIdentifier(DBIdentifier.newTable("NameIsTooLong"));
+        table.setSchemaIdentifier(DBIdentifier.newSchema("IAmASchema"));
+        
+        try {
+            dict.getCreateTableSQL(table);
+            fail("Expected a UserException");
+        } catch (UserException ue) {
+            // expected - check message in case a different UserException is thrown.
+            assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
+        } 
+    }
+    
+    public void testOverridePropertyShortName() {
+        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
+        
+        checking(new Expectations() {
+            {
+                allowing(mockConfiguration).getIdentifierUtilInstance();
+                will(returnValue(idImpl)); 
+
+                allowing(mockConfiguration);
+            }
+        });
+        
+        DBDictionary dict = new DBDictionary();
+        dict.setConfiguration(mockConfiguration);
+        dict.tableLengthIncludesSchema=true;
+        dict.maxTableNameLength = 18;
+
+        Table table = new Table();
+        table.setIdentifier(DBIdentifier.newTable("NameIsRight"));
+        table.setSchemaIdentifier(DBIdentifier.newSchema("schema"));
+        
+        String[] sqls = dict.getCreateTableSQL(table);
+        assertEquals(1, sqls.length);
+        assertTrue(sqls[0].contains("NameIsRight"));
+        assertTrue(sqls[0].contains("schema"));
+    }
 }
