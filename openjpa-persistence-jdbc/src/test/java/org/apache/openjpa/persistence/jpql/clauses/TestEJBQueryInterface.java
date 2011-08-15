@@ -113,7 +113,7 @@ public class TestEJBQueryInterface extends AbstractTestCase {
     public void testSetFirstResults() {
         EntityManager em = currentEntityManager();
 
-        List l = em.createQuery("Select object(o) from Entity1 o")
+        List l = em.createQuery("Select object(o) from Entity1 o order by o.pk")
             .setFirstResult(3)
             .getResultList();
 
