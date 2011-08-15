@@ -27,10 +27,12 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.EntityManagerImpl;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
+import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
-    Object[] props = new Object[] { CLEAR_TABLES, OptSelectEntity.class };
+    Object[] props = new Object[] { CLEAR_TABLES, OptSelectEntity.class
+        };
     OptSelectEntity e1, e2;
 
     @Override
@@ -50,10 +52,11 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
             if (store instanceof JDBCStoreManager == false) {
                 fail("StoreManager is not an instanceof JDBCStoreManager");
             }
-            // Set this JDBCStoreManager property so that we will select FKs for fields that are in the DFG, but not
-            // included in the current select.
-            ((JDBCStoreManager) store).setIgnoreDfgForFkSelect(true);
-
+            // Set this JDBCFetchPlan property so that we will select FKs for fields that are in the DFG, but not
+            // included in the current load. If this property isn't set, the FK for eagerOneToOneOwner will not be
+            // selected.
+             ((JDBCFetchPlan)fp).setIgnoreDfgForFkSelect(true);
+ 
             // Remove all relationships
             fp.removeField(OptSelectEntity.class, "eagerOneToOne");
             fp.removeField(OptSelectEntity.class, "eagerOneToOneOwner");
@@ -77,6 +80,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
                     fks++;
                 }
             }
+            // We expected to find 2 FKs. One for each of the owners (lazyOneToOneOwner and eagerOneToOneOwner)
             assertEquals(2, fks);
         } finally {
             if (em.getTransaction().isActive()) {

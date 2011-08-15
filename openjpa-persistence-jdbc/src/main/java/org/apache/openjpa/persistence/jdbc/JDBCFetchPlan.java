@@ -227,4 +227,20 @@ public interface JDBCFetchPlan
      * @deprecated use {@link #setJoinSyntax(JoinSyntax)} instead.
      */
     public JDBCFetchPlan setJoinSyntax(int syntax);
+    
+    /**
+     * If true - Ignore whether or not a field is in the dfg for mappings that use 2-part selects to load fk table data.
+     * 
+     * @since 2.2.0
+     * @return false
+     */
+    public boolean getIgnoreDfgForFkSelect();
+
+    /**
+     * If true - Ignore whether or not a field is in the dfg for mappings that use 2-part selects to load fk table data.
+     * 
+     * @since 2.2.0
+     * @return false
+     */
+    public void setIgnoreDfgForFkSelect(boolean b);
 }

@@ -111,7 +111,6 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private RefCountConnection _conn = null;
     private boolean _active = false;
     private Log _log = null;
-    boolean _ignoreDfgForFkSelect = false;
     
     // track the pending statements so we can cancel them
     private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
@@ -1410,7 +1409,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      */
     private boolean optSelect(FieldMapping fm, Select sel, OpenJPAStateManager sm, JDBCFetchConfiguration fetch) {
         boolean dfg =
-            _ignoreDfgForFkSelect || 
+            fetch.getIgnoreDfgForFkSelect() || 
                 !fm.isInDefaultFetchGroup() && !fm.isDefaultFetchGroupExplicit();
 
         return dfg && (sm == null || sm.getPCState() == PCState.TRANSIENT || !sm.getLoaded().get(fm.getIndex()))
@@ -1549,10 +1548,6 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     FinderCache getFinderCache() {
         return (((BrokerImpl)getContext()).getCacheFinderQuery())
              ? getConfiguration().getFinderCacheInstance() : null;
-    }
-
-    public void setIgnoreDfgForFkSelect(boolean b) {
-        _ignoreDfgForFkSelect = b;
     }
 
     /**

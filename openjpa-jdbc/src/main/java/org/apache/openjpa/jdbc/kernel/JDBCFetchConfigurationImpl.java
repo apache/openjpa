@@ -92,6 +92,7 @@ public class JDBCFetchConfigurationImpl
         public Set<String> joins = null;
         public Set<String> fetchInnerJoins = null;
         public int isolationLevel = -1;
+        public boolean ignoreDfgForFkSelect = false;
     }
 
     protected final JDBCConfigurationState _state;
@@ -135,8 +136,17 @@ public class JDBCFetchConfigurationImpl
         setLRSSize(jf.getLRSSize());
         setJoinSyntax(jf.getJoinSyntax());
         addJoins(jf.getJoins());
+        setIgnoreDfgForFkSelect(jf.getIgnoreDfgForFkSelect());
     }
 
+    @Override
+    public boolean getIgnoreDfgForFkSelect() {
+        return _state.ignoreDfgForFkSelect;
+    }
+    @Override
+    public void setIgnoreDfgForFkSelect(boolean b) {
+        _state.ignoreDfgForFkSelect = b;
+    }
     public int getEagerFetchMode() {
         return _state.eagerMode;
     }

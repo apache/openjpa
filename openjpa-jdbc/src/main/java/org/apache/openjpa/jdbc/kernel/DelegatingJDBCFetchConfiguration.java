@@ -294,4 +294,21 @@ public class DelegatingJDBCFetchConfiguration
             throw translate(re);
         }
     }
+    @Override
+    public void setIgnoreDfgForFkSelect(boolean b) {
+        try {
+            getJDBCDelegate().setIgnoreDfgForFkSelect(b);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+
+    @Override
+    public boolean getIgnoreDfgForFkSelect() {
+        try {
+            return getJDBCDelegate().getIgnoreDfgForFkSelect();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

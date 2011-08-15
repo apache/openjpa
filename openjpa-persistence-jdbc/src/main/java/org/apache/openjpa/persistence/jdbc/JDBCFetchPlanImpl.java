@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.jdbc;
 
 import java.sql.ResultSet;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.LockModeType;
 
@@ -342,5 +340,15 @@ public class JDBCFetchPlanImpl
     @Override
     public JDBCFetchPlan setQueryTimeout(int timeout) {
         return (JDBCFetchPlan) super.setQueryTimeout(timeout);
+    }
+
+    @Override
+    public boolean getIgnoreDfgForFkSelect() {
+        return _fetch.getIgnoreDfgForFkSelect();
+    }
+
+    @Override
+    public void setIgnoreDfgForFkSelect(boolean b) {
+        _fetch.setIgnoreDfgForFkSelect(b);
     }
 }
