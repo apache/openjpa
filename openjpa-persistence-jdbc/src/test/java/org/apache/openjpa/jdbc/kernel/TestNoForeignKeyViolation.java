@@ -23,6 +23,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.SQLServerDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -40,6 +41,11 @@ public class TestNoForeignKeyViolation
     private EntityD entityD;
 
     public void setUp() {
+        setUnsupportedDatabases(SQLServerDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+        
         setUp(EntityA.class, EntityB.class, EntityC.class, EntityD.class, 
               EntityE.class, EntityF.class, EntityG.class);
         createTestData();
