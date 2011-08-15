@@ -97,8 +97,7 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  * @nojavadoc
  */
-public class JDBCStoreManager 
-    implements StoreManager, JDBCStore {
+public class JDBCStoreManager implements StoreManager, JDBCStore {
 
     private static final Localizer _loc = Localizer.forPackage
         (JDBCStoreManager.class);
@@ -112,7 +111,8 @@ public class JDBCStoreManager
     private RefCountConnection _conn = null;
     private boolean _active = false;
     private Log _log = null;
-
+    boolean _ignoreDfgForFkSelect = false;
+    
     // track the pending statements so we can cancel them
     private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
 
@@ -1404,17 +1404,16 @@ public class JDBCStoreManager
     }
 
     /**
-     * When selecting fieldes, a special case is made for mappings that use
-     * 2-part selects that aren't explicitly *not* in the dfg so that they
-     * can get their primary table data. This method tests for that special
-     * case as an optimization.
+     * When selecting fields, a special case is made for mappings that use 2-part selects that aren't explicitly *not*
+     * in the dfg so that they can get their primary table data. This method tests for that special case as an
+     * optimization.
      */
-    private boolean optSelect(FieldMapping fm, Select sel,
-        OpenJPAStateManager sm, JDBCFetchConfiguration fetch) {
-        return !fm.isInDefaultFetchGroup() 
-             && !fm.isDefaultFetchGroupExplicit()
-            && (sm == null || sm.getPCState() == PCState.TRANSIENT 
-            || !sm.getLoaded().get(fm.getIndex()))
+    private boolean optSelect(FieldMapping fm, Select sel, OpenJPAStateManager sm, JDBCFetchConfiguration fetch) {
+        boolean dfg =
+            _ignoreDfgForFkSelect || 
+                !fm.isInDefaultFetchGroup() && !fm.isDefaultFetchGroupExplicit();
+
+        return dfg && (sm == null || sm.getPCState() == PCState.TRANSIENT || !sm.getLoaded().get(fm.getIndex()))
             && fm.supportsSelect(sel, Select.TYPE_TWO_PART, sm, this, fetch) > 0;
     }
 
@@ -1552,10 +1551,12 @@ public class JDBCStoreManager
              ? getConfiguration().getFinderCacheInstance() : null;
     }
 
+    public void setIgnoreDfgForFkSelect(boolean b) {
+        _ignoreDfgForFkSelect = b;
+    }
 
     /**
-     * Connection returned to client code. Makes sure its wrapped connection
-     * ref count is decremented on finalize.
+     * Connection returned to client code. Makes sure its wrapped connection ref count is decremented on finalize.
      */
     public abstract static class ClientConnection extends
             DelegatingConnection {
