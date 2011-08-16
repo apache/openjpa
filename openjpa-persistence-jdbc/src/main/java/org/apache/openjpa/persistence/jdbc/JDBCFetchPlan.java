@@ -229,18 +229,22 @@ public interface JDBCFetchPlan
     public JDBCFetchPlan setJoinSyntax(int syntax);
     
     /**
-     * If true - Ignore whether or not a field is in the dfg for mappings that use 2-part selects to load fk table data.
+     * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
+     * whether the field is included in the default fetch group of this fetch configuration. <br><br>
+     * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
+     * field in included in the default fetch group of this fetch configuration.
      * 
      * @since 2.2.0
-     * @return false
      */
     public boolean getIgnoreDfgForFkSelect();
 
     /**
-     * If true - Ignore whether or not a field is in the dfg for mappings that use 2-part selects to load fk table data.
+     * Affirms if foreign key for a relation field will be pre-fetched as part of the owning object irrespective of
+     * whether the field is included in the default fetch group of this fetch configuration. <br><br>
+     * By default, foreign key for a relation field is pre-fetched as part of the owning object <em>only</em> if the
+     * field in included in the default fetch group of this fetch configuration.
      * 
      * @since 2.2.0
-     * @return false
      */
     public void setIgnoreDfgForFkSelect(boolean b);
 }

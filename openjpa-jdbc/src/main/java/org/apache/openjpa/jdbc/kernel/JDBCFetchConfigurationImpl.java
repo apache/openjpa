@@ -143,10 +143,12 @@ public class JDBCFetchConfigurationImpl
     public boolean getIgnoreDfgForFkSelect() {
         return _state.ignoreDfgForFkSelect;
     }
+
     @Override
     public void setIgnoreDfgForFkSelect(boolean b) {
         _state.ignoreDfgForFkSelect = b;
     }
+
     public int getEagerFetchMode() {
         return _state.eagerMode;
     }
