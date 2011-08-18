@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.conf;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.meta.MetaDataPlusMappingFactory;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -155,8 +156,20 @@ public class MappingFactoryValue
 
         // if no mapping setting, return meta factory alone, assuming it handles
         // both metadata and mapping
-        MetaDataFactory ret = (map == null) ? meta
-            : new MetaDataPlusMappingFactory(meta, map);
-        return ret;
+        MetaDataFactory ret = null;
+        if(map == null ) { 
+            ret = meta;
+        }
+        else {
+            if( conf instanceof OpenJPAConfiguration) {
+                ret = new MetaDataPlusMappingFactory(meta, map, (OpenJPAConfiguration) conf);
+            }
+            else {
+                ret = new MetaDataPlusMappingFactory(meta, map);
+            }
+        }
+        
+        return ret; 
+        
     }
 }

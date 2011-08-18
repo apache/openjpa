@@ -72,6 +72,7 @@ public class Compatibility {
     private boolean _convertPositionalParametersToNamed = false;
     
     private boolean _useListAttributeForArrays = false; 
+    private boolean _metaFactoriesAreStrict = false; 
     
     /**
      * Whether to require exact identity value types when creating object
@@ -639,5 +640,30 @@ public class Compatibility {
      */   
     public void setUseListAttributeForArrays(boolean useListAttribute ) { 
         _useListAttributeForArrays = useListAttribute;
+    }
+
+    /**
+     * Whether the MetaDataFactory and MappingFactory should be set to strict mode. If strict mode is used a
+     * MetaDataFactory will only resolve MetaData (no JDBC mappings), and a MappingFactory will only resolve Mapping
+     * information.
+     * 
+     * @since 2.2.0
+     * @return Whether strict mode should be used.
+     */
+    public boolean getMetaFactoriesAreStrict() { 
+        return _metaFactoriesAreStrict;
+    }
+    
+    /**
+     * Set whether MetaDataFactories and MappingFactories will be strictly separate.
+     * 
+     * @since 2.2.0
+     * 
+     * @param metaFactoriesAreStrict
+     *            True if the MetaDataFactory should only process metadata, and the MappingFactory should only process
+     *            mappings.
+     */
+    public void setMetaFactoriesAreStrict(boolean metaFactoriesAreStrict) {
+        _metaFactoriesAreStrict = metaFactoriesAreStrict;
     }
 }

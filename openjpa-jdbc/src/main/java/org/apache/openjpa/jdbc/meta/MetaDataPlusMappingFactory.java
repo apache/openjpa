@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
 import org.apache.openjpa.meta.MetaDataFactory;
@@ -42,16 +43,30 @@ public class MetaDataPlusMappingFactory
 
     private final MetaDataFactory _map;
 
+    
     /**
      * Constructor; supply delegates.
      */
-    public MetaDataPlusMappingFactory(MetaDataFactory meta,
-        MetaDataFactory map) {
+    public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map) {
+        this(meta, map, null);
+
+    }
+    
+    /**
+     * Constructor, supply delegates and Configuration. 
+     * 
+     * @param meta MetaFactory delegate, should not be null.
+     * @param map  MappingFactory delegate, should not be null.
+     * @param conf Configuration in use. Used to determine whether delegates should use strict mode. 
+     */
+    public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map, OpenJPAConfiguration conf) {
         super(meta);
         _map = map;
 
-        meta.setStrict(true);
-        map.setStrict(true);
+        if(conf.getCompatibilityInstance().getMetaFactoriesAreStrict()) {
+            meta.setStrict(true);
+            map.setStrict(true);
+        }
     }
 
     /**
