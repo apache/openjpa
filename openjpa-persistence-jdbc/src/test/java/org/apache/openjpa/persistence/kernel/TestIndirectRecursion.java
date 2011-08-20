@@ -61,7 +61,7 @@ public class TestIndirectRecursion extends SingleEMFTestCase {
     };
 
     public void setUp() {
-        super.setUp(CLEAR_TABLES, State.class, Transition.class);
+        super.setUp(DROP_TABLES, State.class, Transition.class);
         
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
         if (dict instanceof OracleDictionary) {
