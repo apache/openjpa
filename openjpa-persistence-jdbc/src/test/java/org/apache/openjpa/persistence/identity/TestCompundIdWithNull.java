@@ -23,6 +23,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -41,6 +43,12 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCompundIdWithNull extends SingleEMFTestCase {
     private static boolean tablesCreated = false;
 	public void setUp() throws Exception {
+        // Works on Derby, Oracle.
+        setSupportedDatabases(DerbyDictionary.class, OracleDictionary.class);
+        if (isTestsDisabled()) {
+            return;
+        }
+	    
 	    // do not use CLEAR_TABLES or DROP_TABLES
 	    super.setUp(SimpleCompoundIdTestEntity.class, ComplexCompoundIdTestEntity.class, TypeEntity.class);
 	    if (!tablesCreated) {

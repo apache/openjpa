@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
@@ -37,6 +39,8 @@ public abstract class SingleEMFTestCase
     extends PersistenceTestCase {
 
     protected OpenJPAEntityManagerFactorySPI emf;
+    
+    protected Boolean testsDisabled = false;
 
     /**
      * Call {@link #setUp(Object...)} with no arguments so that the emf
@@ -127,6 +131,49 @@ public abstract class SingleEMFTestCase
     
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
+    }
+    
+    protected void setSupportedDatabases(Class<?> ... dbs) {
+        OpenJPAEntityManagerFactorySPI tempEMF = emf;
+        if (tempEMF == null) {
+            tempEMF = createEMF();
+        }
+        DBDictionary dict = ((JDBCConfiguration)tempEMF.getConfiguration()).getDBDictionaryInstance();
+        boolean supportedDB = false;
+        for (Class<?> db : dbs) {
+            if (dict.getClass().getCanonicalName().equalsIgnoreCase(db.getCanonicalName())) {
+                supportedDB = true;
+                break;
+            }
+        }
+        setTestsDisabled(!supportedDB);
+        if (emf == null) {
+            closeEMF(tempEMF);
+        }
+    }
+    
+    protected void setTestsDisabled(boolean disable) {
+        synchronized (testsDisabled) {
+            testsDisabled = new Boolean(disable);
+        }
+    }
+    
+    protected boolean isTestsDisabled() {
+        synchronized (testsDisabled) {
+            return testsDisabled;
+        }
+    }
+    
+    /**
+     * Override to run the test and assert its state.
+     * @exception Throwable if any exception is thrown
+     */
+    @Override
+    protected void runTest() throws Throwable {
+        if (isTestsDisabled()) {
+            return;
+        }
+        super.runTest();
     }
     
 }
