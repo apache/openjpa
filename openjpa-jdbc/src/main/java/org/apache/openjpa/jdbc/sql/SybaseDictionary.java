@@ -30,6 +30,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
+import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
@@ -485,4 +486,20 @@ public class SybaseDictionary
         return identityColumnName;       
     }
 
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+        FilterValue start) {
+        buf.append("(CHARINDEX(");
+        find.appendTo(buf);
+        buf.append(", ");
+        if (start != null)
+            substring(buf, str, start, null);
+        else
+            str.appendTo(buf);
+        buf.append(")");
+        if (start != null) {
+            buf.append(" - 1 + ");
+            start.appendTo(buf);
+        }
+        buf.append(")");
+    }
 }

@@ -136,21 +136,4 @@ public abstract class AbstractSQLServerDictionary
             buf.append(" - 1))");
         }
     }
-
-    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
-        FilterValue start) {
-        buf.append("(CHARINDEX(");
-        find.appendTo(buf);
-        buf.append(", ");
-        if (start != null)
-            substring(buf, str, start, null);
-        else
-            str.appendTo(buf);
-        buf.append(")");
-        if (start != null) {
-            buf.append(" - 1 + ");
-            start.appendTo(buf);
-        }
-        buf.append(")");
-    }
 }

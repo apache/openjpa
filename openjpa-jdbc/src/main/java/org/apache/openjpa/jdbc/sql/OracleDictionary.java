@@ -1416,4 +1416,18 @@ public class OracleDictionary
         }
         return super.getIsNotNullSQL(colAlias, colType);
     }
+
+    @Override
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+        FilterValue start) {
+        buf.append("INSTR(");
+        str.appendTo(buf);
+        buf.append(", ");
+        find.appendTo(buf);
+        if (start != null) {
+            buf.append(", ");
+            start.appendTo(buf);
+        }
+        buf.append(")");
+    }
 }

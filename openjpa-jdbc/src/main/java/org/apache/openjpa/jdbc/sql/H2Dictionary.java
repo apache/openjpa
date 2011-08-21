@@ -229,16 +229,12 @@ public class H2Dictionary extends DBDictionary {
     @Override
     public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
         FilterValue start) {
-        buf.append("(POSITION(");
+        buf.append("LOCATE(");
         find.appendTo(buf);
-        buf.append(" IN ");
-        if (start != null)
-            substring(buf, str, start, null);
-        else
-            str.appendTo(buf);
-        buf.append(")");
+        buf.append(", ");
+        str.appendTo(buf);
         if (start != null) {
-            buf.append(" - 1 + ");
+            buf.append(", ");
             start.appendTo(buf);
         }
         buf.append(")");

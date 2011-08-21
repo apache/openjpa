@@ -477,5 +477,19 @@ public class MySQLDictionary
             return super.getTypeName(col);
         }
     }
+
+    @Override
+    public void indexOf(SQLBuffer buf, FilterValue str, FilterValue find,
+        FilterValue start) {
+        buf.append("LOCATE(");
+        find.appendTo(buf);
+        buf.append(", ");
+        str.appendTo(buf);
+        if (start != null) {
+            buf.append(", ");
+            start.appendTo(buf);
+        }
+        buf.append(")");
+    }
 }
 
