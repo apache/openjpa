@@ -361,14 +361,19 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _sourceName = sourceName;
             SAXParser parser = null;
             ClassLoader oldLoader = null;
-
+            ClassLoader overrideLoader = null;
+            
             try {
                 if (_overrideContextClassloader == true) {
-
                     oldLoader = (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getContextClassLoaderAction());
-                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(
-                        XMLMetaDataParser.class.getClassLoader()));
+                    
+                    overrideLoader = XMLMetaDataParser.class.getClassLoader();
+                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(overrideLoader));               
+                    
+                    if (_log != null && _log.isTraceEnabled()) {
+                        _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, overrideLoader));
+                    }
                 }
 
                 parser = XMLFactory.getSAXParser(validating, true);
@@ -402,16 +407,18 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 JavaVersions.initCause(ioe, se);
                 throw ioe;
             } finally {
-                if (_overrideContextClassloader == true && oldLoader != null) {
+                if (_overrideContextClassloader == true) {
                     // Restore the old ContextClassloader
                     try {
+                        if (_log != null && _log.isTraceEnabled()) {
+                            _log.trace(_loc.get("override-contextclassloader-end", overrideLoader, oldLoader));
+                        }
                         AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
                     } catch (Throwable t) {
-                        if (_log != null && _log.isTraceEnabled()) {
-                            _log.trace(_loc.get("restore-contextclassloader-failed"));
+                        if (_log != null && _log.isWarnEnabled()) {
+                            _log.warn(_loc.get("restore-contextclassloader-failed"));
                         }
-                    }
-                    
+                    }           
                 }
             }
         } finally {
