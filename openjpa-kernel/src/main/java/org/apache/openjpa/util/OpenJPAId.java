@@ -42,7 +42,7 @@ public abstract class OpenJPAId
 
     // type hash is based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
-    private transient int _typeHash = 0;
+    private int _typeHash = 0;
 
     protected OpenJPAId() {
     }
@@ -115,7 +115,7 @@ public abstract class OpenJPAId
                     base = base.getSuperclass();
                     superclass = base.getSuperclass();
                 }
-                _typeHash = base.hashCode();
+                _typeHash = base.getName().hashCode();
                 _typeCache.put(type, Integer.valueOf(_typeHash));
             } else {
                 _typeHash = typeHashInt.intValue();
