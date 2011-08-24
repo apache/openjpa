@@ -60,7 +60,7 @@
 		<referential-integrity>423,511,515,530,547,2601,2615,2714</referential-integrity>
 		<object-exists>23000</object-exists>
 		<object-not-found></object-not-found>
-		<optimistic>1205</optimistic>
+		<optimistic>1205,1222</optimistic>
 		<query>611</query>
 	</dictionary>
 	
