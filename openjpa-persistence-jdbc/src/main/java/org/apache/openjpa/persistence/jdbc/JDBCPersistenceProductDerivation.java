@@ -91,6 +91,9 @@ public class JDBCPersistenceProductDerivation
             PersistenceMappingDefaults.class.getName());
         conf.mappingDefaultsPlugin.setAlias(jpa.getName(),
             PersistenceMappingDefaults.class.getName());
+        
+        conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
+        
         return true;
     }
 
@@ -105,6 +108,8 @@ public class JDBCPersistenceProductDerivation
         
         conf.mappingDefaultsPlugin.setDefault(jpa.getName());
         conf.mappingDefaultsPlugin.setString(jpa.getName());
+        conf.lockManagerPlugin.setDefault("mixed");
+        conf.lockManagerPlugin.setString("mixed");
         return true;
     } 
     

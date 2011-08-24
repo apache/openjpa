@@ -210,7 +210,6 @@ public class PersistenceProductDerivation
         conf.writeLockLevel.setAlias("pessimistic-force-increment", String
             .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
-        conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
 
         configureBeanValidation(conf);
         
@@ -279,8 +278,6 @@ public class PersistenceProductDerivation
         OpenJPAConfigurationImpl conf = (OpenJPAConfigurationImpl) c;
         conf.metaFactoryPlugin.setDefault(SPEC_JPA.getName());
         conf.metaFactoryPlugin.setString(SPEC_JPA.getName());
-        conf.lockManagerPlugin.setDefault("mixed");
-        conf.lockManagerPlugin.setString("mixed");
         conf.nontransactionalWrite.setDefault("true");
         conf.nontransactionalWrite.set(true);
         Specification spec = ((OpenJPAConfiguration) c).getSpecificationInstance();
