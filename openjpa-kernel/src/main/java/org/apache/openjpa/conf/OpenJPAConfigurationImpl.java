@@ -594,9 +594,7 @@ public class OpenJPAConfigurationImpl
         auditorPlugin = addPlugin("Auditor", true);
         aliases = new String[] { "default", AuditLogger.class.getName(), };
         auditorPlugin.setAliases(aliases);
-        auditorPlugin.setDefault(aliases[0]);
-        auditorPlugin.setString(aliases[0]);
-        auditorPlugin.setInstantiatingGetter("getAuditor");
+        auditorPlugin.setInstantiatingGetter("getAuditorInstance");
         
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
