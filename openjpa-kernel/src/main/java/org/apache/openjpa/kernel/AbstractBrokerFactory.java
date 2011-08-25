@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
@@ -41,9 +40,9 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.openjpa.kernel.AuditManager;
+import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
-import org.apache.openjpa.conf.MetaDataRepositoryValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAVersion;
@@ -67,7 +66,6 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InvalidStateException;
-import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
 
@@ -237,7 +235,7 @@ public abstract class AbstractBrokerFactory
         if (remote.areRemoteEventsEnabled())
             broker.addTransactionListener(remote);
 
-        loadPersistentTypes(broker.getClassLoader());
+       loadPersistentTypes(broker.getClassLoader());
         _brokers.add(broker);
         _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
     }
@@ -486,8 +484,7 @@ public abstract class AbstractBrokerFactory
         else
             bv = (BrokerValue) _conf.getValue(BrokerValue.KEY);
 
-        if (FinalizingBrokerImpl.class.isAssignableFrom(
-            bv.getTemplateBrokerType(_conf))) {
+        if (FinalizingBrokerImpl.class.isAssignableFrom(bv.getTemplateBrokerType(_conf))) {
             return MapBackedSet.decorate(new ConcurrentHashMap(), new Object() { });
         } else {
             return new ConcurrentReferenceHashSet<Broker>(ConcurrentReferenceHashSet.WEAK);
@@ -854,6 +851,13 @@ public abstract class AbstractBrokerFactory
      * This method is invoked AFTER a BrokerFactory has been instantiated. 
      */
     public void postCreationCallback() {
+    	Auditor auditor = _conf.getAuditorInstance();
+    	if (auditor != null) {
+    		AuditManager auditManager = new AuditManager();
+    		auditManager.setAuditor(auditor);
+    		addLifecycleListener(auditManager, null);
+    		addTransactionListener(auditManager);
+    	}
         if (_conf.isInitializeEagerly()) {
             newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword(),
                 _conf.isConnectionFactoryModeManaged(), _conf.getConnectionRetainModeConstant(), false).close();

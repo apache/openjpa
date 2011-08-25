@@ -21,6 +21,8 @@ package org.apache.openjpa.conf;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.kernel.AuditManager;
+import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
@@ -1862,6 +1864,21 @@ public interface OpenJPAConfiguration
      * @since 2.1.0
      */
     public InstrumentationManager getInstrumentationManagerInstance();
+    
+    
+    /**
+     * Gets an instance of {@link AuditManager} associated with this configuration.
+     * 
+     * @since 2.2.0
+     */
+    public Auditor getAuditorInstance();
+    
+    /**
+     * Gets the plug-in string of {@link AuditManager} specified in this configuration.
+     * 
+     * @since 2.2.0
+     */
+    public String getAuditor();
     
 }
 

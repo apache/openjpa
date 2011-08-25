@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.audit.AuditLogger;
+import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
@@ -98,6 +100,7 @@ public class OpenJPAConfigurationImpl
     public BrokerValue brokerPlugin;
     public ObjectValue dataCachePlugin;
     public ObjectValue dataCacheManagerPlugin;
+    public ObjectValue auditorPlugin;
     public ObjectValue cacheDistributionPolicyPlugin;
     public IntValue dataCacheTimeout;
     public ObjectValue queryCachePlugin;
@@ -587,6 +590,13 @@ public class OpenJPAConfigurationImpl
         aliases = new String[] { "jmx", "org.apache.openjpa.instrumentation.jmx.JMXProvider" };
         instrumentationProviders.setAliases(aliases);
         instrumentationProviders.setInstantiatingGetter("getInstrumentationInstances");
+        
+        auditorPlugin = addPlugin("Auditor", true);
+        aliases = new String[] { "default", AuditLogger.class.getName(), };
+        auditorPlugin.setAliases(aliases);
+        auditorPlugin.setDefault(aliases[0]);
+        auditorPlugin.setString(aliases[0]);
+        auditorPlugin.setInstantiatingGetter("getAuditor");
         
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -1806,6 +1816,18 @@ public class OpenJPAConfigurationImpl
 
     public Map<String, Object> getPersistenceEnvironment() {
         return _peMap;
+    }
+    
+    public Auditor getAuditorInstance() {
+    	Auditor auditor = (Auditor) auditorPlugin.get();
+        if (auditor == null) {
+            auditor = (Auditor) auditorPlugin.instantiate(Auditor.class, this);
+       }
+       return auditor;
+    }
+    
+    public String getAuditor() {
+    	return auditorPlugin.getString();
     }
 }
 
