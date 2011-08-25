@@ -47,7 +47,8 @@ public class AuditLogger implements Auditor {
 			_out.println(" Fields:" + Arrays.toString(audited.getUpdatedFields()));
 		}
 		for (Audited audited : updates) {
-			_out.print(audited.getType() + ": [" + audited.getOriginalObject() + "] to [" + audited.getManagedObject() + "]");
+			_out.print(audited.getType() + ": [" + audited.getOriginalObject() + "] to [" 
+					+ audited.getManagedObject() + "]");
 			_out.println(" Fields:" + Arrays.toString(audited.getUpdatedFields()));
 		}
 		for (Audited audited : deletes) {
@@ -86,5 +87,4 @@ public class AuditLogger implements Auditor {
 			_out.close();
 		}
 	}
-
 }
