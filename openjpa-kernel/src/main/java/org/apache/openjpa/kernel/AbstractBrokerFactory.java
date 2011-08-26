@@ -853,10 +853,7 @@ public abstract class AbstractBrokerFactory
     public void postCreationCallback() {
     	Auditor auditor = _conf.getAuditorInstance();
     	if (auditor != null) {
-    		AuditManager auditManager = new AuditManager();
-    		auditManager.setAuditor(auditor);
-    		addLifecycleListener(auditManager, null);
-    		addTransactionListener(auditManager);
+    		addTransactionListener(new AuditManager(auditor));
     	}
         if (_conf.isInitializeEagerly()) {
             newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword(),

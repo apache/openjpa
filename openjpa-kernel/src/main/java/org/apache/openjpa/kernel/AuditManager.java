@@ -52,24 +52,29 @@ import org.apache.openjpa.event.TransactionListener;
  *
  */
 public class AuditManager extends InMemorySavepointManager 
-	implements LifecycleListener, TransactionListener, RegisterClassListener {
+	implements TransactionListener, RegisterClassListener {
 	
-	private Auditor _auditor;
+	private final Auditor _auditor;
 	private final Set<Class<?>> _allTypes;
 	private final Set<Class<?>> _newTypes;
 	private final Set<Class<?>> _updateTypes;
 	private final Set<Class<?>> _deleteTypes;
-	private final Map<Broker, Set<Audited>> _saved;
+	private final Map<Broker, AuditCallback> _saved;
 	private final ReentrantLock _lock = new ReentrantLock();
 	
-	public AuditManager() {
+	public AuditManager(Auditor auditor) {
 		super();
+		if (auditor == null) {
+			throw new NullPointerException("null auditor");
+		}
+
 		setPreFlush(false);
+		_auditor = auditor;
 		_allTypes = new HashSet<Class<?>>();
 		_newTypes = new HashSet<Class<?>>();
 		_updateTypes = new HashSet<Class<?>>();
 		_deleteTypes = new HashSet<Class<?>>();
-		_saved = new ConcurrentHashMap<Broker, Set<Audited>>();
+		_saved = new ConcurrentHashMap<Broker, AuditCallback>();
 		PCRegistry.addRegisterClassListener(this);
 	}
 	
@@ -98,10 +103,6 @@ public class AuditManager extends InMemorySavepointManager
 		}
 	}
 	
-	public void setAuditor(Auditor auditor) {
-		_auditor = auditor;
-	}
-	
 	public Auditor getAuditor() {
 		return _auditor;
 	}
@@ -110,46 +111,32 @@ public class AuditManager extends InMemorySavepointManager
 		return Collections.unmodifiableSet(_allTypes);
 	}
 
-	/**
-	 * Transaction callbacks.
-	 */
+	/** 
+	 * -----------------------------------------------------------------------
+	 *                 Transaction callbacks.
+	 * -----------------------------------------------------------------------               
+	 */ 
+	
 	@Override
-	public void beforeCommit(TransactionEvent event) {
-		if (_auditor == null) return;
+	public void afterBegin(TransactionEvent event) {
 		_lock.lock();
 		try {
 			Broker broker = (Broker)event.getSource();
-			Set<Audited> audits = _saved.get(broker);
-			if (audits == null) return;
-			Collection<Audited> news = new HashSet<Audited>();
-			Collection<Audited> updates = new HashSet<Audited>();
-			Collection<Audited> deletes = new HashSet<Audited>();
-			Collection<?> instances = event.getTransactionalObjects();
-			for (Object instance : instances) {
-				StateManagerImpl sm = getImpl(instance);
-				if (sm != null) {
-					Audited audited = search(audits, sm);
-					if (audited == null) {
-						continue;
-					}
-					
-					if (sm.getPCState().isNew()) {
-						news.add(audited);
-					} else if (sm.getPCState().isDeleted()) {
-						deletes.add(audited);
-					} else if (sm.getPCState().isDirty()) {
-						updates.add(audited);
-					}
-				}
-			}
-			try {
-				_auditor.audit(broker, news, updates, deletes);
-			} catch (Exception e) {
-				if (_auditor.isRollbackOnError()) {
-					throw new RuntimeException("dump", e);
-				} else {
-					e.printStackTrace();
-				}
+			AuditCallback cb = new AuditCallback(broker);
+			broker.addLifecycleListener(cb, _allTypes.toArray(new Class<?>[_allTypes.size()]));
+			_saved.put(broker, cb);
+		} finally {
+			_lock.unlock();
+		}
+	}
+
+	@Override
+	public void beforeCommit(TransactionEvent event) {
+		_lock.lock();
+		try {
+			AuditCallback cb = _saved.get(event.getSource());
+			if (cb != null) {
+				cb.audit();
 			}
 		} finally {
 			_lock.unlock();
@@ -167,9 +154,15 @@ public class AuditManager extends InMemorySavepointManager
 	}
 
 	@Override
-	public void afterBegin(TransactionEvent event) {
+	public void afterCommitComplete(TransactionEvent event) {
+		_saved.remove(event.getSource());
 	}
 
+	@Override
+	public void afterRollbackComplete(TransactionEvent event) {
+		_saved.remove(event.getSource());
+	}
+	
 	@Override
 	public void beforeFlush(TransactionEvent event) {
 	}
@@ -182,95 +175,7 @@ public class AuditManager extends InMemorySavepointManager
 	public void afterStateTransitions(TransactionEvent event) {
 	}
 
-	@Override
-	public void afterCommitComplete(TransactionEvent event) {
-	}
 
-	@Override
-	public void afterRollbackComplete(TransactionEvent event) {
-	}
-
-	/**
-	 * Life-cycle callbacks 
-	 */
-	@Override
-	public void afterLoad(LifecycleEvent event) {
-		save(AuditableOperation.ALL, event);
-	}
-
-	@Override
-	public void afterPersist(LifecycleEvent event) {
-		save(AuditableOperation.CREATE, event);
-	}
-
-	@Override
-	public void beforeDelete(LifecycleEvent event) {
-		save(AuditableOperation.DELETE, event);
-	}
-
-	@Override
-	public void beforeDirty(LifecycleEvent event) {
-		if (!isAudited(event)) {
-			save(AuditableOperation.UPDATE, event);
-		}
-	}
-
-	@Override
-	public void beforePersist(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterRefresh(LifecycleEvent event) {
-	}
-
-	@Override
-	public void beforeStore(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterStore(LifecycleEvent event) {
-	}
-
-	@Override
-	public void beforeClear(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterClear(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterDelete(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterDirty(LifecycleEvent event) {
-	}
-
-	@Override
-	public void beforeDirtyFlushed(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterDirtyFlushed(LifecycleEvent event) {
-	}
-
-	@Override
-	public void beforeDetach(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterDetach(LifecycleEvent event) {
-	}
-
-	@Override
-	public void beforeAttach(LifecycleEvent event) {
-	}
-
-	@Override
-	public void afterAttach(LifecycleEvent event) {
-	}
-	
 	/**
 	 * Support functions.
 	 */
@@ -285,17 +190,6 @@ public class AuditManager extends InMemorySavepointManager
 	}
 	
 	/**
-	 * Affirms if source of the given event is being audited already.
-	 */
-	protected boolean isAudited(LifecycleEvent event) {
-		StateManagerImpl sm = getImpl(event.getSource());
-		if (_saved.containsKey(sm.getBroker())) {
-			return search(_saved.get(sm.getBroker()), sm) != null;
-		}
-		return false;
-	}
-	
-	/**
 	 * Extracts the broker from the given persistence capable instance.
 	 * @param pc a persistence capable instance
 	 * @return null if a Broker can notbe extracted
@@ -304,47 +198,6 @@ public class AuditManager extends InMemorySavepointManager
 		if (pc == null) return null;
 		Object ctx = pc.pcGetGenericContext();
 		return ctx instanceof Broker ? (Broker)ctx : null;
-	}
-	
-	/**
-	 * Saves the source of the given event for auditing.
-	 * @param lc
-	 * @param event
-	 */
-	protected void save(AuditableOperation lc, LifecycleEvent event) {
-		StateManagerImpl sm = getImpl(event.getSource());
-		if (sm != null && isAuditable(lc, sm)) {
-			Broker broker = sm.getBroker();
-			
-			OpenJPASavepoint savepoint = newSavepoint("", broker);
-			savepoint.save(Collections.singleton(sm));
-			Map<StateManagerImpl, SavepointFieldManager> states = savepoint.getStates();
-			Map.Entry<StateManagerImpl, SavepointFieldManager> e = states.entrySet().iterator().next();
-			PersistenceCapable copy = e.getValue().getCopy();
-			copy.pcReplaceStateManager(null);
-			Audited audited = new Audited(sm, copy);
-			Set<Audited> audits = _saved.get(broker);
-			if (audits == null) {
-				audits = new HashSet<Audited>();
-				_saved.put(broker, audits);
-			}
-			audits.add(audited);
-		}
-	}
-	
-	/**
-	 * Searches the set of Auditable instances for a matching Statemanager. 
-	 * @param audits
-	 * @param sm
-	 * @return
-	 */
-	private Audited search(Set<Audited> audits, StateManagerImpl sm) {
-		for (Audited audit : audits) {
-			if (audit.getManagedObject() == sm.getPersistenceCapable()) {
-				return audit;
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -381,5 +234,144 @@ public class AuditManager extends InMemorySavepointManager
 		     ||(op == AuditableOperation.DELETE && _deleteTypes.contains(cls));
 	}
 	
+	/**
+	 * Listens to entity life cycle operations and saves them for auditing.
+	 *
+	 */
+	private class AuditCallback implements LifecycleListener {
+		private final Broker _broker;
+		private final Map<StateManagerImpl,PersistenceCapable> _audits = 
+			new ConcurrentHashMap<StateManagerImpl,PersistenceCapable>();
+		
+		AuditCallback(Broker broker) {
+			_broker = broker;
+		}
 
+		void audit() {
+			if (_audits.isEmpty()) return;
+			Collection<Audited> news = new HashSet<Audited>();
+			Collection<Audited> updates = new HashSet<Audited>();
+			Collection<Audited> deletes = new HashSet<Audited>();
+			for (Map.Entry<StateManagerImpl,PersistenceCapable> e : _audits.entrySet()) {
+				StateManagerImpl sm = e.getKey();
+				Audited audited = new Audited(sm, e.getValue());
+				if (sm.getPCState().isNew()) {
+					news.add(audited);
+				} else if (sm.getPCState().isDeleted()) {
+					deletes.add(audited);
+				} else if (sm.getPCState().isDirty()) {
+					updates.add(audited);
+				}
+			}
+			try {
+				_auditor.audit(_broker, news, updates, deletes);
+			} catch (Exception e) {
+				if (_auditor.isRollbackOnError()) {
+					throw new RuntimeException("dump", e);
+				} else {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		/**
+		 * Saves the source of the given event for auditing.
+		 * @param op an auditable operation
+		 * @param event the event
+		 */
+		protected void save(AuditableOperation op, LifecycleEvent event) {
+			StateManagerImpl sm = getImpl(event.getSource());
+			if (sm != null && !_audits.containsKey(sm) && isAuditable(op, sm)) {
+				Broker broker = sm.getBroker();
+				
+				OpenJPASavepoint savepoint = newSavepoint("", broker);
+				savepoint.save(Collections.singleton(sm));
+				Map<StateManagerImpl, SavepointFieldManager> states = savepoint.getStates();
+				Map.Entry<StateManagerImpl, SavepointFieldManager> e = states.entrySet().iterator().next();
+				PersistenceCapable copy = e.getValue().getCopy();
+				copy.pcReplaceStateManager(null);
+				_audits.put(sm, copy);
+			}
+		}
+		
+		/**
+		 * Life-cycle callbacks 
+		 */
+		@Override
+		public void afterLoad(LifecycleEvent event) {
+			save(AuditableOperation.ALL, event);
+		}
+
+		@Override
+		public void afterPersist(LifecycleEvent event) {
+			save(AuditableOperation.CREATE, event);
+		}
+
+		@Override
+		public void beforeDelete(LifecycleEvent event) {
+			save(AuditableOperation.DELETE, event);
+		}
+
+		@Override
+		public void beforeDirty(LifecycleEvent event) {
+			save(AuditableOperation.UPDATE, event);
+		}
+
+		@Override
+		public void beforePersist(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterRefresh(LifecycleEvent event) {
+		}
+
+		@Override
+		public void beforeStore(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterStore(LifecycleEvent event) {
+		}
+
+		@Override
+		public void beforeClear(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterClear(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterDelete(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterDirty(LifecycleEvent event) {
+		}
+
+		@Override
+		public void beforeDirtyFlushed(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterDirtyFlushed(LifecycleEvent event) {
+		}
+
+		@Override
+		public void beforeDetach(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterDetach(LifecycleEvent event) {
+		}
+
+		@Override
+		public void beforeAttach(LifecycleEvent event) {
+		}
+
+		@Override
+		public void afterAttach(LifecycleEvent event) {
+		}
+		
+	}
 }
