@@ -287,7 +287,7 @@ public class AuditManager extends InMemorySavepointManager
 				OpenJPASavepoint savepoint = newSavepoint("", broker);
 				savepoint.save(Collections.singleton(sm));
 				Map<StateManagerImpl, SavepointFieldManager> states = savepoint.getStates();
-				Map.Entry<StateManagerImpl, SavepointFieldManager> e = states.entrySet().iterator().next();
+                Map.Entry<StateManagerImpl, SavepointFieldManager> e = states.entrySet().iterator().next();
 				PersistenceCapable copy = e.getValue().getCopy();
 				copy.pcReplaceStateManager(null);
 				_audits.put(sm, copy);
