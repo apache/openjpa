@@ -378,14 +378,20 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _sourceName = sourceName;
             
             SAXParser parser = null;
+            boolean overrideCL = _overrideContextClassloader;
             ClassLoader oldLoader = null;
+            ClassLoader newLoader = null;           
             
             try {
-                if (_overrideContextClassloader == true) {
-                    oldLoader = (ClassLoader) AccessController.doPrivileged(
-                        J2DoPrivHelper.getContextClassLoaderAction());
-                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(
-                        XMLMetaDataParser.class.getClassLoader()));
+                if (overrideCL == true) {
+                    oldLoader =
+                        (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                    newLoader = XMLMetaDataParser.class.getClassLoader();
+                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(newLoader));
+                    
+                    if (_log != null && _log.isTraceEnabled()) {
+                        _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, newLoader));
+                    }                   
                 }
                 
                 parser = XMLFactory.getSAXParser(validating, true);
@@ -419,13 +425,16 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 ioe.initCause(se);
                 throw ioe;
             } finally {
-                if (_overrideContextClassloader == true && oldLoader != null) {
+                if (overrideCL == true) {
                     // Restore the old ContextClassloader
                     try {
+                        if (_log != null && _log.isTraceEnabled()) {
+                            _log.trace(_loc.get("override-contextclassloader-end", newLoader, oldLoader));
+                        }
                         AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
                     } catch (Throwable t) {
-                        if (_log != null && _log.isTraceEnabled()) {
-                            _log.trace(_loc.get("restore-contextclassloader-failed"));
+                        if (_log != null && _log.isWarnEnabled()) {
+                            _log.warn(_loc.get("restore-contextclassloader-failed"));
                         }
                     }
                 }
