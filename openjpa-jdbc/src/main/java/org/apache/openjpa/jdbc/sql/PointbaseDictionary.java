@@ -63,6 +63,10 @@ public class PointbaseDictionary
         supportsAutoAssign = true;
         lastGeneratedKeyQuery = "SELECT MAX({0}) FROM {1}";
         autoAssignTypeName = "BIGINT IDENTITY";
+        
+        // OpenJPA-2045: NAME has been removed from common reserved words to
+        // only specific dictionaries
+        reservedWordSet.add("NAME");
     }
 
     public int getPreferredType(int type) {

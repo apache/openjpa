@@ -82,6 +82,10 @@ public class FoxProDictionary
         // the max character literal length is actually 254, but for primary
         // keys, it is 240; default to that length so users can add PKs later
         characterColumnSize = 240;
+        
+        // OpenJPA-2045: NAME has been removed from common reserved words to
+        // only specific dictionaries
+        reservedWordSet.add("NAME");
     }
 
     @Override

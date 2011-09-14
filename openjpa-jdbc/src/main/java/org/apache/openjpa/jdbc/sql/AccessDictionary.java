@@ -37,6 +37,9 @@ public class AccessDictionary
         joinSyntax = SYNTAX_TRADITIONAL;
         validationSQL = "SELECT 1";
         reservedWordSet.add("VALUE");
+        // OpenJPA-2045: NAME has been removed from common reserved words to
+        // only specific dictionaries
+        reservedWordSet.add("NAME"); 
 
         supportsAutoAssign = true;
         autoAssignTypeName = "COUNTER";

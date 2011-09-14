@@ -127,6 +127,10 @@ public class InformixDictionary
             "BYTE", "DOUBLE PRECISION", "INTERVAL", "SMALLFLOAT", "TEXT",
             "INT8",
         }));
+        
+        // OpenJPA-2045: NAME has been removed from common reserved words to
+        // only specific dictionaries
+        reservedWordSet.add("NAME");
 
         supportsLockingWithDistinctClause = false;
         supportsLockingWithMultipleTables = false;
