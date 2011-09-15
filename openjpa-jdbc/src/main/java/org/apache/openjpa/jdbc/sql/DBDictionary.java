@@ -3411,8 +3411,6 @@ public class DBDictionary
             buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
         }
 
-        if (seq.getIncrement() > 1)
-            buf.append(" INCREMENT BY ").append(seq.getIncrement());
         return new String[]{ buf.toString() };
     }
 
