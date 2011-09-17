@@ -211,6 +211,22 @@ public class MergedResult
         _res[_idx].setBaseMapping(mapping);
     }
 
+    public FieldMapping getMappedByFieldMapping() {
+        return _res[_idx].getMappedByFieldMapping();
+    }
+
+    public void setMappedByFieldMapping(FieldMapping fieldMapping) {
+        _res[_idx].setMappedByFieldMapping(fieldMapping);
+    }
+
+    public Object getMappedByValue() {
+        return _res[_idx].getMappedByValue();
+    }
+
+    public void setMappedByValue(Object mappedByValue) {
+        _res[_idx].setMappedByValue(mappedByValue);
+    }
+
     public int indexOf() {
         return _res[_idx].indexOf();
     }

@@ -336,6 +336,13 @@ public class JDBCStoreManager
             // from the indicator is a subclass of expected type
             sm.initialize(type, state);
 
+            if (info != null && info.result != null) {
+                FieldMapping mappedByFieldMapping = info.result.
+                    getMappedByFieldMapping();
+                Object mappedByObject = info.result.getMappedByValue();
+                if (mappedByFieldMapping != null && mappedByObject != null)
+                    setMappedBy(sm, mappedByFieldMapping, mappedByObject);
+            }
             // load the selected mappings into the given state manager
             if (res != null) {
                 // re-get the mapping in case the instance was a subclass
@@ -350,6 +357,18 @@ public class JDBCStoreManager
         }
     }
     
+    protected void setMappedBy(OpenJPAStateManager sm,
+        FieldMapping mappedByFieldMapping, Object mappedByObject) {
+        ClassMapping mapping = (ClassMapping) sm.getMetaData();
+        FieldMapping[] fms = mapping.getDeclaredFieldMappings();
+        for (int i = 0; i < fms.length; i++) {
+            if (fms[i] == mappedByFieldMapping) {
+                sm.storeObject(fms[i].getIndex(), mappedByObject);
+                return;
+            }
+        }
+    }
+
     /**
      * This method is to provide override for non-JDBC or JDBC-like 
      * implementation of getting version from the result set.

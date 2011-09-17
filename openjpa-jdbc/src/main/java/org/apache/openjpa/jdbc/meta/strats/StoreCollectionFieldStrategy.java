@@ -24,11 +24,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
+import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.sql.Joins;
@@ -37,6 +39,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Id;
@@ -293,11 +296,56 @@ public abstract class StoreCollectionFieldStrategy
 
             if (field.getOrderColumn() != null)
                 seq = res.getInt(field.getOrderColumn(), orderJoins) + 1;
-            add(store, coll, loadElement(null, store, fetch, res, dataJoins));
+
+            // for inverseEager field
+            setMappedBy(oid, sm, coll, res);
+            Object val = loadElement(null, store, fetch, res, dataJoins);
+            add(store, coll, val);
         }
         res.close();
 
         return rels;
+    }
+
+    private void setMappedBy(Object oid, OpenJPAStateManager sm, Object coll,
+        Result res) {
+        // for inverseEager field
+        FieldMapping mappedByFieldMapping = field.getMappedByMapping();
+        PersistenceCapable mappedByValue = null;
+        
+        if (mappedByFieldMapping != null) {
+            ValueMapping val = mappedByFieldMapping.getValueMapping();
+            ClassMetaData decMeta = val.getTypeMetaData();
+            // this inverse field does not have corresponding classMapping
+            // its value may be a collection/map etc.
+            if (decMeta == null) 
+                return;
+        	
+            if (oid.equals(sm.getObjectId())) {
+                mappedByValue = sm.getPersistenceCapable();
+                res.setMappedByFieldMapping(mappedByFieldMapping);
+                res.setMappedByValue(mappedByValue);
+            } else if (coll instanceof Collection && 
+                ((Collection) coll).size() > 0) {
+                // Customer (1) <--> Orders(n)
+                // coll contains the values of the toMany field (Orders)
+                // get the StateManager of this toMany value
+                // and find the value of the inverse mappedBy field (Customer)
+                // for this toMacdny field
+                PersistenceCapable pc = (PersistenceCapable)
+                    ((Collection) coll).iterator().next();
+                OpenJPAStateManager sm1 = (OpenJPAStateManager) pc.
+                    pcGetStateManager();
+                
+                ClassMapping clm = ((ClassMapping) sm1.getMetaData());
+                FieldMapping fm = (FieldMapping) clm.getField(
+                    mappedByFieldMapping.getName());
+                if (fm == mappedByFieldMapping)
+                    res.setMappedByValue(sm1.fetchObject(fm.getIndex()));
+            } else {
+                res.setMappedByValue(null);
+            }
+        }        
     }
 
     /**
@@ -476,6 +524,7 @@ public abstract class StoreCollectionFieldStrategy
             while (res.next()) {
                 if (ct != null && field.getOrderColumn() != null)
                     seq = res.getInt(field.getOrderColumn());
+                setMappedBy(sm.getObjectId(), sm, coll, res);
                 add(store, coll, loadElement(sm, store, fetch, res,
                     resJoins[res.indexOf()]));
             }

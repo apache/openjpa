@@ -161,6 +161,36 @@ public interface Result
     public void setBaseMapping(ClassMapping mapping);
 
     /**
+     * If this is the result used to select a toMany relationship,
+     * the mappedByFieldMapping is field mapping representing 
+     * the inverse relationship. This is to avoid unneeded  
+     * extra sql to retrieve the eager inverse field.
+     */
+    public FieldMapping getMappedByFieldMapping();
+
+    /**
+     * If this is the result used to select a toMany relationship,
+     * the mappedByFieldMapping is field mapping representing 
+     * the inverse relationship. This is to avoid unneeded  
+     * extra sql to retrieve the eager inverse field.
+     */
+    public void setMappedByFieldMapping(FieldMapping fieldMapping);
+
+    /**
+     * If this is the result used to select a toMany relationship,
+     * the mappedByValue is value of the owner of the toMany relationship. 
+     * This is to avoid unneeded extra sql to retrieve the eager inverse field.
+     */
+    public Object getMappedByValue();
+
+    /**
+     * If this is the result used to select a toMany relationship,
+     * the mappedByValue is value of the owner of the toMany relationship. 
+     * This is to avoid unneeded extra sql to retrieve the eager inverse field.
+     */
+    public void setMappedByValue(Object mappedByValue);
+
+    /**
      * The index of the select within the UNION that the current row
      * corresponds to, or 0.
      */
