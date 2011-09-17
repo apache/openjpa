@@ -70,6 +70,8 @@ class ProjectionResultObjectProvider
     public Object getResultObject()
         throws Exception {
         Result res = getResult();
+        // for a projection, Result has no base mapping
+        res.setBaseMapping(null);
         int idx = res.indexOf();
         Object[] arr = new Object[_exps[idx].projections.length];
         for (int i = 0; i < _exps[idx].projections.length; i++)
