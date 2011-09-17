@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.embed;
 
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -26,6 +28,73 @@ public class TestEmbedded extends SQLListenerTestCase {
     public void setUp() {
         super.setUp(BaseEntity.class, Address.class, Geocode.class,
                 CLEAR_TABLES);
+    }
+
+    /*
+     * This variation verifies that an embedded entity can be accessed after
+     * being detached.  An entity /w embedded is persisted and then queried.
+     * The em is closed, detaching the entities, and then a getter is called
+     * on the embeddeded.  If the embedded is still attached (it should not be)
+     * an IllegalStateException will be thrown.    
+     * 
+     * JIRA Ref: OPENJPA-733
+     * Authors: Chris Tillman, Jeremy Bauer
+     */    
+    public void testDetachedQueryEmbedded() {
+        Address a = new Address();
+        a.setStreetAddress("456 Main St");
+        a.setCity("New York");
+        a.setState("NY");
+        a.setZip(12955);
+        Geocode g = new Geocode();
+        g.setLatitude(1.0f);
+        g.setLongtitude(2.0f);
+        a.setGeocode(g);
+    
+        persistAddress(a);
+    
+        Address a2 = queryAddresses(
+            "select address from Address address" +
+            " where address.streetAddress = '456 Main St'").get(0);
+    
+        assertEquals(a2.getGeocode().getLatitude(),1.0f);
+    }
+
+    private void persistAddress(Address address) {
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction tx = em.getTransaction();
+
+        tx.begin();
+
+        try {
+            em.persist(address);
+            tx.commit();
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            em.close();
+        }
+        assertEquals(address.getGeocode().getLatitude(),1.0f);
+    }
+
+    private List<Address> queryAddresses(String query) {
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction tx = em.getTransaction();
+
+        tx.begin();
+
+        try {
+            final List<Address> list = (List<Address>) em.createQuery(query)
+                        .getResultList();
+            tx.commit();
+            return list;
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            em.close();
+        }
     }
 
     public void testInsertEmbedded() {
@@ -86,3 +155,4 @@ public class TestEmbedded extends SQLListenerTestCase {
     }
 
 }
+

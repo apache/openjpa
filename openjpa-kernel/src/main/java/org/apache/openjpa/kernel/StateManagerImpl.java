@@ -311,7 +311,8 @@ public class StateManagerImpl
 
         // initialize our state and add ourselves to the broker's cache
         setPCState(state);
-        if (_broker.getStateManagerImplById(getObjectId(), false) == null) {
+        if ( _oid == null ||
+            _broker.getStateManagerImplById(_oid, false) == null) {
             _broker.setStateManager(_id, this, BrokerImpl.STATUS_INIT);
         }
         if (state == PCState.PNEW)
