@@ -1146,6 +1146,19 @@ public class JDBCStoreManager
             }
         }
 
+        // in certain circumstances force join to superclass table to avoid
+        // SQL generation error.
+        if ( eagerToMany != null && pseld < 0 && seld > 0 && !joined
+                && parent != null ) {
+            FieldMapping[] pfms = parent.getDefinedFieldMappings();
+            for (int i = 0; i < pfms.length; i++) {
+                if (pfms[i] == eagerToMany ) {
+                    pseld = 0;
+                    break;
+                }
+            }
+        }
+
         // join to parent table if the parent / any ancestors have selected
         // anything
         if (!joined && pseld >= 0 && parent.getTable() != mapping.getTable())
