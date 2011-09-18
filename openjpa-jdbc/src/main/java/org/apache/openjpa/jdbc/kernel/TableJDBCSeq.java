@@ -24,7 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -79,7 +79,8 @@ public class TableJDBCSeq
     private transient Log _log = null;
     private int _alloc = 50;
     private int _intValue = 1;
-    private final HashMap _stat = new HashMap();
+    private final ConcurrentHashMap<ClassMapping, Status> _stat =
+        new ConcurrentHashMap<ClassMapping, Status>();
 
     private String _table = "OPENJPA_SEQUENCE_TABLE";
     private String _seqColumnName = "SEQUENCE_VALUE";
@@ -262,8 +263,8 @@ public class TableJDBCSeq
                 stat.seq = Math.max(stat.seq, 1);
                 if (stat.seq < stat.max)
                     return Numbers.valueOf(stat.seq++);
+                allocateSequence(store, mapping, stat, _alloc, true);
             }
-            allocateSequence(store, mapping, stat, _alloc, true);
         }
     }
 
@@ -308,7 +309,12 @@ public class TableJDBCSeq
         Status status = (Status)_stat.get(mapping);        
         if (status == null){ 
             status = new Status();
-            _stat.put(mapping, status);
+            Status tStatus = _stat.putIfAbsent(mapping, status);
+            // This can happen if another thread calls .put(..) sometime after our call to get. Return
+            // the value from the putIfAbsent call as that is truly in the map.
+            if (tStatus != null) {
+                return tStatus;
+            }
         }
         return status;
             
