@@ -18,9 +18,11 @@
  */
 package org.apache.openjpa.persistence.query;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -31,8 +33,9 @@ public class TestSubquery
     extends SingleEMFTestCase {
 
     public void setUp() {
-        setUp(Customer.class, Customer.CustomerKey.class,
-            Order.class, OrderItem.class, CLEAR_TABLES);
+        setUp(Customer.class, Customer.CustomerKey.class, Order.class,
+            OrderItem.class, Employee.class, Dependent.class,
+            DependentId.class, CLEAR_TABLES);
     }
 
     static String[]  querys = new String[] {
@@ -98,6 +101,27 @@ public class TestSubquery
         }
 
         em.getTransaction().rollback();
+        em.close();
+    }
+
+    /**
+     * Verify a sub query can contain MAX and additional date comparisons 
+     * without losing the correct alias information. This sort of query 
+     * originally caused problems for DBDictionaries which used DATABASE syntax. 
+     */
+    public void testSubSelectMaxDateRange() {        
+        String query =
+            "SELECT e,d from Employee e, Dependent d "
+                + "WHERE e.empId = :empid "
+                + "AND d.id.empid = (SELECT MAX (e2.empId) FROM Employee e2) "
+                + "AND d.id.effDate > :minDate "
+                + "AND d.id.effDate < :maxDate ";
+        EntityManager em = emf.createEntityManager();
+        Query q = em.createQuery(query);
+        q.setParameter("empid", (long) 101);
+        q.setParameter("minDate", new Date(100));
+        q.setParameter("maxDate", new Date(100000));
+        q.getResultList();
         em.close();
     }
 }
