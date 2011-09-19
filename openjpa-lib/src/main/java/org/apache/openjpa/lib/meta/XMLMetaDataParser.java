@@ -360,11 +360,12 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         try {
             _sourceName = sourceName;
             SAXParser parser = null;
+            boolean overrideCL = _overrideContextClassloader;
             ClassLoader oldLoader = null;
             ClassLoader overrideLoader = null;
             
             try {
-                if (_overrideContextClassloader == true) {
+                if (overrideCL == true) {
                     oldLoader = (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getContextClassLoaderAction());
                     
@@ -407,7 +408,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 JavaVersions.initCause(ioe, se);
                 throw ioe;
             } finally {
-                if (_overrideContextClassloader == true) {
+                if (overrideCL == true) {
                     // Restore the old ContextClassloader
                     try {
                         if (_log != null && _log.isTraceEnabled()) {
