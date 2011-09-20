@@ -146,7 +146,7 @@ class VersionAttachStrategy
         int detach = (isNew) ? DETACH_ALL : broker.getDetachState();
         FetchConfiguration fetch = broker.getFetchConfiguration();
         try {
-            FieldMetaData[] fmds = meta.getFields();
+            FieldMetaData[] fmds = sm.getMetaData().getFields(); 
             for (int i = 0; i < fmds.length; i++) {
                 switch (detach) {
                     case DETACH_ALL:

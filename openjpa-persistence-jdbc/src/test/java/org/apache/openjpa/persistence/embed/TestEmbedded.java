@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbedded extends SingleEMFTestCase {
     public void setUp() {
-        super.setUp(BaseEntity.class, Address.class, Geocode.class,
+        super.setUp(BaseEntity.class, Address.class, Geocode.class, NestedEmbeddable.class,
                 CLEAR_TABLES);
     }
 
@@ -76,6 +76,79 @@ public class TestEmbedded extends SingleEMFTestCase {
 
         assertEquals(a2.getGeocode().getLatitude(), 1.0f);
     }
+    
+    /**
+     * JIRA Ref: OPENJPA-1226: Create and persist a NestedEmbeddable, then
+     * update and merge the NestedEmbeddable in order to verify an 
+     * 'ArgumentException' is not caused during the merge.
+     */
+    public void testNestedEmbeddable_UpdateExistingEmbed() {
+        Address a = new Address();
+        a.setStreetAddress("456 Main St");
+        Geocode g = new Geocode();
+        g.setLatitude(1.0f);
+        NestedEmbeddable ne = new NestedEmbeddable();
+        ne.setField1("test");
+        g.setNestedEmbed(ne);
+        a.setGeocode(g);
+
+        persistAddress(a);
+
+        g = a.getGeocode();       
+        ne = g.getNestedEmbed();
+        ne.setField1("test2");
+        ne.setField2("test3");
+        
+        g.setNestedEmbed(ne);
+        a.setGeocode(g);
+        
+        mergeAddress(a);      
+ 	
+        a =
+                 queryAddresses(
+                "select address from Address address"
+                    + " where address.streetAddress = '456 Main St'").get(0);
+        
+        ne = a.getGeocode().getNestedEmbed();
+        
+        assertEquals(ne.getField1(),"test2");
+        assertEquals(ne.getField2(),"test3");
+    }
+     
+    /**
+     * JIRA Ref: OPENJPA-1226: Create a NestedEmbeddable, and add it to an
+     * existing Address/Geocode, and then merge the NestedEmbeddable in
+     * order to verify an 'ArgumentException' is not caused during the merge.
+     */
+    public void testNestedEmbeddable_AddNewEmbed() {
+        Address a = new Address();
+        a.setStreetAddress("456 Main St");
+        Geocode g = new Geocode();
+        g.setLatitude(1.0f);
+        a.setGeocode(g);
+
+        persistAddress(a);
+
+        g = a.getGeocode();       
+
+        NestedEmbeddable ne = new NestedEmbeddable();
+        ne.setField1("test");
+        
+        g.setNestedEmbed(ne);       
+        a.setGeocode(g);
+        
+        mergeAddress(a);      
+ 	
+        a =
+            queryAddresses(
+                "select address from Address address"
+                    + " where address.streetAddress = '456 Main St'").get(0);
+        
+        ne = a.getGeocode().getNestedEmbed();
+        
+        assertEquals(ne.getField1(),"test");
+        assertEquals(ne.getField2(),null);
+    }    
 
     private void persistAddress(Address address) {
         final EntityManager em = emf.createEntityManager();
@@ -95,6 +168,23 @@ public class TestEmbedded extends SingleEMFTestCase {
         assertEquals(address.getGeocode().getLatitude(), 1.0f);
     }
 
+    private void mergeAddress(Address address) {
+        final EntityManager em = emf.createEntityManager();
+        final EntityTransaction tx = em.getTransaction();
+
+        tx.begin();
+
+        try {
+            em.merge(address);
+            tx.commit();
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            em.close();
+        }
+    }
+    
     private List<Address> queryAddresses(String query) {
         final EntityManager em = emf.createEntityManager();
         final EntityTransaction tx = em.getTransaction();

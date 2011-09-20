@@ -115,7 +115,7 @@ public class DetachedStateManager
 
         // pre-load for efficiency: current field values for restore, dependent
         // for delete
-        FieldMetaData[] fields = meta.getFields();
+        FieldMetaData[] fields = sm.getMetaData().getFields(); 
         int restore = broker.getRestoreState();
         if (_dirty.length() > 0) {
             BitSet load = new BitSet(fields.length);

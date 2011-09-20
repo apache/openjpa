@@ -29,6 +29,8 @@ import javax.persistence.*;
 @Embeddable
 public class Geocode extends BaseEntity {
     float latitude, longtitude;
+    
+    NestedEmbeddable nestedEmbed;
 
     public float getLatitude() {
         return latitude;
@@ -45,4 +47,12 @@ public class Geocode extends BaseEntity {
     public void setLongtitude(float longtitude) {
         this.longtitude = longtitude;
     }
+    
+    public NestedEmbeddable getNestedEmbed() {
+    	return nestedEmbed;
+    }
+    
+	public void setNestedEmbed(NestedEmbeddable ne) {
+		this.nestedEmbed = ne;
+	}    
 }
