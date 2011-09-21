@@ -3888,10 +3888,11 @@ CLOB to persist with the embedded method. Defaults to 4000 characters.
                 </listitem>
                 <listitem id="OracleDictionary.SupportsSetClob">
                     <para>
-<literal>SupportsSetClob</literal>: This property was used in previous releases 
+<literal>SupportsSetClob</literal>: This property was used in releases previous
+to OpenJPA 2.2.0
 to indicate that OpenJPA should attempt to use a Reader-based JDBC 4.0 method to 
-set Clob or XML data.  It allowed XMLType and Clob values larger than 4000 bytes 
-to be used.  For this release, and newer, code was added to allow said 
+set CLOB or XML data.  It allowed XMLType and CLOB values larger than 4000 bytes 
+to be used.  For OpenJPA 2.2.0 and later releases, code was added to allow said 
 functionality by default (see OPENJPA-1691).  For forward compatibility, this 
 property still remains, however it has been deprecated and will eventually be
 removed.  Setting this property has no effect and any occurrence of it should
