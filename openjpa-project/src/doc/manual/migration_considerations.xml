@@ -408,7 +408,7 @@
             </section>
             <section id="jpa_2.2_metamodelArrays">
                 <title>
-                    MetaModel attributes for Arrays  
+                    MetaModel Attributes for Arrays  
                 </title>
                 <!-- See OPENJPA-2025 for details. -->
                 <para>
@@ -417,7 +417,7 @@
                     so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute. 
                 </para>
                 <para>
-                    If youre application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and
+                    If your application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and
                     do not use the @PersistentCollection annotation with those fields you will need to update your application to use OpenJPA 2.2.0.
                 </para>
                 <para> In order for the existing applications to work with OpenJPA you may: 
@@ -446,15 +446,15 @@
             </section>            
             <section id="UseNativeSequenceCache">
                 <title>
-                    useNativeSequenceCache property.  
+                    useNativeSequenceCache Property.  
                 </title>
                 <!-- See OPENJPA-1376 for details. -->
                 <para>
-                    In the OpenJPA 2.2.x release, code was added which changed the way sequences were generated, please see 
+                    In OpenJPA 2.2.0, code was added which changed the way sequences were generated, please see 
                     <xref linkend="jpa_2.2_allocationSize"/> for details.  This functionality was eventually back ported 
-                    to previous releases, and enabeld by the useNativeSequenceCache property on the DBDictionary.  Setting this property 
-                    has no effect in 2.2.x and later releases and any occurrence of it should be removed.  If previous behavior is
-                    desired (i.e. useNativeSequenceCache=true), please see the details described in section 
+                    to previous releases, and enabled by the <literal>useNativeSequenceCache</literal> property on the DBDictionary.  Setting this property 
+                    has no effect in 2.2.0 and later releases and any occurrence of it should be removed.  If previous behavior is
+                    desired (i.e. <literal>useNativeSequenceCache=true</literal>), please see the details described in section 
                     <xref linkend="jpa_2.2_allocationSize"/>.
                 </para>
             </section>            

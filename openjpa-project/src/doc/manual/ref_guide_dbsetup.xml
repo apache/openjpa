@@ -3409,27 +3409,6 @@ ResultSet.getString</methodname> will be used to obtain clob data rather than
 <methodname>ResultSet.getCharacterStream</methodname>.
                     </para>
                 </listitem>
-                <listitem id="DBDictionary.UseSchemaName">
-                    <para>
-                    <indexterm>
-                        <primary>
-                            schema
-                        </primary>
-                        <secondary>
-                            UseSchemaName
-                        </secondary>
-                    </indexterm>
-<literal>UseNativeSequenceCache</literal>: This property was used in 
-2.1.x and prior releases to indicate (when set to false) that OpenJPA 
-should not use the CACHE clause when getting a native sequence; instead 
-the INCREMENT BY clause gets its value equal to the allocationSize 
-property.  Post 2.1.x, code was added to allow said functionality by 
-default (see OPENJPA-1376).  
-For forward compatibility, this property still remains, however it has 
-been deprecated and will eventually be removed.  Setting this property 
-has no effect and any occurrence of it should be removed.
-                    </para>
-                </listitem>
                 <listitem id="DBDictionary.UseNativeSequenceCache">
                     <para>
                     <indexterm>
@@ -3438,6 +3417,27 @@ has no effect and any occurrence of it should be removed.
                         </primary>
                         <secondary>
                             UseNativeSequenceCache
+                        </secondary>
+                    </indexterm>
+<literal>UseNativeSequenceCache</literal>: This property was introduced in 
+the 2.1.2 release to indicate (when set to <literal>false</literal>) that OpenJPA 
+should not use the <literal>CACHE</literal> clause when creating a native sequence; instead 
+the <literal>INCREMENT BY</literal> clause gets its value equal to the allocationSize 
+property.  In the 2.2.0 release, code was added to allow said functionality by 
+default (see OPENJPA-1376).
+For forward compatibility, this property still remains, however it has 
+been deprecated and will eventually be removed.  Setting this property 
+has no effect and any occurrence of it should be removed.
+                    </para>
+                </listitem>
+                <listitem id="DBDictionary.UseSchemaName">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            UseSchemaName
                         </secondary>
                     </indexterm>
 <literal>UseSchemaName</literal>: If <literal>false</literal>, then avoid
