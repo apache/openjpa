@@ -789,6 +789,25 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
+    
+    /**
+     * Return a PrivilegeAction object for Thread.currentThread
+     *   .setContextClassLoader().
+     * 
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "setContextClassLoader";'
+     *   
+     * @return ClassLoader
+     */
+    public static final PrivilegedAction<Boolean> 
+            setContextClassLoaderAction(final ClassLoader loader) {
+        return new PrivilegedAction<Boolean>() {
+            public Boolean run() {
+                Thread.currentThread().setContextClassLoader(loader);
+                return Boolean.TRUE;
+            }
+        };
+    }
 
     /**
      * Return a PrivilegedAction object for new Thread().
