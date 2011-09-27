@@ -942,7 +942,7 @@ public class MappingRepository
         try {
             Class c = JavaTypes.classForName(name, val,
                 (ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)),false);
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             Object o = AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(c));
             Configurations.configureInstance(o, getConfiguration(), props);
@@ -969,7 +969,7 @@ public class MappingRepository
         try {
             Class c = JavaTypes.classForName(name, val,
                 (ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)),false);
+                    J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)));
             if (ValueHandler.class.isAssignableFrom(c)) {
                 ValueHandler vh = (ValueHandler) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(c));
