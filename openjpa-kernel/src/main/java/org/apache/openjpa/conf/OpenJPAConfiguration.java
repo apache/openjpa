@@ -1867,18 +1867,33 @@ public interface OpenJPAConfiguration
     
     
     /**
-     * Gets an instance of {@link AuditManager} associated with this configuration.
+     * Gets the singular instance of {@link Auditor} associated with this configuration.
      * 
      * @since 2.2.0
      */
     public Auditor getAuditorInstance();
     
     /**
-     * Gets the plug-in string of {@link AuditManager} specified in this configuration.
+     * Sets the singular instance of {@link Auditor} associated with this configuration.
+     * 
+     * @since 2.2.0
+     */
+
+    public void setAuditorInstance(Auditor auditor);
+    
+    /**
+     * Gets the plug-in string of {@link Auditor} specified in this configuration.
      * 
      * @since 2.2.0
      */
     public String getAuditor();
+    
+    /**
+     * Sets the plug-in string of {@link Auditor} specified in this configuration.
+     * 
+     * @since 2.2.0
+     */
+    public void setAuditor(String s);
     
 }
 

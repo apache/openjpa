@@ -1660,6 +1660,7 @@ public class OpenJPAConfigurationImpl
         super.instantiateAll();
         getMetaDataRepositoryInstance();
         getRemoteCommitEventManager();
+        getAuditorInstance();
         cacheMarshallerPlugins.initialize();
         if (isInitializeEagerly()) {
         	getConnectionFactory();
@@ -1824,8 +1825,16 @@ public class OpenJPAConfigurationImpl
        return auditor;
     }
     
+    public void setAuditorInstance(Auditor auditor) {
+    	auditorPlugin.set(auditor);
+    }
+    
     public String getAuditor() {
     	return auditorPlugin.getString();
+    }
+    
+    public void setAuditor(String auditor) {
+    	auditorPlugin.setString(auditor);
     }
 }
 
