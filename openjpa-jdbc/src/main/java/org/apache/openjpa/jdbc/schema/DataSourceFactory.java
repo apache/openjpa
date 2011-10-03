@@ -60,10 +60,8 @@ import org.apache.openjpa.util.UserException;
  */
 public class DataSourceFactory {
 
-    private static final Localizer _loc = Localizer.forPackage
-    	 (DataSourceFactory.class);
-    protected static Localizer _eloc = 
-    	Localizer.forPackage(DelegatingDataSource.class);
+    private static final Localizer _loc = Localizer.forPackage(DataSourceFactory.class);
+    protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
 
     /**
      * Create a datasource using the given configuration.
@@ -73,7 +71,7 @@ public class DataSourceFactory {
         String driver = (factory2) ? conf.getConnection2DriverName()
             : conf.getConnectionDriverName();
         if (StringUtils.isEmpty(driver))
-            throw new UserException(_loc.get("no-driver", driver)).
+            throw new UserException(_loc.get("no-driver", conf)).
                 setFatal(true);
 
         ClassLoader loader = conf.getClassResolverInstance().
