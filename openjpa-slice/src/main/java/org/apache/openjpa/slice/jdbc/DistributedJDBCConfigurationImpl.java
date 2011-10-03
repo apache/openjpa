@@ -79,10 +79,10 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     protected BooleanValue lenientPlugin;
     protected StringValue masterPlugin;
     protected StringListValue namesPlugin;
-    public PluginValue distributionPolicyPlugin;
-    public PluginValue replicationPolicyPlugin;
-    public PluginValue queryTargetPolicyPlugin;
-    public PluginValue finderTargetPolicyPlugin;
+    public PluginValue<DistributionPolicy> distributionPolicyPlugin;
+    public PluginValue<ReplicationPolicy> replicationPolicyPlugin;
+    public PluginValue<QueryTargetPolicy> queryTargetPolicyPlugin;
+    public PluginValue<FinderTargetPolicy> finderTargetPolicyPlugin;
     public StringListValue replicatedTypesPlugin;
     
     private ReplicatedTypeRepository _replicationRepos;
@@ -101,22 +101,22 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
               false); // load globals
         brokerPlugin.setString(DistributedBrokerImpl.class.getName());
         
-        distributionPolicyPlugin = addPlugin(PREFIX_SLICE + "DistributionPolicy", true);
+        distributionPolicyPlugin = addPlugin(DistributionPolicy.class, PREFIX_SLICE + "DistributionPolicy", true);
         distributionPolicyPlugin.setAlias("random", DistributionPolicy.Default.class.getName());
         distributionPolicyPlugin.setDefault("random");
         distributionPolicyPlugin.setString("random");
         distributionPolicyPlugin.setDynamic(true);
         
-        replicationPolicyPlugin = addPlugin(PREFIX_SLICE + "ReplicationPolicy", true);
+        replicationPolicyPlugin = addPlugin(ReplicationPolicy.class, PREFIX_SLICE + "ReplicationPolicy", true);
         replicationPolicyPlugin.setAlias("all", ReplicationPolicy.Default.class.getName());
         replicationPolicyPlugin.setDefault("all");
         replicationPolicyPlugin.setString("all");
         replicationPolicyPlugin.setDynamic(true);
         
-        queryTargetPolicyPlugin = addPlugin(PREFIX_SLICE + "QueryTargetPolicy", true);
+        queryTargetPolicyPlugin = addPlugin(QueryTargetPolicy.class, PREFIX_SLICE + "QueryTargetPolicy", true);
         queryTargetPolicyPlugin.setDynamic(true);
         
-        finderTargetPolicyPlugin = addPlugin(PREFIX_SLICE + "FinderTargetPolicy", true);
+        finderTargetPolicyPlugin = addPlugin(FinderTargetPolicy.class, PREFIX_SLICE + "FinderTargetPolicy", true);
         finderTargetPolicyPlugin.setDynamic(true);
         
         replicatedTypesPlugin = new StringListValue(PREFIX_SLICE + "ReplicatedTypes");
@@ -212,16 +212,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public DistributionPolicy getDistributionPolicyInstance() {
         if (distributionPolicyPlugin.get() == null) {
-            distributionPolicyPlugin.instantiate(DistributionPolicy.class,
-                    this, true);
+            distributionPolicyPlugin.instantiate(this, true);
         }
-        return (DistributionPolicy) distributionPolicyPlugin.get();
+        return distributionPolicyPlugin.get();
     }
     
     public String getDistributionPolicy() {
         if (distributionPolicyPlugin.get() == null) {
-            distributionPolicyPlugin.instantiate(DistributionPolicy.class,
-                    this, true);
+            distributionPolicyPlugin.instantiate(this, true);
         }
         return distributionPolicyPlugin.getString();
     }
@@ -236,16 +234,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public ReplicationPolicy getReplicationPolicyInstance() {
         if (replicationPolicyPlugin.get() == null) {
-            replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
-                    this, true);
+            replicationPolicyPlugin.instantiate(this, true);
         }
-        return (ReplicationPolicy) replicationPolicyPlugin.get();
+        return replicationPolicyPlugin.get();
     }
     
     public String getReplicationPolicy() {
         if (replicationPolicyPlugin.get() == null) {
-            replicationPolicyPlugin.instantiate(ReplicationPolicy.class,
-                    this, true);
+            replicationPolicyPlugin.instantiate(this, true);
         }
         return replicationPolicyPlugin.getString();
     }
@@ -260,16 +256,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public QueryTargetPolicy getQueryTargetPolicyInstance() {
         if (queryTargetPolicyPlugin.get() == null) {
-            queryTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
-                    this, true);
+            queryTargetPolicyPlugin.instantiate(this, true);
         }
-        return (QueryTargetPolicy) queryTargetPolicyPlugin.get();
+        return queryTargetPolicyPlugin.get();
     }
     
     public String getQueryTargetPolicy() {
         if (queryTargetPolicyPlugin.get() == null) {
-            queryTargetPolicyPlugin.instantiate(QueryTargetPolicy.class,
-                    this, true);
+            queryTargetPolicyPlugin.instantiate(this, true);
         }
         return queryTargetPolicyPlugin.getString();
     }
@@ -284,16 +278,14 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     
     public FinderTargetPolicy getFinderTargetPolicyInstance() {
         if (finderTargetPolicyPlugin.get() == null) {
-            finderTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
-                    this, true);
+            finderTargetPolicyPlugin.instantiate(this, true);
         }
-        return (FinderTargetPolicy) finderTargetPolicyPlugin.get();
+        return finderTargetPolicyPlugin.get();
     }
     
     public String getFinderTargetPolicy() {
         if (finderTargetPolicyPlugin.get() == null) {
-            finderTargetPolicyPlugin.instantiate(FinderTargetPolicy.class,
-                    this, true);
+            finderTargetPolicyPlugin.instantiate(this, true);
         }
         return finderTargetPolicyPlugin.getString();
     }
