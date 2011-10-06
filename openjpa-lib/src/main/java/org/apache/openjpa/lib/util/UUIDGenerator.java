@@ -115,10 +115,16 @@ public class UUIDGenerator {
         } catch (IOException ioe) {
             throw new NestableRuntimeException(ioe);
         }
-
+        
         IP = new byte[6];
         RANDOM.nextBytes(IP);
-        System.arraycopy(ip, 0, IP, 2, ip.length);        
+        
+        //OPENJPA-2055: account for the fact that 'getAddress'
+        //may return an IPv6 address which is 16 bytes wide.
+        for( int i = 0 ; i < ip.length; ++i ) {
+            IP[2+(i%4)] ^= ip[i];
+        }
+        	
         type1Initialized = true;
     }
 
