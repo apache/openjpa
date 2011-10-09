@@ -149,9 +149,6 @@ public class PostgresDictionary
         supportsSelectStartIndex = true;
         supportsSelectEndIndex = true;
 
-        // PostgreSQL requires double-escape for strings
-        searchStringEscape = "\\\\";
-
         maxTableNameLength = 63;
         maxColumnNameLength = 63;
         maxIndexNameLength = 63;
@@ -740,7 +737,7 @@ public class PostgresDictionary
     }
 
     /**
-     * Determine whether XML column is supported.
+     * Determine XML column support and backslash handling.
      */
     public void connectedConfiguration(Connection conn) throws SQLException {
         super.connectedConfiguration(conn);
@@ -767,6 +764,10 @@ public class PostgresDictionary
         
         if ((maj >= 9 || (maj == 8 && min >= 3))) {
             supportsXMLColumn = true;
+        }
+        // Old PostgreSQL requires double-escape for strings.
+        if ((maj <= 8 || (maj == 9 && min == 0))) {
+            searchStringEscape = "\\\\";
         }
     }
  
