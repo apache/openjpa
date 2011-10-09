@@ -91,8 +91,7 @@ public class TestQueryEscapeCharacters
 
     public void testDoubleSlashQuery() {
         // get the Dictionary and check the requiresSearchStringEscapeForLike flag
-        OpenJPAEntityManagerFactorySPI ojpaEmf = 
-            (OpenJPAEntityManagerFactorySPI) emf;
+        OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
         
         if (conf.getDBDictionaryInstance().
