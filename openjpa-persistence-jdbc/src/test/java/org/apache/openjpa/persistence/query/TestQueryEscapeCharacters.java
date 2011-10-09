@@ -90,7 +90,7 @@ public class TestQueryEscapeCharacters
     }
 
     public void testDoubleSlashQuery() {
-        // get the Dictionary and check the alwaysAddSearchString flag
+        // get the Dictionary and check the requiresSearchStringEscapeForLike flag
         OpenJPAEntityManagerFactorySPI ojpaEmf = 
             (OpenJPAEntityManagerFactorySPI) emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
@@ -105,8 +105,7 @@ public class TestQueryEscapeCharacters
 
     @SuppressWarnings("unchecked")
     public void testDifferentEscapeCharacter () {
-        OpenJPAEntityManagerFactorySPI ojpaEmf = 
-            (OpenJPAEntityManagerFactorySPI) emf;
+        OpenJPAEntityManagerFactorySPI ojpaEmf = emf;
         JDBCConfiguration conf = (JDBCConfiguration)ojpaEmf.getConfiguration();
 
         // Would be nice to just pass a map to the createEntityManager, but
@@ -118,7 +117,7 @@ public class TestQueryEscapeCharacters
 
         Query q = em.createNamedQuery("Employee.findByName");
         q.setParameter("name", "M|%%");
-        List<Employee> emps = (List<Employee>) q.getResultList();
+        List<Employee> emps = q.getResultList();
         assertEquals(1, emps.size());
 
         String unnamedQuery =
@@ -126,7 +125,7 @@ public class TestQueryEscapeCharacters
 
         q = em.createQuery(unnamedQuery);
         q.setParameter("name", "M|%%");
-        emps = (List<Employee>) q.getResultList();
+        emps = q.getResultList();
         assertEquals(1, emps.size());
         em.close();
     }
@@ -138,7 +137,7 @@ public class TestQueryEscapeCharacters
 
         Query q = em.createNamedQuery(namedQuery);
         q.setParameter("name", parameter);
-        List<Employee> emps = (List<Employee>) q.getResultList();
+        List<Employee> emps = q.getResultList();
         assertEquals(expected, emps.size());
 
         String unnamedQuery =
@@ -149,7 +148,7 @@ public class TestQueryEscapeCharacters
         }
         q = em.createQuery(unnamedQuery);
         q.setParameter("name", parameter);
-        emps = (List<Employee>) q.getResultList();
+        emps = q.getResultList();
         assertEquals(expected, emps.size());
         em.close();
     }
