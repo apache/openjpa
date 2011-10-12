@@ -141,14 +141,20 @@ public class SourceCode {
 	public SourceCode addComment(boolean inline, String... lines) {
 	    if (lines == null)
 	        return this;
-	    if (lines.length == 1 && lines[0].length() > 120)
-	        return addComment(inline, wrap(lines[0], 120-4));
 		if (comments == null) 
 		    comments = new ArrayList<Comment>();
 		Comment comment = new Comment();
 		comments.add(comment);
 		comment.makeInline(inline);
-		for (String line:lines) comment.append(line);
+		for (String line:lines) {
+		    // Handle long header comment lines...
+		    if (line.length() > 120-4) {
+		        String[] wrappedLines = wrap(line, 120-4);
+		        for (String w:wrappedLines) comment.append(w);
+		    } else {
+	            comment.append(line);
+		    }
+		}
 		return this;
 	}
 	
@@ -746,8 +752,8 @@ public class SourceCode {
 					if (i == 0) {
 						out.println("/** ");
 						tab(out, tab);
-					} 
-					out.println(" *  " + l);
+					}
+                    out.println(" *  " + l);
 					i++;
 				}
 				tab(out, tab);

@@ -21,12 +21,15 @@ package org.apache.openjpa.persistence.meta;
 import static javax.lang.model.SourceVersion.RELEASE_6;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -107,7 +110,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private MetaDataFactory factory;
     private int generatedSourceVersion = 6;
     private CompileTimeLogger logger;
-    private String header;
+    private List<String> header = new ArrayList<String>();
     private boolean active;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
 
@@ -302,8 +305,8 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     }
     
     private void comment(SourceCode source) {
-        if (header != null)
-            source.addComment(false, header);
+        if (header.size() != 0)
+            source.addComment(false, header.toArray(new String[header.size()]));
         String defaultHeader = _loc.get("mmg-tool-sign").getMessage();
         source.addComment(false, defaultHeader);
     }
@@ -347,11 +350,15 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             return;
         }
         if ("ASL".equalsIgnoreCase(headerOption)) {
-            header = _loc.get("mmg-asl-header").getMessage();
+            header.add(_loc.get("mmg-asl-header").getMessage());
         } else {
             try {
                 URL url = new URL(headerOption);
-                header = url.getContent().toString();
+                InputStream is = url.openStream();
+                Scanner s = new Scanner(is);
+                while (s.hasNextLine()) {
+                    header.add(s.nextLine());
+                }
             } catch (Throwable t) {
                 
             }
