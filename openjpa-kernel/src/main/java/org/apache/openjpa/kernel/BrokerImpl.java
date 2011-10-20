@@ -4036,7 +4036,10 @@ public class BrokerImpl
         lock();
         try {
             switch (status) {
-                case STATUS_INIT:
+                case STATUS_INIT:                	
+                	if (_compat.getResetFlushFlagForCascadePersist()){//OPENJPA-2051                	
+                		_flags &= ~FLAG_FLUSHED;
+                	}
                     _cache.add(sm);
                     break;
                 case STATUS_TRANSIENT:
