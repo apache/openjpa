@@ -73,6 +73,8 @@ public class Compatibility {
     
     private boolean _useListAttributeForArrays = false; 
     private boolean _metaFactoriesAreStrict = false; 
+    private boolean _resetFlushFlagForCascadePersist = true;//OPENJPA-2051
+
     
     /**
      * Whether to require exact identity value types when creating object
@@ -665,5 +667,33 @@ public class Compatibility {
      */
     public void setMetaFactoriesAreStrict(boolean metaFactoriesAreStrict) {
         _metaFactoriesAreStrict = metaFactoriesAreStrict;
+    }
+
+    /**
+     * Whether OpenJPA should reset the internal state (flush flag) when cascading a persist to another 
+     * Entity. That is, when a flush is performed, OpenJPA keep state to indicate the flush has been 
+     * performed.  In certain cascade persist scenarios the fact that a flush has been performed prior to 
+     * a cascade persist can cause certain entities to not be written to the database given the prior 
+     * flush.  This property, when set, will cause the flush flag to be reset in cascade scenarios. For more 
+     * details see JIRA OPENJPA-2051
+     *    
+     * @since 2.0.x
+     */
+    public boolean getResetFlushFlagForCascadePersist(){
+        return _resetFlushFlagForCascadePersist;
+    }
+    
+    /**
+     * Whether OpenJPA should reset the internal state (flush flag) when cascading a persist to another 
+     * Entity. That is, when a flush is performed, OpenJPA keep state to indicate the flush has been 
+     * performed.  In certain cascade persist scenarios the fact that a flush has been performed prior to 
+     * a cascade persist can cause certain entities to not be written to the database given the prior 
+     * flush.  This property, when set, will cause the flush flag to be reset in cascade scenarios. For more 
+     * details see JIRA OPENJPA-2051
+     *    
+     * @since 2.0.x
+     */
+    public void setResetFlushFlagForCascadePersist(boolean b){
+        _resetFlushFlagForCascadePersist = b;
     }
 }
