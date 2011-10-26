@@ -35,8 +35,7 @@ public class TestJoinedMultiInheritanceHierarchy
     public void setUp() {
         super.setUp( CLEAR_TABLES, ChildChildClass.class, ChildClass.class, 
                      GrandChildClass.class, ParentClass.class,
-                     "openjpa.BrokerImpl", "EvictFromDataCache=true",
-                     "openjpa.Log", "Enhance=ERROR,SQL=TRACE");
+                     "openjpa.BrokerImpl", "EvictFromDataCache=true" );
     }
     
     public void testCacheSqlGeneration() throws PersistenceException {
@@ -63,11 +62,8 @@ public class TestJoinedMultiInheritanceHierarchy
         em.getFetchPlan().clearFetchGroups();
         em.getFetchPlan().addField(ParentClass.class, "items");
         em.getFetchPlan().addField(GrandChildClass.class, "someUnloadedField");
-        assert empty.getItems().isEmpty() : empty.getName()
-            + " should be empty !";
+        assertTrue(empty.getItems().isEmpty());
     }
     
-    public void tearDown() throws Exception {
-    }
 }
 
