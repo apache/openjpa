@@ -1382,7 +1382,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
 
         // in certain circumstances force join to superclass table to avoid
         // SQL generation error.
-        if ( eagerToMany != null && pseld < 0 && seld > 0 && !joined
+        if ( eagerToMany != null && pseld < 0 && !joined
                 && parent != null ) {
             FieldMapping[] pfms = parent.getDefinedFieldMappings();
             for (int i = 0; i < pfms.length; i++) {
