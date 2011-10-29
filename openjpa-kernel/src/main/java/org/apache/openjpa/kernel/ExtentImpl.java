@@ -66,7 +66,7 @@ public class ExtentImpl<T>
      * @param type the candidate class
      * @param subs whether subclasses are included in the extent
      */
-    ExtentImpl(Broker broker, Class<T> type, boolean subs,
+    protected ExtentImpl(Broker broker, Class<T> type, boolean subs,
         FetchConfiguration fetch) {
         _broker = broker;
         _type = type;
@@ -120,8 +120,7 @@ public class ExtentImpl<T>
             // add database iterators for each implementing class
             MetaDataRepository repos = _broker.getConfiguration().
                 getMetaDataRepositoryInstance();
-            ClassMetaData meta = repos.getMetaData(_type,
-                _broker.getClassLoader(), false);
+            ClassMetaData meta = repos.getMetaData(_type, false);
 
             ClassMetaData[] metas;
             if (meta != null && (!_subs || !meta.isManagedInterface())
@@ -129,8 +128,7 @@ public class ExtentImpl<T>
                 && meta.getMappedPCSubclassMetaDatas().length > 0)))
                 metas = new ClassMetaData[]{ meta };
             else if (_subs && (meta == null || meta.isManagedInterface()))
-                metas = repos.getImplementorMetaDatas(_type,
-                    _broker.getClassLoader(), false);
+                metas = repos.getImplementorMetaDatas(_type, false);
             else
                 metas = EMPTY_METAS;
 

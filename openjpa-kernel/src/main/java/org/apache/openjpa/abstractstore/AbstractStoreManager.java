@@ -244,7 +244,7 @@ public abstract class AbstractStoreManager
      * states, and delegates to
      * {@link #flush(Collection,Collection,Collection,Collection,Collection)}.
      */
-    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
+    public Collection<Exception> flush(Collection<? extends OpenJPAStateManager> sms) {
         // break down state managers by state; initialize as empty lists;
         // use constants for efficiency
         Collection<OpenJPAStateManager> pNew = new LinkedList<OpenJPAStateManager>();

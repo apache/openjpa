@@ -18,19 +18,17 @@
  */
 package org.apache.openjpa.abstractstore;
 
-import java.security.AccessController;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -71,8 +69,7 @@ public class AbstractStoreBrokerFactory
      * Factory method for obtaining a possibly-pooled {@link BrokerFactory}
      * from properties. Invoked from {@link Bootstrap#getBrokerFactory()}.
      */
-    public static AbstractStoreBrokerFactory getInstance(
-        ConfigurationProvider cp) {
+    public static AbstractStoreBrokerFactory getInstance(ConfigurationProvider cp) {
         Object key = toPoolKey(cp.getProperties());
         AbstractStoreBrokerFactory factory = (AbstractStoreBrokerFactory)
             getPooledFactoryForKey(key);
@@ -88,8 +85,7 @@ public class AbstractStoreBrokerFactory
      * Factory method for constructing a {@link BrokerFactory}
      * from properties. Invoked from {@link Bootstrap#newBrokerFactory()}.
      */
-    public static AbstractStoreBrokerFactory newInstance
-        (ConfigurationProvider cp) {
+    public static AbstractStoreBrokerFactory newInstance(ConfigurationProvider cp) {
         // use a tmp store manager to get metadata about the capabilities of
         // this runtime
         Map map = cp.getProperties();
@@ -97,8 +93,7 @@ public class AbstractStoreBrokerFactory
             .getConfigurationKey(PROP_ABSTRACT_STORE, map));
         String storeCls = Configurations.getClassName(storePlugin);
         String storeProps = Configurations.getProperties(storePlugin);
-        AbstractStoreManager store = createStoreManager(storeCls,
-            storeProps);
+        AbstractStoreManager store = createStoreManager(storeCls, storeProps);
 
         // populate configuration
         OpenJPAConfiguration conf = store.newConfiguration();
@@ -131,14 +126,10 @@ public class AbstractStoreBrokerFactory
         return createStoreManager(_storeCls, _storeProps);
     }
 
-    private static AbstractStoreManager createStoreManager(String cls,
-        String props) {
+    private static AbstractStoreManager createStoreManager(String cls, String props) {
         AbstractStoreManager store =
-            (AbstractStoreManager) Configurations.newInstance(cls,
-                AccessController.doPrivileged(J2DoPrivHelper
-                    .getClassLoaderAction(AbstractStoreManager.class))); 
-        Configurations.configureInstance(store, null, props,
-            PROP_ABSTRACT_STORE);
+            (AbstractStoreManager) Configurations.newInstance(cls, (Configuration)null, props); 
+        Configurations.configureInstance(store, null, props, PROP_ABSTRACT_STORE);
         if (store == null)
             throw new UserException(s_loc.get("no-store-manager",
                 PROP_ABSTRACT_STORE)).setFatal(true);

@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.conf.test;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.AccessController;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
@@ -29,6 +30,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
 import org.apache.openjpa.lib.conf.ProductDerivation;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * A Product Derivation to test loading of global and default configuration with
@@ -51,19 +53,18 @@ public class ConfigurationTestProductDerivation
         closed = true;
     }
 
-    public ConfigurationProvider loadGlobals(ClassLoader loader)
+    public ConfigurationProvider loadGlobals()
         throws IOException {
-        return load(null, loader);
+        return load(null);
     }
 
-    public ConfigurationProvider load(String rsrc, ClassLoader loader)
-        throws IOException {
+    public ConfigurationProvider load(String rsrc) throws IOException {
         if (rsrc == null)
             rsrc = System.getProperty("openjpatest.properties");
         if (rsrc == null || !rsrc.endsWith(".properties"))
             return null;
 
-        URL url = findResource(rsrc, loader);
+        URL url = findResource(rsrc);
         if (url == null)
             throw new MissingResourceException(rsrc, getClass().getName(), 
                 rsrc);
@@ -84,8 +85,9 @@ public class ConfigurationTestProductDerivation
     /**
      * Locate the given resource.
      */
-    private URL findResource(String rsrc, ClassLoader loader)
+    private URL findResource(String rsrc)
         throws IOException {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (loader != null)
             return loader.getResource(rsrc);
 
@@ -95,7 +97,6 @@ public class ConfigurationTestProductDerivation
         if (loader != null)
             url = loader.getResource(rsrc);
         if (url == null) {
-            loader = Thread.currentThread().getContextClassLoader();
             if (loader != null)
                 url = loader.getResource(rsrc);
         }

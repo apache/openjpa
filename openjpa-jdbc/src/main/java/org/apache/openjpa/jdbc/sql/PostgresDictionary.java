@@ -920,12 +920,9 @@ public class PostgresDictionary
         try {
             if (dbcpGetDelegate == null) {
                 Class<?> dbcpConnectionClass =
-                    Class.forName("org.apache.commons.dbcp.DelegatingConnection", true, AccessController
-                        .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+                    Class.forName("org.apache.commons.dbcp.DelegatingConnection", true, conf.getClassLoader());
                 Class<?> poolingDataSource = Class.forName(
-                        "org.apache.commons.dbcp.PoolingDataSource", true,
-                        AccessController.doPrivileged(J2DoPrivHelper
-                                .getContextClassLoaderAction()));
+                        "org.apache.commons.dbcp.PoolingDataSource", true, conf.getClassLoader());
                 Method setAccessToUnderlyingConnectionAllowed = poolingDataSource
                         .getMethod("setAccessToUnderlyingConnectionAllowed",
                                 boolean.class);

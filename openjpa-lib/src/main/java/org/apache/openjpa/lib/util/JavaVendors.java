@@ -24,7 +24,8 @@ import java.security.AccessController;
  * Utilities for dealing with different Java vendors.
  */
 public enum JavaVendors {
-    IBM("com.ibm.tools.attach.VirtualMachine"), SUN("com.sun.tools.attach.VirtualMachine"),
+    IBM("com.ibm.tools.attach.VirtualMachine"), 
+    SUN("com.sun.tools.attach.VirtualMachine"),
     // When in doubt, try the Sun implementation.
     OTHER("com.sun.tools.attach.VirtualMachine");
 

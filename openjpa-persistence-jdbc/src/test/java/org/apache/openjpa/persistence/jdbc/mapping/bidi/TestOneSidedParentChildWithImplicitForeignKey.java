@@ -70,8 +70,7 @@ public class TestOneSidedParentChildWithImplicitForeignKey extends
 		MetaDataRepository repos = emf.getConfiguration()
 				.getMetaDataRepositoryInstance();
 		for (int i = 0; i < VALUE_STRATEGIES.length; i++) {
-            ClassMetaData meta = repos.getMetaData(PARENT_ID_TYPES[i], null,
-                    true);
+            ClassMetaData meta = repos.getMetaData(PARENT_ID_TYPES[i], true);
 			FieldMetaData fmd = meta.getPrimaryKeyFields()[0];
             assertEquals(fmd + " strategy is " + fmd.getValueStrategy(),
                     VALUE_STRATEGIES[i], fmd.getValueStrategy());

@@ -67,7 +67,7 @@ public class TestDynamicSchemaFactory
         JDBCConfiguration conf = new JDBCConfigurationImpl();
         conf.setSchemaFactory(DynamicSchemaFactory.class.getName());
         MappingRepository repos = conf.newMappingRepositoryInstance();
-        _mapping = repos.getMapping(MappingTest1.class, null, true);
+        _mapping = repos.getMapping(MappingTest1.class, true);
     }
 
     public void testClassMapping() {

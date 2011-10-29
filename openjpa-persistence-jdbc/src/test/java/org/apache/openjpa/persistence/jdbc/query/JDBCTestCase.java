@@ -62,8 +62,7 @@ public abstract class JDBCTestCase extends AbstractTestCase {
     
     public ClassMapping getClassMapping(Class c) {
         OpenJPAConfiguration jdoConf = getConfiguration();
-        return ((JDBCConfiguration) jdoConf).getMappingRepositoryInstance().
-                getMapping(c, getClass().getClassLoader(), true);
+        return ((JDBCConfiguration) jdoConf).getMappingRepositoryInstance().getMapping(c, true);
     }
     
     public FieldMapping getFieldMapping(Class c, String field) {

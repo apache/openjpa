@@ -282,7 +282,7 @@ public class QueryResultMapping
          */
         public ClassMapping getCandidateTypeMapping() {
             if (_candidateMap == null)
-                _candidateMap = _repos.getMapping(_candidate, null, true);
+                _candidateMap = _repos.getMapping(_candidate, true);
             return _candidateMap;
         }
 

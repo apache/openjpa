@@ -23,17 +23,13 @@ package org.apache.openjpa.lib.conf;
  *
  * @author Marc Prud'hommeaux
  */
-public class BooleanValue extends Value {
+public class BooleanValue extends Value<Boolean> {
 
     private boolean value;
     
     public BooleanValue(String prop) {
-        super(prop);
+        super(Boolean.class, prop);
         setAliasListComprehensive(true);
-    }
-
-    public Class<Boolean> getValueType() {
-        return boolean.class;
     }
 
     /**
@@ -59,13 +55,10 @@ public class BooleanValue extends Value {
     }
 
     protected void setInternalString(String val) {
-        set(Boolean.valueOf(val).booleanValue());
+        set(Boolean.valueOf(val));
     }
 
     protected void setInternalObject(Object obj) {
-        if (obj == null)
-            set(false);
-        else
-            set(((Boolean) obj).booleanValue());
+    	set(obj == null ? false : (Boolean)obj);
     }
 }

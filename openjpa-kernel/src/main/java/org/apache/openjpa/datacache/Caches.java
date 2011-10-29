@@ -36,7 +36,7 @@ class Caches {
         if (classNames == null || classNames.isEmpty())
             return classes;
 
-        ClassLoader loader = conf.getClassResolverInstance().getClassLoader(null, null);
+        ClassLoader loader = conf.getClassLoader();
 
         Class<?> cls;
         for (String className : classNames) {

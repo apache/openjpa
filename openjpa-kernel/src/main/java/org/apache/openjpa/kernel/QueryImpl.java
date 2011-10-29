@@ -86,7 +86,6 @@ public class QueryImpl
     private final StoreQuery _storeQuery;
     private transient final BrokerImpl _broker;
     private transient final Log _log;
-    private transient ClassLoader _loader = null;
 
     // query has its own internal lock
     private ReentrantLock _lock;
@@ -354,7 +353,6 @@ public class QueryImpl
             boolean invalidate = false;
             if (_extent.getElementType() != _class) {
                 _class = _extent.getElementType();
-                _loader = null;
                 invalidate = true;
             }
             if (_extent.hasSubclasses() != _subclasses) {
@@ -414,7 +412,6 @@ public class QueryImpl
             assertNotReadOnly();
             _class = candidateClass;
             _subclasses = subs;
-            _loader = null;
             invalidateCompilation();
         } finally {
             unlock();
@@ -723,17 +720,14 @@ public class QueryImpl
     private StoreQuery.Executor createExecutor(boolean inMem) {
         assertCandidateType();
 
-        MetaDataRepository repos = _broker.getConfiguration().
-            getMetaDataRepositoryInstance();
-        ClassMetaData meta = repos.getMetaData(_class,
-            _broker.getClassLoader(), false);
+        MetaDataRepository repos = _broker.getConfiguration().getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData(_class, false);
 
         ClassMetaData[] metas;
         if (_class == null || _storeQuery.supportsAbstractExecutors())
             metas = new ClassMetaData[]{ meta };
         else if (_subclasses && (meta == null || meta.isManagedInterface()))
-            metas = repos.getImplementorMetaDatas(_class,
-                _broker.getClassLoader(), true);
+            metas = repos.getImplementorMetaDatas(_class, true);
         else if (meta != null && (_subclasses || meta.isMapped()))
             metas = new ClassMetaData[]{ meta };
         else
@@ -744,8 +738,7 @@ public class QueryImpl
         try {
             if (metas.length == 1) {
                 if (inMem)
-                    return _storeQuery.newInMemoryExecutor(metas[0],
-                        _subclasses);
+                    return _storeQuery.newInMemoryExecutor(metas[0], _subclasses);
                 return _storeQuery.newDataStoreExecutor(metas[0], _subclasses);
             }
 
@@ -1635,11 +1628,8 @@ public class QueryImpl
             return type;
 
         // first check the aliases map in the MetaDataRepository
-        ClassLoader loader = (_class == null) ? _loader
-            : AccessController.doPrivileged(
-                J2DoPrivHelper.getClassLoaderAction(_class)); 
         ClassMetaData meta = _broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(name, loader, false);
+            getMetaDataRepositoryInstance().getMetaData(name, false);
         if (meta != null)
             return meta.getDescribedType();
 
@@ -1683,14 +1673,10 @@ public class QueryImpl
     /**
      * Return the {@link Class} for the given name, or null if name not valid.
      */
-    private Class toClass(String name) {
-        if (_loader == null)
-            _loader = _broker.getConfiguration().getClassResolverInstance().
-                getClassLoader(_class, _broker.getClassLoader());
+    private Class<?> toClass(String name) {
         try {
-            return Strings.toClass(name, _loader);
-        } catch (RuntimeException re) {
-        } catch (NoClassDefFoundError ncdfe) {
+            return Class.forName(name, true, getBroker().getConfiguration().getClassLoader());
+        } catch (Exception re) {
         }
         return null;
     }

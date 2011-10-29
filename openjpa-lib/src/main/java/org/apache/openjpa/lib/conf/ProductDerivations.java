@@ -34,7 +34,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Services;
@@ -48,8 +47,7 @@ import org.apache.openjpa.lib.util.Services;
  */
 public class ProductDerivations {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (ProductDerivations.class);
+    private static final Localizer _loc = Localizer.forPackage(ProductDerivations.class);
 
     private static final ProductDerivation[] _derivations;
     private static final String[] _derivationNames;
@@ -62,22 +60,25 @@ public class ProductDerivations {
         l.addClassLoader(1, AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
         _derivationNames = Services.getImplementors(ProductDerivation.class, l);
         _derivationErrors = new Throwable[_derivationNames.length];
-        List<ProductDerivation> derivations =
-            new ArrayList<ProductDerivation>(_derivationNames.length);
+        List<ProductDerivation> derivations = new ArrayList<ProductDerivation>(_derivationNames.length);
         boolean errors = false; 
         for (int i = 0; i < _derivationNames.length; i++) {
             try {
                 ProductDerivation d = (ProductDerivation)
-                    AccessController.doPrivileged(
-                        J2DoPrivHelper.newInstanceAction(
+                    AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(
                             Class.forName(_derivationNames[i], true, l)));
                 d.validate();
                 derivations.add(d);
             } catch (Throwable t) {
-                if (t instanceof PrivilegedActionException)
-                    t = ((PrivilegedActionException) t).getException();
-                _derivationErrors[i] = t;
-                errors = true;
+                if (t instanceof BootstrapException && !((BootstrapException)t).isFatal()) {
+                	// do nothing
+                } else {
+	                if (t instanceof PrivilegedActionException) {
+	                    t = ((PrivilegedActionException) t).getException();
+	                }
+	                _derivationErrors[i] = t;
+	                errors = true;
+                }
             }
         }
 
@@ -92,14 +93,11 @@ public class ProductDerivations {
 
         // if some derivations weren't instantiable, warn
         if (errors)
-            System.err.println(_loc.get("bad-product-derivations",
-                ProductDerivations.class.getName()));
+            System.err.println(_loc.get("bad-product-derivations", ProductDerivations.class.getName()));
         for (int i = 0; i < _derivationErrors.length; i++) {
-            if (_derivationErrors[i] == null)
-                continue;
-            System.err.println(_derivationNames[i] + ":" +
-                    _derivationErrors[i]);
-            break;
+            if (_derivationErrors[i] != null) {
+                System.err.println(_derivationNames[i] + ":" + _derivationErrors[i]);
+            }
         }
 
         Collections.sort(derivations, new ProductDerivationComparator());
@@ -160,22 +158,18 @@ public class ProductDerivations {
         for (int i = 0; map != null && i < _prefixes.length; i++) {
             String fullKey = _prefixes[i] + "." + partialKey;
             if (map.containsKey(fullKey)) {
-                if (firstKey == null) 
+                if (firstKey == null) {
                     firstKey = fullKey;
-                else {
+                } else {
                     // if we've already found a property with a previous 
                     // prefix, then this is a collision.
-                    throw new IllegalStateException(_loc.get(
-                        "dup-with-different-prefixes", firstKey, fullKey)
+                    throw new IllegalStateException(_loc.get("dup-with-different-prefixes", firstKey, fullKey)
                         .getMessage());
                 }
             }
         }
         
-        if (firstKey == null)
-            return _prefixes[0] + "." + partialKey;
-        else
-            return firstKey;
+        return (firstKey == null) ?  _prefixes[0] + "." + partialKey : firstKey;
     }
 
     /**
@@ -258,20 +252,16 @@ public class ProductDerivations {
      * @param anchor optional named anchor within a multiple-configuration
      * resource
      */
-    public static ConfigurationProvider load(String resource, String anchor, 
-        ClassLoader loader) {
+    public static ConfigurationProvider load(String resource, String anchor) {
         if (StringUtils.isEmpty(resource))
             return null;
-        if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         // most specific to least
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
-                provider = _derivations[i].load(resource, anchor, loader);
+                provider = _derivations[i].load(resource, anchor);
                 if (provider != null)
                     return provider;
             } catch (Throwable t) {
@@ -294,13 +284,9 @@ public class ProductDerivations {
      *
      * @param anchor optional named anchor within a multiple-configuration file
      */
-    public static ConfigurationProvider load(File file, String anchor, 
-        ClassLoader loader) {
+    public static ConfigurationProvider load(File file, String anchor) {
         if (file == null)
             return null;
-        if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         Throwable err = null;
@@ -329,26 +315,21 @@ public class ProductDerivations {
     /**
      * Return a {@link ConfigurationProvider} that has parsed system defaults.
      */
-    public static ConfigurationProvider loadDefaults(ClassLoader loader) {
-        return load(loader, false);
+    public static ConfigurationProvider loadDefaults() {
+        return load(false);
     }
 
     /**
      * Return a {@link ConfigurationProvider} that has parsed system globals.
      */
-    public static ConfigurationProvider loadGlobals(ClassLoader loader) {
-        return load(loader, true);
+    public static ConfigurationProvider loadGlobals() {
+        return load(true);
     }
             
     /**
      * Load a built-in resource location.
      */
-    private static ConfigurationProvider load(ClassLoader loader, 
-       boolean globals) {
-        if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
-        
+    private static ConfigurationProvider load(boolean globals) {
         ConfigurationProvider provider = null;
         StringBuilder errs = null;
         String type = (globals) ? "globals" : "defaults";
@@ -356,8 +337,8 @@ public class ProductDerivations {
         // most specific to least
         for (int i = _derivations.length - 1; i >= 0; i--) {
             try {
-                provider = (globals) ? _derivations[i].loadGlobals(loader) 
-                    : _derivations[i].loadDefaults(loader);
+                provider = (globals) ? _derivations[i].loadGlobals() 
+                    : _derivations[i].loadDefaults();
                 if (provider != null)
                    return provider;
             } catch (Throwable t) {
@@ -398,47 +379,39 @@ public class ProductDerivations {
         StringBuilder errs = null;
         Throwable err = null;
         for (int i = _derivations.length - 1; i >= 0; i--) {
+        	ProductDerivation d = _derivations[i];
             try {
                 if (propertiesLocation == null) {
-                    String loc = _derivations[i].getDefaultResourceLocation();
-                    addAll(fqAnchors, loc,
-                        _derivations[i].getAnchorsInResource(loc));
+                    String loc = d.getDefaultResourceLocation();
+                    addAll(fqAnchors, loc, d.getAnchorsInResource(loc));
                     continue;
                 }
 
                 File f = new File(propertiesLocation);
-                if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
-                    .booleanValue()) {
-                    addAll(fqAnchors, propertiesLocation,
-                        _derivations[i].getAnchorsInFile(f));
+                if (J2DoPrivHelper.isFileAction(f).run().booleanValue()) {
+                    addAll(fqAnchors, propertiesLocation, d.getAnchorsInFile(f));
                 } else {
-                    f = new File("META-INF" + File.separatorChar
-                        + propertiesLocation);
-                    if (((Boolean) J2DoPrivHelper.isFileAction(f).run())
-                        .booleanValue()) {
-                        addAll(fqAnchors, propertiesLocation,
-                            _derivations[i].getAnchorsInFile(f));
+                    f = new File("META-INF" + File.separatorChar + propertiesLocation);
+                    if (J2DoPrivHelper.isFileAction(f).run().booleanValue()) {
+                        addAll(fqAnchors, propertiesLocation, d.getAnchorsInFile(f));
                     } else {
-                        addAll(fqAnchors, propertiesLocation,
-                            _derivations[i].getAnchorsInResource(
-                                propertiesLocation));
+                        addAll(fqAnchors, propertiesLocation, d.getAnchorsInResource(propertiesLocation));
                     }
                 }
             } catch (Throwable t) {
                 err = t;
                 errs = (errs == null) ? new StringBuilder() : errs.append("\n");
-                errs.append(_derivations[i].getClass().getName() + ":" + t);
+                errs.append(d.getClass().getName() + ":" + t);
             }
         }
         reportErrors(errs, propertiesLocation, err);
         return fqAnchors;
     }
 
-    private static void addAll(Collection collection, String base,
-        Collection newMembers) {
+    private static void addAll(Collection<String> collection, String base,  Collection<String> newMembers) {
         if (newMembers == null || collection == null)
             return;
-        for (Iterator iter = newMembers.iterator(); iter.hasNext(); ) {
+        for (Iterator<String> iter = newMembers.iterator(); iter.hasNext(); ) {
             String fqLoc = base + "#" + iter.next();
             if (!collection.contains(fqLoc))
                 collection.add(fqLoc);

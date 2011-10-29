@@ -49,11 +49,8 @@ public class GenericResultObjectProvider
      * @param fetch the fetch configuration, or null for default
      * @param res the result containing the data
      */
-    public GenericResultObjectProvider(Class<?> pcClass,
-        JDBCStore store, JDBCFetchConfiguration fetch, Result res) {
-        this(store.getConfiguration().getMappingRepositoryInstance().getMapping
-            (pcClass, store.getContext().getClassLoader(), true),
-            store, fetch, res);
+    public GenericResultObjectProvider(Class<?> pcClass, JDBCStore store, JDBCFetchConfiguration fetch, Result res) {
+        this(store.getConfiguration().getMappingRepositoryInstance().getMapping(pcClass, true), store, fetch, res);
     }
 
     /**

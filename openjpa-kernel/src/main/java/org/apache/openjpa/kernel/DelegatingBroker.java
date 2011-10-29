@@ -170,14 +170,6 @@ public class DelegatingBroker
         }
     }
 
-    public ClassLoader getClassLoader() {
-        try {
-            return _broker.getClassLoader();
-        } catch (RuntimeException re) {
-            throw translate(re);
-        }
-    }
-
     public LockManager getLockManager() {
         try {
             return _broker.getLockManager();

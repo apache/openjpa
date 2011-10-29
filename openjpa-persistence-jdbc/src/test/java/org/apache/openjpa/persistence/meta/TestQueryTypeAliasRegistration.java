@@ -94,7 +94,7 @@ public class TestQueryTypeAliasRegistration extends SingleEMFTestCase {
         @Override
         public void run() {
             try {
-                repo.getMetaData("MdrTestEntity", Thread.currentThread().getContextClassLoader(), true);
+                repo.getMetaData("MdrTestEntity", true);
             } catch (Exception e) {
                 ex = e;
                 e.printStackTrace();

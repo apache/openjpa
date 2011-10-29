@@ -103,7 +103,7 @@ public class ApplicationIdTool {
         repos.setValidate(repos.VALIDATE_NONE);
         repos.setSourceMode(repos.MODE_MAPPING, false);
         loadObjectIds(repos, true);
-        _meta = repos.getMetaData(type, null, false);
+        _meta = repos.getMetaData(type, false);
         if (_meta != null) {
             _abstract = Modifier.isAbstract(_meta.getDescribedType().
                 getModifiers());
@@ -1335,16 +1335,13 @@ public class ApplicationIdTool {
         }
 
         Configurations.populateConfiguration(conf, opts);
-        ClassLoader loader = conf.getClassResolverInstance().
-            getClassLoader(ApplicationIdTool.class, null);
-        return run(conf, args, flags, loader);
+        return run(conf, args, flags);
     }
 
     /**
      * Run the tool. Returns false if invalid options were given.
      */
-    public static boolean run(OpenJPAConfiguration conf, String[] args,
-        Flags flags, ClassLoader loader)
+    public static boolean run(OpenJPAConfiguration conf, String[] args, Flags flags)
         throws IOException, ClassNotFoundException {
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
         repos.setValidate(repos.VALIDATE_NONE, true);
@@ -1354,11 +1351,11 @@ public class ApplicationIdTool {
         Collection classes;
         if (args.length == 0) {
             log.info(_loc.get("running-all-classes"));
-            classes = repos.loadPersistentTypes(true, loader);
+            classes = repos.loadPersistentTypes(true);
         } else {
             ClassArgParser cap = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
-            cap.setClassLoader(loader);
+            cap.setClassLoader(conf.getClassLoader());
             classes = new HashSet();
             for (int i = 0; i < args.length; i++)
                 classes.addAll(Arrays.asList(cap.parseTypes(args[i])));
@@ -1375,7 +1372,7 @@ public class ApplicationIdTool {
             cls = (Class) itr.next();
             log.info(_loc.get("appid-running", cls));
 
-            meta = repos.getMetaData(cls, null, false);
+            meta = repos.getMetaData(cls, false);
             setObjectIdType(meta, flags, bc);
 
             tool = new ApplicationIdTool(conf, cls, meta);

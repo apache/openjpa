@@ -54,7 +54,7 @@ public class TestSharedUnqualifiedClassNames
     public void testMappedSuperclass() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
-            .getMetaData("SharedName1", getClass().getClassLoader(), true);
+            .getMetaData("SharedName1", true);
         assertEquals(
             org.apache.openjpa.persistence.inheritance.entity.SharedName1.class,
             meta.getDescribedType());
@@ -63,7 +63,7 @@ public class TestSharedUnqualifiedClassNames
     public void testEmbeddable() {
         ClassMetaData meta = emf.getConfiguration()
             .getMetaDataRepositoryInstance()
-            .getMetaData("SharedName2", getClass().getClassLoader(), true);
+            .getMetaData("SharedName2", true);
         assertEquals(
             org.apache.openjpa.persistence.inheritance.entity.SharedName2.class,
             meta.getDescribedType());

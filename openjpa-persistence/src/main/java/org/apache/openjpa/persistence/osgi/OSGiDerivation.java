@@ -18,39 +18,28 @@
  */
 package org.apache.openjpa.persistence.osgi;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-
-import org.osgi.framework.Bundle;
+import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.persistence.PersistenceProductDerivation;
 
 /**
- * This is a simple ClassLoader that delegates to the Bundle
- * and is used by the PersistenceUnitInfo
+ * Derives for OSGi environment. Adds bundle class loader in class loading scheme.
+ * 
+ * @author Pinaki Poddar
  *
  */
-public class BundleDelegatingClassLoader extends ClassLoader {
+public class OSGiDerivation extends PersistenceProductDerivation {
 
-  private final Bundle bundle;
-  
-  public BundleDelegatingClassLoader(Bundle b) {
-    bundle = b;
-  }
-  
-  @Override
-  protected Class<?> findClass(String className) throws ClassNotFoundException {
-    return bundle.loadClass(className);
-  }
+	@Override
+	public void validate() throws Exception {
+		if (!BundleUtils.runningUnderOSGi()) {
+			throw new RuntimeException("Not running in OSGi environment");
+		}
+	}
 
-  @Override
-  protected URL findResource(String resName) {
-    return bundle.getResource(resName);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected Enumeration<URL> findResources(String resName) throws IOException {
-    return bundle.getResources(resName);
-  }
-
+	@Override
+	public boolean beforeConfigurationConstruct(ConfigurationProvider cp) {
+		cp.getClassLoader().addClassLoader(BundleUtils.getBundleClassLoader());
+		super.beforeConfigurationConstruct(cp);
+		return true;
+	}
 }

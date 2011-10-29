@@ -58,10 +58,10 @@ public class TestMetaDataComplete extends SingleEMFTestCase {
 			MetaDataRepository repos = oemf.getConfiguration()
 					.getMetaDataRepositoryInstance();
 
-			entityA = repos.getMetaData(EntityA.class, null, true);
-			entityB = repos.getMetaData(EntityB.class, null, true);
-            derivedA = repos.getMetaData(DerivedA.class, null, true);
-            derivedB = repos.getMetaData(DerivedB.class, null, true);
+			entityA = repos.getMetaData(EntityA.class, true);
+			entityB = repos.getMetaData(EntityB.class, true);
+            derivedA = repos.getMetaData(DerivedA.class, true);
+            derivedB = repos.getMetaData(DerivedB.class, true);
 		}
 	}
 

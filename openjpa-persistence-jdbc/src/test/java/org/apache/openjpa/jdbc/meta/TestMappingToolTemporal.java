@@ -36,8 +36,7 @@ public class TestMappingToolTemporal extends SingleEMTestCase {
         ClassMapping mapping = (ClassMapping)
             ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf))
                 .getConfiguration().getMetaDataRepositoryInstance()
-                .getMetaData("TemporalFieldTypes", getClass().getClassLoader(),
-                        true);
+                .getMetaData("TemporalFieldTypes", true);
 
         assertEquals(java.sql.Types.TIMESTAMP, mapping.getFieldMapping(
                "dateDefaultField").getValueMapping().getColumns()[0].getType());

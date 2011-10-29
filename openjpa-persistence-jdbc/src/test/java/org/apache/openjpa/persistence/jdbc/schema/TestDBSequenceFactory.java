@@ -105,7 +105,7 @@ public class TestDBSequenceFactory
                 for (int i = 0; i < 51; i++)
                     _set.add(seq.next(_broker, 
                         conf.getMetaDataRepositoryInstance().
-                        getMetaData(RuntimeTest1.class, null, true)));
+                        getMetaData(RuntimeTest1.class, true)));
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }

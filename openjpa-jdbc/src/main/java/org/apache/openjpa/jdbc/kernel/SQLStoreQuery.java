@@ -112,12 +112,8 @@ public class SQLStoreQuery
             if (resultMapping == null)
                 _resultMapping = null;
             else {
-                ClassLoader envLoader = ctx.getStoreContext().getClassLoader();
-                MappingRepository repos = q.getStore().getConfiguration().
-                    getMappingRepositoryInstance();
-                _resultMapping = repos.getQueryResultMapping
-                    (ctx.getResultMappingScope(), resultMapping, envLoader,
-                        true);
+                MappingRepository repos = q.getStore().getConfiguration().getMappingRepositoryInstance();
+                _resultMapping = repos.getQueryResultMapping(ctx.getResultMappingScope(), resultMapping, true);
             }
             _meta = candidate;
 

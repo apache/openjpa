@@ -48,7 +48,6 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.datacache.DataCacheMode;
-import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -61,9 +60,11 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.validation.Validator;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
+import static org.apache.openjpa.kernel.MixedLockLevels.*;
 
 /**
  * Sets JPA specification defaults and parses JPA specification XML files.
@@ -78,6 +79,7 @@ import org.xml.sax.SAXException;
  * a named one).
  *
  * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  */
 public class PersistenceProductDerivation 
@@ -90,11 +92,8 @@ public class PersistenceProductDerivation
     public static final String RSRC_DEFAULT = "META-INF/persistence.xml";
     public static final BigDecimal VERSION_1_0 = BigDecimal.valueOf(1.0);
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PersistenceProductDerivation.class);
+    private static final Localizer _loc = Localizer.forPackage(PersistenceProductDerivation.class);
 
-    private HashMap<String, PUNameCollision> _puNameCollisions
-        = new HashMap<String,PUNameCollision>();
     
     public static final String PREFIX = "javax.persistence"; 
     
@@ -104,8 +103,11 @@ public class PersistenceProductDerivation
     
     private static Set<String> _hints = new HashSet<String>();
     
-    // Provider name to filter out PUs that don't belong to this derivation.
-    protected String _providerImplName;
+    /**
+     * The loader used to load resources and classes by name and eventually set into
+     * the configuration.
+     */
+    private final MultiClassLoader _loader;
 
     static {
         _hints.add("javax.persistence.lock.timeout");
@@ -149,8 +151,15 @@ public class PersistenceProductDerivation
         _hints = Collections.unmodifiableSet(_hints);
     }
     
+    /**
+     * Constructs and configures a class loader to be used for loading
+     * resources and classes by their names.
+     */
 	public PersistenceProductDerivation() {
-		_providerImplName = PersistenceProviderImpl.class.getName();
+		_loader = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+		_loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+		_loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
+		_loader.addClassLoader(this.getClass().getClassLoader());
 	}
     
     public void putBrokerFactoryAliases(Map<String, String> m) {
@@ -171,8 +180,7 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public void validate()
-        throws Exception {
+    public void validate() throws Exception {
         // make sure JPA is available
         AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(
             javax.persistence.EntityManagerFactory.class));
@@ -189,26 +197,17 @@ public class PersistenceProductDerivation
         
         conf.addValue(new EntityManagerFactoryValue());
         
-        conf.readLockLevel.setAlias("optimistic", String.valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
-        conf.readLockLevel.setAlias("optimistic-force-increment", String
-            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
-        conf.readLockLevel.setAlias("pessimistic-read", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_READ));
-        conf.readLockLevel.setAlias("pessimistic-write", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_WRITE));
-        conf.readLockLevel.setAlias("pessimistic-force-increment", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+        conf.readLockLevel.setAlias("optimistic",                  String.valueOf(LOCK_OPTIMISTIC));
+        conf.readLockLevel.setAlias("optimistic-force-increment",  String.valueOf(LOCK_OPTIMISTIC_FORCE_INCREMENT));
+        conf.readLockLevel.setAlias("pessimistic-read",            String.valueOf(LOCK_PESSIMISTIC_READ));
+        conf.readLockLevel.setAlias("pessimistic-write",           String.valueOf(LOCK_PESSIMISTIC_WRITE));
+        conf.readLockLevel.setAlias("pessimistic-force-increment", String.valueOf(LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
-        conf.writeLockLevel.setAlias("optimistic", String
-            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC));
-        conf.writeLockLevel.setAlias("optimistic-force-increment", String
-            .valueOf(MixedLockLevels.LOCK_OPTIMISTIC_FORCE_INCREMENT));
-        conf.writeLockLevel.setAlias("pessimistic-read", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_READ));
-        conf.writeLockLevel.setAlias("pessimistic-write", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_WRITE));
-        conf.writeLockLevel.setAlias("pessimistic-force-increment", String
-            .valueOf(MixedLockLevels.LOCK_PESSIMISTIC_FORCE_INCREMENT));
+        conf.writeLockLevel.setAlias("optimistic",                  String.valueOf(LOCK_OPTIMISTIC));
+        conf.writeLockLevel.setAlias("optimistic-force-increment",  String.valueOf(LOCK_OPTIMISTIC_FORCE_INCREMENT));
+        conf.writeLockLevel.setAlias("pessimistic-read",            String.valueOf(LOCK_PESSIMISTIC_READ));
+        conf.writeLockLevel.setAlias("pessimistic-write",           String.valueOf(LOCK_PESSIMISTIC_WRITE));
+        conf.writeLockLevel.setAlias("pessimistic-force-increment", String.valueOf(LOCK_PESSIMISTIC_FORCE_INCREMENT));
 
 
         configureBeanValidation(conf);
@@ -230,8 +229,8 @@ public class PersistenceProductDerivation
      */
     private void configureBeanValidation(OpenJPAConfigurationImpl conf) {
         // Validation defines/adds the following plugins to OpenJPA Configuration
-        conf.validationFactory         = conf.addObject(JPAProperties.VALIDATE_FACTORY); 
-        conf.validator                 = conf.addObject("Validator");
+        conf.validationFactory         = conf.addObject(Object.class, JPAProperties.VALIDATE_FACTORY); 
+        conf.validator                 = conf.addObject(Validator.class, "Validator");
         conf.validationMode            = conf.addString(JPAProperties.VALIDATE_MODE);
         conf.validationGroupPrePersist = conf.addString(JPAProperties.VALIDATE_PRE_PERSIST);
         conf.validationGroupPreUpdate  = conf.addString(JPAProperties.VALIDATE_PRE_UPDATE);
@@ -302,12 +301,10 @@ public class PersistenceProductDerivation
      * Load configuration from the given persistence unit with the specified
      * user properties.
      */
-    public ConfigurationProvider load(PersistenceUnitInfo pinfo, Map m)
-        throws IOException {
+    public ConfigurationProvider load(PersistenceUnitInfo pinfo, Map m) throws IOException {
         if (pinfo == null)
             return null;
-        if (!isOpenJPAPersistenceProvider(pinfo, null)) {
-            warnUnknownProvider(pinfo);
+        if (!isOpenJPAPersistenceProvider(pinfo)) {
             return null;
         }
 
@@ -333,7 +330,7 @@ public class PersistenceProductDerivation
             rsrc = RSRC_DEFAULT;
         
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
-        Boolean ret = load(cp, rsrc, name, m, null, explicit);
+        Boolean ret = load(cp, rsrc, name, m, explicit);
         if (ret != null)
             return (ret.booleanValue()) ? cp : null;
         if (explicit)
@@ -342,8 +339,7 @@ public class PersistenceProductDerivation
         // persistence.xml does not exist; just load map
         PersistenceUnitInfoImpl pinfo = new PersistenceUnitInfoImpl();
         pinfo.fromUserProperties(m);
-        if (!isOpenJPAPersistenceProvider(pinfo, null)) {
-            warnUnknownProvider(pinfo);
+        if (!isOpenJPAPersistenceProvider(pinfo)) {
             return null;
         }
         cp.addProperties(pinfo.toOpenJPAProperties());
@@ -351,27 +347,25 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider load(String rsrc, String anchor, 
-        ClassLoader loader)
-        throws IOException {
+    public ConfigurationProvider load(String rsrc, String anchor)  throws IOException {
         if (rsrc != null && !rsrc.endsWith(".xml"))
             return null;
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
-        if (load(cp, rsrc, anchor, null, loader, true) == Boolean.TRUE)
+        if (load(cp, rsrc, anchor, null, true) == Boolean.TRUE)
             return cp;
         return null;
     }
 
     @Override
-    public ConfigurationProvider load(File file, String anchor) 
-        throws IOException {
+    public ConfigurationProvider load(File file, String anchor) throws IOException {
         if (!file.getName().endsWith(".xml"))
             return null;
 
-        ConfigurationParser parser = new ConfigurationParser(null);
+        ConfigurationParser parser = new ConfigurationParser(_loader, null);
         parser.parse(file);
-        return load(findUnit((List<PersistenceUnitInfoImpl>) 
-            parser.getResults(), anchor, null), null);
+        List<PersistenceUnitInfoImpl> units = (List<PersistenceUnitInfoImpl>) parser.getResults();
+        PersistenceUnitInfoImpl unit = findUnit(units, anchor);
+        return load(unit, null);
     }
 
     @Override
@@ -380,8 +374,8 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInFile(File file) throws IOException {
-        ConfigurationParser parser = new ConfigurationParser(null);
+    public List<String> getAnchorsInFile(File file) throws IOException {
+        ConfigurationParser parser = new ConfigurationParser(_loader, null);
         try {
             parser.parse(file);
             return getUnitNames(parser);
@@ -397,7 +391,7 @@ public class PersistenceProductDerivation
         for (PersistenceUnitInfoImpl unit : units){
         	String provider = unit.getPersistenceProviderClassName();
 			// Only add the PU name if the provider it is ours or not specified.
-			if (provider == null || provider.equals(_providerImplName)) {
+			if (provider == null || provider.indexOf("openjpa") != -1) {
 				names.add(unit.getPersistenceUnitName());
 			} else {
 				// Should trace something, but logging isn't configured yet.
@@ -408,13 +402,11 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInResource(String resource) throws Exception {
-        ConfigurationParser parser = new ConfigurationParser(null);
+    public List<String> getAnchorsInResource(String resource) throws Exception {
+        ConfigurationParser parser = new ConfigurationParser(_loader, null);
         try {
-        	List results = new ArrayList();
-            ClassLoader loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
-            List<URL> urls = getResourceURLs(resource, loader);
+        	List<String> results = new ArrayList<String>();
+            List<URL> urls = getResourceURLs(resource);
             if (urls != null) {
                 for (URL url : urls) {
                     parser.parse(url);
@@ -429,7 +421,7 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public ConfigurationProvider loadGlobals(ClassLoader loader)
+    public ConfigurationProvider loadGlobals()
         throws IOException {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
@@ -451,54 +443,52 @@ public class PersistenceProductDerivation
             return null;
 
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
-        if (load(cp, rsrc, anchor, null, loader, explicit) == Boolean.TRUE)
+        if (load(cp, rsrc, anchor, null, explicit) == Boolean.TRUE)
             return cp;
         return null;
     }
 
     @Override
-    public ConfigurationProvider loadDefaults(ClassLoader loader)
+    public ConfigurationProvider loadDefaults()
         throws IOException {
         ConfigurationProviderImpl cp = new ConfigurationProviderImpl();
-        if (load(cp, RSRC_DEFAULT, null, null, loader, false) == Boolean.TRUE)
+        if (load(cp, RSRC_DEFAULT, null, null, false) == Boolean.TRUE)
             return cp;
         return null;
     }
 
-      /**
-      * This method checks to see if the provided <code>puName</code> was
-      * detected in multiple resources. If a collision is detected, a warning
-      * will be logged and this method will return <code>true</code>.
-      * <p>
-      */
-     public boolean checkPuNameCollisions(Log logger,String puName){
-         PUNameCollision p = _puNameCollisions.get(puName);
-         if (p != null){
-             p.logCollision(logger);
-             return true;
-         }
-         return false;
+     private void checkPuNameCollisions(){
      }
 
-    private static List<URL> getResourceURLs(String rsrc, ClassLoader loader)
+    private List<URL> getResourceURLs(String rsrc)
         throws IOException {
         Enumeration<URL> urls = null;
         try {
-            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, rsrc)); 
+            urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(_loader, rsrc)); 
             if (!urls.hasMoreElements()) {
                 if (!rsrc.startsWith("META-INF"))
-                  urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, "META-INF/" + rsrc));
+                  urls = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(_loader, "META-INF/" + rsrc));
                 if (!urls.hasMoreElements())
                     return null;
             }
         } catch (PrivilegedActionException pae) {
             throw (IOException) pae.getException();
         }
-
-        return Collections.list(urls);
+        List<URL> result = new ArrayList<URL>();
+        for (;urls.hasMoreElements();) {
+        	URL url = urls.nextElement();
+        	if (!result.contains(url)) {
+        		result.add(url);
+        	}
+        }
+        return result;
     }
 
     /**
+     * The core load method to load the configuration resource.
+     * The class loader that loads the configuration resource is remembered by the provider
+     * and later {@link ConfigurationProvider#setInto(Configuration) set into} {@link Configuration}.
+     * <br>
      * Looks through the resources at <code>rsrc</code> for a configuration
      * file that matches <code>name</code> (or an unnamed one if
      * <code>name</code> is <code>null</code>), and loads the XML in the
@@ -508,26 +498,21 @@ public class PersistenceProductDerivation
      * @return {@link Boolean#TRUE} if the resource was loaded, null if it
      * does not exist, or {@link Boolean#FALSE} if it is not for OpenJPA
      */
-    private Boolean load(ConfigurationProviderImpl cp, String rsrc, 
-        String name, Map m, ClassLoader loader, boolean explicit)
+    private Boolean load(ConfigurationProviderImpl cp, String rsrc, String name, Map m, boolean explicit)
         throws IOException {
-        if (loader == null)
-            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-
-        List<URL> urls = getResourceURLs(rsrc, loader);
+        List<URL> urls = getResourceURLs(rsrc);
         if (urls == null || urls.size() == 0)
             return null;
 
-        ConfigurationParser parser = new ConfigurationParser(m);
-        PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name, loader);
+        ConfigurationParser parser = new ConfigurationParser(_loader, m);
+        PersistenceUnitInfoImpl pinfo = parseResources(parser, urls, name);
         if (pinfo == null) {
             if (!explicit)
                 return Boolean.FALSE;
             throw new MissingResourceException(_loc.get("missing-xml-config", 
                 rsrc, String.valueOf(name)).getMessage(), getClass().getName(), rsrc);
-        } else if (!isOpenJPAPersistenceProvider(pinfo, loader)) {
+        } else if (!isOpenJPAPersistenceProvider(pinfo)) {
             if (!explicit) {
-                warnUnknownProvider(pinfo);
                 return Boolean.FALSE;
             }
             throw new MissingResourceException(_loc.get("unknown-provider", 
@@ -540,6 +525,7 @@ public class PersistenceProductDerivation
 
         cp.addProperties(pinfo.toOpenJPAProperties());
         cp.setSource(pinfo.getPersistenceXmlFileUrl().toString());
+        
         return Boolean.TRUE;
     }
 
@@ -549,100 +535,70 @@ public class PersistenceProductDerivation
      * no name given (preferring an unnamed OpenJPA unit to a named one).
      */
     private PersistenceUnitInfoImpl parseResources(ConfigurationParser parser,
-        List<URL> urls, String name, ClassLoader loader)
+        List<URL> urls, String name)
         throws IOException {
         List<PersistenceUnitInfoImpl> pinfos = new ArrayList<PersistenceUnitInfoImpl>();
         for (URL url : urls) {
             parser.parse(url);
             pinfos.addAll((List<PersistenceUnitInfoImpl>) parser.getResults());
-        }
-        return findUnit(pinfos, name, loader);
+            PersistenceUnitInfoImpl pu = null;
+         }
+        return findUnit(pinfos, name);
     }
 
     /**
-     * Find the unit with the given name, or an OpenJPA unit if no name is
-     * given (preferring an unnamed OpenJPA unit to a named one).
+     * Finds the unit with the given name in the given list of persistence unit infos.
+     * Ignores any persistence unit info that does not use OpenJPA as persistence provider.
+     * If the same unit name is found in multiple units, returns the first unit but
+     * records the rest as duplicates.
      */
-    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> 
-        pinfos, String name, ClassLoader loader) {
-        PersistenceUnitInfoImpl ojpa = null;
+    private PersistenceUnitInfoImpl findUnit(List<PersistenceUnitInfoImpl> pinfos, String name) {
+        PUNameCollision _puNameCollisions = null;
         PersistenceUnitInfoImpl result = null;
         for (PersistenceUnitInfoImpl pinfo : pinfos) {
-            // found named unit?
-            if (name != null) {
-                if (name.equals(pinfo.getPersistenceUnitName())){
-                    if (result != null){
-                        this.addPuNameCollision(name, result.getPersistenceXmlFileUrl().toString(),
-                                pinfo.getPersistenceXmlFileUrl().toString());
-
-                    } else {
-                        // Grab a ref to the pinfo that matches the name we're
-                        // looking for. Keep going to look for duplicate pu names.
-                        result = pinfo;
-                    }
-                }
-                continue;
-            }
-
-            if (isOpenJPAPersistenceProvider(pinfo, loader)) {
-                // if no name given and found unnamed unit, return it.  
-                // otherwise record as default unit unless we find a better match later
-                if (StringUtils.isEmpty(pinfo.getPersistenceUnitName()))
-                    return pinfo;
-                if (ojpa == null)
-                    ojpa = pinfo;
-            }
+        	if (!isOpenJPAPersistenceProvider(pinfo)) {
+        		continue;
+        	}
+        	if (name == null || name.equals(pinfo.getPersistenceUnitName())) {
+        		if (result == null) {
+        			result = pinfo;
+        		} else {
+        			if (_puNameCollisions == null) {
+        				_puNameCollisions = new PUNameCollision(name, result, pinfo);
+        			} else {
+        				_puNameCollisions.addDuplicate(pinfo);
+        			}
+        		}
+        	} 
         }
-        if(result!=null){
-            return result;
+        if (_puNameCollisions != null) {
+        	_puNameCollisions.logCollision();
         }
-        return ojpa;
+        return result;
     }
 
     /**
-     * Return whether the given persistence unit uses an OpenJPA provider.
+     * Affirms if the given provider is recognized as an OpenJPA provider.
+     * An empty string or a name containing <tt>"openjpa"</tt> returns true.
      */
-    private static boolean isOpenJPAPersistenceProvider(PersistenceUnitInfo pinfo, ClassLoader loader) {
-        String provider = pinfo.getPersistenceProviderClassName();
-        if (StringUtils.isEmpty(provider) || PersistenceProviderImpl.class.getName().equals(provider))
+    private boolean isOpenJPAPersistenceProvider(PersistenceUnitInfo pinfo) {
+    	String provider = pinfo.getPersistenceProviderClassName();
+        if (StringUtils.isEmpty(provider) || "void".equals(provider) || provider.indexOf("openjpa") != -1)
             return true;
 
-        if (loader == null)
-            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-        try {
-            if (PersistenceProviderImpl.class.isAssignableFrom(Class.forName(provider, false, loader)))
-                return true;
-        } catch (Throwable t) {
-            log(_loc.get("unloadable-provider", provider, t).getMessage());
-            return false;
-        }
+        log(_loc.get("unrecognized-provider", provider).getMessage());
         return false;
     }
 
-    /**
-     * Warn the user that we could only find an unrecognized persistence 
-     * provider.
-     */
-    private static void warnUnknownProvider(PersistenceUnitInfo pinfo) {
-        log(_loc.get("unrecognized-provider", pinfo.getPersistenceProviderClassName()).getMessage());
-    }
     
     /**
-     * Log a message.   
+     * Log a message on the console because no logging mechanism has been configured yet.   
      */
     private static void log(String msg) {
         // at this point logging isn't configured yet
-        System.err.println(msg);
+        System.err.println("WARN: " + msg);
     }
 
-    private void addPuNameCollision(String puName, String file1, String file2){
-        PUNameCollision pun = _puNameCollisions.get(puName);
-        if (pun != null){
-            pun.addCollision(file1, file2);
-        } else {
-            _puNameCollisions.put(puName, new PUNameCollision(puName, file1, file2));
-        }
-    }
     
     /**
      * Custom configuration provider.   
@@ -653,6 +609,7 @@ public class PersistenceProductDerivation
         private String _source;
 
         public ConfigurationProviderImpl() {
+        	super();
         }
 
         public ConfigurationProviderImpl(Map props) {
@@ -666,6 +623,9 @@ public class PersistenceProductDerivation
             _source = source;
         }
 
+        /**
+         * Sets the configuration.
+         */
         @Override
         public void setInto(Configuration conf) {
             if (conf instanceof OpenJPAConfiguration) {
@@ -694,17 +654,17 @@ public class PersistenceProductDerivation
             }
             super.setInto(conf, null);
             
-            // At this point user properties have been loaded into the configuration. Apply any modifications based off
-            // those.
+            // At this point user properties have been loaded into the configuration. 
+            // Apply any modifications based off those.
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
-                // If the datacache is enabled, make sure we have a RemoteCommitProvider
+                // If the data cache is enabled, make sure we have a RemoteCommitProvider
                 String dc = oconf.getDataCache();
                 String rcp = oconf.getRemoteCommitProvider();
-                // If the datacache is set and is something other than false
-                if (dc != null && dc.equals("false") == false) {
+                // If the data cache is set and is something other than false
+                if (!"false".equals(dc)) {
                     // If RCP is null or empty, set it to sjvm.
-                    if (rcp == null || (rcp != null && rcp.equals("") == false)) {
+                    if (StringUtils.isEmpty(rcp)) {
                         oconf.setRemoteCommitProvider("sjvm");
                     }
                 }
@@ -737,8 +697,6 @@ public class PersistenceProductDerivation
         private static final String PERSISTENCE_XSD_1_0 = "persistence_1_0.xsd";
         private static final String PERSISTENCE_XSD_2_0 = "persistence_2_0.xsd";
 
-        private static final Localizer _loc = Localizer.forPackage
-            (ConfigurationParser.class);
 
         private final Map _map;
         private PersistenceUnitInfoImpl _info = null;
@@ -747,7 +705,15 @@ public class PersistenceProductDerivation
         private String _schemaLocation;
         private boolean _excludeUnlistedSet = false;
 
-        public ConfigurationParser(Map map) {
+        /**
+         * Parse configuration information.
+         * 
+         * @param loader Class Loader to load resources. Must not be null.
+         * @param 
+         * @param map
+         */
+        public ConfigurationParser(ClassLoader loader, Map map) {
+        	super(loader);
             _map = map;
             setCaching(false);
             setValidating(true);
@@ -766,8 +732,7 @@ public class PersistenceProductDerivation
                 _persistenceVersion = vp.getVersion();
                 _schemaLocation = vp.getSchemaLocation();
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error", 
-                        _source.toString()).toString());
+                    log(_loc.get("version-check-error", _source.toString()).toString());
             }            
             super.parse(url);
         }
@@ -776,8 +741,7 @@ public class PersistenceProductDerivation
         public void parse(File file)
             throws IOException {
             try {
-                _source = AccessController.doPrivileged(J2DoPrivHelper
-                    .toURLAction(file));
+                _source = AccessController.doPrivileged(J2DoPrivHelper.toURLAction(file));
             } catch (PrivilegedActionException pae) {
                 throw (MalformedURLException) pae.getException();
             }
@@ -788,10 +752,21 @@ public class PersistenceProductDerivation
                 _persistenceVersion = vp.getVersion();
                 _schemaLocation = vp.getSchemaLocation();                
             } catch (Throwable t) {
-                    log(_loc.get("version-check-error", 
-                        _source.toString()).toString());
+                    log(_loc.get("version-check-error", _source.toString()).toString());
             }            
             super.parse(file);
+        }
+        
+        boolean peek(String name, URL fileOrURL) {
+            XMLVersionParser vp = new XMLVersionParser("persistence");
+            try {
+                vp.parse(fileOrURL);
+                _persistenceVersion = vp.getVersion();
+                _schemaLocation = vp.getSchemaLocation();                
+            } catch (Throwable t) {
+                    log(_loc.get("version-check-error", _source.toString()).toString());
+            }            
+            return vp.unitNames().contains(name);
         }
 
         @Override
@@ -930,9 +905,8 @@ public class PersistenceProductDerivation
                     return new BigDecimal(_info.getPersistenceXMLSchemaVersion());
                 }
                 catch (Throwable t) {
-                    log(_loc.get("invalid-version-attribute", 
-                        _info.getPersistenceXMLSchemaVersion(),
-                        VERSION_1_0.toString()).toString());
+                    log(_loc.get("invalid-version-attribute", _info.getPersistenceXMLSchemaVersion(),
+                        VERSION_1_0).toString());
                 }
             }
             // OpenJPA supports persistence files without a version attribute.
@@ -945,32 +919,40 @@ public class PersistenceProductDerivation
     
     
     /**
-     * This private class is used to hold onto information regarding
-     * PersistentUnit name collisions.
+     * Holds the URLs of persistence configuration that contain the same unit name.
      */
-    private static class PUNameCollision{
-        private String _puName;
-        private Set<String> _resources;
+    private static class PUNameCollision {
+    	private final String _puName;
+        private final PersistenceUnitInfoImpl _original;
+        private final Set<PersistenceUnitInfoImpl> _duplicates;
 
-        PUNameCollision(String puName, String file1, String file2) {
-            _resources = new LinkedHashSet<String>();
-            _resources.add(file1);
-            _resources.add(file2);
+        PUNameCollision(String pu, PersistenceUnitInfoImpl original, PersistenceUnitInfoImpl duplicate) {
+        	_puName = pu;
+        	_original = original;
+        	_duplicates = new LinkedHashSet<PersistenceUnitInfoImpl>();
+        	_duplicates.add(duplicate);
 
-            _puName=puName;
         }
         
-        void logCollision(Log logger){
-            if(logger.isWarnEnabled()){
-                logger.warn(_loc.getFatal("dup-pu", new Object[]{_puName,_resources.toString(),	
-                    _resources.iterator().next()}));
-            }
+        void logCollision(){
+        	String duplicates = listDuplicates();
+        	if (_puName == null) {
+        		log(_loc.get("dup-pu-unnamed", _original, duplicates).toString());
+        	} else {
+        		log(_loc.get("dup-pu", _puName, _original, duplicates).toString());
+        	}
         }
         
-        void addCollision(String file1, String file2){
-            _resources.add(file1);
-            _resources.add(file2);
+        void addDuplicate(PersistenceUnitInfoImpl dup){
+        	_duplicates.add(dup);
         }
-
+        
+        String listDuplicates() {
+        	StringBuilder buf = new StringBuilder("\r\n");
+        	for (PersistenceUnitInfoImpl pu : _duplicates) {
+        		buf.append(pu).append("\r\n");
+        	}
+        	return buf.toString();
+        }
     }
 }

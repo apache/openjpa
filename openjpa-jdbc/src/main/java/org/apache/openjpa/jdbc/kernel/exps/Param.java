@@ -81,7 +81,7 @@ public class Param
         Object[] params = ctx.params;
         if (params[_idx] != null && params[_idx] instanceof Class)
             return (ClassMapping) ctx.store.getConfiguration().getMetaDataRepositoryInstance().
-                getMetaData((Class) params[_idx], getClass().getClassLoader(), true);
+                getMetaData((Class) params[_idx], true);
         return null;
     }
 
@@ -126,17 +126,14 @@ public class Param
             pstate.otherLength = other.length(sel, ctx, otherState);
             if (other instanceof Type) {
                 pstate.mapping = ctx.store.getConfiguration().
-                    getMappingRepositoryInstance().getMapping((Class) val,
-                        ctx.store.getContext().getClassLoader(), true);
+                    getMappingRepositoryInstance().getMapping((Class) val, true);
                 pstate.disc = pstate.mapping.getDiscriminator();
                 pstate.discValue = pstate.disc.getValue() != null ? pstate.disc.getValue() : "1";
             }
         } else if (ImplHelper.isManageable(val)) {
             ClassMapping mapping = ctx.store.getConfiguration().
-                getMappingRepositoryInstance().getMapping(val.getClass(),
-                ctx.store.getContext().getClassLoader(), true);
-            pstate.sqlValue = mapping.toDataStoreValue(val,
-                mapping.getPrimaryKeyColumns(), ctx.store);
+                    getMappingRepositoryInstance().getMapping(val.getClass(), true);
+            pstate.sqlValue = mapping.toDataStoreValue(val, mapping.getPrimaryKeyColumns(), ctx.store);
             pstate.otherLength = mapping.getPrimaryKeyColumns().length;
         } else
             pstate.sqlValue = val;

@@ -31,15 +31,18 @@ import org.apache.commons.lang.StringUtils;
  * @author Abe White
  * @see PluginValue
  */
-public class PluginListValue extends ObjectValue {
+public class PluginListValue<T> extends ObjectValue<T[]> {
 
     private static final String[] EMPTY = new String[0];
 
     private String[] _names = EMPTY;
     private String[] _props = EMPTY;
+    
+    private final Class<T> elemType;
 
-    public PluginListValue(String prop) {
-        super(prop);
+    public PluginListValue(Class<T[]> cls, String prop) {
+        super(cls, prop);
+        elemType = (Class<T>)cls.getComponentType();
     }
 
     /**
@@ -81,17 +84,16 @@ public class PluginListValue extends ObjectValue {
     /**
      * Instantiate the plugins as instances of the given class.
      */
-    public Object instantiate(Class<?> elemType, Configuration conf,
-        boolean fatal) {
-        Object[] ret;
-        if (_names.length == 0)
-            ret = (Object[]) Array.newInstance(elemType, 0);
-        else {
-            ret = (Object[]) Array.newInstance(elemType, _names.length);
+    public T[] instantiate(Configuration conf, boolean fatal) {
+        T[] ret;
+        if (_names.length == 0) {
+            ret = (T[])Array.newInstance(elemType, 0);
+        } else {
+            ret = (T[]) Array.newInstance(elemType, _names.length);
             for (int i = 0; i < ret.length; i++) {
-                ret[i] = newInstance(_names[i], elemType, conf, fatal);
-                Configurations.configureInstance(ret[i], conf, _props[i],
-                    getProperty());
+            	PluginValue<T> elem = new PluginValue<T>(elemType, "element", false);
+            	ret[i] = elem.newInstance(_names[i], conf, fatal);
+                Configurations.configureInstance(ret[i], conf, _props[i],  getProperty());
             }
         }
         set(ret, true);
@@ -180,10 +182,6 @@ public class PluginListValue extends ObjectValue {
         _props = props.toArray(new String[props.size()]);
         set(null, true);
         valueChanged();
-    }
-
-    public Class<Object []> getValueType() {
-        return Object[].class;
     }
 
     protected void objectChanged() {

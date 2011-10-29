@@ -32,33 +32,28 @@ import org.apache.openjpa.lib.conf.Configuration;
  *
  * @since 1.1.0
  */
-public class CacheMarshallersValue
-    extends PluginListValue {
+public class CacheMarshallersValue extends PluginListValue<CacheMarshaller> {
 
     private static final String KEY = "CacheMarshallers";
-    private static final CacheMarshaller NO_OP_CACHE_MARSHALLER
-        = new NoOpCacheMarshaller();
-    private static final Localizer _loc =
-        Localizer.forPackage(CacheMarshallersValue.class);
+    private static final CacheMarshaller NO_OP_CACHE_MARSHALLER = new NoOpCacheMarshaller();
+    private static final Localizer _loc = Localizer.forPackage(CacheMarshallersValue.class);
 
     private Configuration _conf;
     private Map<String,CacheMarshaller> _marshallers;
     private boolean _initialized;
 
     public CacheMarshallersValue(Configuration conf) {
-        super(KEY);
+        super(CacheMarshaller[].class, KEY);
         _conf = conf;
         setAlias("default", CacheMarshallerImpl.class.getName());
-        setAlias("none", null);
+        setAlias("none", (String)null);
         setDefault("none");
         setString("none");
         setScope(getClass());
     }
 
-    public Object instantiate(Class<?> elemType, Configuration conf,
-        boolean fatal) {
-        CacheMarshaller[] ms = (CacheMarshaller[])
-            super.instantiate(elemType, conf, fatal);
+    public CacheMarshaller[] instantiate(Configuration conf, boolean fatal) {
+        CacheMarshaller[] ms = super.instantiate(conf, fatal);
         if (ms != null) {
             _marshallers = new HashMap<String,CacheMarshaller>();
             for (int i = 0; i < ms.length; i++) {
@@ -114,7 +109,7 @@ public class CacheMarshallersValue
 
     protected synchronized void initialize() {
         if (!_initialized) {
-            instantiate(CacheMarshaller.class, _conf);
+            instantiate(_conf);
             _initialized = true;
         }
     }

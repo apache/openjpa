@@ -62,14 +62,12 @@ public class PersistenceUnitInfoImpl
     public static final String PERSISTENCE_VERSION = "PersistenceVersion";
     
 
-    private static final Localizer s_loc = Localizer.forPackage
-        (PersistenceUnitInfoImpl.class);
+    private static final Localizer s_loc = Localizer.forPackage(PersistenceUnitInfoImpl.class);
 
     private String _name;
     private final HashMap<Object,Object> _props = new HashMap<Object, Object>();
-    private PersistenceUnitTransactionType _transType =
-        PersistenceUnitTransactionType.RESOURCE_LOCAL;
-
+    private PersistenceUnitTransactionType _transType = PersistenceUnitTransactionType.RESOURCE_LOCAL;
+    private ClassLoader _loader;
     private String _providerClassName;
     private List<String> _mappingFileNames;
     private List<String> _entityClassNames;
@@ -98,8 +96,11 @@ public class PersistenceUnitInfoImpl
     // - an application client jar file
     private URL _root;
 
+    public PersistenceUnitInfoImpl() {
+    }
+    
     public ClassLoader getClassLoader() {
-        return null;
+        return _loader;
     }
 
     public ClassLoader getNewTempClassLoader() {
@@ -569,5 +570,9 @@ public class PersistenceUnitInfoImpl
     
     public void setSharedCacheMode(SharedCacheMode mode) { 
         _sharedCacheMode = mode;
+    }
+    
+    public String toString() {
+    	return getPersistenceXmlFileUrl().toString() + '#' + getPersistenceUnitName();
     }
 }

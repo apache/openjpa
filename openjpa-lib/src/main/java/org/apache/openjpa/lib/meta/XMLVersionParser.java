@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.lib.meta;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -34,16 +37,18 @@ public class XMLVersionParser extends XMLMetaDataParser {
     public static final String VERSION_2_0 = "2.0";
 
     static private final String VERSION_ATTR = "version";
-    static private final String XSI_NS =
-        "http://www.w3.org/2001/XMLSchema-instance";
+    static private final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
     static private final String SCHEMA_LOCATION = "schemaLocation";
 
     private String _rootElement;
     private String _version;
     private String _schemaLocation;
+    private Set<String> _unitNames;
     
     public XMLVersionParser(String rootElement) {
+    	super(null);
         _rootElement = rootElement;
+        _unitNames = new LinkedHashSet<String>();
         setCaching(false);
         setValidating(false);
         setParseText(false);
@@ -61,8 +66,10 @@ public class XMLVersionParser extends XMLMetaDataParser {
             // save the version and schema location attributes
             _version = attrs.getValue("", VERSION_ATTR);
             _schemaLocation = attrs.getValue(XSI_NS, SCHEMA_LOCATION);
-            // ignore remaining content
-            ignoreContent(true);
+        } else if (name.equals("persistence-unit")) {
+        	 _unitNames.add(attrs.getValue("name"));
+             // ignore remaining content
+             ignoreContent(true);
         }
         return false;
     }
@@ -81,5 +88,9 @@ public class XMLVersionParser extends XMLMetaDataParser {
      */
     public String getSchemaLocation() {
         return _schemaLocation;
+    }
+    
+    public Set<String> unitNames() {
+    	return _unitNames;
     }
 }

@@ -111,7 +111,7 @@ public class TestPersistentGraph extends SingleEMFTestCase {
     FieldMapping getFieldMapping(Class<?> pcClass, String field) {
         MappingRepository repos = (MappingRepository) emf.getConfiguration()
                 .getMetaDataRepositoryInstance();
-        ClassMapping cmd = repos.getMapping(pcClass, null, true);
+        ClassMapping cmd = repos.getMapping(pcClass, true);
         assertNotNull("No metadata found for " + pcClass, cmd);
         FieldMapping fmd = cmd.getFieldMapping(field);
         assertNotNull("No metadata found for " + pcClass.getName() + "." + field + " Fields are "
@@ -150,8 +150,8 @@ public class TestPersistentGraph extends SingleEMFTestCase {
 
     FieldStrategy getStrategy(Class<?> cls, String field) {
         MetaDataRepository repos = emf.getConfiguration().getMetaDataRepositoryInstance();
-        ClassMetaData cmd = repos.getMetaData(cls, null, true);
-        assertNotNull("No metadat found for " + cls, cmd);
+        ClassMetaData cmd = repos.getMetaData(cls, true);
+        assertNotNull("No metadata found for " + cls, cmd);
         FieldMetaData fmd = cmd.getField(field);
         assertNotNull("No metadata found for " + cls.getName() + "." + field + " Fields are "
                 + Arrays.toString(cmd.getFieldNames()), fmd);

@@ -46,36 +46,33 @@ public class TestMapKey
 
     public void testDefaultMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
-            .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
-                null, true);
+            .getMappingRepositoryInstance().getMapping(AnnoTest1.class, true);
         FieldMapping fm = mapping.getFieldMapping("defaultMapKey");
         assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
         assertEquals("pk", fm.getKey().getValueMappedBy());
-        assertEquals(mapping.getRepository().getMetaData(Flat1.class, null,
-            true).getField("pk"), fm.getKey().getValueMappedByMetaData());
+        assertEquals(mapping.getRepository().getMetaData(Flat1.class, true).getField("pk"), 
+        		fm.getKey().getValueMappedByMetaData());
     }
 
     public void testNamedMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
-            .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
-                null, true);
+            .getMappingRepositoryInstance().getMapping(AnnoTest1.class, true);
         FieldMapping fm = mapping.getFieldMapping("namedMapKey");
         assertTrue(fm.getStrategy() instanceof RelationMapTableFieldStrategy);
         assertEquals("basic", fm.getKey().getValueMappedBy());
-        assertEquals(mapping.getRepository().getMetaData(Flat1.class, null,
-            true).getField("basic"), fm.getKey().getValueMappedByMetaData());
+        assertEquals(mapping.getRepository().getMetaData(Flat1.class, true)
+        		.getField("basic"), fm.getKey().getValueMappedByMetaData());
     }
 
     public void testInverseOwnerMapKeyMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration())
-            .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
-                null, true);
+            .getMappingRepositoryInstance().getMapping(AnnoTest1.class, true);
         FieldMapping fm = mapping.getFieldMapping("inverseOwnerMapKey");
         assertTrue(fm.getStrategy() instanceof
             RelationMapInverseKeyFieldStrategy);
         assertEquals("basic", fm.getKey().getValueMappedBy());
         assertEquals(mapping.getRepository().getMetaData(AnnoTest2.class,
-            null, true).getField("basic"), fm.getKey().
+            true).getField("basic"), fm.getKey().
             getValueMappedByMetaData());
     }
 

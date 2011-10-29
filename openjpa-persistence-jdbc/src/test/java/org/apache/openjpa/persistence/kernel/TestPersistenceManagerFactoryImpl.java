@@ -162,11 +162,11 @@ public class TestPersistenceManagerFactoryImpl extends BaseKernelTest {
             assertTrue("no listeners defined added to Runtimetest4",
                 broker.getLifecycleEventManager().hasLoadListeners(
                     new RuntimeTest4("foo"),
-                    repos.getMetaData(RuntimeTest4.class, null, true)));
+                    repos.getMetaData(RuntimeTest4.class, true)));
             assertFalse("there should be listeners def for runtimetest1",
                 broker.getLifecycleEventManager().hasLoadListeners
                     (new RuntimeTest1(), repos.getMetaData
-                        (RuntimeTest1.class, null, true)));
+                        (RuntimeTest1.class, true)));
             broker.close();
         } finally {
             pmfSPI.removeLifecycleListener(listener);

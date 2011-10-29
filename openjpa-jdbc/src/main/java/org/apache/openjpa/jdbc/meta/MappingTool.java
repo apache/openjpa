@@ -473,7 +473,7 @@ public class MappingTool
             if (_dropCls != null && !_dropCls.isEmpty()) {
                 Class<?>[] cls = (Class[]) _dropCls.toArray
                     (new Class[_dropCls.size()]);
-                if (!io.drop(cls, _mode, null))
+                if (!io.drop(cls, _mode))
                     _log.warn(_loc.get("bad-drop", _dropCls));
             }
 
@@ -608,7 +608,7 @@ public class MappingTool
         SequenceMetaData smd = mapping.getIdentitySequenceMetaData();
         Seq seq = null;
         if (smd != null)
-            seq = smd.getInstance(null);
+            seq = smd.getInstance();
         else if (mapping.getIdentityStrategy() == ValueStrategies.NATIVE
             || (mapping.getIdentityStrategy() == ValueStrategies.NONE
             && mapping.getIdentityType() == ClassMapping.ID_DATASTORE))
@@ -625,7 +625,7 @@ public class MappingTool
         for (int i = 0; i < fmds.length; i++) {
             smd = fmds[i].getValueSequenceMetaData();
             if (smd != null) {
-                seq = smd.getInstance(null);
+                seq = smd.getInstance();
                 if (seq instanceof JDBCSeq)
                     ((JDBCSeq) seq).addSchema(mapping, group);
             } else if (fmds[i].getEmbeddedMapping() != null)
@@ -679,7 +679,7 @@ public class MappingTool
         boolean validate) {
         // this will parse all possible metadata rsrcs looking for cls, so
         // will detect if p-aware
-        ClassMapping mapping = repos.getMapping(cls, null, false);
+        ClassMapping mapping = repos.getMapping(cls, false);
         if (mapping != null)
             return mapping;
         if (!validate || cls.isInterface() 
@@ -790,7 +790,7 @@ public class MappingTool
         repos.setStrategyInstaller(new RuntimeStrategyInstaller(repos));
         ClassMapping mapping = null;
         try {
-            mapping = repos.getMapping(cls, null, false);
+            mapping = repos.getMapping(cls, false);
         } catch (Exception e) {
         }
 
@@ -985,8 +985,7 @@ public class MappingTool
             opts.setProperty("schemas", schemas);
 
         Configurations.populateConfiguration(conf, opts);
-        ClassLoader loader = conf.getClassResolverInstance().
-            getClassLoader(MappingTool.class, null);
+        ClassLoader loader = conf.getClassLoader();
         if (flags.meta && ACTION_ADD.equals(flags.action))
             flags.metaDataFile = Files.getFile(fileName, loader);
         else
@@ -1022,13 +1021,12 @@ public class MappingTool
             if (ACTION_IMPORT.equals(flags.action))
                 return false;
             log.info(_loc.get("running-all-classes"));
-            classes = conf.getMappingRepositoryInstance().
-                loadPersistentTypes(true, loader);
+            classes = conf.getMappingRepositoryInstance().loadPersistentTypes(true);
         } else {
             classes = new HashSet<Class<?>>();
             ClassArgParser classParser = conf.getMetaDataRepositoryInstance().
                 getMetaDataFactory().newClassArgParser();
-            classParser.setClassLoader(loader);
+            classParser.setClassLoader(conf.getClassLoader());
             Class<?>[] parsed;
             for (int i = 0; i < args.length; i++) {
                 parsed = classParser.parseTypes(args[i]);

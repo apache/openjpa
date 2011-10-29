@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
+import org.apache.openjpa.enhance.PCEnhancer.Flags;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.BytecodeWriter;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -46,13 +47,13 @@ public class TestEnhancementWithMultiplePUs
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
+        conf.addClassLoader(loader);
         Project project = new Project();
 
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
+        String className = "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
         BCClass bc = assertNotPC(loader, project, className);
 
-        PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
+        PCEnhancer enhancer = new PCEnhancer(conf, bc, repos);
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
         assertTrue(Arrays.asList(bc.getInterfaceNames()).contains(
@@ -79,11 +80,11 @@ public class TestEnhancementWithMultiplePUs
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
+        conf.addClassLoader(loader);
         Project project = new Project();
 
         // make sure that the class is not already enhanced for some reason
-        String className =
-            "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
+        String className = "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
         BCClass bc = assertNotPC(loader, project, className);
 
         // build up a writer that just stores to a list so that we don't
@@ -98,8 +99,7 @@ public class TestEnhancementWithMultiplePUs
             }
         };
 
-        PCEnhancer.run(conf, null, new PCEnhancer.Flags(), repos, writer,
-            loader);
+        PCEnhancer.run(conf, null, new PCEnhancer.Flags(), repos, writer);
 
         // ensure that we don't attempt to process classes listed in other PUs
         assertEquals(1, written.size());
@@ -108,7 +108,13 @@ public class TestEnhancementWithMultiplePUs
         assertTrue(written.contains(className));
     }
 
-    public void testEnhancementOfAllPUsWithinAResource()
+    
+    
+    /**
+     * This test is retired due to <A href="https://issues.apache.org/jira/browse/OPENJPA-2057">
+     * classloading changes</A>.
+     */
+    public void xtestEnhancementOfAllPUsWithinAResource()
         throws IOException {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         Options opts = new Options();
@@ -118,6 +124,7 @@ public class TestEnhancementWithMultiplePUs
         ClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(
                 getClass().getClassLoader()));
+        conf.addClassLoader(loader);
         Project project = new Project();
 
         // make sure that the classes is not already enhanced for some reason
@@ -147,8 +154,14 @@ public class TestEnhancementWithMultiplePUs
         opts.setProperty("MetaDataRepository", 
             "org.apache.openjpa.enhance.RestrictedMetaDataRepository(excludedTypes=" +
             "org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess)");
+        RestrictedMetaDataRepository rmdr = new RestrictedMetaDataRepository();
+        rmdr.setConfiguration(conf);
+        rmdr.setMetaDataFactory(repos.getMetaDataFactory());
+        
+        rmdr.setExcludedTypes("org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess");
         opts.put(PCEnhancer.class.getName() + "#bytecodeWriter", writer);
-        PCEnhancer.run(null, opts);
+        PCEnhancer.run(conf, null, new Flags(), rmdr, writer);
+//        PCEnhancer.run(null, opts);
 
         // ensure that we do process the classes listed in the PUs
         assertTrue(written.contains(

@@ -62,7 +62,6 @@ public class TestMetaDataValueIndicator
     }
     
     public void setUp() {
-        // ### I hate that we have to do this
         Class c = MultiE.class;
         c = MultiF.class;
         
@@ -70,16 +69,13 @@ public class TestMetaDataValueIndicator
         
         eMapping =
             (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(MultiE.class,
-            pm.getClassLoader(), true);
+            getMetaDataRepositoryInstance().getMetaData(MultiE.class, true);
         fMapping =
             (ClassMapping) ((OpenJPAEntityManagerSPI) pm).getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(MultiF.class,
-            pm.getClassLoader(), true);
+            getMetaDataRepositoryInstance().getMetaData(MultiF.class, true);
     }
     
-    public void tearDown()
-    throws Exception {
+    public void tearDown() throws Exception {
         if (pm.getTransaction().isActive())
             pm.getTransaction().rollback();
         pm.close();

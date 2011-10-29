@@ -73,8 +73,8 @@ public class TestDynamicClassRegistration
         // trigger class initialization
         ManagedClassSubclasser.prepareUnenhancedClasses(
             emf1.getConfiguration(),
-            Collections.singleton(UnenhancedFieldAccess.class),
-            null);
+            Collections.singleton(UnenhancedFieldAccess.class)
+            );
 
         ClassMetaData meta =
             JPAFacadeHelper.getMetaData(emf1, UnenhancedFieldAccess.class);

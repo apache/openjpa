@@ -53,11 +53,11 @@ public class TestXMLPersistenceMetaDataSerializer
         throws Exception {
         OpenJPAConfiguration conf = new OpenJPAConfigurationImpl();
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
-        repos.getMetaData(MetaTest5.class, null, true);
-        repos.getMetaData(MetaTest3.class, null, true);
-        repos.getMetaData(MetaTest2.class, null, true);
-        repos.getMetaData(MetaTest1.class, null, true);
-        repos.getMetaData(MetaTest6.class, null, true);
+        repos.getMetaData(MetaTest5.class, true);
+        repos.getMetaData(MetaTest3.class, true);
+        repos.getMetaData(MetaTest2.class, true);
+        repos.getMetaData(MetaTest1.class, true);
+        repos.getMetaData(MetaTest6.class, true);
 
         XMLPersistenceMetaDataSerializer ser =
             new XMLPersistenceMetaDataSerializer(conf);

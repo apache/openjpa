@@ -48,8 +48,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  */
 public class Serialization {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (Serialization.class);
+    private static final Localizer _loc = Localizer.forPackage(Serialization.class);
 
     /**
      * Serialize a value that might contain persistent objects. Replaces
@@ -58,8 +57,7 @@ public class Serialization {
     public static byte[] serialize(Object val, StoreContext ctx) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try {
-            ObjectOutputStream objs = new PersistentObjectOutputStream(bytes,
-                ctx);
+            ObjectOutputStream objs = new PersistentObjectOutputStream(bytes, ctx);
             objs.writeObject(val);
             objs.flush();
             return bytes.toByteArray();
@@ -100,8 +98,7 @@ public class Serialization {
         /**
          * Constructor; supply underlying stream.
          */
-        public PersistentObjectOutputStream(OutputStream delegate,
-            StoreContext ctx)
+        public PersistentObjectOutputStream(OutputStream delegate, StoreContext ctx)
             throws IOException {
             super(delegate);
             _ctx = ctx;
@@ -155,8 +152,7 @@ public class Serialization {
          * Constructor; supply source stream and broker to
          * use for persistent object lookups.
          */
-        public PersistentObjectInputStream(InputStream delegate,
-            StoreContext ctx)
+        public PersistentObjectInputStream(InputStream delegate, StoreContext ctx)
             throws IOException {
             super(delegate);
             _ctx = ctx;
@@ -170,7 +166,7 @@ public class Serialization {
 
         protected void addContextClassLoaders(MultiClassLoader loader) {
             super.addContextClassLoaders(loader);
-            loader.addClassLoader(_ctx.getClassLoader());
+            loader.addClassLoader(_ctx.getConfiguration().getClassLoader());
         }
 
         protected Object resolveObject(Object obj) {

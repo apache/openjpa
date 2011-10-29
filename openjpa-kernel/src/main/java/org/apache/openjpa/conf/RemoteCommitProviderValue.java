@@ -35,7 +35,7 @@ import org.apache.openjpa.lib.util.Options;
  * @nojavadoc
  */
 public class RemoteCommitProviderValue
-    extends PluginValue {
+    extends PluginValue<RemoteCommitProvider> {
 
     private static final String[] ALIASES = new String[]{
         "sjvm", "org.apache.openjpa.event.SingleJVMRemoteCommitProvider",
@@ -47,7 +47,7 @@ public class RemoteCommitProviderValue
     private Boolean _transmitPersIds = null;
 
     public RemoteCommitProviderValue() {
-        super("RemoteCommitProvider", true);
+        super(RemoteCommitProvider.class, "RemoteCommitProvider", true);
         setAliases(ALIASES);
     }
 
@@ -67,7 +67,7 @@ public class RemoteCommitProviderValue
      * The cached provider.
      */
     public RemoteCommitProvider getProvider() {
-        return (RemoteCommitProvider) get();
+        return get();
     }
 
     /**
@@ -101,10 +101,8 @@ public class RemoteCommitProviderValue
     /**
      * Instantiate the provider.
      */
-    public RemoteCommitProvider instantiateProvider(Configuration conf,
-        boolean fatal) {
-        return (RemoteCommitProvider) instantiate(RemoteCommitProvider.class,
-            conf, fatal);
+    public RemoteCommitProvider instantiateProvider(Configuration conf, boolean fatal) {
+        return instantiate(conf, fatal);
     }
 
     /**
@@ -119,8 +117,8 @@ public class RemoteCommitProviderValue
     /**
      * Override to keep decorators out of transport configuration.
      */
-    public Object instantiate(Class type, Configuration conf, boolean fatal) {
-        Object obj = newInstance(getClassName(), type, conf, fatal);
+    public RemoteCommitProvider instantiate(Configuration conf, boolean fatal) {
+    	RemoteCommitProvider obj = newInstance(getClassName(), conf, fatal);
         parseOptions();
         Configurations.configureInstance(obj, conf, _opts, getProperty());
         set(obj, true);

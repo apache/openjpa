@@ -384,17 +384,14 @@ public abstract class CacheTest extends AbstractTestCase {
         DataCache cache = cacheManager(factory).getSystemDataCache();
         assertEquals(defaultCache, cache);
 
-        ClassMetaData aMeta = repos.getMetaData(CacheObjectA.class, null, true);
-        ClassMetaData aChild1Meta = repos.getMetaData(CacheObjectAChild1.class,
-            null, true);
-        ClassMetaData aChild2Meta = repos.getMetaData(CacheObjectAChild2.class,
-            null, true);
-        ClassMetaData bMeta = repos.getMetaData(CacheObjectB.class, null, true);
-        ClassMetaData bChild1Meta = repos.getMetaData(CacheObjectBChild1.class,
-            null, true);
-        ClassMetaData cMeta = repos.getMetaData(CacheObjectC.class, null, true);
-        ClassMetaData dMeta = repos.getMetaData(CacheObjectD.class, null, true);
-        ClassMetaData eMeta = repos.getMetaData(CacheObjectE.class, null, true);
+        ClassMetaData aMeta = repos.getMetaData(CacheObjectA.class, true);
+        ClassMetaData aChild1Meta = repos.getMetaData(CacheObjectAChild1.class, true);
+        ClassMetaData aChild2Meta = repos.getMetaData(CacheObjectAChild2.class, true);
+        ClassMetaData bMeta = repos.getMetaData(CacheObjectB.class, true);
+        ClassMetaData bChild1Meta = repos.getMetaData(CacheObjectBChild1.class, true);
+        ClassMetaData cMeta = repos.getMetaData(CacheObjectC.class, true);
+        ClassMetaData dMeta = repos.getMetaData(CacheObjectD.class, true);
+        ClassMetaData eMeta = repos.getMetaData(CacheObjectE.class, true);
 
         cache = aMeta.getDataCache();
         assertEquals(defaultCache, cache);
@@ -460,7 +457,7 @@ public abstract class CacheTest extends AbstractTestCase {
         Object relationOid = em.getObjectId(a.getRelatedObject());
         relationOid = new Id(CacheObjectA.class, relationOid.toString());
 
-        ClassMetaData meta = repos.getMetaData(CacheObjectA.class, null, true);
+        ClassMetaData meta = repos.getMetaData(CacheObjectA.class, true);
         DataCache cache = meta.getDataCache();
 
         // drop the related data from the cache
@@ -912,7 +909,7 @@ public abstract class CacheTest extends AbstractTestCase {
                 ((((OpenJPAEntityManagerFactorySPI) factory2))
                 .getConfiguration()).getMetaDataRepositoryInstance();
             ClassMetaData meta = repos2
-                .getMetaData(CacheObjectA.class, em2.getClassLoader(), true);
+                .getMetaData(CacheObjectA.class, true);
             cache = meta.getDataCache();
             assertTrue(cache.contains(oidwithclass));
 
@@ -1622,8 +1619,7 @@ public abstract class CacheTest extends AbstractTestCase {
             ClassMetaData meta =
                 ((OpenJPAEntityManagerFactorySPI) OpenJPAPersistence
                     .cast(factory)).getConfiguration()
-                    .getMetaDataRepositoryInstance().getMetaData(a.getClass(),
-                    null, false);
+                    .getMetaDataRepositoryInstance().getMetaData(a.getClass(), false);
             FieldMetaData fmd = meta.getField("date");
             d = (Date) data.getData(fmd.getIndex());
             Broker broker = JPAFacadeHelper.toBroker(em1);

@@ -135,11 +135,11 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
             return;
         
         ClassMapping aMapping = conf.getMappingRepositoryInstance().
-                getMapping(SeqA.class, null, true);
+                getMapping(SeqA.class, true);
         ClassMapping bMapping = conf.getMappingRepositoryInstance().
-                getMapping(SeqB.class, null, true);
+                getMapping(SeqB.class, true);
         ClassMapping cMapping = conf.getMappingRepositoryInstance().
-                getMapping(SeqC.class, null, true);
+                getMapping(SeqC.class, true);
         DataSource ds = conf.getDataSource2(null);
         
         // hold a and c and start b
@@ -192,7 +192,7 @@ public class TestClassSequenceFactory extends BaseJDBCTest{
             try {
                 Seq seq = _conf.getSequenceInstance();
                 ClassMapping mapping = _conf.getMappingRepositoryInstance().
-                        getMapping(SeqA.class, null, true);
+                        getMapping(SeqA.class, true);
                 for (int i = 0; i < 51; i++)
                     _set.add(seq.next(_broker, mapping));
             } catch (Exception e) {

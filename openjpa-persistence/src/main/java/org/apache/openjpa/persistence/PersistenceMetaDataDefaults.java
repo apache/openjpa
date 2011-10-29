@@ -309,7 +309,7 @@ public class PersistenceMetaDataDefaults
     	MetaDataRepository repos = meta.getRepository();
     	ClassMetaData supMeta = repos.getCachedMetaData(sup);
     	if (supMeta == null)
-    		supMeta = repos.getMetaData(sup, null, false);
+    		supMeta = repos.getMetaData(sup, false);
     	return supMeta;
     }
 

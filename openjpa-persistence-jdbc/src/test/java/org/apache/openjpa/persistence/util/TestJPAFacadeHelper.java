@@ -57,7 +57,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     }
 
     public void testEmbeddedId() throws Exception {
-        ClassMetaData cmd = repo.getMetaData(EmbeddedIdEntity.class, null, true);
+        ClassMetaData cmd = repo.getMetaData(EmbeddedIdEntity.class, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EmbeddedIdEntity());
             fail("Didn't fail!");
@@ -70,7 +70,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     }
 
     public void testCompositeId() throws Exception {
-        ClassMetaData cmd = repo.getMetaData(EntityWithCompositeId.class, null, true);
+        ClassMetaData cmd = repo.getMetaData(EntityWithCompositeId.class, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EntityWithCompositeId());
             fail("Didn't fail!");
@@ -83,7 +83,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     }
 
     public void testBasic() throws Exception {
-        ClassMetaData cmd = repo.getMetaData(BasicEntity.class, null, true);
+        ClassMetaData cmd = repo.getMetaData(BasicEntity.class, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new BasicEntity());
             fail("Didn't fail!");
@@ -103,7 +103,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     }
 
     public void testDerivedId() throws Exception {
-        ClassMetaData cmd = repo.getMetaData(EDSQLDateID.class, null, true);
+        ClassMetaData cmd = repo.getMetaData(EDSQLDateID.class, true);
         try {
             JPAFacadeHelper.toOpenJPAObjectId(cmd, new EDSQLDateID());
             fail("Didn't fail!");
@@ -116,7 +116,7 @@ public class TestJPAFacadeHelper extends SingleEMFTestCase {
     }
 
     public void testNoId() throws Exception {
-        ClassMetaData cmd = repo.getMetaData(AllFieldTypes.class, null, true);
+        ClassMetaData cmd = repo.getMetaData(AllFieldTypes.class, true);
         try {
             // Don't parameterize this collection to force the JVM to use the 
             // ...(ClassMetaData meta, Collection<Object> oids) method sig.

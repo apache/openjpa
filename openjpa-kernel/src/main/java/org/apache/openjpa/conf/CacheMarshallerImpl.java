@@ -182,8 +182,7 @@ public class CacheMarshallerImpl
         throws InstantiationException, IllegalAccessException {
         String name = Configurations.getClassName(policy);
         String props = Configurations.getProperties(policy);
-        _validationPolicy = (ValidationPolicy)
-            Configurations.newInstance(name, _conf, props, null);
+        _validationPolicy = (ValidationPolicy) Configurations.newInstance(name, _conf, props);
     }
 
     public ValidationPolicy getValidationPolicy() {
@@ -218,8 +217,7 @@ public class CacheMarshallerImpl
 
     private void setInputUrlFromResourceLocation() {
         try {
-            ClassLoader cl = _conf.getClassResolverInstance()
-                .getClassLoader(getClass(), null);
+            ClassLoader cl = _conf.getClassLoader();
             List list = new ArrayList();
             for (Enumeration e = cl.getResources(_inputResourceLocation);
                 e.hasMoreElements(); )

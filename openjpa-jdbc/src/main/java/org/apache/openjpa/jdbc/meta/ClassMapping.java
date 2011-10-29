@@ -209,8 +209,7 @@ public class ClassMapping
             try {
                 Class dtype = cls.getDiscriminator().getClass(store, cls, res);
                 if (dtype != cls.getDescribedType())
-                  dcls = cls.getMappingRepository().getMapping(dtype, 
-                    store.getContext().getClassLoader(), true); 
+                  dcls = cls.getMappingRepository().getMapping(dtype, true); 
             } catch (Exception e) {
                 // intentionally ignored
             }

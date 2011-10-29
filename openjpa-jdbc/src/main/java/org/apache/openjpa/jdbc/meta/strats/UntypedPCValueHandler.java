@@ -113,9 +113,7 @@ public class UntypedPCValueHandler
         String oidStr = str.substring(idx + 1);
 
         StoreContext ctx = store.getContext();
-        ClassLoader loader = store.getConfiguration().
-            getClassResolverInstance().getClassLoader(vm.getType(),
-            ctx.getClassLoader());
+        ClassLoader loader = store.getConfiguration().getClassLoader();
         Class cls = null;
         try {
             cls = Class.forName(clsName, true, loader);

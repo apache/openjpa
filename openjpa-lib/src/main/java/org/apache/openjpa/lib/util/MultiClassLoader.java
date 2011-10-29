@@ -23,6 +23,7 @@ import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -47,11 +48,10 @@ public class MultiClassLoader extends ClassLoader {
     /**
      * The standard system class loader.
      */
-    public static final ClassLoader SYSTEM_LOADER =
-        AccessController.doPrivileged(
+    public static final ClassLoader SYSTEM_LOADER = AccessController.doPrivileged(
             J2DoPrivHelper.getSystemClassLoaderAction());
 
-    private List _loaders = new ArrayList(5);
+    private List<ClassLoader> _loaders = new ArrayList<ClassLoader>(5);
 
     /**
      * Constructor; initializes the loader with an empty list of delegates.
@@ -81,12 +81,12 @@ public class MultiClassLoader extends ClassLoader {
     public ClassLoader[] getClassLoaders() {
         ClassLoader[] loaders = new ClassLoader[size()];
         ClassLoader loader;
-        Iterator itr = _loaders.iterator();
+        Iterator<ClassLoader> itr = _loaders.iterator();
         for (int i = 0; i < loaders.length; i++) {
-            loader = (ClassLoader) itr.next();
-            if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getContextClassLoaderAction());
+            loader = itr.next();
+            if (loader == THREAD_LOADER) {
+                loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            }
             loaders[i] = loader;
         }
         return loaders;
@@ -96,10 +96,10 @@ public class MultiClassLoader extends ClassLoader {
      * Return the class loader at the given index.
      */
     public ClassLoader getClassLoader(int index) {
-        ClassLoader loader = (ClassLoader) _loaders.get(index);
-        if (loader == THREAD_LOADER)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader loader = _loaders.get(index);
+        if (loader == THREAD_LOADER) {
+            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        }
         return loader;
     }
 
@@ -125,7 +125,7 @@ public class MultiClassLoader extends ClassLoader {
         _loaders.add(index, loader);
         return true;
     }
-
+    
     /**
      * Set the class loaders of this loader to those of the given loader.
      */
@@ -146,8 +146,8 @@ public class MultiClassLoader extends ClassLoader {
 
         // use iterator so that the thread loader is not resolved
         boolean added = false;
-        for (Iterator itr = multi._loaders.iterator(); itr.hasNext();) {
-            if (addClassLoader(index, (ClassLoader) itr.next())) {
+        for (Iterator<ClassLoader> itr = multi._loaders.iterator(); itr.hasNext();) {
+            if (addClassLoader(index, itr.next())) {
                 index++;
                 added = true;
             }
@@ -166,8 +166,8 @@ public class MultiClassLoader extends ClassLoader {
 
         // use iterator so that the thread loader is not resolved
         boolean added = false;
-        for (Iterator itr = multi._loaders.iterator(); itr.hasNext();)
-            added = addClassLoader((ClassLoader) itr.next()) || added;
+        for (Iterator<ClassLoader> itr = multi._loaders.iterator(); itr.hasNext();)
+            added = addClassLoader(itr.next()) || added;
         return added;
     }
 
@@ -195,19 +195,18 @@ public class MultiClassLoader extends ClassLoader {
     }
 
     /**
-     * Return true if there are no internal class laoders.
+     * Return true if there are no internal class loaders.
      */
     public boolean isEmpty() {
         return _loaders.isEmpty();
     }
 
-    protected Class findClass(String name) throws ClassNotFoundException {
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
         ClassLoader loader;
-        for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
-            loader = (ClassLoader) itr.next();
+        for (Iterator<ClassLoader> itr = _loaders.iterator(); itr.hasNext();) {
+            loader = itr.next();
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getContextClassLoaderAction());
+                loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             try {
                 return Class.forName(name, false, loader);
             } catch (Throwable t) {
@@ -219,17 +218,15 @@ public class MultiClassLoader extends ClassLoader {
     protected URL findResource(String name) {
         ClassLoader loader;
         URL rsrc;
-        for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
-            loader = (ClassLoader) itr.next();
+        for (Iterator<ClassLoader> itr = _loaders.iterator(); itr.hasNext();) {
+            loader = itr.next();
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getContextClassLoaderAction());
+                loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
 
             if (loader == null) // skip 
                 continue;
 
-            rsrc = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourceAction(loader, name)); 
+            rsrc = AccessController.doPrivileged(J2DoPrivHelper.getResourceAction(loader, name)); 
             if (rsrc != null)
                 return rsrc;
         }
@@ -238,21 +235,19 @@ public class MultiClassLoader extends ClassLoader {
 
     protected Enumeration findResources(String name) throws IOException {
         ClassLoader loader;
-        Enumeration rsrcs;
+        Enumeration<?> rsrcs;
         Object rsrc;
-        Vector all = new Vector();
-        for (Iterator itr = _loaders.iterator(); itr.hasNext();) {
-            loader = (ClassLoader) itr.next();
+        Vector<Object> all = new Vector<Object>();
+        for (Iterator<ClassLoader> itr = _loaders.iterator(); itr.hasNext();) {
+            loader = itr.next();
             if (loader == THREAD_LOADER)
-                loader = AccessController.doPrivileged(
-                    J2DoPrivHelper.getContextClassLoaderAction());
+                loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
 
             if (loader == null) // skip
                 continue;
 
             try {
-                rsrcs = AccessController.doPrivileged(
-                    J2DoPrivHelper.getResourcesAction(loader, name)); 
+                rsrcs = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader, name)); 
                 while (rsrcs.hasMoreElements()) {
                     rsrc = rsrcs.nextElement();
                     if (!all.contains(rsrc))
@@ -275,5 +270,9 @@ public class MultiClassLoader extends ClassLoader {
 
     public int hashCode() {
         return _loaders.hashCode();
+    }
+    
+    public String toString() {
+    	return _loaders.toString();
     }
 }

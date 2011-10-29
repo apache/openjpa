@@ -18,37 +18,51 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import java.security.AccessController;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 
 /**
  * Simple configuration provider that sets configuration based on a
  * provided map.
+ * <br>
+ * This provider uses a {@link MultiClassLoader flat class loader} comprised
+ * of system class loader, context class loader and the loader that loaded
+ * this class itself.
  *
  * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  */
 public class MapConfigurationProvider implements ConfigurationProvider {
-
-    private static final Localizer _loc = Localizer.forPackage
-        (MapConfigurationProvider.class);
-
-    private Map _props = null;
+    private Map _props;
+    private final MultiClassLoader _loader;
+    private static final Localizer _loc = Localizer.forPackage(MapConfigurationProvider.class);
     
     /**
-     * Construct with null properties.
+     * Constructs a provider with default class loading scheme that employs 
+     * system class loader, current thread context class loader and the
+     * class loader that loaded this class itself.
      */
     public MapConfigurationProvider() {
+    	_loader = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+    	_loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+    	_loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
+    	_loader.addClassLoader(this.getClass().getClassLoader());
     }
+    
 
     /**
      * Constructor; supply properties map.
      */
     public MapConfigurationProvider(Map props) {
+    	this();
         addProperties(props);
     }
 
@@ -75,13 +89,18 @@ public class MapConfigurationProvider implements ConfigurationProvider {
     }
 
     /**
-     * Set properties into configuration. If the log is non-null, will log
-     * a TRACE message about the set.
+     * Set properties and class loader into configuration. 
      */
     protected void setInto(Configuration conf, Log log) {
+    	conf.addClassLoader(getClassLoader());
         if (log != null && log.isTraceEnabled())
             log.trace(_loc.get("conf-load", getProperties()));
         if (_props != null)
             conf.fromProperties(_props);
     }
+
+	@Override
+	public MultiClassLoader getClassLoader() {
+		return _loader;
+	}
 }

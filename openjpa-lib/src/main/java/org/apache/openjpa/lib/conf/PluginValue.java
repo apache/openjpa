@@ -33,17 +33,16 @@ import org.apache.openjpa.lib.util.Localizer;
  *
  * @author Abe White
  */
-public class PluginValue extends ObjectValue {
+public class PluginValue<T> extends ObjectValue<T> {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PluginValue.class);
+    private static final Localizer _loc = Localizer.forPackage(PluginValue.class);
 
     private final boolean _singleton;
     private String _name = null;
     private String _props = null;
 
-    public PluginValue(String prop, boolean singleton) {
-        super(prop);
+    public PluginValue(Class<T> type, String prop, boolean singleton) {
+        super(type, prop);
         _singleton = singleton;
     }
 
@@ -98,32 +97,25 @@ public class PluginValue extends ObjectValue {
     /**
      * Instantiate the plugin as an instance of the given class.
      */
-    public Object instantiate(Class<?> type, Configuration conf, boolean fatal)
-    {
-        Object obj = newInstance(_name, type, conf, fatal);
-        Configurations.configureInstance(obj, conf, _props,
-            (fatal) ? getProperty() : null);
-        if (_singleton)
-            set(obj, true);
-        return obj;
+    public T instantiate(Configuration conf, boolean fatal) {
+        T obj = newInstance(_name, conf, fatal);
+        return configure(obj, conf, fatal);
     }
 
     /**
      * Configure the given object.
      */
-    public Object configure(Object obj, Configuration conf, boolean fatal) {
-        Configurations.configureInstance(obj, conf, _props,
-            (fatal) ? getProperty() : null);
+    public T configure(T obj, Configuration conf, boolean fatal) {
+        Configurations.configureInstance(obj, conf, _props, fatal ? getProperty() : null);
         if (_singleton)
             set(obj, true);
         return obj;
     }
     
 
-    public void set(Object obj, boolean derived) {
+    public void set(T obj, boolean derived) {
         if (!_singleton)
-            throw new IllegalStateException(_loc.get("not-singleton",
-                getProperty()).getMessage());
+            throw new IllegalStateException(_loc.get("not-singleton", getProperty()).getMessage());
         super.set(obj, derived);
     }
 
@@ -139,10 +131,6 @@ public class PluginValue extends ObjectValue {
         if (_singleton)
             set(null, true);
         valueChanged();
-    }
-
-    public Class<Object> getValueType() {
-        return Object.class;
     }
 
     protected void objectChanged() {

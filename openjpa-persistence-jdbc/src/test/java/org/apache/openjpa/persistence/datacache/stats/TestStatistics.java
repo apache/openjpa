@@ -48,7 +48,7 @@ public class TestStatistics extends SingleEMFTestCase {
 
 	void startCaching(Class<?> cls) {
 		ClassMetaData meta = emf.getConfiguration()
-                .getMetaDataRepositoryInstance().getMetaData(cls, null, true);
+                .getMetaDataRepositoryInstance().getMetaData(cls, true);
 		meta.setDataCacheName(DataCache.NAME_DEFAULT);
 	}
 

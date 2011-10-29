@@ -65,7 +65,7 @@ public class JDBCBrokerFactory
      * Factory method for obtaining a possibly-pooled factory from properties.
      * Invoked from {@link Bootstrap#getBrokerFactory}.
      */
-    public static JDBCBrokerFactory getInstance(ConfigurationProvider cp, ClassLoader loader) {
+    public static JDBCBrokerFactory getInstance(ConfigurationProvider cp) {
         Map<String, Object> props = cp.getProperties();
         Object key = toPoolKey(props);
         JDBCBrokerFactory factory = (JDBCBrokerFactory) getPooledFactoryForKey(key);
@@ -73,7 +73,7 @@ public class JDBCBrokerFactory
             return factory;
         
         // The creation of all BrokerFactories should be driven through Bootstrap.
-        factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp, loader);
+        factory = (JDBCBrokerFactory) Bootstrap.newBrokerFactory(cp);
         pool(key, factory);
         return factory;
     }
@@ -119,7 +119,7 @@ public class JDBCBrokerFactory
             // global login is given
             if (!_synchronizedMappings) {
                 _synchronizedMappings = true;
-                synchronizeMappings(broker.getClassLoader());
+                synchronizeMappings();
             }
 
             return broker;
@@ -131,14 +131,13 @@ public class JDBCBrokerFactory
     /**
      * Synchronize the mappings of the classes listed in the configuration.
      */
-    protected void synchronizeMappings(ClassLoader loader, 
-        JDBCConfiguration conf) {
+    protected void synchronizeMappings(JDBCConfiguration conf) {
         String action = conf.getSynchronizeMappings();
         if (StringUtils.isEmpty(action))
             return;
 
         MappingRepository repo = conf.getMappingRepositoryInstance();
-        Collection<Class<?>> classes = repo.loadPersistentTypes(false, loader);
+        Collection<Class<?>> classes = repo.loadPersistentTypes(false);
         if (classes.isEmpty())
             return;
 
@@ -160,7 +159,7 @@ public class JDBCBrokerFactory
         tool.record();
     }
     
-    protected void synchronizeMappings(ClassLoader loader) {
-        synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
+    protected void synchronizeMappings() {
+        synchronizeMappings((JDBCConfiguration) getConfiguration());
     }
 }

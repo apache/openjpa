@@ -229,8 +229,7 @@ public class TestVersion extends AnnotationTestCase
            ClassMapping cls =
                    ((JDBCConfigurationImpl) ((OpenJPAEntityManagerSPI)
                    OpenJPAPersistence.cast(pm)).getConfiguration())
-                   .getMappingRepositoryInstance().getMapping(EmbedOwner.class,
-                           null, true);
+                   .getMappingRepositoryInstance().getMapping(EmbedOwner.class, true);
            assertEquals(NoneVersionStrategy.getInstance(),
                    cls.getVersion().getStrategy()); assertEquals(0,
                            cls.getVersion().getColumns().length);
@@ -243,8 +242,7 @@ public class TestVersion extends AnnotationTestCase
                (OpenJPAEntityManager) currentEntityManager();
            ClassMapping cls = ((JDBCConfigurationImpl)((OpenJPAEntityManagerSPI)
                    OpenJPAPersistence.cast(pm)).getConfiguration())
-                   .getMappingRepositoryInstance().getMapping(AnnoTest1.class,
-                           null, true);
+                   .getMappingRepositoryInstance().getMapping(AnnoTest1.class, true);
 		   assertTrue(NoneVersionStrategy.getInstance() !=
 			   cls.getVersion().getStrategy()); assertEquals(1,
                        cls.getVersion().getColumns().length);

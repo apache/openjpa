@@ -197,16 +197,14 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
         DBDictionary dict = conf.getDBDictionaryInstance();
         ClassMapping mapping =  (ClassMapping)conf.
             getMetaDataRepositoryInstance().
-            getMetaData(EntityVeryLongNames.class,getClass().
-                getClassLoader(), true);
+            getMetaData(EntityVeryLongNames.class, true);
         Table table = mapping.getTable();
         assertTrue(table.getName().length() > 0);
         assertTrue(table.getName().length() <= dict.maxTableNameLength);
         validateColumnNames(table, dict);
         mapping =  (ClassMapping)conf.
             getMetaDataRepositoryInstance().
-            getMetaData(EntityReservedWords.class,getClass().
-                getClassLoader(), true);
+            getMetaData(EntityReservedWords.class, true);
         table = mapping.getTable();
         assertTrue(table.getName().length() > 0);
         assertTrue(table.getName().length() <= dict.maxTableNameLength);

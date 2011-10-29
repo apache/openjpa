@@ -1223,9 +1223,7 @@ public class OracleDictionary
         if (EMPTY_CLOB != null)
             return EMPTY_CLOB;
         try {
-            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB",true, 
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
+            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB",true, conf.getClassLoader()).
                 getMethod("empty_lob", new Class[0]).
                 invoke(null, new Object[0]);
         } catch (Exception e) {
@@ -1238,9 +1236,7 @@ public class OracleDictionary
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
         try {
-            return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB",true, 
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
+            return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB",true, conf.getClassLoader()).
                 getMethod("empty_lob", new Class[0]).
                 invoke(null, new Object[0]);
         } catch (Exception e) {

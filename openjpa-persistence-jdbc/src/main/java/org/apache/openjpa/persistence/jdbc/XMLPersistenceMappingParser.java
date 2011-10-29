@@ -418,7 +418,7 @@ public class XMLPersistenceMappingParser
      */
     private boolean startSecondaryTable(Attributes attrs)
         throws SAXException {
-        _secondaryTable = toTableIdentifier(attrs.getValue("schema"),
+        _secondaryTable = toTableIdentifier(getSchemaName(attrs),
             attrs.getValue("name")).getName();
         ((ClassMapping)currentElement()).getMappingInfo()
         	.addSecondaryTable(DBIdentifier.newTable(_secondaryTable));
@@ -458,7 +458,7 @@ public class XMLPersistenceMappingParser
         SequenceMapping seq = (SequenceMapping) getRepository().
             addSequenceMetaData(name);
         seq.setSequencePlugin(SequenceMapping.IMPL_VALUE_TABLE);
-        seq.setTableIdentifier(toTableIdentifier(attrs.getValue("schema"),
+        seq.setTableIdentifier(toTableIdentifier(getSchemaName(attrs),
             attrs.getValue("table")));
         seq.setPrimaryKeyColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("pk-column-name"), delimit())); 
         seq.setSequenceColumnIdentifier(DBIdentifier.newColumn(attrs.getValue("value-column-name"), delimit())); 
@@ -485,6 +485,21 @@ public class XMLPersistenceMappingParser
     
     private void endTableGenerator() {
     	popElement();
+    }
+    
+    /**
+     * Gets the name of the schema from the given attribute value <tt>"schema"</tt>.
+     * If the value is unspecified and a default schema is specified, then
+     * gets the default schema name.
+     * @param attrs attributes of an XML element
+     * @return the schema name
+     */
+    String getSchemaName(Attributes attrs) {
+    	String name = attrs.getValue("schema");
+    	if (StringUtils.isEmpty(name) && _schema != null) {
+    		return _schema;
+    	}
+    	return name;
     }
 
     /**
@@ -796,7 +811,7 @@ public class XMLPersistenceMappingParser
         ClassMapping mapping = (ClassMapping) currentElement();
         if (mapping.isAbstract())
             throw new UserException(_loc.get("table-not-allowed", mapping));
-        DBIdentifier table = toTableIdentifier(attrs.getValue("schema"),
+        DBIdentifier table = toTableIdentifier(attrs.getValue(getSchemaName(attrs)),
             attrs.getValue("name"));
         if (!DBIdentifier.isNull(table))
             mapping.getMappingInfo().setTableIdentifier(table);
@@ -808,7 +823,7 @@ public class XMLPersistenceMappingParser
      */
     private boolean startJoinTable(Attributes attrs)
         throws SAXException {
-        DBIdentifier sTable = toTableIdentifier(attrs.getValue("schema"),
+        DBIdentifier sTable = toTableIdentifier(getSchemaName(attrs),
             attrs.getValue("name"));
         if (!DBIdentifier.isNull(sTable)) {
             Object elem = currentElement();
@@ -1056,7 +1071,7 @@ public class XMLPersistenceMappingParser
 
     private DBIdentifier parseCollectionTable(Attributes attrs) {
         String tVal = attrs.getValue("name");
-        String sVal = attrs.getValue("schema");
+        String sVal = getSchemaName(attrs);
         return toTableIdentifier(sVal, tVal); 
     }
 

@@ -249,18 +249,14 @@ public class PCEnhancer {
      * @deprecated use {@link #PCEnhancer(OpenJPAConfiguration, BCClass,
         MetaDataRepository, ClassLoader)} instead. 
      */
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
-        MetaDataRepository repos) {
-        this(conf, type, repos, null);
-    }
 
     /**
      * Constructor. Supply configuration.
      *
-     * @param type the bytecode representation fo the type to
+     * @param type the bytecode representation for the type to
      * enhance; this can be created from any stream or file
      * @param repos a metadata repository to use for metadata access,
-     * or null to create a new reporitory; the repository
+     * or null to create a new repository; the repository
      * from the given configuration isn't used by default
      * because the configuration might be an
      * implementation-specific subclass whose metadata
@@ -268,8 +264,7 @@ public class PCEnhancer {
      * @param loader the environment classloader to use for loading
      * classes and resources.
      */
-    public PCEnhancer(OpenJPAConfiguration conf, BCClass type,
-        MetaDataRepository repos, ClassLoader loader) {
+    public PCEnhancer(OpenJPAConfiguration conf, BCClass type, MetaDataRepository repos) {
         _managedType = type;
         _pc = type;
 
@@ -278,9 +273,10 @@ public class PCEnhancer {
         if (repos == null) {
             _repos = conf.newMetaDataRepositoryInstance();
             _repos.setSourceMode(MetaDataRepository.MODE_META);
-        } else
+        } else {
             _repos = repos;
-        _meta = _repos.getMetaData(type.getType(), loader, false);
+        }
+        _meta = _repos.getMetaData(type.getType(), false);
     }
 
     /**
@@ -1132,7 +1128,7 @@ public class PCEnhancer {
         if (_meta != null && _meta.getDescribedType().isInterface())
             return _meta;
 
-        return _repos.getMetaData(f.getDeclaringClass(), null, false);
+        return _repos.getMetaData(f.getDeclaringClass(), false);
     }
 
     /**
@@ -4686,22 +4682,18 @@ public class PCEnhancer {
             PCEnhancer.class.getName() + "#bytecodeWriter");
 
         Configurations.populateConfiguration(conf, opts);
-        return run(conf, args, flags, null, writer, null);
+        return run(conf, args, flags, null, writer);
     }
 
     /**
      * Enhance the given classes.
      */
     public static boolean run(OpenJPAConfiguration conf, String[] args,
-        Flags flags, MetaDataRepository repos, BytecodeWriter writer,
-        ClassLoader loader)
+        Flags flags, MetaDataRepository repos, BytecodeWriter writer)
         throws IOException {
-        if (loader == null)
-            loader = conf.getClassResolverInstance().
-                getClassLoader(PCEnhancer.class, null);
-        if (flags.tmpClassLoader)
-            loader = AccessController.doPrivileged(J2DoPrivHelper
-                .newTemporaryClassLoaderAction(loader));
+        ClassLoader loader = conf.getClassLoader();
+//        if (flags.tmpClassLoader)
+//            loader = AccessController.doPrivileged(J2DoPrivHelper.newTemporaryClassLoaderAction(loader));
 
         if (repos == null) {
             repos = conf.newMetaDataRepositoryInstance();
@@ -4712,7 +4704,7 @@ public class PCEnhancer {
         Collection classes;
         if (args == null || args.length == 0) {
             log.info(_loc.get("running-all-classes"));
-            classes = repos.getPersistentTypeNames(true, loader);
+            classes = repos.getPersistentTypeNames(true);
             if (classes == null) {
             	log.warn(_loc.get("no-class-to-enhance"));
             	return false;
@@ -4722,8 +4714,9 @@ public class PCEnhancer {
                 getMetaDataFactory().newClassArgParser();
             cap.setClassLoader(loader);
             classes = new HashSet();
-            for (int i = 0; i < args.length; i++)
+            for (int i = 0; i < args.length; i++) {
                 classes.addAll(Arrays.asList(cap.parseTypes(args[i])));
+            }
         }
 
         Project project = new Project();
@@ -4739,7 +4732,7 @@ public class PCEnhancer {
                 bc = project.loadClass((String) o, loader);
             else
                 bc = project.loadClass((Class) o);
-            enhancer = new PCEnhancer(conf, bc, repos, loader);
+            enhancer = new PCEnhancer(conf, bc, repos);
             if (writer != null)
                 enhancer.setBytecodeWriter(writer);
             enhancer.setDirectory(flags.directory);

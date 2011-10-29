@@ -2828,8 +2828,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             conf, 
             new String[] { "org.apache.openjpa.persistence.embed.Book" },
             flags,
-            conf.getClassResolverInstance().
-            getClassLoader(MappingTool.class, null));        
+            conf.getClassLoader());        
     }
 
     /*

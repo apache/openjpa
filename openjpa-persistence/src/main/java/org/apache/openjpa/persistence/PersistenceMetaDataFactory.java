@@ -75,11 +75,9 @@ public class PersistenceMetaDataFactory
     extends AbstractCFMetaDataFactory
     implements Configurable, GenericConfigurable {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (PersistenceMetaDataFactory.class);
+    private static final Localizer _loc = Localizer.forPackage(PersistenceMetaDataFactory.class);
 
-    private final PersistenceMetaDataDefaults _def = 
-        new PersistenceMetaDataDefaults();
+    private final PersistenceMetaDataDefaults _def = new PersistenceMetaDataDefaults();
     private AnnotationPersistenceMetaDataParser _annoParser = null;
     private AnnotationPersistenceXMLMetaDataParser _annoXMLParser = null;
     private XMLPersistenceMetaDataParser _xmlParser = null;
@@ -87,8 +85,7 @@ public class PersistenceMetaDataFactory
     private Set<URL> _unparsed = null; // xml rsrc
     private boolean _fieldOverride = true;
 
-    protected Stack<XMLPersistenceMetaDataParser> _stack = 
-        new Stack<XMLPersistenceMetaDataParser>();
+    protected Stack<XMLPersistenceMetaDataParser> _stack = new Stack<XMLPersistenceMetaDataParser>();
 
     /**
      * Whether to use field-level override or class-level override.
@@ -120,8 +117,7 @@ public class PersistenceMetaDataFactory
     /**
      * Set the metadata parser.
      */
-    public void setAnnotationParser(
-        AnnotationPersistenceMetaDataParser parser) {
+    public void setAnnotationParser(AnnotationPersistenceMetaDataParser parser) {
         if (_annoParser != null)
             _annoParser.setRepository(null);
         if (parser != null)
@@ -133,8 +129,7 @@ public class PersistenceMetaDataFactory
      * Create a new metadata parser.
      */
     protected AnnotationPersistenceMetaDataParser newAnnotationParser() {
-        return new AnnotationPersistenceMetaDataParser
-            (repos.getConfiguration());
+        return new AnnotationPersistenceMetaDataParser(repos.getConfiguration());
     }
 
     /**
@@ -205,7 +200,7 @@ public class PersistenceMetaDataFactory
         return new XMLPersistenceMetaDataSerializer(repos.getConfiguration());
     }
     
-    public void load(Class<?> cls, int mode, ClassLoader envLoader) {
+    public void load(Class<?> cls, int mode) {
         if (mode == MODE_NONE)
             return;
         if (!strict && (mode & MODE_META) != 0)
@@ -214,7 +209,7 @@ public class PersistenceMetaDataFactory
         // getting the list of persistent types runs callbacks to
         // mapPersistentTypeNames if it hasn't been called already, which
         // caches XML resources
-        getPersistentTypeNames(false, envLoader);
+        getPersistentTypeNames(false);
         URL xml = findXML(cls);
 
         // we have to parse metadata up-front to register persistence unit
@@ -225,7 +220,7 @@ public class PersistenceMetaDataFactory
             && (mode & MODE_META) != 0) {
             Set<URL> unparsed = new HashSet<URL>(_unparsed);
             for (URL url : unparsed) {
-                parseXML(url, cls, mode, envLoader);
+                parseXML(url, cls, mode);
             }
             parsedXML = unparsed.contains(xml);
              _unparsed.clear();
@@ -245,7 +240,7 @@ public class PersistenceMetaDataFactory
         // we may still need to parse XML if this is a redeploy of a class, or
         // if we're in strict query-only mode
         if (!parsedXML && xml != null) {
-            parseXML(xml, cls, mode, envLoader);
+            parseXML(xml, cls, mode);
             // XML process check
             meta = repos.getCachedMetaData(cls);
             if (meta != null && (meta.getSourceMode() & mode) == mode) {
@@ -255,7 +250,6 @@ public class PersistenceMetaDataFactory
         }
 
         AnnotationPersistenceMetaDataParser parser = getAnnotationParser();
-        parser.setEnvClassLoader(envLoader);
         parser.setMode(mode);
         parser.parse(cls);
 
@@ -267,27 +261,11 @@ public class PersistenceMetaDataFactory
     /**
      * Parse the given XML resource.
      */
-    private void parseXML(URL xml, Class<?> cls, int mode, 
-    	ClassLoader envLoader) {
+    private void parseXML(URL xml, Class<?> cls, int mode) {
         // spring needs to use the envLoader first for all class resolution,
         // but we must still fall back on application loader
-        ClassLoader loader = repos.getConfiguration().
-            getClassResolverInstance().getClassLoader(cls, null);
-        if (envLoader != null && envLoader != loader) {
-          MultiClassLoader mult = new MultiClassLoader();
-          mult.addClassLoader(envLoader);
-
-          // loader from resolver is usually a multi loader itself
-          if (loader instanceof MultiClassLoader)
-            mult.addClassLoaders((MultiClassLoader)loader);
-          else
-            mult.addClassLoader(loader);
-          loader = mult;
-        }
     
         XMLPersistenceMetaDataParser xmlParser = getXMLParser();
-        xmlParser.setClassLoader(loader);
-        xmlParser.setEnvClassLoader(envLoader);
         xmlParser.setMode(mode);
         try {
             xmlParser.parse(xml);
@@ -344,10 +322,10 @@ public class PersistenceMetaDataFactory
     }
 
     @Override
-    public Class<?> getQueryScope(String queryName, ClassLoader loader) {
+    public Class<?> getQueryScope(String queryName) {
         if (queryName == null)
             return null;
-        Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
+        Collection<Class<?>> classes = repos.loadPersistentTypes(false);
         for (Class<?> cls :  classes) {
             if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isAnnotationPresentAction(cls, NamedQuery.class)))
@@ -377,12 +355,11 @@ public class PersistenceMetaDataFactory
     }
 
     @Override
-    public Class<?> getResultSetMappingScope(String rsMappingName,
-        ClassLoader loader) {
+    public Class<?> getResultSetMappingScope(String rsMappingName) {
         if (rsMappingName == null)
             return null;
         
-        Collection<Class<?>> classes = repos.loadPersistentTypes(false, loader);
+        Collection<Class<?>> classes = repos.loadPersistentTypes(false);
         for (Class<?> cls : classes) {
 
             if ((AccessController.doPrivileged(J2DoPrivHelper
@@ -511,8 +488,7 @@ public class PersistenceMetaDataFactory
      * Look for META-INF/orm.xml, and if it doesn't exist, choose a default.
      */
     private File defaultXMLFile() {
-        ClassLoader loader = repos.getConfiguration().
-            getClassResolverInstance().getClassLoader(getClass(), null);
+        ClassLoader loader = repos.getConfiguration().getClassLoader();
         URL rsrc = AccessController.doPrivileged(
             J2DoPrivHelper.getResourceAction(loader, "META-INF/orm.xml"));
         if (rsrc != null) {

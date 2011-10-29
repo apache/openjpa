@@ -86,6 +86,6 @@ public class PCEnhancerTask
             : Files.getFile(dirName, getClassLoader());
         OpenJPAConfiguration conf = (OpenJPAConfiguration) getConfiguration();
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
-        PCEnhancer.run(conf, files, flags, repos, null, getClassLoader ());
+        PCEnhancer.run(conf, files, flags, repos, null);
 	}
 }

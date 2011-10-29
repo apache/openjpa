@@ -106,8 +106,7 @@ public class ValueMetaDataImpl
             return getDeclaredTypeMetaData();
         if (_typeMeta == null && _code == JavaTypes.PC) {
             ClassMetaData meta = _owner.getDefiningMetaData();
-            _typeMeta = meta.getRepository().getMetaData(_type,
-                meta.getEnvClassLoader(), true);
+            _typeMeta = meta.getRepository().getMetaData(_type, true);
         }
         return _typeMeta;
     }
@@ -142,8 +141,7 @@ public class ValueMetaDataImpl
                 _decTypeMeta = getEmbeddedMetaData();
             else {
                 ClassMetaData meta = _owner.getDefiningMetaData();
-                _decTypeMeta = meta.getRepository().getMetaData(_decType,
-                    meta.getEnvClassLoader(), true);
+                _decTypeMeta = meta.getRepository().getMetaData(_decType, true);
             }
         }
         return _decTypeMeta;
@@ -298,8 +296,7 @@ public class ValueMetaDataImpl
         if (_mappedBy == MAPPED_BY_PK) {
             // use this instead of getting meta from element b/c that
             // requires element to be resolved
-            ClassMetaData meta = getRepository().getMetaData
-                (_owner.getElement().getType(), null, false);
+            ClassMetaData meta = getRepository().getMetaData(_owner.getElement().getType(), false);
             if (meta == null)
                 throw new MetaDataException(_loc.get("val-not-pc", _owner));
             if (meta.getPrimaryKeyFields().length != 1)
@@ -409,8 +406,7 @@ public class ValueMetaDataImpl
 
         // see if actual type is pc
         if (JavaTypes.maybePC(_code, _type)) {
-            _typeMeta = _owner.getRepository().getMetaData(_type,
-                _owner.getDefiningMetaData().getEnvClassLoader(), false);
+            _typeMeta = _owner.getRepository().getMetaData(_type, false);
             if (_typeMeta != null)
                 _code = JavaTypes.PC;
         }
@@ -446,8 +442,7 @@ public class ValueMetaDataImpl
      * Resolve the declared type.
      */
     private void resolveDeclaredType(Class type) {
-        ClassMetaData meta = _owner.getRepository().getMetaData(type,
-            _owner.getDefiningMetaData().getEnvClassLoader(), false);
+        ClassMetaData meta = _owner.getRepository().getMetaData(type, false);
         if (meta != null)
             _decCode = JavaTypes.PC;
         

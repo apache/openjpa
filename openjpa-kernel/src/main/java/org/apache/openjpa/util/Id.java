@@ -67,8 +67,7 @@ public final class Id
      * instance.
      */
     public Id(String str, OpenJPAConfiguration conf, ClassLoader brokerLoader) {
-        this(str, (conf == null) ? brokerLoader : conf.
-            getClassResolverInstance().getClassLoader(Id.class, brokerLoader));
+        this(str, (conf == null) ? brokerLoader : conf.getClassLoader());
     }
 
     /**

@@ -43,7 +43,7 @@ public class TestNonPersistentFields
     public void setUp() {
         MetaDataRepository repos = new OpenJPAConfigurationImpl().
             newMetaDataRepositoryInstance();
-        _meta = repos.getMetaData(NonPersistentFieldsPC.class, null, true);
+        _meta = repos.getMetaData(NonPersistentFieldsPC.class, true);
     }
 
     public void testNonPersistentFields() {

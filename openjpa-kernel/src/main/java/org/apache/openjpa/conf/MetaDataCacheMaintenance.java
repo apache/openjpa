@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
+import java.security.AccessController;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.Query;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.conf.MapConfigurationProvider;
@@ -51,14 +53,11 @@ public class MetaDataCacheMaintenance {
     public static void main(String[] args) {
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
-        boolean devpath = opts.getBooleanProperty("scanDevPath", "ScanDevPath",
-            true);
-
+        boolean devpath = opts.getBooleanProperty("scanDevPath", "ScanDevPath", true);
         ConfigurationProvider cp = new MapConfigurationProvider(opts);
-        BrokerFactory factory = Bootstrap.newBrokerFactory(cp, null);
+        BrokerFactory factory = Bootstrap.newBrokerFactory(cp);
         try {
-            MetaDataCacheMaintenance maint = new MetaDataCacheMaintenance(
-                factory, devpath);
+            MetaDataCacheMaintenance maint = new MetaDataCacheMaintenance(factory, devpath);
 
             if (args.length != 1) {
                 usage();
@@ -115,9 +114,9 @@ public class MetaDataCacheMaintenance {
     public void store() {
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
         repos.setSourceMode(MetaDataRepository.MODE_ALL);
-        Collection types = repos.loadPersistentTypes(devpath, null);
+        Collection types = repos.loadPersistentTypes(devpath);
         for (Iterator iter = types.iterator(); iter.hasNext(); )
-            repos.getMetaData((Class) iter.next(), null, true);
+            repos.getMetaData((Class) iter.next(), true);
 
         loadQueries();
 

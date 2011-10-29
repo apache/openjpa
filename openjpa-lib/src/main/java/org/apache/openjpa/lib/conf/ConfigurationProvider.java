@@ -20,12 +20,21 @@ package org.apache.openjpa.lib.conf;
 
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.MultiClassLoader;
+
 /**
- * Implementations of this interface can populate {@link Configuration}s in
- * some environment-specific way. Implementations must implement the
+ * Implementations of this interface populates {@link Configuration}s in
+ * some {@link ProductDerivation environment-specific} way. Implementations must implement the
  * <code>equals</code> and <code>hashCode</code> methods so that equivalent
  * configurations compare equal.
+ * <br>
+ * A provider looks up resources and resolves classes by their names <em>before</em>
+ * runtime is initialized. The class loader used by a provider eventually is 
+ * {@link #setInto(Configuration) set} in the {@link Configuration configuration} for runtime. 
+ * 
  *
+ * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  * @since 0.4.0.0
  */
@@ -52,4 +61,12 @@ public interface ConfigurationProvider {
      * Set loaded information into the given configuration.
      */
     public void setInto(Configuration conf);
+    
+    
+    /**
+     * Gets the loader to load plug-in and resources by class name.
+     * 
+     * @since 2.2.0
+     */
+    public MultiClassLoader getClassLoader();
 }

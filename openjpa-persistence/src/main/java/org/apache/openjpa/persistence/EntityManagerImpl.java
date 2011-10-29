@@ -219,10 +219,6 @@ public class EntityManagerImpl
         _broker.setSyncWithManagedTransactions(sync);
     }
 
-    public ClassLoader getClassLoader() {
-        return _broker.getClassLoader();
-    }
-
     public String getConnectionUserName() {
         return _broker.getConnectionUserName();
     }
@@ -923,9 +919,8 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         try {
             SequenceMetaData meta = _broker.getConfiguration().
-                getMetaDataRepositoryInstance().getSequenceMetaData(name,
-                _broker.getClassLoader(), true);
-            Seq seq = meta.getInstance(_broker.getClassLoader());
+                getMetaDataRepositoryInstance().getSequenceMetaData(name, true);
+            Seq seq = meta.getInstance();
             return new GeneratorImpl(seq, name, _broker, null);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
@@ -936,8 +931,7 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         try {
             ClassMetaData meta = _broker.getConfiguration().
-                getMetaDataRepositoryInstance().getMetaData(forClass,
-                _broker.getClassLoader(), true);
+                getMetaDataRepositoryInstance().getMetaData(forClass, true);
             Seq seq = _broker.getIdentitySequence(meta);
             return (seq == null) ? null : new GeneratorImpl(seq, null, _broker,
                 meta);
@@ -950,8 +944,7 @@ public class EntityManagerImpl
         assertNotCloseInvoked();
         try {
             ClassMetaData meta = _broker.getConfiguration().
-                getMetaDataRepositoryInstance().getMetaData(forClass,
-                _broker.getClassLoader(), true);
+                getMetaDataRepositoryInstance().getMetaData(forClass, true);
             FieldMetaData fmd = meta.getField(fieldName);
             if (fmd == null)
                 throw new ArgumentException(_loc.get("no-named-field",
@@ -1022,8 +1015,7 @@ public class EntityManagerImpl
         _broker.assertOpen();
         try {
             QueryMetaData meta = _broker.getConfiguration().
-                getMetaDataRepositoryInstance().getQueryMetaData(null, name,
-                _broker.getClassLoader(), true);
+                getMetaDataRepositoryInstance().getQueryMetaData(null, name, true);
             String qid = meta.getQueryString();
             
             PreparedQuery pq = JPQLParser.LANG_JPQL.equals(meta.getLanguage()) ? getPreparedQuery(qid) : null;

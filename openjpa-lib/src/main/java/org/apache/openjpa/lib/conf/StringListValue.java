@@ -32,7 +32,7 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-public class StringListValue extends Value {
+public class StringListValue extends Value<String[]> {
 
     public static final String[] EMPTY = new String[0];
     private static final Localizer s_loc = Localizer.forPackage
@@ -41,7 +41,7 @@ public class StringListValue extends Value {
     private String[] _values = EMPTY;
 
     public StringListValue(String prop) {
-        super(prop);
+        super(String[].class, prop);
     }
 
     /**
@@ -60,10 +60,6 @@ public class StringListValue extends Value {
         return _values;
     }
 
-    public Class<String []> getValueType() {
-        return String[].class;
-    }
-    
     /**
      * Unalias the value list.  This method defers to super.unalias()
      * UNLESS the string passed is a list of values for a property that
@@ -134,7 +130,7 @@ public class StringListValue extends Value {
     }
 
     protected void setInternalObject(Object obj) {
-        set((String[]) obj);
+        set((String[])obj);
     }
     
     protected List<String> getAliasList() {

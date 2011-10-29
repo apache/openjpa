@@ -94,12 +94,6 @@ public interface StoreContext {
     public void popFetchConfiguration();
 
     /**
-     * Return the current thread's class loader at the time this context
-     * was obtained.
-     */
-    public ClassLoader getClassLoader();
-
-    /**
      * Return the lock manager in use.
      */
     public LockManager getLockManager();
@@ -153,8 +147,7 @@ public interface StoreContext {
      * parameter
      * @see #find(Object,boolean,FindCallbacks)
      */
-    public Object[] findAll(Collection<Object> oids, boolean validate,
-        FindCallbacks call);
+    public Object[] findAll(Collection<?> oids, boolean validate, FindCallbacks call);
 
     /**
      * Return the object with the given oid. If present, the
@@ -169,15 +162,14 @@ public interface StoreContext {
      * if a cached instance has been deleted concurrently. These options
      * are controllable through the given <code>OID_XXX</code> flags.
      */
-    public Object find(Object oid, FetchConfiguration fetch, BitSet exclude,
-        Object edata, int flags);
+    public Object find(Object oid, FetchConfiguration fetch, BitSet exclude, Object edata, int flags);
 
     /**
      * Return the objects with the given oids.
      *
      * @see #find(Object,FetchConfiguration,BitSet,Object,int)
      */
-    public Object[] findAll(Collection<Object> oids, FetchConfiguration fetch,
+    public Object[] findAll(Collection<?> oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags);
 
     /**
@@ -186,8 +178,7 @@ public interface StoreContext {
      * when no longer needed. This method delegates to 
      * {@link StoreManager#executeExtent}.
      */
-    public Iterator<Object> extentIterator(Class<?> cls, boolean subs,
-        FetchConfiguration fetch, boolean ignoreChanges);
+    public <T> Iterator<T> extentIterator(Class<T> cls, boolean subs, FetchConfiguration fetch, boolean ignoreChanges);
 
     /**
      * Immediately load the given object's persistent fields. One might
@@ -209,7 +200,7 @@ public interface StoreContext {
      * @param fgOnly indicator as to whether to retrieve only fields
      * @see #retrieve
      */
-    public void retrieveAll(Collection<Object> objs, boolean fgOnly, OpCallbacks call);
+    public void retrieveAll(Collection<?> objs, boolean fgOnly, OpCallbacks call);
 
     /**
      * Make the given instance embedded.
@@ -221,8 +212,7 @@ public interface StoreContext {
      * @param ownerMeta the value in which the object is embedded
      * @return the state manager for the embedded instance
      */
-    public OpenJPAStateManager embed(Object obj, Object id,
-        OpenJPAStateManager owner, ValueMetaData ownerMeta);
+    public OpenJPAStateManager embed(Object obj, Object id, OpenJPAStateManager owner, ValueMetaData ownerMeta);
 
     /**
      * Return the application or datastore identity class the given persistent
@@ -339,7 +329,7 @@ public interface StoreContext {
      * @param updateVersion if true, the instance's version will be
      * incremented at the next flush
      */
-    public void transactionalAll(Collection<Object> objs, boolean updateVersion, OpCallbacks call);
+    public void transactionalAll(Collection<?> objs, boolean updateVersion, OpCallbacks call);
 
     /**
      * Make the given object non-transactional.
@@ -349,7 +339,7 @@ public interface StoreContext {
     /**
      * Make the given objects nontransactional.
      */
-    public void nontransactionalAll(Collection<Object> objs, OpCallbacks call);
+    public void nontransactionalAll(Collection<?> objs, OpCallbacks call);
 
     /**
      * Return whether the given object is persistent.

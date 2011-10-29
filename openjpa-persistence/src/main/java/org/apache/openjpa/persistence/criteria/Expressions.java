@@ -1056,7 +1056,7 @@ class Expressions {
                 ClassMetaData can = ((Types.Entity<X>)q.getRoot().getModel()).meta;
                 Class<?> candidate = can.getDescribedType();
                 if (candidate.isAssignableFrom((Class)value)) {
-                   lit.setMetaData(q.getMetamodel().getRepository().getMetaData((Class<?>)value, null, true));
+                   lit.setMetaData(q.getMetamodel().getRepository().getMetaData((Class<?>)value, true));
                 } else {
                     lit.setMetaData(can);
                 }

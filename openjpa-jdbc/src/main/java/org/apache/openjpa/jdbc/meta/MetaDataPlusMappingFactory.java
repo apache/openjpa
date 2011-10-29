@@ -45,28 +45,17 @@ public class MetaDataPlusMappingFactory
 
     
     /**
-     * Constructor; supply delegates.
-     */
-    public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map) {
-        this(meta, map, null);
-
-    }
-    
-    /**
      * Constructor, supply delegates and Configuration. 
      * 
      * @param meta MetaFactory delegate, should not be null.
      * @param map  MappingFactory delegate, should not be null.
      * @param conf Configuration in use. Used to determine whether delegates should use strict mode. 
      */
-    public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map, OpenJPAConfiguration conf) {
+    public MetaDataPlusMappingFactory(MetaDataFactory meta, MetaDataFactory map, boolean strict) {
         super(meta);
         _map = map;
-
-        if(conf.getCompatibilityInstance().getMetaFactoriesAreStrict()) {
-            meta.setStrict(true);
-            map.setStrict(true);
-        }
+        meta.setStrict(strict);
+        map.setStrict(strict);        
     }
 
     /**
@@ -104,40 +93,37 @@ public class MetaDataPlusMappingFactory
         // always in strict mode
     }
 
-    public void load(Class cls, int mode, ClassLoader envLoader) {
+    public void load(Class cls, int mode) {
         if ((mode & ~MODE_MAPPING) != MODE_NONE)
-            super.load(cls, mode & ~MODE_MAPPING, envLoader);
+            super.load(cls, mode & ~MODE_MAPPING);
         if (cls != null && (mode & MODE_MAPPING) != 0)
-            _map.load(cls, mode & ~MODE_META, envLoader);
+            _map.load(cls, mode & ~MODE_META);
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
         SequenceMetaData[] seqs, int mode, Map output) {
         boolean store = true;
         if ((mode & ~MODE_MAPPING) != MODE_NONE)
-            store &= super.store(metas, queries, seqs, mode & ~MODE_MAPPING,
-                output);
+            store &= super.store(metas, queries, seqs, mode & ~MODE_MAPPING, output);
         if ((mode & MODE_MAPPING) != 0)
-            store &= _map.store(metas, queries, seqs, mode & ~MODE_META,
-                output);
+            store &= _map.store(metas, queries, seqs, mode & ~MODE_META, output);
         return store;
     }
 
-    public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
+    public boolean drop(Class[] cls, int mode) {
         boolean drop = true;
         if ((mode & ~MODE_MAPPING) != MODE_NONE)
-            drop &= super.drop(cls, mode & ~MODE_MAPPING, envLoader);
+            drop &= super.drop(cls, mode & ~MODE_MAPPING);
         if ((mode & MODE_MAPPING) != 0)
-            drop &= _map.drop(cls, mode & ~MODE_META, envLoader);
+            drop &= _map.drop(cls, mode & ~MODE_META);
         return drop;
     }
 
-    public Set getPersistentTypeNames(boolean classpath,
-        ClassLoader envLoader) {
-        Set names = super.getPersistentTypeNames(classpath, envLoader);
+    public Set getPersistentTypeNames(boolean classpath) {
+        Set names = super.getPersistentTypeNames(classpath);
         if (names != null && !names.isEmpty())
             return names;
-        return _map.getPersistentTypeNames(classpath, envLoader);
+        return _map.getPersistentTypeNames(classpath);
     }
 
     public void clear() {

@@ -175,7 +175,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 				result = new MergedResultObjectProvider(tmp);
 			}
 			if (hasRange) {
-                result = new RangeResultObjectProvider(result,
+                result = new RangeResultObjectProvider(result, 
                         ctx.getStartRange(), ctx.getEndRange());
 			}
 			return result;

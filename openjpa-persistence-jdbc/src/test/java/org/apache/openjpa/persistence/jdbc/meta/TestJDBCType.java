@@ -70,7 +70,7 @@ public class TestJDBCType
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
         repos.setStrategyInstaller(new RefreshStrategyInstaller(repos));
-        ClassMapping mapping = repos.getMapping(Column.class, null, true);
+        ClassMapping mapping = repos.getMapping(Column.class, true);
 
         Class cls;
         if (dict.getPreferredType(JavaSQLTypes.CLOB) ==  JavaSQLTypes.CLOB) {

@@ -31,6 +31,7 @@ import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.util.MultiLoaderClassResolver;
 
 /**
@@ -186,19 +187,15 @@ public class MappingToolTask
         throws Exception {
         if (MappingTool.ACTION_IMPORT.equals(flags.action))
             assertFiles(files);
-
-        ClassLoader toolLoader = AccessController
-                .doPrivileged(J2DoPrivHelper
+        MultiClassLoader loader = new MultiClassLoader();
+        ClassLoader toolLoader = AccessController.doPrivileged(J2DoPrivHelper
                         .getClassLoaderAction(MappingTool.class));
-        ClassLoader loader = toolLoader;
-        MultiLoaderClassResolver resolver = new MultiLoaderClassResolver();
+        loader.addClassLoader(toolLoader);
 
         if (tmpClassLoader) {
-            loader = AccessController.doPrivileged(J2DoPrivHelper
-                    .newTemporaryClassLoaderAction(getClassLoader()));
-            resolver.addClassLoader(loader);
+            loader.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
+                    .newTemporaryClassLoaderAction(getClassLoader())));
         }
-        resolver.addClassLoader(toolLoader);
             
         if (flags.meta && MappingTool.ACTION_ADD.equals(flags.action))
             flags.metaDataFile = Files.getFile(file, loader);
@@ -209,11 +206,11 @@ public class MappingToolTask
         flags.sqlWriter = Files.getWriter(sqlFile, loader, sqlEncode);
 
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        conf.setClassResolver(resolver);
+        conf.addClassLoader(loader);
         
-        if (!MappingTool.run(conf, files, flags, loader))
-            throw new BuildException(_loc.get("bad-conf", "MappingToolTask")
-                .getMessage());
+        if (!MappingTool.run(conf, files, flags, loader)) {
+            throw new BuildException(_loc.get("bad-conf", "MappingToolTask").getMessage());
+        }
     }
 
     public static class Action
@@ -229,8 +226,7 @@ public class MappingToolTask
 
         public String[] getValues() {
             String[] actions = new String[SchemaTool.ACTIONS.length + 1];
-            System.arraycopy(SchemaTool.ACTIONS, 0, actions, 0,
-                SchemaTool.ACTIONS.length);
+            System.arraycopy(SchemaTool.ACTIONS, 0, actions, 0, SchemaTool.ACTIONS.length);
             actions[actions.length - 1] = "none";
             return actions;
         }

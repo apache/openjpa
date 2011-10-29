@@ -37,6 +37,8 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVendors;
@@ -53,9 +55,7 @@ import org.apache.openjpa.lib.util.Localizer;
 public class InstrumentationFactory {
     private static Instrumentation _inst;
     private static boolean _dynamicallyInstall = true;
-    private static final String _name = InstrumentationFactory.class.getName();
-    private static final Localizer _loc = Localizer.forPackage(
-        InstrumentationFactory.class);
+    private static final Localizer _loc = Localizer.forPackage(InstrumentationFactory.class);
 
     /**
      * This method is not synchronized because when the agent is loaded from
@@ -81,63 +81,48 @@ public class InstrumentationFactory {
      * @return null if Instrumentation can not be obtained, or if any 
      * Exceptions are encountered.
      */
-    public static synchronized Instrumentation getInstrumentation(final Log log) {
-        if (log.isTraceEnabled() == true) {
-            log.trace(_name + ".getInstrumentation() _inst:" + _inst
-                + " _dynamicallyInstall:" + _dynamicallyInstall);
-        }
+    public static synchronized Instrumentation getInstrumentation(final OpenJPAConfiguration conf) {
+    	final Log log = conf.getConfigurationLog();
+        trace(conf, "getInstrumentation()", "_inst:" + _inst + " _dynamicallyInstall:" + _dynamicallyInstall);
         if ( _inst != null || !_dynamicallyInstall)
             return _inst;
 
         // dynamic loading of the agent is only available in JDK 1.6+
         if (JavaVersions.VERSION < 6) {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".getInstrumentation() Dynamic loading only supported on Java SE 6 or later");
-            }
+            trace(conf, "getInstrumentation()", "Dynamic loading only supported on Java SE 6 or later");
             return null;
         }
 
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
-                // Dynamic agent enhancement should only occur when the OpenJPA library is 
-                // loaded using the system class loader.  Otherwise, the OpenJPA
-                // library may get loaded by separate, disjunct loaders, leading to linkage issues.
-                try {
-                    if (!InstrumentationFactory.class.getClassLoader().equals(
-                        ClassLoader.getSystemClassLoader())) {
-                        return null;
-                    }
-                } catch (Throwable t) {
-                    return null;
-                }
                 JavaVendors vendor = JavaVendors.getCurrentVendor();                
                 File toolsJar = null;
                 // When running on IBM, the attach api classes are packaged in vm.jar which is a part
                 // of the default vm classpath.
-                if (vendor.isIBM() == false) {
+                if (!vendor.isIBM()) {
                     // If we can't find the tools.jar and we're not on IBM we can't load the agent. 
-                    toolsJar = findToolsJar(log);
+                    toolsJar = findToolsJar(conf);
                     if (toolsJar == null) {
                         return null;
                     }
                 }
 
-                Class<?> vmClass = loadVMClass(toolsJar, log, vendor);
+                Class<?> vmClass = loadVMClass(toolsJar, conf, vendor);
                 if (vmClass == null) {
                     return null;
                 }
-                String agentPath = getAgentJar(log);
+                String agentPath = getAgentJar(conf);
                 if (agentPath == null) {
                     return null;
                 }
-                loadAgent(log, agentPath, vmClass);
+                loadAgent(conf, agentPath, vmClass);
                 return null;
-            }// end run()
+            }
         });
         // If the load(...) agent call was successful, this variable will no 
         // longer be null.
         return _inst;
-    }//end getInstrumentation()
+    }
 
     /**
      *  The method that is called when a jar is added as an agent at runtime.
@@ -176,52 +161,35 @@ public class InstrumentationFactory {
     }
 
     /**
-     * This private worker method attempts to find [java_home]/lib/tools.jar.
+     * Finds [java_home]/lib/tools.jar.
      * Note: The tools.jar is a part of the SDK, it is not present in the JRE.
      * 
      * @return If tools.jar can be found, a File representing tools.jar. <BR>
      *         If tools.jar cannot be found, null.
      */
-    private static File findToolsJar(Log log) {
+    private static File findToolsJar(Configuration conf) {
         String javaHome = System.getProperty("java.home");
         File javaHomeFile = new File(javaHome);
 
         File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-        if (toolsJarFile.exists() == false) {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath());
-            }
-            // If we're on an IBM SDK, then remove /jre off of java.home and try again.
-            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
+        if (!toolsJarFile.exists()) {
+             // If we're on an IBM SDK, then remove /jre off of java.home and try again.
+            if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre")) {
                 javaHomeFile = javaHomeFile.getParentFile();
                 toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-                if (toolsJarFile.exists() == false) {
-                    if (log.isTraceEnabled() == true) {
-                        log.trace(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
-                            toolsJarFile.getAbsolutePath());
-                    }
-                }
             } else if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0) {
                 // If we're on a Mac, then change the search path to use ../Classes/classes.jar.
                 if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home") == true) {
                     javaHomeFile = javaHomeFile.getParentFile();
                     toolsJarFile = new File(javaHomeFile, "Classes" + File.separator + "classes.jar");
-                    if (toolsJarFile.exists() == false) {
-                        if (log.isTraceEnabled() == true) {
-                            log.trace(_name + ".findToolsJar() -- for Mac OS couldn't find " +
-                                toolsJarFile.getAbsolutePath());
-                        }
-                    }
                 }
             }
         }
 
-        if (toolsJarFile.exists() == false) {
+        if (!toolsJarFile.exists()) {
             return null;
         } else {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
-            }
+            trace(conf, ".findToolsJar()", "found " + toolsJarFile.getAbsolutePath());
             return toolsJarFile;
         }
     }
@@ -236,15 +204,14 @@ public class InstrumentationFactory {
      * @return absolute path to the agent jar or null if anything unexpected
      * happens.
      */
-    private static String getAgentJar(Log log) {
+    private static String getAgentJar(Configuration conf) {
         File agentJarFile = null;
         // Find the name of the File that this class was loaded from. That
         // jar *should* be the same location as our agent.
-        CodeSource cs =
-            InstrumentationFactory.class.getProtectionDomain().getCodeSource();
+        CodeSource cs = InstrumentationFactory.class.getProtectionDomain().getCodeSource();
         if (cs != null) {   
             URL loc = cs.getLocation();
-            if(loc!=null){
+            if (loc != null){
                 agentJarFile = new File(loc.getFile());
             }
         }
@@ -252,30 +219,27 @@ public class InstrumentationFactory {
         // Determine whether the File that this class was loaded from has this
         // class defined as the Agent-Class.
         boolean createJar = false;
-        if (cs == null || agentJarFile == null
-            || agentJarFile.isDirectory() == true) {
+        if (cs == null || agentJarFile == null || agentJarFile.isDirectory()) {
             createJar = true;
-        }else if(validateAgentJarManifest(agentJarFile, log, _name) == false){
+        } else if (!InstrumentationFactory.class.getName().equals(getAgentClassName(agentJarFile, conf))) {
             // We have an agentJarFile, but this class isn't the Agent-Class.
-            createJar=true;           
+            createJar = true;           
         }
         
         String agentJar;
-        if (createJar == true) {
+        if (createJar) {
             // This can happen when running in eclipse as an OpenJPA
             // developer or for some reason the CodeSource is null. We
             // should log a warning here because this will create a jar
             // in your temp directory that doesn't always get cleaned up.
             try {
                 agentJar = createAgentJar();
-                if (log.isInfoEnabled() == true) {
+                Log log = conf.getConfigurationLog();
+                if (log.isInfoEnabled()) {
                     log.info(_loc.get("temp-file-creation", agentJar));
                 }
             } catch (IOException ioe) {
-                if (log.isTraceEnabled() == true) {
-                    log.trace(_name + ".getAgentJar() caught unexpected "
-                        + "exception.", ioe);
-                }
+                trace(conf, "getAgentJar()",  "caught unexpected exception " + ioe);
                 agentJar = null;
             }
         } else {
@@ -283,7 +247,7 @@ public class InstrumentationFactory {
         }
 
         return agentJar;
-    }//end getAgentJar
+    }
 
     /**
      * Attach and load an agent class. 
@@ -292,7 +256,7 @@ public class InstrumentationFactory {
      * @param agentJar absolute path to the agent jar.
      * @param vmClass VirtualMachine.class from tools.jar.
      */
-    private static void loadAgent(Log log, String agentJar, Class<?> vmClass) {
+    private static void loadAgent(Configuration conf, String agentJar, Class<?> vmClass) {
         try {
             // first obtain the PID of the currently-running process
             // ### this relies on the undocumented convention of the
@@ -313,18 +277,13 @@ public class InstrumentationFactory {
                     .invoke(null, new Object[] { pid });
             // now deploy the actual agent, which will wind up calling
             // agentmain()
-            vmClass.getMethod("loadAgent", new Class[] { String.class })
-                .invoke(vm, new Object[] { agentJar });
-            vmClass.getMethod("detach", new Class[] {}).invoke(vm,
-                new Object[] {});
+            vmClass.getMethod("loadAgent", new Class[] { String.class }).invoke(vm, new Object[] { agentJar });
+            vmClass.getMethod("detach", new Class[] {}).invoke(vm, new Object[] {});
         } catch (Throwable t) {
-            if (log.isTraceEnabled() == true) {
-                // Log the message from the exception. Don't log the entire
-                // stack as this is expected when running on a JDK that doesn't
-                // support the Attach API.
-                log.trace(_name + ".loadAgent() caught an exception. Message: "
-                    + t.getMessage());
-            }
+            // Log the message from the exception. Don't log the entire
+            // stack as this is expected when running on a JDK that doesn't
+            // support the Attach API.
+            trace(conf, "loadAgent()",  "caught an exception. Message: " + t.getMessage());
         }
     }
 
@@ -340,19 +299,16 @@ public class InstrumentationFactory {
      * @return The AttachAPI VirtualMachine class <br>
      *         or null if something unexpected happened.
      */
-    private static Class<?> loadVMClass(File toolsJar, Log log, JavaVendors vendor) {
+    private static Class<?> loadVMClass(File toolsJar, Configuration conf, JavaVendors vendor) {
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             String cls = vendor.getVirtualMachineClassName();
-            if (vendor.isIBM() == false) {
+            if (!vendor.isIBM()) {
                 loader = new URLClassLoader(new URL[] { toolsJar.toURI().toURL() }, loader);
             }
             return loader.loadClass(cls);
         } catch (Exception e) {
-            if (log.isTraceEnabled()) {
-                log.trace(_name
-                    + ".loadVMClass() failed to load the VirtualMachine class");
-            }
+           trace(conf, "loadVMClass()", "failed to load the VirtualMachine class");
         }
         return null;
     }
@@ -370,26 +326,25 @@ public class InstrumentationFactory {
      * @return True if the provided agentClassName is defined as the Agent-Class
      *         in the manifest from the provided agentJarFile. False otherwise.
      */
-    private static boolean validateAgentJarManifest(File agentJarFile, Log log,
-        String agentClassName) {
+    private static String getAgentClassName(File agentJarFile, Configuration conf) {
         try {
             JarFile jar = new JarFile(agentJarFile);
             Manifest manifest = jar.getManifest();
             if (manifest == null) {
-                return false;
+                return null;
             }
             Attributes attributes = manifest.getMainAttributes();
-            String ac = attributes.getValue("Agent-Class");
-            if (ac != null && ac.equals(agentClassName)) {
-                return true;
-            }
+            return attributes.getValue("Agent-Class");
         } catch (Exception e) {
-            if (log.isTraceEnabled() == true) {
-                log.trace(_name
-                    + ".validateAgentJarManifest() caught unexpected "
-                    + "exception " + e.getMessage());
-            }
+            trace(conf, "validateAgentJarManifest()",  " caught unexpected exception " + e.getMessage());
         }
-        return false;
-    }// end validateAgentJarManifest   
+        return null;
+    } 
+    
+    private static void trace(Configuration conf, String method, String message) {
+    	Log log = conf.getConfigurationLog();
+    	if (log.isTraceEnabled()) {
+    		log.trace(InstrumentationFactory.class.getName() + "." + method + ":" + message);
+    	}
+    }
 }

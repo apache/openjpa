@@ -36,20 +36,19 @@ import serp.util.Strings;
  * @nojavadoc
  */
 public class MappingRepositoryValue
-    extends PluginValue {
+    extends PluginValue<MappingRepository> {
 
     public MappingRepositoryValue(String prop) {
-        super(prop, true);
+        super(MappingRepository.class, prop, true);
     }
 
-    public Object newInstance(String clsName, Class type,
-        Configuration conf, boolean fatal) {
+    public MappingRepository newInstance(String clsName, Configuration conf, boolean fatal) {
         // since the MappingRepository takes a JDBConfiguration constructor,
         // we need to manually perform the instantiation
         try {
-            Class cls = Strings.toClass(clsName,
+            Class<MappingRepository> cls = Strings.toClass(clsName,
                 AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(type)));        
+                    J2DoPrivHelper.getClassLoaderAction(getValueType())));        
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).
                 newInstance(new Object[]{ conf });
         } catch (RuntimeException e) {
@@ -59,10 +58,10 @@ public class MappingRepositoryValue
                 throw(RuntimeException) e.getTargetException();
 
             // fall back to default behavior for better error reporting
-            return super.newInstance(clsName, type, conf, fatal);
+            return super.newInstance(clsName, conf, fatal);
         } catch (Exception e) {
             // fall back to default behavior for better error reporting
-            return super.newInstance(clsName, type, conf, fatal);
+            return super.newInstance(clsName, conf, fatal);
         }
     }
 }

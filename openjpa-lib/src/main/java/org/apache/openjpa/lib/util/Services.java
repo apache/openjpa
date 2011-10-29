@@ -59,7 +59,7 @@ public class Services {
      * Return an array of Strings of class names of all known service
      * implementors of the specified interface or class.
      */
-    public static String[] getImplementors(Class serviceClass) {
+    public static String[] getImplementors(Class<?> serviceClass) {
         return getImplementors(serviceClass, null);
     }
 
@@ -67,8 +67,7 @@ public class Services {
      * Return an array of Strings of class names of all known service
      * implementors of the specified interface or class.
      */
-    public static String[] getImplementors(Class serviceClass,
-        ClassLoader loader) {
+    public static String[] getImplementors(Class<?> serviceClass, ClassLoader loader) {
         return getImplementors(serviceClass.getName(), loader);
     }
 
@@ -86,22 +85,15 @@ public class Services {
      * implementors of the specified class name, as resolved by the specified
      * {@link ClassLoader}.
      */
-    public static String[] getImplementors(String serviceName,
-        ClassLoader loader) {
-        if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
-
+    public static String[] getImplementors(String serviceName, ClassLoader loader) {
         try {
-            Set resourceList = new TreeSet();
-            Enumeration resources = AccessController.doPrivileged(
-                J2DoPrivHelper.getResourcesAction(loader,
+            Set<String> resourceList = new TreeSet<String>();
+            Enumeration resources = AccessController.doPrivileged(J2DoPrivHelper.getResourcesAction(loader,
                         PREFIX + serviceName));
-            while (resources.hasMoreElements())
+            while (resources.hasMoreElements()) {
                 addResources((URL) resources.nextElement(), resourceList);
-
-            return (String[]) resourceList.toArray(new String[resourceList
-                .size()]);
+            }
+            return resourceList.toArray(new String[resourceList.size()]);
         } catch (PrivilegedActionException pae) {
             // silently swallow all exceptions.
         } catch (IOException ioe) {
@@ -115,11 +107,10 @@ public class Services {
      * Set. Class names are separated by lines. Lines starting with '#' are
      * ignored.
      */
-    private static void addResources(URL url, Set set) throws IOException {
+    private static void addResources(URL url, Set<String> set) throws IOException {
         InputStream in = null;
         BufferedReader reader = null;
         URLConnection urlCon = null;
-
         try {
             urlCon = url.openConnection();
             urlCon.setUseCaches(false);
@@ -137,8 +128,10 @@ public class Services {
                     String next = tok.nextToken();
                     if (next != null) {
                         next = next.trim();
-                        if (next.length() > 0 && !next.startsWith("#"))
+                        if (next.length() > 0 && !next.startsWith("#")) {
                             set.add(next);
+                        }
+                        
                     }
                 }
             }

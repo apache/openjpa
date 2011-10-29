@@ -33,12 +33,6 @@ import java.util.List;
 public interface MetaDataParser {
 
     /**
-     * The classloader to use to resolve resources, or null for impl-defined
-     * default.
-     */
-    public void setClassLoader(ClassLoader loader);
-
-    /**
      * Return the results from the last parse.
      */
     public List getResults();

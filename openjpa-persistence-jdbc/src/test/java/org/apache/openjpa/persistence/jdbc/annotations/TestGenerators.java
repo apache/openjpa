@@ -42,7 +42,7 @@ public class TestGenerators extends SingleEMFTestCase {
 
     public void testGet() {
         if (!PersistenceCapable.class.isAssignableFrom(Generator.class)
-            && !ClassRedefiner.canRedefineClasses(_log))
+            && !ClassRedefiner.canRedefineClasses(emf.getConfiguration()))
             fail("This test requires a higher level of enhancement than"
                 + " is available in the current environment.");
 

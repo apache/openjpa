@@ -146,7 +146,7 @@ public class ImplHelper {
     }
 
     /**
-     * Generate a value for the given metadaa.
+     * Generate a value for the given metadata.
      */
     private static Object generateValue(StoreContext ctx,
         ClassMetaData meta, FieldMetaData fmd, int typeCode) {
@@ -157,8 +157,7 @@ public class ImplHelper {
                 SequenceMetaData smd = (fmd == null)
                     ? meta.getIdentitySequenceMetaData()
                     : fmd.getValueSequenceMetaData();
-                return JavaTypes.convert(smd.getInstance(ctx.getClassLoader()).
-                    next(ctx, meta), typeCode);
+                return JavaTypes.convert(smd.getInstance().next(ctx, meta), typeCode);
             case ValueStrategies.UUID_STRING:
                 return UUIDGenerator.nextString(UUIDGenerator.TYPE1);
             case ValueStrategies.UUID_HEX:

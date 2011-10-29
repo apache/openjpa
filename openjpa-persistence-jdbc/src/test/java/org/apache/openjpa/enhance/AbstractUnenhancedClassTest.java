@@ -51,11 +51,12 @@ public abstract class AbstractUnenhancedClassTest
     //   * Java 6
     //   * Java 5 with javaagent
     //   * Java 5 without javaagent
-
+    OpenJPAConfiguration _conf;
     public void setUp() {
         setUp(getUnenhancedClass(), getUnenhancedSubclass(), CLEAR_TABLES);
         // trigger class redefinition
         emf.createEntityManager().close();
+        _conf = emf.getConfiguration();
         _log = emf.getConfiguration().getLog(OpenJPAConfiguration.LOG_ENHANCE);
     }
 
@@ -76,7 +77,7 @@ public abstract class AbstractUnenhancedClassTest
     public void testMetaData() {
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
-        assertEquals(ClassRedefiner.canRedefineClasses(_log), meta
+        assertEquals(ClassRedefiner.canRedefineClasses(_conf), meta
             .isIntercepting());
     }
 
@@ -264,7 +265,7 @@ public abstract class AbstractUnenhancedClassTest
 
     public void testEnhancer() throws IOException {
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
-            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()), null);
+            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()));
         Class sub = subs.get(0);
         assertNotNull(sub);
         assertEquals("org.apache.openjpa.enhance."
@@ -311,7 +312,7 @@ public abstract class AbstractUnenhancedClassTest
 
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
-        if (ClassRedefiner.canRedefineClasses(_log)
+        if (ClassRedefiner.canRedefineClasses(_conf)
             || (!userDefined 
             	&& AccessCode.isProperty(sm.getMetaData().getAccessType()))) {
 
@@ -363,7 +364,7 @@ public abstract class AbstractUnenhancedClassTest
 
         // we only expect lazy loading to work when we can redefine classes
         // or when accessing a property-access record that OpenJPA created.
-        if (ClassRedefiner.canRedefineClasses(_log)
+        if (ClassRedefiner.canRedefineClasses(_conf)
             || AccessCode.isProperty(sm.getMetaData().getAccessType())) {
             assertFalse(sm.getLoaded()
                 .get(sm.getMetaData().getField("lazyField").getIndex()));
@@ -588,14 +589,13 @@ public abstract class AbstractUnenhancedClassTest
         ClassMetaData meta = JPAFacadeHelper.getMetaData(emf,
             getUnenhancedClass());
         List<Class<?>> subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
-            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()),
-            null);
+            emf.getConfiguration(), Collections.singleton(getUnenhancedClass()));
         assertSame(meta, JPAFacadeHelper.getMetaData(emf, subs.get(0)));
 
         meta = JPAFacadeHelper.getMetaData(emf, getUnenhancedSubclass());
         subs =  ManagedClassSubclasser.prepareUnenhancedClasses(
             emf.getConfiguration(),
-            Collections.singleton(getUnenhancedSubclass()), null);
+            Collections.singleton(getUnenhancedSubclass()));
         assertSame(meta, JPAFacadeHelper.getMetaData(emf, subs.get(0)));
     }
 

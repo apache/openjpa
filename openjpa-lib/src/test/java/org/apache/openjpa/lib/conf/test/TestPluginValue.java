@@ -38,9 +38,9 @@ public class TestPluginValue extends AbstractTestCase {
 
     public void testDefault() {
         defaultTest(new StringValue("testKey"));
-        defaultTest(new PluginValue("testKey", true));
-        defaultTest(new PluginListValue("testKey"));
-        pluginDefaultTest(new PluginValue("testKey", true));
+        defaultTest(new PluginValue<String>(String.class, "testKey", true));
+        defaultTest(new PluginListValue<String>(String[].class, "testKey"));
+        pluginDefaultTest(new PluginValue<String>(String.class, "testKey", true));
     }
 
     private void defaultTest(Value val) {
@@ -76,13 +76,13 @@ public class TestPluginValue extends AbstractTestCase {
 
     public void testAlias() {
         aliasTest(new StringValue("testKey"));
-        aliasTest(new PluginValue("testKey", true));
-        aliasTest(new PluginListValue("testKey"));
+        aliasTest(new PluginValue<String>(String.class, "testKey", true));
+        aliasTest(new PluginListValue<String>(String[].class, "testKey"));
         emptyAliasTest(new StringValue("testKey"));
         emptyAliasTest(new StringValue("testKey"));
-        pluginAliasTest(new PluginValue("testKey", true));
-        pluginAliasTest(new PluginListValue("testKey"));
-        pluginListAliasTest(new PluginListValue("testKey"));
+        pluginAliasTest(new PluginValue<String>(String.class, "testKey", true));
+        pluginAliasTest(new PluginListValue<String>(String[].class, "testKey"));
+        pluginListAliasTest(new PluginListValue<String>(String[].class, "testKey"));
     }
 
     private void aliasTest(Value val) {
@@ -132,7 +132,7 @@ public class TestPluginValue extends AbstractTestCase {
     }
 
     public void testPluginListParsing() {
-        PluginListValue val = new PluginListValue("testKey");
+        PluginListValue<String> val = new PluginListValue<String>(String[].class, "testKey");
         assertEquals(0, val.getClassNames().length);
         val.setString("foo");
         assertEquals(1, val.getClassNames().length);

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence;
 
+import javax.persistence.EntityManagerFactory;
+
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.PluginValue;
@@ -29,7 +31,7 @@ import org.apache.openjpa.lib.conf.PluginValue;
  * @nojavadoc
  */
 public class EntityManagerFactoryValue
-    extends PluginValue {
+    extends PluginValue<OpenJPAEntityManagerFactory> {
 
     /**
      * Configuration property key.
@@ -45,17 +47,16 @@ public class EntityManagerFactoryValue
      */
     public static OpenJPAEntityManagerFactory newFactory(BrokerFactory bf) {
         OpenJPAConfiguration conf = bf.getConfiguration();
-        PluginValue val = (PluginValue) conf.getValue(KEY); 
+        PluginValue<OpenJPAEntityManagerFactory> val = (PluginValue<OpenJPAEntityManagerFactory>) conf.getValue(KEY); 
         if (val == null)
             return null;
-        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl) val.
-            instantiate(EntityManagerFactoryImpl.class, conf, true);
+        EntityManagerFactoryImpl emf = (EntityManagerFactoryImpl)val.instantiate(conf, true);
         emf.setBrokerFactory(bf);
         return emf;
     }
 
     public EntityManagerFactoryValue() {
-        super(KEY, false);
+        super(OpenJPAEntityManagerFactory.class, KEY, false);
         setAliases(ALIASES);
         setDefault(ALIASES[0]);
         setClassName(ALIASES[1]);

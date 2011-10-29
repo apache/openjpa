@@ -65,7 +65,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
 
         // Force entity resolution
-        repos.getMetaData(BaseTestEntity2.class, null, true);
+        repos.getMetaData(BaseTestEntity2.class, true);
         
         OpenJPAEntityManagerSPI em = emf1.createEntityManager();
 
@@ -240,7 +240,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
 
         // Force entity resolution
-        repos.getMetaData(BaseTestEntity1.class, null, true);
+        repos.getMetaData(BaseTestEntity1.class, true);
 
         XMLPersistenceMappingSerializer ser =
             new XMLPersistenceMappingSerializer((JDBCConfiguration)conf);
@@ -256,7 +256,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         MetaDataRepository mdr2 = parser.getRepository();
 
         ClassMetaData _entityMeta2 = 
-            mdr2.getMetaData(BaseTestEntity1.class, null, true);
+            mdr2.getMetaData(BaseTestEntity1.class, true);
 
         // Assert metadata is populated correctly
         FieldMapping fm = (FieldMapping)_entityMeta2.getField("one2Melems");
@@ -286,7 +286,7 @@ public class TestOrderColumnXML extends AbstractCachedEMFTestCase {
         Class clazz, String fieldName) {
         JDBCConfiguration conf = (JDBCConfiguration) emf1.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(clazz, null, true);
+            getMapping(clazz, true);
         FieldMapping fm = cls.getFieldMapping(fieldName);
         Column oc = fm.getOrderColumn();
         assertNotNull(oc);

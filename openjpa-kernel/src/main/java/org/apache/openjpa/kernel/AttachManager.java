@@ -247,8 +247,7 @@ public class AttachManager {
         //### need to handle ACT_RUN without also ACT_CASCADE
         ClassMetaData meta = _broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(
-                ImplHelper.getManagedInstance(toAttach).getClass(),
-                _broker.getClassLoader(), true);
+                ImplHelper.getManagedInstance(toAttach).getClass(), true);
         return getStrategy(toAttach).attach(this, toAttach, meta, into,
             owner, ownerMeta, explicit);
     }

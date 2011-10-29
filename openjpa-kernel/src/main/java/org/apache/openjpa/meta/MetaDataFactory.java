@@ -75,7 +75,7 @@ public interface MetaDataFactory
      * {@link MetaDataModes#MODE_META MODE_META}, so long as
      * the <code>strict</code> property hasn't been set
      */
-    public void load(Class<?> cls, int mode, ClassLoader envLoader);
+    public void load(Class<?> cls, int mode);
 
     /**
      * Store the given metadata.
@@ -95,7 +95,7 @@ public interface MetaDataFactory
      *
      * @return false if any metadata could not be dropped
      */
-    public boolean drop(Class<?>[] cls, int mode, ClassLoader envLoader);
+    public boolean drop(Class<?>[] cls, int mode);
 
     /**
      * Return the metadata defaults for this factory.
@@ -112,19 +112,17 @@ public interface MetaDataFactory
      * @see MetaDataRepository#getPersistentTypeNames
      * @see MetaDataRepository#loadPersistentTypes
      */
-    public Set<String> getPersistentTypeNames(boolean devpath, 
-    		ClassLoader envLoader);
+    public Set<String> getPersistentTypeNames(boolean devpath);
 
     /**
      * Return the type defining the given query name, if any.
      */
-    public Class<?> getQueryScope(String queryName, ClassLoader loader);
+    public Class<?> getQueryScope(String queryName);
 
     /**
      * Return the type defining the given result set mapping name, if any.
      */
-    public Class<?> getResultSetMappingScope(String resultSetMappingName,
-        ClassLoader loader);
+    public Class<?> getResultSetMappingScope(String resultSetMappingName);
     
     /**
      * Return a properly-configured class arg parser for our expected

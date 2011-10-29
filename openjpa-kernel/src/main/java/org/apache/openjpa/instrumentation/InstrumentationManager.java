@@ -38,7 +38,7 @@ public interface InstrumentationManager extends Closeable {
      * @param conf the configuration to use for initialization
      * @param providers one or more providers as supplied via plugin list value
      */
-    public void initialize(OpenJPAConfiguration conf, PluginListValue providers);
+    public void initialize(OpenJPAConfiguration conf, PluginListValue<InstrumentationProvider> providers);
 
     /**
      * Manage a given provider.  This will plug the instruments managed by the 

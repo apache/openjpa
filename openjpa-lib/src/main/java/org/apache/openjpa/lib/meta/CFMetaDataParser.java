@@ -36,16 +36,15 @@ import serp.util.Strings;
  */
 public class CFMetaDataParser extends XMLMetaDataParser {
 
-    static final String[] PACKAGES = new String[]{
-        "java.lang.", "java.util.", "java.math." };
-    private static final Localizer _loc = Localizer.forPackage
-        (CFMetaDataParser.class);
+    static final String[] PACKAGES = new String[]{"java.lang.", "java.util.", "java.math." };
+    private static final Localizer _loc = Localizer.forPackage(CFMetaDataParser.class);
 
     // the current package and class being parsed
     private String _package = null;
     private String _class = null;
 
-    public CFMetaDataParser() {
+    public CFMetaDataParser(ClassLoader loader) {
+    	super(loader);
         setParseText(false);
     }
 
@@ -282,8 +281,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         throws SAXException {
         if (name == null)
             return null;
-        Class<?> cls =
-            classForName(name, _package, resolve, currentClassLoader());
+        Class<?> cls = classForName(name, _package, resolve, getClassLoader());
         if (cls == null)
             throw getException(_loc.get("invalid-class", name).getMessage());
         return cls;
@@ -298,9 +296,6 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         if (StringUtils.isEmpty(name))
             return null;
 
-        if (loader == null)
-            loader = AccessController.doPrivileged(
-                J2DoPrivHelper.getContextClassLoaderAction());
         boolean fullName = name.indexOf('.') != -1;
         boolean noPackage = StringUtils.isEmpty(pkg);
         try {

@@ -83,8 +83,7 @@ public class TestNamedQueries extends BaseQueryTest {
         assertEquals("num", query.getGrouping());
         */
         QueryMetaData meta = ((OpenJPAEntityManagerSPI) pm).getConfiguration().
-            getMetaDataRepositoryInstance().getQueryMetaData(null,
-            "named", pm.getClassLoader(), true);
+            getMetaDataRepositoryInstance().getQueryMetaData(null, "named", true);
         assertNotNull(meta);
         assertEquals("SELECT o FROM QueryTest1 o", meta.getQueryString());
         assertEquals(null, meta.getResultType());

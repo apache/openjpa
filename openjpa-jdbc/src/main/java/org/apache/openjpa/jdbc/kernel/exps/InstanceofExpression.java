@@ -86,8 +86,7 @@ class InstanceofExpression
             // cache mapping for cast
             MappingRepository repos = ctx.store.getConfiguration().
                 getMappingRepositoryInstance();
-            mapping = repos.getMapping(_cls, ctx.store.getContext().
-                getClassLoader(), false);
+            mapping = repos.getMapping(_cls, false);
 
             // if not looking for a PC, don't bother with indicator
             if (mapping == null || !discrim.hasClassConditions(mapping, true))

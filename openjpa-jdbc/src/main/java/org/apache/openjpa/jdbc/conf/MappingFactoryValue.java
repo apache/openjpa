@@ -36,16 +36,15 @@ import org.apache.openjpa.meta.MetaDataFactory;
  * @nojavadoc
  */
 public class MappingFactoryValue
-    extends PluginValue {
+    extends PluginValue<MetaDataFactory> {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (MappingFactoryValue.class);
+    private static final Localizer _loc = Localizer.forPackage(MappingFactoryValue.class);
 
     private String[] _metaFactoryDefaults = null;
     private String[] _mappedMetaFactoryDefaults = null;
 
     public MappingFactoryValue(String prop) {
-        super(prop, false);
+        super(MetaDataFactory.class, prop, false);
     }
 
     /**
@@ -57,8 +56,7 @@ public class MappingFactoryValue
      */
     public void setMetaDataFactoryDefault(String metaAlias,
         String mappingAlias) {
-        _metaFactoryDefaults = setAlias(metaAlias, mappingAlias,
-            _metaFactoryDefaults);
+        _metaFactoryDefaults = setAlias(metaAlias, mappingAlias, _metaFactoryDefaults);
     }
 
     /**
@@ -72,20 +70,20 @@ public class MappingFactoryValue
     }
 
     /**
-     * Intantiate a {@link MetaDataFactory} responsible for both metadata and
+     * Instantiate a {@link MetaDataFactory} responsible for both metadata and
      * mapping.
      */
     public MetaDataFactory instantiateMetaDataFactory(Configuration conf,
-        PluginValue metaPlugin, String mapping) {
+        PluginValue<MetaDataFactory> metaPlugin, String mapping) {
         return instantiateMetaDataFactory(conf, metaPlugin, mapping, true);
     }
 
     /**
-     * Intantiate a {@link MetaDataFactory} responsible for both metadata and
+     * Instantiate a {@link MetaDataFactory} responsible for both metadata and
      * mapping.
      */
     public MetaDataFactory instantiateMetaDataFactory(Configuration conf,
-        PluginValue metaPlugin, String mapping, boolean fatal) {
+        PluginValue<MetaDataFactory> metaPlugin, String mapping, boolean fatal) {
         String clsName = getClassName();
         String props = getProperties();
         String metaClsName = metaPlugin.getClassName();
@@ -95,14 +93,13 @@ public class MappingFactoryValue
         if (StringUtils.isEmpty(clsName)) {
             String def;
             if (!StringUtils.isEmpty(mapping)) {
-                def = unalias(metaPlugin.alias(metaClsName),
-                    _mappedMetaFactoryDefaults, true);
-                if (def != null)
+                def = unalias(metaPlugin.alias(metaClsName), _mappedMetaFactoryDefaults, true);
+                if (def != null) {
                     clsName = unalias(def);
+                }
             }
             if (StringUtils.isEmpty(clsName)) {
-                def = unalias(metaPlugin.alias(metaClsName),
-                    _metaFactoryDefaults, true);
+                def = unalias(metaPlugin.alias(metaClsName), _metaFactoryDefaults, true);
                 if (def != null)
                     clsName = unalias(def);
             }
@@ -111,17 +108,16 @@ public class MappingFactoryValue
         // if mapping factory and metadata factory the same, combine
         // into metadata factory
         if (clsName != null && clsName.equals(metaClsName)) {
-            if (props != null && metaProps == null)
+            if (props != null && metaProps == null) {
                 metaProps = props;
-            else if (props != null)
+            } else if (props != null)
                 metaProps += "," + props;
             clsName = null;
             props = null;
         }
 
         // instantiate factories
-        MetaDataFactory map = (MetaDataFactory) newInstance(clsName,
-            MetaDataFactory.class, conf, fatal);
+        MetaDataFactory map = newInstance(clsName, conf, fatal);
         MetaDataFactory meta;
         if (map != null
             && map.getClass().getName().indexOf("Deprecated") != -1) {
@@ -130,8 +126,7 @@ public class MappingFactoryValue
             meta = map;
             map = null;
         } else {
-            meta = (MetaDataFactory) metaPlugin.newInstance
-                (metaClsName, MetaDataFactory.class, conf, fatal);
+            meta = metaPlugin.newInstance(metaClsName, conf, fatal);
         }
 
         // configure factories.  if only meta factory, allow user to specify
@@ -142,10 +137,8 @@ public class MappingFactoryValue
             else
                 metaProps += ", " + props;
         }
-        Configurations.configureInstance(map, conf, props,
-            (fatal) ? getProperty() : null);
-        Configurations.configureInstance(meta, conf, metaProps,
-            (fatal) ? metaPlugin.getProperty() : null);
+        Configurations.configureInstance(map, conf, props, (fatal) ? getProperty() : null);
+        Configurations.configureInstance(meta, conf, metaProps, (fatal) ? metaPlugin.getProperty() : null);
 
         Log log = conf.getLog(JDBCConfiguration.LOG_METADATA);
         if (log.isTraceEnabled()) {
@@ -156,20 +149,12 @@ public class MappingFactoryValue
 
         // if no mapping setting, return meta factory alone, assuming it handles
         // both metadata and mapping
-        MetaDataFactory ret = null;
-        if(map == null ) { 
-            ret = meta;
+        if (map == null) { 
+            return meta;
+        } else {
+        	boolean strict = (conf instanceof OpenJPAConfiguration) 
+        	    && ((OpenJPAConfiguration)conf).getCompatibilityInstance().getMetaFactoriesAreStrict();
+            return new MetaDataPlusMappingFactory(meta, map, strict);
         }
-        else {
-            if( conf instanceof OpenJPAConfiguration) {
-                ret = new MetaDataPlusMappingFactory(meta, map, (OpenJPAConfiguration) conf);
-            }
-            else {
-                ret = new MetaDataPlusMappingFactory(meta, map);
-            }
-        }
-        
-        return ret; 
-        
     }
 }

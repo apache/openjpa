@@ -57,8 +57,7 @@ public abstract class JDBCTestCase extends BaseJDBCTest {
     public ClassMapping getClassMapping(Class c) {
         
         OpenJPAConfiguration jdoConf = getConfiguration();
-        return ((JDBCConfiguration) jdoConf).getMappingRepositoryInstance().
-            getMapping(c, getClass().getClassLoader(), true);
+        return ((JDBCConfiguration) jdoConf).getMappingRepositoryInstance().getMapping(c, true);
     }
 
     public FieldMapping getFieldMapping(Class c, String field) {
@@ -66,7 +65,6 @@ public abstract class JDBCTestCase extends BaseJDBCTest {
     }
 
     public boolean isInheritanceStrategyVertical() {
-        return VerticalClassStrategy.class.
-            isAssignableFrom(getDefaultInheritanceStrategy());
+        return VerticalClassStrategy.class.isAssignableFrom(getDefaultInheritanceStrategy());
     }
 }

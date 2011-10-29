@@ -58,10 +58,6 @@ class AutoDetachValue
         setAliasListComprehensive(true);
     }
 
-    public Class getValueType() {
-        return String[].class;
-    }
-
     public void setConstant(int flags) {
         _flags = flags;
     }

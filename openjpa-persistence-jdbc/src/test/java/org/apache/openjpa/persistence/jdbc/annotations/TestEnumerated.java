@@ -41,7 +41,7 @@ public class TestEnumerated
     public void testMapping() {
         ClassMapping cls = (ClassMapping) emf.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(AnnoTest1.class, 
-            null, true);
+            true);
         FieldMapping fm = cls.getDeclaredFieldMapping("enumeration");
         assertNotNull(fm);
         assertEquals(FieldMapping.MANAGE_PERSISTENT, fm.getManagement());

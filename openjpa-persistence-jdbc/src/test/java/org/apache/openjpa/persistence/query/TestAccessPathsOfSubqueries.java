@@ -38,6 +38,7 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
 
 public class TestAccessPathsOfSubqueries extends BaseQueryTest {
 
@@ -57,12 +58,9 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
             + "WHERE rt5.name IS NOT NULL)");
         ClassMetaData[] metas = q.getAccessPathMetaDatas();
         Collection c = Arrays.asList(metas);
-        ClassMetaData rt1 = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(RuntimeTest1.class,
-            broker.getClassLoader(), true);
-        ClassMetaData rt5 = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(RuntimeTest5.class,
-            broker.getClassLoader(), true);
+        MetaDataRepository repos = broker.getConfiguration().getMetaDataRepositoryInstance();
+        ClassMetaData rt1 = repos.getMetaData(RuntimeTest1.class,true);
+        ClassMetaData rt5 = repos.getMetaData(RuntimeTest5.class,true);
         assertTrue(c.contains(rt1));
         assertTrue(c.contains(rt5));
         assertEquals(2, c.size());
@@ -77,15 +75,10 @@ public class TestAccessPathsOfSubqueries extends BaseQueryTest {
 
         ClassMetaData[] metas = q.getAccessPathMetaDatas();
         Collection c = Arrays.asList(metas);
-        ClassMetaData rt1 = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(RuntimeTest1.class,
-            broker.getClassLoader(), true);
-        ClassMetaData rt4 = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(RuntimeTest4.class,
-            broker.getClassLoader(), true);
-        ClassMetaData rt5 = broker.getConfiguration().
-            getMetaDataRepositoryInstance().getMetaData(RuntimeTest5.class,
-            broker.getClassLoader(), true);
+        MetaDataRepository repos = broker.getConfiguration().getMetaDataRepositoryInstance();
+        ClassMetaData rt1 = repos.getMetaData(RuntimeTest1.class, true);
+        ClassMetaData rt4 = repos.getMetaData(RuntimeTest4.class, true);
+        ClassMetaData rt5 = repos.getMetaData(RuntimeTest5.class, true);
         assertTrue(c.contains(rt1));
         assertTrue(c.contains(rt4));
         assertTrue(c.contains(rt5));

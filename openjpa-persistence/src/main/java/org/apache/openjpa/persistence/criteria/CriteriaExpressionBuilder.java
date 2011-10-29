@@ -92,7 +92,7 @@ class CriteriaExpressionBuilder {
             for (Join<?,?> join : root.getJoins()) {
                 Class<?> cls = join.getAttribute().getJavaType();
                 if (join.getAttribute().isAssociation()) {
-                    ClassMetaData meta = metamodel.getRepository().getMetaData(cls, null, true);
+                    ClassMetaData meta = metamodel.getRepository().getMetaData(cls, true);
                     PersistenceType type = MetamodelImpl.getPersistenceType(meta);
                     if (type == PersistenceType.ENTITY || type == PersistenceType.EMBEDDABLE) 
                         metas.add(meta);

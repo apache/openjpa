@@ -58,12 +58,10 @@ public class TestMappedByKeyMaps
     
     public void testInverseKeyMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
-                (InverseKeyMapPC.class, null, true);
+        ClassMapping pc = conf.getMappingRepositoryInstance().getMapping(InverseKeyMapPC.class, true);
         FieldMapping map = pc.getFieldMapping("helpers");
         
-        ClassMapping helper = conf.getMappingRepositoryInstance().getMapping
-                (HelperPC.class, null, true);
+        ClassMapping helper = conf.getMappingRepositoryInstance().getMapping(HelperPC.class, true);
         FieldMapping str = helper.getFieldMapping("stringField");
         
         assertEquals("stringField", map.getKey().getValueMappedBy());
@@ -77,12 +75,10 @@ public class TestMappedByKeyMaps
     
     public void testJoinTableMapMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        ClassMapping pc = conf.getMappingRepositoryInstance().getMapping
-                (JoinTableMapPC.class, null, true);
+        ClassMapping pc = conf.getMappingRepositoryInstance().getMapping(JoinTableMapPC.class, true);
         FieldMapping map = pc.getFieldMapping("helpers");
         
-        ClassMapping helper = conf.getMappingRepositoryInstance().getMapping
-                (HelperPC.class, null, true);
+        ClassMapping helper = conf.getMappingRepositoryInstance().getMapping(HelperPC.class, true);
         FieldMapping str = helper.getFieldMapping("stringField");
         
         assertEquals("stringField", map.getKey().getValueMappedBy());
@@ -257,13 +253,13 @@ public class TestMappedByKeyMaps
     
     private void setLRS(Class cls, boolean lrs) {
         ClassMapping cm = ((JDBCConfiguration) getConfiguration()).
-                getMappingRepositoryInstance().getMapping(cls, null, true);
+                getMappingRepositoryInstance().getMapping(cls, true);
         cm.getFieldMapping("helpers").setLRS(lrs);
     }
     
     private void unsetLRS(Class cls) {
         ClassMapping cm = ((JDBCConfiguration) getConfiguration()).
-                getMappingRepositoryInstance().getMapping(cls, null, true);
+                getMappingRepositoryInstance().getMapping(cls, true);
         cm.getFieldMapping("helpers").setLRS(false);
     }
     

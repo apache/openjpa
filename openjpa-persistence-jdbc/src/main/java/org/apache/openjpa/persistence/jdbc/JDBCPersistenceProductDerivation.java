@@ -77,20 +77,14 @@ public class JDBCPersistenceProductDerivation
         Specification jpa = PersistenceProductDerivation.SPEC_JPA;
         Specification ejb = PersistenceProductDerivation.ALIAS_EJB;
 
-        conf.metaFactoryPlugin.setAlias(ejb.getName(),
-            PersistenceMappingFactory.class.getName());
-        conf.metaFactoryPlugin.setAlias(jpa.getName(),
-            PersistenceMappingFactory.class.getName());
+        conf.metaFactoryPlugin.setAlias(ejb.getName(), PersistenceMappingFactory.class.getName());
+        conf.metaFactoryPlugin.setAlias(jpa.getName(), PersistenceMappingFactory.class.getName());
 
-        conf.mappingFactoryPlugin.setAlias(ejb.getName(),
-            PersistenceMappingFactory.class.getName());
-        conf.mappingFactoryPlugin.setAlias(jpa.getName(),
-            PersistenceMappingFactory.class.getName());
+        conf.mappingFactoryPlugin.setAlias(ejb.getName(), PersistenceMappingFactory.class.getName());
+        conf.mappingFactoryPlugin.setAlias(jpa.getName(), PersistenceMappingFactory.class.getName());
 
-        conf.mappingDefaultsPlugin.setAlias(ejb.getName(),
-            PersistenceMappingDefaults.class.getName());
-        conf.mappingDefaultsPlugin.setAlias(jpa.getName(),
-            PersistenceMappingDefaults.class.getName());
+        conf.mappingDefaultsPlugin.setAlias(ejb.getName(), PersistenceMappingDefaults.class.getName());
+        conf.mappingDefaultsPlugin.setAlias(jpa.getName(), PersistenceMappingDefaults.class.getName());
         
         conf.lockManagerPlugin.setAlias("mixed", "org.apache.openjpa.jdbc.kernel.MixedLockManager");
         

@@ -541,7 +541,7 @@ public class TestSubclassedBehavior extends AbstractTestCase {
         // registry-parsing code.
         ClassMetaData meta = getConfiguration()
             .getMetaDataRepositoryInstance().
-            getMetaData(DerivedEntity.class, null, false);
+            getMetaData(DerivedEntity.class, false);
         assertTrue("meta's access should be ACCESS_PROPERTY",
         		AccessCode.isProperty(meta.getAccessType()));
         FieldMetaData[] fmds = meta.getFields();

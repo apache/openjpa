@@ -294,11 +294,11 @@ public class PreparedStatementManagerImpl
      * log any SQL warnings that result from the execution of a SQL statement. 
      */
     protected void logSQLWarnings(PreparedStatement stmt) {
-        if (stmt != null && _log != null && _log.isTraceEnabled()) {
+        if (stmt != null && _log != null && _log.isWarnEnabled()) {
             try {
                 SQLWarning warn = stmt.getWarnings();
                 while (warn != null) {
-                    _log.trace(_loc.get("sql-warning", warn.getMessage()));
+                    _log.warn(_loc.get("sql-warning", warn.getMessage()));
                     warn = warn.getNextWarning();
                 }
             } catch (SQLException e) {}

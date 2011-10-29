@@ -25,6 +25,7 @@ import javax.persistence.EntityManager;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -103,8 +104,7 @@ public abstract class SingleEMFTestCase
      */
     protected ClassMapping getMapping(String name) {
         return (ClassMapping) emf.getConfiguration()
-                .getMetaDataRepositoryInstance().getMetaData(name,
-                        getClass().getClassLoader(), true);
+                .getMetaDataRepositoryInstance().getMetaData(name, true);
     }
     
     /**
@@ -117,8 +117,7 @@ public abstract class SingleEMFTestCase
      */
     protected ClassMapping getMapping(Class<?> entityClass) {
         return (ClassMapping) emf.getConfiguration()
-                .getMetaDataRepositoryInstance().getMetaData(entityClass,
-                        getClass().getClassLoader(), true);
+                .getMetaDataRepositoryInstance().getMetaData(entityClass, true);
     }
     
     /**
@@ -160,7 +159,7 @@ public abstract class SingleEMFTestCase
     
     public String getAlias(Class<?> t) {
         return emf.getConfiguration().getMetaDataRepositoryInstance()
-            .getMetaData(t, null, true).getTypeAlias();
+            .getMetaData(t, true).getTypeAlias();
     }
 
     protected ClassMapping [] getMappings() {

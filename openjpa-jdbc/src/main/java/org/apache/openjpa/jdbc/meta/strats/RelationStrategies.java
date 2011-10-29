@@ -87,8 +87,7 @@ public class RelationStrategies {
         } else if (val.getClass() == vm.getType())
             rel = vm.getTypeMapping(); // common case
         else {
-            rel = vm.getMappingRepository().getMapping(val.getClass(),
-                store.getContext().getClassLoader(), true);
+            rel = vm.getMappingRepository().getMapping(val.getClass(), true);
         }
         if (!rel.isMapped())
             throw new UserException(_loc.get("unmapped-datastore-value", 

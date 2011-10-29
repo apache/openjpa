@@ -24,6 +24,7 @@ package org.apache.openjpa.lib.conf;
  * @since 0.4.1.4
  *
  */
+@SuppressWarnings("serial")
 public class BootstrapException extends RuntimeException {
     private boolean _fatal = false;
 	

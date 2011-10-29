@@ -187,18 +187,16 @@ public class ClassTableJDBCSeq
     /**
      * Run the tool. Returns false if invalid options were given.
      */
-    public static boolean run(JDBCConfiguration conf, String[] args,
-        Options opts) throws Exception {
+    public static boolean run(JDBCConfiguration conf, String[] args, Options opts) throws Exception {
         String action = opts.removeProperty("action", "a", null);
         Configurations.populateConfiguration(conf, opts);
-        return run(conf, args, action, null, null);
+        return run(conf, args, action, null);
     }
 
     /**
      * Run the tool. Return false if an invalid option was given.
      */
-    public static boolean run(JDBCConfiguration conf, String[] args,
-        String action, MappingRepository repos, ClassLoader loader)
+    public static boolean run(JDBCConfiguration conf, String[] args, String action, MappingRepository repos)
         throws Exception {
         ClassTableJDBCSeq seq = new ClassTableJDBCSeq();
         String props = Configurations.getProperties(conf.getSequence());
@@ -216,18 +214,14 @@ public class ClassTableJDBCSeq
             if (args.length == 0)
                 return false;
 
-            if (loader == null)
-                loader = conf.getClassResolverInstance().getClassLoader(
-                    ClassTableJDBCSeq.class, null);
-
             ClassArgParser cap = conf.getMetaDataRepositoryInstance()
                 .getMetaDataFactory().newClassArgParser();
-            cap.setClassLoader(loader);
+            cap.setClassLoader(conf.getClassLoader());
             Class<?> cls = cap.parseTypes(args[0])[0];
 
             if (repos == null)
                 repos = conf.getMappingRepositoryInstance();
-            ClassMapping mapping = repos.getMapping(cls, null, true);
+            ClassMapping mapping = repos.getMapping(cls, true);
 
             Connection conn = conf.getDataSource2(null).getConnection();
             try {

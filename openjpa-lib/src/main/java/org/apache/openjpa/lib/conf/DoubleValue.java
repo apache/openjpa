@@ -25,17 +25,14 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Marc Prud'hommeaux
  */
-public class DoubleValue extends Value {
+public class DoubleValue extends Value<Double> {
 
     private double value;
 
     public DoubleValue(String prop) {
-        super(prop);
+        super(Double.class, prop);
     }
 
-    public Class<Double> getValueType() {
-        return double.class;
-    }
 
     /**
      * The internal value.
@@ -60,16 +57,10 @@ public class DoubleValue extends Value {
     }
 
     protected void setInternalString(String val) {
-        if (StringUtils.isEmpty(val))
-            set(0D);
-        else
-            set(Double.parseDouble(val));
+        set (StringUtils.isEmpty(val) ? 0D : Double.parseDouble(val));
     }
 
     protected void setInternalObject(Object obj) {
-        if (obj == null)
-            set(0D);
-        else
-            set(((Number) obj).doubleValue());
+        set (obj == null ? 0D : ((Number)obj).doubleValue());
     }
 }

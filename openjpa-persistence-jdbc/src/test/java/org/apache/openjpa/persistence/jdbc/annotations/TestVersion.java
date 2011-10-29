@@ -180,8 +180,7 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void testNoDefaultVersionWithoutFieldOrColumn() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(EmbedOwner.class, 
-            null, true);
+            getMappingRepositoryInstance().getMapping(EmbedOwner.class, true);
         assertEquals(NoneVersionStrategy.getInstance(),
             cls.getVersion().getStrategy());
         assertEquals(0, cls.getVersion().getColumns().length);
@@ -189,8 +188,7 @@ public class TestVersion extends SingleEMFTestCase {
 
     public void testVersionWithField() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(AnnoTest1.class, 
-            null, true);
+            getMappingRepositoryInstance().getMapping(AnnoTest1.class, true);
         assertTrue(NoneVersionStrategy.getInstance() !=
             cls.getVersion().getStrategy());
         assertEquals(1, cls.getVersion().getColumns().length);

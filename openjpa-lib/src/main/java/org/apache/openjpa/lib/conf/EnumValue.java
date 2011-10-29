@@ -18,15 +18,21 @@
  */
 package org.apache.openjpa.lib.conf;
 
-/**
- * Components can listen on {@link Value} objects for changes directly.
- *
- * @author Abe White
- */
-public interface ValueListener {
+import java.util.EnumSet;
 
-    /**
-     * Callback used by {@link Value} objects to notify listener of change.
-     */
-    public void valueChanged(Value<?> val);
+public class EnumValue<T extends Enum<T>> extends ObjectValue<T> {
+
+	public EnumValue(Class<T> type, String prop) {
+		super(type, prop);
+		setAliasListComprehensive(true);
+		EnumSet<T> all = EnumSet.allOf(type);
+		for (T v : all) {
+			setAlias(v.toString(), v.toString().toLowerCase());
+		}
+	}
+
+	@Override
+	protected void setInternalString(String str) {
+		set(Enum.valueOf(getValueType(), str));
+	}
 }

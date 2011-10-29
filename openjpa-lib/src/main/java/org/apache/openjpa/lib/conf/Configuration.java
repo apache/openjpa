@@ -33,10 +33,14 @@ import org.apache.openjpa.lib.util.Closeable;
 /**
  * Interface for generic configuration objects. Includes the ability
  * to write configuration to and from {@link Properties} instances. Instances
- * are threadsafe for reads, but not for writes.
+ * are thread-safe for reads, but not for writes.
+ * <br>
+ * A configuration comprises of {@link Value values}. The configuration is
+ * responsible for loading the values. 
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
+ * @author Pinaki Poddar
  */
 public interface Configuration
     extends BeanInfo, Serializable, Closeable, Cloneable {
@@ -147,24 +151,23 @@ public interface Configuration
     /**
      * Return the {@link Value} for the given property, or null if none.
      */
-    public Value getValue(String property);
+    public Value<?> getValue(String property);
 
     /**
      * Return the set of all {@link Value}s.
      */
-    public Value[] getValues();
+    public Value<?>[] getValues();
 
     /**
      * Add the given value to the set of configuration properties. This
      * method replaces any existing value under the same property.
      */
-    public <T extends Value> T addValue(T val);
-    //public Value addValue(Value val);
+    public <T> Value<T> addValue(Value<T> val);
 
     /**
      * Remove the given value from the set of configuration properties.
      */
-    public boolean removeValue(Value val);
+    public boolean removeValue(Value<?> val);
     
     /**
      * A properties representation of this Configuration.
@@ -245,33 +248,23 @@ public interface Configuration
      * Free the resources used by this object.
      */
     public void close();
+    
+    /**
+     * Adds a class loader for loading plug-ins by class name.
+     * 
+     * @param loader
+     */
+    public ClassLoader addClassLoader(ClassLoader loader);
+    
+    /**
+     * Gets the class loader for loading plug-ins by class name.
+     * 
+     */
+    public ClassLoader getClassLoader();
 
     /**
      * Return a copy of this configuration.
      */
     public Object clone();
     
-    /**
-     * Modifies a <em>dynamic</em> property of this receiver even when 
-     * {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
-     */
-//    public void modifyDynamic(String property, Object newValue);
-//    
-//    /**
-//     * Affirms if the given property can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public boolean isDynamic(String property);
-//    
-//    /**
-//     * Gets the values that can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public Value[] getDynamicValues();
 }

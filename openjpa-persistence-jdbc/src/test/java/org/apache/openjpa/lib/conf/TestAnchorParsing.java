@@ -70,16 +70,12 @@ public class TestAnchorParsing extends TestCase {
     public void testProductDerivationsLoadResource() {
         ProductDerivations.load(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml",
-            "foo", null);
+            "foo");
 
-        ProductDerivations.load(
-            "org/apache/openjpa/lib/conf/product-derivations-load.xml",
-            null, null);
+        ProductDerivations.load("org/apache/openjpa/lib/conf/product-derivations-load.xml", null);
 
         try {
-            ProductDerivations.load(
-                "org/apache/openjpa/lib/conf/product-derivations-load.xml",
-                "nonexistant", null);
+            ProductDerivations.load("org/apache/openjpa/lib/conf/product-derivations-load.xml", "nonexistant");
             fail("pu 'nonexistant' does not exist");
         } catch (MissingResourceException mre) {
             // expected
@@ -88,7 +84,7 @@ public class TestAnchorParsing extends TestCase {
         try {
             ProductDerivations.load(
                 "org/apache/openjpa/lib/conf/product-derivations-load.xml",
-                "", null);
+                "");
             fail("pu '' does not exist");
         } catch (MissingResourceException mre) {
             // expected
@@ -97,7 +93,7 @@ public class TestAnchorParsing extends TestCase {
 
     public void testNonexistantResourceLoad() {
         try {
-            ProductDerivations.load("nonexistant-resource", null, null);
+            ProductDerivations.load("nonexistant-resource", null);
             fail("resource 'nonexistant-resource' should not exist");
         } catch (MissingResourceException e) {
             // expected
@@ -108,19 +104,19 @@ public class TestAnchorParsing extends TestCase {
         File validFile = resourceToTemporaryFile(
             "org/apache/openjpa/lib/conf/product-derivations-load.xml");
 
-        ProductDerivations.load(validFile, "foo", null);
+        ProductDerivations.load(validFile, "foo");
 
-        ProductDerivations.load(validFile, null, null);
+        ProductDerivations.load(validFile, null);
 
         try {
-            ProductDerivations.load(validFile, "nonexistant", null);
+            ProductDerivations.load(validFile, "nonexistant");
             fail("pu 'nonexistant' does not exist");
         } catch (MissingResourceException mre) {
             // expected
         }
 
         try {
-            ProductDerivations.load(validFile, "", null);
+            ProductDerivations.load(validFile, "");
             fail("pu '' does not exist");
         } catch (MissingResourceException mre) {
             // expected
@@ -132,7 +128,7 @@ public class TestAnchorParsing extends TestCase {
         File f = new File("this-should-not-exist");
         assertFalse(f.exists());
         try {
-            ProductDerivations.load(f, null, null);
+            ProductDerivations.load(f, null);
             fail(f.getName() + " does not exist");
         } catch (MissingResourceException e) {
             // expected

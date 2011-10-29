@@ -25,16 +25,12 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Marc Prud'hommeaux
  */
-public class StringValue extends Value {
+public class StringValue extends Value<String> {
 
     private String value;
 
     public StringValue(String prop) {
-        super(prop);
-    }
-
-    public Class<String> getValueType() {
-        return String.class;
+        super(String.class, prop);
     }
 
     /**
@@ -64,11 +60,7 @@ public class StringValue extends Value {
     }
     
     protected void setInternalObject(Object obj) {
-        if (obj instanceof String) {
-            set((String) obj);
-        } else {
-            set(obj == null ? null : obj.toString());
-        }
+        set(obj == null ? null : obj.toString());
     }
 }
 
