@@ -90,8 +90,7 @@ public class PersistenceProviderImpl
      * @return EntityManagerFactory or null if anything goes wrong during loading resources.
      */
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, String resource, Map m) {
-        PersistenceProductDerivation pd = BundleUtils.runningUnderOSGi() 
-        	? new OSGiDerivation() : new PersistenceProductDerivation();
+        PersistenceProductDerivation pd = new PersistenceProductDerivation(BundleUtils.runningUnderOSGi());
         ProductDerivations.load(resource, name);
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
@@ -165,9 +164,7 @@ public class PersistenceProviderImpl
     }
 
     public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map m) {
-        PersistenceProductDerivation pd = BundleUtils.runningUnderOSGi() 
-        		? new OSGiDerivation() 
-        		: new PersistenceProductDerivation();
+        PersistenceProductDerivation pd = new PersistenceProductDerivation(BundleUtils.runningUnderOSGi());
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(pui, m);

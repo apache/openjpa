@@ -1103,7 +1103,7 @@ public class ConfigurationImpl
         PluginValue<T> val = new PluginValue<T>(type, property, singleton);
         addValue(val);
         if (singleton) {
-        	val.setInstantiatingGetter("get" + property + "Instance");
+        	val.setInstantiatingGetter("get" + removePrefix(property) + "Instance");
         }
         return val;
     }
@@ -1143,4 +1143,8 @@ public class ConfigurationImpl
 		return _pluginLoader;
 	}
 
+	private String removePrefix(String s) {
+		int index = s.lastIndexOf('.');
+		return index == -1 ? s : s.substring(index+1);
+	}
 }

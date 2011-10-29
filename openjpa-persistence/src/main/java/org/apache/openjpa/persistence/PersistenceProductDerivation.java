@@ -61,6 +61,7 @@ import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
+import org.apache.openjpa.persistence.osgi.BundleUtils;
 import org.apache.openjpa.validation.Validator;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -151,15 +152,21 @@ public class PersistenceProductDerivation
         _hints = Collections.unmodifiableSet(_hints);
     }
     
+    public PersistenceProductDerivation() {
+    	this(false);
+    }
+    
     /**
      * Constructs and configures a class loader to be used for loading
      * resources and classes by their names.
      */
-	public PersistenceProductDerivation() {
+	public PersistenceProductDerivation(boolean osgi) {
 		_loader = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
-		_loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
+		if (osgi) 
+			_loader.addClassLoader(BundleUtils.getBundleClassLoader());
 		_loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
 		_loader.addClassLoader(this.getClass().getClassLoader());
+		_loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
 	}
     
     public void putBrokerFactoryAliases(Map<String, String> m) {

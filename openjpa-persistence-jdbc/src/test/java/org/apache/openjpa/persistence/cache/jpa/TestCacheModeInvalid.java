@@ -38,13 +38,11 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
                 "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
             emf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("cache-mode-invalid",
                 "META-INF/caching-persistence-invalid.xml", propertiesMap );
+            fail("Expected SAX parse error for invalid entry");
         } catch (Throwable e) {
-            exceptionCaught = true;
-            assertException(e, org.apache.openjpa.util.GeneralException.class);
             String msg = e.getMessage();
             assertTrue(msg.contains("org.xml.sax.SAXException"));
         }
-        assertTrue(exceptionCaught);
     }
 
     @Override
