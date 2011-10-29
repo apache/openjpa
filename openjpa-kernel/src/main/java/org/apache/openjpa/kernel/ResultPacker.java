@@ -117,10 +117,9 @@ public class ResultPacker {
     /**
      * Internal constructor.
      */
-    private ResultPacker(Class candidate, Class[] types, String[] aliases,
-        Class resultClass) {
+    private ResultPacker(Class<?> candidate, Class<?>[] types, String[] aliases, Class<?> resultClass) {
         _aliases = aliases;
-        if (candidate == resultClass 
+        if (candidate == resultClass || isInterface(resultClass, candidate) 
          ||(types != null && types.length == 1 && types[0] == resultClass) 
          || resultClass.isArray()) {
             _resultClass = resultClass;
@@ -135,7 +134,7 @@ public class ResultPacker {
             _constructor = null;
         } else if (!_stdTypes.contains(_resultClass = resultClass)) {
             // check for a constructor that matches the projection types
-            Constructor cons = null;
+            Constructor<?> cons = null;
             if (types != null && types.length > 0) {
                 try {
                     cons = _resultClass.getConstructor(types);
@@ -150,7 +149,7 @@ public class ResultPacker {
                 _put = findPut(methods);
                 _sets = new Member[aliases.length];
 
-                Class type;
+                Class<?> type;
                 for (int i = 0; i < _sets.length; i++) {
                     type = (types == null) ? candidate : types[i];
                     _sets[i] = findSet(aliases[i], type, fields, methods);
@@ -171,6 +170,15 @@ public class ResultPacker {
             _put = null;
             _constructor = null;
         }
+    }
+    
+    boolean isInterface(Class<?> intf, Class<?> actual) {
+    	Class<?>[] intfs = actual.getInterfaces();
+    	for (Class<?> c : intfs) {
+    		if (c == intf)
+    			return true;
+    	}
+    	return false;
     }
 
     /**
