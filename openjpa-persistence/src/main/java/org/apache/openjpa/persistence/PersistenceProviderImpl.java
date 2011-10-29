@@ -43,7 +43,6 @@ import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.conf.ProductDerivation;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -51,9 +50,7 @@ import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.osgi.BundleUtils;
-import org.apache.openjpa.persistence.osgi.OSGiDerivation;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
-import org.apache.openjpa.util.ClassResolver;
 
 
 /**

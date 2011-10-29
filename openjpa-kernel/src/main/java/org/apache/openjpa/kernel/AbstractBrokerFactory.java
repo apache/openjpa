@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
-import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,7 +39,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.kernel.AuditManager;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;

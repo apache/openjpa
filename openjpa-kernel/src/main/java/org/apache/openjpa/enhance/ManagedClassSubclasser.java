@@ -93,7 +93,7 @@ public class ManagedClassSubclasser {
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
-                if (PCEnhancerAgent.getLoadSuccessful() == true) {
+                if (PCEnhancerAgent.getLoadSuccessful()) {
                     // This means that the enhancer has been ran but we
                     // have some unenhanced classes. This can happen if an
                     // entity is loaded by the JVM before the EntityManger
