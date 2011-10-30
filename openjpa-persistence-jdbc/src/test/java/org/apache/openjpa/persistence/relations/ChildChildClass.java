@@ -14,15 +14,12 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.*;
-import org.apache.openjpa.persistence.FetchAttribute;
-import org.apache.openjpa.persistence.FetchGroup;
-import org.apache.openjpa.persistence.FetchGroups;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -42,10 +39,9 @@ public class ChildChildClass extends ChildClass {
     public void setName2(String name2) {
         this.name2 = name2;
     }
-    
+
     @Override
     public String toString() {
         return super.toString()+"\n"+"Name2: "+name2+"\n";
     }
 }
-

@@ -14,26 +14,26 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 
 package org.apache.openjpa.persistence.relations;
 
 import javax.persistence.*;
-import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 @Inheritance(strategy=InheritanceType.JOINED)
 public class GrandChildClass extends ChildChildClass {
- 
+
     @Basic(fetch=FetchType.EAGER)
     private String someUnloadedField;
 
     public String getSomeUnloadedString() {
         return someUnloadedField;
     }
-    
+
     public String toString() {
         return super.toString() + "SomeUnloadedField: " + someUnloadedField + "\n";
     }
 }
+
