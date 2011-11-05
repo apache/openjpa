@@ -45,7 +45,7 @@ import javax.persistence.NamedQuery;
 @NamedQuery(name = "systemjdoql",
     query = "select o FROM QueryTest1 where o.numb == 4")
     })
-public class QueryTest1 {
+public class QueryTest1 implements EntityInterface {
 
     /*
       * Changed Variable names : Afam Okeke

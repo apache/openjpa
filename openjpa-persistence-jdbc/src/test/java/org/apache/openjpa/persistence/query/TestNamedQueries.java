@@ -28,8 +28,11 @@ package org.apache.openjpa.persistence.query;
 
 import java.util.Collection;
 
+import javax.persistence.TypedQuery;
 
 
+
+import org.apache.openjpa.persistence.query.common.apps.EntityInterface;
 import org.apache.openjpa.persistence.query.common.apps.QueryTest1;
 
 import org.apache.openjpa.meta.QueryMetaData;
@@ -109,5 +112,12 @@ public class TestNamedQueries extends BaseQueryTest {
         assertEquals(10, ((Collection) query.getResultList()).size());
         query.closeAll();
         endEm(pm);
+    }
+    
+    public void testInterfaceResultClass() {
+        OpenJPAEntityManager pm = getEM();
+
+        TypedQuery<EntityInterface> query = pm.createNamedQuery("named", EntityInterface.class);
+        assertEquals(10, query.getResultList().size());
     }
 }
