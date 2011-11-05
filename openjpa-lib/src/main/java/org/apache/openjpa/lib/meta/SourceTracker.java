@@ -22,7 +22,7 @@ import java.io.File;
 
 /**
  * Interface that can optionally be implemented by metadata
- * to include the source URL from which the metadata was originally parsed.
+ * to include the source file from which the metadata was originally parsed.
  *
  * @author Abe White
  */
@@ -33,7 +33,7 @@ public interface SourceTracker {
     public static final int SRC_XML = 2;
 
     /**
-     * Return the URL from which this instance was parsed.
+     * Return the file from which this instance was parsed.
      */
     public File getSourceFile();
 

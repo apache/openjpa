@@ -124,7 +124,6 @@ public class XMLSchemaParser
      * Constructor. Supply configuration.
      */
     public XMLSchemaParser(JDBCConfiguration conf) {
-    	super(conf.getClassLoader());
         _dict = conf.getDBDictionaryInstance();
         setLog(conf.getLog(JDBCConfiguration.LOG_SCHEMA));
         setParseText(false);

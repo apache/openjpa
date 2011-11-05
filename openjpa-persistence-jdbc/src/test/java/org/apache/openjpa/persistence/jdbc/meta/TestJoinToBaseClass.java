@@ -60,7 +60,7 @@ public class TestJoinToBaseClass
     public void testMapping() {
         ClassMapping mapping = ((JDBCConfiguration) getConfiguration()).
             getMappingRepositoryInstance().
-            getMapping(MappingTest5.class, true);
+            getMapping(MappingTest5.class, null, true);
 
         Table supTable = mapping.getPCSuperclassMapping().getTable();
         assertTrue(mapping.getTable() != supTable);

@@ -62,10 +62,13 @@ public abstract class AbstractPCResultObjectProvider
         load(sm, fetch);
     }
 
-    public Object getResultObject() throws Exception {
-        Class<?> type = getPCType();
-        MetaDataRepository repos = ctx.getConfiguration().getMetaDataRepositoryInstance();
-        ClassMetaData meta = repos.getMetaData(type, true);
+    public Object getResultObject()
+        throws Exception {
+        Class type = getPCType();
+        MetaDataRepository repos = ctx.getConfiguration().
+            getMetaDataRepositoryInstance();
+        ClassMetaData meta = repos.getMetaData
+            (type, ctx.getClassLoader(), true);
 
         Object oid = getObjectId(meta);
         Object res = ctx.find(oid, null, null, this, 0);
@@ -78,25 +81,30 @@ public abstract class AbstractPCResultObjectProvider
      * Implement this method to extract the object id value from the
      * current record of the input.
      */
-    protected abstract Object getObjectId(ClassMetaData meta) throws Exception;
+    protected abstract Object getObjectId(ClassMetaData meta)
+        throws Exception;
 
     /**
      * Implement this method to extract the type of the pc stored
      * in the current record of the input.
      */
-    protected abstract Class<?> getPCType() throws Exception;
+    protected abstract Class getPCType()
+        throws Exception;
 
     /**
      * Load data from the current input record into the given state
      * manager. Remember to call {@link OpenJPAStateManager#setVersion} to set
      * the optimistic versioning information, if it has any.
      */
-    protected abstract void load(OpenJPAStateManager sm, FetchConfiguration fetch) throws Exception;
+    protected abstract void load(OpenJPAStateManager sm, 
+        FetchConfiguration fetch)
+        throws Exception;
 
     /**
      * Override if desired. Does nothing by default.
      */
-    public void open() throws Exception {
+    public void open()
+        throws Exception {
     }
 
     /**
@@ -113,14 +121,16 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#next
      */
-    public abstract boolean next() throws Exception;
+    public abstract boolean next()
+        throws Exception;
 
     /**
      * Override if desired. Throws an exception by default.
      *
      * @see ResultObjectProvider#absolute
      */
-    public boolean absolute(int pos) throws Exception {
+    public boolean absolute(int pos)
+        throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -129,7 +139,8 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#size
      */
-    public int size() throws Exception {
+    public int size()
+        throws Exception {
         return Integer.MAX_VALUE;
     }
 
@@ -138,7 +149,8 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#reset
      */
-    public void reset() throws Exception {
+    public void reset()
+        throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -147,7 +159,8 @@ public abstract class AbstractPCResultObjectProvider
      *
      * @see ResultObjectProvider#close
      */
-    public void close() throws Exception {
+    public void close()
+        throws Exception {
     }
 
     /**

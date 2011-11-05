@@ -84,9 +84,9 @@ public class TestSequenceGeneratorEnsureCapacityCall
     private Seq seqForClass(Class cls) {
         OpenJPAConfiguration conf = getConfiguration();
         ClassMetaData meta = conf.getMetaDataRepositoryInstance().getMetaData
-            (cls, true);
+            (cls, null, true);
         SequenceMetaData smeta = meta.getIdentitySequenceMetaData();
         return (smeta == null) ? conf.getSequenceInstance()
-            : smeta.getInstance();
+            : smeta.getInstance(null);
     }
 }

@@ -28,6 +28,7 @@ import org.osgi.framework.Bundle;
  * This is a simple ClassLoader that delegates to the Bundle
  * and is used by the PersistenceUnitInfo
  *
+ * @version $Rev$ $Date$
  */
 public class BundleDelegatingClassLoader extends ClassLoader {
 

@@ -55,7 +55,8 @@ public class DelegatingMetaDataFactory
      */
     public MetaDataFactory getInnermostDelegate() {
         if (_delegate instanceof DelegatingMetaDataFactory)
-            return ((DelegatingMetaDataFactory) _delegate).getInnermostDelegate();
+            return ((DelegatingMetaDataFactory) _delegate).
+                getInnermostDelegate();
         return _delegate;
     }
 
@@ -75,17 +76,17 @@ public class DelegatingMetaDataFactory
         _delegate.setStrict(true);
     }
 
-    public void load(Class<?> cls, int mode) {
-        _delegate.load(cls, mode);
+    public void load(Class cls, int mode, ClassLoader envLoader) {
+        _delegate.load(cls, mode, envLoader);
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
-    	SequenceMetaData[] seqs, int mode, Map output) {
+        SequenceMetaData[] seqs, int mode, Map output) {
         return _delegate.store(metas, queries, seqs, mode, output);
     }
 
-    public boolean drop(Class<?>[] cls, int mode) {
-        return _delegate.drop(cls, mode);
+    public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
+        return _delegate.drop(cls, mode, envLoader);
     }
 
     public MetaDataDefaults getDefaults() {
@@ -96,16 +97,18 @@ public class DelegatingMetaDataFactory
         return _delegate.newClassArgParser();
     }
 
-    public Set<String> getPersistentTypeNames(boolean classpath) {
-        return _delegate.getPersistentTypeNames(classpath);
+    public Set getPersistentTypeNames(boolean classpath,
+        ClassLoader envLoader) {
+        return _delegate.getPersistentTypeNames(classpath, envLoader);
     }
 
-    public Class<?> getQueryScope(String queryName) {
-        return _delegate.getQueryScope(queryName);
+    public Class getQueryScope(String queryName, ClassLoader loader) {
+        return _delegate.getQueryScope(queryName, loader);
     }
 
-    public Class<?> getResultSetMappingScope(String resultSetMappingName) {
-        return _delegate.getResultSetMappingScope(resultSetMappingName);
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader) {
+        return _delegate.getResultSetMappingScope(resultSetMappingName, loader);
     }
 
     public void clear() {

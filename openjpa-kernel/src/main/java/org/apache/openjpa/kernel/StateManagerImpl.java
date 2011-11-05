@@ -160,7 +160,8 @@ public class StateManagerImpl
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
-    public StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
+    protected StateManagerImpl(Object id, ClassMetaData meta, 
+        BrokerImpl broker) {
         _id = id;
         _meta = meta;
         _broker = broker;
@@ -302,13 +303,15 @@ public class StateManagerImpl
         // metadata to a superclass id -- the subclass' id may be a
         // different class, so we need to reset it
         if (_meta.getDescribedType() != cls) {
-            ClassMetaData sub = _meta.getRepository().getMetaData(cls, true);
+            ClassMetaData sub = _meta.getRepository().getMetaData
+                (cls, _broker.getClassLoader(), true);
             if (_oid != null) {
-                if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
-                    _oid = _broker.getStoreManager().copyDataStoreId(_oid, sub);
-                } else if (_meta.isOpenJPAIdentity()) {
+                if (_meta.getIdentityType() == ClassMetaData.ID_DATASTORE)
+                    _oid = _broker.getStoreManager().copyDataStoreId(_oid,
+                        sub);
+                else if (_meta.isOpenJPAIdentity())
                     _oid = ApplicationIds.copy(_oid, sub);
-                } else if (sub.getObjectIdType() != _meta.getObjectIdType()) {
+                else if (sub.getObjectIdType() != _meta.getObjectIdType()) {
                     Object[] pkFields = ApplicationIds.toPKValues(_oid, _meta);
                     _oid = ApplicationIds.fromPKValues(pkFields, sub);
                 }
@@ -321,9 +324,9 @@ public class StateManagerImpl
             // the instance was null: check to see if the instance is
             // abstract (as can sometimes be the case when the
             // class discriminator strategy is not configured correctly)
-            if (Modifier.isAbstract(cls.getModifiers())) {
-                throw new UserException(_loc.get("instantiate-abstract", cls.getName(), _oid));
-            }
+            if (Modifier.isAbstract(cls.getModifiers()))
+                throw new UserException(_loc.get("instantiate-abstract",
+                    cls.getName(), _oid));
             throw new InternalException();
         }
 
@@ -333,7 +336,7 @@ public class StateManagerImpl
     /**
      * Initialize with the given instance and state.
      */
-    public void initialize(PersistenceCapable pc, PCState state) {
+    protected void initialize(PersistenceCapable pc, PCState state) {
         if (pc == null)
             throw new UserException(_loc.get("init-null-pc", _meta));
         if (pc.pcGetStateManager() != null && pc.pcGetStateManager() != this)
@@ -3364,7 +3367,7 @@ public class StateManagerImpl
         // penalizes the serialization footprint of non-ReflectingPC SMs also.
         Class managedType = (Class) in.readObject();
         _meta = _broker.getConfiguration().getMetaDataRepositoryInstance()
-            .getMetaData(managedType, true);
+            .getMetaData(managedType, null, true);
 
         _pc = readPC(in);
     }

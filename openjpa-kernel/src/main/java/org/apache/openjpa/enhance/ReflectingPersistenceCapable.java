@@ -64,7 +64,7 @@ public class ReflectingPersistenceCapable
         Class type = o.getClass();
         pcSubclassInstance = PCRegistry.newInstance(type, null, false);
         meta = conf.getMetaDataRepositoryInstance()
-            .getMetaData(type, true);
+            .getMetaData(type, null, true);
     }
 
     public int pcGetEnhancementContractVersion() {

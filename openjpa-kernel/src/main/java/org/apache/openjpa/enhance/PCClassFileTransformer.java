@@ -43,15 +43,16 @@ import serp.bytecode.lowlevel.ConstantPoolTable;
 public class PCClassFileTransformer
     implements ClassFileTransformer {
 
-    private static final Localizer _loc = Localizer.forPackage(PCClassFileTransformer.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (PCClassFileTransformer.class);
 
     private final MetaDataRepository _repos;
     private final PCEnhancer.Flags _flags;
     private final ClassLoader _tmpLoader;
     private final Log _log;
-    private final Set<String> _names;
+    private final Set _names;
     private boolean _transforming = false;
-    private static final String PERSISTENCE_CAPABLE = "org/apache/openjpa/enhance/PersistenceCapable";
+
     /**
      * Constructor.
      *
@@ -93,20 +94,17 @@ public class PCClassFileTransformer
         _repos = repos;
         _tmpLoader = tmpLoader;
 
-        _log = repos.getConfiguration().getLog(OpenJPAConfiguration.LOG_ENHANCE);
+        _log = repos.getConfiguration().
+            getLog(OpenJPAConfiguration.LOG_ENHANCE);
         _flags = flags;
-        repos.getConfiguration().addClassLoader(tmpLoader);
-        _names = repos.getPersistentTypeNames(devscan);
+
+        _names = repos.getPersistentTypeNames(devscan, tmpLoader);
         if (_names == null && _log.isInfoEnabled())
             _log.info(_loc.get("runtime-enhance-pcclasses"));
     }
 
-    /**
-     * The hook to transform byte code as they are loaded in Java Virtual Machine.
-     * 
-     */
     public byte[] transform(ClassLoader loader, String className,
-        Class<?> redef, ProtectionDomain domain, byte[] bytes)
+        Class redef, ProtectionDomain domain, byte[] bytes)
         throws IllegalClassFormatException {
         if (loader == _tmpLoader)
             return null;
@@ -131,27 +129,29 @@ public class PCClassFileTransformer
      * ClassCircularityError when executing method using pure-JIT JVMs
      * such as JRockit.
      */
-    private byte[] transform0(String className, Class<?> redef, byte[] bytes)
+    private byte[] transform0(String className, Class redef, byte[] bytes)
         throws IllegalClassFormatException {
         
+        byte[] returnBytes = null;
         try {
             Boolean enhance = needsEnhance(className, redef, bytes);
-            if (enhance != null && _log.isTraceEnabled()) {
-                _log.trace(_loc.get("needs-runtime-enhance", className,  enhance));
-            } 
-            if (enhance != Boolean.TRUE) {
+            if (enhance != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("needs-runtime-enhance", className,
+                    enhance));
+            if (enhance != Boolean.TRUE)
                 return null;
-            }
 
             PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(),
-                new Project().loadClass(new ByteArrayInputStream(bytes),  _tmpLoader), _repos);
+                new Project().loadClass(new ByteArrayInputStream(bytes),
+                    _tmpLoader), _repos);
             enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
-            enhancer.setEnforcePropertyRestrictions(_flags.enforcePropertyRestrictions);
+            enhancer.setEnforcePropertyRestrictions
+                (_flags.enforcePropertyRestrictions);
 
-            if (enhancer.run() == PCEnhancer.ENHANCE_NONE) {
+            if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
                 return null;
-            }
-            return enhancer.getPCBytecode().toByteArray();
+            returnBytes = enhancer.getPCBytecode().toByteArray();
+            return returnBytes;
         } catch (Throwable t) {
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
@@ -161,38 +161,40 @@ public class PCClassFileTransformer
             throw new GeneralException(t);
         } finally {
             _transforming = false;
+            if (returnBytes != null && _log.isTraceEnabled())
+                _log.trace(_loc.get("runtime-enhance-complete", className,
+                    bytes.length, returnBytes.length));
         }
     }
 
     /**
      * Return whether the given class needs enhancement.
      */
-    private Boolean needsEnhance(String clsName, Class<?> redef, byte[] bytes) {
+    private Boolean needsEnhance(String clsName, Class redef, byte[] bytes) {
         if (redef != null) {
-            Class<?>[] intfs = redef.getInterfaces();
-            for (int i = 0; i < intfs.length; i++) {
-                if (PersistenceCapable.class.getName().equals(intfs[i].getName())) {
-                    return !isEnhanced(bytes);
-                }
-            }
+            Class[] intfs = redef.getInterfaces();
+            for (int i = 0; i < intfs.length; i++)
+                if (PersistenceCapable.class.getName().
+                    equals(intfs[i].getName()))
+                    return Boolean.valueOf(!isEnhanced(bytes));
             return null;
         }
 
         if (_names != null) {
             if (_names.contains(clsName.replace('/', '.')))
-                return !isEnhanced(bytes);
+                return Boolean.valueOf(!isEnhanced(bytes));
             return null;
         }
 
-        if (clsName.startsWith("java/") || clsName.startsWith("javax/")) {
+        if (clsName.startsWith("java/") || clsName.startsWith("javax/"))
             return null;
-        }
         if (isEnhanced(bytes))
             return Boolean.FALSE;
 
         try {
-            Class<?> c = Class.forName(clsName.replace('/', '.'), false,  _tmpLoader);
-            if (_repos.getMetaData(c, false) != null)
+            Class c = Class.forName(clsName.replace('/', '.'), false,
+                _tmpLoader);
+            if (_repos.getMetaData(c, null, false) != null)
                 return Boolean.TRUE;
             return null;
         } catch (ClassNotFoundException cnfe) {
@@ -227,7 +229,7 @@ public class PCClassFileTransformer
             clsEntry = table.readUnsignedShort(idx);
             utfEntry = table.readUnsignedShort(table.get(clsEntry));
             name = table.readString(table.get(utfEntry));
-            if (PERSISTENCE_CAPABLE.equals(name))
+            if ("org/apache/openjpa/enhance/PersistenceCapable".equals(name))
                 return true;
         }
         return false;

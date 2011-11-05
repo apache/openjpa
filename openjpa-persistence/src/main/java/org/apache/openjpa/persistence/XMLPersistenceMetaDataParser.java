@@ -116,7 +116,8 @@ public class XMLPersistenceMetaDataParser
         SEQUENCE_GEN_SCHEMA
     }    
 
-    private static final Map<String, Object> _elems = new HashMap<String, Object>();
+    private static final Map<String, Object> _elems =
+        new HashMap<String, Object>();
 
     // Map for storing deferred metadata which needs to be populated
     // after embeddables are loaded.
@@ -184,12 +185,13 @@ public class XMLPersistenceMetaDataParser
         _elems.put("map-key-class", MAP_KEY_CLASS);
     }
 
-    private static final Localizer _loc = Localizer.forPackage(XMLPersistenceMetaDataParser.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (XMLPersistenceMetaDataParser.class);
 
     private final OpenJPAConfiguration _conf;
     private MetaDataRepository _repos = null;
     private AnnotationPersistenceMetaDataParser _parser = null;
-//    private ClassLoader _envLoader = null;
+    private ClassLoader _envLoader = null;
     private int _mode = MODE_NONE;
     private boolean _override = false;
 
@@ -222,7 +224,6 @@ public class XMLPersistenceMetaDataParser
      * Constructor; supply configuration.
      */
     public XMLPersistenceMetaDataParser(OpenJPAConfiguration conf) {
-    	super(conf.getClassLoader());
         _conf = conf;
         setValidating(true);
         setLog(conf.getLog(OpenJPAConfiguration.LOG_METADATA));
@@ -279,23 +280,31 @@ public class XMLPersistenceMetaDataParser
         if (repos != null
             && (repos.getValidate() & MetaDataRepository.VALIDATE_RUNTIME) != 0)
             setParseComments(false);
+        
+        if (repos != null) {
+            // Determine if the Thread Context Classloader needs to be temporally overridden to the Classloader
+            // that loaded the OpenJPA classes, to avoid a potential deadlock issue with the way Xerces
+            // handles parsers and classloaders.
+            this.setOverrideContextClassloader(repos.getConfiguration().getCompatibilityInstance().
+                getOverrideContextClassloader());
+        }
     }
 
     /**
      * Return the environmental class loader to pass on to parsed
      * metadata instances.
      */
-//    public ClassLoader getEnvClassLoader() {
-//        return _envLoader;
-//    }
+    public ClassLoader getEnvClassLoader() {
+        return _envLoader;
+    }
 
     /**
      * Set the environmental class loader to pass on to parsed
      * metadata instances.
      */
-//    public void setEnvClassLoader(ClassLoader loader) {
-//        _envLoader = loader;
-//    }
+    public void setEnvClassLoader(ClassLoader loader) {
+        _envLoader = loader;
+    }
 
     /**
      * Whether to allow later parses of mapping information to override
@@ -374,7 +383,8 @@ public class XMLPersistenceMetaDataParser
         } catch (Throwable t) {
                 Log log = getLog();
                 if (log.isInfoEnabled())
-                    log.trace(_loc.get("version-check-error", file.toString()));
+                    log.trace(_loc.get("version-check-error",
+                        file.toString()));
         }
         super.parse(file);
     }
@@ -872,7 +882,7 @@ public class XMLPersistenceMetaDataParser
             && ((isMetaDataMode() && (meta.getSourceMode() & MODE_META) != 0)
             || (isMappingMode() && (meta.getSourceMode() & MODE_MAPPING) != 0)))
         {
-            if (isDuplicateClass(meta)) { 
+            if(isDuplicateClass(meta)) { 
                 if (log.isWarnEnabled()) {
                     log.warn(_loc.get("dup-metadata", _cls, getSourceName()));
                 }
@@ -901,6 +911,7 @@ public class XMLPersistenceMetaDataParser
                     fmds[i].setExplicit(true);
                 }
             }
+            meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
 
             // parse annotations first so XML overrides them

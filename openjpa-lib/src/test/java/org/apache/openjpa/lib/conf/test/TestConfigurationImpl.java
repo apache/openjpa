@@ -256,8 +256,8 @@ public class TestConfigurationImpl extends AbstractTestCase {
 
         private final StringValue _testKey;
         private final StringValue _sysKey;
-        private final PluginValue<Object> _pluginKey;
-        private final ObjectValue<Object> _objectKey;
+        private final PluginValue _pluginKey;
+        private final ObjectValue _objectKey;
 
         public ConfigurationTest() {
             this(true);
@@ -267,8 +267,8 @@ public class TestConfigurationImpl extends AbstractTestCase {
             super(false);
             _testKey = addString("testKey");
             _sysKey = addString("sysKey");
-            _pluginKey = addPlugin(Object.class, "pluginKey", canSetPlugin);
-            _objectKey = addObject(Object.class, "objectKey");
+            _pluginKey = addPlugin("pluginKey", canSetPlugin);
+            _objectKey = addObject("objectKey");
         }
 
         public String getTestKey() {
@@ -297,7 +297,7 @@ public class TestConfigurationImpl extends AbstractTestCase {
 
         public Object getPluginKeyInstance() {
             if (_pluginKey.get() == null)
-                return _pluginKey.instantiate(this);
+                return _pluginKey.instantiate(Object.class, this);
             return _pluginKey.get();
         }
 

@@ -33,6 +33,7 @@ public class TestNoNoArgs
 
     OpenJPAConfiguration conf;
     MetaDataRepository repos;
+    ClassLoader loader;
     private PCEnhancer.Flags flags = new PCEnhancer.Flags();
 
     public TestNoNoArgs(String s) {
@@ -40,14 +41,19 @@ public class TestNoNoArgs
     }
 
     public void setUp() {
-        OpenJPAEntityManager em = (OpenJPAEntityManager) currentEntityManager();
+        OpenJPAEntityManager em =
+            (OpenJPAEntityManager) currentEntityManager();
         conf = ((OpenJPAEntityManagerSPI) em).getConfiguration();
         repos = conf.newMetaDataRepositoryInstance();
+        loader = em.getClassLoader();
         endEm(em);
     }
 
-    public void testNoNoArgs() throws IOException {
-        PCEnhancer.run((OpenJPAConfiguration) conf, new String[]{ }, flags, repos, null);
+    public void testNoNoArgs()
+        throws IOException {
+        PCEnhancer.run((OpenJPAConfiguration) conf,
+            new String[]{ },
+            flags, repos, null, loader);
     }
 
     public void testNo2NoArgs()
@@ -55,7 +61,8 @@ public class TestNoNoArgs
         flags.addDefaultConstructor = false;
         boolean caughtException = false;
         try {
-            PCEnhancer.run((OpenJPAConfiguration) conf, new String[]{ },  flags, repos, null);
+            PCEnhancer.run((OpenJPAConfiguration) conf, new String[]{ },
+                flags, repos, null, loader);
         } catch (OpenJPAException e) {
             caughtException = true;
         }
@@ -65,6 +72,7 @@ public class TestNoNoArgs
     public void testNo3NoArgs()
         throws IOException {
         PCEnhancer.run((OpenJPAConfiguration) conf,
-            new String[]{ "persistence.enhance.common.apps.Entity1" }, flags, repos, null);
+            new String[]{ "persistence.enhance.common.apps.Entity1" },
+            flags, repos, null, loader);
     }
 }

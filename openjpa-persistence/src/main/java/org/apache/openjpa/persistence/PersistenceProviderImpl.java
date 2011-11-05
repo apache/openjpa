@@ -36,14 +36,12 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.enhance.PCClassFileTransformer;
 import org.apache.openjpa.enhance.PCEnhancerAgent;
-import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.kernel.Bootstrap;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.kernel.ConnectionRetainModes;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
@@ -51,10 +49,12 @@ import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.osgi.BundleUtils;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
+import org.apache.openjpa.util.ClassResolver;
 
 
 /**
- * Bootstrapping class that allows the creation of a stand-alone {@link EntityManager}.
+ * Bootstrapping class that allows the creation of a stand-alone
+ * {@link EntityManager}.
  *
  * @see javax.persistence.Persistence#createEntityManagerFactory(String,Map)
  * @published
@@ -68,27 +68,19 @@ public class PersistenceProviderImpl
     private static final Localizer _loc = Localizer.forPackage(PersistenceProviderImpl.class);
 
     private Log _log;
-    
     /**
      * Loads the entity manager specified by <code>name</code>, applying
-     * the properties in given map <code>m</code> as overrides to the properties defined
+     * the properties in <code>m</code> as overrides to the properties defined
      * in the XML configuration file for <code>name</code>. If <code>name</code>
      * is <code>null</code>, this method loads the XML in the resource
      * identified by <code>resource</code>, and uses the first resource found
      * when doing this lookup, regardless of the name specified in the XML
      * resource or the name of the jar that the resource is contained in.
-     * <br>
-     * This does not pool EntityManagersFactories.
-     * 
-     * @param name name of the persistence unit
-     * @param resource name of the resource. Normally, <tt>META-INF/persistence.xml</tt>, but not necessarily.
-     * @param m a map of properties that overrides properties found in the resource.
-     * 
-     * @return EntityManagerFactory or null if anything goes wrong during loading resources.
+     * This does no pooling of EntityManagersFactories.
+     * @return EntityManagerFactory or null
      */
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, String resource, Map m) {
-        PersistenceProductDerivation pd = new PersistenceProductDerivation(BundleUtils.runningUnderOSGi());
-        ProductDerivations.load(resource, name);
+        PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(resource, name, m);
@@ -96,9 +88,10 @@ public class PersistenceProviderImpl
                 return null;
             }
 
-            BrokerFactory factory = getBrokerFactory(cp, poolValue);
+            BrokerFactory factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
             OpenJPAConfiguration conf = factory.getConfiguration();
-            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);  
+            _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);            
+            pd.checkPuNameCollisions(_log,name);
             
             // add enhancer
             loadAgent(factory);
@@ -137,11 +130,12 @@ public class PersistenceProviderImpl
         }
     }
 
-    private BrokerFactory getBrokerFactory(ConfigurationProvider cp, Object poolValue) {
+    private BrokerFactory getBrokerFactory(ConfigurationProvider cp,
+        Object poolValue, ClassLoader loader) {
         // handle "true" and "false"
         if (poolValue instanceof String
             && ("true".equalsIgnoreCase((String) poolValue)
-             || "false".equalsIgnoreCase((String) poolValue)))
+                || "false".equalsIgnoreCase((String) poolValue)))
             poolValue = Boolean.valueOf((String) poolValue);
 
         if (poolValue != null && !(poolValue instanceof Boolean)) {
@@ -149,11 +143,10 @@ public class PersistenceProviderImpl
             throw new IllegalArgumentException(poolValue.toString());
         }
         
-        if (poolValue == null || !((Boolean) poolValue).booleanValue()) {
-            return Bootstrap.newBrokerFactory(cp);
-        } else {
-            return Bootstrap.getBrokerFactory(cp);
-        }
+        if (poolValue == null || !((Boolean) poolValue).booleanValue())
+            return Bootstrap.newBrokerFactory(cp, loader);
+        else
+            return Bootstrap.getBrokerFactory(cp, loader);
     }
 
     public OpenJPAEntityManagerFactory createEntityManagerFactory(String name, Map m) {
@@ -161,7 +154,7 @@ public class PersistenceProviderImpl
     }
 
     public OpenJPAEntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo pui, Map m) {
-        PersistenceProductDerivation pd = new PersistenceProductDerivation(BundleUtils.runningUnderOSGi());
+        PersistenceProductDerivation pd = new PersistenceProductDerivation();
         try {
             Object poolValue = Configurations.removeProperty(EMF_POOL, m);
             ConfigurationProvider cp = pd.load(pui, m);
@@ -179,14 +172,20 @@ public class PersistenceProviderImpl
                 transformerException = e;
             }
 
-            // if the BrokerImpl hasn't been specified, switch to the non-finalizing one, 
-            // since anything claiming to be a container should be doing proper resource management.
+            // if the BrokerImpl hasn't been specified, switch to the
+            // non-finalizing one, since anything claiming to be a container
+            // should be doing proper resource management.
             if (!Configurations.containsProperty(BrokerValue.KEY, cp.getProperties())) {
                 cp.addProperty("openjpa." + BrokerValue.KEY, getDefaultBrokerAlias());
             }
 
-            BrokerFactory factory = getBrokerFactory(cp, poolValue);
-            
+            // OPENJPA-1491 If running under OSGi, use the Bundle's ClassLoader instead of the application one
+            BrokerFactory factory;
+            if (BundleUtils.runningUnderOSGi()) {
+                factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
+            } else {
+                factory = getBrokerFactory(cp, poolValue, pui.getClassLoader());
+            }
 
             OpenJPAConfiguration conf = factory.getConfiguration();
             setPersistenceEnvironmentInfo(conf, pui);
@@ -272,34 +271,44 @@ public class PersistenceProviderImpl
             final ClassLoader tmpLoader, OpenJPAConfiguration conf) {
             cp.setInto(conf);
             // use the temporary loader for everything
-            conf.addClassLoader(tmpLoader);
+            conf.setClassResolver(new ClassResolver() {
+                public ClassLoader getClassLoader(Class<?> context, ClassLoader env) {
+                    return tmpLoader;
+                }
+            });
             conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
 
             MetaDataRepository repos = conf.getMetaDataRepositoryInstance();
             repos.setResolve(MetaDataModes.MODE_MAPPING, false);
-            _trans = new PCClassFileTransformer(repos, Configurations.parseProperties(props), tmpLoader);
+            _trans = new PCClassFileTransformer(repos,
+                Configurations.parseProperties(props), tmpLoader);
         }
 
         public byte[] transform(ClassLoader cl, String name,
-        		Class<?> previousVersion, ProtectionDomain pd, byte[] bytes)
+            Class<?> previousVersion, ProtectionDomain pd, byte[] bytes)
             throws IllegalClassFormatException {
             return _trans.transform(cl, name, previousVersion, pd, bytes);
         }
 	}
     
     /**
-     * Loads the PCEnhancerAgent.
+     * This private worker method will attempt load the PCEnhancerAgent.
      */
     private void loadAgent(BrokerFactory factory) {
         OpenJPAConfiguration conf = factory.getConfiguration();
-        if (conf.getRuntimeUnenhancedClassesConstant() == RuntimeUnenhancedClassesModes.SUPPORTED
-         && conf.getDynamicEnhancementAgent()) {
-            boolean res = PCEnhancerAgent.loadDynamicAgent(conf);
-         }
+        Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+
+        if (conf.getDynamicEnhancementAgent() == true) {
+            boolean res = PCEnhancerAgent.loadDynamicAgent(log);
+            if (log.isInfoEnabled() && res == true ){
+                log.info(_loc.get("dynamic-agent"));
+            }
+        }
     }
     
     /**
-     * Sets up the proper LifecycleEventManager type based on if the <tt>javax.validation APIs</tt> are
+     * This private worker method will attempt to setup the proper
+     * LifecycleEventManager type based on if the javax.validation APIs are
      * available and a ValidatorImpl is required by the configuration.
      * @param log
      * @param conf
@@ -309,7 +318,8 @@ public class PersistenceProviderImpl
         OpenJPAConfiguration conf = factory.getConfiguration();
         Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
 
-        if ((ValidationUtils.setupValidation(conf) == true) && log.isInfoEnabled()) {
+        if ((ValidationUtils.setupValidation(conf) == true) &&
+                log.isInfoEnabled()) {
             log.info(_loc.get("vlem-creation-info"));
         }
     }

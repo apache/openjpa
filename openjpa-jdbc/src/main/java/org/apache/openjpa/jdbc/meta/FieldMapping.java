@@ -473,7 +473,8 @@ public class FieldMapping
             // copy embedded template mapping info
             ClassMapping cls = getDefiningMapping();
             if (cls.getEmbeddingMapping() != null) {
-                ClassMapping orig = repos.getMapping(cls.getDescribedType(), true);
+                ClassMapping orig = repos.getMapping(cls.getDescribedType(),
+                    cls.getEnvClassLoader(), true);
                 FieldMapping tmplate = orig.getFieldMapping(getName());
                 if (tmplate != null)
                     copyMappingInfo(tmplate);

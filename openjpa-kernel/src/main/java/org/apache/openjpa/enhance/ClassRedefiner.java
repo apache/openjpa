@@ -25,8 +25,6 @@ import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
-import javax.security.auth.login.Configuration;
-
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.JavaVersions;
@@ -55,13 +53,13 @@ public class ClassRedefiner {
     public static void redefineClasses(OpenJPAConfiguration conf,
         final Map<Class<?>,byte[]> classes) {
         Log log = conf.getLog(OpenJPAConfiguration.LOG_ENHANCE);
-        if (classes == null || classes.size() == 0 || !canRedefineClasses(conf))
+        if (classes == null || classes.size() == 0 || !canRedefineClasses(log))
             return;
 
         Instrumentation inst = null;
         ClassFileTransformer t = null;
         try {
-            inst = InstrumentationFactory.getInstrumentation(conf);
+            inst = InstrumentationFactory.getInstrumentation(log);
 
             Class<?>[] array = classes.keySet().toArray(new Class[classes.size()]);
             if (JavaVersions.VERSION >= 6) {
@@ -89,9 +87,9 @@ public class ClassRedefiner {
                 log.trace(_loc.get("redefine-types", classes.keySet()));
                 // in a Java 5 context, we can use class redefinition instead
                 ClassDefinition[] defs = new ClassDefinition[array.length];
-                for (int i = 0; i < defs.length; i++) {
-                    defs[i] = new ClassDefinition(array[i], classes.get(array[i]));
-                }
+                for (int i = 0; i < defs.length; i++)
+                    defs[i] = new ClassDefinition(array[i],
+                        classes.get(array[i]));
                 inst.redefineClasses(defs);
             }
         } catch (Exception e) {
@@ -110,10 +108,10 @@ public class ClassRedefiner {
      * only checks whether or not an instrumentation is available and
      * if retransformation is possible.
      */
-    public static boolean canRedefineClasses(OpenJPAConfiguration conf) {
+    public static boolean canRedefineClasses(Log log) {
         if (_canRedefine == null) {
             try {
-                Instrumentation inst = InstrumentationFactory.getInstrumentation(conf);
+                Instrumentation inst = InstrumentationFactory.getInstrumentation(log);
                 if (inst == null) {
                     _canRedefine = Boolean.FALSE;
                 } else if (JavaVersions.VERSION == 5) {

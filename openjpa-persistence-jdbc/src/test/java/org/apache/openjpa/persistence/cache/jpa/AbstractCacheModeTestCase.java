@@ -451,7 +451,7 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     private String getAlias(Class<?> cls) {
         ClassMapping mapping =
             (ClassMapping) getEntityManagerFactory().getConfiguration().getMetaDataRepositoryInstance().getMetaData(
-                cls, true);
+                cls, null, true);
         return mapping.getTypeAlias();
     }
 }

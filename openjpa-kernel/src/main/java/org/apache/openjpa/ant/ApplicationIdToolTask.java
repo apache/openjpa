@@ -104,7 +104,9 @@ public class ApplicationIdToolTask
 
     protected void executeOn(String[] files)
         throws IOException, ClassNotFoundException {
-        flags.directory = (dirName == null) ? null : Files.getFile(dirName, getClassLoader());
-        ApplicationIdTool.run((OpenJPAConfiguration) getConfiguration(), files, flags);
+        flags.directory = (dirName == null) ? null
+            : Files.getFile(dirName, getClassLoader());
+        ApplicationIdTool.run((OpenJPAConfiguration) getConfiguration(), files,
+            flags, getClassLoader ());
 	}
 }

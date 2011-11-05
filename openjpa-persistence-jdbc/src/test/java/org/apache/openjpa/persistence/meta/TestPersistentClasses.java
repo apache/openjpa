@@ -45,7 +45,8 @@ public class TestPersistentClasses
     private void assertClass(String clsName, OpenJPAConfiguration conf,
         boolean shouldExist) {
 
-        Collection names = conf.getMetaDataRepositoryInstance().getPersistentTypeNames(false);
+        Collection names = conf.getMetaDataRepositoryInstance().
+            getPersistentTypeNames(false, null);
 
         if (shouldExist)
             assertTrue("expected element " + clsName + " was not found in "
@@ -64,7 +65,7 @@ public class TestPersistentClasses
         assertNull(((OpenJPAEntityManagerFactorySPI) pmf).getConfiguration()
             .getMetaDataRepositoryInstance().
 
-            getPersistentTypeNames(false));
+            getPersistentTypeNames(false, null));
 
         pmf.close();
     }

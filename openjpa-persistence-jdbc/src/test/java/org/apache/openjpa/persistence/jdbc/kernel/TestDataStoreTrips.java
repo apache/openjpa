@@ -77,8 +77,10 @@ public class TestDataStoreTrips extends BaseJDBCTest{
             (JDBCConfiguration) ((OpenJPAEntityManagerSPI) kem)
             .getConfiguration();        
 
-        ClassMapping mapping = conf.getMappingRepositoryInstance().getMapping(DataStoreTripsPC.class, true);
-        String table = conf.getDBDictionaryInstance().getFullName(mapping.getTable(), false);
+        ClassMapping mapping = conf.getMappingRepositoryInstance().getMapping
+            (DataStoreTripsPC.class, null, true);
+        String table = conf.getDBDictionaryInstance()
+            .getFullName(mapping.getTable(), false);
 
         // get factory with counter listener
         _factory = getEmf();

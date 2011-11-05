@@ -145,7 +145,7 @@ public class HintHandler  {
             return;
         }
         
-        ClassLoader loader = owner.getDelegate().getBroker().getConfiguration().getClassLoader();
+        ClassLoader loader = owner.getDelegate().getBroker().getClassLoader();
         if (QueryHints.HINT_SUBCLASSES.equals(key)) {
             if (value instanceof String)
                 value = Boolean.valueOf((String) value);

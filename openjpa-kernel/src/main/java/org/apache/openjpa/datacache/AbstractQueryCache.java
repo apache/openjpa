@@ -101,7 +101,11 @@ public abstract class AbstractQueryCache
             entityTimestampMap = new ConcurrentHashMap<String,Long>();
         
             // Get all persistence types to pre-load the entityTimestamp Map
-            Collection perTypes = conf.getMetaDataRepositoryInstance().getPersistentTypeNames(false);
+            Collection perTypes =
+                conf.getMetaDataRepositoryInstance().getPersistentTypeNames(
+                    false,
+                    AccessController.doPrivileged(J2DoPrivHelper
+                        .getContextClassLoaderAction()));
             
             // Pre-load all the entity types into the HashMap to handle 
             // synchronization on the map efficiently
@@ -299,7 +303,7 @@ public abstract class AbstractQueryCache
                 // ok if no metadata for oid; that just means the pc type
                 // probably hasn't been loaded into this JVM yet, and therefore
                 // there's no chance that it's in the cache anyway
-                meta = repos.getMetaData(oid, false);
+                meta = repos.getMetaData(oid, null, false);
                 if (meta != null)
                     classes.add(meta.getDescribedType());
             }

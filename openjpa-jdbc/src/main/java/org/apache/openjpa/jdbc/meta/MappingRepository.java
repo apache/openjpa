@@ -210,14 +210,14 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Return the query result mapping for the given name.
      */
-    public QueryResultMapping getQueryResultMapping(Class<?> cls, String name, boolean mustExist) {
+    public QueryResultMapping getQueryResultMapping(Class<?> cls, String name, ClassLoader loader, boolean mustExist) {
         QueryResultMapping res = null;
         if (_locking) {
             synchronized (this) {
-                res = getQueryResultMappingInternal(cls, name);
+                res = getQueryResultMappingInternal(cls, name, loader);
             }
         } else {
-            res = getQueryResultMappingInternal(cls, name);
+            res = getQueryResultMappingInternal(cls, name, loader);
         }
         if (res == null && mustExist)
             throw new MetaDataException(_loc.get("no-query-res", cls, name));
@@ -227,7 +227,7 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Returned the query result mapping with the given name.
      */
-    private QueryResultMapping getQueryResultMappingInternal(Class<?> cls, String name) {
+    private QueryResultMapping getQueryResultMappingInternal(Class<?> cls, String name, ClassLoader envLoader) {
         if (name == null)
             return null;
 
@@ -238,7 +238,7 @@ public class MappingRepository extends MetaDataRepository {
             return res;
 
         // get metadata for class, which will find results in metadata file
-        if (cls != null && getMetaData(cls, false) != null) {
+        if (cls != null && getMetaData(cls, envLoader, false) != null) {
             res = (QueryResultMapping) _results.get(key);
             if (res != null)
                 return res;
@@ -247,9 +247,10 @@ public class MappingRepository extends MetaDataRepository {
             return null;
 
         if (cls == null)
-            cls = getMetaDataFactory().getResultSetMappingScope(name);
+            cls = getMetaDataFactory()
+                    .getResultSetMappingScope(name, envLoader);
         // not in cache; load
-        getMetaDataFactory().load(cls, MODE_META | MODE_MAPPING);
+        getMetaDataFactory().load(cls, MODE_META | MODE_MAPPING, envLoader);
         return (QueryResultMapping) _results.get(key);
     }
 
@@ -349,20 +350,24 @@ public class MappingRepository extends MetaDataRepository {
         return getQueryKey(cls, name);
     }
 
-    public ClassMapping getMapping(Class<?> cls, boolean mustExist) {
-        return (ClassMapping) super.getMetaData(cls, mustExist);
+    public ClassMapping getMapping(Class<?> cls, ClassLoader envLoader,
+        boolean mustExist) {
+        return (ClassMapping) super.getMetaData(cls, envLoader, mustExist);
     }
 
     public ClassMapping[] getMappings() {
         return (ClassMapping[]) super.getMetaDatas();
     }
 
-    public ClassMapping getMapping(Object oid, boolean mustExist) {
-        return (ClassMapping) super.getMetaData(oid, mustExist);
+    public ClassMapping getMapping(Object oid, ClassLoader envLoader,
+        boolean mustExist) {
+        return (ClassMapping) super.getMetaData(oid, envLoader, mustExist);
     }
 
-    public ClassMapping[] getImplementorMappings(Class<?> cls, boolean mustExist) {
-        return (ClassMapping[]) super.getImplementorMetaDatas(cls, mustExist);
+    public ClassMapping[] getImplementorMappings(Class<?> cls,
+        ClassLoader envLoader, boolean mustExist) {
+        return (ClassMapping[]) super.getImplementorMetaDatas(cls, envLoader,
+            mustExist);
     }
 
     public void clear() {
@@ -518,7 +523,8 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Return the strategy for the given name.
      */
-    protected ClassStrategy instantiateClassStrategy(String name, ClassMapping cls) {
+    protected ClassStrategy instantiateClassStrategy(String name,
+        ClassMapping cls) {
         if (name == null)
             return null;
         if (NoneClassStrategy.ALIAS.equals(name))
@@ -536,17 +542,22 @@ public class MappingRepository extends MetaDataRepository {
         else if (VerticalClassStrategy.ALIAS.equals(name))
             strat = VerticalClassStrategy.class;
         try {
-            if (strat == null) {
-                strat = JavaTypes.classForName(name, cls, getConfiguration().getClassLoader());
-            }
+            if (strat == null)
+                strat = JavaTypes.classForName(name, cls,
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(
+                            ClassStrategy.class)));
             ClassStrategy strategy = 
-                (ClassStrategy) AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(strat));
-            Configurations.configureInstance(strategy, getConfiguration(),  props);
+                (ClassStrategy) AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(strat));
+            Configurations.configureInstance(strategy, getConfiguration(),
+                props);
             return strategy;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
                 e = ((PrivilegedActionException) e).getException();
-            throw new MetaDataException(_loc.get("bad-cls-strategy", cls, name), e);
+            throw new MetaDataException(_loc.get("bad-cls-strategy",
+                cls, name), e);
         }
     }
 
@@ -565,13 +576,16 @@ public class MappingRepository extends MetaDataRepository {
 
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
-        OpenJPAConfiguration conf = getConfiguration();
         try {
-            Class<?> c = JavaTypes.classForName(name, field, conf.getClassLoader());
+            Class<?> c = JavaTypes.classForName(name, field,
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
             if (FieldStrategy.class.isAssignableFrom(c)) {
-                FieldStrategy strat = (FieldStrategy)AccessController.doPrivileged(
+                FieldStrategy strat = (FieldStrategy)
+                    AccessController.doPrivileged(
                         J2DoPrivHelper.newInstanceAction(c));
-                Configurations.configureInstance(strat, conf, props);
+                Configurations.configureInstance(strat, getConfiguration(),
+                    props);
                 return strat;
             }
 
@@ -579,7 +593,8 @@ public class MappingRepository extends MetaDataRepository {
             if (installHandlers) {
                 ValueHandler vh = (ValueHandler) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(c));
-                Configurations.configureInstance(vh, conf, props);
+                Configurations.configureInstance(vh, getConfiguration(),
+                    props);
                 field.setHandler(vh);
             }
             return new HandlerFieldStrategy();
@@ -631,19 +646,25 @@ public class MappingRepository extends MetaDataRepository {
             strat = ValueMapDiscriminatorStrategy.class;
         else if (SubclassJoinDiscriminatorStrategy.ALIAS.equals(name))
             strat = SubclassJoinDiscriminatorStrategy.class;
-        OpenJPAConfiguration conf = getConfiguration();
+
         try {
             if (strat == null)
-                strat = JavaTypes.classForName(name, discrim.getClassMapping(), conf.getClassLoader());
+                strat = JavaTypes.classForName(name,
+                    discrim.getClassMapping(),
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(
+                            DiscriminatorStrategy.class)));
             DiscriminatorStrategy strategy = (DiscriminatorStrategy)
                 AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(strat));
-            Configurations.configureInstance(strategy, conf, props);
+            Configurations.configureInstance(strategy, getConfiguration(),
+                props);
             return strategy;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
                 e = ((PrivilegedActionException) e).getException();
-            throw new MetaDataException(_loc.get("bad-discrim-strategy", discrim.getClassMapping(), name), e);
+            throw new MetaDataException(_loc.get("bad-discrim-strategy",
+                discrim.getClassMapping(), name), e);
         }
     }
 
@@ -694,7 +715,11 @@ public class MappingRepository extends MetaDataRepository {
 
         try {
             if (strat == null)
-                strat = JavaTypes.classForName(name, version.getClassMapping(), getConfiguration().getClassLoader());
+                strat = JavaTypes.classForName(name,
+                    version.getClassMapping(),
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(
+                            VersionStrategy.class)));
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), name), e);
@@ -1180,7 +1205,8 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Check the given value against mapped strategies.
      */
-    private Object mappedStrategy(ValueMapping val, Class<?> type, boolean adapting) {
+    private Object mappedStrategy(ValueMapping val, Class<?> type,
+        boolean adapting) {
         if (type == null || type == Object.class)
             return null;
 
@@ -1200,7 +1226,13 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-        	return Configurations.newInstance(name, getConfiguration(), props);
+            Class<?> c = JavaTypes.classForName(name, val,
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)),false);
+            Object o = AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(c));
+            Configurations.configureInstance(o, getConfiguration(), props);
+            return o;
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException)
                 e = ((PrivilegedActionException) e).getException();
@@ -1221,9 +1253,15 @@ public class MappingRepository extends MetaDataRepository {
         String props = Configurations.getProperties(name);
         name = Configurations.getClassName(name);
         try {
-        	Object vh = Configurations.newInstance(name, getConfiguration(), props);
-            if (vh instanceof ValueHandler) {
-                return (ValueHandler) vh;
+            Class<?> c = JavaTypes.classForName(name, val,
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(ValueHandler.class)),false);
+            if (ValueHandler.class.isAssignableFrom(c)) {
+                ValueHandler vh = (ValueHandler) AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(c));
+                Configurations.configureInstance(vh, getConfiguration(),
+                    props);
+                return vh;
             }
             return null; // named field strategy
         } catch (Exception e) {
@@ -1496,7 +1534,8 @@ public class MappingRepository extends MetaDataRepository {
                 // persistent subclasses may not have been resolved yet.  
                 // run through the persistent types to see if any of them 
                 // or their superclass is a subclass of this class.
-                Collection<Class<?>> classes = loadPersistentTypes(false);
+                Collection<Class<?>> classes = loadPersistentTypes(false, 
+                        mapping.getEnvClassLoader());
                 Class<?> cls;
                 for (Iterator<Class<?>> itr = classes.iterator(); itr.hasNext();) {
                     cls = itr.next();

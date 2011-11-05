@@ -29,15 +29,17 @@ import org.apache.openjpa.validation.ValidationUnavailableException;
 
 /**
  * Validation helper routines and wrappers to remove runtime dependencies
- * on the Bean Validation APIs or a implementation.
+ * on the Bean Valdiation APIs or a implementation.
  * 
  * Note:  This class should have no direct dependency on the javax.validation
  *        packages, which should only occur in the ValidatorImpl class.
  *
+ * @version $Rev$ $Date$
  */
 public class ValidationUtils {
 
-    private static final Localizer _loc = Localizer.forPackage(ValidationUtils.class);
+    private static final Localizer _loc = Localizer.forPackage(
+        ValidationUtils.class);
 
     /**
      * Setup Validation support by determining if the javax.validation APIs
@@ -48,76 +50,84 @@ public class ValidationUtils {
      * @throws If a Validator was required but could not be created.
      */
     public static boolean setupValidation(OpenJPAConfiguration conf) {
-    	if (conf.getValidationMode().equalsIgnoreCase(String.valueOf(ValidationMode.NONE))) {
-    		return false;
-    	}
         Log log = conf.getConfigurationLog();
         boolean brc = false;
         
         // only try creating a Validator for JPA2 and if not mode==NONE
-        
         if (conf.getSpecificationInstance().getVersion() < 2) {
             if (log.isTraceEnabled()) {
-                log.trace("Bean Validator not created because JPA specification version is " + 
-                		conf.getSpecificationInstance());
+                log.trace("Not creating a ValidatorImpl because " +
+                    "this app is using the JPA 1.0 Spec");
             }
-            return false;
         }
+        else if (!(String.valueOf(ValidationMode.NONE)
+                .equalsIgnoreCase(conf.getValidationMode()))) {
             // we'll use this in the exception handlers
-        boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
-            .equalsIgnoreCase(conf.getValidationMode());
-        try {
-            // see if the javax.validation spec api is available
-            @SuppressWarnings("unused")
-            Class<?> c = Class.forName("javax.validation.ValidationException");
-        } catch (ClassNotFoundException e) {
-            if (bValRequired) {
-                // fatal error - ValidationMode requires a validator
-                Message msg = _loc.get("vlem-creation-error");
-                log.error(msg, e);
-                // rethrow as a more descriptive/identifiable exception
-                throw new ValidationUnavailableException(
-                    msg.getMessage(),
-                    new RuntimeException(e), true);
-            } else {
-                // no optional validation provider, so just trace output
+            boolean bValRequired = String.valueOf(ValidationMode.CALLBACK)
+                .equalsIgnoreCase(conf.getValidationMode());
+            try {
+                // see if the javax.validation spec api is available
                 if (log.isTraceEnabled()) {
-                    log.trace(_loc.get("vlem-creation-warn",
-                        "No available javax.validation APIs"));
+                    log.trace("Trying to load javax.validation APIs " +
+                        "based on the ValidationMode="
+                        + conf.getValidationMode());
                 }
-                return brc;
+                @SuppressWarnings("unused")
+                Class<?> c = Class.forName(
+                    "javax.validation.ValidationException");
+            } catch (ClassNotFoundException e) {
+                if (bValRequired) {
+                    // fatal error - ValidationMode requires a validator
+                    Message msg = _loc.get("vlem-creation-error");
+                    log.error(msg, e);
+                    // rethrow as a more descriptive/identifiable exception
+                    throw new ValidationUnavailableException(
+                        msg.getMessage(),
+                        new RuntimeException(e), true);
+                } else {
+                    // no optional validation provider, so just trace output
+                    if (log.isTraceEnabled()) {
+                        log.trace(_loc.get("vlem-creation-warn",
+                            "No available javax.validation APIs"));
+                    }
+                    return brc;
+                }
             }
-        }
-        // we have the javax.validation APIs
-        try {
-            // try loading a validation provider
-            ValidatorImpl validator = new ValidatorImpl(conf);
-            // set the Validator into the config
-            conf.setValidatorInstance(validator);
-            // update the LifecycleEventManager plugin to use it
-            conf.setLifecycleEventManager("validating");
-            // all done, so return good rc if anyone cares
-            brc = true;
-        } catch (RuntimeException e) {
-            if (bValRequired) {
-                // fatal error - ValidationMode requires a validator
-                // rethrow as a WrappedException
-                Message msg = _loc.get("vlem-creation-error");
-                log.error(msg, e);
-                // rethrow as a more descriptive/identifiable exception
-                throw new ValidationUnavailableException(
-                    msg.getMessage(),
-                    e, true);
+            // we have the javax.validation APIs
+            try {
+                // try loading a validation provider
+                ValidatorImpl validator = new ValidatorImpl(conf);
+                // set the Validator into the config
+                conf.setValidatorInstance(validator);
+                // update the LifecycleEventManager plugin to use it
+                conf.setLifecycleEventManager("validating");
+                // all done, so return good rc if anyone cares
+                brc = true;
+            } catch (RuntimeException e) {
+                if (bValRequired) {
+                    // fatal error - ValidationMode requires a validator
+                    // rethrow as a WrappedException
+                    Message msg = _loc.get("vlem-creation-error");
+                    log.error(msg, e);
+                    // rethrow as a more descriptive/identifiable exception
+                    throw new ValidationUnavailableException(
+                        msg.getMessage(),
+                        e, true);
 
-            } else {
-                // unexpected, but validation is optional,
-                // so just log it as a warning
-                String msg = e.getMessage();
-                log.warn(_loc.get("vlem-creation-warn", msg == null ? e : msg ));
-                return brc;
+                } else {
+                    // unexpected, but validation is optional,
+                    // so just log it as a warning
+                    String msg = e.getMessage();
+                    log.warn(_loc.get("vlem-creation-warn", msg == null ? e : msg ));
+                    return brc;
+                }
+            }
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace("Not creating a ValidatorImpl because " +
+                    "ValidationMode=" + conf.getValidationMode());
             }
         }
-        
         return brc;
     }
 

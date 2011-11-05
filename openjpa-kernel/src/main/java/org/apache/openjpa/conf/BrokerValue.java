@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.conf;
 
+import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
-import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.util.InternalException;
 
 /**
@@ -31,7 +31,7 @@ import org.apache.openjpa.util.InternalException;
  * @since 0.9.7
  */
 public class BrokerValue 
-    extends PluginValue<BrokerImpl> {
+    extends PluginValue {
 
     public static final String KEY = "BrokerImpl";
     public static final String NON_FINALIZING_ALIAS = "non-finalizing";
@@ -40,7 +40,7 @@ public class BrokerValue
     private BrokerImpl _templateBroker;
 
     public BrokerValue() {
-        super(BrokerImpl.class, KEY, false);
+        super(KEY, false);
         String[] aliases = new String[] {
             DEFAULT_ALIAS, FinalizingBrokerImpl.class.getName(),
             NON_FINALIZING_ALIAS, BrokerImpl.class.getName(), 
@@ -50,29 +50,34 @@ public class BrokerValue
         setString(aliases[0]);        
     }
 
-    public BrokerImpl newInstance(String clsName, Configuration conf,  boolean fatal) {
-        getTemplateBroker(clsName, conf, fatal);
+    public Object newInstance(String clsName, Class type, Configuration conf,
+        boolean fatal) {
+        getTemplateBroker(clsName, type, conf, fatal);
 
         try {
-            return (BrokerImpl)_templateBroker.clone();
+            return _templateBroker.clone();
         } catch (CloneNotSupportedException e) {
             throw new InternalException(e);
         }
     }
 
     public Class<? extends BrokerImpl> getTemplateBrokerType(Configuration c) {
-        return getTemplateBroker(getClassName(), c, true).getClass();
+        return getTemplateBroker(getClassName(), BrokerImpl.class, c, true)
+            .getClass();
     }
 
-    private BrokerImpl getTemplateBroker(String clsName, Configuration conf, boolean fatal) {
+    private BrokerImpl getTemplateBroker(String clsName, Class type,
+        Configuration conf, boolean fatal) {
         if (clsName == null || !clsName.equals(getClassName()))
-            throw new IllegalArgumentException("clsName != configured value '" + getClassName() + "'");
+            throw new IllegalArgumentException("clsName != configured value '"
+                + getClassName() + "'");
 
         // This is not synchronized. If there are concurrent invocations
         // while _templateBroker is null, we'll just end up with extra
         // template brokers, which will get safely garbage collected.
         if (_templateBroker == null)
-            _templateBroker = super.newInstance(clsName, conf, fatal);
+            _templateBroker = (BrokerImpl) super.newInstance(clsName, type,
+                conf, fatal);
         return _templateBroker;
     }
 }

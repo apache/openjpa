@@ -53,7 +53,8 @@ public interface Broker
      * after the first invocation with non-null arguments,
      * subsequent invocations of this method are ignored.
      */
-    public void setImplicitBehavior(OpCallbacks call, RuntimeExceptionTranslator ex);
+    public void setImplicitBehavior(OpCallbacks call,
+        RuntimeExceptionTranslator ex);
 
     /**
      * Return the factory that produced this broker.
@@ -287,7 +288,7 @@ public interface Broker
      *
      * @since 0.3.3
      */
-    public void addLifecycleListener(Object listener, Class<?>[] classes);
+    public void addLifecycleListener(Object listener, Class[] classes);
 
     /**
      * Remove a listener for lifecycle-related events.
@@ -468,7 +469,7 @@ public interface Broker
     /**
      * Persist the given objects.
      */
-    public void persistAll(Collection<?> objs, OpCallbacks call);
+    public void persistAll(Collection objs, OpCallbacks call);
 
     /**
      * Make the given instance persistent. Unlike other persist operations,
@@ -489,7 +490,7 @@ public interface Broker
     /**
      * Delete the given objects.
      */
-    public void deleteAll(Collection<?> objs, OpCallbacks call);
+    public void deleteAll(Collection objs, OpCallbacks call);
 
     /**
      * Release the given object from management. This operation is not
@@ -501,7 +502,7 @@ public interface Broker
      * Release the given objects from management. This operation is not
      * recursive.
      */
-    public void releaseAll(Collection<?> objs, OpCallbacks call);
+    public void releaseAll(Collection objs, OpCallbacks call);
 
     /**
      * Refresh the state of the given object.
@@ -511,7 +512,7 @@ public interface Broker
     /**
      * Refresh the state of the given objects.
      */
-    public void refreshAll(Collection<?> objs, OpCallbacks call);
+    public void refreshAll(Collection objs, OpCallbacks call);
 
     /**
      * Evict the given object.
@@ -521,7 +522,7 @@ public interface Broker
     /**
      * Evict the given objects.
      */
-    public void evictAll(Collection<?> objs, OpCallbacks call);
+    public void evictAll(Collection objs, OpCallbacks call);
 
     /**
      * Evict all clean objects.
@@ -532,7 +533,7 @@ public interface Broker
      * Evict all persistent-clean and persistent-nontransactional
      * instances in the given {@link Extent}.
      */
-    public void evictAll(Extent<?> extent, OpCallbacks call);
+    public void evictAll(Extent extent, OpCallbacks call);
 
     /**
      * Detach all objects in place.  A flush will be performed before
@@ -572,7 +573,7 @@ public interface Broker
      * @param objs the instances to detach
      * @return the detached instances
      */
-    public Object[] detachAll(Collection<?> objs, OpCallbacks call);
+    public Object[] detachAll(Collection objs, OpCallbacks call);
 
     /**
      * Import the specified detached object into the broker.
@@ -593,7 +594,8 @@ public interface Broker
      * @return the re-attached instances
      * @param copyNew whether to copy new instances
      */
-    public Object[] attachAll(Collection<?> objs, boolean copyNew,  OpCallbacks call);
+    public Object[] attachAll(Collection objs, boolean copyNew,
+        OpCallbacks call);
 
     /**
      * Create a new instance of type <code>cls</code>. If <code>cls</code> is
@@ -606,7 +608,7 @@ public interface Broker
      * @throws IllegalArgumentException if <code>cls</code> is not a managed
      * type or interface.
      */
-    public Object newInstance(Class<?> cls);
+    public Object newInstance(Class cls);
 
     /**
      * Returns <code>true</code> if <code>obj</code> is a detached object
@@ -618,13 +620,13 @@ public interface Broker
     /**
      * Return an extent of the given class, optionally including subclasses.
      */
-    public <T> Extent<T> newExtent(Class<T> cls, boolean subs);
+    public Extent newExtent(Class cls, boolean subs);
 
     /**
      * Create a new query from the given data, with the given candidate class
      * and language.
      */
-    public Query newQuery(String language, Class<?> cls, Object query);
+    public Query newQuery(String language, Class cls, Object query);
 
     /**
      * Create a new query in the given language.
@@ -672,7 +674,8 @@ public interface Broker
      * giving up, or -1 for no limit
      * @since 0.3.1
      */
-    public void lockAll(Collection<?> objs, int level, int timeout, OpCallbacks call);
+    public void lockAll(Collection objs, int level, int timeout,
+        OpCallbacks call);
 
     /**
      * Ensure that the given instances are locked at the current lock level, as
@@ -680,7 +683,7 @@ public interface Broker
      *
      * @since 0.3.1
      */
-    public void lockAll(Collection<?> objs, OpCallbacks call);
+    public void lockAll(Collection objs, OpCallbacks call);
 
     /**
      * Cancel all pending data store statements. If statements are cancelled
@@ -697,7 +700,7 @@ public interface Broker
      *
      * @since 0.3.0
      */
-    public void dirtyType(Class<?> cls);
+    public void dirtyType(Class cls);
 
     /**
      * Begin a logical operation. This indicates to the broker the

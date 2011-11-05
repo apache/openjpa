@@ -21,6 +21,7 @@ package org.apache.openjpa.conf;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.kernel.AuditManager;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
@@ -57,7 +58,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.StoreFacadeTypeRegistry;
-import org.apache.openjpa.validation.Validator;
 
 /**
  * Defines the properties necessary to configure runtime properties and
@@ -270,23 +270,23 @@ public interface OpenJPAConfiguration
      * The plugin string for the {@link ClassResolver} to use for custom
      * class loading.
      */
-//    public String getClassResolver();
+    public String getClassResolver();
 
     /**
      * The plugin string for the {@link ClassResolver} to use for custom
      * class loading.
      */
-//    public void setClassResolver(String classResolver);
+    public void setClassResolver(String classResolver);
 
     /**
      * The {@link ClassResolver} to use.
      */
-//    public ClassResolver getClassResolverInstance();
+    public ClassResolver getClassResolverInstance();
 
     /**
      * The {@link ClassResolver} to use.
      */
-//    public void setClassResolver(ClassResolver classResolver);
+    public void setClassResolver(ClassResolver classResolver);
 
     /**
      * The {@link BrokerFactory} class to use.
@@ -1701,7 +1701,7 @@ public interface OpenJPAConfiguration
      *
      * @since 2.0.0
      */
-    public Validator getValidatorInstance();
+    public Object getValidatorInstance();
 
     /**
      * Set the container or application provided Validator instance.
@@ -1709,7 +1709,7 @@ public interface OpenJPAConfiguration
      *
      * @since 2.0.0
      */
-    public void setValidatorInstance(Validator val);
+    public void setValidatorInstance(Object val);
     
     /**
      * Gets the lifecycle event manager instance classname.
@@ -1786,7 +1786,7 @@ public interface OpenJPAConfiguration
      * 
      * @return EncryptionProvider
      */
-    public EncryptionProvider getEncryptionProviderInstance();
+    public EncryptionProvider getEncryptionProvider();
     
     
     /**

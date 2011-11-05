@@ -112,9 +112,11 @@ public class DataCacheStoreManager
             return;
 
         MetaDataRepository mdr = _ctx.getConfiguration().getMetaDataRepositoryInstance();
+        ClassLoader loader = _ctx.getClassLoader();
+
         DataCache cache;
         for (Class<?> cls : classes) {
-            cache = mdr.getMetaData(cls, false).getDataCache();
+            cache = mdr.getMetaData(cls, loader, false).getDataCache();
             if (cache != null && cache.getEvictOnBulkUpdate())
                 cache.removeAll(cls, false);
         }
@@ -655,7 +657,7 @@ public class DataCacheStoreManager
         return unloaded;
     }
 
-    public Collection<Exception> flush(Collection<? extends OpenJPAStateManager> states) {
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> states) {
         Collection<Exception> exceps = super.flush(states);
 
         // if there were errors evict bad instances and don't record changes

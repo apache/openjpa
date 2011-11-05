@@ -43,8 +43,9 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
      * @param conf
      * @param providers
      */
-    public void initialize(OpenJPAConfiguration conf, PluginListValue<InstrumentationProvider> pluginVal) {
-        InstrumentationProvider[] providers = pluginVal.instantiate(conf);
+    public void initialize(OpenJPAConfiguration conf, PluginListValue pluginVal) {
+        InstrumentationProvider[] providers = 
+            (InstrumentationProvider[])pluginVal.instantiate(InstrumentationProvider.class, conf);
         _providers.addAll(Arrays.asList(providers));
     }
     

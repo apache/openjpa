@@ -42,7 +42,8 @@ public class TestTablePerClassInheritance
 
     public void testMapping() {
         ClassMapping mapping = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(TablePerClass2.class, true);
+            getMappingRepositoryInstance().getMapping(TablePerClass2.class,
+            null, true);
         assertTrue(mapping.getStrategy() instanceof FullClassStrategy);
         assertTrue(mapping.getDiscriminator().getStrategy()
             instanceof NoneDiscriminatorStrategy);

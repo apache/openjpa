@@ -64,7 +64,7 @@ public class TestEmbeddableSuperclass
     public void testRelationMappings() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(EmbeddableSuperSub.class, true);
+            getMapping(EmbeddableSuperSub.class, null, true);
         FieldMapping fm = cls.getFieldMapping("sub");
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
 

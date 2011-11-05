@@ -180,6 +180,9 @@ public class BrokerImpl
     private transient OpenJPAConfiguration _conf = null;
     private transient MetaDataRepository _repo = null;
 
+    // cache class loader associated with the broker
+    private transient ClassLoader _loader = null;
+
     // user state
     private Synchronization _sync = null;
     private Map<Object, Object> _userObjects = null;
@@ -326,6 +329,8 @@ public class BrokerImpl
         boolean fromDeserialization, boolean fromWriteBehindCallback) {
         _fromWriteBehindCallback = fromWriteBehindCallback;
         _initializeWasInvoked = true;
+        _loader = AccessController.doPrivileged(
+            J2DoPrivHelper.getContextClassLoaderAction());
         if (!fromDeserialization){
             _conf = factory.getConfiguration();
             _repo = _conf.getMetaDataRepositoryInstance();
@@ -480,6 +485,10 @@ public class BrokerImpl
 
     public ManagedRuntime getManagedRuntime() {
         return _runtime;
+    }
+
+    public ClassLoader getClassLoader() {
+        return _loader;
     }
 
     public DelegatingStoreManager getStoreManager() {
@@ -735,7 +744,7 @@ public class BrokerImpl
     // Events
     // ////////
 
-    public void addLifecycleListener(Object listener, Class<?>[] classes) {
+    public void addLifecycleListener(Object listener, Class[] classes) {
         beginOperation(false);
         try {
             _lifeEventManager.addListener(listener, classes);
@@ -1032,22 +1041,23 @@ public class BrokerImpl
         return sm;
     }
 
-    public Object[] findAll(Collection<?> oids, boolean validate, FindCallbacks call) {
+    public Object[] findAll(Collection oids, boolean validate,
+        FindCallbacks call) {
         int flags = OID_COPY | OID_ALLOW_NEW | OID_NODELETED;
-        if (!validate) {
+        if (!validate)
             flags |= OID_NOVALIDATE;
-        }
         return findAll(oids, _fc, null, null, flags, call);
     }
 
-    public Object[] findAll(Collection<?> oids, FetchConfiguration fetch, BitSet exclude, Object edata, int flags) {
+    public Object[] findAll(Collection oids, FetchConfiguration fetch,
+        BitSet exclude, Object edata, int flags) {
         return findAll(oids, fetch, exclude, edata, flags, null);
     }
 
     /**
      * Internal finder.
      */
-    protected Object[] findAll(Collection<?> oids, FetchConfiguration fetch,
+    protected Object[] findAll(Collection oids, FetchConfiguration fetch,
         BitSet exclude, Object edata, int flags, FindCallbacks call) {
         findAllDepth ++;
 
@@ -1110,8 +1120,10 @@ public class BrokerImpl
             // pass all state managers in need of loading or validation to the
             // store manager
             if (load != null) {
-                PCState state = (transState) ? PCState.PCLEAN : PCState.PNONTRANS;
-                Collection<Object> failed = _store.loadAll(load, state, StoreManager.FORCE_LOAD_NONE, fetch, edata);
+                PCState state = (transState) ? PCState.PCLEAN
+                    : PCState.PNONTRANS;
+                Collection<Object> failed = _store.loadAll(load, state,
+                    StoreManager.FORCE_LOAD_NONE, fetch, edata);
 
                 // set failed instances to null
                 if (failed != null && !failed.isEmpty()) {
@@ -1223,7 +1235,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _repo.getMetaData(cls, false);
+            ClassMetaData meta = _repo.getMetaData(cls, _loader, false);
             if (meta == null
                 || meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
                 return null;
@@ -1246,7 +1258,7 @@ public class BrokerImpl
 
         beginOperation(false);
         try {
-            ClassMetaData meta = _repo.getMetaData(cls, true);
+            ClassMetaData meta = _repo.getMetaData(cls, _loader, true);
             switch (meta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:
                 // delegate to store manager for datastore ids
@@ -1308,9 +1320,9 @@ public class BrokerImpl
         Class<?> pcType = _store.getManagedType(oid);
         ClassMetaData meta;
         if (pcType != null)
-            meta = _repo.getMetaData(pcType, true);
+            meta = _repo.getMetaData(pcType, _loader, true);
         else
-            meta = _repo.getMetaData(oid, true);
+            meta = _repo.getMetaData(oid, _loader, true);
 
         // copy the oid if needed
         if (copy && _compat.getCopyObjectIds()) {
@@ -2075,7 +2087,7 @@ public class BrokerImpl
     protected void flush(int reason) {
         // this will enlist proxied states as necessary so we know whether we
         // have anything to flush
-        Collection<StateManagerImpl> transactional = getTransactionalStates();
+        Collection transactional = getTransactionalStates();
 
         // do we actually have to flush?  only if our flags say so, or if
         // we have transaction listeners that need to be invoked for commit
@@ -2090,14 +2102,13 @@ public class BrokerImpl
         if (!flush && (reason != FLUSH_COMMIT || !listeners))
             return;
 
-        ManagedObjectCollection mobjs = null;
+        Collection mobjs = null;
         _flags |= FLAG_PRESTORING;
         try {
             if (flush) {
                 // call pre store on all currently transactional objs
-                for (StateManagerImpl sm : transactional) {
-                    sm.beforeFlush(reason, _call);
-                }
+                for (Iterator itr = transactional.iterator(); itr.hasNext();)
+                    ((StateManagerImpl) itr.next()).beforeFlush(reason, _call);
                 flushAdditions(transactional, reason);
             }
 
@@ -2172,7 +2183,9 @@ public class BrokerImpl
 
             // mark states as flushed
             if (flush) {
-                for (StateManagerImpl sm : transactional) {
+                StateManagerImpl sm;
+                for (Iterator itr = transactional.iterator(); itr.hasNext();) {
+                    sm = (StateManagerImpl) itr.next();
                     try {
                         // the state may have become transient, such as if
                         // it is embedded and the owner has been deleted during
@@ -2210,7 +2223,7 @@ public class BrokerImpl
     /**
      * Flush newly-transactional objects.
      */
-    private void flushAdditions(Collection<StateManagerImpl> transactional, int reason) {
+    private void flushAdditions(Collection transactional, int reason) {
         boolean loop;
         do {
             // flush new transactional instances; note logical or
@@ -2222,7 +2235,7 @@ public class BrokerImpl
     /**
      * Flush transactional additions.
      */
-    private boolean flushTransAdditions(Collection<StateManagerImpl> transactional, int reason) {
+    private boolean flushTransAdditions(Collection transactional, int reason) {
         if (_transAdditions == null || _transAdditions.isEmpty())
             return false;
 
@@ -2230,7 +2243,8 @@ public class BrokerImpl
         transactional.addAll(_transAdditions);
 
         // copy the change set, then clear it for the next iteration
-        StateManagerImpl[] states = _transAdditions.toArray(new StateManagerImpl[_transAdditions.size()]);
+        StateManagerImpl[] states = (StateManagerImpl[]) _transAdditions.
+            toArray(new StateManagerImpl[_transAdditions.size()]);
         _transAdditions = null;
 
         for (int i = 0; i < states.length; i++)
@@ -2241,14 +2255,15 @@ public class BrokerImpl
     /**
      * Delete new dereferenced objects.
      */
-    private boolean deleteDerefAdditions(Collection<StateManagerImpl> derefs) {
+    private boolean deleteDerefAdditions(Collection derefs) {
         if (_derefAdditions == null || _derefAdditions.isEmpty())
             return false;
 
         // remember these additions in case one becomes derefed again later
         derefs.addAll(_derefAdditions);
 
-        StateManagerImpl[] states = _derefAdditions.toArray(new StateManagerImpl[_derefAdditions.size()]);
+        StateManagerImpl[] states = (StateManagerImpl[]) _derefAdditions.
+            toArray(new StateManagerImpl[_derefAdditions.size()]);
         _derefAdditions = null;
 
         for (int i = 0; i < states.length; i++)
@@ -2260,7 +2275,8 @@ public class BrokerImpl
      * Delete a dereferenced dependent.
      */
     private void deleteDeref(StateManagerImpl sm) {
-        int action = processArgument(OpCallbacks.OP_DELETE, sm.getManagedInstance(), sm, null);
+        int action = processArgument(OpCallbacks.OP_DELETE,
+            sm.getManagedInstance(), sm, null);
         if ((action & OpCallbacks.ACT_RUN) != 0)
             sm.delete();
         if ((action & OpCallbacks.ACT_CASCADE) != 0)
@@ -2271,7 +2287,8 @@ public class BrokerImpl
      * Determine the action to take based on the user's given callbacks and
      * our implicit behavior.
      */
-    private int processArgument(int op, Object obj, OpenJPAStateManager sm, OpCallbacks call) {
+    private int processArgument(int op, Object obj, OpenJPAStateManager sm,
+        OpCallbacks call) {
         if (call != null)
             return call.processArgument(op, obj, sm);
         if (_call != null)
@@ -2341,15 +2358,14 @@ public class BrokerImpl
         _fc.setWriteLockLevel(LOCK_NONE);
         _fc.setLockTimeout(-1);
 
-        TransactionalCache transStates;
-        if (hasTransactionalObjects()) {
+        Collection transStates;
+        if (hasTransactionalObjects())
             transStates = _transCache;
-        } else {
-        	transStates = new TransactionalCache(true);
-        }
+        else
+            transStates = Collections.EMPTY_SET;
 
         // fire after rollback/commit event
-        ManagedObjectCollection mobjs = null;
+        Collection mobjs = null;
         if (_transEventManager.hasEndListeners()) {
             mobjs = new ManagedObjectCollection(transStates);
             int eventType = (rollback) ? TransactionEvent.AFTER_ROLLBACK
@@ -2384,7 +2400,9 @@ public class BrokerImpl
         }
 
         // perform commit or rollback state transitions on each instance
-        for (StateManagerImpl sm : transStates) {
+        StateManagerImpl sm;
+        for (Iterator itr = transStates.iterator(); itr.hasNext();) {
+            sm = (StateManagerImpl) itr.next();
             try {
                 if (rollback) {
                     // tell objects that may have been derefed then flushed
@@ -2444,7 +2462,7 @@ public class BrokerImpl
         return persist(obj, id, true, call);
     }
 
-    public void persistAll(Collection<?> objs, OpCallbacks call) {
+    public void persistAll(Collection objs, OpCallbacks call) {
         persistAll(objs, true, call);
     }
 
@@ -2452,7 +2470,7 @@ public class BrokerImpl
      * Persist the given objects.  Indicate whether this was an explicit persist
      * (PNEW) or a provisonal persist (PNEWPROVISIONAL).
      */
-    public void persistAll(Collection<?> objs, boolean explicit, 
+    public void persistAll(Collection objs, boolean explicit, 
         OpCallbacks call) {
         if (objs.isEmpty())
             return;
@@ -2611,7 +2629,7 @@ public class BrokerImpl
             }
         }
 
-        ClassMetaData meta = _repo.getMetaData(obj.getClass(), true);
+        ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
         if (fireEvent) {
             fireLifecycleEvent(obj, null, meta, LifecycleEvent.BEFORE_PERSIST);
         }
@@ -2665,7 +2683,7 @@ public class BrokerImpl
         if (pc.pcGetStateManager() != null)
             throw newDetachedException(obj, errOp);
 
-        ClassMetaData meta = _repo.getMetaData(obj.getClass(), true);
+        ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
         StateManagerImpl sm = newStateManagerImpl(StateManagerId.
             newInstance(this), meta);
         sm.initialize(pc, PCState.TLOADED);
@@ -2689,7 +2707,7 @@ public class BrokerImpl
         }
     }
 
-    public void deleteAll(Collection<?> objs, OpCallbacks call) {
+    public void deleteAll(Collection objs, OpCallbacks call) {
         beginOperation(true);
         try {
             assertWriteOperation();
@@ -2786,7 +2804,7 @@ public class BrokerImpl
             Exceptions.toString(obj))).setFailedObject(obj);
     }
 
-    public void releaseAll(Collection<?> objs, OpCallbacks call) {
+    public void releaseAll(Collection objs, OpCallbacks call) {
         beginOperation(false);
         try {
             List<Exception> exceps = null;
@@ -2929,7 +2947,7 @@ public class BrokerImpl
             if (sm == null) {
                 MetaDataRepository repos = _conf.
                     getMetaDataRepositoryInstance();
-                ClassMetaData meta = repos.getMetaData(type, true);
+                ClassMetaData meta = repos.getMetaData(type, _loader, true);
                 // construct a new state manager with all info known
                 sm = newStateManagerImpl(oid, meta);
                 sm.setObjectId(oid);
@@ -2941,7 +2959,7 @@ public class BrokerImpl
         }
     }
     
-    public void refreshAll(Collection<?> objs, OpCallbacks call) {
+    public void refreshAll(Collection objs, OpCallbacks call) {
         if (objs == null || objs.isEmpty())
             return;
 
@@ -3007,7 +3025,7 @@ public class BrokerImpl
      * This method is called with the full set of objects reachable via
      * cascade-refresh relations from the user-given instances.
      */
-    protected void refreshInternal(Collection<?> objs, OpCallbacks call) {
+    protected void refreshInternal(Collection objs, OpCallbacks call) {
     	if (objs == null || objs.isEmpty())
     		return;
         List<Exception> exceps = null;
@@ -3124,7 +3142,8 @@ public class BrokerImpl
     }
     
     
-    public void retrieveAll(Collection<?> objs, boolean dfgOnly, OpCallbacks call) {
+    public void retrieveAll(Collection objs, boolean dfgOnly,
+        OpCallbacks call) {
         if (objs == null || objs.isEmpty())
             return;
         if (objs.size() == 1) {
@@ -3260,7 +3279,7 @@ public class BrokerImpl
         }
     }
 
-    public void evictAll(Collection<?> objs, OpCallbacks call) {
+    public void evictAll(Collection objs, OpCallbacks call) {
         List<Exception> exceps = null;
         beginOperation(false);
         try {
@@ -3277,7 +3296,7 @@ public class BrokerImpl
         throwNestedExceptions(exceps, false);
     }
 
-    public void evictAll(Extent<?> extent, OpCallbacks call) {
+    public void evictAll(Extent extent, OpCallbacks call) {
         if (extent == null)
             return;
 
@@ -3349,7 +3368,7 @@ public class BrokerImpl
         }
     }
 
-    public Object[] detachAll(Collection<?> objs, OpCallbacks call) {
+    public Object[] detachAll(Collection objs, OpCallbacks call) {
         if (objs == null)
             return null;
         if (objs.isEmpty())
@@ -3466,7 +3485,8 @@ public class BrokerImpl
         }
     }
 
-    public Object[] attachAll(Collection<?> objs, boolean copyNew, OpCallbacks call) {
+    public Object[] attachAll(Collection objs, boolean copyNew,
+        OpCallbacks call) {
         if (objs == null)
             return null;
         if (objs.isEmpty())
@@ -3492,7 +3512,7 @@ public class BrokerImpl
         }
     }
 
-    public void nontransactionalAll(Collection<?> objs, OpCallbacks call) {
+    public void nontransactionalAll(Collection objs, OpCallbacks call) {
         beginOperation(true);
         try {
             List<Exception> exceps = null;
@@ -3533,7 +3553,7 @@ public class BrokerImpl
     /**
      * Make the given instances transactional.
      */
-    public void transactionalAll(Collection<?> objs, boolean updateVersion,
+    public void transactionalAll(Collection objs, boolean updateVersion,
         OpCallbacks call) {
         if (objs.isEmpty())
             return;
@@ -3565,7 +3585,7 @@ public class BrokerImpl
 
                     if (sm == null) {
                         // manage transient instance
-                        meta = _repo.getMetaData(obj.getClass(), true);
+                        meta = _repo.getMetaData(obj.getClass(), _loader, true);
 
                         sm = newStateManagerImpl
                             (StateManagerId.newInstance(this), meta);
@@ -3636,7 +3656,7 @@ public class BrokerImpl
                 _flags |= FLAG_FLUSH_REQUIRED; // version check/up
             } else if (sm == null) {
                 // manage transient instance
-                ClassMetaData meta = _repo.getMetaData(obj.getClass(), true);
+                ClassMetaData meta = _repo.getMetaData(obj.getClass(), _loader, true);
                 Object id = StateManagerId.newInstance(this);
                 sm = newStateManagerImpl(id, meta);
                 sm.initialize(assertPersistenceCapable(obj),
@@ -3655,10 +3675,12 @@ public class BrokerImpl
     /**
      * Transition the given state managers to transactional.
      */
-    private void transactionalStatesAll(Collection<StateManagerImpl> sms, Collection<?> failed, 
-    		List<Exception> exceps) {
+    private void transactionalStatesAll(Collection sms, Collection failed,
+        List<Exception> exceps) {
         // make instances transactional and make sure they are loaded
-        for (StateManagerImpl sm : sms) {
+        StateManagerImpl sm;
+        for (Iterator<?> itr = sms.iterator(); itr.hasNext();) {
+            sm = (StateManagerImpl) itr.next();
             if (failed != null && failed.contains(sm.getId()))
                 continue;
 
@@ -3676,14 +3698,15 @@ public class BrokerImpl
     // Extent, Query
     /////////////////
 
-    public <T> Extent<T> newExtent(Class<T> type, boolean subclasses) {
+    public Extent newExtent(Class type, boolean subclasses) {
         return newExtent(type, subclasses, null);
     }
 
-    private <T> Extent<T> newExtent(Class<T> type, boolean subclasses, FetchConfiguration fetch) {
+    private Extent newExtent(Class type, boolean subclasses,
+        FetchConfiguration fetch) {
         beginOperation(true);
         try {
-            ExtentImpl<T> extent = new ExtentImpl<T>(this, type, subclasses, fetch);
+            ExtentImpl extent = new ExtentImpl(this, type, subclasses, fetch);
             if (_extents == null)
                 _extents = new ReferenceHashSet(ReferenceHashSet.WEAK);
             _extents.add(extent);
@@ -3698,14 +3721,14 @@ public class BrokerImpl
         }
     }
 
-    public <T> Iterator<T> extentIterator(Class<T> type, boolean subclasses,
-    		FetchConfiguration fetch, boolean ignoreChanges) {
-        Extent<T> extent = newExtent(type, subclasses, fetch);
+    public Iterator extentIterator(Class type, boolean subclasses,
+        FetchConfiguration fetch, boolean ignoreChanges) {
+        Extent extent = newExtent(type, subclasses, fetch);
         extent.setIgnoreChanges(ignoreChanges);
         return extent.iterator();
     }
 
-    public Query newQuery(String lang, Class<?> cls, Object query) {
+    public Query newQuery(String lang, Class cls, Object query) {
         Query q = newQuery(lang, query);
         q.setCandidateType(cls, true);
         return q;
@@ -3792,7 +3815,7 @@ public class BrokerImpl
                 SequenceMetaData smd = (fmd == null)
                     ? meta.getIdentitySequenceMetaData()
                     : fmd.getValueSequenceMetaData();
-                return smd.getInstance();
+                return smd.getInstance(_loader);
             default:
                 // use store manager for native sequence
                 if (fmd == null) {
@@ -3811,7 +3834,7 @@ public class BrokerImpl
                     }
 
                     if (smd != null) {
-                        return smd.getInstance();
+                        return smd.getInstance(_loader);
                     } else {
                         return _store.getDataStoreIdSequence(meta);
                     }
@@ -3862,7 +3885,7 @@ public class BrokerImpl
         }
     }
 
-    public void lockAll(Collection<?> objs, OpCallbacks call) {
+    public void lockAll(Collection objs, OpCallbacks call) {
         if (objs.isEmpty())
             return;
 
@@ -3875,7 +3898,8 @@ public class BrokerImpl
         }
     }
 
-    public void lockAll(Collection<?> objs, int level, int timeout, OpCallbacks call) {
+    public void lockAll(Collection objs, int level, int timeout,
+        OpCallbacks call) {
         if (objs.isEmpty())
             return;
         if (objs.size() == 1) {
@@ -3904,9 +3928,8 @@ public class BrokerImpl
             }
 
             _lm.lockAll(sms, level, timeout, null);
-            for (Iterator<StateManagerImpl> itr = sms.iterator(); itr.hasNext();) {
+            for (Iterator<StateManagerImpl> itr = sms.iterator(); itr.hasNext();)
                 itr.next().readLocked(level, level);
-            }
         } catch (OpenJPAException ke) {
             throw ke;
         } catch (RuntimeException re) {
@@ -3978,7 +4001,7 @@ public class BrokerImpl
     // Cache
     /////////
 
-    public Collection<Object> getManagedObjects() {
+    public Collection getManagedObjects() {
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getManagedStates());
@@ -3987,7 +4010,7 @@ public class BrokerImpl
         }
     }
 
-    public Collection<Object> getTransactionalObjects() {
+    public Collection getTransactionalObjects() {
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getTransactionalStates());
@@ -3996,16 +4019,17 @@ public class BrokerImpl
         }
     }
 
-    public Collection<Object> getPendingTransactionalObjects() {
+    public Collection getPendingTransactionalObjects() {
         beginOperation(false);
         try {
-            return new ManagedObjectCollection(getPendingTransactionalStates());
+            return new ManagedObjectCollection
+                (getPendingTransactionalStates());
         } finally {
             endOperation();
         }
     }
 
-    public Collection<Object> getDirtyObjects() {
+    public Collection getDirtyObjects() {
         beginOperation(false);
         try {
             return new ManagedObjectCollection(getDirtyStates());
@@ -4025,7 +4049,7 @@ public class BrokerImpl
     /**
      * Return a copy of all managed state managers.
      */
-    protected Collection<StateManagerImpl> getManagedStates() {
+    protected Collection getManagedStates() {
         return _cache.copy();
     }
 
@@ -4053,9 +4077,9 @@ public class BrokerImpl
     /**
      * Return a copy of all dirty state managers.
      */
-    protected Collection<StateManagerImpl> getDirtyStates() {
+    protected Collection getDirtyStates() {
         if (!hasTransactionalObjects())
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
 
         return _transCache.copyDirty();
     }
@@ -4064,9 +4088,9 @@ public class BrokerImpl
      * Return a copy of all state managers which will become
      * transactional upon the next transaction.
      */
-    protected Collection<StateManagerImpl> getPendingTransactionalStates() {
+    protected Collection getPendingTransactionalStates() {
         if (_pending == null)
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         return new LinkedHashSet<StateManagerImpl>(_pending);
     }
 
@@ -4275,7 +4299,7 @@ public class BrokerImpl
         }
     }
 
-    public void dirtyType(Class<?> cls) {
+    public void dirtyType(Class cls) {
         if (cls == null)
             return;
 
@@ -4289,21 +4313,21 @@ public class BrokerImpl
         }
     }
 
-    public Collection<Class<?>> getPersistedTypes() {
+    public Collection getPersistedTypes() {
         if (_persistedClss == null || _persistedClss.isEmpty())
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_persistedClss);
     }
 
-    public Collection<Class<?>> getUpdatedTypes() {
+    public Collection getUpdatedTypes() {
         if (_updatedClss == null || _updatedClss.isEmpty())
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_updatedClss);
     }
 
-    public Collection<Class<?>> getDeletedTypes() {
+    public Collection getDeletedTypes() {
         if (_deletedClss == null || _deletedClss.isEmpty())
-            return Collections.emptySet();
+            return Collections.EMPTY_SET;
         return Collections.unmodifiableCollection(_deletedClss);
     }
 
@@ -4359,6 +4383,7 @@ public class BrokerImpl
         _deletedClss = null;
         _derefCache = null;
         _pending = null;
+        _loader = null;
         _transEventManager = null;
         _lifeEventManager = null;
 
@@ -4382,9 +4407,9 @@ public class BrokerImpl
         }
 
         if (_extents != null) {
-            Extent<?> e;
+            Extent e;
             for (Iterator<?> itr = _extents.iterator(); itr.hasNext();) {
-                e = (Extent<?>) itr.next();
+                e = (Extent) itr.next();
                 try {
                     e.closeAll();
                 } catch (RuntimeException re) {
@@ -4429,11 +4454,12 @@ public class BrokerImpl
     // State management
     ////////////////////
 
-    public Object newInstance(Class<?> cls) {
+    public Object newInstance(Class cls) {
         assertOpen();
 
         if (!cls.isInterface() && Modifier.isAbstract(cls.getModifiers()))
-            throw new UnsupportedOperationException(_loc.get("new-abstract", cls).getMessage());
+            throw new UnsupportedOperationException(_loc.get
+                ("new-abstract", cls).getMessage());
 
         // 1.5 doesn't initialize classes without a true Class.forName
         if (!PCRegistry.isRegistered(cls)) {
@@ -4445,7 +4471,7 @@ public class BrokerImpl
             }
         }
 
-        if (_repo.getMetaData(cls, false) == null)
+        if (_repo.getMetaData(cls, getClassLoader(), false) == null)
             throw new IllegalArgumentException(
                 _loc.get("no-interface-metadata", cls.getName()).getMessage());
 
@@ -4467,7 +4493,7 @@ public class BrokerImpl
                 if (pc.pcGetStateManager() == null) {
                     // If the statemanager is null the call to pcFetchObjectId always returns null. Create a new object
                     // id.
-                    return ApplicationIds.create(pc, _repo.getMetaData(pc.getClass(), true));
+                    return ApplicationIds.create(pc, _repo.getMetaData(pc.getClass(), null, true));
                 }
                 return pc.pcFetchObjectId();
             }
@@ -4556,7 +4582,7 @@ public class BrokerImpl
             return detached.booleanValue();
 
         // last resort: instance is detached if it has a store record
-        ClassMetaData meta = _repo.getMetaData(ImplHelper.getManagedInstance(pc).getClass(), true);
+        ClassMetaData meta = _repo.getMetaData(ImplHelper.getManagedInstance(pc).getClass(), _loader, true);
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
@@ -4685,7 +4711,8 @@ public class BrokerImpl
      * Return an object not found exception containing nested exceptions
      * for all of the given failed objects.
      */
-    private static ObjectNotFoundException newObjectNotFoundException(Collection<?> failed) {
+    private static ObjectNotFoundException newObjectNotFoundException
+        (Collection failed) {
         Throwable[] t = new Throwable[failed.size()];
         int idx = 0;
         for (Iterator<?> itr = failed.iterator(); itr.hasNext(); idx++)
@@ -4774,11 +4801,11 @@ public class BrokerImpl
      * Transactional cache that holds soft refs to clean instances.
      */
     static class TransactionalCache
-        implements Set<StateManagerImpl>, Serializable {
+        implements Set, Serializable {
 
         private final boolean _orderDirty;
-        private Set<StateManagerImpl> _dirty;
-        private Set<StateManagerImpl> _clean;
+        private Set<StateManagerImpl> _dirty = null;
+        private Set<StateManagerImpl> _clean = null;
 
         public TransactionalCache(boolean orderDirty) {
             _orderDirty = orderDirty;
@@ -4787,31 +4814,31 @@ public class BrokerImpl
         /**
          * Return a copy of all transactional state managers.
          */
-        public Collection<StateManagerImpl> copy() {
+        public Collection copy() {
             if (isEmpty()) {
                 // Transaction Listeners may add entities to the transaction. 
-                return new LinkedHashSet<StateManagerImpl>();
+                return new LinkedHashSet();
             }
 
             // size may not be entirely accurate due to refs expiring, so
             // manually copy each object; doesn't matter this way if size too
             // big by some
-            Set<StateManagerImpl> copy = new LinkedHashSet<StateManagerImpl>(size());
+            Set copy = new LinkedHashSet(size());
             if (_dirty != null)
-                for (StateManagerImpl dirty : _dirty)
-                    copy.add(dirty);
+                for (Iterator<StateManagerImpl> itr = _dirty.iterator(); itr.hasNext();)
+                    copy.add(itr.next());
             if (_clean != null)
-                for (StateManagerImpl clean : _clean)
-                    copy.add(clean);
+                for (Iterator<StateManagerImpl> itr = _clean.iterator(); itr.hasNext();)
+                    copy.add(itr.next());
             return copy;
         }
 
         /**
          * Return a copy of all dirty state managers.
          */
-        public Collection<StateManagerImpl> copyDirty() {
+        public Collection copyDirty() {
             if (_dirty == null || _dirty.isEmpty())
-                return Collections.emptySet();
+                return Collections.EMPTY_SET;
             return new LinkedHashSet<StateManagerImpl>(_dirty);
         }
 
@@ -4863,7 +4890,7 @@ public class BrokerImpl
             return _clean != null && _clean.remove(sm);
         }
 
-        public Iterator<StateManagerImpl> iterator() {
+        public Iterator iterator() {
             IteratorChain chain = new IteratorChain();
             if (_dirty != null && !_dirty.isEmpty())
                 chain.addIterator(_dirty.iterator());
@@ -4877,7 +4904,7 @@ public class BrokerImpl
                 || (_clean != null && _clean.contains(obj));
         }
 
-        public boolean containsAll(Collection<?> coll) {
+        public boolean containsAll(Collection coll) {
             for (Iterator<?> itr = coll.iterator(); itr.hasNext();)
                 if (!contains(itr.next()))
                     return false;
@@ -4905,11 +4932,11 @@ public class BrokerImpl
             return size;
         }
 
-        public boolean add(StateManagerImpl obj) {
+        public boolean add(Object obj) {
             throw new UnsupportedOperationException();
         }
 
-        public boolean addAll(Collection<? extends StateManagerImpl> coll) {
+        public boolean addAll(Collection coll) {
             throw new UnsupportedOperationException();
         }
 
@@ -4917,11 +4944,11 @@ public class BrokerImpl
             throw new UnsupportedOperationException();
         }
 
-        public boolean removeAll(Collection<?> coll) {
+        public boolean removeAll(Collection coll) {
             throw new UnsupportedOperationException();
         }
 
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(Collection c) {
             throw new UnsupportedOperationException();
         }
 
@@ -4929,10 +4956,9 @@ public class BrokerImpl
             throw new UnsupportedOperationException();
         }
 
-		@Override
-		public <T> T[] toArray(T[] a) {
+        public Object[] toArray(Object[] arr) {
             throw new UnsupportedOperationException();
-		}
+        }
     }
 
     /**
@@ -4989,15 +5015,15 @@ public class BrokerImpl
      * with the corresponding managed objects.
      */
     private static class ManagedObjectCollection
-        extends AbstractCollection<Object> {
+        extends AbstractCollection {
 
-        private final Collection<? extends OpenJPAStateManager> _states;
+        private final Collection _states;
 
-        public ManagedObjectCollection(Collection<? extends OpenJPAStateManager> states) {
+        public ManagedObjectCollection(Collection states) {
             _states = states;
         }
 
-        public Collection<? extends OpenJPAStateManager> getStateManagers() {
+        public Collection getStateManagers() {
             return _states;
         }
 
@@ -5005,16 +5031,17 @@ public class BrokerImpl
             return _states.size();
         }
 
-        public Iterator<Object> iterator() {
-            return new Iterator<Object>() {
-                private final Iterator<? extends OpenJPAStateManager> _itr = _states.iterator();
+        public Iterator iterator() {
+            return new Iterator() {
+                private final Iterator _itr = _states.iterator();
 
                 public boolean hasNext() {
                     return _itr.hasNext();
                 }
 
                 public Object next() {
-                    return ((OpenJPAStateManager) _itr.next()).getManagedInstance();
+                    return ((OpenJPAStateManager) _itr.next()).
+                        getManagedInstance();
                 }
 
                 public void remove() {

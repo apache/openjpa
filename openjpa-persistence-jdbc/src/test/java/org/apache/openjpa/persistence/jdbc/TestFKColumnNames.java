@@ -52,10 +52,10 @@ public class TestFKColumnNames extends AbstractPersistenceTestCase {
                 (MappingRepository) emf.getConfiguration()
                         .getMetaDataRepositoryInstance();
 
-        assertEquals("SELECT_ID", repos.getMapping(Inner1.class, true)
+        assertEquals("SELECT_ID", repos.getMapping(Inner1.class, null, true)
                 .getFieldMapping("select").getColumns()[0].getName());
 
-        assertEquals("FROM_ID", repos.getMapping(Inner2.class, true)
+        assertEquals("FROM_ID", repos.getMapping(Inner2.class, null, true)
                 .getFieldMapping("from").getColumns()[0].getName());
         closeEMF(emf);
     }

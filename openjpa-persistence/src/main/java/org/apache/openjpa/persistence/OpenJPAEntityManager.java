@@ -110,6 +110,12 @@ public interface OpenJPAEntityManager
     public void setSyncWithManagedTransactions(boolean resync);
 
     /**
+     * Return the current thread's class loader at the time this entity
+     * manager was obtained from the factory.
+     */
+    public ClassLoader getClassLoader();
+
+    /**
      * Return the connection user name.
      */
     public String getConnectionUserName();

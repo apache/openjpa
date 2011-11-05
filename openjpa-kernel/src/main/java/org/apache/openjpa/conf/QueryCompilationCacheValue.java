@@ -36,7 +36,7 @@ import org.apache.openjpa.util.CacheMap;
  * @nojavadoc
  */
 public class QueryCompilationCacheValue
-    extends PluginValue<Map> {
+    extends PluginValue {
 
     public static final String[] ALIASES = {
         "true", CacheMap.class.getName(),
@@ -45,18 +45,19 @@ public class QueryCompilationCacheValue
     };
 
     public QueryCompilationCacheValue(String prop) {
-        super(Map.class, prop, true);
+        super(prop, true);
         setAliases(ALIASES);
         setDefault(ALIASES[0]);
         setClassName(ALIASES[1]);
     }
 
-    public Map newInstance(String clsName, Configuration conf, boolean fatal) {
+    public Object newInstance(String clsName, Class type,
+        Configuration conf, boolean fatal) {
         // make sure map handles concurrency
         Map map;
         
         try {
-            map = super.newInstance(clsName, conf, fatal);
+            map = (Map) super.newInstance(clsName, type, conf, fatal);
         } catch (ParseException pe) {
             // OPENJPA256: this class differs from most plugins in that
             // the plugin type is the standard java interface Map.class (rather
@@ -67,7 +68,8 @@ public class QueryCompilationCacheValue
             // the ParseException (which is what we wrap the
             // ClassNotFoundException in) and try again, this time using
             // this class' ClassLoader.
-            map = super.newInstance(clsName, conf, fatal);
+            map = (Map) super.newInstance(clsName,
+                QueryCompilationCacheValue.class, conf, fatal);
         } catch (IllegalArgumentException iae) {
             // OPENJPA256: this class differs from most plugins in that
             // the plugin type is the standard java interface Map.class (rather
@@ -78,7 +80,8 @@ public class QueryCompilationCacheValue
             // the IllegalArgumentException (which is what we wrap the
             // ClassNotFoundException in) and try again, this time using
             // this class' ClassLoader.
-            map = super.newInstance(clsName, conf, fatal);
+            map = (Map) super.newInstance(clsName,
+                QueryCompilationCacheValue.class, conf, fatal);
         }
 
         if (map != null && !(map instanceof Hashtable)

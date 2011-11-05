@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.meta;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.security.AccessController;
@@ -56,7 +55,16 @@ public class ClassMetaDataIterator implements MetaDataIterator {
      * Constructor; supply the class whose metadata to find, the suffix
      * of metadata files, and whether to parse top-down or bottom-up.
      */
-    public ClassMetaDataIterator(Class<?> cls, String suffix, ClassLoader loader, boolean topDown) {
+    public ClassMetaDataIterator(Class<?> cls, String suffix, boolean topDown) {
+        this(cls, suffix, null, topDown);
+    }
+
+    /**
+     * Constructor; supply the class whose metadata to find, the suffix
+     * of metadata files, and whether to parse top-down or bottom-up.
+     */
+    public ClassMetaDataIterator(Class<?> cls, String suffix,
+            ClassLoader loader, boolean topDown) {
         // skip classes that can't have metadata
         if (cls != null && (cls.isPrimitive()
             || cls.getName().startsWith("java.")
@@ -72,8 +80,11 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             multi.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
             multi.addClassLoader(MultiClassLoader.THREAD_LOADER);
             multi.addClassLoader(getClass().getClassLoader());
-            if (cls != null) {
-                ClassLoader clsLoader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls));
+            if (cls != null)
+            {
+                ClassLoader clsLoader = (ClassLoader)
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(cls));
                 if (clsLoader != null)
                     multi.addClassLoader(clsLoader);
             }

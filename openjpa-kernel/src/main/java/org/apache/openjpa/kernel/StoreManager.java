@@ -252,7 +252,7 @@ public interface StoreManager
      *
      * @see org.apache.openjpa.util.ApplicationIds#assign()
      */
-    public Collection<Exception> flush(Collection<? extends OpenJPAStateManager> sms);
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms);
 
     /**
      * Assign an object id to the given new instance. Return false if the

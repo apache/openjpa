@@ -992,7 +992,7 @@ public class TestOrderColumn extends SingleEMFTestCase {
         Class clazz, String fieldName) {
         JDBCConfiguration conf = (JDBCConfiguration) emf1.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(clazz, true);
+            getMapping(clazz, null, true);
         FieldMapping fm = cls.getFieldMapping(fieldName);
         Column oc = fm.getOrderColumn();
         assertNotNull(oc);

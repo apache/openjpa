@@ -49,7 +49,8 @@ public class TestEmbeddableSuperclass
 
     public void testSuperclassEmbeddedOnly() {
         ClassMapping cls = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(EmbeddableSuper.class, true);
+            getMappingRepositoryInstance().getMapping(EmbeddableSuper.class, 
+            null, true);
         assertTrue(cls.isEmbeddedOnly());
         assertEquals(NoneClassStrategy.getInstance(), cls.getStrategy());
     }
@@ -57,7 +58,7 @@ public class TestEmbeddableSuperclass
     public void testSubclassMappingDefaultsAndOverrides() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(EmbeddableSuperSub.class, true);
+            getMapping(EmbeddableSuperSub.class, null, true);
         assertTrue(!cls.isEmbeddedOnly());
         assertTrue(cls.getStrategy() instanceof FullClassStrategy);
         assertEquals(ClassMapping.ID_APPLICATION, cls.getIdentityType());
@@ -86,7 +87,7 @@ public class TestEmbeddableSuperclass
     public void testSubclassDiscriminatorMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(EmbeddableSuperSub.class, true);
+            getMapping(EmbeddableSuperSub.class, null, true);
         assertEquals("DISC", cls.getDiscriminator().getColumns()[0].
             getName());
     }
@@ -94,14 +95,14 @@ public class TestEmbeddableSuperclass
     public void testVersionOverrideMapping() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(EmbeddableSuperSub.class, true);
+            getMapping(EmbeddableSuperSub.class, null, true);
         assertEquals("VERSVAL", cls.getVersion().getColumns()[0].getName());
     }
 
     public void testRelationMappings() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         ClassMapping cls = conf.getMappingRepositoryInstance().
-            getMapping(EmbeddableSuperSub.class, true);
+            getMapping(EmbeddableSuperSub.class, null, true);
         FieldMapping fm = cls.getFieldMapping("sub");
         assertTrue(fm.getStrategy() instanceof RelationFieldStrategy);
 

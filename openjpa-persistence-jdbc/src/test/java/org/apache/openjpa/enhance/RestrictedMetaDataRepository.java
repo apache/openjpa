@@ -48,8 +48,8 @@ public class RestrictedMetaDataRepository extends MetaDataRepository {
         }
     }
     
-    public Set<String> getPersistentTypeNames(boolean devpath) {
-        Set<String> types = super.getPersistentTypeNames(devpath);
+    public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
+        Set<String> types = super.getPersistentTypeNames(devpath, envLoader);
         String[] typeArray = types.toArray(new String[types.size()]);
         for (String type : typeArray) {
             if(_excludedTypes.contains(type)) {

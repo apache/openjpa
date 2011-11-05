@@ -74,38 +74,38 @@ public class PCEnhancerAgent {
     private static boolean disableDynamicAgent = false;
 
     /**
-     * Affirms if the Agent has ran successfully. 
+     * @return True if the Agent has ran successfully. False otherwise.
      */
     public static synchronized boolean getLoadSuccessful() {
         return loadSuccessful;
     }
     /**
-     * disables dynamic agent. 
+     * @return True if the dynamic agent was disabled via configuration. 
      */
     public static void disableDynamicAgent(){
-        disableDynamicAgent = true;
+        disableDynamicAgent=true;
     }
     
     /**
-     * @param configuration
+     * @param log
      * @return True if the agent is loaded successfully
      */
-    public static synchronized boolean loadDynamicAgent(OpenJPAConfiguration conf) {
-        if (loadAttempted || disableDynamicAgent) {
-        	return false;
+    public static synchronized boolean loadDynamicAgent(Log log) {
+        if (loadAttempted == false && disableDynamicAgent == false) {
+            Instrumentation inst =
+                InstrumentationFactory.getInstrumentation(log);
+            if (inst != null) {
+                premain("", inst);
+                return true;
+            } 
+            // If we successfully get the Instrumentation, we will call premain
+            // where loadAttempted will be set to true. This case is the path 
+            // where we were unable to get Instrumentation so we need to set the
+            // loadAttempted flag to true. We do this so we will only run
+            // through this code one time.
+            loadAttempted = true;
         }
-        
-        Instrumentation inst = InstrumentationFactory.getInstrumentation(conf);
-        if (inst != null) {
-            premain("", inst);
-            return true;
-        } 
-        // If we successfully get the Instrumentation, we will call premain
-        // where loadAttempted will be set to true. This case is the path 
-        // where we were unable to get Instrumentation so we need to set the
-        // loadAttempted flag to true. We do this so we will only run
-        // through this code one time.
-        loadAttempted = true;
+
         return false;
     }
 
@@ -116,7 +116,7 @@ public class PCEnhancerAgent {
         // The agent will be disabled when running in an application
         // server.
         synchronized (PCEnhancerAgent.class) {
-            if (loadAttempted) {
+            if (loadAttempted == true) {
                 return;
             }
             // See the comment in loadDynamicAgent as to why we set this to true
@@ -128,11 +128,15 @@ public class PCEnhancerAgent {
 
         if (opts.containsKey("ClassLoadEnhancement") ||
             opts.containsKey("classLoadEnhancement")) {
-            if (opts.getBooleanProperty("ClassLoadEnhancement", "classLoadEnhancement", true))
+            if (opts.getBooleanProperty(
+                "ClassLoadEnhancement", "classLoadEnhancement", true))
                 registerClassLoadEnhancer(inst, opts);
-        } else if (opts.containsKey("RuntimeEnhancement") || opts.containsKey("runtimeEnhancement")) {
+        }
+        else if (opts.containsKey("RuntimeEnhancement") ||
+            opts.containsKey("runtimeEnhancement")) {
             // Deprecated property setting
-            if (opts.getBooleanProperty("RuntimeEnhancement", "runtimeEnhancement", true))
+            if (opts.getBooleanProperty(
+                "RuntimeEnhancement", "runtimeEnhancement", true))
                 registerClassLoadEnhancer(inst, opts);
         } else {
             // if neither is set, then we should be turning it on. We need this
@@ -141,7 +145,8 @@ public class PCEnhancerAgent {
             registerClassLoadEnhancer(inst, opts);
         }
 
-        if (opts.getBooleanProperty("RuntimeRedefinition", "runtimeRedefinition", true)) {
+        if (opts.getBooleanProperty(
+            "RuntimeRedefinition", "runtimeRedefinition", true)) {
             InstrumentationFactory.setInstrumentation(inst);
         } else {
             InstrumentationFactory.setDynamicallyInstallAgent(false);
@@ -149,8 +154,10 @@ public class PCEnhancerAgent {
         loadSuccessful = true;
     }
 
-    private static void registerClassLoadEnhancer(Instrumentation inst,  Options opts) {
-    	List<String> anchors = Configurations.getFullyQualifiedAnchorsInPropertiesLocation(opts);
+    private static void registerClassLoadEnhancer(Instrumentation inst,
+        Options opts) {
+    	List<String> anchors = Configurations.
+            getFullyQualifiedAnchorsInPropertiesLocation(opts);
     	for (String a : anchors) {
     		Options clonedOptions = (Options) opts.clone();
     		clonedOptions.setProperty("properties", a);
@@ -168,7 +175,12 @@ public class PCEnhancerAgent {
     		    .newTemporaryClassLoaderAction(AccessController
     		    .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())
     		    ));
-    		conf.addClassLoader(tmpLoader);
+    		conf.setClassResolver(new ClassResolver() {
+    		    public ClassLoader getClassLoader(Class context,
+                    ClassLoader env) {
+    		        return tmpLoader;
+    		    }
+    		});
     		conf.setReadOnly(Configuration.INIT_STATE_FREEZING);
     		conf.instantiateAll(); // avoid threading issues
 

@@ -86,7 +86,8 @@ public class PartitionedDataCache extends ConcurrentDataCache {
      */
     public void setPartitionType(String type) throws Exception {
         Value value = conf.getValue("DataCache");
-        ClassLoader loader = conf.getClassLoader();
+        ClassLoader ctxLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader loader = conf.getClassResolverInstance().getClassLoader(null, ctxLoader);
         _type = (Class<? extends DataCache>) AccessController.doPrivileged(
                 J2DoPrivHelper.getForNameAction(value.unalias(type), true, loader));
     }
@@ -100,12 +101,12 @@ public class PartitionedDataCache extends ConcurrentDataCache {
     public void setPartitions(String parts) {
         _partProperties.clear();
         parsePartitionProperties(parts);
-        PluginListValue<DataCache> partitions = new PluginListValue<DataCache>(DataCache[].class, "partitions");
+        PluginListValue partitions = new PluginListValue("partitions");
         String[] types = (String[])Array.newInstance(String.class, _partProperties.size());
         Arrays.fill(types, _type.getName());
         partitions.setClassNames(types);
         partitions.setProperties(_partProperties.toArray(new String[_partProperties.size()]));
-        DataCache[] array = partitions.instantiate(conf);
+        DataCache[] array = (DataCache[])partitions.instantiate(_type, conf);
         for (DataCache part : array) {
             if (part.getName() == null)
                 throw new UserException(_loc.get("partition-cache-null-partition", parts));

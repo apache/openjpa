@@ -157,7 +157,8 @@ public class TestEJBEmbedded extends SingleEMFTestCase {
 
     public void testMappingTransferAndOverride() {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
-        ClassMapping cls = conf.getMappingRepositoryInstance().getMapping(EmbedOwner.class, true);
+        ClassMapping cls = conf.getMappingRepositoryInstance().getMapping
+            (EmbedOwner.class, null, true);
         assertEquals("OWN_BASIC", cls.getFieldMapping("basic").
             getColumns()[0].getName());
         ClassMapping embed = cls.getFieldMapping("embed").getEmbeddedMapping();

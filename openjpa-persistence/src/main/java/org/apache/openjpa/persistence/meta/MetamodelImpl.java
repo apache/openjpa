@@ -82,9 +82,9 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     public MetamodelImpl(MetaDataRepository repos) {
         this.repos = repos;
-        Collection<Class<?>> classes = repos.loadPersistentTypes(true);
+        Collection<Class<?>> classes = repos.loadPersistentTypes(true, null);
         for (Class<?> cls : classes) {
-        	ClassMetaData meta = repos.getMetaData(cls, true);
+        	ClassMetaData meta = repos.getMetaData(cls, null, true);
             PersistenceType type = getPersistenceType(meta);
             switch (type) {
             case ENTITY:
@@ -221,7 +221,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             PersistenceType expected) {
         if (container.containsKey(cls))
             return container.get(cls);
-        ClassMetaData meta = repos.getMetaData(cls, false);
+        ClassMetaData meta = repos.getMetaData(cls, null, false);
         if (meta != null) {
             instantiate(cls, meta, container, expected);
         }

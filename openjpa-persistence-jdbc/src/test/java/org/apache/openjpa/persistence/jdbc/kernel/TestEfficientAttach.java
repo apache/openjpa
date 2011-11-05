@@ -73,7 +73,7 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         MetaDataRepository repos = conf.getMappingRepositoryInstance();
         ClassMetaData meta;
         for (int i = 0; i < clss.length; i++) {
-            meta = repos.getMetaData(clss[i], true);
+            meta = repos.getMetaData(clss[i], null, true);
             detachedStateFields[i] = meta.getDetachedState();
             meta.setDetachedState(null);
 
@@ -85,7 +85,7 @@ public class TestEfficientAttach extends TestSQLListenerTestCase {
         } finally {
             // set detached state back
             for (int i = 0; i < clss.length; i++)
-                repos.getMetaData(clss[i], true).setDetachedState
+                repos.getMetaData(clss[i], null, true).setDetachedState
                     (detachedStateFields[i]);
         }
     }

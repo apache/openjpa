@@ -131,8 +131,7 @@ public class SchemaToolTask
         this.file = file;
     }
 
-    @Override
-    protected JDBCConfigurationImpl newConfiguration() {
+    protected ConfigurationImpl newConfiguration() {
         return new JDBCConfigurationImpl();
     }
 

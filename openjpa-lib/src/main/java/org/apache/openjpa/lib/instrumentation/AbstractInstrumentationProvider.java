@@ -38,7 +38,7 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
     private Map<String, Instrument> _instruments = new ConcurrentHashMap<String, Instrument>();
     
     private boolean _started = false;
-    private PluginListValue<Instrument> _instrumentValues;
+    private PluginListValue _instrumentValues;
     private String _options;
     private Configuration _config;
 
@@ -57,13 +57,13 @@ public abstract class AbstractInstrumentationProvider implements Instrumentation
     }
     
     public void setInstrument(String instrument) {
-        _instrumentValues = new PluginListValue<Instrument>(Instrument[].class, "Instrument");
+        _instrumentValues = new PluginListValue("Instrument");
         if (getInstrumentAliases() != null) {
             _instrumentValues.setAliases(getInstrumentAliases());
         }
         _instrumentValues.setString(instrument);
         
-        Instrument[] instruments = _instrumentValues.instantiate(_config);
+        Instrument[] instruments = (Instrument[])_instrumentValues.instantiate(Instrument.class, _config);
         for (Instrument inst : instruments) {
             inst.setProvider(this);
             _instruments.put(inst.getName(), inst);

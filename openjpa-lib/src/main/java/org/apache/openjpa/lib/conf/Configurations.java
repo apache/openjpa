@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -38,9 +40,11 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 import serp.util.Strings;
 
@@ -52,8 +56,15 @@ import serp.util.Strings;
  */
 public class Configurations {
 
-    private static final Localizer _loc = Localizer.forPackage(Configurations.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (Configurations.class);
     
+    private static final ConcurrentReferenceHashMap _loaders = new
+        ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.WEAK, 
+                ConcurrentReferenceHashMap.HARD);
+
+    private static final Object NULL_LOADER = "null-loader";
+
     /**
      * Return the class name from the given plugin string, or null if none.
      */
@@ -90,7 +101,8 @@ public class Configurations {
         // clsName(props) form
         if (clsName)
             return plugin.substring(0, openParen).trim();
-        String prop = plugin.substring(openParen + 1, plugin.length() - 1).trim();
+        String prop = plugin.substring(openParen + 1,
+            plugin.length() - 1).trim();
         return (prop.length() == 0) ? null : prop;
     }
 
@@ -140,17 +152,33 @@ public class Configurations {
         return getPlugin(cls, serializeProperties(props)); 
     }
 
-
-    public static Object newInstance(String clsName, Configuration conf, String props) {
-    	return newInstance(clsName, conf, parseProperties(props));
-    }
     /**
-     * Create and configure an instance with the given class name and properties.
-     * The class name is loaded using the {@link Configuration#getClassLoader() class loader} of
-     * the given configuration.
+     * Create the instance with the given class name, using the given
+     * class loader. No configuration of the instance is performed by
+     * this method.
      */
-    public static Object newInstance(String clsName, Configuration conf, Properties props) {
-        Object obj = newInstance(clsName, null, conf, conf.getClassLoader(), true);
+    public static Object newInstance(String clsName, ClassLoader loader) {
+        return newInstance(clsName, null, null, loader, true);
+    }
+
+    /**
+     * Create and configure an instance with the given class name and
+     * properties as a String.
+     */
+    public static Object newInstance(String clsName, Configuration conf,
+        String props, ClassLoader loader) {
+        Object obj = newInstance(clsName, null, conf, loader, true);
+        configureInstance(obj, conf, props);
+        return obj;
+    }
+
+    /**
+     * Create and configure an instance with the given class name and
+     * properties.
+     */
+    public static Object newInstance(String clsName, Configuration conf,
+        Properties props, ClassLoader loader) {
+        Object obj = newInstance(clsName, null, conf, loader, true);
         configureInstance(obj, conf, props);
         return obj;
     }
@@ -159,30 +187,52 @@ public class Configurations {
      * Helper method used by members of this package to instantiate plugin
      * values.
      */
-    static <T> T newInstance(String clsName, Value<T> val, Configuration conf, ClassLoader loader, boolean fatal) {
+    static Object newInstance(String clsName, Value val, Configuration conf,
+        ClassLoader loader, boolean fatal) {
         if (StringUtils.isEmpty(clsName))
             return null;
-        Class<T> cls = null; 
+
+        Class cls = null; 
+
         while (cls == null) {
-            try {
-                cls = (Class<T>)Class.forName(clsName, true, loader);
-            } catch (Exception e) {
-                if (loader != null)  { // Try one more time with loader=null
-                    loader = null;
-                } else {
-                    RuntimeException re = getCreateException(clsName, val, loader, e);
-                    if (fatal)
-                        throw re;
-                    Log log = (conf == null) ? null : conf.getConfigurationLog();
-                    if (log != null && log.isErrorEnabled())
-                        log.error(_loc.get("plugin-creation-exception", val), e);
-                    return null;
+            // can't have a null reference in the map, so use symbolic
+            // constant as key
+            Object key = loader == null ? NULL_LOADER : loader;
+            Map loaderCache = (Map) _loaders.get(key);
+            if (loaderCache == null) { // We don't have a cache for this loader.
+                loaderCache = new ConcurrentHashMap();
+                _loaders.put(key, loaderCache);
+            } else {  // We have a cache for this loader.
+                cls = (Class) loaderCache.get(clsName);
+            }
+
+            if (cls == null) {
+                try {
+                    cls = Strings.toClass(clsName, findDerivedLoader(conf,
+                            loader));
+                    loaderCache.put(clsName, cls);
+                } catch (RuntimeException re) {
+                    if (loader != null)  // Try one more time with loader=null
+                        loader = null;
+                    else {
+                        if (val != null)
+                            re = getCreateException(clsName, val, re);
+                        if (fatal)
+                            throw re;
+                        Log log = (conf == null) ? null : conf
+                                .getConfigurationLog();
+                        if (log != null && log.isErrorEnabled())
+                            log.error(_loc
+                                    .get("plugin-creation-exception", val), re);
+                        return null;
+                    }
                 }
             }
         }
 
         try {
-            return (T) AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(cls));
+            return AccessController.doPrivileged(
+                J2DoPrivHelper.newInstanceAction(cls));
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException) {
                 e = ((PrivilegedActionException) e).getException();   
@@ -198,7 +248,48 @@ public class Configurations {
         }
     }
 
-    
+    /**
+     * Attempt to find a derived loader that delegates to our target loader.
+     * This allows application loaders that delegate appropriately for known
+     * classes first crack at class names.
+     */
+    private static ClassLoader findDerivedLoader(Configuration conf,
+        ClassLoader loader) {
+        // we always prefer the thread loader, because it's the only thing we
+        // can access that isn't bound to the OpenJPA classloader, unless
+        // the conf object is of a custom class
+        ClassLoader ctxLoader = AccessController.doPrivileged(
+            J2DoPrivHelper.getContextClassLoaderAction());
+        if (loader == null) {
+            if (ctxLoader != null)
+                return ctxLoader;
+            if (conf != null)
+                return AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
+            return Configurations.class.getClassLoader();
+        }
+
+        for (ClassLoader parent = ctxLoader; parent != null; 
+            parent = AccessController.doPrivileged(
+                J2DoPrivHelper.getParentAction(parent))) {
+            if (parent == loader)
+                return ctxLoader;
+        }
+        if (conf != null) {
+            for (ClassLoader parent = (ClassLoader)
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
+                parent != null; 
+                parent = AccessController.doPrivileged(
+                    J2DoPrivHelper.getParentAction(parent))) {
+                if (parent == loader)
+                    return AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
+            }
+        }
+        return loader;
+    }
+
     /**
      * Return a List<String> of all the fully-qualified anchors specified in the
      * properties location listed in <code>opts</code>. If no properties
@@ -224,7 +315,8 @@ public class Configurations {
                 return Arrays.asList(new String[] { props });
         }
 
-        return ProductDerivations.getFullyQualifiedAnchorsInPropertiesLocation(props);
+        return ProductDerivations.getFullyQualifiedAnchorsInPropertiesLocation(
+            props);
     }
 
     /**
@@ -255,14 +347,14 @@ public class Configurations {
             File file = new File(path);
             if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isFileAction(file))).booleanValue())
-                provider = ProductDerivations.load(file, anchor);
+                provider = ProductDerivations.load(file, anchor, null);
             else {
                 file = new File("META-INF" + File.separatorChar + path);
                 if ((AccessController.doPrivileged(J2DoPrivHelper
                     .isFileAction(file))).booleanValue())
-                    provider = ProductDerivations.load(file, anchor);
+                    provider = ProductDerivations.load(file, anchor, null);
                 else
-                    provider = ProductDerivations.load(path, anchor);
+                    provider = ProductDerivations.load(path, anchor, null);
             }
             if (provider != null)
                 provider.setInto(conf);
@@ -271,7 +363,7 @@ public class Configurations {
                     props).getMessage(), Configurations.class.getName(), 
                     props);
         } else {
-            provider = ProductDerivations.loadDefaults();
+            provider = ProductDerivations.loadDefaults(null);
             if (provider != null)
                 provider.setInto(conf);
         }
@@ -281,7 +373,8 @@ public class Configurations {
     /**
      * Helper method to throw an informative description on instantiation error.
      */
-    private static RuntimeException getCreateException(String clsName, Value val, ClassLoader loader, Exception e) {
+    private static RuntimeException getCreateException(String clsName,
+        Value val, Exception e) {
         // re-throw the exception with some better information
         final String msg;
         final Object[] params;
@@ -289,27 +382,30 @@ public class Configurations {
         String alias = val.alias(clsName);
         String[] aliases = val.getAliases();
         String[] keys;
-        if (aliases.length == 0) {
+        if (aliases.length == 0)
             keys = aliases;
-        } else {
+        else {
             keys = new String[aliases.length / 2];
-            for (int i = 0; i < aliases.length; i += 2) {
+            for (int i = 0; i < aliases.length; i += 2)
                 keys[i / 2] = aliases[i];
-            }
-            Arrays.sort(keys);
         }
+
         String closest;
         if (keys.length == 0) {
             msg = "invalid-plugin";
-            params = new Object[]{val.getProperty(), alias, e.toString(), loader};
-        } else if ((closest = StringDistance.getClosestLevenshteinDistance(alias, keys, 0.5f)) == null) {
+            params = new Object[]{ val.getProperty(), alias, e.toString(), };
+        } else if ((closest = StringDistance.getClosestLevenshteinDistance
+            (alias, keys, 0.5f)) == null) {
             msg = "invalid-plugin-aliases";
-            params = new Object[]{val.getProperty(), alias, e.toString(), keys, loader};
+            params = new Object[]{
+                val.getProperty(), alias, e.toString(),
+                new TreeSet<String>(Arrays.asList(keys)), };
         } else {
             msg = "invalid-plugin-aliases-hint";
-            params = new Object[]{val.getProperty(), alias, e.toString(), keys, closest, loader};
+            params = new Object[]{
+                val.getProperty(), alias, e.toString(),
+                new TreeSet<String>(Arrays.asList(keys)), closest, };
         }
-        e.printStackTrace();
         return new ParseException(_loc.get(msg, params), e);
     }
 

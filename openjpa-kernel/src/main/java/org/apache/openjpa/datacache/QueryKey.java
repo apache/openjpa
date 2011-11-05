@@ -222,7 +222,7 @@ public class QueryKey
         // won't find metadata for interfaces.
         if (candidateClass.isInterface())
             return null;
-        meta = repos.getMetaData(candidateClass, true);
+        meta = repos.getMetaData(candidateClass, ctx.getClassLoader(), true);
         int timeout = meta.getDataCacheTimeout();
         if (subclasses) {
             metas = meta.getPCSubclassMetaDatas();

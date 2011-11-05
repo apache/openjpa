@@ -42,12 +42,9 @@ import org.apache.openjpa.jdbc.sql.DBDictionaryFactory;
 import org.apache.openjpa.jdbc.sql.MaxDBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
-import org.apache.openjpa.kernel.FinderCache;
-import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.conf.ObjectValue;
-import org.apache.openjpa.lib.conf.PluginListValue;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
@@ -80,16 +77,16 @@ public class JDBCConfigurationImpl
     public FetchModeValue subclassFetchMode;
     public IntValue lrsSize;
     public StringValue synchronizeMappings;
-    public PluginListValue<JDBCListener> jdbcListenerPlugins;
-    public PluginListValue<ConnectionDecorator> connectionDecoratorPlugins;
-    public PluginValue<DBDictionary> dbdictionaryPlugin;
-    public ObjectValue<UpdateManager> updateManagerPlugin;
-    public ObjectValue<SchemaFactory> schemaFactoryPlugin;
-    public ObjectValue<SQLFactory> sqlFactoryPlugin;
-    public ObjectValue<MappingDefaults> mappingDefaultsPlugin;
-    public PluginValue<DriverDataSource> driverDataSourcePlugin;
+    public ObjectValue jdbcListenerPlugins;
+    public ObjectValue connectionDecoratorPlugins;
+    public PluginValue dbdictionaryPlugin;
+    public ObjectValue updateManagerPlugin;
+    public ObjectValue schemaFactoryPlugin;
+    public ObjectValue sqlFactoryPlugin;
+    public ObjectValue mappingDefaultsPlugin;
+    public PluginValue driverDataSourcePlugin;
     public MappingFactoryValue mappingFactoryPlugin;
-    public ObjectValue<DBIdentifierUtil> identifierUtilPlugin;
+    public ObjectValue identifierUtilPlugin;
 
     // used internally
     private String firstUser = null;
@@ -195,15 +192,15 @@ public class JDBCConfigurationImpl
         synchronizeMappings.setAliases(aliases);
         synchronizeMappings.setDefault(aliases[0]);
 
-        jdbcListenerPlugins = addPluginList(JDBCListener[].class, "jdbc.JDBCListeners");
+        jdbcListenerPlugins = addPluginList("jdbc.JDBCListeners");
         jdbcListenerPlugins.setInstantiatingGetter("getJDBCListenerInstances");
 
-        connectionDecoratorPlugins = addPluginList(ConnectionDecorator[].class,
-            "jdbc.ConnectionDecorators");
+        connectionDecoratorPlugins = addPluginList
+            ("jdbc.ConnectionDecorators");
         connectionDecoratorPlugins.setInstantiatingGetter
             ("getConnectionDecoratorInstances");
 
-        dbdictionaryPlugin = addPlugin(DBDictionary.class, "jdbc.DBDictionary", true);
+        dbdictionaryPlugin = addPlugin("jdbc.DBDictionary", true);
         aliases = new String[]{
             "access", "org.apache.openjpa.jdbc.sql.AccessDictionary",
             "db2", "org.apache.openjpa.jdbc.sql.DB2Dictionary",
@@ -227,7 +224,7 @@ public class JDBCConfigurationImpl
         dbdictionaryPlugin.setAliases(aliases);
         dbdictionaryPlugin.setInstantiatingGetter("getDBDictionaryInstance");
 
-        updateManagerPlugin = addPlugin(UpdateManager.class, "jdbc.UpdateManager", true);
+        updateManagerPlugin = addPlugin("jdbc.UpdateManager", true);
         aliases = new String[]{
             "default",
             BatchingConstraintUpdateManager.class.getName(),
@@ -245,7 +242,7 @@ public class JDBCConfigurationImpl
         updateManagerPlugin.setString(aliases[0]);
         updateManagerPlugin.setInstantiatingGetter("getUpdateManagerInstance");
 
-        driverDataSourcePlugin = addPlugin(DriverDataSource.class, "jdbc.DriverDataSource", false);
+        driverDataSourcePlugin = addPlugin("jdbc.DriverDataSource", false);
         aliases = new String[]{
             "auto", "org.apache.openjpa.jdbc.schema.AutoDriverDataSource",
             "simple", "org.apache.openjpa.jdbc.schema.SimpleDriverDataSource",
@@ -255,7 +252,7 @@ public class JDBCConfigurationImpl
         driverDataSourcePlugin.setDefault(aliases[0]);
         driverDataSourcePlugin.setString(aliases[0]);
 
-        schemaFactoryPlugin = addPlugin(SchemaFactory.class, "jdbc.SchemaFactory", true);
+        schemaFactoryPlugin = addPlugin("jdbc.SchemaFactory", true);
         aliases = new String[]{
             "dynamic", "org.apache.openjpa.jdbc.schema.DynamicSchemaFactory",
             "native", "org.apache.openjpa.jdbc.schema.LazySchemaFactory",
@@ -269,7 +266,7 @@ public class JDBCConfigurationImpl
         schemaFactoryPlugin.setString(aliases[0]);
         schemaFactoryPlugin.setInstantiatingGetter("getSchemaFactoryInstance");
 
-        sqlFactoryPlugin = addPlugin(SQLFactory.class, "jdbc.SQLFactory", true);
+        sqlFactoryPlugin = addPlugin("jdbc.SQLFactory", true);
         aliases = new String[]{
             "default", "org.apache.openjpa.jdbc.sql.SQLFactoryImpl",
         };
@@ -281,14 +278,15 @@ public class JDBCConfigurationImpl
         mappingFactoryPlugin = new MappingFactoryValue("jdbc.MappingFactory");
         addValue(mappingFactoryPlugin);
 
-        mappingDefaultsPlugin = addPlugin(MappingDefaults.class, "jdbc.MappingDefaults", true);
+        mappingDefaultsPlugin = addPlugin("jdbc.MappingDefaults", true);
         aliases = new String[]{
             "default", "org.apache.openjpa.jdbc.meta.MappingDefaultsImpl",
         };
         mappingDefaultsPlugin.setAliases(aliases);
         mappingDefaultsPlugin.setDefault(aliases[0]);
         mappingDefaultsPlugin.setString(aliases[0]);
-        mappingDefaultsPlugin.setInstantiatingGetter("getMappingDefaultsInstance");
+        mappingDefaultsPlugin.setInstantiatingGetter
+            ("getMappingDefaultsInstance");
 
         // set up broker factory defaults
         brokerFactoryPlugin.setAlias("jdbc", JDBCBrokerFactory.class.getName());
@@ -319,7 +317,7 @@ public class JDBCConfigurationImpl
         // This plug-in is declared in superclass but defined here
         // because PreparedQueryCache is currently available for JDBC
         // backend only
-        preparedQueryCachePlugin = addPlugin(PreparedQueryCache.class, "jdbc.QuerySQLCache", true);
+        preparedQueryCachePlugin = addPlugin("jdbc.QuerySQLCache", true);
         aliases = new String[] {
             "true", "org.apache.openjpa.jdbc.kernel.PreparedQueryCacheImpl",
             "false", null
@@ -332,7 +330,7 @@ public class JDBCConfigurationImpl
         preparedQueryCachePlugin.setInstantiatingGetter(
                 "getQuerySQLCacheInstance");
 
-        finderCachePlugin = addPlugin(FinderCache.class, "jdbc.FinderCache", true);
+        finderCachePlugin = addPlugin("jdbc.FinderCache", true);
         aliases = new String[] {
             "true", "org.apache.openjpa.jdbc.kernel.FinderCacheImpl",
             "false", null
@@ -344,7 +342,7 @@ public class JDBCConfigurationImpl
         finderCachePlugin.setDynamic(true);
         finderCachePlugin.setInstantiatingGetter("getFinderCacheInstance");
 
-        identifierUtilPlugin = addPlugin(DBIdentifierUtil.class, "jdbc.IdentifierUtil", true);
+        identifierUtilPlugin = addPlugin("jdbc.IdentifierUtil", true);
         aliases = new String[] { 
             "default", "org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl" };
         identifierUtilPlugin.setAliases(aliases);
@@ -527,8 +525,8 @@ public class JDBCConfigurationImpl
 
     public JDBCListener[] getJDBCListenerInstances() {
         if (jdbcListenerPlugins.get() == null)
-            jdbcListenerPlugins.instantiate(this);
-        return jdbcListenerPlugins.get();
+            jdbcListenerPlugins.instantiate(JDBCListener.class, this);
+        return (JDBCListener[]) jdbcListenerPlugins.get();
     }
 
     public void setConnectionDecorators(String connectionDecorators) {
@@ -545,9 +543,10 @@ public class JDBCConfigurationImpl
 
     public ConnectionDecorator[] getConnectionDecoratorInstances() {
         if (connectionDecoratorPlugins.get() == null) {
-            connectionDecoratorPlugins.instantiate(this);
+            connectionDecoratorPlugins.instantiate
+                (ConnectionDecorator.class, this);
         }
-        return connectionDecoratorPlugins.get();
+        return (ConnectionDecorator[]) connectionDecoratorPlugins.get();
     }
 
     public void setDBDictionary(String dbdictionary) {
@@ -624,8 +623,8 @@ public class JDBCConfigurationImpl
 
     public UpdateManager getUpdateManagerInstance() {
         if (updateManagerPlugin.get() == null)
-            updateManagerPlugin.instantiate(this);
-        return updateManagerPlugin.get();
+            updateManagerPlugin.instantiate(UpdateManager.class, this);
+        return (UpdateManager) updateManagerPlugin.get();
     }
 
     public void setDriverDataSource(String driverDataSource) {
@@ -637,7 +636,8 @@ public class JDBCConfigurationImpl
     }
 
     public DriverDataSource newDriverDataSourceInstance() {
-        return driverDataSourcePlugin.instantiate(this);
+        return (DriverDataSource) driverDataSourcePlugin.
+            instantiate(DriverDataSource.class, this);
     }
 
     public void setSchemaFactory(String schemaFactory) {
@@ -654,8 +654,8 @@ public class JDBCConfigurationImpl
 
     public SchemaFactory getSchemaFactoryInstance() {
         if (schemaFactoryPlugin.get() == null)
-            schemaFactoryPlugin.instantiate(this);
-        return schemaFactoryPlugin.get();
+            schemaFactoryPlugin.instantiate(SchemaFactory.class, this);
+        return (SchemaFactory) schemaFactoryPlugin.get();
     }
 
     public void setSQLFactory(String sqlFactory) {
@@ -672,8 +672,8 @@ public class JDBCConfigurationImpl
 
     public SQLFactory getSQLFactoryInstance() {
         if (sqlFactoryPlugin.get() == null)
-            sqlFactoryPlugin.instantiate(this);
-        return sqlFactoryPlugin.get();
+            sqlFactoryPlugin.instantiate(SQLFactory.class, this);
+        return (SQLFactory) sqlFactoryPlugin.get();
     }
 
     public String getMappingFactory() {
@@ -703,8 +703,8 @@ public class JDBCConfigurationImpl
 
     public MappingDefaults getMappingDefaultsInstance() {
         if (mappingDefaultsPlugin.get() == null)
-            mappingDefaultsPlugin.instantiate(this);
-        return mappingDefaultsPlugin.get();
+            mappingDefaultsPlugin.instantiate(MappingDefaults.class, this);
+        return (MappingDefaults) mappingDefaultsPlugin.get();
     }
 
     public MappingRepository getMappingRepositoryInstance() {
@@ -989,8 +989,8 @@ public class JDBCConfigurationImpl
 
     public DBIdentifierUtil getIdentifierUtilInstance() {
         if (identifierUtilPlugin.get() == null)
-            identifierUtilPlugin.instantiate(this);
-        return identifierUtilPlugin.get();
+            identifierUtilPlugin.instantiate(DBIdentifierUtil.class, this);
+        return (DBIdentifierUtil) identifierUtilPlugin.get();
     }
 
     public void setIdentifierUtil(DBIdentifierUtil util) {

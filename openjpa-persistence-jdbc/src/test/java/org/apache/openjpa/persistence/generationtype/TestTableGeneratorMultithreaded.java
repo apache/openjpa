@@ -43,8 +43,8 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         MetaDataRepository repo = emf.getConfiguration().getMetaDataRepositoryInstance();
         // Initialize MetaData
-        repo.getMetaData(Dog.class, true);
-        repo.getSequenceMetaData("Dog_Gen", true);
+        repo.getMetaData(Dog.class, loader, true);
+        repo.getSequenceMetaData("Dog_Gen", loader, true);
 
     }
 
@@ -82,14 +82,15 @@ public class TestTableGeneratorMultithreaded extends SingleEMFTestCase {
         }
 
         public void run() {
-            SequenceMetaData meta = _repo.getSequenceMetaData("Dog_Gen", true);
+            ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+            SequenceMetaData meta = _repo.getSequenceMetaData("Dog_Gen", contextLoader, true);
             meta.setInitialValue(1);
             meta.setIncrement(10000);
             _em = (EntityManagerImpl) emf.createEntityManager();
             _ctx = (StoreContext) _em.getBroker();
-            _cmd = _repo.getMetaData(Dog.class, true);
+            _cmd = _repo.getMetaData(Dog.class, contextLoader, true);
 
-            _seq = (TableJDBCSeq) meta.getInstance();
+            _seq = (TableJDBCSeq) meta.getInstance(contextLoader);
             // Change defaults so this test doesn't take so long to run.
             _seq.setAllocate(ALLOC_SIZE);
             _seq.setInitialValue(1);

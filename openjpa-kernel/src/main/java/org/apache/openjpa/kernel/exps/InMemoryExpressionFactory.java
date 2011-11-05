@@ -82,7 +82,7 @@ public class InMemoryExpressionFactory
      * of embedded procedural loops over the extents of all variables in the
      * unbounds list.
      */
-    protected boolean matches(Exp exp, Object candidate, StoreContext ctx,
+    private boolean matches(Exp exp, Object candidate, StoreContext ctx,
         Object[] params, int i) {
         // base case: all variables have been aliased; evaluate for current
         // values

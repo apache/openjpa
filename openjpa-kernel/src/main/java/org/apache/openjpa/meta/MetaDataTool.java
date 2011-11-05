@@ -188,7 +188,7 @@ public class MetaDataTool
         try {
             if (_drop != null && !_drop.isEmpty()
                 && !mdf.drop((Class[]) _drop.toArray(new Class[_drop.size()]),
-                MODE_META | MODE_MAPPING | MODE_QUERY)) {
+                MODE_META | MODE_MAPPING | MODE_QUERY, null)) {
                 Log log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
                 if (log.isWarnEnabled())
                     log.warn(_loc.get("bad-drop", _drop));
@@ -285,7 +285,8 @@ public class MetaDataTool
         }
 
         Configurations.populateConfiguration(conf, opts);
-        ClassLoader loader = conf.getClassLoader();
+        ClassLoader loader = conf.getClassResolverInstance().
+            getClassLoader(MetaDataTool.class, null);
 
         if (fileName != null)
             flags.file = Files.getFile(fileName, loader);
@@ -319,8 +320,8 @@ public class MetaDataTool
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         ClassArgParser cap = conf.getMetaDataRepositoryInstance().
             getMetaDataFactory().newClassArgParser();
-        cap.setClassLoader(conf.getClassLoader());
-        Class<?>[] classes;
+        cap.setClassLoader(loader);
+        Class[] classes;
         for (int i = 0; i < args.length; i++) {
             classes = cap.parseTypes(args[i]);
             for (int j = 0; j < classes.length; j++) {

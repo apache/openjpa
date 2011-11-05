@@ -57,7 +57,8 @@ public class CodeGenerator {
      * Constructor. Supply configuration and class to generate code for.
      */
     public CodeGenerator(OpenJPAConfiguration conf, Class type) {
-        this(conf.newMetaDataRepositoryInstance().getMetaData(type, true));
+        this(conf.newMetaDataRepositoryInstance().
+            getMetaData(type, null, true));
     }
 
     /**

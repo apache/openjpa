@@ -22,13 +22,13 @@ import junit.framework.TestCase;
 
 public class TestValue extends TestCase {
     
-    private static class SimpleValue extends Value<String> {
+    private static class SimpleValue extends Value {
 
-        public SimpleValue(String prop) {
-			super(String.class, prop);
-		}
+        protected String getInternalString() {
+            return null;
+        }
 
-		protected String getInternalString() {
+        public Class getValueType() {
             return null;
         }
 
@@ -39,7 +39,7 @@ public class TestValue extends TestCase {
         protected void setInternalString(String str) {
         }
         
-        public String get() {
+        public Object get() {
             return null;
         }
         
@@ -51,7 +51,7 @@ public class TestValue extends TestCase {
         String bName = "Pete";
         String [] aStrings = { alias, aName };
         
-        SimpleValue sValue = new SimpleValue("test");
+        SimpleValue sValue = new SimpleValue();
         sValue.setAliases(aStrings);
         sValue.setAlias(alias, bName);
         assertEquals("Did not set the new alias", bName, 
@@ -60,7 +60,8 @@ public class TestValue extends TestCase {
     }
     
     public void testEquivalentValueCanBeSet() {
-        SimpleValue v = new SimpleValue("main");
+        SimpleValue v = new SimpleValue();
+        v.setProperty("main");
         v.addEquivalentKey("eqivalent1");
         v.addEquivalentKey("eqivalent2");
         assertEquals(2, v.getEquivalentKeys().size());
@@ -74,7 +75,8 @@ public class TestValue extends TestCase {
     }
     
     public void testEquivalentValuesAreUnmodifable() {
-        SimpleValue v = new SimpleValue("main");
+        SimpleValue v = new SimpleValue();
+        v.setProperty("main");
         v.addEquivalentKey("eqivalent1");
         v.addEquivalentKey("eqivalent2");
         

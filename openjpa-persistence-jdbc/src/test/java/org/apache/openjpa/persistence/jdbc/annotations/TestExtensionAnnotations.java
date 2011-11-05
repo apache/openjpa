@@ -41,7 +41,8 @@ public class TestExtensionAnnotations
     public void setUp() {
         setUp(ExtensionsEntity.class);
         _mapping = ((JDBCConfiguration) emf.getConfiguration()).
-            getMappingRepositoryInstance().getMapping(ExtensionsEntity.class, true);
+            getMappingRepositoryInstance().getMapping(ExtensionsEntity.class,
+            null, true);
     }
 
     public void testDataStoreId() {

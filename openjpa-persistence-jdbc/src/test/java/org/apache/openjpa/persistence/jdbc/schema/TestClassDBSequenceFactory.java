@@ -226,7 +226,7 @@ public class TestClassDBSequenceFactory
                 ClassMapping mapping =
                         ((JDBCConfiguration) _broker.getConfiguration()).
                         getMappingRepositoryInstance().
-                        getMapping(SeqD.class, true);
+                        getMapping(SeqD.class, null, true);
                 ClassTableJDBCSeq seq = (ClassTableJDBCSeq)
                 _broker.getIdentitySequence(mapping);
                 for (int i = 0; i < 51; i++)

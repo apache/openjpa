@@ -168,11 +168,12 @@ public class JPQLExpressionBuilder
     }
 
     private ClassMetaData getClassMetaData(String alias, boolean assertValid) {
+        ClassLoader loader = getClassLoader();
         MetaDataRepository repos = resolver.getConfiguration().
             getMetaDataRepositoryInstance();
 
         // first check for the alias
-        ClassMetaData cmd = repos.getMetaData(alias, false);
+        ClassMetaData cmd = repos.getMetaData(alias, loader, false);
 
         if (cmd != null)
             return cmd;
@@ -183,9 +184,9 @@ public class JPQLExpressionBuilder
         // the concept of entity names or aliases
         Class<?> c = resolver.classForName(alias, null);
         if (c != null)
-            cmd = repos.getMetaData(c, assertValid);
+            cmd = repos.getMetaData(c, loader, assertValid);
         else if (assertValid)
-            cmd = repos.getMetaData(alias, false);
+            cmd = repos.getMetaData(alias, loader, false);
 
         if (cmd == null && assertValid) {
             String close = repos.getClosestAliasName(alias);

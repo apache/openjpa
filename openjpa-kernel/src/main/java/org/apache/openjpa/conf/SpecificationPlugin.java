@@ -33,15 +33,20 @@ import org.apache.openjpa.util.UserException;
  * @author Pinaki Poddar
  *
  */
-public class SpecificationPlugin extends ObjectValue<Specification> implements ValueListener {
+public class SpecificationPlugin extends ObjectValue implements ValueListener {
     private Configuration _conf;
     protected static final Localizer _loc = Localizer.forPackage
         (SpecificationPlugin.class);
     
     public SpecificationPlugin(Configuration conf, String prop) {
-        super(Specification.class, prop);
+        super(prop);
         _conf = conf;
         addListener(this);
+    }
+    
+    @Override
+    public Class<?> getValueType() {
+        return Specification.class;
     }
     
     /**
@@ -62,12 +67,16 @@ public class SpecificationPlugin extends ObjectValue<Specification> implements V
      * @param obj can be null to set the Specification to null.
      */
     @Override
-    public void set(Specification obj) {
+    public void set(Object obj) {
         if (obj == null) {
             super.set(null);
             return;
         }
-        validateOverwrite(obj);
+        if (obj instanceof Specification == false) {
+            throw new UserException(_loc.get("spec-wrong-obj", obj, 
+                obj.getClass())).setFatal(true);
+        }
+        validateOverwrite((Specification)obj);
         super.set(obj);
     }
     

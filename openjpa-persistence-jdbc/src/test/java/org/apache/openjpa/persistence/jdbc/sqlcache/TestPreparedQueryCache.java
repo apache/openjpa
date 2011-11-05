@@ -1324,7 +1324,7 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
             return name;
         return emf.getConfiguration()
                   .getMetaDataRepositoryInstance()
-                  .getQueryMetaData(null, name, true)
+                  .getQueryMetaData(null, name, null, true)
                   .getQueryString();
     }
 

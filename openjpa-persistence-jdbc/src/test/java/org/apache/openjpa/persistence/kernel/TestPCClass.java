@@ -60,7 +60,7 @@ public class TestPCClass extends BaseKernelTest {
 
         MetaDataRepository repos = getConfiguration()
             .getMetaDataRepositoryInstance();
-        ClassMetaData meta = repos.getMetaData(PCClassPC.class, true);
+        ClassMetaData meta = repos.getMetaData(PCClassPC.class, null, true);
 
         FieldMetaData fmd = meta.getField("specificPC");
         assertNotNull("fmd is nulll", fmd);

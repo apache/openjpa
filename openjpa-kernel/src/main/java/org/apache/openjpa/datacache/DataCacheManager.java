@@ -43,8 +43,8 @@ public interface DataCacheManager {
     /**
      * Initialize the manager, supplying the cache configuration.
      */
-    public void initialize(OpenJPAConfiguration conf, ObjectValue<DataCache> dataCache,
-        ObjectValue<QueryCache> queryCache);
+    public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache,
+        ObjectValue queryCache);
 
     /**
      * Return the system-wide data cache, or null if caching is not enabled.

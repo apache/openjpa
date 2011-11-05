@@ -55,7 +55,7 @@ public class NoneMetaDataFactory
     public void setStrict(boolean strict) {
     }
 
-    public void load(Class cls, int mode) {
+    public void load(Class cls, int mode, ClassLoader envLoader) {
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
@@ -63,7 +63,7 @@ public class NoneMetaDataFactory
         return false;
     }
 
-    public boolean drop(Class[] cls, int mode) {
+    public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
         return false;
     }
 
@@ -71,15 +71,17 @@ public class NoneMetaDataFactory
         return this;
     }
 
-    public Set getPersistentTypeNames(boolean classpath) {
+    public Set getPersistentTypeNames(boolean classpath,
+        ClassLoader envLoader) {
         return null;
     }
 
-    public Class getQueryScope(String queryName) {
+    public Class getQueryScope(String queryName, ClassLoader loader) {
         return null;
     }
 
-    public Class getResultSetMappingScope(String resultSetMappingName) {
+    public Class getResultSetMappingScope(String resultSetMappingName,
+        ClassLoader loader) {
         return null;
     }
 

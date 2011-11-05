@@ -40,17 +40,18 @@ public abstract class AbstractProductDerivation
         throws Exception {
     }
 
-    public ConfigurationProvider loadGlobals()
+    public ConfigurationProvider loadGlobals(ClassLoader loader)
         throws Exception {
         return null;
     }
 
-    public ConfigurationProvider loadDefaults()
+    public ConfigurationProvider loadDefaults(ClassLoader loader)
         throws Exception {
         return null;
     }
 
-    public ConfigurationProvider load(String resource, String anchor) 
+    public ConfigurationProvider load(String resource, String anchor,
+        ClassLoader loader) 
         throws Exception {
         return null;
     }

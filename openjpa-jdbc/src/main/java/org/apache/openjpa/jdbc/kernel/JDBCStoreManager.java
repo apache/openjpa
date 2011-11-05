@@ -1504,7 +1504,8 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             return;
 
         // if the subclass list is set, no need to load subs
-        if (mapping.getRepository().getPersistentTypeNames(false) != null) {
+        if (mapping.getRepository().getPersistentTypeNames(false,
+            _ctx.getClassLoader()) != null) {
             dsc.setSubclassesLoaded(true);
             return;
         }

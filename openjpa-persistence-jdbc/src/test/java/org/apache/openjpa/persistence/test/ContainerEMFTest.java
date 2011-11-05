@@ -85,7 +85,7 @@ public abstract class ContainerEMFTest extends SingleEMFTestCase {
             clist = (List<Class<?>>)map.remove(PERSISTENT_CLASS_LIST);
         }
         PersistenceProductDerivation.ConfigurationParser cfgParser = 
-            new PersistenceProductDerivation.ConfigurationParser(this.getClass().getClassLoader(), config);
+            new PersistenceProductDerivation.ConfigurationParser(config);
         try {
             URL url = getResourceURL(persistenceFile);
             cfgParser.parse(url);

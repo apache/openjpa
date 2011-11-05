@@ -231,7 +231,7 @@ public class TestValueStrategies
         pm.persist(pc);
         ClassMetaData meta = getConfiguration()
             .getMetaDataRepositoryInstance().
-            getMetaData(pc.getClass(), false);
+            getMetaData(pc.getClass(), null, false);
         assertNotNull(meta.getVersionField());
         assertEquals("version", meta.getVersionField().getName());
         assertEquals(0, pc.getVersion());

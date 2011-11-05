@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
 import org.apache.openjpa.enhance.StateManager;
@@ -49,31 +48,39 @@ class VersionAttachStrategy
     extends AttachStrategy
     implements DetachState {
 
-    private static final Localizer _loc = Localizer.forPackage(VersionAttachStrategy.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (VersionAttachStrategy.class);
 
-    protected Object getDetachedObjectId(AttachManager manager, Object toAttach) {
+    protected Object getDetachedObjectId(AttachManager manager,
+        Object toAttach) {
         Broker broker = manager.getBroker();
         ClassMetaData meta = broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(
-                ImplHelper.getManagedInstance(toAttach).getClass(), true);
-        return ApplicationIds.create(ImplHelper.toPersistenceCapable(toAttach, broker.getConfiguration()), meta);
+                ImplHelper.getManagedInstance(toAttach).getClass(),
+                broker.getClassLoader(), true);
+        return ApplicationIds.create(ImplHelper.toPersistenceCapable(toAttach,
+            broker.getConfiguration()),
+            meta);
     }
 
-    protected void provideField(Object toAttach, StateManagerImpl sm,  int field) {
-        sm.provideField(ImplHelper.toPersistenceCapable(toAttach, sm.getContext().getConfiguration()), this, field);
+    protected void provideField(Object toAttach, StateManagerImpl sm,
+        int field) {
+        sm.provideField(ImplHelper.toPersistenceCapable(toAttach,
+            sm.getContext().getConfiguration()), this, field);
     }
 
     public Object attach(AttachManager manager, Object toAttach,
         ClassMetaData meta, PersistenceCapable into, OpenJPAStateManager owner,
         ValueMetaData ownerMeta, boolean explicit) {
         BrokerImpl broker = manager.getBroker();
-        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach, meta.getRepository().getConfiguration());
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
         boolean isNew = !broker.isDetached(pc);
         Object version = null;
         StateManagerImpl sm;
-        OpenJPAConfiguration conf = broker.getConfiguration();
+
         // if the state manager for the embedded instance is null, then
         // it should be treated as a new instance (since the
         // newly persisted owner may create a new embedded instance
@@ -83,35 +90,39 @@ class VersionAttachStrategy
         // copy into a new embedded instance
         if (embedded && (isNew || into == null
             || broker.getStateManager(into) == null)) {
-            if (into == null) {
+            if (into == null)
                 into = pc.pcNewInstance(null, false);
-            }
             sm = (StateManagerImpl) broker.embed(into, null, owner, ownerMeta);
             into = sm.getPersistenceCapable();
         } else if (isNew) {
             Object oid = null;
-            if (!isPrimaryKeysGenerated(meta)) {
+            if (!isPrimaryKeysGenerated(meta))
                 oid = ApplicationIds.create(pc, meta);
-            }
+
             sm = persist(manager, pc, meta, oid, explicit);
             into = sm.getPersistenceCapable();
         } else if (!embedded && into == null) {
             Object id = getDetachedObjectId(manager, toAttach);
-            if (id != null) {
-                into =  ImplHelper.toPersistenceCapable(broker.find(id, true, null), conf);
-            }
-            if (into == null) {
+            if (id != null)
+                into =
+                    ImplHelper.toPersistenceCapable(broker.find(id, true, null),
+                        broker.getConfiguration());
+            if (into == null)
                 throw new OptimisticException(_loc.get("attach-version-del",
-                    ImplHelper.getManagedInstance(pc).getClass(), id, version)).setFailedObject(toAttach);
-            }
+                    ImplHelper.getManagedInstance(pc).getClass(), id, version))
+                    .setFailedObject(toAttach);
+
             sm = manager.assertManaged(into);
-            if (meta.getDescribedType() != sm.getMetaData().getDescribedType()) {
-                throw new ObjectNotFoundException(_loc.get("attach-wrongclass", id, toAttach.getClass(),
-                        sm.getMetaData().getDescribedType())).setFailedObject(toAttach);
+            if (meta.getDescribedType()
+                != sm.getMetaData().getDescribedType()) {
+                throw new ObjectNotFoundException(_loc.get
+                    ("attach-wrongclass", id, toAttach.getClass(),
+                        sm.getMetaData().getDescribedType())).
+                    setFailedObject(toAttach);
             }
-        } else {
+        } else
             sm = manager.assertManaged(into);
-        }
+
         // mark that we attached the instance *before* we
         // fill in values to avoid endless recursion
         manager.setAttachedCopy(toAttach, into);
@@ -123,7 +134,8 @@ class VersionAttachStrategy
         }
 
         if (isNew) {
-            broker.fireLifecycleEvent(toAttach, null, meta, LifecycleEvent.BEFORE_PERSIST);
+            broker.fireLifecycleEvent(toAttach, null, meta,
+                LifecycleEvent.BEFORE_PERSIST);
         } else {
             // invoke any preAttach on the detached instance
             manager.fireBeforeAttach(toAttach, meta);
@@ -143,9 +155,9 @@ class VersionAttachStrategy
                         attachField(manager, toAttach, sm, fmds[i], true);
                         break;
                     case DETACH_FETCH_GROUPS:
-                        if (fetch.requiresFetch(fmds[i]) != FetchConfiguration.FETCH_NONE) {
+                        if (fetch.requiresFetch(fmds[i]) 
+                            != FetchConfiguration.FETCH_NONE)
                             attachField(manager, toAttach, sm, fmds[i], true);
-                        }
                         break;
                     case DETACH_LOADED:
                         attachField(manager, toAttach, sm, fmds[i], false);
@@ -155,9 +167,8 @@ class VersionAttachStrategy
         } finally {
             pc.pcReplaceStateManager(smBefore);
         }
-        if (!embedded && !isNew) {
+        if (!embedded && !isNew)
             compareVersion(sm, pc);
-        }
         return ImplHelper.getManagedInstance(into);
     }
 

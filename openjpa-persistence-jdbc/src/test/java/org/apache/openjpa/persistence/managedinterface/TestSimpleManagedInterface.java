@@ -42,7 +42,7 @@ public class TestSimpleManagedInterface
         MetaDataRepository repos = bf.getConfiguration()
             .getMetaDataRepositoryInstance();
         ClassMetaData meta = repos.getMetaData(SimpleManagedInterface.class,
-            false);
+            null, false);
         assertNotNull(meta);
         assertTrue(meta.isManagedInterface());
         assertEquals(SimpleManagedInterface.class, meta.getDescribedType());

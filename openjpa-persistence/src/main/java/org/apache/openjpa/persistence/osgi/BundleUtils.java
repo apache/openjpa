@@ -25,6 +25,7 @@ package org.apache.openjpa.persistence.osgi;
  * All routines MUST use reflection, so we don't have any hard-coded
  * runtime depends on OSGi classes for Java SE and EE users.
  *
+ * @version $Rev$ $Date$
  */
 public class BundleUtils {
 

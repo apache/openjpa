@@ -138,33 +138,41 @@ public class CollectionParam
         }
     } 
 
-    public void calculateValue(Select sel, ExpContext ctx, ExpState state, Val other, ExpState otherState) {
+    public void calculateValue(Select sel, ExpContext ctx, ExpState state, 
+        Val other, ExpState otherState) {
         super.calculateValue(sel, ctx, state, other, otherState);
         ParamExpState pstate = (ParamExpState) state;
         Object value = getValue(ctx.params);
 
         if (!(value instanceof Collection))
-            throw new IllegalArgumentException(_loc.get("not-collection-parm", _key).toString());
+            throw new IllegalArgumentException(_loc.get(
+                "not-collection-parm", _key).toString());
 
         if (((Collection) value).isEmpty())
-            throw new IllegalArgumentException(_loc.get("empty-collection-parm", _key).toString());
+            throw new IllegalArgumentException(_loc.get(
+                "empty-collection-parm", _key).toString());
 
         Iterator itr = ((Collection) value).iterator();
         for (int i = 0; i < pstate.size && itr.hasNext(); i++) {
             Object val = itr.next();
             if (other != null && !_container) {
-                pstate.sqlValue[i] = other.toDataStoreValue(sel, ctx, otherState, val);
+                pstate.sqlValue[i] = other.toDataStoreValue(sel, ctx,
+                    otherState, val);
                 pstate.otherLength[i] = other.length(sel, ctx, otherState);
                 if (other instanceof Type) {
                     pstate.mapping[i] = ctx.store.getConfiguration().
-                    getMappingRepositoryInstance().getMapping((Class) val, true);
+                    getMappingRepositoryInstance().getMapping((Class) val,
+                        ctx.store.getContext().getClassLoader(), true);
                     pstate.disc[i] = pstate.mapping[i].getDiscriminator();
-                    pstate.discValue[i] = pstate.disc[i] != null ? pstate.disc[i].getValue() : null;
+                    pstate.discValue[i] = pstate.disc[i] != null ?
+                        pstate.disc[i].getValue() : null;
                 }
             } else if (ImplHelper.isManageable(val)) {
                 ClassMapping mapping = ctx.store.getConfiguration().
-                getMappingRepositoryInstance().getMapping(val.getClass(), true);
-                pstate.sqlValue[i] = mapping.toDataStoreValue(val, mapping.getPrimaryKeyColumns(), ctx.store);
+                getMappingRepositoryInstance().getMapping(val.getClass(),
+                    ctx.store.getContext().getClassLoader(), true);
+                pstate.sqlValue[i] = mapping.toDataStoreValue(val,
+                    mapping.getPrimaryKeyColumns(), ctx.store);
                 pstate.otherLength[i] = mapping.getPrimaryKeyColumns().length;
             } else
                 pstate.sqlValue[i] = val;
@@ -176,13 +184,16 @@ public class CollectionParam
         ParamExpState pstate = (ParamExpState) state;
         for (int i = 0; i < pstate.size; i++) {
             if (pstate.otherLength[i] > 1)
-                sql.appendValue(((Object[]) pstate.sqlValue[i])[index], pstate.getColumn(index), this);
+                sql.appendValue(((Object[]) pstate.sqlValue[i])[index], 
+                        pstate.getColumn(index), this);
             else if (pstate.cols != null)
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index),
+                        this);
             else if (pstate.discValue[i] != null)
                 sql.appendValue(pstate.discValue[i]);
             else
-                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index), this);
+                sql.appendValue(pstate.sqlValue[i], pstate.getColumn(index),
+                        this);
         }
     }
 }

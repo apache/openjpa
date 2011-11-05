@@ -123,9 +123,9 @@ public class TestPersistenceProductDerivation extends TestCase {
 
 		ConfigurationProvider provider = ppd.load(
 				PersistenceProductDerivation.RSRC_DEFAULT,
-				"encryption_plugin_pu");
+				"encryption_plugin_pu", loader);
 		provider.setInto(conf);
-		EncryptionProvider ep = conf.getEncryptionProviderInstance();
+		EncryptionProvider ep = conf.getEncryptionProvider();
 		assertNotNull(ep);
 		// Cast to test impl
 		TestEncryptionProvider tep = (TestEncryptionProvider) ep;
@@ -146,10 +146,10 @@ public class TestPersistenceProductDerivation extends TestCase {
 
 		ConfigurationProvider provider = ppd.load(
 				PersistenceProductDerivation.RSRC_DEFAULT,
-				"encryption_plugin_default_pu");
+				"encryption_plugin_default_pu", loader);
 		provider.setInto(conf);
 
-		assertNull(conf.getEncryptionProviderInstance());
+		assertNull(conf.getEncryptionProvider());
 	}
     
     /*
@@ -158,8 +158,7 @@ public class TestPersistenceProductDerivation extends TestCase {
      */
     public void testJPA1ExcludeUnlistedClasses() throws Exception {
         PersistenceProductDerivation.ConfigurationParser cp = 
-                new PersistenceProductDerivation.ConfigurationParser(this.getClass().getClassLoader(), 
-                		new HashMap());
+                new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 
         List<URL> urls = getResourceURL(PersistenceProductDerivation.RSRC_DEFAULT);
         assertNotNull(urls);
@@ -203,8 +202,7 @@ public class TestPersistenceProductDerivation extends TestCase {
      */
     public void testExcludeUnlistedClasses() throws Exception {
         PersistenceProductDerivation.ConfigurationParser cp = 
-            new PersistenceProductDerivation.ConfigurationParser(this.getClass().getClassLoader(), 
-            		new HashMap());
+            new PersistenceProductDerivation.ConfigurationParser(new HashMap());
 
     List<URL> urls = getResourceURL("META-INF/persistence-2_0.xml");
     assertNotNull(urls);

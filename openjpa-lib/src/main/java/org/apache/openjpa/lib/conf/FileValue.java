@@ -29,12 +29,16 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  *
  * @author Marc Prud'hommeaux
  */
-public class FileValue extends Value<File> {
+public class FileValue extends Value {
 
     private File value;
 
     public FileValue(String prop) {
-        super(File.class, prop);
+        super(prop);
+    }
+
+    public Class<File> getValueType() {
+        return File.class;
     }
 
     /**
@@ -65,7 +69,7 @@ public class FileValue extends Value<File> {
     }
 
     protected void setInternalObject(Object obj) {
-        set((File)obj);
+        set((File) obj);
     }
 }
 

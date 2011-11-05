@@ -1652,7 +1652,9 @@ public class ReverseMappingTool
                     propNames[propNames.length - 1]));
 
             if (typeSpec != null)
-                type = Strings.toClass(typeSpec, _conf.getClassLoader());
+                type = Strings.toClass(typeSpec, _conf.
+                    getClassResolverInstance().getClassLoader
+                    (ReverseMappingTool.class, null));
         }
 
         if (type == null)
@@ -1941,12 +1943,15 @@ public class ReverseMappingTool
 
         // setup a configuration instance with cmd-line info
         Configurations.populateConfiguration(conf, opts);
-        ClassLoader loader = conf.getClassLoader();
+        ClassLoader loader = conf.getClassResolverInstance().
+            getClassLoader(ReverseMappingTool.class, null);
 
         // customizer
-        flags.customizer = (ReverseCustomizer) Configurations.newInstance(customCls, conf, customOpts);
+        flags.customizer = (ReverseCustomizer) Configurations.
+            newInstance(customCls, loader);
         if (flags.customizer != null) {
-            Configurations.configureInstance(flags.customizer, conf, customOpts);
+            Configurations.configureInstance(flags.customizer, conf,
+                customOpts);
             flags.customizer.setConfiguration(customProps);
         }
 

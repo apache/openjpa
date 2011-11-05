@@ -70,7 +70,8 @@ public class SequenceMetaData
     private static final String PROP_SCHEMA = "Schema";
     private static final String PROP_CATALOG = "Catalog";
 
-    private static final Localizer _loc = Localizer.forPackage(SequenceMetaData.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (SequenceMetaData.class);
 
     private MetaDataRepository _repos;
     private SequenceFactory _factory = null;
@@ -257,25 +258,27 @@ public class SequenceMetaData
     /**
      * Return the initialized sequence instance.
      */
-    public synchronized Seq getInstance() {
+    public synchronized Seq getInstance(ClassLoader envLoader) {
         if (_instance == null)
-            _instance = instantiate();
+            _instance = instantiate(envLoader);
         return _instance;
     }
 
     /**
      * Create a new uninitialized instance of this sequence.
      */
-    protected Seq instantiate() {
+    protected Seq instantiate(ClassLoader envLoader) {
         if (NAME_SYSTEM.equals(_name))
             return _repos.getConfiguration().getSequenceInstance();
 
         try {
-            PluginValue<Seq> plugin = newPluginValue("sequence-plugin");
+            PluginValue plugin = newPluginValue("sequence-plugin");
             plugin.setString(_plugin);
             String clsName = plugin.getClassName();
 
-            Class cls = Class.forName(clsName, true, _repos.getConfiguration().getClassLoader());
+            Class cls = Class.forName(clsName, true,
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(Seq.class)));
             StringBuilder props = new StringBuilder();
             if (plugin.getProperties() != null)
                 props.append(plugin.getProperties());
@@ -285,8 +288,10 @@ public class SequenceMetaData
             // interface or a factory class
             Seq seq;
             if (Seq.class.isAssignableFrom(cls)) {
-                seq = (Seq) AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(cls));
-                Configurations.configureInstance(seq, _repos.getConfiguration(), props.toString());
+                seq = (Seq) AccessController.doPrivileged(
+                    J2DoPrivHelper.newInstanceAction(cls));
+                Configurations.configureInstance(seq,
+                    _repos.getConfiguration(), props.toString());
                 if(_type != Seq.TYPE_DEFAULT)
                     seq.setType(_type);
             } else if (_factory != null)
@@ -331,7 +336,7 @@ public class SequenceMetaData
      * Create a new plugin value for sequences. Returns a standard
      * {@link SeqValue} by default.
      */
-    protected PluginValue<Seq> newPluginValue(String property) {
+    protected PluginValue newPluginValue(String property) {
         return new SeqValue(property);
     }
 

@@ -62,7 +62,7 @@ public class ClassNameDiscriminatorStrategy
 
     protected Class getClass(Object val, JDBCStore store)
         throws ClassNotFoundException {
-        ClassLoader loader = store.getConfiguration().getClassLoader();
+        ClassLoader loader = getClassLoader(store);
         return Class.forName((String) val, true, loader);
     }
 
@@ -84,7 +84,7 @@ public class ClassNameDiscriminatorStrategy
         if (log.isTraceEnabled())
             log.trace(_loc.get("load-subs", col.getTable().getFullName()));
 
-        ClassLoader loader = store.getConfiguration().getClassLoader();
+        ClassLoader loader = getClassLoader(store);
         Connection conn = store.getConnection();
         PreparedStatement stmnt = null;
         ResultSet rs = null;
@@ -119,4 +119,12 @@ public class ClassNameDiscriminatorStrategy
         }
     }
 
+    /**
+     * Return the class loader to use for loading class names.
+     */
+    private ClassLoader getClassLoader(JDBCStore store) {
+        return store.getConfiguration().getClassResolverInstance().
+            getClassLoader(disc.getClassMapping().getDescribedType(),
+                store.getContext().getClassLoader());
+    }
 }

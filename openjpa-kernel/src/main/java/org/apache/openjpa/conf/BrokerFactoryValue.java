@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Iterator;
 
 import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
-import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.PluginValue;
@@ -39,7 +38,7 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
  * @nojavadoc
  */
 public class BrokerFactoryValue
-    extends PluginValue<BrokerFactory> {
+    extends PluginValue {
 
     public static final String KEY = "BrokerFactory";
 
@@ -79,7 +78,7 @@ public class BrokerFactoryValue
     }
 
     public BrokerFactoryValue() {
-        super(BrokerFactory.class, KEY, false);
+        super(KEY, false);
         setAliases(_aliases);
     }
 }

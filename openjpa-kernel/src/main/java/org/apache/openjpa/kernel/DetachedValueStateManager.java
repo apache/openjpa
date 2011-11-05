@@ -52,7 +52,8 @@ public class DetachedValueStateManager
     public DetachedValueStateManager(Object pc, StoreContext ctx) {
         this(ImplHelper.toPersistenceCapable(pc, ctx.getConfiguration()),
             ctx.getConfiguration().getMetaDataRepositoryInstance()
-                .getMetaData(ImplHelper.getManagedInstance(pc).getClass(), true), ctx);
+                .getMetaData(ImplHelper.getManagedInstance(pc).getClass(),
+            ctx.getClassLoader(), true), ctx);
     }
 
     public DetachedValueStateManager(PersistenceCapable pc, ClassMetaData meta,

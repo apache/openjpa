@@ -167,7 +167,7 @@ public class CandidatePath
     /**
      * Represents a traversal through a field.
      */
-    public static class Traversal {
+    private static class Traversal {
 
         public final FieldMetaData field;
         public final boolean nullTraversal;

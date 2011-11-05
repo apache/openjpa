@@ -313,7 +313,21 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
 
 
-        Set<String> classes = getPersistentTypeNames(false);
+        MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
+        multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
+            .getClassLoaderAction(MetaDataRepository.class)));
+        // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
+        // we need to add that loader to the chain of classloaders
+        ClassResolver resolver = _conf.getClassResolverInstance();
+        if (resolver != null) {
+            ClassLoader cl = resolver.getClassLoader(null, null);
+            if (cl != null) {
+                multi.addClassLoader(cl);
+            }
+        }
+
+        Set<String> classes = getPersistentTypeNames(false, multi);
         if (classes == null || classes.size() == 0) {
             throw new MetaDataException(_loc.get("repos-initializeEager-none"));
         }
@@ -324,15 +338,15 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         List<Class<?>> loaded = new ArrayList<Class<?>>();
         for (String c : classes) {
             try {
-                Class<?> cls = Class.forName(c, true, _conf.getClassLoader());
+                Class<?> cls = AccessController.doPrivileged((J2DoPrivHelper.getForNameAction(c, true, multi)));
                 loaded.add(cls);
                 // This call may be unnecessary?
-                _factory.load(cls, MODE_ALL);
-            } catch (Exception pae) {
+                _factory.load(cls, MODE_ALL, multi);
+            } catch (PrivilegedActionException pae) {
                 throw new MetaDataException(_loc.get("repos-initializeEager-error"), pae);
             }
         }
-        resolveAll();
+        resolveAll(multi);
         
         // Preload XML MetaData
         for (Class<?> cls : loaded) {
@@ -348,7 +362,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // Hook in this class as a listener and process registered classes list to populate _aliases
         // list.
         PCRegistry.addRegisterClassListener(this);
-        processRegisteredClasses();
+        processRegisteredClasses(multi);
         _locking = false;
         _preloadComplete = true;
     }
@@ -364,17 +378,17 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param mustExist
      *            if true, throws a {@link MetaDataException} if no metadata is found
      */
-    public ClassMetaData getMetaData(Class<?> cls, boolean mustExist) {
+    public ClassMetaData getMetaData(Class<?> cls, ClassLoader envLoader, boolean mustExist) {
         if (_locking) {
             synchronized(this){
-                return getMetaDataInternal(cls, mustExist);    
+                return getMetaDataInternal(cls, envLoader, mustExist);    
             }
         } else {
-            return getMetaDataInternal(cls, mustExist);
+            return getMetaDataInternal(cls, envLoader, mustExist);
         }
     }
 
-    private ClassMetaData getMetaDataInternal(Class<?> cls, boolean mustExist) {
+    private ClassMetaData getMetaDataInternal(Class<?> cls, ClassLoader envLoader, boolean mustExist) {
             if (cls != null && DynamicPersistenceCapable.class.isAssignableFrom(cls))
                 cls = cls.getSuperclass();
 
@@ -383,12 +397,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (cls != null && _implGen != null && _implGen.isImplType(cls))
                 cls = _implGen.toManagedInterface(cls);
 
-            ClassMetaData meta = getMetaDataInternal(cls);
+            ClassMetaData meta = getMetaDataInternal(cls, envLoader);
             if (meta == null && mustExist) {
                 if (cls != null && !ImplHelper.isManagedType(_conf, cls))
                     throw new MetaDataException(_loc.get("no-meta-notpc", cls)).setFatal(false);
 
-                Set<String> pcNames = getPersistentTypeNames(false);
+                Set<String> pcNames = getPersistentTypeNames(false, envLoader);
                 if (pcNames != null && pcNames.size() > 0)
                     throw new MetaDataException(_loc.get("no-meta-types", cls, pcNames));
 
@@ -409,22 +423,28 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      *            if true, throws a {@link MetaDataException} if no metadata is found
      * @see ClassMetaData#getTypeAlias
      */
-    public ClassMetaData getMetaData(String alias, boolean mustExist) {
+    public ClassMetaData getMetaData(String alias, ClassLoader envLoader, boolean mustExist) {
         if (alias == null && mustExist)
             throw new MetaDataException(_loc.get("no-alias-meta", alias, _aliases));
         if (alias == null)
             return null;
 
         // check cache
-        processRegisteredClasses();
+        processRegisteredClasses(envLoader);
         List<Class<?>> classList = _aliases.get(alias);
 
-        Set<String> pcNames = getPersistentTypeNames(false);
+        // multiple classes may have been defined with the same alias: we
+        // will filter by checking against the current list of the
+        // persistent types and filter based on which classes are loadable
+        // via the current environment's ClassLoader
+        Set<String> pcNames = getPersistentTypeNames(false, envLoader);
         Class<?> cls = null;
         for (int i = 0; classList != null && i < classList.size(); i++) {
             Class<?> c = classList.get(i);
             try {
-                Class<?> nc = Class.forName(c.getName(), false, _conf.getClassLoader());
+                // re-load the class in the current environment loader so
+                // that we can handle redeployment of the same class name
+                Class<?> nc = Class.forName(c.getName(), false, envLoader);
 
                 // if we have specified a list of persistent clases,
                 // also check to ensure that the class is in that list
@@ -435,10 +455,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                     break;
                 }
             } catch (Throwable t) {
+                // this happens when the class is not loadable by
+                // the environment class loader, so it was probably
+                // listed elsewhere; also ignore linkage failures and
+                // other class loading problems
             }
         }
         if (cls != null)
-            return getMetaData(cls, mustExist);
+            return getMetaData(cls, envLoader, mustExist);
 
         // maybe this is some type we've seen but just isn't valid
         if (_aliases.containsKey(alias)) {
@@ -503,7 +527,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Internal method to get the metadata for the given class, without resolving it.
      */
-    private ClassMetaData getMetaDataInternal(Class<?> cls) {
+    private ClassMetaData getMetaDataInternal(Class<?> cls, ClassLoader envLoader) {
         if (cls == null)
             return null;
 
@@ -517,7 +541,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // dev time so that user can manipulate persistent classes he's writing
         // before adding them to the list
         if ((_validate & VALIDATE_RUNTIME) != 0) {
-            Set<String> pcNames = getPersistentTypeNames(false);
+            Set<String> pcNames = getPersistentTypeNames(false, envLoader);
             if (pcNames != null && !pcNames.contains(cls.getName()))
                 return meta;
         }
@@ -553,7 +577,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (mode != MODE_NONE) {
             if (_log.isTraceEnabled())
                 _log.trace(_loc.get("load-cls", cls, toModeString(mode)));
-            _factory.load(cls, mode);
+            _factory.load(cls, mode, envLoader);
         }
 
         // check cache again
@@ -660,7 +684,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             Class<?> sup = meta.getDescribedType().getSuperclass();
             ClassMetaData supMeta;
             while (sup != null && sup != Object.class) {
-                supMeta = getMetaData(sup, false);
+                supMeta = getMetaData(sup, meta.getEnvClassLoader(), false);
                 if (supMeta != null) {
                     meta.setPCSuperclass(sup);
                     meta.setPCSuperclassMetaData(supMeta);
@@ -671,7 +695,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             if (meta.getDescribedType().isInterface()) {
                 Class<?>[] sups = meta.getDescribedType().getInterfaces();
                 for (int i = 0; i < sups.length; i++) {
-                    supMeta = getMetaData(sups[i], false);
+                    supMeta = getMetaData(sups[i], meta.getEnvClassLoader(), false);
                     if (supMeta != null) {
                         meta.setPCSuperclass(sup);
                         meta.setPCSuperclassMetaData(supMeta);
@@ -687,7 +711,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         FieldMetaData[] fmds = meta.getDeclaredFields();
         for (int i = 0; i < fmds.length; i++)
             if (fmds[i].isPrimaryKey())
-                getMetaData(fmds[i].getDeclaredType(), false);
+                getMetaData(fmds[i].getDeclaredType(), meta.getEnvClassLoader(), false);
 
         // resolve metadata; if we're not in the process of resolving
         // others, this will return the set of interrelated metas that
@@ -713,7 +737,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 if (_log.isTraceEnabled())
                     _log.trace(_loc.get("load-mapping", meta, toModeString(mode)));
                 try {
-                    _factory.load(meta.getDescribedType(), mode);
+                    _factory.load(meta.getDescribedType(), mode, meta.getEnvClassLoader());
                 } catch (RuntimeException re) {
                     removeMetaData(meta);
                     _errs.add(re);
@@ -837,7 +861,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             ClassMetaData[] metas = (ClassMetaData[]) _metas.values().toArray(new ClassMetaData[_metas.size()]);
             for (int i = 0; i < metas.length; i++)
                 if (metas[i] != null)
-                    getMetaData(metas[i].getDescribedType(), true);
+                    getMetaData(metas[i].getDescribedType(), metas[i].getEnvClassLoader(), true);
 
             List<ClassMetaData> resolved = new ArrayList<ClassMetaData>(_metas.size());
             for (ClassMetaData meta : _metas.values()) {
@@ -1125,7 +1149,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param mustExist
      *            if true, throws a {@link MetaDataException} if no metadata is found
      */
-    public ClassMetaData getMetaData(Object oid, boolean mustExist) {
+    public ClassMetaData getMetaData(Object oid, ClassLoader envLoader, boolean mustExist) {
         if (oid == null && mustExist)
             throw new MetaDataException(_loc.get("no-oid-meta", oid, "?", _oids.toString()));
         if (oid == null)
@@ -1133,14 +1157,14 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         if (oid instanceof OpenJPAId) {
             Class<?> cls = ((OpenJPAId) oid).getType();
-            return getMetaData(cls, mustExist);
+            return getMetaData(cls, envLoader, mustExist);
         }
 
         // check cache
-        processRegisteredClasses();
+        processRegisteredClasses(envLoader);
         Class<?> cls = _oids.get(oid.getClass());
         if (cls != null)
-            return getMetaData(cls, mustExist);
+            return getMetaData(cls, envLoader, mustExist);
 
         // maybe this is some type we've seen but just isn't valid
         if (_oids.containsKey(oid.getClass())) {
@@ -1152,10 +1176,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // if still not match, register any classes that look similar to the
         // oid class and check again
         resolveIdentityClass(oid);
-        if (processRegisteredClasses().length > 0) {
+        if (processRegisteredClasses(envLoader).length > 0) {
             cls = _oids.get(oid.getClass());
             if (cls != null)
-                return getMetaData(cls, mustExist);
+                return getMetaData(cls, envLoader, mustExist);
         }
 
         // record that this is an invalid type
@@ -1218,23 +1242,23 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param mustExist
      *            if true, throws a {@link MetaDataException} if no metadata is found
      */
-    public ClassMetaData[] getImplementorMetaDatas(Class<?> cls, boolean mustExist) {
+    public ClassMetaData[] getImplementorMetaDatas(Class<?> cls, ClassLoader envLoader, boolean mustExist) {
         if (cls == null && mustExist)
             throw new MetaDataException(_loc.get("no-meta", cls));
         if (cls == null)
             return EMPTY_METAS;
 
         // get impls of given interface / abstract class
-        loadRegisteredClassMetaData();
+        loadRegisteredClassMetaData(envLoader);
         Collection<Class<?>> vals = _impls.get(cls);
         ClassMetaData[] mapped = null;
         if (vals != null) {
             if (_locking) {
                 synchronized (vals) {
-                    mapped = getImplementorMetaDatasInternal(vals, mustExist);
+                    mapped = getImplementorMetaDatasInternal(vals, envLoader, mustExist);
                 }
             } else {
-                mapped = getImplementorMetaDatasInternal(vals, mustExist);
+                mapped = getImplementorMetaDatasInternal(vals, envLoader, mustExist);
             }
         }
 
@@ -1245,11 +1269,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return mapped;
     }
 
-    private ClassMetaData[] getImplementorMetaDatasInternal(Collection<Class<?>> classes, boolean mustExist) {
+    private ClassMetaData[] getImplementorMetaDatasInternal(Collection<Class<?>> classes, ClassLoader envLoader,
+        boolean mustExist) {
         Collection<ClassMetaData> mapped = new ArrayList<ClassMetaData>(classes.size());
         ClassMetaData meta = null;
         for (Class<?> c : classes) {
-            meta = getMetaData(c, true);
+            meta = getMetaData(c, envLoader, true);
             if (meta.isMapped() || meta.getMappedPCSubclassMetaDatas().length > 0) {
                 mapped.add(meta);
             }
@@ -1432,18 +1457,18 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param envLoader
      *            the class loader to use, or null for default
      */
-    public Set<String> getPersistentTypeNames(boolean devpath) {
+    public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
         if (_locking) {
             synchronized (this) {
-                return getPersistentTypeNamesInternal(devpath);
+                return getPersistentTypeNamesInternal(devpath, envLoader);
             }
         } else {
-            return getPersistentTypeNamesInternal(devpath);
+            return getPersistentTypeNamesInternal(devpath, envLoader);
         }
     }
 
-    private Set<String> getPersistentTypeNamesInternal(boolean devpath) {
-        return _factory.getPersistentTypeNames(devpath);
+    private Set<String> getPersistentTypeNamesInternal(boolean devpath, ClassLoader envLoader) {
+        return _factory.getPersistentTypeNames(devpath, envLoader);
     }
     /**
      * Load the persistent classes named in configuration.
@@ -1457,8 +1482,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * @param envLoader the class loader to use, or null for default
      * @return the loaded classes, or empty collection if none
      */
-    public Collection<Class<?>> loadPersistentTypes(boolean devpath) {
-        return loadPersistentTypes(devpath, false);
+    public Collection<Class<?>> loadPersistentTypes(boolean devpath, ClassLoader envLoader) {
+        return loadPersistentTypes(devpath, envLoader, false);
     }
     /**
      * Load the persistent classes named in configuration. This ensures that all subclasses and
@@ -1475,18 +1500,19 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      *            raise an exception.
      * @return the loaded classes, or empty collection if none
      */
-    public Collection<Class<?>> loadPersistentTypes(boolean devpath, boolean mustExist) {
+    public Collection<Class<?>> loadPersistentTypes(boolean devpath, ClassLoader envLoader, boolean mustExist) {
         if (_locking) {
             synchronized (this) {
-                return loadPersistentTypesInternal(devpath, mustExist);
+                return loadPersistentTypesInternal(devpath, envLoader, mustExist);
             }
         } else {
-            return loadPersistentTypesInternal(devpath, mustExist);
+            return loadPersistentTypesInternal(devpath, envLoader, mustExist);
         }
     }
 
-    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, boolean mustExist) {
-            Set<String> names = getPersistentTypeNames(devpath);
+    private Collection<Class<?>> loadPersistentTypesInternal(boolean devpath, ClassLoader envLoader, 
+        boolean mustExist) {
+            Set<String> names = getPersistentTypeNames(devpath, envLoader);
             if (names == null || names.isEmpty()) {
                 if (!mustExist)
                     return Collections.emptyList();
@@ -1495,10 +1521,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
 
             // attempt to load classes so that they get processed
+            ClassLoader clsLoader = _conf.getClassResolverInstance().getClassLoader(getClass(), envLoader);
             List<Class<?>> classes = new ArrayList<Class<?>>(names.size());
             Class<?> cls;
             for (String className : names) {
-                cls = classForName(className);
+                cls = classForName(className, clsLoader);
                 if (_factory.isMetaClass(cls)) {
                     setMetaModel(cls);
                     continue;
@@ -1509,7 +1536,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                     // if the class is an interface, load its metadata to kick
                     // off the impl generator
                     if (cls.isInterface())
-                        getMetaData(cls, false);
+                        getMetaData(cls, clsLoader, false);
                 } else if (cls == null && mustExist) {
                     throw new MetaDataException(_loc.get("eager-class-not-found", className));
                 }
@@ -1520,8 +1547,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return the class for the given name, or null if not loadable.
      */
-    private Class<?> classForName(String name) {
-    	ClassLoader loader = _conf.getClassLoader();
+    private Class<?> classForName(String name, ClassLoader loader) {
         try {
             return Class.forName(name, true, loader);
         } catch (Exception e) {
@@ -1577,11 +1603,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Parses the metadata for all registered classes.
      */
-    private void loadRegisteredClassMetaData() {
-        Class<?>[] reg = processRegisteredClasses();
+    private void loadRegisteredClassMetaData(ClassLoader envLoader) {
+        Class<?>[] reg = processRegisteredClasses(envLoader);
         for (int i = 0; i < reg.length; i++) {
             try {
-                getMetaData(reg[i], false);
+                getMetaData(reg[i], envLoader, false);
             } catch (MetaDataException me) {
                 if (_log.isWarnEnabled())
                     _log.warn(me);
@@ -1592,7 +1618,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Updates our datastructures with the latest registered classes.
      */
-    Class<?>[] processRegisteredClasses() {
+    Class<?>[] processRegisteredClasses(ClassLoader envLoader) {
         if (_registered.isEmpty())
             return EMPTY_CLASSES;
 
@@ -1604,7 +1630,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _registered.clear();
         }
 
-        Collection<String> pcNames = getPersistentTypeNames(false);
+        Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;
         for (int i = 0; i < reg.length; i++) {
             // don't process types that aren't listed by the user; may belong
@@ -1887,29 +1913,30 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return query metadata for the given class, name, and classloader.
      */
-    public QueryMetaData getQueryMetaData(Class<?> cls, String name, boolean mustExist) {
+    public QueryMetaData getQueryMetaData(Class<?> cls, String name, ClassLoader envLoader, boolean mustExist) {
         if (_locking) {
             synchronized (this) {
-                return getQueryMetaDataInternal(cls, name, mustExist);
+                return getQueryMetaDataInternal(cls, name, envLoader, mustExist);
             }
         } else {
-            return getQueryMetaDataInternal(cls, name, mustExist);
+            return getQueryMetaDataInternal(cls, name, envLoader, mustExist);
         }
     }
 
-    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, boolean mustExist) {
-            QueryMetaData meta = getQueryMetaDataInternal(cls, name);
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader, 
+        boolean mustExist) {
+            QueryMetaData meta = getQueryMetaDataInternal(cls, name, envLoader);
             if (meta == null) {
                 // load all the metadatas for all the known classes so that
                 // query names are seen and registered
-                resolveAll();
-                meta = getQueryMetaDataInternal(cls, name);
+                resolveAll(envLoader);
+                meta = getQueryMetaDataInternal(cls, name, envLoader);
             }
 
             if (meta == null && mustExist) {
                 if (cls == null) {
-                    throw new MetaDataException(_loc.get("no-named-query-null-class", 
-                    		getPersistentTypeNames(false), name));
+                    throw new MetaDataException(_loc.get("no-named-query-null-class", getPersistentTypeNames(false,
+                        envLoader), name));
                 } else {
                     throw new MetaDataException(_loc.get("no-named-query", cls, name));
                 }
@@ -1921,17 +1948,17 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Resolve all known metadata classes.
      */
-    private void resolveAll() {
-        Collection<Class<?>> types = loadPersistentTypes(false);
+    private void resolveAll(ClassLoader envLoader) {
+        Collection<Class<?>> types = loadPersistentTypes(false, envLoader);
         for (Class<?> c : types) {
-            getMetaData(c, false);
+            getMetaData(c, envLoader, false);
         }
     }
 
     /**
      * Return query metadata for the given class, name, and classloader.
      */
-    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name) {
+    private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader) {
         if (name == null)
             return null;
         QueryMetaData qm = null;
@@ -1947,7 +1974,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return qm;
 
         // get metadata for class, which will find queries in metadata file
-        if (cls != null && getMetaData(cls, false) != null) {
+        if (cls != null && getMetaData(cls, envLoader, false) != null) {
             qm = _queries.get(key);
             if (qm != null)
                 return qm;
@@ -1957,10 +1984,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         // see if factory can figure out a scope for this query
         if (cls == null)
-            cls = _factory.getQueryScope(name);
+            cls = _factory.getQueryScope(name, envLoader);
 
         // not in cache; load
-        _factory.load(cls, MODE_QUERY);
+        _factory.load(cls, MODE_QUERY, envLoader);
         return _queries.get(key);
     }
 
@@ -2089,18 +2116,18 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return sequence metadata for the given name and classloader.
      */
-    public SequenceMetaData getSequenceMetaData(String name, boolean mustExist) {
+    public SequenceMetaData getSequenceMetaData(String name, ClassLoader envLoader, boolean mustExist) {
         if (_locking) {
             synchronized (this) {
-                return getSequenceMetaDataInternal(name, mustExist);
+                return getSequenceMetaDataInternal(name, envLoader, mustExist);
             }
         } else {
-            return getSequenceMetaDataInternal(name, mustExist);
+            return getSequenceMetaDataInternal(name, envLoader, mustExist);
         }
     }
 
-    private SequenceMetaData getSequenceMetaDataInternal(String name, boolean mustExist) {
-            SequenceMetaData meta = getSequenceMetaDataInternal(name);
+    private SequenceMetaData getSequenceMetaDataInternal(String name, ClassLoader envLoader, boolean mustExist) {
+            SequenceMetaData meta = getSequenceMetaDataInternal(name, envLoader);
             if (meta == null && SequenceMetaData.NAME_SYSTEM.equals(name)) {
                 if (_sysSeq == null)
                     _sysSeq = newSequenceMetaData(name);
@@ -2119,7 +2146,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // try with given name
         MetaDataException e = null;
         try {
-            SequenceMetaData seq = getSequenceMetaData(name, mustExist);
+            SequenceMetaData seq = getSequenceMetaData(name, context.getEnvClassLoader(), mustExist);
             if (seq != null)
                 return seq;
         } catch (MetaDataException mde) {
@@ -2136,7 +2163,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         // try with qualified name
         name = Strings.getPackageName(context.getDescribedType()) + "." + name;
         try {
-            return getSequenceMetaData(name, mustExist);
+            return getSequenceMetaData(name, context.getEnvClassLoader(), mustExist);
         } catch (MetaDataException mde) {
             // throw original exception
             if (e != null)
@@ -2148,7 +2175,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return sequence metadata for the given name and classloader.
      */
-    private SequenceMetaData getSequenceMetaDataInternal(String name) {
+    private SequenceMetaData getSequenceMetaDataInternal(String name, ClassLoader envLoader) {
         if (name == null)
             return null;
 
@@ -2157,7 +2184,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (meta == null) {
             // load metadata for registered classes to hopefully find sequence
             // definition
-            loadRegisteredClassMetaData();
+            loadRegisteredClassMetaData(envLoader);
             meta = _seqs.get(name);
         }
         return meta;

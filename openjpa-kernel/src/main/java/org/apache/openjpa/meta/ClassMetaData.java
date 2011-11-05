@@ -135,10 +135,12 @@ public class ClassMetaData
     private static final Localizer _loc = Localizer.forPackage
         (ClassMetaData.class);
 
-    private static final FetchGroup[] EMPTY_FETCH_GROUP_ARRAY = new FetchGroup[0];
+    private static final FetchGroup[] EMPTY_FETCH_GROUP_ARRAY
+        = new FetchGroup[0];
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private MetaDataRepository _repos;
+    private transient ClassLoader _loader = null;
 
     private final ValueMetaData _owner;
     private final LifecycleMetaData _lifeMeta = new LifecycleMetaData(this);
@@ -234,6 +236,8 @@ public class ClassMetaData
     protected ClassMetaData(ValueMetaData owner) {
         _owner = owner;
         _repos = owner.getRepository();
+        setEnvClassLoader(owner.getFieldMetaData().getDefiningMetaData().
+            getEnvClassLoader());
         registerForValueUpdate("DataCacheTimeout");
     }
 
@@ -281,6 +285,24 @@ public class ClassMetaData
     }
 
     /**
+     * The environmental loader used when loading this metadata.
+     * The class metadata should use this loader when loading metadata for
+     * its superclass and field types.
+     */
+    public ClassLoader getEnvClassLoader() {
+        return _loader;
+    }
+
+    /**
+     * The class environmental loader used when loading this metadata.
+     * The class metadata should use this loader when loading metadata for
+     * its superclass and field types.
+     */
+    public void setEnvClassLoader(ClassLoader loader) {
+        _loader = loader;
+    }
+
+    /**
      * The persistence capable superclass of the described type.
      */
     public Class<?> getPCSuperclass() {
@@ -304,7 +326,7 @@ public class ClassMetaData
                 _superMeta = _repos.newEmbeddedClassMetaData(_owner);
                 _superMeta.setDescribedType(_super);
             } else
-                _superMeta = _repos.getMetaData(_super, true);
+                _superMeta = _repos.getMetaData(_super, _loader, true);
         }
         return _superMeta;
     }
@@ -346,7 +368,7 @@ public class ClassMetaData
         if (_owner != null)
             return MetaDataRepository.EMPTY_CLASSES;
 
-        _repos.processRegisteredClasses();
+        _repos.processRegisteredClasses(_loader);
         if (_subs == null) {
             Collection<Class<?>> subs = _repos.getPCSubclasses(_type);
             _subs = (Class[]) subs.toArray(new Class[subs.size()]);
@@ -371,7 +393,7 @@ public class ClassMetaData
                 ClassMetaData[] metas = _repos.newClassMetaDataArray
                     (subs.length);
                 for (int i = 0; i < subs.length; i++)
-                    metas[i] = _repos.getMetaData(subs[i], true);
+                    metas[i] = _repos.getMetaData(subs[i], _loader, true);
                 _subMetas = metas;
             }
         }
@@ -1807,7 +1829,7 @@ public class ClassMetaData
             }
 
             // copy info from the "real" metadata for this type
-            ClassMetaData meta = _repos.getMetaData(_type, true);
+            ClassMetaData meta = _repos.getMetaData(_type, _loader, true);
             meta.resolve(MODE_META);
             copy(this, meta);
             _embedded = Boolean.FALSE; // embedded instance isn't embedded-only
@@ -2598,20 +2620,21 @@ public class ClassMetaData
     	if (values == null)
     		return;
     	for (String key : values) {
-    		Value<?> value = getRepository().getConfiguration().getValue(key);
+    		Value value = getRepository().getConfiguration()
+    			.getValue(key);
     		if (value != null)
     			value.addListener(this);
     	}
     }
     
-    public void valueChanged(Value<?> val) {
+    public void valueChanged(Value val) {
     	if (val != null && val.matches("DataCacheTimeout")) {
     		_cacheTimeout = Integer.MIN_VALUE;
     	}
     }
     
     /**
-     * Utility method to get names of all fields including the super classes'
+     * Utility method to get names of all fields including the superclasses'
      * sorted in lexical order.
      */
     public String[] getFieldNames() {
@@ -2620,7 +2643,7 @@ public class ClassMetaData
     
     /**
      * Utility method to get names of all declared fields excluding the 
-     * super classes' sorted in lexical order.
+     * superclasses' sorted in lexical order.
      */
     public String[] getDeclaredFieldNames() {
     	return toNames(getDeclaredFields());

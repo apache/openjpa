@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.TimeSeededSeq;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.meta.SequenceMetaData;
@@ -32,7 +31,7 @@ import org.apache.openjpa.meta.SequenceMetaData;
  * @nojavadoc
  */
 public class SeqValue
-    extends PluginValue<Seq> {
+    extends PluginValue {
 
     private static final String[] ALIASES = new String[]{
         SequenceMetaData.IMPL_TIME, TimeSeededSeq.class.getName(),
@@ -42,7 +41,7 @@ public class SeqValue
     };
 
     public SeqValue(String prop) {
-        super(Seq.class, prop, true);
+        super(prop, true);
         setAliases(ALIASES);
         setDefault(ALIASES[0]);
         setClassName(ALIASES[1]);

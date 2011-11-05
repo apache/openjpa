@@ -52,7 +52,7 @@ public class TestLifecycleEventManager
                 OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))
                 .
                     getConfiguration().getMetaDataRepositoryInstance();
-        ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, true);
+        ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, null, true);
         LifecycleEventManager mgr = new LifecycleEventManager();
         RuntimeTest2 pc = new RuntimeTest2();
         Listener listener = new Listener();
@@ -126,7 +126,7 @@ public class TestLifecycleEventManager
                 OpenJPAPersistence.createEntityManagerFactory("TestConv2", "")))
                 .
                     getConfiguration().getMetaDataRepositoryInstance();
-        ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, true);
+        ClassMetaData meta = repos.getMetaData(RuntimeTest2.class, null, true);
 
         LifecycleEventManager mgr = new LifecycleEventManager();
         RuntimeTest2 pc = new RuntimeTest2();

@@ -57,13 +57,12 @@ public class DataCacheManagerImpl
     private Set<String> _includedTypes;
     private Set<String> _excludedTypes;
     
-    public void initialize(OpenJPAConfiguration conf, ObjectValue<DataCache> dataCache, 
-    		ObjectValue<QueryCache> queryCache) {
+    public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
         _conf = conf;        
-        _queryCache = queryCache.instantiate(conf);
+        _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
-        _cache = dataCache.instantiate(conf);
+        _cache = (DataCache) dataCache.instantiate(DataCache.class, conf);
 
         if (_cache == null)
             return;

@@ -177,7 +177,7 @@ public class JPAFacadeHelper {
             OpenJPAPersistence.cast(em);
         try {
             return kem.getConfiguration().getMetaDataRepositoryInstance().
-                getMetaData(cls, false);
+                getMetaData(cls, kem.getClassLoader(), false);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }
@@ -196,7 +196,7 @@ public class JPAFacadeHelper {
             (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.cast(emf);
         try {
             return emfSPI.getConfiguration().getMetaDataRepositoryInstance().
-                getMetaData(cls, false);
+                getMetaData(cls, null, false);
         } catch (Exception e) {
             throw PersistenceExceptions.toPersistenceException(e);
         }

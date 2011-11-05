@@ -94,8 +94,8 @@ public class ExpressionStoreQuery
         new StringContains(), new WildcardMatch(),
     };
 
-    protected final ExpressionParser _parser;
-    protected transient Object _parsed;
+    private final ExpressionParser _parser;
+    private transient Object _parsed;
 
     /**
      * Construct a query with a parser for the language.
@@ -172,7 +172,7 @@ public class ExpressionStoreQuery
 
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
         return new InMemoryExecutor(this, meta, subs, _parser,
-            ctx.getCompilation(), new InMemoryExpressionFactory());
+            ctx.getCompilation());
     }
 
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
@@ -576,7 +576,7 @@ public class ExpressionStoreQuery
     /**
      * Runs the expression query in memory.
      */
-    public static class InMemoryExecutor
+    private static class InMemoryExecutor
         extends AbstractExpressionExecutor
         implements Executor, Serializable {
 
@@ -588,10 +588,10 @@ public class ExpressionStoreQuery
 
         public InMemoryExecutor(ExpressionStoreQuery q,
             ClassMetaData candidate, boolean subclasses,
-            ExpressionParser parser, Object parsed, InMemoryExpressionFactory factory) {
+            ExpressionParser parser, Object parsed) {
             _meta = candidate;
             _subs = subclasses;
-            _factory = factory;
+            _factory = new InMemoryExpressionFactory();
 
             _exps = new QueryExpressions[] {
                 parser.eval(parsed, q, _factory, _meta)
@@ -637,9 +637,9 @@ public class ExpressionStoreQuery
                 Object obj;
                 while (itr.hasNext()) {
                     obj = itr.next();
-                    if (_factory.matches(_exps[0], _meta, _subs, obj, ctx, params)) {
+                    if (_factory.matches(_exps[0], _meta, _subs, obj, ctx,
+                        params))
                         results.add(obj);
-                    }
                 }
             }
             finally {
@@ -703,7 +703,6 @@ public class ExpressionStoreQuery
         public Class[] getProjectionTypes(StoreQuery q) {
             return _projTypes;
         }
-        
 
         /**
          * Throws an exception if a variable is found.

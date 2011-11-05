@@ -328,7 +328,8 @@ public class FieldMetaData
         if (_dec == null)
             return _owner;
         if (_decMeta == null)
-            _decMeta = getRepository().getMetaData(_dec, true);
+            _decMeta = getRepository().getMetaData(_dec,
+                _owner.getEnvClassLoader(), true);
         return _decMeta;
     }
 

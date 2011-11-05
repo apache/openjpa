@@ -53,7 +53,8 @@ import org.apache.tools.ant.types.Path;
  */
 public abstract class AbstractTask extends MatchingTask {
 
-    private static final Localizer _loc = Localizer.forPackage(AbstractTask.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (AbstractTask.class);
 
     protected final List<FileSet> fileSets = new ArrayList<FileSet>();
     protected boolean haltOnError = true;
@@ -81,7 +82,7 @@ public abstract class AbstractTask extends MatchingTask {
 
     /**
      * Whether we want to delegate to the parent ClassLoader
-     * for resolving classes. This may "taint" classes.
+     * for resolveing classes. This may "taint" classes.
      */
     public void setUseParentClassloader(boolean useParent) {
         this.useParent = useParent;
@@ -114,12 +115,11 @@ public abstract class AbstractTask extends MatchingTask {
         if (_cl != null)
             return _cl;
 
-        if (classpath != null) {
+        if (classpath != null)
             _cl = new AntClassLoader(getProject(), classpath, useParent);
-        } else {
+        else
             _cl = new AntClassLoader(getProject().getCoreLoader(), getProject(),
                 new Path(getProject()), useParent);
-        }
         _cl.setIsolated(isolate);
 
         return _cl;
@@ -159,7 +159,9 @@ public abstract class AbstractTask extends MatchingTask {
         if (_conf == null)
             _conf = newConfiguration();
         if (_conf.getPropertiesResource() == null) {
-            ConfigurationProvider cp = ProductDerivations.loadDefaults();
+            ConfigurationProvider cp = ProductDerivations.loadDefaults
+                (AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
             if (cp != null)
                 cp.setInto(_conf);
         }
@@ -185,10 +187,11 @@ public abstract class AbstractTask extends MatchingTask {
             String[] dsFiles = ds.getIncludedFiles();
             for (int j = 0; j < dsFiles.length; j++) {
                 File f = new File(dsFiles[j]);
-                if (!( AccessController.doPrivileged(J2DoPrivHelper.isFileAction(f))).booleanValue()) {
+                if (!( AccessController.doPrivileged(J2DoPrivHelper
+                    .isFileAction(f))).booleanValue())
                     f = new File(ds.getBasedir(), dsFiles[j]);
-                }
-                files.add(AccessController.doPrivileged(J2DoPrivHelper.getAbsolutePathAction(f)));
+                files.add(AccessController.doPrivileged(
+                    J2DoPrivHelper.getAbsolutePathAction(f)));
             }
         }
         return (String[]) files.toArray(new String[files.size()]);

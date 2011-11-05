@@ -32,12 +32,12 @@ import org.apache.openjpa.meta.MetaDataRepository;
  * @since 1.1.0
  */
 public class MetaDataRepositoryValue
-    extends PluginValue<MetaDataRepository> {
+    extends PluginValue {
 
     private static final String KEY = "MetaDataRepository";
 
     public MetaDataRepositoryValue() {
-        super(MetaDataRepository.class, KEY, false);
+        super(KEY, false);
         String[] aliases = new String[] {
             "default",
             MetaDataRepository.class.getName()
@@ -47,7 +47,7 @@ public class MetaDataRepositoryValue
         setString(aliases[0]);
     }
 
-    public MetaDataRepository instantiate(Configuration c, boolean fatal) {
+    public Object instantiate(Class type, Configuration c, boolean fatal) {
         MetaDataRepository repos = null;
         OpenJPAConfiguration conf = (OpenJPAConfiguration) c;
 
@@ -64,7 +64,10 @@ public class MetaDataRepositoryValue
                 conf.getQueryCompilationCacheInstance().putAll((Map) os[1]);
         }
 
-        return (repos == null) ? super.instantiate(c, fatal) : repos;
+        if (repos == null)
+            return super.instantiate(type, c, fatal);
+        else
+            return repos;
     }
 
 

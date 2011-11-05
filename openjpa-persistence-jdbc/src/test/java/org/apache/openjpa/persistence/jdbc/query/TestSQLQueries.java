@@ -90,7 +90,8 @@ public class TestSQLQueries
             .getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
-        ClassMapping mapping = repos.getMapping(RuntimeTest1.class, true);
+        ClassMapping mapping = repos.getMapping(RuntimeTest1.class,
+                pm.getClassLoader(), true);
         
         _tableName = mapping.getTable().getName();
         _fullTableName = dict.getFullName(mapping.getTable(), false);
@@ -381,13 +382,15 @@ public class TestSQLQueries
         DBDictionary dict = conf.getDBDictionaryInstance();
         MappingRepository repos = conf.getMappingRepositoryInstance();
         
-        ClassMapping mappingA = repos.getMapping(AttachD.class, true);
+        ClassMapping mappingA = repos.getMapping(AttachD.class,
+                pm.getClassLoader(), true);
         String tableNameA = mappingA.getTable().getName();
         String fullTableNameA = dict.getFullName(mappingA.getTable(), false);
         String relColNameA = mappingA.getFieldMapping("a").
                 getColumns()[0].getName();
         
-        ClassMapping mappingD = repos.getMapping(AttachA.class, true);
+        ClassMapping mappingD = repos.getMapping(AttachA.class,
+                pm.getClassLoader(), true);
         String tableNameD = mappingD.getTable().getName();
         String fullTableNameD = dict.getFullName(mappingD.getTable(), false);
         String pkColNameD = mappingD.getTable().getPrimaryKey().

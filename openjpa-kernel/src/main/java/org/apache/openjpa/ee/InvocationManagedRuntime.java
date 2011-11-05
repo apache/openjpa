@@ -62,8 +62,10 @@ public class InvocationManagedRuntime extends AbstractManagedRuntime
     public TransactionManager getTransactionManager()
         throws Exception {
         if (_method == null) {
-            ClassLoader loader = _conf.getClassLoader();
-            _method = Class.forName(_clazz, true, loader).getMethod(_methodName, null);
+            ClassLoader loader = _conf.getClassResolverInstance().
+                getClassLoader(getClass(), null);
+            _method = Class.forName(_clazz, true, loader)
+                .getMethod(_methodName, null);
         }
         return (TransactionManager) _method.invoke(null, null);
     }

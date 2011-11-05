@@ -99,7 +99,8 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
             if (_ds == null) {
                 try {
                     Properties dbcpProps = updateDBCPProperties(props);
-                    _ds = (DataSource) Configurations.newInstance(DBCPBASICDATASOURCENAME, conf, dbcpProps);
+                    _ds = (DataSource) Configurations.newInstance(DBCPBASICDATASOURCENAME, conf,
+                        dbcpProps, getClassLoader());
                 } catch (Exception e) {
                     _dbcpEx = new RuntimeException(_eloc.get("driver-null", DBCPBASICDATASOURCENAME).getMessage(), e);
                 }

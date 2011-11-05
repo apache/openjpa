@@ -53,16 +53,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         } catch (UserException e) {
             System.err.println(e);
         }
-        
-    }
-    
-    /**
-     * This test will not run because of Configuration is not assigned
-     * if a cache is directly instantiated in a test.
-     */
-    public void xtestMisConfiguration() {
-        PartitionedDataCache cache = new PartitionedDataCache();
-        String badProperty = "(cacheSize=100),(name=b,cacheSize=200)";// missing name
+        badProperty = "(cacheSize=100),(name=b,cacheSize=200)";// missing name
         try {
             cache.setPartitions(badProperty);
             fail("Expected parse error on " + badProperty);
@@ -83,6 +74,7 @@ public class TestPartitionedDataCache extends SingleEMFTestCase {
         } catch (UserException e) {
             System.err.println(e);
         }
+        
     }
     
     public void testPolicyConfiguration() {

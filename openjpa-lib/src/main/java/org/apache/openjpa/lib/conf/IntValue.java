@@ -25,12 +25,16 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Marc Prud'hommeaux
  */
-public class IntValue extends Value<Number> {
+public class IntValue extends Value {
 
     private int value;
 
     public IntValue(String prop) {
-        super(Number.class, prop);
+        super(prop);
+    }
+
+    public Class<Integer> getValueType() {
+        return int.class;
     }
 
     /**
@@ -56,10 +60,16 @@ public class IntValue extends Value<Number> {
     }
 
     protected void setInternalString(String val) {
-        set (StringUtils.isEmpty(val) ? 0 : Integer.parseInt(val));
+        if (StringUtils.isEmpty(val))
+            set(0);
+        else
+            set(Integer.parseInt(val));
     }
 
-    protected void setInternalObject(Object num) {
-        set (num == null ? 0 : ((Number)num).intValue());
+    protected void setInternalObject(Object obj) {
+        if (obj == null)
+            set(0);
+        else
+            set(((Number) obj).intValue());
     }
 }

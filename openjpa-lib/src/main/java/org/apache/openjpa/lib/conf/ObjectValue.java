@@ -18,72 +18,45 @@
  */
 package org.apache.openjpa.lib.conf;
 
+import java.security.AccessController;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * An object {@link Value}.
  *
  * @author Abe White
- * @author Pinaki Poddar
  */
-public class ObjectValue<T> extends Value<T> {
+public class ObjectValue extends Value {
 
-    private static final Localizer _loc = Localizer.forPackage(ObjectValue.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (ObjectValue.class);
 
     // cache the types' classloader
-//    private static ConcurrentReferenceHashMap _classloaderCache =
-//        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
+    private static ConcurrentReferenceHashMap _classloaderCache =
+        new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.WEAK);
 
-    private T _value = null;
+    private Object _value = null;
 
-    public ObjectValue(Class<T> type, String prop) {
-        super(type, prop);
-    }
-    
-    public void setAlias(String key, Class<? extends T> value) {
-        setAlias(key, value.getName());
-    }
-    
-    /**
-     * Sets the fully-qualified name of the given class as the value for an alias with fixed 
-     * name <tt>"default"</tt>.
-     * Also set the string value to the key i.e. value of this plug-in is set to its
-     * default value.
-     *   
-     * @param value value for the alias. also the value set to this plug-in.
-     * 
-     * @see #setDefaultAlias(String, Class)
-     */
-    public void setDefaultAlias(Class<? extends T> value) {
-    	setDefaultAlias("default", value);
-    }    
-    
-    /**
-     * Sets the given key as the default alias for the fully-qualified name of the given class.
-     * Also set the string value to the key i.e. value of this plug-in is set to its
-     * default value.
-     *   
-     * @param key alias which is also the default
-     * @param value value for the alias. also the value set to this plug-in.
-     */
-    public void setDefaultAlias(String key, Class<? extends T> value) {
-        setAlias(key, value == null ? null : value.getName());
-        setDefault(key);
-        setString(key);
+    public ObjectValue(String prop) {
+        super(prop);
     }
 
     /**
      * The internal value.
      */
-    public T get() {
+    public Object get() {
         return _value;
     }
 
     /**
      * The internal value.
      */
-    public void set(T obj) {
+    public void set(Object obj) {
         set(obj, false);
     }
 
@@ -92,7 +65,7 @@ public class ObjectValue<T> extends Value<T> {
      *
      * @param derived if true, this value was derived from other properties
      */
-    public void set(T obj, boolean derived) {
+    public void set(Object obj, boolean derived) {
         if (!derived) assertChangeable();
         Object oldValue = _value;
         _value = obj;
@@ -106,28 +79,29 @@ public class ObjectValue<T> extends Value<T> {
      * Instantiate the object as an instance of the given class. Equivalent
      * to <code>instantiate(type, conf, true)</code>.
      */
-    public T instantiate(Configuration conf) {
-        return instantiate(conf, true);
+    public Object instantiate(Class<?> type, Configuration conf) {
+        return instantiate(type, conf, true);
     }
 
     /**
      * Instantiate the object as an instance of the given class.
      */
-    public T instantiate(Configuration conf, boolean fatal) {
+    public Object instantiate(Class<?> type, Configuration conf, boolean fatal)
+    {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Configure the given object.
      */
-    public Object configure(T obj, Configuration conf) {
+    public Object configure(Object obj, Configuration conf) {
         return configure(obj, conf, true);
     }
 
     /**
      * Configure the given object.
      */
-    public Object configure(T obj, Configuration conf, boolean fatal) {
+    public Object configure(Object obj, Configuration conf, boolean fatal) {
         throw new UnsupportedOperationException();
     }
 
@@ -135,10 +109,25 @@ public class ObjectValue<T> extends Value<T> {
      * Allow subclasses to instantiate additional plugins. This method does
      * not perform configuration.
      */
-    public T newInstance(String clsName, Configuration conf, boolean fatal) {
-        return Configurations.newInstance(clsName, this, conf, conf.getClassLoader(), fatal);
+    public Object newInstance(String clsName, Class<?> type, Configuration conf,
+            boolean fatal) {
+        ClassLoader cl = (ClassLoader) _classloaderCache.get(type);
+        if (cl == null) {
+            cl = AccessController.doPrivileged(
+                J2DoPrivHelper.getClassLoaderAction(type));
+            if (cl == null) {  // System classloader is returned as null
+                cl = AccessController.doPrivileged(
+                    J2DoPrivHelper.getSystemClassLoaderAction()); 
+            }
+            _classloaderCache.put(type, cl);
+        }
+        return Configurations.newInstance(clsName, this, conf, cl, fatal);
     }
-    
+
+    public Class<?> getValueType() {
+        return Object.class;
+    }
+
     /**
      * Implement this method to synchronize internal data with the new
      * object value.
@@ -154,15 +143,11 @@ public class ObjectValue<T> extends Value<T> {
         if (str == null)
             set(null);
         else
-            throw new IllegalArgumentException(_loc.get("cant-set-string", getProperty()).getMessage());
+            throw new IllegalArgumentException(_loc.get("cant-set-string",
+                getProperty()).getMessage());
     }
 
     protected void setInternalObject(Object obj) {
-        set((T)obj);
+        set(obj);
     }
-    
-    public Object getExternal() {
-      return isHidden() ? Value.INVISIBLE : getString();
-    }
-
 }

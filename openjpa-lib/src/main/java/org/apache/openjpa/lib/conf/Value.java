@@ -31,69 +31,44 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 
 /**
- * A value of a user-configurable property.
- * The runtime {@link Configuration configuration} is essentially comprised of a set of values.
- * <br>
- * Each Value is identified by a property key. A value can also have other {@link #getEquivalentKeys() equivalent 
- * keys}. The user can configure using either the primary or the equivalent keys. For example, the user can configure
- * the JDBC driver either by <tt>openjpa.ConnectionDriverName</tt> or <tt>javax.persistence.jdbc.driver</tt>.
- * <br>
- * A Value can be aliased. For example, a value of a fully qualified class name 
- * <tt>org.apache.openjpa.ee.ManagedRuntime</tt> can be aliased simply as <tt>managed</tt>.
- * Some values can have a {@link #isAliasListComprehensive() fixed} set of aliases such as values that represents
- * an enumeration. 
- * <br>
- * A Value may have a {@link #getDefault() default} value. Setting a default value does not imply that the vale is 
- * set to the default value. The value is explicitly set by {@link #setObject(Object) set} method. 
- * <br>
- * The values are often printed on console etc. hence the values that carry sensitive information such as 
- * password can be {@link #hide() hidden}.
- * <br>
- * Most values get frozen after an OpenJPA runtime is initialized. However, a value can be modified at runtime
- * only if it is declared as {@link #setDynamic(boolean) dynamic}. Dynamic change of a value is significant because
- * the identity of a OpenJPA runtime is hash code of {@link Configuration configuration} which, in turn, is hash code
- * of its values. This identity is critical to locate a OpenJPA runtime. The dynamic values remember their original 
- * value and that original value is used its hash code computation.
- * <br>
- * Listeners can be {@link #addListener(ValueListener) added} to a value to be notified of changes.
- * <p>
- * Value is made generic since version 2.2.0. The generic type implies the type of value e.g. Value&ltInteger&gt; 
- * holds integer value. 
+ * A configuration value.
  *
  * @author Marc Prud'hommeaux
  * @author Pinaki Poddar
  */
-public abstract class Value<T> implements Cloneable {
+public abstract class Value implements Cloneable {
 
-    private static final String[] EMPTY_ALIASES  = new String[0];
-    private static final Set<String> EMPTY_SET = Collections.emptySet();
-    
-    public static final String INVISIBLE = "******";
+    private static final String[] EMPTY_ALIASES = new String[0];
     private static final Localizer s_loc = Localizer.forPackage(Value.class);
+    public static final String INVISIBLE = "******";
     
-    private final String _prop;
-    private final Class<T> _type;
-    private String loadKey;
-    private String def;
-    private String[] aliases;
-    private String getter;
-    private List<ValueListener> listeners;
-    private boolean aliasListComprehensive;
-    private Class<?> scope;
-    private boolean isDynamic;
-    private String originalValue;
-    private Set<String> otherNames;
-    private boolean _hidden;
-    private boolean _private;
+    private String prop = null;
+    private String loadKey = null;
+    private String def = null;
+    private String[] aliases = null;
+    private String getter = null;
+    private List<ValueListener> listeners = null;
+    private boolean aliasListComprehensive = false;
+    private Class scope = null;
+    private boolean isDynamic = false;
+    private String originalValue = null;
+    private Set<String> otherNames = null;
+    private boolean _hidden  = false;
+    private boolean _private = false;
     
+    /**
+     * Default constructor.
+     */
+    public Value() {
+    }
+
     /**
      * Constructor. Supply the property name.
      *
      * @see #setProperty
      */
-    public Value(Class<T> type, String prop) {
-    	_type = type;
-        _prop  = prop;
+    public Value(String prop) {
+        setProperty(prop);
     }
 
     /**
@@ -101,9 +76,17 @@ public abstract class Value<T> implements Cloneable {
      * getting this value in a {@link Map}.
      */
     public String getProperty() {
-        return _prop;
+        return prop;
     }
 
+    /**
+     * The property name that will be used when setting or
+     * getting this value in a {@link Map}.
+     */
+    public void setProperty(String prop) {
+        this.prop = prop;
+    }
+    
     /**
      * Adds a moniker that is equivalent to the original property key used
      * during construction. 
@@ -123,7 +106,8 @@ public abstract class Value<T> implements Cloneable {
      * @since 2.0.0
      */
     public Set<String> getEquivalentKeys() {
-        return otherNames == null ? EMPTY_SET : Collections.unmodifiableSet(otherNames);
+        return otherNames == null ? Collections.EMPTY_SET 
+            : Collections.unmodifiableSet(otherNames);
     }
     
     /**
@@ -134,7 +118,8 @@ public abstract class Value<T> implements Cloneable {
      * @since 2.0.0
      */
     public List<String> getPropertyKeys() {
-        List<String> result = new ArrayList<String>(1 + (otherNames ==null ? 0 : otherNames.size()));
+        List<String> result = new ArrayList<String>(1 + 
+            (otherNames ==null ? 0 : otherNames.size()));
         result.add(getProperty());
         if (otherNames != null)
             result.addAll(otherNames);
@@ -164,8 +149,9 @@ public abstract class Value<T> implements Cloneable {
      * already loaded key. 
      */
     public void setLoadKey(String key) {
-        if (loadKey != null && key != null && !loadKey.equals(key)) 
-            throw new ParseException(s_loc.get("multiple-load-key", loadKey, key));
+        if (this.loadKey != null && key != null && !this.loadKey.equals(key)) 
+            throw new ParseException(s_loc.get("multiple-load-key", 
+                loadKey, key));
         loadKey = key;
     }
 
@@ -197,7 +183,7 @@ public abstract class Value<T> implements Cloneable {
     public void setAlias(String key, String value) {
         aliases = setAlias(key, value, aliases);
     }
-    
+
     /**
      * Set an alias into a current alias list, returning the new list.
      */
@@ -224,7 +210,7 @@ public abstract class Value<T> implements Cloneable {
      * value. If so, an error will be generated when attempting to invoke
      * any method on this value with an unknown option.
      */
-    public final boolean isAliasListComprehensive() {
+    public boolean isAliasListComprehensive() {
         return aliasListComprehensive;
     }
 
@@ -233,7 +219,7 @@ public abstract class Value<T> implements Cloneable {
      * value. If so, an error will be generated when attempting to invoke
      * any method on this value with an unknown option.
      */
-    public final void setAliasListComprehensive(boolean aliasListIsComprehensive) {
+    public void setAliasListComprehensive(boolean aliasListIsComprehensive) {
         this.aliasListComprehensive = aliasListIsComprehensive;
     }
 
@@ -309,7 +295,7 @@ public abstract class Value<T> implements Cloneable {
 
     /**
      * The name of the getter method for the instantiated value of this
-     * property (as opposed to the string value)
+     * property(as opposed to the string value)
      */
     public String getInstantiatingGetter() {
         return getter;
@@ -331,7 +317,7 @@ public abstract class Value<T> implements Cloneable {
      * be used by the configuration framework to look up metadata about
      * the value.
      */
-    public Class<?> getScope() {
+    public Class getScope() {
         return scope;
     }
 
@@ -340,7 +326,7 @@ public abstract class Value<T> implements Cloneable {
      * be used by the configuration framework to look up metadata about
      * the value.
      */
-    public void setScope(Class<?> cls) {
+    public void setScope(Class cls) {
         scope = cls;
     }
 
@@ -355,7 +341,7 @@ public abstract class Value<T> implements Cloneable {
     /**
      * Set this value from the given string. If the given string is null or
      * empty and a default is defined, the default is used. If the given
-     * string (or default) is an alias key, it will be converted to the
+     * string(or default) is an alias key, it will be converted to the
      * corresponding value internally.
      * <br>
      * If this Value is being set to a non-default value for the first time
@@ -376,7 +362,7 @@ public abstract class Value<T> implements Cloneable {
         } catch (ParseException pe) {
             throw pe;
         } catch (RuntimeException re) {
-            throw new ParseException(_prop + ": " + val, re);
+            throw new ParseException(prop + ": " + val, re);
         }
     }
 
@@ -390,11 +376,11 @@ public abstract class Value<T> implements Cloneable {
      * {@link #isDynamic() dynamic}. 
      * 
      */
-    public void setObject(T obj) {
+    public void setObject(Object obj) {
         // if setting to null set as string to get defaults into play
-        if (obj == null && def != null) {
+        if (obj == null && def != null)
             setString(null);
-        } else {
+        else {
             try {
                 setInternalObject(obj);
                 if (originalValue == null && obj != null && !isDefault(obj)) {
@@ -403,7 +389,7 @@ public abstract class Value<T> implements Cloneable {
             } catch (ParseException pe) {
                 throw pe;
             } catch (RuntimeException re) {
-                throw new ParseException(_prop + ": " + obj, re);
+                throw new ParseException(prop + ": " + obj, re);
             }
         }
     }
@@ -427,12 +413,25 @@ public abstract class Value<T> implements Cloneable {
     /**
      * Returns the type of the property that this Value represents.
      */
-    public final Class<T> getValueType() {
-    	return _type;
-    }
+    public abstract Class<?> getValueType();
 
     /**
-     * Gets unmodifiable list of listeners for value changes.
+     * Return the internal string form of this value.
+     */
+    protected abstract String getInternalString();
+
+    /**
+     * Set this value from the given string.
+     */
+    protected abstract void setInternalString(String str);
+
+    /**
+     * Set this value from an object.
+     */
+    protected abstract void setInternalObject(Object obj);
+
+    /**
+     * Gets unmodifable list of listeners for value changes.
      */
     public List<ValueListener> getListeners() {
         return Collections.unmodifiableList(this.listeners);
@@ -500,7 +499,7 @@ public abstract class Value<T> implements Cloneable {
      *  
      * @since 1.1.0
      */
-    public final void setDynamic(boolean flag) {
+    public void setDynamic(boolean flag) {
     	isDynamic = flag;
     }
     
@@ -510,7 +509,7 @@ public abstract class Value<T> implements Cloneable {
      *  
      * @since 1.1.0
      */
-    public final boolean isDynamic() {
+    public boolean isDynamic() {
     	return isDynamic; 
     }
 
@@ -523,7 +522,7 @@ public abstract class Value<T> implements Cloneable {
     public int hashCode() {
         String str = (isDynamic()) ? getOriginalValue() : getString();
         int strHash = (str == null) ? 0 : str.hashCode();
-        int propHash = (_prop == null) ? 0 : _prop.hashCode();
+        int propHash = (prop == null) ? 0 : prop.hashCode();
         return strHash ^ propHash;
     }
 
@@ -539,11 +538,11 @@ public abstract class Value<T> implements Cloneable {
         if (!(other instanceof Value))
             return false;
 
-        Value<T> o = (Value<T>) other;
+        Value o = (Value) other;
         String thisStr = (isDynamic()) ? getOriginalValue() : getString();
         String thatStr = (isDynamic()) ? o.getOriginalValue() : o.getString();
         return (isDynamic() == o.isDynamic())
-            && StringUtils.equals(_prop, o.getProperty())
+            && StringUtils.equals(prop, o.getProperty())
             && StringUtils.equals(thisStr, thatStr);
     }
 
@@ -567,7 +566,7 @@ public abstract class Value<T> implements Cloneable {
     /**
      * Hides the value of this Value from being output to the caller.
      */
-    public final void hide() {
+    public void hide() {
         _hidden = true;
     }
     
@@ -575,49 +574,23 @@ public abstract class Value<T> implements Cloneable {
      * Affirms if this Value is used for internal purpose only and not exposed as a supported property.
      * @see Configuration#getPropertyKeys()
      */
-    public final boolean isPrivate() {
+    public boolean isPrivate() {
         return _private;
     }
 
     /**
      * Marks this Value for internal purpose only.
      */
-    public final void makePrivate() {
+    public void makePrivate() {
         _private = true;
     }
     
     /**
-     * Gets the external visible form of this value.
-     * @return
-     */
-    public Object getExternal() {
-    	return _hidden ? INVISIBLE : get();
-    }
-    
-    public String toString() {
-        return getProperty() + "<" + getValueType().getSimpleName() + ">:" + get();
-    }
-    
-    
-    /**
      * Get the actual data stored in this value.
      */
-    public abstract T get();
+    public abstract Object get();
     
-    /**
-     * Return the internal string form of this value.
-     */
-    protected abstract String getInternalString();
-
-    /**
-     * Set this value from the given string.
-     */
-    protected abstract void setInternalString(String str);
-
-    /**
-     * Set this value from an object.
-     */
-    protected abstract void setInternalObject(Object obj);
-
-
+    public String toString() {
+        return getProperty()+ ":" + get() + "[" + getValueType().getName() + "]";
+    }
 }

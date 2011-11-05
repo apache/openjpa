@@ -960,7 +960,7 @@ public class XMLPersistenceMetaDataSerializer
             ClassMetaData meta = fmd.getEmbeddedMetaData();
             ClassMetaData owner = getConfiguration().
                 getMetaDataRepositoryInstance().getMetaData
-                (meta.getDescribedType(), true);
+                (meta.getDescribedType(), meta.getEnvClassLoader(), true);
             FieldMetaData eorig;
             for (FieldMetaData efmd : meta.getFields()) {
                 eorig = owner.getField(efmd.getName());

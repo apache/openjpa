@@ -360,7 +360,7 @@ public class XMLFileHandler {
                     // get the metadata for the type we're reading
                     String type = attrs.getValue("class");
                     ClassMetaData meta = _conf.getMetaDataRepositoryInstance().
-                        getMetaData(classForName(type), true);
+                        getMetaData(classForName(type), null, true);
 
                     // construct the oid object
                     Object oid;
@@ -578,8 +578,11 @@ public class XMLFileHandler {
         /**
          * Return the class for the specified name.
          */
-        private Class classForName(String name) throws Exception {
-            return Class.forName(name, true, _conf.getClassLoader());
+        private Class classForName(String name)
+            throws Exception {
+            ClassLoader loader = _conf.getClassResolverInstance().
+                getClassLoader(getClass(), null);
+            return Class.forName(name, true, loader);
         }
     }
 

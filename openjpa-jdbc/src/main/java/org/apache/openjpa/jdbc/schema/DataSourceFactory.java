@@ -66,13 +66,18 @@ public class DataSourceFactory {
     /**
      * Create a datasource using the given configuration.
      */
-    public static DataSource newDataSource(JDBCConfiguration conf,  boolean factory2) {
-        String driver = (factory2) ? conf.getConnection2DriverName() : conf.getConnectionDriverName();
-        if (StringUtils.isEmpty(driver)) {
-            throw new UserException(_loc.get("no-driver", conf)).setFatal(true);
-        }
-        ClassLoader loader = conf.getClassLoader();
-        String props = (factory2) ? conf.getConnection2Properties() : conf.getConnectionProperties();
+    public static DataSource newDataSource(JDBCConfiguration conf,
+        boolean factory2) {
+        String driver = (factory2) ? conf.getConnection2DriverName()
+            : conf.getConnectionDriverName();
+        if (StringUtils.isEmpty(driver))
+            throw new UserException(_loc.get("no-driver", conf)).
+                setFatal(true);
+
+        ClassLoader loader = conf.getClassResolverInstance().
+            getClassLoader(DataSourceFactory.class, null);
+        String props = (factory2) ? conf.getConnection2Properties()
+            : conf.getConnectionProperties();
         try {
             Class<?> driverClass;
             try {
@@ -108,7 +113,10 @@ public class DataSourceFactory {
 
             // see if their driver name is actually a data source
             if (DataSource.class.isAssignableFrom(driverClass)) {
-                return (DataSource) Configurations.newInstance(driver, conf, props); 
+                return (DataSource) Configurations.newInstance(driver,
+                    conf, props, AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(
+                            DataSource.class))); 
             }
         }
         catch (OpenJPAException ke) {

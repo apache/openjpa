@@ -234,8 +234,16 @@ public abstract class AbstractExpressionBuilder {
      * Convenience method to get metadata for the given type.
      */
     protected ClassMetaData getMetaData(Class<?> c, boolean required) {
+        return getMetaData(c, required, getClassLoader());
+    }
+
+    /**
+     * Convenience method to get metadata for the given type.
+     */
+    protected ClassMetaData getMetaData(Class<?> c, boolean required,
+        ClassLoader loader) {
         return resolver.getConfiguration().getMetaDataRepositoryInstance().
-            getMetaData(c, required);
+            getMetaData(c, loader, required);
     }
 
     /**

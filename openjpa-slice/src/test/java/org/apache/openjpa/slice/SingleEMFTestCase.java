@@ -69,6 +69,8 @@ public abstract class SingleEMFTestCase
     }
     
     protected ClassMapping getMapping(String name) {
-        return (ClassMapping) emf.getConfiguration().getMetaDataRepositoryInstance().getMetaData(name, true);
+        return (ClassMapping) emf.getConfiguration()
+                .getMetaDataRepositoryInstance().getMetaData(name,
+                        getClass().getClassLoader(), true);
     }
 }

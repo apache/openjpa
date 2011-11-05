@@ -367,7 +367,8 @@ public class PreparedQueryImpl implements PreparedQuery {
             .getInnermostDelegate();
         MappingRepository repos = store.getConfiguration()
             .getMappingRepositoryInstance();
-        ClassMapping mapping = repos.getMapping(pc.getClass(), true);
+        ClassMapping mapping = repos.getMapping(pc.getClass(), 
+            broker.getClassLoader(), true);
         Column[] pks = mapping.getPrimaryKeyColumns();
         Object cols = mapping.toDataStoreValue(pc, pks, store);
         if (cols instanceof Object[]) {

@@ -30,12 +30,10 @@ package org.apache.openjpa.persistence.jdbc.schema;
 import java.util.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.meta.MetaDataRepository;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
@@ -61,18 +59,36 @@ public class TestPerClassSequenceFactory
 
     public void testPerClassSequenceFactory()
         throws Exception {
-        Map props = new HashMap();
+        Map props=new HashMap();
         props.put("openjpa.Sequence", "table");
         
-        OpenJPAEntityManagerFactory factory =(OpenJPAEntityManagerFactory)getEmf(props);
+        OpenJPAEntityManagerFactory factory =(OpenJPAEntityManagerFactory)
+                getEmf(props);
 
-        JDBCConfiguration conf = (JDBCConfiguration) factory.getConfiguration();
-        MappingRepository repos = conf.getMappingRepositoryInstance();
-        ClassMapping mapping1 = repos.getMapping(RuntimeTest1.class, true);
-        ClassMapping mapping2 = repos.getMapping(PerClassTestObject.class, true);
-        ClassMapping mapping3 = repos.getMapping(PerClassTestObject2.class, true);
+        JDBCConfiguration conf = (JDBCConfiguration)
+            factory.getConfiguration();
+        ClassMapping mapping1 = conf.getMappingRepositoryInstance().
+            getMapping(RuntimeTest1.class, null, true);
+        ClassMapping mapping2 = conf.getMappingRepositoryInstance().
+            getMapping(PerClassTestObject.class, null, true);
+        ClassMapping mapping3 = conf.getMappingRepositoryInstance().
+            getMapping(PerClassTestObject2.class, null, true);
 
         OpenJPAEntityManager pm =(OpenJPAEntityManager)currentEntityManager();
+        //FIXME jthomas
+        /*
+        Sequence s1 = pm.getIdentitySequence(mapping1.getDescribedType());
+        Sequence s2 = pm.getIdentitySequence(mapping2.getDescribedType());
+        Sequence s3 = pm.getFieldSequence(mapping3.getDescribedType(), "age");
+        assertTrue(((SequenceImpl) s1).getDelegate()
+            instanceof TableJDBCSeq);
+        assertTrue(((SequenceImpl) s2).getDelegate().toString(),
+            ((SequenceImpl) s2).getDelegate()
+                instanceof DummySequenceFactory);
+        assertTrue(((SequenceImpl) s2).getDelegate().toString(),
+            ((SequenceImpl) s3).getDelegate()
+                instanceof DummySequenceFactory);
+         */
     }
 
     public static class DummySequenceFactory

@@ -55,9 +55,6 @@ import org.apache.openjpa.lib.xml.XMLFactory;
 /**
  * Custom SAX parser used by the system to quickly parse metadata files.
  * Subclasses should handle the processing of the content.
- * <br>
- * The parsers may need to resolve parsed strings to actual class instances.
- * 
  *
  * @author Abe White
  * @nojavadoc
@@ -65,7 +62,8 @@ import org.apache.openjpa.lib.xml.XMLFactory;
 public abstract class XMLMetaDataParser extends DefaultHandler
     implements LexicalHandler, MetaDataParser {
 
-    private static final Localizer _loc = Localizer.forPackage(XMLMetaDataParser.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (XMLMetaDataParser.class);
     private static boolean _schemaBug;
 
     static {
@@ -73,8 +71,9 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             // check for Xerces version 2.0.2 to see if we need to disable
             // schema validation, which works around the bug reported at:
             // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4708859
-            _schemaBug = "Xerces-J 2.0.2".equals(Class.forName("org.apache.xerces.impl.Version")
-            		.getField("fVersion").get(null));
+            _schemaBug = "Xerces-J 2.0.2".equals(Class.forName
+                ("org.apache.xerces.impl.Version").getField("fVersion").
+                get(null));
         } catch (Throwable t) {
             // Xerces might not be available
             _schemaBug = false;
@@ -83,8 +82,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
     // map of classloaders to sets of parsed locations, so that we don't parse
     // the same resource multiple times for the same class
-    private Set<String> _parsed = null;
-    
+    private Map<ClassLoader, Set<String>> _parsed = null;
+
     private Log _log = null;
     private boolean _validating = true;
     private boolean _systemId = true;
@@ -92,8 +91,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private boolean _parseText = true;
     private boolean _parseComments = true;
     private String _suffix = null;
-//    private ClassLoader _loader = null;
-//    private ClassLoader _curLoader = null;
+    private ClassLoader _loader = null;
+    private ClassLoader _curLoader = null;
 
     // state for current parse
     private final Collection _curResults = new LinkedList();
@@ -108,12 +107,17 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private int _ignore = Integer.MAX_VALUE;
 
     private boolean _parsing = false;
-    private final ClassLoader _loader;
     
-    protected XMLMetaDataParser(ClassLoader loader) {
-    	_loader = loader;
+    private boolean _overrideContextClassloader = false;
+    
+    public boolean getOverrideContextClassloader() {
+        return _overrideContextClassloader;
     }
-    
+
+    public void setOverrideContextClassloader(boolean overrideCCL) {
+        _overrideContextClassloader = overrideCCL;
+    }
+
     /*
      * Whether the parser is currently parsing.
      */
@@ -263,16 +267,16 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     /**
      * Classloader to use for class name resolution.
      */
-//    public ClassLoader getClassLoader() {
-//        return _loader;
-//    }
+    public ClassLoader getClassLoader() {
+        return _loader;
+    }
 
     /**
      * Classloader to use for class name resolution.
      */
-//    public void setClassLoader(ClassLoader loader) {
-//        _loader = loader;
-//    }
+    public void setClassLoader(ClassLoader loader) {
+        _loader = loader;
+    }
 
     public List getResults() {
         if (_results == null)
@@ -293,7 +297,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void parse(File file) throws IOException {
         if (file == null)
             return;
-        if (!(AccessController.doPrivileged(J2DoPrivHelper.isDirectoryAction(file))).booleanValue())
+        if (!(AccessController.doPrivileged(J2DoPrivHelper
+            .isDirectoryAction(file))).booleanValue())
             parse(new FileMetaDataIterator(file));
         else {
             String suff = (_suffix == null) ? "" : _suffix;
@@ -302,9 +307,9 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         }
     }
 
-    public void parse(Class<?> cls, boolean topDown) throws IOException {
+    public void parse(Class cls, boolean topDown) throws IOException {
         String suff = (_suffix == null) ? "" : _suffix;
-        parse(new ClassMetaDataIterator(cls, suff, _loader, topDown), !topDown);
+        parse(new ClassMetaDataIterator(cls, suff, topDown), !topDown);
     }
 
     public void parse(Reader xml, String sourceName) throws IOException {
@@ -364,7 +369,8 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 _log.trace(_loc.get("parser-schema-bug"));
             schemaSource = null;
         }
-        boolean validating = _validating && (getDocType() != null || schemaSource != null);
+        boolean validating = _validating && (getDocType() != null 
+            || schemaSource != null);
 
         // parse the metadata with a SAX parser
         try {
@@ -372,8 +378,22 @@ public abstract class XMLMetaDataParser extends DefaultHandler
             _sourceName = sourceName;
             
             SAXParser parser = null;
+            boolean overrideCL = _overrideContextClassloader;
+            ClassLoader oldLoader = null;
+            ClassLoader newLoader = null;           
             
             try {
+                if (overrideCL == true) {
+                    oldLoader =
+                        (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                    newLoader = XMLMetaDataParser.class.getClassLoader();
+                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(newLoader));
+                    
+                    if (_log != null && _log.isTraceEnabled()) {
+                        _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, newLoader));
+                    }                   
+                }
+                
                 parser = XMLFactory.getSAXParser(validating, true);
                 Object schema = null;
                 if (validating) {
@@ -383,12 +403,16 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 }
 
                 if (_parseComments || _lh != null)
-                    parser.setProperty("http://xml.org/sax/properties/lexical-handler", this);
+                    parser.setProperty
+                        ("http://xml.org/sax/properties/lexical-handler", this);
 
                 if (schema != null) {
-                    parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+                    parser.setProperty
+                        ("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
                             "http://www.w3.org/2001/XMLSchema");
-                    parser.setProperty("http://java.sun.com/xml/jaxp/properties/schemaSource", schema);
+                    parser.setProperty
+                        ("http://java.sun.com/xml/jaxp/properties/schemaSource",
+                            schema);
                 }
 
                 InputSource is = new InputSource(xml);
@@ -401,6 +425,19 @@ public abstract class XMLMetaDataParser extends DefaultHandler
                 ioe.initCause(se);
                 throw ioe;
             } finally {
+                if (overrideCL == true) {
+                    // Restore the old ContextClassloader
+                    try {
+                        if (_log != null && _log.isTraceEnabled()) {
+                            _log.trace(_loc.get("override-contextclassloader-end", newLoader, oldLoader));
+                        }
+                        AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
+                    } catch (Throwable t) {
+                        if (_log != null && _log.isWarnEnabled()) {
+                            _log.warn(_loc.get("restore-contextclassloader-failed"));
+                        }
+                    }
+                }
             }
         } finally {
             reset();
@@ -415,9 +452,15 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         if (!_caching)
             return false;
         if (_parsed == null)
-            _parsed = new HashSet<String>();
+            _parsed = new HashMap<ClassLoader, Set<String>>();
 
-        boolean added = _parsed.add(src);
+        ClassLoader loader = currentClassLoader();
+        Set<String> set = _parsed.get(loader);
+        if (set == null) {
+            set = new HashSet<String>();
+            _parsed.put(loader, set);
+        }
+        boolean added = set.add(src);
         if (!added && _log != null && _log.isTraceEnabled())
             _log.trace(_loc.get("already-parsed", src));
         return !added;
@@ -551,7 +594,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
      */
     protected void reset() {
         _curResults.clear();
-//        _curLoader = null;
+        _curLoader = null;
         _sourceName = null;
         _sourceFile = null;
         _depth = -1;
@@ -647,13 +690,14 @@ public abstract class XMLMetaDataParser extends DefaultHandler
      * Return the class loader to use when resolving resources and loading
      * classes.
      */
-//    protected ClassLoader currentClassLoader() {
-//        if (_loader != null)
-//            return _loader;
-//        if (_curLoader == null)
-//            _curLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
-//        return _curLoader;
-//    }
+    protected ClassLoader currentClassLoader() {
+        if (_loader != null)
+            return _loader;
+        if (_curLoader == null)
+            _curLoader = AccessController.doPrivileged(
+                J2DoPrivHelper.getContextClassLoaderAction());
+        return _curLoader;
+    }
 
     /**
      * Ignore all content below the current element.
@@ -699,13 +743,5 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     }
 
     protected void clearDeferredMetaData() {
-    }
-    
-    /**
-     * Gets the class loader used by this parser to resolve classes
-     * or locate resources.
-     */
-    protected final ClassLoader getClassLoader() {
-    	return _loader;
     }
 }

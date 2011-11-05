@@ -66,13 +66,15 @@ public class ClassArgParser {
     private static final int TOKEN_PACKAGE_NOATTR = 3;
     private static final int TOKEN_CLASS_NOATTR = 4;
 
-    private static final Localizer _loc = Localizer.forPackage(ClassArgParser.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (ClassArgParser.class);
 
     private ClassLoader _loader = null;
     private char[] _packageAttr = "name".toCharArray();
     private char[] _classAttr = "name".toCharArray();
     private char[][] _beginElements = { { 'p' }, { 'c' } };
-    private char[][] _endElements = { "ackage".toCharArray(), "lass".toCharArray() };
+    private char[][] _endElements = { "ackage".toCharArray(),
+        "lass".toCharArray() };
 
     /**
      * The class loader with which to load parsed classes.
@@ -104,14 +106,14 @@ public class ClassArgParser {
         for (; true; charIdx++) {
             for (int i = 0; i < buf.length; i++) {
                 if (i == 0) {
-                    if (charIdx == packageElementName.length()) {
-                        throw new UnsupportedOperationException(_loc.get("cant-diff-elems").getMessage());
-                    }
+                    if (charIdx == packageElementName.length())
+                        throw new UnsupportedOperationException(_loc.get
+                            ("cant-diff-elems").getMessage());
                     buf[i] = packageElementName.charAt(charIdx);
                 } else {
-                    if (charIdx == classElementNames[i - 1].length()) {
-                        throw new UnsupportedOperationException(_loc.get("cant-diff-elems").getMessage());
-                    }
+                    if (charIdx == classElementNames[i - 1].length())
+                        throw new UnsupportedOperationException(_loc.get
+                            ("cant-diff-elems").getMessage());
                     buf[i] = classElementNames[i - 1].charAt(charIdx);
                 }
             }
@@ -119,15 +121,21 @@ public class ClassArgParser {
                 break;
         }
 
-        _packageAttr = (packageAttributeName == null) ? null : packageAttributeName.toCharArray();
-        _classAttr   = (classAttributeName == null)   ? null : classAttributeName.toCharArray();
+        _packageAttr = (packageAttributeName == null) ? null
+            : packageAttributeName.toCharArray();
+        _classAttr = (classAttributeName == null) ? null
+            : classAttributeName.toCharArray();
         _beginElements = new char[classElementNames.length + 1][];
         _endElements = new char[classElementNames.length + 1][];
-        _beginElements[0] = packageElementName.substring(0, charIdx + 1).toCharArray();
-        _endElements[0] = packageElementName.substring(charIdx + 1).toCharArray();
+        _beginElements[0] = packageElementName.substring(0, charIdx + 1).
+            toCharArray();
+        _endElements[0] = packageElementName.substring(charIdx + 1).
+            toCharArray();
         for (int i = 0; i < classElementNames.length; i++) {
-            _beginElements[i + 1] = classElementNames[i].substring(0, charIdx + 1).toCharArray();
-            _endElements[i + 1] = classElementNames[i].substring(charIdx + 1).toCharArray();
+            _beginElements[i + 1] = classElementNames[i].
+                substring(0, charIdx + 1).toCharArray();
+            _endElements[i + 1] = classElementNames[i].
+                substring(charIdx + 1).toCharArray();
         }
     }
 
@@ -205,12 +213,10 @@ public class ClassArgParser {
 
         try {
             File file = Files.getFile(arg, _loader);
-            if (arg.endsWith(".class")) {
+            if (arg.endsWith(".class"))
                 return new String[]{ getFromClassFile(file) };
-            }
-            if (arg.endsWith(".java")) {
+            if (arg.endsWith(".java"))
                 return new String[]{ getFromJavaFile(file) };
-            }
             if ((AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(file))).booleanValue()) {
                 Collection<String> col = getFromMetaDataFile(file);

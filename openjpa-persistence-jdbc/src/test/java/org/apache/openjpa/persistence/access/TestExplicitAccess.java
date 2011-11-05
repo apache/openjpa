@@ -944,7 +944,7 @@ public class TestExplicitAccess extends SingleEMFTestCase {
             em.getConfiguration().getMetaDataRepositoryInstance();
         
         ClassMetaData cmd = mdr.getMetaData(PropAccessFieldStratsEntity.class, 
-            true);
+            null, true);
         // Assert expected persistent fields and properties were created
         assertNotNull(cmd.getField("embedId"));
         assertNotNull(cmd.getField("m2one"));
@@ -1035,7 +1035,8 @@ public class TestExplicitAccess extends SingleEMFTestCase {
         MetaDataRepository mdr = 
             em.getConfiguration().getMetaDataRepositoryInstance();
         
-        ClassMetaData cmd = mdr.getMetaData(FieldAccessPropStratsEntity.class, true);
+        ClassMetaData cmd = mdr.getMetaData(FieldAccessPropStratsEntity.class, 
+            null, true);
         // Assert expected persistent fields and properties were created
         assertNotNull(cmd.getField("eid"));
         assertNotNull(cmd.getField("elementCollection"));

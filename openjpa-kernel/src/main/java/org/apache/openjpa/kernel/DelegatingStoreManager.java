@@ -127,7 +127,7 @@ public abstract class DelegatingStoreManager
         _store.beforeStateChange(sm, fromState, toState);
     }
 
-    public Collection<Exception> flush(Collection<? extends OpenJPAStateManager> sms) {
+    public Collection<Exception> flush(Collection<OpenJPAStateManager> sms) {
         return _store.flush(sms);
     }
 

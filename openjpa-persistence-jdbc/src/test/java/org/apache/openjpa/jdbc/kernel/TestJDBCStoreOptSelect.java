@@ -73,7 +73,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
             // Check to see how many fks(intermediate fields) we selected.
             StateManagerImpl smi = ((StateManagerImpl) ((PersistenceCapable) ee1).pcGetStateManager());
             ClassMetaData cmd =
-                em.getConfiguration().getMetaDataRepositoryInstance().getMetaData(OptSelectEntity.class, true);
+                em.getConfiguration().getMetaDataRepositoryInstance().getMetaData(OptSelectEntity.class, null, true);
             int fks = 0;
             for (FieldMetaData fmd : cmd.getFields()) {
                 if (smi.getIntermediate(fmd.getIndex()) != null) {
@@ -97,7 +97,7 @@ public class TestJDBCStoreOptSelect extends SQLListenerTestCase {
         FetchPlan fp = em.pushFetchPlan();
         fp.removeFetchGroups(fp.getFetchGroups());
         for (Class<?> cls : new Class<?>[] { OptSelectEntity.class }) {
-            ClassMetaData cmd = mdr.getMetaData(cls, true);
+            ClassMetaData cmd = mdr.getMetaData(cls, null, true);
             for (FieldMetaData fmd : cmd.getFields()) {
                 fp.addField(cls, fmd.getName());
             }

@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.io.ObjectStreamException;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.kernel.AuditManager;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -103,7 +105,7 @@ public abstract class AbstractBrokerFactory
     // cache the class names loaded from the persistent classes property so
     // that we can re-load them for each new broker
     private transient Collection<String> _pcClassNames = null;
-//    private transient Collection<ClassLoader> _pcClassLoaders = null;
+    private transient Collection<ClassLoader> _pcClassLoaders = null;
     private transient boolean _persistentTypesLoaded = false;
 
     // lifecycle listeners to pass to each broker
@@ -153,6 +155,7 @@ public abstract class AbstractBrokerFactory
     protected AbstractBrokerFactory(OpenJPAConfiguration config) {
         _conf = config;
         _brokers = newBrokerSet();
+        getPcClassLoaders();
     }
 
     /**
@@ -232,7 +235,7 @@ public abstract class AbstractBrokerFactory
         if (remote.areRemoteEventsEnabled())
             broker.addTransactionListener(remote);
 
-       loadPersistentTypes();
+       loadPersistentTypes(broker.getClassLoader());
         _brokers.add(broker);
         _conf.setReadOnly(Configuration.INIT_STATE_FROZEN);
     }
@@ -259,7 +262,7 @@ public abstract class AbstractBrokerFactory
      * Load the configured persistent classes list. Performed automatically
      * whenever a broker is created.
      */
-    public void loadPersistentTypes() {
+    public void loadPersistentTypes(ClassLoader envLoader) {
         // if we've loaded the persistent types and the class name list
         // is empty, then we can simply return. Note that there is a
         // potential threading scenario in which _persistentTypesLoaded is
@@ -272,11 +275,12 @@ public abstract class AbstractBrokerFactory
             return;
 
         // cache persistent type names if not already
-        ClassLoader loader = _conf.getClassLoader();
+        ClassLoader loader = _conf.getClassResolverInstance().
+            getClassLoader(getClass(), envLoader);
         Collection<Class<?>> toRedefine = new ArrayList<Class<?>>();
         if (!_persistentTypesLoaded) {
             Collection<Class<?>> clss = _conf.getMetaDataRepositoryInstance().
-                loadPersistentTypes(false, _conf.isInitializeEagerly());
+                loadPersistentTypes(false, loader, _conf.isInitializeEagerly());
             if (clss.isEmpty())
                 _pcClassNames = Collections.emptyList();
             else {
@@ -287,27 +291,27 @@ public abstract class AbstractBrokerFactory
                     if (needsSub(cls))
                         toRedefine.add(cls);
                 }
-//                getPcClassLoaders().add(loader);
+                getPcClassLoaders().add(loader);
                 _pcClassNames = c;
             }
             _persistentTypesLoaded = true;
         } else {
             // reload with this loader
-//            if (getPcClassLoaders().add(loader)) {
-//                for (String clsName : _pcClassNames) {
-//                    try {
-//                        Class<?> cls = Class.forName(clsName, true, loader);
-//                        if (needsSub(cls))
-//                            toRedefine.add(cls);
-//                    } catch (Throwable t) {
-//                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
-//                    }
-//                }
-//            }
+            if (getPcClassLoaders().add(loader)) {
+                for (String clsName : _pcClassNames) {
+                    try {
+                        Class<?> cls = Class.forName(clsName, true, loader);
+                        if (needsSub(cls))
+                            toRedefine.add(cls);
+                    } catch (Throwable t) {
+                        _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME).warn(null, t);
+                    }
+                }
+            }
         }
 
         // get the ManagedClassSubclasser into the loop
-        ManagedClassSubclasser.prepareUnenhancedClasses(_conf, toRedefine);
+        ManagedClassSubclasser.prepareUnenhancedClasses(_conf, toRedefine, envLoader);
     }
 
     private boolean needsSub(Class<?> cls) {
@@ -809,12 +813,12 @@ public abstract class AbstractBrokerFactory
     /**
      * Method insures that deserialized EMF has this reference re-instantiated
      */
-//    private Collection<ClassLoader> getPcClassLoaders() {
-//       if (_pcClassLoaders == null)
-//         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ConcurrentReferenceHashSet.WEAK);
-//          
-//       return _pcClassLoaders;
-//    }
+    private Collection<ClassLoader> getPcClassLoaders() {
+       if (_pcClassLoaders == null)
+         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ConcurrentReferenceHashSet.WEAK);
+          
+       return _pcClassLoaders;
+    }
 
     /**
      * <P>
@@ -857,13 +861,14 @@ public abstract class AbstractBrokerFactory
         }
         // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're preloading.
         Options o = Configurations.parseProperties(Configurations.getProperties(_conf.getMetaDataRepository()));
-        if (MetaDataRepository.needsPreload(o)) {
+        if (MetaDataRepository.needsPreload(o) == true) {
             MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
             mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
 
             // Load persistent classes and hook in subclasser
-            loadPersistentTypes();
+            loadPersistentTypes((ClassLoader) AccessController.doPrivileged(J2DoPrivHelper
+                .getContextClassLoaderAction()));
             mdr.preload();
         }
 

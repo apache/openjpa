@@ -215,10 +215,11 @@ public class JavaTypes {
      * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. If true no attempt to use a 
      *        different classloader will be made. If false the ClassResolver from the configuration will be used. 
      */
-    public static Class<?> classForName(String name, ValueMetaData context, boolean mustExist) {    	
+    public static Class<?> classForName(String name, ValueMetaData context,
+            ClassLoader loader, boolean mustExist) {    	
             return classForName(name,
                 context.getFieldMetaData().getDefiningMetaData(),
-                context.getFieldMetaData().getDeclaringType(), context, mustExist);
+                context.getFieldMetaData().getDeclaringType(), context, loader, mustExist);
         }
 
     /**
@@ -227,7 +228,7 @@ public class JavaTypes {
      */
     private static Class<?> classForName(String name, ClassMetaData meta,
             Class<?> dec, ValueMetaData vmd, ClassLoader loader) {
-    	return classForName(name, meta, dec, vmd,  true);
+    	return classForName(name, meta, dec, vmd,  loader, true);
     }
 
     /**
@@ -235,7 +236,7 @@ public class JavaTypes {
      * when parsing metadata.
      */
     private static Class<?> classForName(String name, ClassMetaData meta, Class<?> dec, ValueMetaData vmd, 
-        boolean mustExist) {
+        ClassLoader loader, boolean mustExist) {
         // special case for PersistenceCapable and Object
         if ("PersistenceCapable".equals(name)
             || "javax.jdo.PersistenceCapable".equals(name)) // backwards compatibility
@@ -245,7 +246,9 @@ public class JavaTypes {
 
         MetaDataRepository rep = meta.getRepository();
         boolean runtime = (rep.getValidate() & MetaDataRepository.VALIDATE_RUNTIME) != 0;
-        ClassLoader loader = rep.getConfiguration().getClassLoader();
+        if (loader == null)
+            loader = rep.getConfiguration().getClassResolverInstance().
+                getClassLoader(dec, meta.getEnvClassLoader());
 
         // try the owner's package
         String pkg = Strings.getPackageName(dec);
@@ -260,7 +263,8 @@ public class JavaTypes {
         //load the class, check with the ClassResolver to get a loader
         //and use it to attempt to load the class. 
         if (cls == null  && !mustExist){
-            loader = rep.getConfiguration().getClassLoader();
+            loader = rep.getConfiguration().getClassResolverInstance().
+            getClassLoader(dec, meta.getEnvClassLoader());
             cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
         }         	
         //OJ-758 end  

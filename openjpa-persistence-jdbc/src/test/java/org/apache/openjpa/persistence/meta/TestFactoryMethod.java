@@ -48,7 +48,7 @@ public class TestFactoryMethod extends AbstractTestCase {
 
     public void setUp() throws Exception {
         _repos = getRepository();
-        _metaTest7 = _repos.getMetaData(MetaTest7.class, true);
+        _metaTest7 = _repos.getMetaData(MetaTest7.class, null, true);
     }
 
     protected MetaDataRepository getRepository() throws Exception {

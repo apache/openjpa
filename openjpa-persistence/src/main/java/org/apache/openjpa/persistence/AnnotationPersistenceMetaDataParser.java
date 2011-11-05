@@ -181,9 +181,11 @@ import serp.util.Strings;
 public class AnnotationPersistenceMetaDataParser
     implements MetaDataModes {
 
-    private static final Localizer _loc = Localizer.forPackage(AnnotationPersistenceMetaDataParser.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (AnnotationPersistenceMetaDataParser.class);
 
-    private static final Map<Class<?>, MetaDataTag> _tags = new HashMap<Class<?>, MetaDataTag>();
+    private static final Map<Class<?>, MetaDataTag> _tags =
+        new HashMap<Class<?>, MetaDataTag>();
 
     static {
         _tags.put(Access.class, ACCESS);
@@ -191,7 +193,8 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(EmbeddedId.class, EMBEDDED_ID);
         _tags.put(EntityListeners.class, ENTITY_LISTENERS);
         _tags.put(ExcludeDefaultListeners.class, EXCLUDE_DEFAULT_LISTENERS);
-        _tags.put(ExcludeSuperclassListeners.class, EXCLUDE_SUPERCLASS_LISTENERS);
+        _tags.put(ExcludeSuperclassListeners.class,
+            EXCLUDE_SUPERCLASS_LISTENERS);
         _tags.put(FlushModeType.class, FLUSH_MODE);
         _tags.put(GeneratedValue.class, GENERATED_VALUE);
         _tags.put(Id.class, ID);
@@ -237,6 +240,7 @@ public class AnnotationPersistenceMetaDataParser
     private final OpenJPAConfiguration _conf;
     private final Log _log;
     private MetaDataRepository _repos = null;
+    private ClassLoader _envLoader = null;
     private boolean _override = false;
     private int _mode = MODE_NONE;
 
@@ -294,6 +298,21 @@ public class AnnotationPersistenceMetaDataParser
         _repos = repos;
     }
 
+    /**
+     * Return the environmental class loader to pass on to parsed
+     * metadata instances.
+     */
+    public ClassLoader getEnvClassLoader() {
+        return _envLoader;
+    }
+
+    /**
+     * Set the environmental class loader to pass on to parsed
+     * metadata instances.
+     */
+    public void setEnvClassLoader(ClassLoader loader) {
+        _envLoader = loader;
+    }
 
     /**
      * Whether to allow later parses of mapping information to override
@@ -731,6 +750,7 @@ public class AnnotationPersistenceMetaDataParser
 
         if (meta == null) {
             meta = getRepository().addMetaData(_cls, getAccessCode(_cls));
+            meta.setEnvClassLoader(_envLoader);
             meta.setSourceMode(MODE_NONE);
             meta.setSource(getSourceFile(), SourceTracker.SRC_ANNOTATIONS, getSourceFile() == null ? ""
                 : getSourceFile().getPath());

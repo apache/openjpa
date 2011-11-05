@@ -99,7 +99,8 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
 	
 	public Slice addSlice(String name, Map properties) {
 	    Slice slice = ((DistributedJDBCConfigurationImpl)getConfiguration()).addSlice(name, properties);
-        synchronizeMappings((JDBCConfiguration)slice.getConfiguration());
+        ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        synchronizeMappings(loader, (JDBCConfiguration)slice.getConfiguration());
         Collection<Broker> brokers = getOpenBrokers();
         for (Broker broker : brokers) {
             ((DistributedBroker)broker).getDistributedStoreManager().addSlice(slice);
@@ -117,10 +118,10 @@ public class DistributedJDBCBrokerFactory extends JDBCBrokerFactory
         return new DistributedBrokerImpl();
     }
     
-    protected void synchronizeMappings() {
+    protected void synchronizeMappings(ClassLoader loader) {
         List<Slice> slices = getConfiguration().getSlices(Slice.Status.ACTIVE);
         for (Slice slice : slices) {
-            synchronizeMappings((JDBCConfiguration) slice.getConfiguration());
+            synchronizeMappings(loader, (JDBCConfiguration) slice.getConfiguration());
         }
     }
 

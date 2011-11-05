@@ -276,7 +276,11 @@ public class ReverseMappingToolTask
 
         // create and configure customizer
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
-        flags.customizer = (ReverseCustomizer) Configurations.newInstance(customizerClass, conf, (String)null);
+        flags.customizer = (ReverseCustomizer) Configurations.
+            newInstance(customizerClass, conf, (String)null,
+                AccessController.doPrivileged(
+                    J2DoPrivHelper.getClassLoaderAction(
+                        ReverseCustomizer.class)));
         if (flags.customizer != null)
             flags.customizer.setConfiguration(customProps);
 

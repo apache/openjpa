@@ -25,12 +25,10 @@ import java.util.Set;
 
 /**
  * Hooks for deriving products with additional functionality.
- * Parses configuration information from global, default or explicitly-specified
+ * Parses configuration information from global, default or explictly-specified
  * resources. All implementations of this interface will have a chance to mutate
  * a {@link Configuration} both before and after the user-specified 
- * configuration data is loaded. 
- * <br>
- * The order in which the product derivations are
+ * configuration data is loaded. The order in which the product derivations are
  * evaluated is determined by the specificity of the derivation type.
  *
  * @author Abe White
@@ -57,21 +55,23 @@ public interface ProductDerivation {
      * loading classes for the product this derivation represents to be sure
      * they exist.  Throw any throwable to indicate an invalid derivation.
      * Invalid derivations will not be used.
-     * Throw non-fatal {@link BootstrapException} to supress error reporting.
      */
-    public void validate() throws Exception;
+    public void validate()
+        throws Exception;
 
     /**
      * Load globals into the returned ConfigurationProvider, or return null if 
      * no globals are found.
      */
-    public ConfigurationProvider loadGlobals() throws Exception;
+    public ConfigurationProvider loadGlobals(ClassLoader loader) 
+        throws Exception;
 
     /**
      * Load defaults into the returned ConfigurationProvider, or return null if 
      * no defaults are found.
      */
-    public ConfigurationProvider loadDefaults() throws Exception;
+    public ConfigurationProvider loadDefaults(ClassLoader loader) 
+        throws Exception;
 
     /**
      * Load the given given resource into the returned ConfigurationProvider, 
@@ -81,7 +81,9 @@ public interface ProductDerivation {
      * @param anchor optional named anchor within a multiple-configuration
      * resource
      */
-    public ConfigurationProvider load(String resource, String anchor) throws Exception;
+    public ConfigurationProvider load(String resource, String anchor, 
+        ClassLoader loader) 
+        throws Exception;
 
     /**
      * Load given file, or return null if it is not a file this receiver
@@ -89,7 +91,8 @@ public interface ProductDerivation {
      *
      * @param anchor optional named anchor within a multiple-configuration file
      */
-    public ConfigurationProvider load(File file, String anchor) throws Exception;
+    public ConfigurationProvider load(File file, String anchor) 
+        throws Exception;
 
     /**
      * Return a string identifying the default resource location for this
@@ -110,7 +113,8 @@ public interface ProductDerivation {
      *
      * @since 1.1.0
      */
-    public List<String> getAnchorsInFile(File file) throws IOException, Exception;
+    public List<String> getAnchorsInFile(File file) throws IOException,
+            Exception;
 
     /**
      * Return a List<String> of all the anchors defined in

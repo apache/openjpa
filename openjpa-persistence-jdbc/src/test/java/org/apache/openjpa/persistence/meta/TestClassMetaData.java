@@ -60,11 +60,11 @@ public class TestClassMetaData
     public void setUp()
         throws Exception {
         _repos = getRepository();
-        _metaTest5 = _repos.getMetaData(MetaTest5.class, true);
-        _metaTest3 = _repos.getMetaData(MetaTest3.class, true);
-        _metaTest2 = _repos.getMetaData(MetaTest2.class, true);
-        _metaTest1 = _repos.getMetaData(MetaTest1.class, true);
-        _metaTest6 = _repos.getMetaData(MetaTest6.class, true);
+        _metaTest5 = _repos.getMetaData(MetaTest5.class, null, true);
+        _metaTest3 = _repos.getMetaData(MetaTest3.class, null, true);
+        _metaTest2 = _repos.getMetaData(MetaTest2.class, null, true);
+        _metaTest1 = _repos.getMetaData(MetaTest1.class, null, true);
+        _metaTest6 = _repos.getMetaData(MetaTest6.class, null, true);
     }
 
     protected MetaDataRepository getRepository()
@@ -274,7 +274,7 @@ public class TestClassMetaData
      * Test that metadata on inner classes is available.
      */
     public void testStaticInnerClasses() {
-        assertNotNull(_repos.getMetaData(MetaTest1.Inner.class, true));
+        assertNotNull(_repos.getMetaData(MetaTest1.Inner.class, null, true));
     }
 
     /**

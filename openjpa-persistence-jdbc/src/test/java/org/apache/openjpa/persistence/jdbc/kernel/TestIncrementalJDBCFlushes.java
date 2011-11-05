@@ -74,7 +74,8 @@ public class TestIncrementalJDBCFlushes
         JDBCStore store = (JDBCStore) getStoreManager(em, true);
         Connection conn = store.getConnection();
         ClassMapping mapping = store.getConfiguration().
-                getMappingRepositoryInstance().getMapping(RuntimeTest1.class, true);
+                getMappingRepositoryInstance().getMapping(RuntimeTest1.class,
+                null, true);
         FieldMapping fm = mapping.getFieldMapping("stringField");
         String tableName =
             store.getConfiguration().getDBDictionaryInstance().getFullName(

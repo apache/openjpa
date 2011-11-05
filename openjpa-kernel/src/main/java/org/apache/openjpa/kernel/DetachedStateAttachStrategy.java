@@ -48,10 +48,12 @@ class DetachedStateAttachStrategy
             return null;
 
         Broker broker = manager.getBroker();
-        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach, broker.getConfiguration());
+        PersistenceCapable pc = ImplHelper.toPersistenceCapable(toAttach,
+            broker.getConfiguration());
         ClassMetaData meta = broker.getConfiguration().
             getMetaDataRepositoryInstance().getMetaData(
-                ImplHelper.getManagedInstance(toAttach).getClass(), true);
+                ImplHelper.getManagedInstance(toAttach).getClass(),
+                broker.getClassLoader(), true);
 
         switch (meta.getIdentityType()) {
             case ClassMetaData.ID_DATASTORE:

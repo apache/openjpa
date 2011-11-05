@@ -213,7 +213,7 @@ public class JESTContext implements JPAServletContext {
     
     public ClassMetaData resolve(String alias) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        return _repos.getMetaData(alias, true);
+        return _repos.getMetaData(alias, loader, true);
     }
     
     /**

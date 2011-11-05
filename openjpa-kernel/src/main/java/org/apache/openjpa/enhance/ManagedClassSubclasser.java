@@ -32,8 +32,9 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.BytecodeWriter;
-import org.apache.openjpa.lib.util.Files;
+import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -45,7 +46,6 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UserException;
-
 import serp.bytecode.BCClass;
 
 /**
@@ -80,7 +80,8 @@ public class ManagedClassSubclasser {
      */
     public static List<Class<?>> prepareUnenhancedClasses(
         final OpenJPAConfiguration conf,
-        final Collection<? extends Class<?>> classes) {
+        final Collection<? extends Class<?>> classes,
+        final ClassLoader envLoader) {
         if (classes == null)
             return null;
         if (classes.size() == 0)
@@ -93,7 +94,7 @@ public class ManagedClassSubclasser {
                 if (!PersistenceCapable.class.isAssignableFrom(cls))
                     unenhanced.add(cls);
             if (unenhanced.size() > 0) {
-                if (PCEnhancerAgent.getLoadSuccessful()) {
+                if (PCEnhancerAgent.getLoadSuccessful() == true) {
                     // This means that the enhancer has been ran but we
                     // have some unenhanced classes. This can happen if an
                     // entity is loaded by the JVM before the EntityManger
@@ -118,7 +119,7 @@ public class ManagedClassSubclasser {
             return null;
         }
 
-        boolean redefine = ClassRedefiner.canRedefineClasses(conf);
+        boolean redefine = ClassRedefiner.canRedefineClasses(log);
         if (redefine) {
             log.info(_loc.get("enhance-and-subclass-and-redef-start", classes));
         } else {
@@ -175,13 +176,13 @@ public class ManagedClassSubclasser {
 
         ClassRedefiner.redefineClasses(conf, map);
         for (Class<?> cls : map.keySet()) {
-            setIntercepting(conf, cls);
-            configureMetaData(conf, cls, redefine);
+            setIntercepting(conf, envLoader, cls);
+            configureMetaData(conf, envLoader, cls, redefine);
         }
         for (Class<?> cls : subs)
-            configureMetaData(conf, cls, redefine);
+            configureMetaData(conf, envLoader, cls, redefine);
         for (Class<?> cls : ints)
-            setIntercepting(conf, cls);
+            setIntercepting(conf, envLoader, cls);
 
         return subs;
     }
@@ -223,8 +224,9 @@ public class ManagedClassSubclasser {
     }
 
     private static void configureMetaData(OpenJPAConfiguration conf,
-        Class<?> cls, boolean redefineAvailable) {
-        ClassMetaData meta = conf.getMetaDataRepositoryInstance().getMetaData(cls, true);
+        ClassLoader envLoader, Class<?> cls, boolean redefineAvailable) {
+        ClassMetaData meta = conf.getMetaDataRepositoryInstance()
+            .getMetaData(cls, envLoader, true);
         configureMetaData(meta, conf, redefineAvailable, true);
     }
 
@@ -304,9 +306,10 @@ public class ManagedClassSubclasser {
         }
     }
 
-    private static void setIntercepting(OpenJPAConfiguration conf, Class<?> cls) {
+    private static void setIntercepting(OpenJPAConfiguration conf,
+        ClassLoader envLoader, Class<?> cls) {
         ClassMetaData meta = conf.getMetaDataRepositoryInstance()
-            .getMetaData(cls, true);
+            .getMetaData(cls, envLoader, true);
         meta.setIntercepting(true);
     }
 

@@ -1423,7 +1423,8 @@ public class SchemaTool {
         Configurations.populateConfiguration(conf, opts);
 
         // create script writer
-        ClassLoader loader = conf.getClassLoader();
+        ClassLoader loader = conf.getClassResolverInstance().
+            getClassLoader(SchemaTool.class, null);
         flags.writer = Files.getWriter(fileName, loader);
 
         boolean returnValue = true;

@@ -61,7 +61,7 @@ import serp.util.Strings;
 
 /**
  * Base class for factory implementations built around XML metadata files
- * in the common format.
+ * in the common fomat.
  *
  * @author Abe White
  * @since 0.4.0
@@ -69,7 +69,8 @@ import serp.util.Strings;
 public abstract class AbstractCFMetaDataFactory
     extends AbstractMetaDataFactory {
 
-    private static final Localizer _loc = Localizer.forPackage(AbstractMetaDataFactory.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (AbstractMetaDataFactory.class);
 
     protected Collection<File> files = null;
     protected Collection<URL> urls = null;
@@ -180,7 +181,8 @@ public abstract class AbstractCFMetaDataFactory
         if (!strict && (mode & MODE_META) != 0)
             mode |= MODE_MAPPING;
         Class<?> cls = (metas.length == 0) ? null : metas[0].getDescribedType();
-        ClassLoader loader = repos.getConfiguration().getClassLoader();
+        ClassLoader loader = repos.getConfiguration().
+            getClassResolverInstance().getClassLoader(cls, null);
         Map<String,ClassMetaData> clsNames = new HashMap<String,ClassMetaData>
         	((int) (metas.length * 1.33 + 1));
         for (int i = 0; i < metas.length; i++)
@@ -191,7 +193,8 @@ public abstract class AbstractCFMetaDataFactory
         Set metaFiles = null;
         Set queryFiles = null;
         if (isMappingOnlyFactory() || (mode & MODE_META) != 0)
-            metaFiles = assignDefaultMetaDataFiles(metas, queries, seqs, mode, clsNames);
+            metaFiles = assignDefaultMetaDataFiles(metas, queries, seqs, mode,
+                clsNames);
         if (!isMappingOnlyFactory() && (mode & MODE_QUERY) != 0)
             queryFiles = assignDefaultQueryFiles(queries, clsNames);
 
@@ -209,6 +212,7 @@ public abstract class AbstractCFMetaDataFactory
             if (metaFiles != null) {
                 parser = newParser(false);
                 parser.setMode(sermode);
+                parser.setClassLoader(loader);
                 parse(parser, metaFiles);
 
                 MetaDataRepository pr = parser.getRepository();
@@ -230,9 +234,9 @@ public abstract class AbstractCFMetaDataFactory
                     && (queries[i].getSourceMode() & mode) != 0)
                     ser.addQueryMetaData(queries[i]);
 
-            int flags = MetaDataSerializer.PRETTY;
+            int flags = ser.PRETTY;
             if ((store & STORE_VERBOSE) != 0)
-                flags |= MetaDataSerializer.VERBOSE;
+                flags |= ser.VERBOSE;
             serialize(ser, output, flags);
         }
 
@@ -250,19 +254,20 @@ public abstract class AbstractCFMetaDataFactory
                 if (queryFiles != null) {
                     parser = newParser(false);
                     parser.setMode(MODE_QUERY);
+                    parser.setClassLoader(loader);
                     parse(parser, queryFiles);
                     ser.addAll(parser.getRepository());
                 }
                 for (int i = 0; i < queries.length; i++)
                     if (queries[i].getSourceMode() == MODE_QUERY)
                         ser.addQueryMetaData(queries[i]);
-                serialize(ser, output, MetaDataSerializer.PRETTY);
+                serialize(ser, output, ser.PRETTY);
             }
         }
         return true;
     }
 
-    public boolean drop(Class[] cls, int mode) {
+    public boolean drop(Class[] cls, int mode, ClassLoader envLoader) {
         if (mode == MODE_NONE)
             return true;
         if (isMappingOnlyFactory() && (mode & MODE_MAPPING) == 0)
@@ -295,7 +300,7 @@ public abstract class AbstractCFMetaDataFactory
                     clsNames.add(null);
                 else
                     clsNames.add(cls[i].getName());
-                meta = pr.getMetaData(cls[i], false);
+                meta = pr.getMetaData(cls[i], envLoader, false);
                 if (meta != null) {
                     if (getSourceFile(meta) != null)
                         files.add(getSourceFile(meta));
@@ -337,7 +342,8 @@ public abstract class AbstractCFMetaDataFactory
             // calling code can take advantage of metadata still in repos
             if (isMappingOnlyFactory())
                 for (int i = 0; i < cls.length; i++)
-                    ser.removeMetaData(pr.getMetaData(cls[i], false));
+                    ser.removeMetaData(pr.getMetaData(cls[i], envLoader,
+                        false));
             serialize(ser, null, Serializer.PRETTY);
         }
         if (qqs != null && !qqs.isEmpty()) {
@@ -496,7 +502,8 @@ public abstract class AbstractCFMetaDataFactory
         for (Iterator itr = files.iterator(); itr.hasNext();) {
             file = (File) itr.next();
             if (Files.backup(file, false) != null)
-                AccessController.doPrivileged(J2DoPrivHelper.deleteAction(file));
+                AccessController
+                    .doPrivileged(J2DoPrivHelper.deleteAction(file));
         }
     }
 
@@ -594,7 +601,8 @@ public abstract class AbstractCFMetaDataFactory
         return null;
     }
 
-    public Set<String> getPersistentTypeNames(boolean devpath) {
+    public Set<String> getPersistentTypeNames(boolean devpath, 
+    	ClassLoader envLoader) {
         // some configured locations might be implicit in spec, so return
         // null if we don't find any classes, rather than if we don't have
         // any locations
@@ -602,16 +610,15 @@ public abstract class AbstractCFMetaDataFactory
             return (_typeNames.isEmpty()) ? null : _typeNames;
 
         try {
-            ClassLoader loader = repos.getConfiguration().getClassLoader();
+            ClassLoader loader = repos.getConfiguration().
+                getClassResolverInstance().getClassLoader(getClass(),
+                envLoader);
             long start = System.currentTimeMillis();
 
             Set names = parsePersistentTypeNames(loader);
-            if (names.isEmpty() && devpath) {
-            	ClassArgParser cap = newClassArgParser();
-            	cap.setClassLoader(repos.getConfiguration().getClassLoader());
+            if (names.isEmpty() && devpath)
                 scan(new ClasspathMetaDataIterator(null, newMetaDataFilter()),
-                    cap, names, false, null);
-            }
+                    newClassArgParser(), names, false, null);
             else // we don't cache a full dev cp scan
                 _typeNames = names;
 
@@ -630,7 +637,6 @@ public abstract class AbstractCFMetaDataFactory
     protected Set<String> parsePersistentTypeNames(ClassLoader loader)
         throws IOException {
         ClassArgParser cparser = newClassArgParser();
-        cparser.setClassLoader(loader);
         String[] clss;
         Set<String> names = new HashSet<String>();
         if (files != null) {
@@ -754,8 +760,8 @@ public abstract class AbstractCFMetaDataFactory
                 } else {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-resource", rsrc));
+                    mitr = new ResourceMetaDataIterator(rsrc, loader);
                     OpenJPAConfiguration conf = repos.getConfiguration();
-                    mitr = new ResourceMetaDataIterator(rsrc, conf.getClassLoader());
                     Map peMap = null;
                     if (conf instanceof OpenJPAConfigurationImpl)
                         peMap = ((OpenJPAConfigurationImpl)conf).getPersistenceEnvironment();

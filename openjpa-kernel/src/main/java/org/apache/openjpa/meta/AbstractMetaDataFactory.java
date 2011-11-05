@@ -45,13 +45,13 @@ public abstract class AbstractMetaDataFactory
     protected File dir = null;
     protected int store = STORE_DEFAULT;
     protected boolean strict = false;
-    protected Set<String> types = null;
+    protected Set types = null;
 
 
     /**
      * Set of persistent type names supplied by user.
      */
-    public void setTypes(Set<String> types) {
+    public void setTypes(Set types) {
         this.types = types;
     }
 
@@ -61,13 +61,14 @@ public abstract class AbstractMetaDataFactory
      */
     public void setTypes(String types) {
         this.types = (StringUtils.isEmpty(types)) ? null
-            : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+            : new HashSet(Arrays.asList(Strings.split(types, ";", 0)));
     }
 
     public void setRepository(MetaDataRepository repos) {
         this.repos = repos;
         if (repos != null)
-            log = repos.getConfiguration().getLog(OpenJPAConfiguration.LOG_METADATA);
+            log = repos.getConfiguration().getLog
+                (OpenJPAConfiguration.LOG_METADATA);
     }
 
     public void setStoreDirectory(File dir) {
