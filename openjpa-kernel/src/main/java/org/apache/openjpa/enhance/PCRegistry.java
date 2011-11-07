@@ -206,8 +206,11 @@ public class PCRegistry {
             _metas.put(pcClass, meta);
         }
         synchronized (_listeners) {
-            for (RegisterClassListener r : _listeners)
-                r.register(pcClass);
+            for (RegisterClassListener r : _listeners){
+                if (r != null) {
+                    r.register(pcClass);
+                }
+            }
         }
     }
 
