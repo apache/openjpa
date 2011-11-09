@@ -173,12 +173,14 @@ public class ResultPacker {
     }
     
     boolean isInterface(Class<?> intf, Class<?> actual) {
-    	Class<?>[] intfs = actual.getInterfaces();
-    	for (Class<?> c : intfs) {
-    		if (c == intf)
-    			return true;
-    	}
-    	return false;
+        if (actual != null) {
+            Class<?>[] intfs = actual.getInterfaces();
+            for (Class<?> c : intfs) {
+                if (c == intf)
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
