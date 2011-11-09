@@ -79,11 +79,12 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         em.getTransaction().commit();
 
         // Since allocationSize has a default of 50, we expect 2 sequence fetches and 51 INSERTs.
-        assertEquals("53 statements should be executed.", 53, getSQLCount());
-        String[] statements = new String[53];
-        statements[0] = ".*";
+        assertEquals("54 statements should be executed.", 54, getSQLCount());
+        String[] statements = new String[54];
+        statements[0] = "ALTER .*";
         statements[1] = ".*";
-        for (int i = 2; i < 53; i++) {
+        statements[2] = ".*";
+        for (int i = 3; i < 54; i++) {
             statements[i] = "INSERT .*";
         }
         assertAllExactSQLInOrder(statements);

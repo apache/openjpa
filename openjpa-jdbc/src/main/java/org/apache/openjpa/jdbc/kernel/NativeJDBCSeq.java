@@ -80,7 +80,9 @@ public class NativeJDBCSeq
     private long _maxValue = -1;
 
     private DBIdentifier _schema = DBIdentifier.NULL;
-        
+
+    private boolean alterIncrementBy = false;
+
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
      */
@@ -191,13 +193,13 @@ public class NativeJDBCSeq
     @Override
     protected synchronized Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
-        if (_nextValue < _maxValue) {
-            long result = _nextValue;
-            _nextValue += _increment;
-            return result;
+        if (!alterIncrementBy) {
+            allocateInternal(0, store, mapping);
+            alterIncrementBy = true;
         }
-
-        allocateInternal(0, store, mapping);
+        if (_nextValue >= _maxValue) {
+            allocateInternal(0, store, mapping);
+        }
         long result = _nextValue;
         _nextValue += _increment;
         return result;
@@ -214,6 +216,10 @@ public class NativeJDBCSeq
         throws SQLException {
         Connection conn = getConnection(store);
         try {
+            if (!alterIncrementBy) {
+                DBDictionary dict = _conf.getDBDictionaryInstance();
+                udpateSql(conn, dict.getAlterSequenceSQL(_seq));
+            }
             _nextValue = getSequence(conn);
             _maxValue = _nextValue + _allocate * _increment;
         } finally {
@@ -303,6 +309,26 @@ public class NativeJDBCSeq
             if (stmnt != null)
                 try { stmnt.close(); } catch (SQLException se) {}
         }
+    }
+
+    private int udpateSql(Connection conn, String sql) throws SQLException {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        PreparedStatement stmnt = null;
+        int rc = -1;
+        try {
+            stmnt = conn.prepareStatement(sql);
+            dict.setTimeouts(stmnt, _conf, false);
+            rc = stmnt.executeUpdate();
+        } finally {
+            // clean up our resources
+            if (stmnt != null) {
+                try {
+                    stmnt.close();
+                } catch (SQLException se) {
+                }
+            }
+        }
+        return rc;
     }
 
     /////////

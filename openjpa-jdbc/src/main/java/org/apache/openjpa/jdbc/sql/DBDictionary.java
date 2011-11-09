@@ -3406,28 +3406,36 @@ public class DBDictionary
      * [ INCREMENT BY &lt;increment&gt;]</code> by default.
      */
     public String[] getCreateSequenceSQL(Sequence seq) {
+        return commonCreateAlterSequenceSQL(seq, true);
+    }
+
+    public String getAlterSequenceSQL(Sequence seq) {
+        return commonCreateAlterSequenceSQL(seq, false)[0];
+    }
+
+    private String[] commonCreateAlterSequenceSQL(Sequence seq, boolean create) {
         if (nextSequenceQuery == null)
             return null;
         
-    	//We need a place to detect if the user is setting the 'useNativeSequenceCache' property.
-    	//While in previous releases this property had meaning, it is no longer useful
-    	//given the code added via OPENJPA-1327.  As such, we need to warn user's the
-    	//property no longer has meaning.  While it would be nice to have a better way
-    	//to detect if the useNativeSequenceCache property has been set, the best we can do
-    	//is detect the variable in this code path as this is the path a user's code
-    	//would go down if they are still executing code which actually made use of
-    	//the support provided via setting useNativeSequenceCache.
-    	if (!useNativeSequenceCache && logNativeSequenceCacheWarning){
-    		log.warn(_loc.get("sequence-cache-warning"));
-    		logNativeSequenceCacheWarning=false;
-    	}        
+        //We need a place to detect if the user is setting the 'useNativeSequenceCache' property.
+        //While in previous releases this property had meaning, it is no longer useful
+        //given the code added via OPENJPA-1327.  As such, we need to warn user's the
+        //property no longer has meaning.  While it would be nice to have a better way
+        //to detect if the useNativeSequenceCache property has been set, the best we can do
+        //is detect the variable in this code path as this is the path a user's code
+        //would go down if they are still executing code which actually made use of
+        //the support provided via setting useNativeSequenceCache.
+        if (!useNativeSequenceCache && logNativeSequenceCacheWarning){
+            log.warn(_loc.get("sequence-cache-warning"));
+            logNativeSequenceCacheWarning=false;
+        }        
 
         StringBuilder buf = new StringBuilder();
-        buf.append("CREATE SEQUENCE ");
+        buf.append(create ? "CREATE" : "ALTER").append(" SEQUENCE ");
         String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
                 "long-seq-name");
         buf.append(seqName);
-        if (seq.getInitialValue() != 0)
+        if (create && seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
         if ((seq.getIncrement() > 1) || (seq.getAllocate() > 1))
             buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
