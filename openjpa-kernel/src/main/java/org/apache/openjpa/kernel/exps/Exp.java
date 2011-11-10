@@ -27,7 +27,7 @@ import org.apache.openjpa.kernel.StoreContext;
  *
  * @author Abe White
  */
-class Exp
+public class Exp
     implements Expression {
 
     /**

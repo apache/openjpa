@@ -94,8 +94,8 @@ public class ExpressionStoreQuery
         new StringContains(), new WildcardMatch(),
     };
 
-    private final ExpressionParser _parser;
-    private transient Object _parsed;
+    protected final ExpressionParser _parser;
+    protected transient Object _parsed;
 
     /**
      * Construct a query with a parser for the language.
@@ -171,8 +171,8 @@ public class ExpressionStoreQuery
     }
 
     public Executor newInMemoryExecutor(ClassMetaData meta, boolean subs) {
-        return new InMemoryExecutor(this, meta, subs, _parser,
-            ctx.getCompilation());
+        return new InMemoryExecutor(this, meta, subs, _parser,  
+        		ctx.getCompilation(), new InMemoryExpressionFactory());
     }
 
     public Executor newDataStoreExecutor(ClassMetaData meta, boolean subs) {
@@ -576,7 +576,7 @@ public class ExpressionStoreQuery
     /**
      * Runs the expression query in memory.
      */
-    private static class InMemoryExecutor
+    public static class InMemoryExecutor
         extends AbstractExpressionExecutor
         implements Executor, Serializable {
 
@@ -588,10 +588,10 @@ public class ExpressionStoreQuery
 
         public InMemoryExecutor(ExpressionStoreQuery q,
             ClassMetaData candidate, boolean subclasses,
-            ExpressionParser parser, Object parsed) {
+            ExpressionParser parser, Object parsed, InMemoryExpressionFactory factory) {
             _meta = candidate;
             _subs = subclasses;
-            _factory = new InMemoryExpressionFactory();
+            _factory = factory;
 
             _exps = new QueryExpressions[] {
                 parser.eval(parsed, q, _factory, _meta)
