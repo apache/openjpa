@@ -55,6 +55,7 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
+import org.apache.openjpa.util.UserException;
 
 import serp.util.Strings;
 
@@ -1107,12 +1108,18 @@ public class DB2Dictionary
             try {
                 String str = "SELECT CURRENT SCHEMA FROM " + SYSDUMMY;
                 conn = getConnection(); 
-                stmnt = conn.createStatement();
-                rs = stmnt.executeQuery(str);
-                if (rs.next()) {
-                    String currSchema = rs.getString(1);
-                    if (currSchema != null) {
-                        setDefaultSchemaName(currSchema.trim());
+                if (conn != null) {
+                    stmnt = conn.createStatement();
+                    rs = stmnt.executeQuery(str);
+                    if (rs.next()) {
+                        String currSchema = rs.getString(1);
+                        if (currSchema != null) {
+                            setDefaultSchemaName(currSchema.trim());
+                        }
+                    }
+                } else {
+                    if (log.isTraceEnabled()) {
+                        log.trace(_loc.get("can_not_get_current_schema", "Unable to obtain a datasource"));
                     }
                 }
             } catch (SQLException e) {
@@ -1127,7 +1134,6 @@ public class DB2Dictionary
                         // ignore
                     }
                 }
-
                 if (stmnt != null) {
                     try {
                         stmnt.close();
@@ -1155,22 +1161,25 @@ public class DB2Dictionary
      * In practice this method is only called by getDefaultSchemaName which in turn is only used by the schema tool.
      * 
      * @throws SQLException If neither datasource is available.
-     * @return A connection which may be used to obtain the default schema name. Callers do not need to check for null. 
+     * @return A connection which may be used to obtain the default schema name. 
      */
     private Connection getConnection() throws SQLException {
-        // try to obtain a connection from the primary datasource 
-        DataSource ds = conf.getDataSource(null);
-        
-        if(ds == null) {
-            // use datasource 2 if available
-            ds = conf.getDataSource2(null);
+    	DataSource  ds = null;
+    	try {
+            // try to obtain a connection from the primary datasource 
+            ds = conf.getDataSource(null);
+    	} catch (UserException uex) {
+    	}
+    	if (ds==null) {
+        	try {
+                // use datasource 2 if available
+                ds = conf.getDataSource2(null);
+        	} catch (UserException uex2) {
+        	}
         }
-        
         if (ds != null) {
             return ds.getConnection();
         }
-        
-        // throw
-        throw new SQLException("Unable to obtain a datasource");
+        return null;
     }
 }
