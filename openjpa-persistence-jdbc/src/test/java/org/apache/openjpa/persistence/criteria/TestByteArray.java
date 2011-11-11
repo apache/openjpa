@@ -35,7 +35,9 @@ public class TestByteArray extends SingleEMFTestCase {
     Character[] chars = new Character[] { new Character('a'), new Character('b') };
     public void setUp() {
         super.setUp(BlogUser.class
-//            ,"openjpa.Compatibility", "UseListAttributeForArrays=false"
+            // Using the following property will require corresponding
+            // changes in BlogUser_.java
+//            ,"openjpa.Compatibility", "UseListAttributeForArrays=true"
             );
         cb = emf.getCriteriaBuilder();
         populate();

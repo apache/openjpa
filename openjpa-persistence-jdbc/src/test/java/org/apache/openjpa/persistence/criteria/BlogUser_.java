@@ -22,6 +22,7 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 @javax.persistence.metamodel.StaticMetamodel
@@ -29,9 +30,14 @@ import javax.persistence.metamodel.SingularAttribute;
 @javax.annotation.Generated
 (value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Wed Jul 06 09:09:40 CDT 2011")
 public class BlogUser_ {
+    // The use of ListAttribute for arrays needs a special property setting.
+    // Reference TestByteArray testcase.
+//    public static volatile ListAttribute<BlogUser,Character> characters;
     public static volatile SingularAttribute<BlogUser,Character[]> characters;
+//    public static volatile ListAttribute<BlogUser,Character> chars;
     public static volatile SingularAttribute<BlogUser,char[]> chars;
     public static volatile SingularAttribute<BlogUser,Integer> id;
+//    public static volatile ListAttribute<BlogUser,Byte> pic;
     public static volatile SingularAttribute<BlogUser,byte[]> pic;
     public static volatile SingularAttribute<BlogUser,String> username;
     public static volatile SingularAttribute<BlogUser,Integer> version;
