@@ -319,6 +319,8 @@ public class NativeJDBCSeq
             stmnt = conn.prepareStatement(sql);
             dict.setTimeouts(stmnt, _conf, false);
             rc = stmnt.executeUpdate();
+        } catch (Exception e) {
+            // tolerate exception when attempting to alter increment
         } finally {
             // clean up our resources
             if (stmnt != null) {
