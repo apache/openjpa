@@ -553,7 +553,7 @@ public class Compatibility {
      * only applies for the case where we are trying to cascade a persist to an Entity which doesn't have a StateManager
      * and we can't determine if it is detached. 
      *   
-     * @since 2.1.x
+     * @since 2.1.1
      */
     public boolean getCheckDatabaseForCascadePersistToDetachedEntity(){
         return _checkDatabaseForCascadePersistToDetachedEntity;
@@ -564,7 +564,7 @@ public class Compatibility {
      * only applies for the case where we are trying to cascade a persist to an Entity which doesn't have a StateManager
      * and we can't determine if it is detached. 
      *   
-     * @since 2.1.x
+     * @since 2.1.1
      */
     public void setCheckDatabaseForCascadePersistToDetachedEntity(boolean b){
         _checkDatabaseForCascadePersistToDetachedEntity = b;
