@@ -26,7 +26,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestCascadePersist extends SingleEMFTestCase {
     @Override
     public void setUp() throws Exception {
-        setUp(DROP_TABLES, CascadePersistEntity.class, "openjpa.Log", "SQL=trace");
+        setUp(DROP_TABLES, CascadePersistEntity.class
+//            , "openjpa.Log", "SQL=trace"
+            );
     }
 
     public void testCascadePersistToDetachedFailure() {

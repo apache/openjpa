@@ -29,7 +29,9 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestMergeNoStateManager extends SingleEMFTestCase {
     Object[] args =
         new Object[] { TimestampVersionEntity.class, IntVersionEntity.class, NoVersionEntity.class,
-            IntegerVersionEntity.class, CLEAR_TABLES, "openjpa.Log", "SQL=trace" };
+            IntegerVersionEntity.class, CLEAR_TABLES
+//            , "openjpa.Log", "SQL=trace" 
+            };
 
     IntVersionEntity _ive;
     NoVersionEntity _nve;

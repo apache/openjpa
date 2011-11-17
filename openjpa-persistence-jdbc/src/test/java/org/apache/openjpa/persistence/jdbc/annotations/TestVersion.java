@@ -35,7 +35,7 @@ public class TestVersion extends SingleEMFTestCase {
     public void setUp() {
         setUp(AnnoTest1.class, AnnoTest2.class, AnnoTest3.class, Flat1.class,
             EmbedOwner.class, EmbedValue.class, CLEAR_TABLES 
-            ,"openjpa.Log","SQL=trace"
+//            ,"openjpa.Log","SQL=trace"
             ,"openjpa.ConnectionFactoryProperties","printParameters=true"
         );
 
