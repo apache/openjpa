@@ -998,7 +998,7 @@ public class EntityManagerImpl
             if (pq != null) {
                 pq.setInto(q);
             }
-            return newQueryImpl(q).setId(qid);
+            return newQueryImpl(q, null).setId(qid);
         } catch (RuntimeException re) {
             throw PersistenceExceptions.toPersistenceException(re);
         }
@@ -1009,7 +1009,7 @@ public class EntityManagerImpl
             return createQuery((String) null);
         assertNotCloseInvoked();
         org.apache.openjpa.kernel.Query q = ((QueryImpl) query).getDelegate();
-        return newQueryImpl(_broker.newQuery(q.getLanguage(), q));
+        return newQueryImpl(_broker.newQuery(q.getLanguage(), q), null);
     }
     
     @SuppressWarnings("unchecked")
@@ -1038,7 +1038,7 @@ public class EntityManagerImpl
                 del.compile();
             }
             
-            OpenJPAQuery q = newQueryImpl(del).setId(qid);
+            OpenJPAQuery q = newQueryImpl(del, meta).setId(qid);
             String[] hints = meta.getHintKeys();
             Object[] values = meta.getHintValues();
             for (int i = 0; i < hints.length; i++)
@@ -1064,11 +1064,22 @@ public class EntityManagerImpl
         org.apache.openjpa.kernel.Query kernelQuery = _broker.newQuery(
             QueryLanguages.LANG_SQL, query);
         kernelQuery.setResultMapping(null, mappingName);
-        return newQueryImpl(kernelQuery);
+        return newQueryImpl(kernelQuery, null);
     }
 
+    protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery, QueryMetaData qmd) {
+        return new QueryImpl<T>(this, _ret, kernelQuery, qmd);
+    }
+    
+    /**
+     * @Deprecated -- Use org.apache.openjpa.persistence.EntityManagerImpl.newQueryImpl(Query kernelQuery, QueryMetaData
+     *             qmd)
+     * <br>
+     *             Leave this method here as extenders of OpenJPA might depend on this hook to allow interception of
+     *             query creation
+     */
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery) {
-        return new QueryImpl<T>(this, _ret, kernelQuery);
+        return new QueryImpl<T>(this, _ret, kernelQuery, null);
     }
 
     /**
@@ -1597,7 +1608,7 @@ public class EntityManagerImpl
         
         org.apache.openjpa.kernel.Query kernelQuery =_broker.newQuery(CriteriaBuilderImpl.LANG_CRITERIA, criteriaQuery);
         
-        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery).setId(criteriaQuery.toString());
+        QueryImpl<T> facadeQuery = newQueryImpl(kernelQuery, null).setId(criteriaQuery.toString());
         Set<ParameterExpression<?>> params = criteriaQuery.getParameters();
         
         for (ParameterExpression<?> param : params) {

@@ -48,7 +48,7 @@ public class ParameterImpl<T> implements Parameter<T> {
      * Construct a positional parameter with the given position as key and
      * given expected value type.
      */
-    public ParameterImpl(int position, Class<T> expectedValueType) {
+    public ParameterImpl(Integer position, Class<T> expectedValueType) {
         _name = null;
         _position = position;
         _expectedValueType = expectedValueType;
@@ -91,6 +91,12 @@ public class ParameterImpl<T> implements Parameter<T> {
         if (_position != null)
             return _position.equals(that.getPosition());
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return _expectedValueType.hashCode() ^ ((_name != null) ? _name.hashCode() : 0)
+            ^ ((_position != null) ? _position.hashCode() : 0); 
     }
     
     public String toString() {

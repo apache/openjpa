@@ -28,6 +28,7 @@ import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.xml.Commentable;
 
 /**
@@ -62,7 +63,8 @@ public class QueryMetaData
     private int _colNum;
     private String _srcName; 
     private boolean _convertPositionalParametersToNamed;
-
+    private OrderedMap<Object,Class<?>> _paramTypes;
+    
     /**
      * Construct with the given name.
      */
@@ -305,5 +307,16 @@ public class QueryMetaData
     
     public String getSourceName() {
         return _srcName;
+    }
+
+    public void setParamTypes(OrderedMap<Object, Class<?>> paramTypes) {
+        _paramTypes = paramTypes;
+    }
+
+    /**
+     * @return a map of parameter name to type for this named query or <b>null if this data hasn't been set.</b>
+     */
+    public OrderedMap<Object, Class<?>> getParamTypes() {
+        return _paramTypes;
     }
 }
