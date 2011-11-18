@@ -117,9 +117,18 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 	 * 
 	 * @deprecated
 	 */
-	public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
-		this(em, null, query, null);
-	}
+    public QueryImpl(EntityManagerImpl em, RuntimeExceptionTranslator ret, org.apache.openjpa.kernel.Query query) {
+        this(em, ret, query, null);
+    }
+	
+    /**
+     * Constructor; supply factory and delegate.
+     * 
+     * @deprecated
+     */
+    public QueryImpl(EntityManagerImpl em, org.apache.openjpa.kernel.Query query) {
+        this(em, null, query, null);
+    }	
 
 	/**
 	 * Delegate.
