@@ -73,9 +73,8 @@
     <plugins>
       <plugin>
           <!-- Use the openjpa maven plugin to enhance the domain model classes -->
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>org.apache.openjpa</groupId>
           <artifactId>openjpa-maven-plugin</artifactId>
-          <version>1.1</version>
           <configuration>
             <includes>org/apache/openjpa/examples/gallery/model/*.class</includes>
             <addDefaultConstructor>true</addDefaultConstructor>

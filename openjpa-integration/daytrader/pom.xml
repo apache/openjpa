@@ -139,7 +139,7 @@
 
             <!-- new way of using openjpa-maven-plugin to enhance classes -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.apache.openjpa</groupId>
                 <artifactId>openjpa-maven-plugin</artifactId>
                 <configuration>
                     <includes>org/apache/openjpa/integration/daytrader/*Bean.class</includes>
