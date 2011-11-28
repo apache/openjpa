@@ -566,9 +566,6 @@ public class PCEnhancer {
                 runAuxiliaryEnhancers();
                 return ENHANCE_PC;
             }
-
-            if (_log.isWarnEnabled())
-                _log.warn(_loc.get("pers-aware", type, loader));
             return ENHANCE_AWARE;
         } catch (OpenJPAException ke) {
             throw ke;
@@ -4729,6 +4726,8 @@ public class PCEnhancer {
         Project project = new Project();
         BCClass bc;
         PCEnhancer enhancer;
+        Collection persAwareClasses = new HashSet();
+        
         int status;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             Object o = itr.next();
@@ -4752,12 +4751,15 @@ public class PCEnhancer {
                 if (log.isTraceEnabled())
                     log.trace(_loc.get("enhance-interface"));
             } else if (status == ENHANCE_AWARE) {
-                if (log.isTraceEnabled())
-                    log.trace(_loc.get("enhance-aware"));
+                persAwareClasses.add(o);
                 enhancer.record();
-            } else
+            } else {
                 enhancer.record();
+            }
             project.clear();
+        }
+        if(log.isInfoEnabled() && !persAwareClasses.isEmpty()){
+        	log.info(_loc.get("pers-aware-classes", persAwareClasses.size(), persAwareClasses));
         }
         return true;
     }
