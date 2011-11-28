@@ -242,6 +242,9 @@ The <filename>.class</filename> file of a class.
             <para>
 If you do not supply any arguments to the enhancer, it will run on the classes
 in your persistent class list (see <xref linkend="ref_guide_pc_pcclasses"/>).
+You must, however, supply the classpath you wish the enhancer to run with. This
+classpath must include, at minimum, the openjpa jar(s), persistence.xml and
+the target classes.
             </para>
             <para>
 You can run the enhancer over classes that have already been enhanced, in which

@@ -236,7 +236,9 @@ files that should be processed. You can specify <filename>.java</filename> or
 <filename>.class</filename> files. If you do not specify any files, the task
 will run on the classes listed in your <filename>persistence.xml</filename> or
 <link linkend="openjpa.MetaDataFactory"><literal>
-openjpa.MetaDataFactory</literal></link> property.
+openjpa.MetaDataFactory</literal></link> property. You must, however, supply the
+classpath you wish the enhancer to run with. This classpath must include, at
+minimum, the openjpa jar(s), persistence.xml and the target classes.
             </para>
             <para>
 Following is an example of using the enhancer task in a <filename>build.xml
@@ -247,17 +249,36 @@ Following is an example of using the enhancer task in a <filename>build.xml
                     Invoking the Enhancer from Ant
                 </title>
 <programlisting>
-&lt;target name="enhance"&gt;
-  &lt;!-- define the openjpac task; this can be done at the top of the    --&gt;
-  &lt;!-- build.xml file, so it will be available for all targets      --&gt;
-  &lt;taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask"/&gt;
 
-  &lt;!-- invoke enhancer on all .java files below the model directory --&gt;
-  &lt;openjpac&gt;
-    &lt;fileset dir="."&gt;
-      &lt;include name="**/model/*.java" /&gt;
-    &lt;/fileset&gt;
-  &lt;/openjpac&gt;
+&lt;target name="enhance"&gt;
+    &lt;!-- Define the classpath to include the necessary files. --&gt;
+    &lt;!-- ex. openjpa jars, persistence.xml, orm.xml, and target classes  --&gt;
+    &lt;path id="jpa.enhancement.classpath"&gt;
+        &lt;!-- Assuming persistence.xml/orm.xml are in resources/META-INF --&gt;
+        &lt;pathelement location="resources/" /&gt;
+
+        &lt;!-- Location of the .class files --&gt;
+        &lt;pathelement location="bin/" /&gt;
+
+        &lt;!-- Add the openjpa jars --&gt;
+        &lt;fileset dir="."&gt;
+            &lt;include name="**/lib/*.jar" /&gt;
+        &lt;/fileset&gt;
+    &lt;/path&gt;
+
+
+    &lt;!-- define the openjpac task; this can be done at the top of the --&gt;
+    &lt;!-- build.xml file, so it will be available for all targets --&gt;
+    &lt;taskdef name="openjpac" classname="org.apache.openjpa.ant.PCEnhancerTask" classpathref="jpa.enhancement.classpath" /&gt;
+
+    &lt;!-- invoke enhancer on all .class files below the model directory --&gt;
+    &lt;openjpac&gt;
+        &lt;classpath refid="jpa.enhancement.classpath" /&gt;
+        &lt;fileset dir="."&gt;
+            &lt;include name="**/model/*.class" /&gt;
+        &lt;/fileset&gt;
+    &lt;/openjpac&gt;
+    &lt;echo message="Enhancement complete" /&gt;
 &lt;/target&gt;
 </programlisting>
             </example>
