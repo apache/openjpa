@@ -99,8 +99,22 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         int depth = currentDepth();
         if (depth == 0)
             return true;
+        
+        if (StringUtils.contains(name, ':')) {
+            int index = name.indexOf(':');
+            name = name.substring(index + 1);
+        }
 
         try {
+            if (_openjpaNamespace > 0) {
+                if (name.equals("entity"))
+                    return startExtendedClass(name,attrs);
+                if (name.equals("attributes")) {
+                    return true;
+                }
+                return startClassElement(name, attrs);
+                    
+            }
             if (depth == getPackageElementDepth()
                 && isPackageElementName(name))
                 return startPackage(name, attrs);
@@ -125,9 +139,24 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         int depth = currentDepth();
         if (depth == 0)
             return;
+        
+        if (StringUtils.contains(name, ':')) {
+            int index = name.indexOf(':');
+            name = name.substring(index + 1);
+        }
 
         try {
-            if (depth == getPackageElementDepth()
+            if (_openjpaNamespace > 0) {
+                if (name.equals("entity"))
+                    endExtendedClass(name);
+                else if (name.equals("attributes")) {
+                    // do nothing
+                }
+                else {
+                    endClassElement(name);
+                }
+            }
+            else if (depth == getPackageElementDepth()
                 && isPackageElementName(name))
                 endPackage(name);
             else if (depth == getClassElementDepth()
@@ -197,6 +226,14 @@ public class CFMetaDataParser extends XMLMetaDataParser {
             if (!StringUtils.isEmpty(_package) && _class.indexOf('.') == -1)
                 _class = _package + "." + _class;
         }
+    }
+    
+    protected boolean startExtendedClass(String elem, Attributes attrs)
+        throws SAXException {
+        return false;
+    }
+    
+    protected void endExtendedClass(String elem) throws SAXException {
     }
 
     /**

@@ -392,4 +392,41 @@
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
 	</persistence-unit>
+	
+	<persistence-unit name="nonstandard-mapping-xml">
+        <mapping-file>META-INF/nonstandard-orm.xml</mapping-file>
+        
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="fetch-groups-xml">
+        <mapping-file>META-INF/fetch-groups-orm.xml</mapping-file>
+        
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="foreign-key-xml">
+        <mapping-file>META-INF/foreign-key-orm.xml</mapping-file>
+        
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="version-columns-xml">
+        <mapping-file>META-INF/version-columns-orm.xml</mapping-file>
+        
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

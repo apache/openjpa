@@ -14,41 +14,21 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
-package org.apache.openjpa.persistence.kernel.common.apps;
+package org.apache.openjpa.persistence.jdbc.xml;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.apache.openjpa.persistence.jdbc.annotations.TestNonstandardMappingAnnotations;
 
-@Entity
-@Table(name="RuntimeTest5k")
-public class RuntimeTest5 {
+public class TestNonstandardMappingXML extends
+    TestNonstandardMappingAnnotations {
 
-    private String name;
-    private RuntimeTest4 runtimeTest4;
-
-    protected RuntimeTest5() {
-        this("?");
+    public void setUp() {
+        super.setUp();
     }
     
-    public RuntimeTest5(String str) {
-        name = str;
-    }
-
-    public void setName(String val) {
-        name = val;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setRuntimeTest4(RuntimeTest4 val) {
-        runtimeTest4 = val;
-    }
-
-    public RuntimeTest4 getRuntimeTest4() {
-        return runtimeTest4;
+    @Override
+    protected String getPersistenceUnitName() {
+        return "nonstandard-mapping-xml";
     }
 }

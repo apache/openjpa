@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.kernel.EagerFetchModes;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.ClassMappingInfo;
 import org.apache.openjpa.jdbc.meta.DiscriminatorMappingInfo;
@@ -58,7 +59,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -88,15 +88,21 @@ public class XMLPersistenceMappingParser
         _elems.put("attribute-override", ATTR_OVERRIDE);
         _elems.put("collection-table", COLLECTION_TABLE);
         _elems.put("column", COL);
+        _elems.put("columns", COLS);
         _elems.put("column-name", COLUMN_NAME);
         _elems.put("column-result", COLUMN_RESULT);
+        _elems.put("data-store-id-column", DATASTORE_ID_COL);
         _elems.put("delimited-identifiers", DELIMITED_IDS);
         _elems.put("discriminator-column", DISCRIM_COL);
         _elems.put("discriminator-value", DISCRIM_VAL);
         _elems.put("entity-result", ENTITY_RESULT);
         _elems.put("enumerated", ENUMERATED);
         _elems.put("field-result", FIELD_RESULT);
+        _elems.put("foreign-key", FK);
+        _elems.put("fk_column-names", FK_COL_NAMES);
+        _elems.put("fk_column_name", FK_COL_NAME);
         _elems.put("inheritance", INHERITANCE);
+        _elems.put("index", INDEX);
         _elems.put("join-column", JOIN_COL);
         _elems.put("inverse-join-column", COL);
         _elems.put("join-table", JOIN_TABLE);
@@ -113,6 +119,8 @@ public class XMLPersistenceMappingParser
         _elems.put("table-generator", TABLE_GEN);
         _elems.put("temporal", TEMPORAL);
         _elems.put("unique-constraint", UNIQUE);
+        _elems.put("version-columns", VERSION_COLS);
+        _elems.put("version-column", VERSION_COL);
     }
 
     private static final Localizer _loc = Localizer.forPackage
@@ -132,11 +140,18 @@ public class XMLPersistenceMappingParser
     private Column _discCol;
     private int _resultIdx = 0;
     private final DBDictionary _dict;
+    
+    // ForeignKey info
+    private Attributes _foreignKeyAttributes = null;
+    private List<String> _columnNamesList = null;
+    private String[] _columnNames = {};
+    
+    private List<Column> _versionColumnsList = null;
 
     private final Map<Class<?>, ArrayList<DeferredEmbeddableOverrides>> 
         _deferredMappings = new HashMap<Class<?>, 
              ArrayList<DeferredEmbeddableOverrides>>();
-
+    
     /**
      * Constructor; supply configuration.
      */
@@ -245,6 +260,9 @@ public class XMLPersistenceMappingParser
             case COL:
                 ret = startColumn(attrs);
                 break;
+            case COLS:
+                ret = true;
+                break;
             case JOIN_COL:
                 ret = startJoinColumn(attrs);
                 break;
@@ -289,6 +307,28 @@ public class XMLPersistenceMappingParser
                 break;
             case MAP_KEY_JOIN_COL:
                 ret = startMapKeyJoinColumn(attrs);
+                break;
+            case DATASTORE_ID_COL:
+                ret = startDatastoreIdCol(attrs);
+                break;
+            case INDEX:
+                System.out.println("++++++++++++ INDEX");
+                ret = startIndex(attrs);
+                break;
+            case FK:
+                ret = startForeignKey(attrs);
+                break;
+            case FK_COL_NAMES:
+                ret = startFKColumnNames(attrs);
+                break;
+            case FK_COL_NAME:
+                ret = true;
+                break;
+            case VERSION_COLS:
+                ret = startVersionColumns(attrs);
+                break;
+            case VERSION_COL:
+                ret = startVersionColumn(attrs);
                 break;
             default:
                 ret = false;
@@ -359,6 +399,18 @@ public class XMLPersistenceMappingParser
             	break;
             case NAME:
                 endName();
+                break;
+            case FK:
+                endForeignKey();
+                break;
+            case FK_COL_NAMES:
+                endFKColumnNames();
+                break;
+            case FK_COL_NAME:
+                endFKColumnName();
+                break;
+            case VERSION_COLS:
+                endVersionColumns();
                 break;
         }
     }
@@ -1473,5 +1525,281 @@ public class XMLPersistenceMappingParser
 
     private boolean delimit() {
         return _dict.getDelimitIdentifiers();
+    }
+    
+    /**
+     * Translate the fetch mode enum value to the internal OpenJPA constant.
+     */
+    private static int toEagerFetchModeConstant(String mode) {
+        if(mode.equals("NONE"))
+            return EagerFetchModes.EAGER_NONE;
+        else if (mode.equals("JOIN"))
+            return EagerFetchModes.EAGER_JOIN;
+        else if (mode.equals("PARALLEL"))
+            return EagerFetchModes.EAGER_PARALLEL;
+        else
+            throw new InternalException();
+    }
+    
+    private boolean startDatastoreIdCol(Attributes attrs)
+        throws SAXException {
+        
+        ClassMapping cm = (ClassMapping) peekElement();
+        
+        Column col = new Column();
+        String name = attrs.getValue("name");
+        if (!StringUtils.isEmpty(name));
+            col.setIdentifier(DBIdentifier.newColumn(name, delimit()));
+        String columnDefinition= attrs.getValue("column-definition");
+        if (!StringUtils.isEmpty(columnDefinition))
+            col.setTypeIdentifier(DBIdentifier.newColumnDefinition(columnDefinition));
+        int precision = Integer.parseInt(attrs.getValue("precision"));
+        if (precision != 0)
+            col.setSize(precision);
+        col.setFlag(Column.FLAG_UNINSERTABLE, !Boolean.parseBoolean(attrs.getValue("insertable")));
+        col.setFlag(Column.FLAG_UNUPDATABLE, !Boolean.parseBoolean(attrs.getValue("updatable")));
+        cm.getMappingInfo().setColumns(Arrays.asList(new Column[]{ col }));
+        
+        return true;
+    }
+    
+    private boolean startIndex(Attributes attrs)
+        throws SAXException {
+        
+        FieldMapping fm = (FieldMapping) peekElement();
+        
+        parseIndex(fm.getValueInfo(),
+            attrs.getValue("name"),
+            Boolean.parseBoolean(attrs.getValue("enabled")),
+            Boolean.parseBoolean(attrs.getValue("unique")));
+        
+        return true;
+    }
+    
+    private void parseIndex(MappingInfo info, String name,
+        boolean enabled, boolean unique) {
+        if (!enabled) {
+            info.setCanIndex(false);
+            return;
+        }
+
+        org.apache.openjpa.jdbc.schema.Index idx =
+            new org.apache.openjpa.jdbc.schema.Index();
+        if (!StringUtils.isEmpty(name))
+            idx.setIdentifier(DBIdentifier.newConstraint(name, delimit()));
+        idx.setUnique(unique);
+        info.setIndex(idx);
+    }
+    
+    private boolean startForeignKey(Attributes attrs) 
+        throws SAXException {
+        
+        _foreignKeyAttributes = attrs;
+        
+        return true;
+    }
+    
+    private void endForeignKey() {
+        if (_foreignKeyAttributes == null) {
+            throw new InternalException();
+        }
+        
+        boolean implicit = Boolean.parseBoolean(_foreignKeyAttributes.getValue("implicit"));
+        
+        FieldMapping fm = (FieldMapping) peekElement();
+        MappingInfo info = fm.getValueInfo();
+        
+        String name = _foreignKeyAttributes.getValue("name");
+        boolean enabled = Boolean.parseBoolean(_foreignKeyAttributes.getValue("enabled"));
+        boolean deferred = Boolean.parseBoolean(_foreignKeyAttributes.getValue("deferred"));
+        boolean specified = Boolean.parseBoolean(_foreignKeyAttributes.getValue("specified"));
+        String deleteActionString = _foreignKeyAttributes.getValue("delete-action");
+        String updateActionString = _foreignKeyAttributes.getValue("update-action");
+        int deleteAction = toForeignKeyInt(deleteActionString);
+        int updateAction = toForeignKeyInt(updateActionString);
+        
+        if (!implicit) {
+            parseForeignKey(info, name,
+                enabled,
+                deferred, deleteAction,
+                updateAction);
+        }
+        else {
+            info.setImplicitRelation(true);
+            assertDefault(name, enabled, deferred, specified, updateAction, deleteAction);
+        }
+        
+        _columnNamesList = null;
+    }
+    
+    private void parseForeignKey(MappingInfo info, String name, boolean enabled,
+        boolean deferred, int deleteAction, int updateAction) {
+        
+        if (!enabled) {
+            info.setCanForeignKey(false);
+            return;
+        }
+
+        org.apache.openjpa.jdbc.schema.ForeignKey fk =
+            new org.apache.openjpa.jdbc.schema.ForeignKey();
+        if (!StringUtils.isEmpty(name))
+            fk.setIdentifier(DBIdentifier.newForeignKey(name, delimit()));
+        fk.setDeferred(deferred);
+        fk.setDeleteAction(deleteAction);
+        fk.setUpdateAction(updateAction);
+        info.setForeignKey(fk);
+        
+    }
+    
+    
+    private int toForeignKeyInt(String action) {
+        if (action.equals("RESTRICT")) {
+            return org.apache.openjpa.jdbc.schema.ForeignKey.
+                    ACTION_RESTRICT;
+        }
+        else if (action.equals("CASCADE")) {
+            return org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_CASCADE;
+        }
+        else if (action.equals("NULL")) {
+            return org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_NULL;
+        }
+        else if (action.equals("DEFAULT")) {
+            return org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_DEFAULT;
+        }
+        else {
+            throw new InternalException();
+        }
+        
+    }
+    
+    private void assertDefault(String name, boolean enabled, boolean deferred, boolean specified,
+        int updateAction, int deleteAction) {
+        boolean isDefault = StringUtils.isEmpty(name) 
+            && enabled 
+            && !deferred 
+                && deleteAction == org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT
+                && updateAction == org.apache.openjpa.jdbc.schema.ForeignKey.ACTION_RESTRICT
+            && _columnNames.length == 0
+            && specified;
+        if (!isDefault)
+            throw new UserException(_loc.get("implicit-non-default-fk", _cls,
+                getSourceFile()).getMessage());
+    }
+    
+    private boolean startFKColumnNames(Attributes attrs) 
+        throws SAXException {
+        _columnNamesList = new ArrayList<String>();
+        return true;
+    }
+    
+    private void endFKColumnNames() {
+        if (_columnNamesList.size() > 0) {
+            _columnNames = _columnNamesList.toArray(_columnNames);
+            _columnNamesList.removeAll(_columnNamesList);
+        }
+    }
+    
+    private void endFKColumnName() {
+        _columnNamesList.add(currentText());
+    }
+    
+    private boolean startVersionColumns(Attributes attrs)
+        throws SAXException {
+        
+        _versionColumnsList = new ArrayList<Column>();
+        
+        return true;
+    }
+    
+    private void endVersionColumns() {
+        if (_versionColumnsList == null) {
+            throw new InternalException();
+        }
+        
+        if (_versionColumnsList.size() > 0) {
+            ClassMapping cm = (ClassMapping)peekElement();
+            cm.getVersion().getMappingInfo().setColumns(_versionColumnsList);
+            _versionColumnsList= null;
+        }
+    }
+    
+    private boolean startVersionColumn(Attributes attrs)
+            throws SAXException {
+            
+        Column col = AnnotationPersistenceMappingParser.newColumn(attrs.getValue("name"),
+            Boolean.parseBoolean(attrs.getValue("nullable")),
+            Boolean.parseBoolean(attrs.getValue("insertable")),
+            Boolean.parseBoolean(attrs.getValue("updatable")),
+            attrs.getValue("columnDefinition"),
+            Integer.parseInt(attrs.getValue("length")),
+            Integer.parseInt(attrs.getValue("precision")),
+            Integer.parseInt(attrs.getValue("scale")), 
+            attrs.getValue("table"), 
+            delimit());
+        
+        _versionColumnsList.add(col);
+        
+        return true;
+        }
+
+    @Override
+    protected void parseEagerFetchModeAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        
+        FieldMapping fm = (FieldMapping) fmd;
+        String eagerFetchMode = attrs.getValue("eager-fetch-mode");
+        if (!StringUtils.isEmpty(eagerFetchMode)) {
+            if (eagerFetchMode.equalsIgnoreCase("NONE")) {
+                fm.setEagerFetchMode(EagerFetchModes.EAGER_NONE);
+            } else if (eagerFetchMode.equalsIgnoreCase("JOIN")) {
+                fm.setEagerFetchMode(EagerFetchModes.EAGER_JOIN);
+            } else if (eagerFetchMode.equalsIgnoreCase("PARALLEL")) {
+                fm.setEagerFetchMode(EagerFetchModes.EAGER_PARALLEL);
+            }
+        }
+    }
+
+    @Override
+    protected void parseElementClassCriteriaAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        
+        String elementClassCriteriaString = attrs.getValue("element-class-criteria");
+        if (!StringUtils.isEmpty(elementClassCriteriaString)) {
+            FieldMapping fm = (FieldMapping) fmd;
+            boolean elementClassCriteria = Boolean.parseBoolean(elementClassCriteriaString);
+            fm.getElementMapping().getValueInfo().setUseClassCriteria(elementClassCriteria);
+        }
+    }
+
+    @Override
+    protected void parseStrategy(FieldMetaData fmd, Attributes attrs) {
+        String strategy = attrs.getValue("strategy");
+        if (!StringUtils.isEmpty(strategy)) {
+            ((FieldMapping) fmd).getMappingInfo().setStrategy(strategy);
+        }
+    }
+
+    @Override
+    protected boolean startExtendedClass(String elem, Attributes attrs) 
+            throws SAXException {
+        ClassMapping mapping = (ClassMapping) currentElement();
+        
+        String strategy = attrs.getValue("strategy");
+        if (!StringUtils.isEmpty(strategy))
+            mapping.getMappingInfo().setStrategy(strategy);
+        
+        String versionStrat = attrs.getValue("version-strategy");
+        if (!StringUtils.isEmpty(versionStrat))
+            mapping.getVersion().getMappingInfo().setStrategy(versionStrat);
+        
+        String discrimStrat = attrs.getValue("discriminator-strategy");
+        if (!StringUtils.isEmpty(discrimStrat))
+            mapping.getDiscriminator().getMappingInfo().setStrategy(discrimStrat);
+        
+        String subclassFetchMode = attrs.getValue("subclass-fetch-mode");
+        if (!StringUtils.isEmpty(subclassFetchMode))
+            mapping.setSubclassFetchMode(toEagerFetchModeConstant(subclassFetchMode));
+        
+        return true;
     }
 }

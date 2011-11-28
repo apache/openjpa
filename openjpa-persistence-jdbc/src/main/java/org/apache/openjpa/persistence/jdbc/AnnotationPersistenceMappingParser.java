@@ -724,6 +724,7 @@ public class AnnotationPersistenceMappingParser
         col.setFlag(Column.FLAG_UNUPDATABLE, !id.updatable());
         cm.getMappingInfo().setColumns(Arrays.asList(new Column[]{ col }));
     }
+    
 
     /**
      * Parse the given foreign key.
@@ -853,24 +854,47 @@ public class AnnotationPersistenceMappingParser
      * Create a new schema column with information from the given annotation.
      */
     private static Column newColumn(VersionColumn anno, boolean delimit) {
+        return newColumn(anno.name(),
+            anno.nullable(),
+            anno.insertable(),
+            anno.updatable(),
+            anno.columnDefinition(),
+            anno.length(),
+            anno.precision(),
+            anno.scale(),
+            anno.table(),
+            delimit);
+    }
+    
+    static Column newColumn(String name,
+            boolean nullable,
+            boolean insertable,
+            boolean updatable,
+            String columnDefinition,
+            int length,
+            int precision,
+            int scale,
+            String table,
+            boolean delimit) {
         Column col = new Column();
-        col.setTableIdentifier(DBIdentifier.newTable(anno.table(), delimit));
-        if (!StringUtils.isEmpty(anno.name()))
-            col.setIdentifier(DBIdentifier.newColumn(anno.name(), delimit));
-        if (anno.precision() != 0)
-            col.setSize(anno.precision());
-        else if (anno.length() != 255)
-            col.setSize(anno.length());
-        col.setNotNull(!anno.nullable());
-        col.setDecimalDigits(anno.scale());
-        if (!StringUtils.isEmpty(anno.columnDefinition())) {
-            col.setTypeIdentifier(DBIdentifier.newColumnDefinition(anno.columnDefinition()));
+        col.setTableIdentifier(DBIdentifier.newTable(table, delimit));
+        if (!StringUtils.isEmpty(name))
+            col.setIdentifier(DBIdentifier.newColumn(name, delimit));
+        if (precision != 0)
+            col.setSize(precision);
+        else if (length != 255)
+            col.setSize(length);
+        col.setNotNull(!nullable);
+        col.setDecimalDigits(scale);
+        if (!StringUtils.isEmpty(columnDefinition)) {
+            col.setTypeIdentifier(DBIdentifier.newColumnDefinition(columnDefinition));
             col.setType(Schemas.getJDBCType(col.getTypeIdentifier().getName()));
             col.setJavaType(JavaTypes.getTypeCode(Schemas.getJavaType
-            	(col.getType(), col.getSize(), col.getDecimalDigits())));
+                (col.getType(), col.getSize(), col.getDecimalDigits())));
         }
-        col.setFlag(Column.FLAG_UNINSERTABLE, !anno.insertable());
-        col.setFlag(Column.FLAG_UNUPDATABLE, !anno.updatable());
+        col.setFlag(Column.FLAG_UNINSERTABLE, !insertable);
+        col.setFlag(Column.FLAG_UNUPDATABLE, !updatable);
+        
         return col;
     }
 
@@ -997,7 +1021,7 @@ public class AnnotationPersistenceMappingParser
         Column col = new Column();
         int typeCode = fmd.isElementCollection() ? fmd.getElement().getDeclaredTypeCode() :
             fmd.getDeclaredTypeCode();
-        Class type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() :
+        Class<?> type = fmd.isElementCollection() ? fmd.getElement().getDeclaredType() :
             fmd.getDeclaredType();
    
         if (typeCode == JavaTypes.STRING
@@ -1464,7 +1488,7 @@ public class AnnotationPersistenceMappingParser
      * Parse @Temporal.
      */
     private void parseTemporal(FieldMapping fm, Temporal anno) {
-        List cols = fm.getValueInfo().getColumns();
+        List<Column> cols = fm.getValueInfo().getColumns();
         if (!cols.isEmpty() && cols.size() != 1)
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
@@ -1497,7 +1521,7 @@ public class AnnotationPersistenceMappingParser
      * Parse @Temporal.
      */
     private void parseMapKeyTemporal(FieldMapping fm, MapKeyTemporal anno) {
-        List cols = fm.getKeyMapping().getValueInfo().getColumns();
+        List<Column> cols = fm.getKeyMapping().getValueInfo().getColumns();
         if (!cols.isEmpty() && cols.size() != 1)
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), "1"));
@@ -1529,7 +1553,7 @@ public class AnnotationPersistenceMappingParser
             return;
 
         // might already have some column information from mapping annotation
-        List cols = fm.getValueInfo().getColumns();
+        List<Column> cols = fm.getValueInfo().getColumns();
         if (!cols.isEmpty() && cols.size() != pcols.length)
             throw new MetaDataException(_loc.get("num-cols-mismatch", fm,
                 String.valueOf(cols.size()), String.valueOf(pcols.length)));

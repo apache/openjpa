@@ -44,7 +44,6 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -65,6 +64,10 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private static final Localizer _loc = Localizer.forPackage
         (XMLMetaDataParser.class);
     private static boolean _schemaBug;
+    
+    private static final String OPENJPA_NAMESPACE = "http://www.apache.org/openjpa/ns/orm";
+    protected int _extendedNamespace = 0;
+    protected int _openjpaNamespace = 0;
 
     static {
         try {
@@ -488,15 +491,28 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     public void startElement(String uri, String name, String qName,
         Attributes attrs) throws SAXException {
         _depth++;
-        if (_depth <= _ignore)
+        if (_depth <= _ignore){
+            if (uri.equals(OPENJPA_NAMESPACE)) {
+                _extendedNamespace++;
+                _openjpaNamespace++;
+            }
             if (!startElement(qName, attrs))
                 ignoreContent(true);
+        }
     }
 
     public void endElement(String uri, String name, String qName)
         throws SAXException {
-        if (_depth < _ignore)
+        if (_depth < _ignore) {
             endElement(qName);
+            _extendedNamespace = (_extendedNamespace > 0) ? _extendedNamespace - 1 : 0;
+            _openjpaNamespace = (_openjpaNamespace > 0) ? _openjpaNamespace - 1 : 0;
+        }
+        else if (_depth ==_ignore) {
+            _extendedNamespace = (_extendedNamespace > 0) ? _extendedNamespace - 1 : 0;
+            _openjpaNamespace = (_openjpaNamespace > 0) ? _openjpaNamespace - 1 : 0;
+        }
+        
         _text = null;
         if (_comments != null)
             _comments.clear();

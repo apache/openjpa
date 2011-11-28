@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -28,15 +29,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.GenerationType;
 import javax.persistence.LockModeType;
-import javax.persistence.NamedQuery;
 
 import static javax.persistence.CascadeType.*;
 
@@ -63,16 +63,21 @@ import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.meta.UpdateStrategies;
+
 import static org.apache.openjpa.meta.MetaDataModes.*;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser.FetchAttributeImpl;
+import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataParser.FetchGroupImpl;
 
 import static org.apache.openjpa.persistence.MetaDataTag.*;
 import static org.apache.openjpa.persistence.PersistenceStrategy.*;
 import org.apache.openjpa.util.ImplHelper;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -125,6 +130,13 @@ public class XMLPersistenceMetaDataParser
         _embeddables = new HashMap<Class<?>, ArrayList<MetaDataContext>>();
     private static final Map<Class<?>, Integer>
         _embeddableAccess = new HashMap<Class<?>, Integer>();
+    
+    // Hold fetch group info
+    private FetchGroupImpl[] _fgs = null;
+    private List<FetchGroupImpl> _fgList = null;
+    private List<String> _referencedFgList = null;
+    private FetchGroupImpl _currentFg = null;
+    private List<FetchAttributeImpl> _fetchAttrList = null;
 
     static {
         _elems.put(ELEM_PKG, ELEM_PKG);
@@ -173,6 +185,8 @@ public class XMLPersistenceMetaDataParser
         _elems.put("order-by", ORDER_BY);
         _elems.put("order-column", ORDER_COLUMN);
         _elems.put("lob", LOB);
+        _elems.put("data-store-id", DATASTORE_ID);
+        _elems.put("data-cache", DATA_CACHE);
 
         _elems.put("basic", BASIC);
         _elems.put("many-to-one", MANY_ONE);
@@ -182,8 +196,24 @@ public class XMLPersistenceMetaDataParser
         _elems.put("many-to-many", MANY_MANY);
         _elems.put("transient", TRANSIENT);
         _elems.put("element-collection", ELEM_COLL);
+        _elems.put("persistent", PERS);
+        _elems.put("persistent-collection", PERS_COLL);
+        _elems.put("persistent-map", PERS_MAP);
         _elems.put("map-key-class", MAP_KEY_CLASS);
-    }
+        
+        _elems.put("read-only", READ_ONLY);
+        _elems.put("external-values", EXTERNAL_VALS);
+        _elems.put("external-value", EXTERNAL_VAL);
+        _elems.put("externalizer", EXTERNALIZER);
+        _elems.put("factory", FACTORY);
+        
+        _elems.put("fetch-groups", FETCH_GROUPS);
+        _elems.put("fetch-group", FETCH_GROUP);
+        _elems.put("fetch-attribute", FETCH_ATTRIBUTE);
+        _elems.put("referenced-fetch-group", REFERENCED_FETCH_GROUP);
+        
+        _elems.put("openjpa-version", OPENJPA_VERSION);
+}
 
     private static final Localizer _loc = Localizer.forPackage
         (XMLPersistenceMetaDataParser.class);
@@ -197,8 +227,10 @@ public class XMLPersistenceMetaDataParser
 
     private final Stack<Object> _elements = new Stack<Object>();
     private final Stack<Object> _parents = new Stack<Object>();
+    
+    private StringBuffer _externalValues = null;
 
-    private Class<?> _cls = null;
+    protected Class<?> _cls = null;
     // List of classes currently being parsed
     private ArrayList<Class<?>> _parseList = new ArrayList<Class<?>>();
     private int _fieldPos = 0;
@@ -481,6 +513,7 @@ public class XMLPersistenceMetaDataParser
         // use the latest schema by default.  'unknown' docs should parse
         // with the latest schema.
         String ormxsd = "orm_2_0-xsd.rsrc";
+        boolean useExtendedSchema = true;
         // if the version and/or schema location is for 1.0, use the 1.0
         // schema
         if (_ormVersion != null &&
@@ -488,8 +521,36 @@ public class XMLPersistenceMetaDataParser
             (_schemaLocation != null &&
             _schemaLocation.indexOf(ORM_XSD_1_0) != -1)) {
             ormxsd = "orm-xsd.rsrc";
+            useExtendedSchema = false;
         }
-        return XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd);
+        InputStream ormxsdIS = XMLPersistenceMetaDataParser.class.getResourceAsStream(ormxsd);
+        
+        ArrayList<InputStream> schema = new ArrayList<InputStream>();
+        schema.add(ormxsdIS);
+        
+        if (useExtendedSchema) {
+            // Get the extendable schema
+            InputStream extendableXSDIS = 
+                    XMLPersistenceMetaDataParser.class.getResourceAsStream("extendable-orm.xsd");
+            if (extendableXSDIS != null) {
+                schema.add(extendableXSDIS);
+            }
+            else {
+                // TODO: log/trace
+            }
+            
+            // Get the openjpa extended schema
+            InputStream openjpaXSDIS = 
+                    XMLPersistenceMetaDataParser.class.getResourceAsStream("openjpa-orm.xsd");
+            if (openjpaXSDIS != null) {
+                schema.add(openjpaXSDIS);
+            }
+            else {
+                // TODO: log/trace
+            }
+        }
+        
+        return schema.toArray();
     }
 
     @Override
@@ -728,12 +789,59 @@ public class XMLPersistenceMetaDataParser
                 case POST_LOAD:
                     ret = startCallback((MetaDataTag) tag, attrs);
                     break;
+                case DATASTORE_ID:
+                    ret = startDatastoreId(attrs);
+                    break;
+                case DATA_CACHE:
+                    ret = startDataCache(attrs);
+                    break;
+                case READ_ONLY:
+                    ret = startReadOnly(attrs);
+                    break;
+                case EXTERNAL_VALS:
+                    ret = startExternalValues(attrs);
+                    break;
+                case EXTERNAL_VAL:
+                    ret = startExternalValue(attrs);
+                    break;
+                case EXTERNALIZER:
+                    ret = startExternalizer(attrs);
+                    break;
+                case FACTORY:
+                    ret = startFactory(attrs);
+                    break;
+                case FETCH_GROUPS:
+                    ret = startFetchGroups(attrs);
+                    break;
+                case FETCH_GROUP:
+                    ret = startFetchGroup(attrs);
+                    break;
+                case FETCH_ATTRIBUTE:
+                    ret = startFetchAttribute(attrs);
+                    break;
+                case REFERENCED_FETCH_GROUP:
+                    ret = startReferencedFetchGroup(attrs);
+                    break;
+                case OPENJPA_VERSION:
+                    ret = true;
+                    // TODO: right now the schema enforces this value, but may need to change in the future
+                    break;
                 default:
                     warnUnsupportedTag(name);
             }
         } else if (tag instanceof PersistenceStrategy) {
             PersistenceStrategy ps = (PersistenceStrategy) tag;
-            ret = startStrategy(ps, attrs);
+            if (_openjpaNamespace > 0) {
+                if (ps == PERS
+                    || ps == PERS_COLL
+                    || ps == PERS_MAP)
+                    ret = startStrategy(ps, attrs);
+                else
+                    ret = startExtendedStrategy(ps, attrs);
+            }
+            else {
+                ret = startStrategy(ps, attrs); 
+            }
             if (ret)
                 _strategy = ps;
         } else if (tag == ELEM_LISTENER)
@@ -796,9 +904,31 @@ public class XMLPersistenceMetaDataParser
                 case ORDER_BY:
                     endOrderBy();
                     break;
+                case EXTERNAL_VALS:
+                    endExternalValues();
+                    break;
+                case EXTERNALIZER:
+                    endExternalizer();
+                    break;
+                case FACTORY:
+                    endFactory();
+                    break;
+                case FETCH_GROUP:
+                    endFetchGroup();
+                    break;
+                case REFERENCED_FETCH_GROUP:
+                    endReferencedFetchGroup();
+                    break;
             }
-        } else if (tag instanceof PersistenceStrategy)
-            endStrategy((PersistenceStrategy) tag);
+        } else if (tag instanceof PersistenceStrategy) {
+            PersistenceStrategy ps = (PersistenceStrategy) tag;
+            if (_openjpaNamespace > 0) {
+                endExtendedStrategy(ps);
+            }
+            else {
+                endStrategy(ps); 
+            }
+        }
         else if (tag == ELEM_ACCESS)
             endAccess();
         else if (tag == ELEM_LISTENER)
@@ -970,13 +1100,14 @@ public class XMLPersistenceMetaDataParser
         if (_mode != MODE_QUERY) {
             ClassMetaData meta = (ClassMetaData) popElement();
             storeCallbacks(meta);
+            
             if (isMappingOverrideMode())
                 endClassMapping(meta);
         }
         _cls = null;
         super.endClass(elem);
     }
-
+    
     /**
      * Implement to add mapping attributes to class.
      */
@@ -1440,6 +1571,16 @@ public class XMLPersistenceMetaDataParser
                 break;
             case ELEM_COLL:
                 parseElementCollection(fmd, attrs);
+                break;
+            case PERS:
+                parsePersistent(fmd, attrs);
+                break;
+            case PERS_COLL:
+                parsePersistentCollection(fmd, attrs);
+                break;
+            case PERS_MAP:
+                parsePersistentMap(fmd, attrs);
+                break;
         }
     }
 
@@ -2246,5 +2387,530 @@ public class XMLPersistenceMetaDataParser
             lineNum = loc.getLineNumber();
         }
         return lineNum;
+    }
+    
+    private boolean startDatastoreId(Attributes attrs) 
+            throws SAXException {
+        MetaDataRepository repos = getRepository();
+        ClassMetaData meta = repos.getCachedMetaData(_cls);
+        
+        //Set default value if not specified
+        String strategy = attrs.getValue("strategy");
+        if (StringUtils.isEmpty(strategy)) {
+            strategy ="AUTO"    ;
+        }
+        GenerationType stratType = GenerationType.valueOf(strategy);
+        
+        AnnotationPersistenceMetaDataParser.parseDataStoreId(meta, stratType, 
+            attrs.getValue("generator"));
+        
+        return true;
+    }
+    
+    private boolean startDataCache(Attributes attrs) 
+            throws SAXException {
+        String enabledStr = attrs.getValue("enabled");
+        boolean enabled = (Boolean) (StringUtils.isEmpty(enabledStr) ? true : 
+            Boolean.parseBoolean(enabledStr));
+        
+        String timeoutStr = attrs.getValue("timeout");
+        int timeout = (Integer) (StringUtils.isEmpty(timeoutStr) ? Integer.MIN_VALUE : 
+            Integer.parseInt(timeoutStr));
+        
+        String name = attrs.getValue("name");
+        name = StringUtils.isEmpty(name) ? "" : name;
+        
+        AnnotationPersistenceMetaDataParser.parseDataCache(getRepository().getCachedMetaData(_cls), 
+            enabled, name, timeout);
+            
+        return true;
+    }
+    
+    private boolean startExtendedStrategy(PersistenceStrategy ps, Attributes attrs) 
+        throws SAXException {
+        
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+            parseExtendedStrategy(fmd, ps, attrs);
+        
+        return true;
+    }
+    
+    private void endExtendedStrategy(PersistenceStrategy ps) 
+        throws SAXException {
+        if (ps == PERS 
+            || ps == PERS_COLL
+            || ps == PERS_MAP) {
+            finishField();
+        }
+        
+    }
+
+    /**
+     * Parse strategy specific attributes.
+     */
+    private void parseExtendedStrategy(FieldMetaData fmd,
+        PersistenceStrategy strategy, Attributes attrs)
+        throws SAXException {
+        
+        // The following attributes will be temporarily parsed for all strategy types. This
+        // is because it is not clear which attributes should be supported for which strategies.
+        // And more testing needs to be done to determine what actually works.
+        // Right now they are limited by the schema. But, putting these here allows a temporary schema
+        // update by a developer without requiring a corresponding code update.
+        parseTypeAttr(fmd, attrs);
+        parseElementTypeAttr(fmd, attrs);
+        parseKeyTypeAttr(fmd, attrs);
+        parseDependentAttr(fmd, attrs);
+        parseElementDependentAttr(fmd, attrs);
+        parseKeyDependentAttr(fmd, attrs);
+        parseElementClassCriteriaAttr(fmd, attrs);
+        parseLRSAttr(fmd, attrs);
+        parseInverseLogicalAttr(fmd, attrs);
+        parseEagerFetchModeAttr(fmd, attrs);
+        
+        switch (strategy) {
+            case BASIC:
+                parseExtendedBasic(fmd, attrs);
+                break;
+            case EMBEDDED:
+                parseExtendedEmbedded(fmd, attrs);
+                break;
+            case ONE_ONE:
+                parseExtendedOneToOne(fmd, attrs);
+                break;
+            case MANY_ONE:
+                parseExtendedManyToOne(fmd, attrs);
+                break;
+            case MANY_MANY:
+                parseExtendedManyToMany(fmd, attrs);
+                break;
+            case ONE_MANY:
+                parseExtendedOneToMany(fmd, attrs);
+                break;
+            case ELEM_COLL:
+                parseExtendedElementCollection(fmd, attrs);
+        }
+    }
+    
+    private void parseExtendedBasic(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        // TODO: Handle specific attributes
+        
+    }
+    
+    private void parseExtendedEmbedded(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs); 
+        // TODO: Handle specific attributes
+    }
+    
+    private void parseExtendedOneToOne(FieldMetaData fmd, Attributes attrs) 
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs); 
+        // TODO: Handle specific attributes
+    }
+    
+    private void parseExtendedManyToOne(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        // TODO: Handle specific attributes
+    }
+    
+    private void parseExtendedManyToMany(FieldMetaData fmd, Attributes attrs) 
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        // TODO: Handle specific attributes
+    }
+    
+    private void parseExtendedOneToMany(FieldMetaData fmd, Attributes attrs) 
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        // TODO: Handle specific attributes
+            
+    }
+    
+    private void parseExtendedElementCollection(FieldMetaData fmd, Attributes attrs) 
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        // TODO: Handle specific attributes
+            
+    }
+    
+    private void parsePersistent(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        parseTypeAttr(fmd, attrs);
+        // TODO - handle attributes
+        switch (fmd.getDeclaredTypeCode()) {
+        case JavaTypes.ARRAY:
+            if (fmd.getDeclaredType() == byte[].class
+                || fmd.getDeclaredType() == Byte[].class
+                || fmd.getDeclaredType() == char[].class
+                || fmd.getDeclaredType() == Character[].class)
+                break;
+            // no break
+        case JavaTypes.COLLECTION:
+        case JavaTypes.MAP:
+            throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
+                "Persistent"));
+        }
+    }
+    
+    private void parsePersistentCollection(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        parseElementTypeAttr(fmd, attrs);
+        // TODO - handle attributes and field type
+    }
+    
+    private void parsePersistentMap(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        parseCommonExtendedAttributes(fmd, attrs);
+        parseElementTypeAttr(fmd, attrs);
+        parseKeyTypeAttr(fmd, attrs);
+        // TODO - handle attributes and field type
+    }
+    
+    private void parseCommonExtendedAttributes(FieldMetaData fmd, Attributes attrs) {
+        String loadFetchGroup = attrs.getValue("load-fetch-group");
+        if (!StringUtils.isEmpty(loadFetchGroup)) {
+            fmd.setLoadFetchGroup(loadFetchGroup);
+        }
+        
+        String externalizer = attrs.getValue("externalizer");
+        if (!StringUtils.isEmpty(externalizer)) {
+            fmd.setExternalizer(externalizer);
+        }
+        
+        String factory = attrs.getValue("factory");
+        if (!StringUtils.isEmpty(factory)) {
+            fmd.setFactory(factory);
+        }
+        
+        parseStrategy(fmd, attrs);
+    }
+    
+    protected void parseStrategy(FieldMetaData fmd, Attributes attrs) {
+        
+    }
+    
+    private boolean startReadOnly(Attributes attrs)
+        throws SAXException {
+        
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+        String updateAction = attrs.getValue("update-action");
+        
+        if (updateAction.equalsIgnoreCase("RESTRICT")) {
+            fmd.setUpdateStrategy(UpdateStrategies.RESTRICT);
+        }
+        else if (updateAction.equalsIgnoreCase("IGNORE")) {
+            fmd.setUpdateStrategy(UpdateStrategies.IGNORE);
+        }
+        else
+            throw new InternalException();
+        
+        return true;
+    }
+    
+    private void parseDependentAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        String dependentStr = attrs.getValue("dependent");
+        if (!StringUtils.isEmpty(dependentStr)) {
+            boolean dependent = Boolean.parseBoolean(dependentStr);
+            if (dependent) {
+                fmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
+            }
+            else {
+                fmd.setCascadeDelete(ValueMetaData.CASCADE_NONE);
+            }
+        }
+    }
+    
+    private void parseElementDependentAttr(FieldMetaData fmd, Attributes attrs) 
+        throws SAXException {
+        
+        String elementDependentStr = attrs.getValue("element-dependent");
+        if (!StringUtils.isEmpty(elementDependentStr)) {
+            boolean elementDependent = Boolean.parseBoolean(elementDependentStr);
+            if (elementDependent) {
+                fmd.getElement().setCascadeDelete(ValueMetaData.CASCADE_AUTO);
+            }
+            else {
+                fmd.getElement().setCascadeDelete(ValueMetaData.CASCADE_NONE);
+            }
+        }
+    }
+    
+    private void parseKeyDependentAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        
+        String keyDependentStr = attrs.getValue("key-dependent");
+        if (!StringUtils.isEmpty(keyDependentStr)) {
+            boolean keyDependent = Boolean.parseBoolean(keyDependentStr);
+            if (keyDependent) {
+                fmd.getKey().setCascadeDelete(ValueMetaData.CASCADE_AUTO);
+            }
+            else {
+                fmd.getKey().setCascadeDelete(ValueMetaData.CASCADE_NONE);
+            }
+        }
+    }
+    
+    protected void parseElementClassCriteriaAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        
+//        String elementClassCriteriaString = attrs.getValue("element-class-criteria");
+//        if (!StringUtils.isEmpty(elementClassCriteriaString)) {
+//            FieldMapping fm = (FieldMapping) fmd;
+//            boolean elementClassCriteria = Boolean.parseBoolean(elementClassCriteriaString);
+//            fm.getElementMapping().getValueInfo().setUseClassCriteria(elementClassCriteria);
+//        }
+    }
+    
+    private void parseTypeAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+
+        String typeStr = attrs.getValue("type");
+        if (!StringUtils.isEmpty(typeStr)) {
+            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr =
+                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+            }
+            Class<?> typeCls = parseTypeStr(typeStr);
+
+            fmd.setTypeOverride(typeCls);
+        }
+    }
+    
+    private void parseLRSAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        String lrsStr = attrs.getValue("lrs");
+        if (!StringUtils.isEmpty(lrsStr)) {
+            boolean lrs = Boolean.parseBoolean(lrsStr);
+            fmd.setLRS(lrs);
+        }
+    }
+    
+    private void parseElementTypeAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+
+        String typeStr = attrs.getValue("element-type");
+        if (!StringUtils.isEmpty(typeStr)) {
+            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr =
+                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+            }
+            Class<?> typeCls = parseTypeStr(typeStr);
+
+            fmd.setTypeOverride(typeCls);
+        }
+    }
+    
+    private void parseKeyTypeAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+
+        String typeStr = attrs.getValue("key-type");
+        if (!StringUtils.isEmpty(typeStr)) {
+            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr =
+                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+            }
+            Class<?> typeCls = parseTypeStr(typeStr);
+
+            fmd.setTypeOverride(typeCls);
+        }
+    }
+    
+    private Class<?> parseTypeStr(String typeStr) 
+        throws SAXException {
+        Class<?> typeCls = null;
+        try {
+            if (typeStr.equalsIgnoreCase("int")) {
+                typeCls = int.class;
+            }
+            else if (typeStr.equalsIgnoreCase("byte")) {
+                typeCls = byte.class;
+            }
+            else if (typeStr.equalsIgnoreCase("short")) {
+                typeCls = short.class;
+            }
+            else if (typeStr.equalsIgnoreCase("long")) {
+                typeCls = long.class;
+            }
+            else if (typeStr.equalsIgnoreCase("float")) {
+                typeCls = float.class;
+            }
+            else if (typeStr.equalsIgnoreCase("double")) {
+                typeCls = double.class;
+            }
+            else if (typeStr.equalsIgnoreCase("boolean")) {
+                typeCls = boolean.class;
+            }
+            else if (typeStr.equalsIgnoreCase("char")) {
+                typeCls = char.class;
+            }
+            else {
+                typeCls = Class.forName(typeStr);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new SAXException(e);
+        }
+        
+        return typeCls;
+    }
+    
+    private void parseInverseLogicalAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+        
+        String inverseLogical = attrs.getValue("inverse-logical");
+        if (!StringUtils.isEmpty(inverseLogical)) {
+            fmd.setInverse(inverseLogical);
+        }
+    }
+    
+    protected void parseEagerFetchModeAttr(FieldMetaData fmd, Attributes attrs)
+        throws SAXException {
+    }
+    
+    private boolean startExternalValues(Attributes attrs) 
+        throws SAXException {
+        
+        _externalValues = new StringBuffer(10);
+        
+        return true;
+    }
+    
+    private void endExternalValues() 
+        throws SAXException {
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+        fmd.setExternalValues(_externalValues.toString());
+        _externalValues = null;
+    }
+    
+    private boolean startExternalValue(Attributes attrs) 
+        throws SAXException {
+        
+        if (_externalValues.length() > 0) {
+            _externalValues.append(',');
+        }
+        _externalValues.append(attrs.getValue("java-value"));
+        _externalValues.append('=');
+        _externalValues.append(attrs.getValue("datastore-value"));
+        
+        return true;
+    }
+        
+    private boolean startExternalizer(Attributes attrs)
+        throws SAXException {
+        
+        return true;
+    }
+    
+    private void endExternalizer() 
+        throws SAXException {
+        
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+        String externalizer = currentText();
+        fmd.setExternalizer(externalizer);
+    }
+    
+    private boolean startFactory(Attributes attrs)
+        throws SAXException {
+        
+        return true;
+    }
+    
+    private void endFactory()
+        throws SAXException {
+        
+        FieldMetaData fmd = (FieldMetaData) currentElement();
+        String factory = currentText();
+        fmd.setFactory(factory);
+    }
+    
+    private boolean startFetchGroups(Attributes attrs) 
+        throws SAXException {
+        if (_fgList == null) {
+            _fgList = new ArrayList<FetchGroupImpl>();
+        }
+        return true;
+    }
+    
+    private boolean startFetchGroup(Attributes attrs) 
+        throws SAXException {
+        
+        if (_fgList == null) {
+            _fgList = new ArrayList<FetchGroupImpl>();
+        }
+        _currentFg = new AnnotationPersistenceMetaDataParser.FetchGroupImpl(attrs.getValue("name"), 
+            Boolean.parseBoolean(attrs.getValue("post-load")));
+        
+        return true;
+    }
+    
+    private void endFetchGroup()
+        throws SAXException {
+        
+        String[] referencedFetchGroups = {};
+        if (_referencedFgList != null &&_referencedFgList.size() > 0) {
+            referencedFetchGroups = _referencedFgList.toArray(referencedFetchGroups);
+        }
+        _currentFg.setFetchGroups(referencedFetchGroups);
+        
+        FetchAttributeImpl[] fetchAttrs = {};
+        if (_fetchAttrList != null && _fetchAttrList.size() > 0) {
+            fetchAttrs = _fetchAttrList.toArray(fetchAttrs);
+        }
+        _currentFg.setAttributes(fetchAttrs);
+        
+        _fgList.add(_currentFg);
+        _currentFg = null;
+        _referencedFgList = null;
+        _fetchAttrList = null;
+    }
+    
+    private boolean startFetchAttribute(Attributes attrs)
+        throws SAXException {
+        if (_fetchAttrList == null) {
+            _fetchAttrList = new ArrayList<FetchAttributeImpl>();
+        }
+        
+        FetchAttributeImpl fetchAttribute = new FetchAttributeImpl(attrs.getValue("name"),
+            Integer.parseInt(attrs.getValue("recursion-depth")));
+        
+        _fetchAttrList.add(fetchAttribute);
+        
+        return true;
+    }
+    
+    private boolean startReferencedFetchGroup(Attributes attrs)
+        throws SAXException {
+        
+        if (_referencedFgList == null) {
+            _referencedFgList = new ArrayList<String>();
+        }
+        
+        return true;
+    }
+    
+    private void endReferencedFetchGroup()
+        throws SAXException {
+        
+        _referencedFgList.add(currentText());
+    }
+
+    @Override
+    protected void endExtendedClass(String elem) throws SAXException {
+        ClassMetaData meta = (ClassMetaData) peekElement();
+        
+        if (_fgList != null) {
+            // Handle fetch groups
+            _fgs = new FetchGroupImpl[]{};
+            _fgs = _fgList.toArray(_fgs);
+            AnnotationPersistenceMetaDataParser.parseFetchGroups(meta, _fgs);
+            _fgList = null;
+            _fgs = null;
+        }
     }
 }

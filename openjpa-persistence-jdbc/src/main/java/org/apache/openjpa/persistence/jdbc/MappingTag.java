@@ -80,6 +80,8 @@ enum MappingTag {
     ELEM_STRAT,
     EMBEDDED_MAPPING,
     FK,
+    FK_COL_NAMES,
+    FK_COL_NAME,
     INDEX,
     KEY_COL,
     KEY_COLS,

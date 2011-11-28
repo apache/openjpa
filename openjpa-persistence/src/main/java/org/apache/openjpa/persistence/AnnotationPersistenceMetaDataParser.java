@@ -815,24 +815,29 @@ public class AnnotationPersistenceMetaDataParser
      * Parse @DataStoreId.
      */
     private void parseDataStoreId(ClassMetaData meta, DataStoreId id) {
+        parseDataStoreId(meta, id.strategy(), id.generator());
+    }
+    
+    static void parseDataStoreId(ClassMetaData meta, GenerationType strategy, 
+        String generator) {
         meta.setIdentityType(ClassMetaData.ID_DATASTORE);
 
-        int strat = getGeneratedValueStrategy(meta, id.strategy(),
-            id.generator());
+        int strat = getGeneratedValueStrategy(meta, strategy,
+            generator);
         if (strat != -1)
             meta.setIdentityStrategy(strat);
         else {
-            switch (id.strategy()) {
+            switch (strategy) {
                 case TABLE:
                 case SEQUENCE:
                     // technically we should have separate system table and
                     // sequence generators, but it's easier to just rely on
                     // the system org.apache.openjpa.Sequence setting for both
-                    if (StringUtils.isEmpty(id.generator()))
+                    if (StringUtils.isEmpty(generator))
                         meta.setIdentitySequenceName(
                             SequenceMetaData.NAME_SYSTEM);
                     else
-                        meta.setIdentitySequenceName(id.generator());
+                        meta.setIdentitySequenceName(generator);
                     break;
                 case AUTO:
                     meta.setIdentityStrategy(ValueStrategies.NATIVE);
@@ -841,11 +846,11 @@ public class AnnotationPersistenceMetaDataParser
                     meta.setIdentityStrategy(ValueStrategies.AUTOASSIGN);
                     break;
                 default:
-                    throw new UnsupportedException(id.strategy().toString());
+                    throw new UnsupportedException(strategy.toString());
             }
         }
     }
-
+    
     /**
      * Warn that @FlushMode is not supported.
      */
@@ -859,14 +864,21 @@ public class AnnotationPersistenceMetaDataParser
      * 
      */
     private void parseDataCache(ClassMetaData meta, DataCache cache) {
-        if (cache.timeout() != Integer.MIN_VALUE) {
-            meta.setDataCacheTimeout(cache.timeout());
+        parseDataCache(meta, cache.enabled(), cache.name(), cache.timeout());
+    }
+    
+    static void parseDataCache(ClassMetaData meta,
+            boolean enabled,
+            String name,
+            int timeout) {
+        if (timeout != Integer.MIN_VALUE) {
+            meta.setDataCacheTimeout(timeout);
         }
-        String cacheName = cache.name();
+        String cacheName = name;
         if (StringUtils.isEmpty(cacheName)) {
             cacheName = org.apache.openjpa.datacache.DataCache.NAME_DEFAULT;
         }
-        meta.setDataCacheName(cache.enabled() ? cacheName : null);
+        meta.setDataCacheName(enabled ? cacheName : null);
     }
 
     private void parseManagedInterface(ClassMetaData meta,
@@ -1033,48 +1045,78 @@ public class AnnotationPersistenceMetaDataParser
      * fetch group A which explicitly includes f to its custom fetch groups but
      * also will also add any fetch group B that includes A.
      */
-    private void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
-        org.apache.openjpa.meta.FetchGroup fg;
-        for (FetchGroup group : groups) {
-            if (StringUtils.isEmpty(group.name()))
-                throw new MetaDataException(_loc.get("unnamed-fg", meta));
-
-            fg = meta.addDeclaredFetchGroup(group.name());
-            if (group.postLoad())
-                fg.setPostLoad(true);
-            for (String s : group.fetchGroups()) {
-                fg.addDeclaredInclude(s);
-            }
-        }
-        // Add the parent-child style bi-links between fetch groups in a
-        // separate pass.
-        for (FetchGroup group:groups) {
-        	fg = meta.getFetchGroup(group.name());
-        	String[] includedFetchGropNames = fg.getDeclaredIncludes();
-        	for (String includedFectchGroupName:includedFetchGropNames) {
-        		org.apache.openjpa.meta.FetchGroup child =
-        	    meta.getFetchGroup(includedFectchGroupName);
-        		if (child == null)
-                    throw new UserException(_loc.get("missing-included-fg",
-                            meta.getDescribedType().getName(), fg.getName(),
-                            includedFectchGroupName));
-        		child.addContainedBy(fg);
-        	}
-        }
-
-        for (FetchGroup group : groups) {
-            fg = meta.getFetchGroup(group.name());
-            for (FetchAttribute attr : group.attributes())
-                parseFetchAttribute(meta, fg, attr);
-        }
+    static void parseFetchGroups(ClassMetaData meta, FetchGroup... groups) {
+       FetchGroupImpl[] fetchGroupImpls = new FetchGroupImpl[groups.length];
+       for (int i = 0; i < groups.length; i++) {
+           FetchAttribute[] fetchAttributes = groups[i].attributes();
+           FetchAttributeImpl[] fetchAttributeImpls= null;
+           if (fetchAttributes != null && fetchAttributes.length > 0) {
+               fetchAttributeImpls = new FetchAttributeImpl[fetchAttributes.length];
+               for (int j = 0; j < fetchAttributes.length; j++) {
+                   fetchAttributeImpls[j] = 
+                           new FetchAttributeImpl(fetchAttributes[j].name(), fetchAttributes[j].recursionDepth()); 
+               }
+           }
+           fetchGroupImpls[i] = new FetchGroupImpl(groups[i].name(), groups[i].postLoad());
+           if (fetchAttributeImpls != null) {
+               fetchGroupImpls[i].setAttributes(fetchAttributeImpls);
+           }
+           if (groups[i].fetchGroups() != null) {
+               fetchGroupImpls[i].setFetchGroups(groups[i].fetchGroups());
+           }
+       }
+       
+       parseFetchGroups(meta, fetchGroupImpls);
     }
+   
+   /**
+    * Parse fetch group input for the FetchGroup and FetchGroups annotations
+    * as well as for the fetch-group and fetch-groups XML metadata
+    * @param meta
+    * @param groups
+    */
+   static void parseFetchGroups(ClassMetaData meta, FetchGroupImpl... groups) {
+       org.apache.openjpa.meta.FetchGroup fg;
+       for (FetchGroupImpl group : groups) {
+           if (StringUtils.isEmpty(group.name()))
+               throw new MetaDataException(_loc.get("unnamed-fg", meta));
+
+           fg = meta.addDeclaredFetchGroup(group.name());
+           if (group.postLoad())
+               fg.setPostLoad(true);
+           for (String s : group.fetchGroups()) {
+               fg.addDeclaredInclude(s);
+           }
+       }
+       // Add the parent-child style bi-links between fetch groups in a
+       // separate pass.
+       for (FetchGroupImpl group:groups) {
+           fg = meta.getFetchGroup(group.name());
+           String[] includedFetchGropNames = fg.getDeclaredIncludes();
+           for (String includedFectchGroupName:includedFetchGropNames) {
+               org.apache.openjpa.meta.FetchGroup child =
+               meta.getFetchGroup(includedFectchGroupName);
+               if (child == null)
+                   throw new UserException(_loc.get("missing-included-fg",
+                           meta.getDescribedType().getName(), fg.getName(),
+                           includedFectchGroupName));
+               child.addContainedBy(fg);
+           }
+       }
+
+       for (FetchGroupImpl group : groups) {
+           fg = meta.getFetchGroup(group.name());
+           for (FetchAttributeImpl attr : group.attributes())
+               parseFetchAttribute(meta, fg, attr);
+       }
+   }
 
 
     /**
      * Set a field's fetch group.
      */
-    private void parseFetchAttribute(ClassMetaData meta,
-        org.apache.openjpa.meta.FetchGroup fg, FetchAttribute attr) {
+    private static void parseFetchAttribute(ClassMetaData meta,
+        org.apache.openjpa.meta.FetchGroup fg, FetchAttributeImpl attr) {
         FieldMetaData field = meta.getDeclaredField(attr.name());
         if (field == null
             || field.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
@@ -1983,6 +2025,74 @@ public class AnnotationPersistenceMetaDataParser
 			return compare;
 		}
 	}
+    
+    /**
+     * An internal class used to mimic the FetchGroup annotation.
+     * This is needed to process the fetch-group element in xml
+     * metadata with common code for the annotation.
+     */
+    static class FetchGroupImpl {
+        private String name = "";
+        private boolean postLoad = false;
+        private FetchAttributeImpl[] attributes = {};
+        private String[] fetchGroups = {};
+        
+        FetchGroupImpl(String name, boolean postLoad)
+        {
+            this.name = name;
+            this.postLoad = postLoad;
+        }
+
+        public String name() {
+            return name;
+        }
+
+        public boolean postLoad() {
+            return postLoad;
+        }
+
+        public FetchAttributeImpl[] attributes() {
+            return attributes;
+        }
+
+        public String[] fetchGroups() {
+            return fetchGroups;
+        }
+
+
+        public void setAttributes(FetchAttributeImpl[] attributes) {
+            this.attributes = attributes;
+        }
+
+        public void setFetchGroups(String[] fetchGroups) {
+            this.fetchGroups = fetchGroups;
+        }
+    }
+    
+    /**
+     * An internal class used to mimic the FetchAttribute annotation.
+     * This is needed to process the fetch-attribute element in xml
+     * metadata with common code for the annotation.
+     */
+    static class FetchAttributeImpl {
+        private String name = "";
+        private int recursionDepth = Integer.MIN_VALUE;
+        
+        public FetchAttributeImpl(String name, int recursionDepth) {
+            this.name = name;
+            this.recursionDepth = recursionDepth;
+        }
+        
+        public String name() {
+            return name;
+        }
+
+        public int recursionDepth() {
+            return recursionDepth;
+        }
+
+        
+    }
 
     protected String normalizeSequenceName(String seqName) {
         return seqName;
