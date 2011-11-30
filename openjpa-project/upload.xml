@@ -36,6 +36,14 @@
                 <include name="**/manual/**" />
             </patternset>
         </unzip>
+    	
+    	<!-- copy schema files -->
+    	<mkdir dir="target/site/tempDocs/apache-openjpa-${project.version}/schema"/>
+    	<copy file="../openjpa-persistence/src/main/resources/org/apache/openjpa/persistence/extendable-orm.xsd"
+    		todir="target/site/tempDocs/apache-openjpa-${project.version}/schema"/>
+    	<copy file="../openjpa-persistence/src/main/resources/org/apache/openjpa/persistence/openjpa-orm.xsd"
+    		todir="target/site/tempDocs/apache-openjpa-${project.version}/schema"/>   	
+    	
         <zip destfile="target/site/tempDocs/docs.zip">
             <fileset dir="target/site/tempDocs">
                 <include name="**/javadoc/**"/>
