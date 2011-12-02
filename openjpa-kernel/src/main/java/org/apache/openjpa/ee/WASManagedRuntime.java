@@ -36,6 +36,7 @@ import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
@@ -381,7 +382,7 @@ public class WASManagedRuntime extends AbstractManagedRuntime
         	}
         }
         bcClass.declareInterface(INTERFACE);
-        bcClass.write();
+        AsmAdaptor.write(bcClass);
     }
 
     public void setRollbackOnly(Throwable cause)

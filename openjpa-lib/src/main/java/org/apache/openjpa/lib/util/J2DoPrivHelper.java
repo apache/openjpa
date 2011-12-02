@@ -1040,25 +1040,6 @@ public abstract class J2DoPrivHelper {
     }
     
     /**
-     * Return a PrivilegedExceptionAction object for BCClass.write().
-     * 
-     * Requires security policy:
-     *   'permission java.io.FilePermission "write";'
-     * 
-     * @return null
-     * @throws IOException
-     */
-    public static final PrivilegedExceptionAction<Object> bCClassWrite(
-        final BCClass bc, final File f) throws IOException {
-        return new PrivilegedExceptionAction<Object>() {
-            public Object run() throws IOException {
-                bc.write(f);
-                return null;
-            }
-        };
-    }
-
-    /**
      * Return a PrivilegeAction object for BCClass.getFields().
      * 
      * Requires security policy:

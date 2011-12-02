@@ -50,15 +50,14 @@ import java.util.TreeSet;
 import java.util.Queue;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import serp.bytecode.BCClass;
@@ -1664,7 +1663,7 @@ public class ProxyManagerImpl
             }
 
             System.out.println(bc.getName());
-            bc.write(new File(dir, bc.getClassName() + ".class"));
+            AsmAdaptor.write(bc, new File(dir, bc.getClassName() + ".class"));
         }
     }
 }

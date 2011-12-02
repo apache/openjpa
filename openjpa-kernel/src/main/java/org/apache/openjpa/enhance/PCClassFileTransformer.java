@@ -151,7 +151,7 @@ public class PCClassFileTransformer
             if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
                 return null;
             returnBytes = enhancer.getPCBytecode().toByteArray();
-            return returnBytes;
+            return AsmAdaptor.toByteArray(enhancer.getPCBytecode(), returnBytes);
         } catch (Throwable t) {
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)

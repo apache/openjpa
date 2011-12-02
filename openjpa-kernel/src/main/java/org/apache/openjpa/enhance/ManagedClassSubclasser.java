@@ -32,7 +32,6 @@ import java.util.Set;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.BytecodeWriter;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.Localizer.Message;
@@ -302,7 +301,7 @@ public class ManagedClassSubclasser {
             dir = Files.getPackageFile(dir, bc.getPackageName(), true);
             File f = new File(dir, bc.getClassName() + ".class");
             System.err.println("Writing to " + f);
-            bc.write(f);
+            AsmAdaptor.write(bc, f);
         }
     }
 

@@ -52,7 +52,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
@@ -625,10 +624,10 @@ public class PCEnhancer {
         if (_writer != null)
             _writer.write(bc);
         else if (_dir == null)
-            bc.write();
+            AsmAdaptor.write(bc);
         else {
             File dir = Files.getPackageFile(_dir, bc.getPackageName(), true);
-            bc.write(new File(dir, bc.getClassName() + ".class"));
+            AsmAdaptor.write(bc, new File(dir, bc.getClassName() + ".class"));
         }
     }
 
