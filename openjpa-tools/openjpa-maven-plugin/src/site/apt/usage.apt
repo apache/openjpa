@@ -70,20 +70,12 @@ OpenJPA Maven Plugin
       </execution>
     </executions>
 
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.openjpa</groupId>
-        <artifactId>openjpa</artifactId>
-        <version>2.0.1</version>
-      </dependency>
-    </dependencies>
-
   </plugin>
 +-----------+
 
-  * You have to explicitly specify an OpenJPA dependency in the dependencies section
-  of the plugin! This has been changed to make sure that the correct OpenJPA version is 
-  used for compile time enhancement and other tasks.
+  * You don't have to explicitly specify an OpenJPA dependency in the dependencies section
+  of the plugin! Follow the following guide to use this plugin with {{{examples/older_versions.html}older OpenJPA versions}}.
+
   
   * The <<<openjpa:enhance>>> mojo will automatically be called in the
   <<<process-classes>>> phase.
