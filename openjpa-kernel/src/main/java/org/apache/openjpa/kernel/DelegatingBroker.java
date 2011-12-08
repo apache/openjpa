@@ -1485,4 +1485,13 @@ public class DelegatingBroker
         _broker.setAllowReferenceToSiblingContext(allow);
     }
 
+    public boolean getPostLoadOnMerge() {
+        return _broker.getPostLoadOnMerge();
+    }
+
+    public void setPostLoadOnMerge(boolean allow) {
+        _broker.setPostLoadOnMerge(allow);
+    }
+
+
 }

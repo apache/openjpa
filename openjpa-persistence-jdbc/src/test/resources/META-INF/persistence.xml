@@ -101,8 +101,10 @@
         <class>org.apache.openjpa.persistence.callbacks.EntityListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.GlobalListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.DuplicateListenerEntity</class>
+        <class>org.apache.openjpa.persistence.callbacks.PostLoadListenerEntity</class>
         <class>org.apache.openjpa.persistence.callbacks.Message</class>
         <properties>
+            <property name="openjpa.PostLoadOnMerge" value="true"/>
             <property name="openjpa.jdbc.SynchronizeMappings"
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>

@@ -531,4 +531,22 @@ public interface StoreContext {
      * @since 2.1
      */
     public boolean getAllowReferenceToSiblingContext();
+
+
+    /**
+     * Set to <code>true</code> if the merge operation should trigger
+     * a &#064;PostLoad lifecycle event.
+     * @param allow PostLoad lifecycle events to be triggered on a merge operation
+     */
+    public void setPostLoadOnMerge(boolean allow);
+
+    /**
+     * Force sending a &#064;PostLoad lifecycle event while merging.
+     *
+     * @return <code>false</code> by default
+     *
+     * @since 2.2
+     */
+    public boolean getPostLoadOnMerge();
+
 }

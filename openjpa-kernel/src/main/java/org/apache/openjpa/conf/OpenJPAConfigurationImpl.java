@@ -176,6 +176,7 @@ public class OpenJPAConfigurationImpl
     public BooleanValue dynamicEnhancementAgent;
     public ObjectValue instrumentationManager;
     public PluginListValue instrumentationProviders;
+    public BooleanValue postLoadOnMerge;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -397,6 +398,10 @@ public class OpenJPAConfigurationImpl
         optimistic.setDefault("true");
         optimistic.set(true);
 
+        postLoadOnMerge = addBoolean("PostLoadOnMerge");
+        postLoadOnMerge.setDefault("false");
+        postLoadOnMerge.set(false);
+
         autoClear = addInt("AutoClear");
         aliases =
             new String[] { "datastore",
@@ -612,7 +617,8 @@ public class OpenJPAConfigurationImpl
         supportedOptions.add(OPTION_VALUE_AUTOASSIGN);
         supportedOptions.add(OPTION_VALUE_INCREMENT);
         supportedOptions.add(OPTION_DATASTORE_CONNECTION);
-        
+        supportedOptions.add(OPTION_POSTLOAD_ON_MERGE);
+
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
         if (loadGlobals)
@@ -1836,5 +1842,19 @@ public class OpenJPAConfigurationImpl
     public void setAuditor(String auditor) {
     	auditorPlugin.setString(auditor);
     }
+
+    public boolean getPostLoadOnMerge() {
+        return postLoadOnMerge.get();
+    }
+
+    public void setPostLoadOnMerge(boolean postLoadOnMerge) {
+        this.postLoadOnMerge.set(postLoadOnMerge);
+    }
+
+    public void setPostLoadOnMerge(Boolean postLoadOnMerge) {
+        if (postLoadOnMerge != null)
+            setPostLoadOnMerge(postLoadOnMerge.booleanValue());
+    }
+
 }
 

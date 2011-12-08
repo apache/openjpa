@@ -241,6 +241,7 @@ public class BrokerImpl
     private boolean _cacheFinderQuery = true;
     private boolean _suppressBatchOLELogging = false;
     private boolean _allowReferenceToSiblingContext = false;
+    private boolean _postLoadOnMerge = false;
     
     // status
     private int _flags = 0;
@@ -5199,27 +5200,33 @@ public class BrokerImpl
         return ((_flags & FLAG_FLUSHING) != 0);
     }
     
+     public boolean getPostLoadOnMerge() {
+         return _postLoadOnMerge;
+     }
+
+     public void setPostLoadOnMerge(boolean allow) {
+         _postLoadOnMerge = allow;
+     }
     
-    
-        /**
-         * Asserts consistencey of given automatic detachment option value.
-         */
-        private void assertAutoDetachValue(int value) {
-           if (((value & AutoDetach.DETACH_NONE) != 0) && (value != AutoDetach.DETACH_NONE)) {
-                   throw new UserException(_loc.get("detach-none-exclusive", toAutoDetachString(value)));
-           }
-        }
-    
-        /**
-         * Generates a user-readable String from the given integral value of AutoDetach options.
-         */
-        private String toAutoDetachString(int value) {
-           List<String> result = new ArrayList<String>();
-           for (int i = 0; i < AutoDetach.values.length; i++) {
-                   if ((value & AutoDetach.values[i]) != 0) {
-                           result.add(AutoDetach.names[i]);
-                   }
-           }
-           return Arrays.toString(result.toArray(new String[result.size()]));
-        }
+    /**
+     * Asserts consistencey of given automatic detachment option value.
+     */
+    private void assertAutoDetachValue(int value) {
+       if (((value & AutoDetach.DETACH_NONE) != 0) && (value != AutoDetach.DETACH_NONE)) {
+               throw new UserException(_loc.get("detach-none-exclusive", toAutoDetachString(value)));
+       }
+    }
+
+    /**
+     * Generates a user-readable String from the given integral value of AutoDetach options.
+     */
+    private String toAutoDetachString(int value) {
+       List<String> result = new ArrayList<String>();
+       for (int i = 0; i < AutoDetach.values.length; i++) {
+               if ((value & AutoDetach.values[i]) != 0) {
+                       result.add(AutoDetach.names[i]);
+               }
+       }
+       return Arrays.toString(result.toArray(new String[result.size()]));
+    }
 }

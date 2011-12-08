@@ -70,6 +70,7 @@ public class TestOpenJPAConfiguration
         assertEquals(cfactory, conf.getConnectionFactory());
         assertEquals(cfactory2, conf.getConnectionFactory2());
         assertEquals(false, conf.getOptimistic());
+        assertEquals(false, conf.getPostLoadOnMerge());
         assertEquals(503, conf.getLockTimeout());
         assertEquals(1500, conf.getQueryTimeout());
 

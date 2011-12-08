@@ -594,6 +594,7 @@ public abstract class AbstractBrokerFactory
         broker.setMultithreaded(_conf.getMultithreaded());
         broker.setAutoDetach(_conf.getAutoDetachConstant());
         broker.setDetachState(_conf.getDetachStateInstance().getDetachState());
+        broker.setPostLoadOnMerge(_conf.getPostLoadOnMerge());
     }
 
     /**

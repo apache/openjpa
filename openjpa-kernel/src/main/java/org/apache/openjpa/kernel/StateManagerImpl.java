@@ -158,6 +158,13 @@ public class StateManagerImpl
     private transient ReentrantLock _instanceLock = null;
 
     /**
+     * <p>set to <code>false</code> to prevent the postLoad method from
+     * sending lifecycle callback events.</p>
+     * <p>Callbacks are enabled by default</>
+     */
+    private boolean postLoadCallback = true;
+
+    /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
     protected StateManagerImpl(Object id, ClassMetaData meta, 
@@ -3193,6 +3200,14 @@ public class StateManagerImpl
     }
 
     /**
+     * Set to <code>false</code> to prevent the postLoad method from
+     * sending lifecycle callback events.
+     */
+    public void setPostLoadCallback(boolean enabled) {
+        this.postLoadCallback = enabled;
+    }
+
+    /**
      * Perform post-load steps, including the post load callback.
      * We have to check the dfg after all field loads because it might be
      * loaded in multiple steps when paging is involved; the initial load
@@ -3254,8 +3269,8 @@ public class StateManagerImpl
                 return false;
 
         _flags |= FLAG_LOADED;
-        _broker.fireLifecycleEvent(getManagedInstance(), fetch, _meta, 
-        	LifecycleEvent.AFTER_LOAD);
+        if (postLoadCallback)
+            _broker.fireLifecycleEvent(getManagedInstance(), fetch, _meta, LifecycleEvent.AFTER_LOAD);
         return true;
     }
 

@@ -21,7 +21,6 @@ package org.apache.openjpa.conf;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.kernel.AuditManager;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
@@ -215,6 +214,12 @@ public interface OpenJPAConfiguration
         "openjpa.option.JDBCConnection";
 
     /**
+     * Option for enable fire &#064;PostLoad events on merge operations
+     */
+    public static final String OPTION_POSTLOAD_ON_MERGE =
+        "openjpa.option.PostLoadOnMerge";
+
+    /**
      * Return the set of option strings supported by this runtime. This set
      * is mutable.
      */
@@ -242,7 +247,7 @@ public interface OpenJPAConfiguration
      * This change will trigger all registered Product Derivations to mutate 
      * other configuration properties.
      *
-     * @param fullname of the specification that possibly encodes major and
+     * @param spec fullname of the specification that possibly encodes major and
      * minor version information. For encoding format
      * @see Specification
      * 
@@ -258,7 +263,7 @@ public interface OpenJPAConfiguration
      * This change will trigger all registered Product Derivations to mutate 
      * other configuration properties.
      *
-     * @param fullname of the specification that possibly encodes major and
+     * @param spec fullname of the specification that possibly encodes major and
      * minor version information. For encoding format
      * @see Specification
      * 
@@ -1894,6 +1899,24 @@ public interface OpenJPAConfiguration
      * @since 2.2.0
      */
     public void setAuditor(String s);
+
+     /**
+      * Whether to send &#064;PostLoad events on a merge operation.
+      * @since 2.2.0
+      */
+     public boolean getPostLoadOnMerge();
+
+     /**
+      * Whether to send &#064;PostLoad events on a merge operation.
+      * @since 2.2.0
+      */
+     public void setPostLoadOnMerge(boolean postLoadOnMerge);
+
+     /**
+      * Whether to send &#064;PostLoad events on a merge operation.
+      * @since 2.2.0
+      */
+     public void setPostLoadOnMerge(Boolean postLoadOnMerge);
     
 }
 

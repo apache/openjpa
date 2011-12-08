@@ -28,9 +28,11 @@ import java.util.Map;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
+import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.util.Localizer;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
@@ -128,45 +130,62 @@ public class DetachedStateManager
 
         // pre-load for efficiency: current field values for restore, dependent
         // for delete
-        FieldMetaData[] fields = sm.getMetaData().getFields(); 
+        FieldMetaData[] fields = sm.getMetaData().getFields();
         int restore = broker.getRestoreState();
-        if (_dirty.length() > 0) {
-            BitSet load = new BitSet(fields.length);
-            for (int i = 0; i < fields.length; i++) {
-                if (!_dirty.get(i))
-                    continue;
 
-                switch (fields[i].getDeclaredTypeCode()) {
-                    case JavaTypes.ARRAY:
-                    case JavaTypes.COLLECTION:
-                        if (restore == RestoreState.RESTORE_ALL
-                            || fields[i].getElement().getCascadeDelete()
-                            == ValueMetaData.CASCADE_AUTO)
-                            load.set(i);
-                        break;
-                    case JavaTypes.MAP:
-                        if (restore == RestoreState.RESTORE_ALL
-                            || fields[i].getElement().getCascadeDelete()
-                            == ValueMetaData.CASCADE_AUTO
-                            || fields[i].getKey().getCascadeDelete()
-                            == ValueMetaData.CASCADE_AUTO)
-                            load.set(i);
-                        break;
-                    default:
-                        if (restore != RestoreState.RESTORE_NONE
-                            || fields[i].getCascadeDelete()
-                            == ValueMetaData.CASCADE_AUTO)
-                            load.set(i);
+        boolean postLoadOnMerge = broker.getPostLoadOnMerge();
+        if (_dirty.length() > 0 || postLoadOnMerge) {
+            BitSet load = new BitSet(fields.length);
+            if (postLoadOnMerge && broker.getLifecycleEventManager().hasLoadListeners(pc, meta)) {
+                // load all fields
+                // this will automatically lead to invoking the PostLoad lifecycle event
+                // when the last field got set
+                // @see StateManagerImpl#postLoad(String, FetchConfiguration)
+                load.set(0, fields.length);
+            }
+            else {
+                for (int i = 0; i < fields.length; i++) {
+                    if (!_dirty.get(i))
+                        continue;
+
+                    switch (fields[i].getDeclaredTypeCode()) {
+                        case JavaTypes.ARRAY:
+                        case JavaTypes.COLLECTION:
+                            if (restore == RestoreState.RESTORE_ALL
+                                || fields[i].getElement().getCascadeDelete()
+                                == ValueMetaData.CASCADE_AUTO)
+                                load.set(i);
+                            break;
+                        case JavaTypes.MAP:
+                            if (restore == RestoreState.RESTORE_ALL
+                                || fields[i].getElement().getCascadeDelete()
+                                == ValueMetaData.CASCADE_AUTO
+                                || fields[i].getKey().getCascadeDelete()
+                                == ValueMetaData.CASCADE_AUTO)
+                                load.set(i);
+                            break;
+                        default:
+                            if (restore != RestoreState.RESTORE_NONE
+                                || fields[i].getCascadeDelete()
+                                == ValueMetaData.CASCADE_AUTO)
+                                load.set(i);
+                    }
                 }
+            }
+
+            if (!postLoadOnMerge) {
+                // prevent PostLoad callbacks even for the load operation
+                sm.setPostLoadCallback(false);
             }
             FetchConfiguration fc = broker.getFetchConfiguration();
             sm.loadFields(load, fc, fc.getWriteLockLevel(), null);
-        }        
+        }
         Object origVersion = sm.getVersion();
         sm.setVersion(_version);
 
         BitSet loaded = sm.getLoaded();
         int set = StateManager.SET_ATTACH;
+        sm.setPostLoadCallback(false);
         for (int i = 0; i < fields.length; i++) {
             if (!_loaded.get(i))
                 continue;
@@ -214,8 +233,8 @@ public class DetachedStateManager
                     break;
                 case JavaTypes.SHORT:
                     if (_dirty.get(i))
-                        sm.settingShortField(pc, i, (!loaded.get(i)) ? (short) 0
-                            : sm.fetchShortField(i), (short) longval, set);
+                        sm.settingShortField(pc, i, 
+                            (!loaded.get(i)) ? (short) 0 : sm.fetchShortField(i), (short) longval, set);
                     else
                         sm.storeShortField(i, (short) longval);
                     break;
@@ -299,6 +318,7 @@ public class DetachedStateManager
                     objval = null;
             }
         }
+        sm.setPostLoadCallback(true);
         pc.pcReplaceStateManager(sm);
 
         // if we were clean at least make sure a version check is done to
