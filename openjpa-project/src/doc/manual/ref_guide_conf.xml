@@ -2801,6 +2801,44 @@ mutable second class objects. See
 <xref linkend="ref_guide_pc_scos_proxy_custom"/> for details.
             </para>
         </section>
+
+        <section id="openjpa.PostLoadOnMerge">
+            <title>
+                openjpa.PostLoadOnMerge
+            </title>
+            <indexterm zone="openjpa.PostLoadOnMerge">
+                <primary>
+                    PostLoadOnMerge
+                </primary>
+            </indexterm>
+            <para>
+                <emphasis role="bold">Property name: </emphasis><literal>
+                openjpa.PostLoadOnMerge</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Configuration API:</emphasis>
+                <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getPostLoadOnMerge()">
+                    <methodname>
+                        org.apache.openjpa.conf.OpenJPAConfiguration.getPostLoadOnMerge
+                    </methodname></ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+                PostLoadOnMerge</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis><literal>false</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis> Whether the OpenJPA runtime will
+                trigger a PostLoad lifecycle event for EntityManager#merge(). If you enable this
+                option, OpenJPA will also ensure that the whole entity from the database will
+                get passed to the PostLoad entity listener.
+            </para>
+        </section>
+
+
+
         <section id="openjpa.QueryCache">
             <title>
                 openjpa.QueryCache
