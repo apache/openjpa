@@ -40,7 +40,7 @@ public class LRSEntity {
     @ManyToMany
     @OrderBy("name ASC")
     @LRS
-    private Collection<BasicEntity> lrsList = new ArrayList<BasicEntity>();
+    private Collection<BasicEntity> lrsList;
 
     public long getId() { 
         return id; 
@@ -54,7 +54,10 @@ public class LRSEntity {
         this.name = name; 
     }
 
-    public Collection<BasicEntity> getLRSList() { 
-        return lrsList; 
+    public Collection<BasicEntity> getLRSList() {
+        if (lrsList == null) {
+            lrsList = new ArrayList<BasicEntity>();
+        }
+        return lrsList;
     }
 }

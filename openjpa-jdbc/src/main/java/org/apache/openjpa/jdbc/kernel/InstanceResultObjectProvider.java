@@ -24,6 +24,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.util.ProxyCalendar;
 
 /**
  * Object provider implementation wrapped around a {@link Select}.
@@ -56,6 +57,10 @@ public class InstanceResultObjectProvider
         ClassMapping mapping = res.getBaseMapping();
         if (mapping == null)
             mapping = _mapping;
-        return res.load(mapping, getStore(), getFetchConfiguration());
+        Object ret = res.load(mapping, getStore(), getFetchConfiguration());
+        if (ret != null && ret instanceof ProxyCalendar) {
+            ret = ((ProxyCalendar) ret).copy(ret);
+        }
+        return ret;
     }
 }

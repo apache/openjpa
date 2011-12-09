@@ -20,14 +20,13 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.TemporalFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
+import org.apache.openjpa.util.ProxyCalendar;
 
 public class TestCalendarField extends SingleEMTestCase {
 
@@ -54,4 +53,24 @@ public class TestCalendarField extends SingleEMTestCase {
         tft = find(TemporalFieldTypes.class).get(0);
         assertEquals(tz, tft.getCalendarTimeZoneField().getTimeZone());
     }
+    
+
+    public void testCalendarQuery() throws Exception {
+        persist(new TemporalFieldTypes());
+        persist(new TemporalFieldTypes());
+        persist(new TemporalFieldTypes());
+        em.clear();
+        Calendar cal =
+            em.createQuery("SELECT t.calendarTimeZoneField FROM TemporalFieldTypes t WHERE 1=1", Calendar.class)
+                .setMaxResults(1).getSingleResult();
+        assertFalse(cal instanceof ProxyCalendar);
+
+        List<Calendar> cals =
+            em.createQuery("SELECT t.calendarTimeZoneField FROM TemporalFieldTypes t WHERE 1=1", Calendar.class)
+                .setMaxResults(3).getResultList();
+        for (Calendar c : cals) {
+            assertFalse(c instanceof ProxyCalendar);
+        }
+    }
+    
 }

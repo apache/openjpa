@@ -44,6 +44,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.DateFormatSymbols;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,6 +61,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.spi.TimeZoneNameProvider;
 
 import javax.sql.DataSource;
 
@@ -118,6 +122,7 @@ import org.apache.openjpa.util.ObjectExistsException;
 import org.apache.openjpa.util.ObjectNotFoundException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
+import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.ReferentialIntegrityException;
 import org.apache.openjpa.util.Serialization;
@@ -420,7 +425,9 @@ public class DBDictionary
     
     public final Map<Integer,Set<String>> sqlStateCodes = 
         new HashMap<Integer, Set<String>>();
-                                              
+                   
+    protected ProxyManager _proxyManager;
+    
     public DBDictionary() {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "BIT", "BLOB", "CLOB", "DATE", "DECIMAL", "DISTINCT",
@@ -692,15 +699,20 @@ public class DBDictionary
      * Convert the specified column of the SQL ResultSet to the proper
      * java type. Converts the date from a {@link Timestamp} by default.
      */
-    public Calendar getCalendar(ResultSet rs, int column)
-        throws SQLException {
+    public Calendar getCalendar(ResultSet rs, int column) throws SQLException {
         Date d = getDate(rs, column);
         if (d == null)
             return null;
-
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = (Calendar) getProxyManager().newCalendarProxy(GregorianCalendar.class, null);
         cal.setTime(d);
         return cal;
+    }
+
+    private ProxyManager getProxyManager() {
+        if (_proxyManager == null) {
+            _proxyManager = conf.getProxyManagerInstance();
+        }
+        return _proxyManager;
     }
 
     /**
@@ -5540,5 +5552,4 @@ public class DBDictionary
     public String getIdentityColumnName() {
         return null;       
     }
-
 }

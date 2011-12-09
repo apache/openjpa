@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -77,31 +78,34 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             case JavaTypes.DATE:
                 if (objval == null)
                     return false;
-                proxy = checkProxy();
+                proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     ((Date) proxy).setTime(((Date) objval).getTime());
-                    if (proxy instanceof Timestamp 
-                        && objval instanceof Timestamp)
-                        ((Timestamp) proxy).setNanos(((Timestamp) objval).
-                            getNanos());
+                    if (proxy instanceof Timestamp && objval instanceof Timestamp)
+                        ((Timestamp) proxy).setNanos(((Timestamp) objval).getNanos());
                     ret = true;
                 }
                 break;
             case JavaTypes.CALENDAR:
                 if (objval == null)
                     return false;
-                proxy = checkProxy();
+                proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     ((Calendar) proxy).setTime(((Calendar) objval).getTime());
                     ret = true;
+                } else {
+                    Object init = fmd.getInitializer();
+                    if (init != null && init instanceof TimeZone) {
+                        ((Calendar) proxy).setTimeZone((TimeZone)init);
+                    }
                 }
                 break;
             case JavaTypes.COLLECTION:
                 if (objval == null && !replaceNull)
                     return false;
-                proxy = checkProxy();
+                proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     if (objval != null)
@@ -112,7 +116,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             case JavaTypes.MAP:
                 if (objval == null && !replaceNull)
                     return false;
-                proxy = checkProxy();
+                proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = (Proxy) _sm.newFieldProxy(field);
                     if (objval != null)
@@ -123,7 +127,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
             case JavaTypes.OBJECT:
                 if (objval == null)
                     return false;
-                proxy = checkProxy();
+                proxy = checkProxy(fmd);
                 if (proxy == null) {
                     proxy = getProxyManager().newCustomProxy(objval,
                         _sm.getBroker().getConfiguration().
@@ -152,13 +156,16 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     /**
      * If the current field is a usable proxy, return it; else return null.
      */
-    private Proxy checkProxy() {
+    private Proxy checkProxy(FieldMetaData fmd) {
         if (!(objval instanceof Proxy))
             return null;
 
         Proxy proxy = (Proxy) objval;
-        if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field))
-            return proxy;
+        if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field)) {
+            if(fmd.getProxyType().isAssignableFrom(proxy.getClass())){
+                return proxy;
+            }
+        }
         return null;
     }
 
