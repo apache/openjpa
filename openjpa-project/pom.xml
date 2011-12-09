@@ -95,16 +95,16 @@
 
             ie :
             $ mvn install:install-file -Dfile=jai_core.jar \
-              -DgroupId=javax.media -DartifactId=jai_core \
+              -DgroupId=com.sun -DartifactId=jai_core \
               -Dversion=1.1.3 -Dpackaging=jar
             $ mvn install:install-file -Dfile=jai_codec.jar \
-              -DgroupId=javax.media -DartifactId=jai_codec \
+              -DgroupId=com.sun -DartifactId=jai_codec \
               -Dpackaging=jar -Dversion=1.1.3
 
             Alternatively if you have installed the JAI artifacts to an 
             internal repository you can specify it on the command line:
               -Djai.maven.repo=REPOS_URL
-              -Djai.groupId=javax.media
+              -Djai.groupId=com.sun
             -->
         <jai.maven.repo>https://m2proxy.atlassian.com/repository/public</jai.maven.repo>
         <jai.groupId>com.sun</jai.groupId>
