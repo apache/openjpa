@@ -90,10 +90,16 @@
             repository and should be downloaded and installed manually
             to your local repository.
 
+            JAI can be found here:
+            http://download.java.net/media/jai/builds/release/1_1_3/
+
             ie :
             $ mvn install:install-file -Dfile=jai_core.jar \
-              -DgroupId=javax.media -DartifactId=jai-core \ 
+              -DgroupId=javax.media -DartifactId=jai_core \
               -Dversion=1.1.3 -Dpackaging=jar
+            $ mvn install:install-file -Dfile=jai_codec.jar \
+              -DgroupId=javax.media -DartifactId=jai_codec \
+              -Dpackaging=jar -Dversion=1.1.3
 
             Alternatively if you have installed the JAI artifacts to an 
             internal repository you can specify it on the command line:
@@ -271,7 +277,7 @@
                                         <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
                                         <!-- Replace a 'base href' token to 'base target' in the index.html -->
                                         <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-										<replace file="${docbook.target}/index.html" token="base href" value="base target" />
+                                        <replace file="${docbook.target}/index.html" token="base href" value="base target" />
                                         <!-- Copy main.html from original location to docbook target  -->
                                         <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
                                         <!-- copy over images and styles -->
