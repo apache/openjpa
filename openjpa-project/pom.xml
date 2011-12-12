@@ -80,7 +80,7 @@
         </parent.site.docs>
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
-        <docbook.target>${project.basedir}/target/manual</docbook.target>
+        <docbook.target>${project.basedir}/target/docbook</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
 
@@ -243,7 +243,7 @@
                                         ${docbook.source}/
                                     </imgSrcPath>
                                     <postProcess>
-                                        <!-- copy to parent module for 
+                                        <!-- copy to parent module for
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
                                         <delete file="${docbook.target}/manual.fo" />
@@ -274,32 +274,32 @@
                                     </htmlCustomization>
                                     <postProcess>
                                         <!-- rename manual to index -->
-                                        <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
+                                        <move file="${docbook.target}/manual/manual.html" tofile="${docbook.target}/manual/index.html" />
                                         <!-- Replace a 'base href' token to 'base target' in the index.html -->
                                         <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-                                        <replace file="${docbook.target}/index.html" token="base href" value="base target" />
+                                        <replace file="${docbook.target}/manual/index.html" token="base href" value="base target" />
                                         <!-- Copy main.html from original location to docbook target  -->
-                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
+                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/manual/main.html" />
                                         <!-- copy over images and styles -->
-                                        <mkdir dir="${docbook.target}/img" />
-                                        <copy todir="${docbook.target}/img">
+                                        <mkdir dir="${docbook.target}/manual/img" />
+                                        <copy todir="${docbook.target}/manual/img">
                                             <fileset dir="${docbook.source}/img">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
 
-                                        <mkdir dir="${docbook.target}/css" />
-                                        <copy todir="${docbook.target}/css">
+                                        <mkdir dir="${docbook.target}/manual/css" />
+                                        <copy todir="${docbook.target}/manual/css">
                                             <fileset dir="${docbook.source}/css">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
 
-                                        <!-- copy to parent module for 
+                                        <!-- copy to parent module for
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
                                         <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}">
+                                            <fileset dir="${docbook.target}/manual">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
@@ -323,7 +323,7 @@
                                         ${docbook.source}/manual-xhtml.xsl
                                     </htmlCustomization>
                                     <postProcess>
-                                        <!-- copy to parent module for 
+                                        <!-- copy to parent module for
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
                                         <copy todir="${parent.site.docs}">

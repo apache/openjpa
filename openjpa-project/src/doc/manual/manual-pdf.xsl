@@ -29,7 +29,8 @@
 	<xsl:param name="toc.indent.width" select="24"/>
 
 	<!-- required for PDF bookmarks and some other stuff -->
-	<xsl:param name="fop.extensions" select="1"/>
+    <xsl:param name="fop.extensions" select="0"/>
+    <xsl:param name="fop1.extensions" select="1"/>
 	<!-- <xsl:param name="use.extensions" select="1"/> -->
 
 	<xsl:param name="ulink.hyphenate" select="''"/>
