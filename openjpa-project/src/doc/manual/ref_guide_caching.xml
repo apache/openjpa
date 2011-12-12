@@ -1097,7 +1097,7 @@ their parsed form.  This property accepts the following aliases:
 			<title>
                 Pre-defined aliases
             </title>
-			<tgroup cols="2" align="left" colsep="1" rowsep="1">
+			<tgroup cols="3" align="left" colsep="1" rowsep="1">
 				<colspec colname="alias"/>
 				<colspec colname="value"/>
 				<colspec colname="notes"/>
@@ -1190,7 +1190,7 @@ The <ulink url="../javadoc/org/apache/openjpa/kernel/QueryStatistics.html">
             <title>
                 Pre-defined aliases
             </title>
-            <tgroup cols="2" align="left" colsep="1" rowsep="1">
+            <tgroup cols="3" align="left" colsep="1" rowsep="1">
                 <colspec colname="alias"/>
                 <colspec colname="value"/>
                 <colspec colname="notes"/>
