@@ -44,6 +44,7 @@ import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.meta.ClasspathMetaDataIterator;
 import org.apache.openjpa.lib.meta.FileMetaDataIterator;
+import org.apache.openjpa.lib.meta.JarFileURLMetaDataIterator;
 import org.apache.openjpa.lib.meta.MetaDataFilter;
 import org.apache.openjpa.lib.meta.MetaDataIterator;
 import org.apache.openjpa.lib.meta.MetaDataParser;
@@ -703,12 +704,18 @@ public abstract class AbstractCFMetaDataFactory
                         continue;
                     }
                 }
-                if ("jar".equals(url.getProtocol())
-                    && url.getPath().endsWith("!/")) {
-                    if (log.isTraceEnabled())
-                        log.trace(_loc.get("scanning-jar-url", url));
-                    scan(new ZipFileMetaDataIterator(url,
-                        newMetaDataFilter()), cparser, names, true, url);
+                if ("jar".equals(url.getProtocol())) {
+                    if (url.getPath().endsWith("!/")) {
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-jar-url", url));
+                        scan(new ZipFileMetaDataIterator(url,
+                            newMetaDataFilter()), cparser, names, true, url);
+                    } else {
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-jar-url", url));
+                        scan(new JarFileURLMetaDataIterator(url,
+                            newMetaDataFilter()), cparser, names, true, url);
+                    }                   
                 } else if (url.getPath().endsWith(".jar")) {
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("scanning-jar-at-url", url));

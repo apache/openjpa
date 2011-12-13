@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -43,6 +44,8 @@ import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.ZipFile;
 
 import javax.validation.ConstraintViolation;
@@ -962,6 +965,42 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
+    
+    /**
+     * Return a PrivilegedExceptionAction object for con.getJarFile().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return JarFile
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction<JarFile> getJarFileAction(final JarURLConnection con)
+        throws IOException {
+        return new PrivilegedExceptionAction<JarFile>() {
+            public JarFile run() throws IOException {
+                return con.getJarFile();
+            }
+        };
+    }
+    
+    /**
+     * Return a PrivilegedExceptionAction object for con.getJarEntry().
+     * 
+     * Requires security policy:
+     *   'permission java.io.FilePermission "read";'
+     * 
+     * @return JarFile
+     * @throws IOException
+     */
+    public static final PrivilegedExceptionAction<JarEntry> getJarEntryAction(final JarURLConnection con)
+        throws IOException {
+        return new PrivilegedExceptionAction<JarEntry>() {
+            public JarEntry run() throws IOException {
+                return con.getJarEntry();
+            }
+        };
+    }   
 
     /**
      * Return a PrivilegeAction object for new serp.bytecode.Code().
