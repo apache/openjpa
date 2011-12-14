@@ -990,7 +990,7 @@ public abstract class J2DoPrivHelper {
      * Requires security policy:
      *   'permission java.io.FilePermission "read";'
      * 
-     * @return JarFile
+     * @return JarEntry
      * @throws IOException
      */
     public static final PrivilegedExceptionAction<JarEntry> getJarEntryAction(final JarURLConnection con)
