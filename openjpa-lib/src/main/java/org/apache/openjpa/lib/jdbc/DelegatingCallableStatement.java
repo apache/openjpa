@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -44,26 +43,14 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * {@link CallableStatement} that delegates to an internal statement.
  *
  * @author Abe White
  */
-public abstract class DelegatingCallableStatement
+public class DelegatingCallableStatement
     implements CallableStatement, Closeable {
-
-    static final Constructor<DelegatingCallableStatement> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingCallableStatement.class, 
-                CallableStatement.class, Connection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     private final CallableStatement _stmnt;
     private final DelegatingCallableStatement _del;
@@ -79,13 +66,6 @@ public abstract class DelegatingCallableStatement
             _del = null;
     }
 
-    /** 
-     *  Constructor for the concrete implementation of this abstract class.
-     */
-    public static DelegatingCallableStatement newInstance(CallableStatement stmnt, Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, stmnt, conn);
-    }
-
     protected ResultSet wrapResult(boolean wrap, ResultSet rs) {
         if (!wrap)
             return rs;
@@ -94,7 +74,7 @@ public abstract class DelegatingCallableStatement
         if (rs == null)
             return null;
 
-        return DelegatingResultSet.newInstance(rs, this);
+        return new DelegatingResultSet(rs, this);
     }
 
     /**
@@ -823,13 +803,14 @@ public abstract class DelegatingCallableStatement
 
     // JDBC 4 methods follow.
 
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
-    public Object unwrap(Class iface) {
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         if (isWrapperFor(iface))
-            return getDelegate();
+            return (T) getDelegate();
         else
             return null;
     }

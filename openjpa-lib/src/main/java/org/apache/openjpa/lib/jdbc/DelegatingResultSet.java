@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -42,7 +41,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Wrapper around an existing result set. Subclasses can override the
@@ -52,18 +50,7 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  *
  * @author Marc Prud'hommeaux
  */
-public abstract class DelegatingResultSet implements ResultSet, Closeable {
-
-    static final Constructor<DelegatingResultSet> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingResultSet.class, 
-                ResultSet.class, Statement.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DelegatingResultSet implements ResultSet, Closeable {
 
     private final ResultSet _rs;
     private final DelegatingResultSet _del;
@@ -80,15 +67,6 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
         else
             _del = null;
     }
-
-    public static DelegatingResultSet newInstance(ResultSet rs, Statement stmnt)  {
-        return ConcreteClassGenerator.newInstance(concreteImpl, rs, stmnt);
-    }
-
-    /** 
-     *  Marker to enforce that subclasses of this class are abstract.
-     */
-    protected abstract void enforceAbstract();
 
     /**
      * Return the wrapped result set.
@@ -700,13 +678,14 @@ public abstract class DelegatingResultSet implements ResultSet, Closeable {
     
     // JDBC 4.0 methods follow.
 
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
-    public Object unwrap(Class iface) {
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         if (isWrapperFor(iface))
-            return getDelegate();
+            return (T) getDelegate();
         else
             return null;
     }

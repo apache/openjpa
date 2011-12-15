@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -74,8 +72,6 @@ import org.apache.openjpa.lib.jdbc.DelegatingStatement;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -114,30 +110,6 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     
     // track the pending statements so we can cancel them
     private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
-
-    private static final Constructor<ClientConnection> clientConnectionImpl;
-    private static final Constructor<RefCountConnection> refCountConnectionImpl;
-    private static final Constructor<CancelStatement> cancelStatementImpl;
-    private static final Constructor<CancelPreparedStatement> cancelPreparedStatementImpl;
-
-    static {
-        try {
-            clientConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ClientConnection.class, 
-                Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(clientConnectionImpl, true));
-            refCountConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(RefCountConnection.class,
-                JDBCStoreManager.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(refCountConnectionImpl, true));
-            cancelStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelStatement.class,
-                JDBCStoreManager.class, Statement.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(cancelStatementImpl, true));
-            cancelPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(CancelPreparedStatement.class,
-                JDBCStoreManager.class, PreparedStatement.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(cancelPreparedStatementImpl, true));
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     public StoreContext getContext() {
         return _ctx;
@@ -261,7 +233,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     }
 
     public Object getClientConnection() {
-        return ConcreteClassGenerator.newInstance(clientConnectionImpl, getConnection());
+        return new ClientConnection(getConnection());
     }
 
     public Connection getConnection() {
@@ -985,7 +957,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * can be overridden.
      */
     protected RefCountConnection connectInternal() throws SQLException {
-        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, JDBCStoreManager.this, _ds.getConnection());
+        return new RefCountConnection(_ds.getConnection());
     }
     
     public Connection getNewConnection() {
@@ -1553,7 +1525,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     /**
      * Connection returned to client code. Makes sure its wrapped connection ref count is decremented on finalize.
      */
-    public abstract static class ClientConnection extends
+    public static class ClientConnection extends
             DelegatingConnection {
 
         private boolean _closed = false;
@@ -1577,7 +1549,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * Connection wrapper that keeps an internal ref count so that it knows
      * when to really close.
      */
-    protected abstract class RefCountConnection extends DelegatingConnection {
+    protected class RefCountConnection extends DelegatingConnection {
 
         private boolean _retain = false;
         private int _refs = 0;
@@ -1634,28 +1606,27 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
 
         protected Statement createStatement(boolean wrap) throws SQLException {
-            return ConcreteClassGenerator.newInstance(cancelStatementImpl, JDBCStoreManager.this,
-                    super.createStatement(false), RefCountConnection.this);
+            return new CancelStatement(super.createStatement(false),
+                RefCountConnection.this);
         }
 
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
-            return ConcreteClassGenerator.newInstance(cancelStatementImpl, JDBCStoreManager.this,
-                    super.createStatement(rsType, rsConcur, false), RefCountConnection.this);
+            return new CancelStatement(super.createStatement(rsType, rsConcur,
+                false), RefCountConnection.this);
+
         }
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-            return ConcreteClassGenerator.newInstance(cancelPreparedStatementImpl,
-                    JDBCStoreManager.this, super.prepareStatement(sql, false), RefCountConnection.this);
+            return new CancelPreparedStatement(super.prepareStatement(sql,
+                false), RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
-            return ConcreteClassGenerator.newInstance
-                (cancelPreparedStatementImpl,
-                    JDBCStoreManager.this, super.prepareStatement(sql, rsType, rsConcur, false),
-                    RefCountConnection.this);
+            return new CancelPreparedStatement(super.prepareStatement(sql,
+                rsType, rsConcur, false), RefCountConnection.this);
         }
     }
 
@@ -1663,7 +1634,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
      */
-    protected abstract class CancelStatement extends DelegatingStatement {
+    private class CancelStatement extends DelegatingStatement {
 
         public CancelStatement(Statement stmnt, Connection conn) {
             super(stmnt, conn);
@@ -1756,7 +1727,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
      */
-    protected abstract class CancelPreparedStatement extends
+    private class CancelPreparedStatement extends
             DelegatingPreparedStatement {
 
         public CancelPreparedStatement(PreparedStatement stmnt, 

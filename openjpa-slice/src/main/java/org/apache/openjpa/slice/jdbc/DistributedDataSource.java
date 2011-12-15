@@ -81,7 +81,7 @@ public class DistributedDataSource extends DecoratingDataSource implements
 		List<Connection> c = new ArrayList<Connection>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection());
-		return DistributedConnection.newInstance(c);
+		return new DistributedConnection(c);
 	}
 
 	public Connection getConnection(String username, String password)
@@ -89,7 +89,7 @@ public class DistributedDataSource extends DecoratingDataSource implements
 		List<Connection> c = new ArrayList<Connection>();
 		for (DataSource ds : real)
 			c.add(ds.getConnection(username, password));
-		return DistributedConnection.newInstance(c);
+		return new DistributedConnection(c);
 	}
 
 	public PrintWriter getLogWriter() throws SQLException {
@@ -109,11 +109,6 @@ public class DistributedDataSource extends DecoratingDataSource implements
 		for (DataSource ds:real)
 			ds.setLoginTimeout(seconds);
 	}
-	
-    protected void enforceAbstract() {
-        
-    }
-
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }

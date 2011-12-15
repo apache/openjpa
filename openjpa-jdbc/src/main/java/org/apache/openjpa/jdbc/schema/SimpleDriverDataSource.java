@@ -30,7 +30,6 @@ import java.util.Properties;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.StoreException;
@@ -38,7 +37,7 @@ import org.apache.openjpa.util.StoreException;
 /**
  * Non-pooling driver data source.
  */
-public abstract class SimpleDriverDataSource
+public class SimpleDriverDataSource
     implements DriverDataSource {
 
     private String _connectionDriverName;
@@ -52,20 +51,6 @@ public abstract class SimpleDriverDataSource
     
     protected static Localizer _loc = Localizer.forPackage(SimpleDriverDataSource.class);
     protected static Localizer _eloc = Localizer.forPackage(DelegatingDataSource.class);
-
-    private static final Class<? extends SimpleDriverDataSource> implClass;
-
-    static {
-        try {
-            implClass = ConcreteClassGenerator.makeConcrete(SimpleDriverDataSource.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    public static SimpleDriverDataSource newInstance() {
-        return ConcreteClassGenerator.newInstance(implClass);
-    }
 
     public Connection getConnection()
         throws SQLException {

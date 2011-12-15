@@ -20,26 +20,26 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Map;
-
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * A chain of ResultSet.
@@ -49,24 +49,12 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  * @author Pinaki Poddar 
  *
  */
-public abstract class DistributedResultSet implements ResultSet {
-    static final Constructor<DistributedResultSet> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedResultSet.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DistributedResultSet implements ResultSet {
     
 	private LinkedList<ResultSet> comps = new LinkedList<ResultSet>();
 	private ResultSet current;
 	private int cursor = -1;
 	
-    public static DistributedResultSet newInstance()  {
-        return ConcreteClassGenerator.newInstance(concreteImpl);
-    }
 	/**
 	 * Adds the ResultSet only if it has rows.
 	 */
@@ -699,4 +687,226 @@ public abstract class DistributedResultSet implements ResultSet {
 	public boolean wasNull() throws SQLException {
 		return current.wasNull();
 	}
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public int getHoldability() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public Reader getNCharacterStream(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public Reader getNCharacterStream(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public NClob getNClob(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public NClob getNClob(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public String getNString(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public String getNString(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public RowId getRowId(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public RowId getRowId(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public SQLXML getSQLXML(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public SQLXML getSQLXML(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public boolean isClosed() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateAsciiStream(int arg0, InputStream arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateAsciiStream(String arg0, InputStream arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateAsciiStream(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateAsciiStream(String arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBinaryStream(int arg0, InputStream arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBinaryStream(String arg0, InputStream arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBinaryStream(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBinaryStream(String arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBlob(int arg0, InputStream arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBlob(String arg0, InputStream arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBlob(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateBlob(String arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateCharacterStream(int arg0, Reader arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateCharacterStream(String arg0, Reader arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateCharacterStream(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateCharacterStream(String arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateClob(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateClob(String arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateClob(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateClob(String arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNCharacterStream(int arg0, Reader arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNCharacterStream(String arg0, Reader arg1)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNCharacterStream(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNCharacterStream(String arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(int arg0, NClob arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(String arg0, NClob arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(String arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNClob(String arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNString(int arg0, String arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateNString(String arg0, String arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateRowId(int arg0, RowId arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateRowId(String arg0, RowId arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateSQLXML(int arg0, SQLXML arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+    @Override
+    public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

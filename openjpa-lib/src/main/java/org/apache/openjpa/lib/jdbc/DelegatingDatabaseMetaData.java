@@ -18,32 +18,18 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-
 /**
  * Wrapper around a DatabaseMetaData instance.
  *
  * @author Marc Prud'hommeaux
  */
-public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
-
-    static final Constructor<DelegatingDatabaseMetaData> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingDatabaseMetaData.class, 
-                    DatabaseMetaData.class, Connection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     private final DatabaseMetaData _metaData;
     private final Connection _conn;
@@ -53,15 +39,6 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
         _conn = conn;
         _metaData = metaData;
     }
-
-    public static DelegatingDatabaseMetaData newInstance(DatabaseMetaData metaData, Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, metaData, conn);
-    }
-
-    /** 
-     *  Marker to enforce that subclasses of this class are abstract.
-     */
-    protected abstract void enforceAbstract();
 
     /**
      * Return the base underlying database metadata.
@@ -804,13 +781,13 @@ public abstract class DelegatingDatabaseMetaData implements DatabaseMetaData {
 
     //  JDBC 4.0 methods follow.
 
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
-    public Object unwrap(Class iface) {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         if (isWrapperFor(iface))
-            return getDelegate();
+            return (T) getDelegate();
         else
             return null;
     }

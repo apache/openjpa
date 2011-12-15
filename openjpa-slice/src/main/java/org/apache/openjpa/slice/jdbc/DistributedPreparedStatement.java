@@ -20,24 +20,24 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * A virtual PreparedStaement that delegates to a set of actual
@@ -46,28 +46,14 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  * @author Pinaki Poddar 
  *
  */
-public abstract class DistributedPreparedStatement 
+public class DistributedPreparedStatement 
     extends DistributedTemplate<PreparedStatement> 
     implements PreparedStatement {
 
-    static final Constructor<DistributedPreparedStatement> concreteImpl;
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedPreparedStatement.class, 
-                    DistributedConnection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-    
 	public DistributedPreparedStatement(DistributedConnection c) {
 		super(c);
 	}
 	
-    public static DistributedPreparedStatement newInstance(DistributedConnection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, conn);
-    }
-
 	public void clearParameters() throws SQLException {
 		for (PreparedStatement s : this)
 			s.clearParameters();
@@ -81,7 +67,7 @@ public abstract class DistributedPreparedStatement
 	}
 
 	public ResultSet executeQuery() throws SQLException {
-		DistributedResultSet mrs = DistributedResultSet.newInstance();
+		DistributedResultSet mrs = new DistributedResultSet();
 		for (PreparedStatement t : this)
 			mrs.add(t.executeQuery());
 		return mrs;
@@ -264,4 +250,99 @@ public abstract class DistributedPreparedStatement
 		for (PreparedStatement t:this)
 		    t.addBatch();
 	 }
+
+    @Override
+    public void setAsciiStream(int arg0, InputStream arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setAsciiStream(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBinaryStream(int arg0, InputStream arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBinaryStream(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBlob(int arg0, InputStream arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBlob(int arg0, InputStream arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setCharacterStream(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setCharacterStream(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setClob(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setClob(int arg0, Reader arg1, long arg2) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNCharacterStream(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNCharacterStream(int arg0, Reader arg1, long arg2)
+        throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNClob(int arg0, NClob arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNClob(int arg0, Reader arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNClob(int arg0, Reader arg1, long arg2) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setNString(int arg0, String arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setRowId(int arg0, RowId arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSQLXML(int arg0, SQLXML arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

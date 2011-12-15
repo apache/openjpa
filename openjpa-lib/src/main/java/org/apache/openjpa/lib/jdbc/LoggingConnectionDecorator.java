@@ -72,12 +72,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 public class LoggingConnectionDecorator implements ConnectionDecorator {
 
     private static final String SEP = J2DoPrivHelper.getLineSeparator();
-    static final Constructor<LoggingConnection> loggingConnectionImpl;
-    static final Constructor<LoggingResultSet> loggingResultSetImpl;
-    static final Constructor<LoggingStatement> loggingStatementImpl;
-    static final Constructor<LoggingPreparedStatement> loggingPreparedStatementImpl;
-    static final Constructor<LoggingCallableStatement> loggingCallableStatementImpl;
-    static final Constructor<LoggingDatabaseMetaData> loggingDatabaseMetaDataImpl;
 
     private static final int WARN_IGNORE = 0;
     private static final int WARN_LOG_TRACE = 1;
@@ -96,34 +90,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         WARNING_ACTIONS[WARN_LOG_ERROR] = "error";
         WARNING_ACTIONS[WARN_THROW] = "throw";
         WARNING_ACTIONS[WARN_HANDLE] = "handle";
-
-        try {
-            loggingConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(LoggingConnection.class,
-                LoggingConnectionDecorator.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingConnectionImpl, true));
-            loggingResultSetImpl = ConcreteClassGenerator.getConcreteConstructor(
-                LoggingConnection.LoggingResultSet.class, 
-                LoggingConnection.class, ResultSet.class, Statement.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingResultSetImpl, true));
-            loggingStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
-                LoggingConnection.LoggingStatement.class,
-                LoggingConnection.class, Statement.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingStatementImpl, true));
-            loggingPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
-                LoggingConnection.LoggingPreparedStatement.class, 
-                LoggingConnection.class, PreparedStatement.class, String.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingPreparedStatementImpl, true));
-            loggingCallableStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
-                LoggingConnection.LoggingCallableStatement.class,
-                LoggingConnection.class, CallableStatement.class, String.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingCallableStatementImpl, true));
-            loggingDatabaseMetaDataImpl = ConcreteClassGenerator.getConcreteConstructor(
-                LoggingConnection.LoggingDatabaseMetaData.class,
-                LoggingConnection.class, DatabaseMetaData.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(loggingDatabaseMetaDataImpl, true));
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
     }
 
     private final DataSourceLogs _logs = new DataSourceLogs();
@@ -250,7 +216,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          
     private LoggingConnection newLoggingConnection(Connection conn)
         throws SQLException {
-        return ConcreteClassGenerator.newInstance(loggingConnectionImpl, LoggingConnectionDecorator.this, conn);
+        return new LoggingConnection(conn);
     }
 
     private SQLException wrap(SQLException sqle, Statement stmnt) {
@@ -297,7 +263,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     /**
      * Logging connection.
      */
-    protected abstract class LoggingConnection extends DelegatingConnection {
+    protected class LoggingConnection extends DelegatingConnection {
 
         public LoggingConnection(Connection conn) throws SQLException {
             super(conn);
@@ -376,21 +342,22 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
         private LoggingPreparedStatement newLoggingPreparedStatement
             (PreparedStatement stmnt, String sql) throws SQLException {
-            return ConcreteClassGenerator.newInstance(loggingPreparedStatementImpl, LoggingConnection.this, stmnt, sql);
+            return new LoggingPreparedStatement(stmnt, sql);
         }
         
-        private CallableStatement newLoggingCallableStatement(CallableStatement stmnt, String sql) throws SQLException {
-            return ConcreteClassGenerator.newInstance(loggingCallableStatementImpl, LoggingConnection.this, stmnt, sql);
+        private CallableStatement newLoggingCallableStatement(
+            CallableStatement stmnt, String sql) throws SQLException {
+            return new LoggingCallableStatement(stmnt, sql);
         }
         
         private LoggingStatement newLoggingStatement(Statement stmnt)
             throws SQLException {
-            return ConcreteClassGenerator.newInstance(loggingStatementImpl, LoggingConnection.this, stmnt);
+            return new LoggingStatement(stmnt);
         }
         
         private LoggingDatabaseMetaData newLoggingDatabaseMetaData
             (DatabaseMetaData meta) throws SQLException {
-            return ConcreteClassGenerator.newInstance(loggingDatabaseMetaDataImpl, LoggingConnection.this, meta);
+            return new LoggingDatabaseMetaData(meta);
         }
 
 
@@ -731,7 +698,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         /**
          * Metadata wrapper that logs actions.
          */
-        protected abstract class LoggingDatabaseMetaData
+        protected class LoggingDatabaseMetaData
             extends DelegatingDatabaseMetaData {
 
             public LoggingDatabaseMetaData(DatabaseMetaData meta) {
@@ -911,7 +878,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          * Statement wrapper that logs SQL to the parent data source and
          * remembers the last piece of SQL to be executed on it.
          */
-        protected abstract class LoggingStatement extends DelegatingStatement {
+        protected class LoggingStatement extends DelegatingStatement {
 
             private String _sql = null;
 
@@ -920,7 +887,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             private LoggingResultSet newLoggingResultSet(ResultSet rs, Statement stmnt) {
-                return ConcreteClassGenerator.newInstance(loggingResultSetImpl, LoggingConnection.this, rs, stmnt);
+                return new LoggingResultSet(rs, stmnt);
             }
 
             public void appendInfo(StringBuffer buf) {
@@ -1093,7 +1060,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
         }
 
-        protected abstract class LoggingPreparedStatement
+        protected class LoggingPreparedStatement
             extends DelegatingPreparedStatement {
 
             private final String _sql;
@@ -1111,11 +1078,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
 
             private LoggingResultSet newLoggingResultSet(ResultSet rs,
                 PreparedStatement stmnt) {
-                return ConcreteClassGenerator.
-                    newInstance(loggingResultSetImpl,
-                    LoggingConnection.class, LoggingConnection.this,
-                    ResultSet.class, rs,
-                    PreparedStatement.class, stmnt);
+                return new LoggingResultSet(rs, stmnt);
             }
 
             protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
@@ -1702,7 +1665,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         /**
          * Warning-handling result set.
          */
-        protected abstract class LoggingResultSet extends DelegatingResultSet {
+        protected class LoggingResultSet extends DelegatingResultSet {
 
             public LoggingResultSet(ResultSet rs, Statement stmnt) {
                 super(rs, stmnt);
@@ -1822,7 +1785,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
          * Similar to {@link LoggingPreparedStatement} but can not be extended
          * due to the existing delegation hierarchy.
          */
-        protected abstract class LoggingCallableStatement extends 
+        protected class LoggingCallableStatement extends 
             DelegatingCallableStatement {
             private final String _sql;
             private List<String> _params = null;
@@ -1839,11 +1802,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
         	
             private LoggingResultSet newLoggingResultSet(ResultSet rs,
                 CallableStatement stmnt) {
-                return ConcreteClassGenerator.
-                    newInstance(loggingResultSetImpl,
-                    LoggingConnection.class, LoggingConnection.this,
-                    ResultSet.class, rs,
-                    CallableStatement.class, stmnt);
+                return new LoggingResultSet(rs, stmnt);
             }
             
             protected ResultSet wrapResult(ResultSet rs, boolean wrap) {

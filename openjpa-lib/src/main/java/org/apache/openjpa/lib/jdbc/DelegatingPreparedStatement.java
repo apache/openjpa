@@ -20,10 +20,8 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.security.AccessController;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -44,8 +42,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Wrapper around an existing statement. Subclasses can override the
@@ -55,20 +51,9 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  *
  * @author Abe White
  */
-public abstract class DelegatingPreparedStatement
+public class DelegatingPreparedStatement
     implements PreparedStatement, Closeable {
     
-    static final Constructor<DelegatingPreparedStatement> concreteImpl;
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingPreparedStatement.class,
-                    PreparedStatement.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(concreteImpl, true));
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
     private final PreparedStatement _stmnt;
     private final DelegatingPreparedStatement _del;
     private final Connection _conn;
@@ -83,14 +68,10 @@ public abstract class DelegatingPreparedStatement
             _del = null;
     }
     
-    public static DelegatingPreparedStatement newInstance(PreparedStatement stmnt, Connection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, stmnt, conn);
-    }
-
     protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
         if (!wrap || rs == null)
             return rs;
-        return DelegatingResultSet.newInstance(rs, this);
+        return new DelegatingResultSet(rs, this);
     }
 
     /**
@@ -480,13 +461,13 @@ public abstract class DelegatingPreparedStatement
 
     // JDBC 4 methods follow.
 
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
-    public Object unwrap(Class iface) {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         if (isWrapperFor(iface))
-            return getDelegate();
+            return (T) getDelegate();
         else
             return null;
     }

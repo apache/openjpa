@@ -18,17 +18,14 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.sql.DataSource;
-
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.sql.DataSource;
 
 /**
  * Delegating data source that maintains a list of {@link ConnectionDecorator}s.
@@ -36,19 +33,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Abe White
  * @nojavadoc
  */
-public abstract class DecoratingDataSource extends DelegatingDataSource {
+public class DecoratingDataSource extends DelegatingDataSource {
     
-    private static final Constructor<DecoratingDataSource> implClass;
-
-    static {
-        try {
-            implClass = ConcreteClassGenerator.getConcreteConstructor(DecoratingDataSource.class, DataSource.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-
     private List<ConnectionDecorator> _decorators =
         new CopyOnWriteArrayList<ConnectionDecorator>();
 
@@ -59,11 +45,6 @@ public abstract class DecoratingDataSource extends DelegatingDataSource {
         super(ds);
     }
     
-    public static DecoratingDataSource newDecoratingDataSource(DataSource ds) {
-        return ConcreteClassGenerator.newInstance(implClass, ds);
-    }
-
-
     /**
      * Return a read-only list of connection decorators in the order they were
      * added.

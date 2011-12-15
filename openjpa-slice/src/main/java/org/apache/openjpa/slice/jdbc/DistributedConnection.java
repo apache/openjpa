@@ -18,19 +18,24 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
-import java.lang.reflect.Constructor;
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
+import java.util.Properties;
 
 /**
  * A virtual connection that contains multiple physical connections.
@@ -38,15 +43,8 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  * @author Pinaki Poddar
  * 
  */
-public abstract class DistributedConnection implements Connection {
-    static final Constructor<DistributedConnection> concreteImpl;
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedConnection.class, List.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DistributedConnection implements Connection {
+
 	private final List<Connection> real;
 	private final Connection master;
 
@@ -56,18 +54,6 @@ public abstract class DistributedConnection implements Connection {
 		real = connections;
 		master = connections.get(0);
 	}
-	
-    /** 
-     *  Constructor for the concrete implementation of this abstract class.
-     */
-    public static DistributedConnection newInstance(List<Connection> conns) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, conns);
-    }
-
-    /** 
-     *  Marker to enforce that subclasses of this class are abstract.
-     */
-    protected abstract void enforceAbstract();
     
 	public boolean contains(Connection c) {
 		return real.contains(c);
@@ -89,7 +75,7 @@ public abstract class DistributedConnection implements Connection {
 	}
 
 	public Statement createStatement() throws SQLException {
-        DistributedStatement ret = DistributedStatement.newInstance(this);
+		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement());
 		}
@@ -97,7 +83,7 @@ public abstract class DistributedConnection implements Connection {
 	}
 
     public Statement createStatement(int arg0, int arg1) throws SQLException {
-        DistributedStatement ret = DistributedStatement.newInstance(this);
+		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement(arg0, arg1));
 		}
@@ -106,7 +92,7 @@ public abstract class DistributedConnection implements Connection {
 
 	public Statement createStatement(int arg0, int arg1, int arg2)
 			throws SQLException {
-        DistributedStatement ret = DistributedStatement.newInstance(this);
+		DistributedStatement ret = new DistributedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.createStatement(arg0, arg1, arg2));
 		}
@@ -180,8 +166,7 @@ public abstract class DistributedConnection implements Connection {
         if (arg0.startsWith(
                 "SELECT SEQUENCE_VALUE FROM OPENJPA_SEQUENCE_TABLE"))
 			return master.prepareStatement(arg0);
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0));
 		}
@@ -190,8 +175,7 @@ public abstract class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int arg1)
 			throws SQLException {
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -200,8 +184,7 @@ public abstract class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, int[] arg1)
 			throws SQLException {
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -210,8 +193,7 @@ public abstract class DistributedConnection implements Connection {
 
 	public PreparedStatement prepareStatement(String arg0, String[] arg1)
 			throws SQLException {
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1));
 		}
@@ -220,8 +202,7 @@ public abstract class DistributedConnection implements Connection {
 
     public PreparedStatement prepareStatement(String arg0, int arg1, int arg2)
 			throws SQLException {
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1, arg2));
 		}
@@ -230,8 +211,7 @@ public abstract class DistributedConnection implements Connection {
 
     public PreparedStatement prepareStatement(String arg0, int arg1, int arg2,
 			int arg3) throws SQLException {
-        DistributedPreparedStatement ret = DistributedPreparedStatement.
-                newInstance(this);
+		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0, arg1, arg2));
 		}
@@ -290,4 +270,70 @@ public abstract class DistributedConnection implements Connection {
 		for (Connection c : real)
 			c.setTypeMap(arg0);
 	}
+
+    @Override
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Array createArrayOf(String arg0, Object[] arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Blob createBlob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Clob createClob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NClob createNClob() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SQLXML createSQLXML() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Struct createStruct(String arg0, Object[] arg1) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Properties getClientInfo() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getClientInfo(String arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isValid(int arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setClientInfo(Properties arg0) throws SQLClientInfoException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setClientInfo(String arg0, String arg1)
+        throws SQLClientInfoException {
+        throw new UnsupportedOperationException();
+    }
 }

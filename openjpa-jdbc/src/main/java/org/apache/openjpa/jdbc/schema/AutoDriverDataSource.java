@@ -22,30 +22,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-
 /**
  * Automatic Commons DBCP pooling or Simple non-pooling driver data source.
  * If the commons-dbcp packages are on the class path, then they will be used,
  * else it will fall back to non-DBCP mode.
  */
-public abstract class AutoDriverDataSource
+public class AutoDriverDataSource
     extends DBCPDriverDataSource {
     
-    private static final Class<? extends AutoDriverDataSource> implClass;
-
-    static {
-        try {
-            implClass = ConcreteClassGenerator.makeConcrete(AutoDriverDataSource.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    public static AutoDriverDataSource newInstance() {
-        return ConcreteClassGenerator.newInstance(implClass);
-    }
-
     @Override
     public Connection getConnection(Properties props) throws SQLException {
         // if we're using managed transactions, or user specified a DBCP driver

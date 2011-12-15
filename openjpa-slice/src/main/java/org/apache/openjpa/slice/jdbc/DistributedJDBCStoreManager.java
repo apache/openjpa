@@ -18,14 +18,11 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,10 +35,8 @@ import java.util.concurrent.Future;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.ConnectionInfo;
-import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
-import org.apache.openjpa.jdbc.kernel.SQLStoreQuery;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -55,13 +50,11 @@ import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.ExpressionParser;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.slice.DistributedConfiguration;
 import org.apache.openjpa.slice.DistributedStoreManager;
-import org.apache.openjpa.slice.ProductDerivation;
 import org.apache.openjpa.slice.Slice;
 import org.apache.openjpa.slice.SliceImplHelper;
 import org.apache.openjpa.slice.SliceInfo;
@@ -87,19 +80,6 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     private final DistributedJDBCConfiguration _conf;
     private static final Localizer _loc = Localizer.forPackage(DistributedJDBCStoreManager.class);
 
-    private static final Constructor<ClientConnection> clientConnectionImpl;
-    private static final Constructor<RefCountConnection> refCountConnectionImpl;
-    static {
-        try {
-            clientConnectionImpl = ConcreteClassGenerator.
-                getConcreteConstructor(ClientConnection.class, Connection.class);
-            refCountConnectionImpl = ConcreteClassGenerator.
-                getConcreteConstructor(RefCountConnection.class, JDBCStoreManager.class, Connection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-    
     /**
      * Constructs a set of child StoreManagers each connected to a physical
      * DataSource.
@@ -369,7 +349,7 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
     }
 
     public Object getClientConnection() {
-        return ConcreteClassGenerator.newInstance(clientConnectionImpl, getConnection());
+        return _master.getClientConnection();
     }
 
     public Seq getDataStoreIdSequence(ClassMetaData forClass) {
@@ -496,8 +476,8 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         List<Connection> list = new ArrayList<Connection>();
         for (SliceStoreManager slice : _slices)
             list.add(slice.getConnection());
-        DistributedConnection con = DistributedConnection.newInstance(list);
-        return ConcreteClassGenerator.newInstance(refCountConnectionImpl, DistributedJDBCStoreManager.this, con);
+        DistributedConnection con = new DistributedConnection(list);
+        return new RefCountConnection(con);
     }
     
     /**

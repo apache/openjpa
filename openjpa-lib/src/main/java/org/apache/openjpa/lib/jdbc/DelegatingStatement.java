@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Wrapper around an existing statement. Subclasses can override the
@@ -36,18 +34,7 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  *
  * @author Abe White
  */
-public abstract class DelegatingStatement implements Statement, Closeable {
-
-    static final Constructor<DelegatingStatement> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingStatement.class, 
-                Statement.class, Connection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DelegatingStatement implements Statement, Closeable {
 
     private final Statement _stmnt;
     private final DelegatingStatement _del;
@@ -62,19 +49,10 @@ public abstract class DelegatingStatement implements Statement, Closeable {
             _del = null;
     }
 
-    public static DelegatingStatement newInstance(Statement stmnt, Connection conn)  {
-        return ConcreteClassGenerator.newInstance(concreteImpl, stmnt, conn);
-    }
-
-    /** 
-     *  Marker to enforce that subclasses of this class are abstract.
-     */
-    protected abstract void enforceAbstract();
-
     protected ResultSet wrapResult(ResultSet rs, boolean wrap) {
         if (!wrap || rs == null)
             return rs;
-        return DelegatingResultSet.newInstance(rs, this);
+        return new DelegatingResultSet(rs, this);
     }
 
     /**
@@ -293,13 +271,13 @@ public abstract class DelegatingStatement implements Statement, Closeable {
 
     // JDBC 4 methods follow.
 
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return iface.isAssignableFrom(getDelegate().getClass());
     }
 
-    public Object unwrap(Class iface) {
+    public <T> T unwrap(Class<T> iface) throws SQLException {
         if (isWrapperFor(iface))
-            return getDelegate();
+            return (T) getDelegate();
         else
             return null;
     }

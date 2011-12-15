@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.slice.jdbc;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,27 +27,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-
 /**
  * A template for multiple Statements being executed by multiple connections.
  * 
  * @author Pinaki Poddar 
  *
  */
-public abstract class DistributedTemplate<T extends Statement> 
+public class DistributedTemplate<T extends Statement> 
 	implements Statement, Iterable<T> {
-    static final Constructor<DistributedTemplate> concreteImpl;
 
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DistributedTemplate.class, 
-                DistributedConnection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
+    
     protected List<T> stmts = new ArrayList<T>();
 	protected final DistributedConnection con;
 	protected T master;
@@ -57,10 +45,6 @@ public abstract class DistributedTemplate<T extends Statement>
 		con = c;
 	}
 	
-    public static DistributedTemplate newInstance(DistributedConnection conn) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, conn);
-    }
-    
 	public Iterator<T> iterator() {
 		return stmts.iterator();
 	}
@@ -142,14 +126,14 @@ public abstract class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet executeQuery() throws SQLException {
-		DistributedResultSet rs = DistributedResultSet.newInstance();
+		DistributedResultSet rs = new DistributedResultSet();
 		for (T s:this)
 			rs.add(s.executeQuery(null));
 		return rs;
 	}
 
 	public ResultSet executeQuery(String arg0) throws SQLException {
-		DistributedResultSet rs = DistributedResultSet.newInstance();
+		DistributedResultSet rs = new DistributedResultSet();
 		for (T s:this)
 			rs.add(s.executeQuery(arg0));
 		return rs;
@@ -196,7 +180,7 @@ public abstract class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet getGeneratedKeys() throws SQLException {
-		DistributedResultSet mrs = DistributedResultSet.newInstance();
+		DistributedResultSet mrs = new DistributedResultSet();
 		for (T s:this)
 			mrs.add(s.getGeneratedKeys());
 		return mrs;
@@ -229,7 +213,7 @@ public abstract class DistributedTemplate<T extends Statement>
 	}
 
 	public ResultSet getResultSet() throws SQLException {
-		DistributedResultSet rs = DistributedResultSet.newInstance();
+		DistributedResultSet rs = new DistributedResultSet();
 		for (T s:this)
 			rs.add(s.getResultSet());
 		return rs;
@@ -289,4 +273,29 @@ public abstract class DistributedTemplate<T extends Statement>
 		for (T s:this)
 			s.setQueryTimeout(n);
 	}
+
+    @Override
+    public boolean isWrapperFor(Class<?> arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isClosed() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isPoolable() throws SQLException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setPoolable(boolean arg0) throws SQLException {
+        throw new UnsupportedOperationException();
+    }
 }

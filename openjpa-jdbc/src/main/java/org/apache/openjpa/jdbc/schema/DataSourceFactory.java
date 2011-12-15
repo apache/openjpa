@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
-import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -42,7 +41,6 @@ import org.apache.openjpa.lib.jdbc.JDBCEventConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -140,8 +138,7 @@ public class DataSourceFactory {
         Log jdbcLog = conf.getLog(JDBCConfiguration.LOG_JDBC);
         Log sqlLog = conf.getLog(JDBCConfiguration.LOG_SQL);
 
-        DecoratingDataSource dds = DecoratingDataSource.
-            newDecoratingDataSource(ds);
+        DecoratingDataSource dds = new DecoratingDataSource(ds);
         try {
             // add user-defined decorators
             List<ConnectionDecorator> decorators = new ArrayList<ConnectionDecorator>();
@@ -275,7 +272,7 @@ public class DataSourceFactory {
         // also check if they are both blank strings
         if ("".equals(user) && "".equals(pass))
             return ds;
-        return DefaultsDataSource.newInstance(ds, user, pass);
+        return new DefaultsDataSource(ds, user, pass);
     }
 
     /**
@@ -290,19 +287,8 @@ public class DataSourceFactory {
     /**
      * A data source with pre-configured default user name and password.
      */
-    protected abstract static class DefaultsDataSource
+    private static class DefaultsDataSource
         extends DelegatingDataSource {
-
-        private static final Constructor<DefaultsDataSource> implClass;
-
-        static {
-            try {
-                implClass = ConcreteClassGenerator.getConcreteConstructor(DefaultsDataSource.class, 
-                        DataSource.class, String.class, String.class);
-            } catch (Exception e) {
-                throw new ExceptionInInitializerError(e);
-            }
-        }
 
         private final String _user;
         private final String _pass;
@@ -311,10 +297,6 @@ public class DataSourceFactory {
             super(ds);
             _user = user;
             _pass = pass;
-        }
-
-        public static DefaultsDataSource newInstance(DataSource ds, String user, String pass) {
-            return ConcreteClassGenerator.newInstance(implClass, ds, user, pass);
         }
 
         public Connection getConnection()

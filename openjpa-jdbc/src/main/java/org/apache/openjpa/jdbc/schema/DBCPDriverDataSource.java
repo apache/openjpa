@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Commons DBCP basic pooling driver data source.
@@ -50,20 +49,6 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     protected JDBCConfiguration conf;
     private DataSource _ds;
     
-    private static final Class<? extends DBCPDriverDataSource> implClass;
-
-    static {
-        try {
-            implClass = ConcreteClassGenerator.makeConcrete(DBCPDriverDataSource.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    public static DBCPDriverDataSource newInstance() {
-        return ConcreteClassGenerator.newInstance(implClass);
-    }
-
     @Override
     public Connection getConnection(Properties props) throws SQLException {
         return getDBCPConnection(props);

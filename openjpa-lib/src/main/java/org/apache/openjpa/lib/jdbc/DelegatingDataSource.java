@@ -19,14 +19,13 @@
 package org.apache.openjpa.lib.jdbc;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 
 /**
  * Wrapper around an existing data source. Subclasses can override the
@@ -35,17 +34,7 @@ import org.apache.openjpa.lib.util.ConcreteClassGenerator;
  *
  * @author Abe White
  */
-public abstract class DelegatingDataSource implements DataSource, Closeable {
-
-    static final Constructor<DelegatingDataSource> concreteImpl;
-
-    static {
-        try {
-            concreteImpl = ConcreteClassGenerator.getConcreteConstructor(DelegatingDataSource.class, DataSource.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+public class DelegatingDataSource implements DataSource, Closeable {
 
     private final DataSource _ds;
     private final DelegatingDataSource _del;
@@ -61,18 +50,6 @@ public abstract class DelegatingDataSource implements DataSource, Closeable {
         else
             _del = null;
     }
-
-    /** 
-     *  Constructor for the concrete implementation of this abstract class.
-     */
-    public static DelegatingDataSource newInstance(DataSource ds) {
-        return ConcreteClassGenerator.newInstance(concreteImpl, ds);
-    }
-
-    /** 
-     *  Marker to enforce that subclasses of this class are abstract.
-     */
-    protected abstract void enforceAbstract();
 
     /**
      * Return the wrapped data source.

@@ -18,15 +18,10 @@
  */
 package org.apache.openjpa.lib.jdbc;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
-import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
  * Connection decorator that can configure some properties of the
@@ -41,18 +36,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * @nojavadoc
  */
 public class ConfiguringConnectionDecorator implements ConnectionDecorator {
-
-   static final Constructor<ConfiguringConnection> configuringConnectionImpl;
-
-    static {
-        try {
-            configuringConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(ConfiguringConnection.class, 
-                    ConfiguringConnectionDecorator.class, Connection.class);
-            AccessController.doPrivileged(J2DoPrivHelper.setAccessibleAction(configuringConnectionImpl, true));
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     private int _isolation = -1;
     private int _queryTimeout = -1;
@@ -107,8 +90,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
     public Connection decorate(Connection conn) throws SQLException {
         if (_isolation == Connection.TRANSACTION_NONE || _queryTimeout != -1
             || _autoCommit != null)
-            conn = ConcreteClassGenerator.
-                newInstance(configuringConnectionImpl, this, conn);
+            conn = new ConfiguringConnection(conn);
         if (_isolation != -1 && _isolation != Connection.TRANSACTION_NONE)
             conn.setTransactionIsolation(_isolation);
         return conn;
@@ -117,7 +99,7 @@ public class ConfiguringConnectionDecorator implements ConnectionDecorator {
     /**
      * Decorator to configure connection components correctly.
      */
-    public abstract class ConfiguringConnection extends DelegatingConnection {
+    public class ConfiguringConnection extends DelegatingConnection {
 
         private boolean _curAutoCommit = false;
 
