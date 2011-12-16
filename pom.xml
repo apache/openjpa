@@ -71,7 +71,7 @@
         <createSource>none</createSource>
         <createSources>false</createSources>
         <!-- common JDBC driver versions -->
-        <derby.version>10.5.3.0_1</derby.version>
+        <derby.version>10.8.2.2</derby.version>
         <hsqldb.version>1.8.0.10</hsqldb.version>
         <mysql.version>5.1.12</mysql.version>
         <postgresql.version>8.4-701.jdbc3</postgresql.version>
