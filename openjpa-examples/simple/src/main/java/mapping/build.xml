@@ -43,7 +43,7 @@
             classname="org.apache.openjpa.jdbc.ant.MappingToolTask"/>
 
         <!-- This can also be performed from a cmdline as -
-          java -cp .:openjpa-all-<version>.jar:derby-10.5.3.0_1.jar
+          java -cp .:openjpa-all-<version>.jar:derby-10.8.2.2.jar
           -Dopenjpa.ConnectionDriverName="org.apache.derby.jdbc.EmbeddedDriver"
           -Dopenjpa.ConnectionURL="jdbc:derby:mapping-database;create=true"
           -Dopenjpa.ConnectionUserName=  -Dopenjpa.ConnectionPassword=  
@@ -61,7 +61,7 @@
         </mappingtool>
 
         <!-- This can also be performed from a cmdline as -
-          java -cp .:openjpa-all-<version>.jar:derby-10.5.3.0_1.jar
+          java -cp .:openjpa-all-<version>.jar:derby-10.8.2.2.jar
           -Dopenjpa.ConnectionDriverName="org.apache.derby.jdbc.EmbeddedDriver"
           -Dopenjpa.ConnectionURL="jdbc:derby:mapping-database;create=true"
           -Dopenjpa.ConnectionUserName=  -Dopenjpa.ConnectionPassword=  
@@ -79,7 +79,7 @@
         </mappingtool>
 
         <!-- This can also be performed from a cmdline as -
-          java -cp .:openjpa-all-<version>.jar:derby-10.5.3.0_1.jar
+          java -cp .:openjpa-all-<version>.jar:derby-10.8.2.2.jar
           -Dopenjpa.ConnectionDriverName="org.apache.derby.jdbc.EmbeddedDriver"
           -Dopenjpa.ConnectionURL="jdbc:derby:mapping-database;create=true"
           -Dopenjpa.ConnectionUserName=  -Dopenjpa.ConnectionPassword=  
