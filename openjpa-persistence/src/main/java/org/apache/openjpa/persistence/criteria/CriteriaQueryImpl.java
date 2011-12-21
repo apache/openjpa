@@ -461,7 +461,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Gets the current context.
      */
     Context ctx() {
-        return _contexts.peek();
+        return _contexts == null || _contexts.isEmpty() ? null :  _contexts.peek();
     }
     
     //

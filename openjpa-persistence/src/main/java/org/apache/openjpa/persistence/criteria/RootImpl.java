@@ -73,7 +73,7 @@ class RootImpl<X> extends FromImpl<X,X> implements Root<X> {
         Path var = null;
         Value val = null;
         String alias = c.getAlias(this);
-        if (!alias.equalsIgnoreCase(c.ctx().schemaAlias)
+        if (c.ctx() != null && !alias.equalsIgnoreCase(c.ctx().schemaAlias)
             && (val = c.getRegisteredRootVariable(this)) != null) {
             // this is cross join
             var = factory.newPath(val);
