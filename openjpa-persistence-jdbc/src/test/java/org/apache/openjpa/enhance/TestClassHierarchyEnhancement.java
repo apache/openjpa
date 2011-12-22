@@ -31,8 +31,6 @@ import java.io.ObjectOutputStream;
 /**
  * This unit test checks the enhancement of a superclass/subclass
  * constellation.
- *
- * @author <a href="mailto:struberg@apache.org>Mark Struberg</a>
  */
 public class TestClassHierarchyEnhancement extends SingleEMFTestCase {
 
