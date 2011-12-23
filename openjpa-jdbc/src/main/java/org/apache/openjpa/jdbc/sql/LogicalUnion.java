@@ -768,27 +768,11 @@ public class LogicalUnion
             sel.where(sql, joins);
         }
 
-        public void where(String sql) {
-            sel.where(sql);
-        }
-
-        public void where(String sql, Joins joins) {
-            sel.where(sql, joins);
-        }
-
         public void having(SQLBuffer sql) {
             sel.having(sql);
         }
 
         public void having(SQLBuffer sql, Joins joins) {
-            sel.having(sql, joins);
-        }
-
-        public void having(String sql) {
-            sel.having(sql);
-        }
-
-        public void having(String sql, Joins joins) {
             sel.having(sql, joins);
         }
 

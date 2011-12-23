@@ -2283,7 +2283,7 @@ public class DBDictionary
                     if (join.isCorrelated() && join.getForeignKey() != null) {
                         SQLBuffer where = new SQLBuffer(this);
                         where.append("(").append(toTraditionalJoin(join)).append(")");
-                        sel.where(where.getSQL());
+                        sel.where(where);
                     }                
                 }
             }
@@ -2343,7 +2343,7 @@ public class DBDictionary
                 if (join.getForeignKey() != null){
                     SQLBuffer where = new SQLBuffer(this);
                     where.append("(").append(toTraditionalJoin(join)).append(")");
-                    sel.where(where.getSQL());
+                    sel.where(where);
                 }                
                 break;
             }
@@ -2493,7 +2493,7 @@ public class DBDictionary
         if (join.getForeignKey() != null){
             SQLBuffer where = new SQLBuffer(this);
             where.append("(").append(toTraditionalJoin(join)).append(")");
-            sel.where(where.getSQL());
+            sel.where(where);
         }
 
         return null;

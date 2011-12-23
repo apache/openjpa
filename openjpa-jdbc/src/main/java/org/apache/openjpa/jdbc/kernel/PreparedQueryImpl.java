@@ -32,6 +32,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.BindParameter;
 import org.apache.openjpa.jdbc.sql.LogicalUnion;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
@@ -430,10 +431,10 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
     }
     
-    void setParameters(List list) {
+    void setParameters(List<BindParameter> list) {
         Map<Integer, Object> tmp = new HashMap<Integer, Object>();
         for (int i = 0; list != null && i < list.size(); i++) {
-            tmp.put(i, list.get(i));
+            tmp.put(i, list.get(i).getValue());
         }
         _template = Collections.unmodifiableMap(tmp);
     }

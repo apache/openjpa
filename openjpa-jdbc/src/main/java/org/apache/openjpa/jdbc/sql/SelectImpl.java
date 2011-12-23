@@ -1394,8 +1394,7 @@ public class SelectImpl
             } else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);
-                val = pks[mapping.getField(join.getFieldIndex()).
-                    getPrimaryKeyIndex()];
+                val = pks[mapping.getField(join.getFieldIndex()).getPrimaryKeyIndex()];
                 val = join.getJoinValue(val, toCols[i], store);
             }
 
@@ -1447,7 +1446,7 @@ public class SelectImpl
 
     public void where(Joins joins) {
         if (joins != null)
-            where((String) null, joins);
+            where((SQLBuffer) null, joins);
     }
 
     public void where(SQLBuffer sql) {
@@ -1473,28 +1472,6 @@ public class SelectImpl
         _where.append(sql);
     }
 
-    public void where(String sql) {
-        where(sql, (Joins) null);
-    }
-
-    public void where(String sql, Joins joins) {
-        where(sql, getJoins(joins, true));
-    }
-
-    /**
-     * Add the given condition to the WHERE clause.
-     */
-    private void where(String sql, PathJoins pj) {
-        // no need to use joins...
-        if (StringUtils.isEmpty(sql))
-            return;
-
-        if (_where == null)
-            _where = new SQLBuffer(_dict);
-        else if (!_where.isEmpty())
-            _where.append(" AND ");
-        _where.append(sql);
-    }
 
     public void having(SQLBuffer sql) {
         having(sql, (Joins) null);
@@ -1510,29 +1487,6 @@ public class SelectImpl
     private void having(SQLBuffer sql, PathJoins pj) {
         // no need to use joins...
         if (sql == null || sql.isEmpty())
-            return;
-
-        if (_having == null)
-            _having = new SQLBuffer(_dict);
-        else if (!_having.isEmpty())
-            _having.append(" AND ");
-        _having.append(sql);
-    }
-
-    public void having(String sql) {
-        having(sql, (Joins) null);
-    }
-
-    public void having(String sql, Joins joins) {
-        having(sql, getJoins(joins, true));
-    }
-
-    /**
-     * Add the given condition to the HAVING clause.
-     */
-    private void having(String sql, PathJoins pj) {
-        // no need to use joins...
-        if (StringUtils.isEmpty(sql))
             return;
 
         if (_having == null)
@@ -2051,10 +2005,6 @@ public class SelectImpl
 
         // not found; create alias
         i = aliasSize(false, null);
-//        System.out.println("GetTableIndex\t"+
-//                ((_parent != null) ? "Sub" :"") +
-//                " created alias: "+
-//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }
@@ -2113,10 +2063,6 @@ public class SelectImpl
 
     private int createAlias(Table table, Object key) {
         Integer i = ctx().nextAlias();
-//        System.out.println("\t"+
-//                ((_parent != null) ? "Sub" :"") +
-//                "Query created alias: "+ 
-//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }
