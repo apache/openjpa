@@ -216,8 +216,7 @@ public final class SQLBuffer
      * Append a parameter value.
      */
     public SQLBuffer appendValue(Object o) {
-    	_sql.append(o == null ? "NULL" : o.toString());
-        return this;
+        return appendValue(o, null, null);
     }
     
     /**
