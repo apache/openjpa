@@ -280,6 +280,21 @@ public final class SQLBuffer
         }
         return userParam;
     }
+    
+    /**
+     * Gets the columns associated with the binding parameters.
+     * All binding parameter may not have an associated column.
+     */
+    public List<Column> getColumns() {
+        if (_params == null)
+            return Collections.emptyList();
+        List<Column> columns = new ArrayList<Column>();
+        for (BindParameter param : _params) {
+        	columns.add(param.getColumn());
+        }
+        return columns;
+    	
+    }
 
     /**
      * Return the SQL for this buffer.
