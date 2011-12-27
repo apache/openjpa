@@ -22,6 +22,7 @@ package org.apache.openjpa.tools.maven;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -130,8 +131,11 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
         MetaDataRepository repo = conf.newMetaDataRepositoryInstance();
         ClassArgParser cap = repo.getMetaDataFactory().newClassArgParser();
 
-        for(File classPath : files) { 
-            Class<?>[] classes = cap.parseTypes(classPath.getAbsolutePath());
+        Iterator<File> fileIt = files.iterator();
+        while (fileIt.hasNext()) {
+            File classPath = fileIt.next();
+
+            Class[] classes = cap.parseTypes(classPath.getAbsolutePath());
 
             if (classes == null) {
                 getLog().info("Found no classes for " + classPath.getAbsolutePath());
@@ -146,6 +150,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
                                 + PersistenceCapable.class.getName());
                     } else {
                         getLog().debug("Removing non-entity class " + classPath);
+                        fileIt.remove();
                     }
                 }
             }

@@ -4,6 +4,7 @@
         <table name="TestEntity">
             <pk column="xint1"/>
             <column name="xint1" type="integer" not-null="true"/>
+            <column name="myEnum" type="varchar" size="20"/>
             <column name="string1" type="varchar" size="255"/>
         </table>
     </schema>

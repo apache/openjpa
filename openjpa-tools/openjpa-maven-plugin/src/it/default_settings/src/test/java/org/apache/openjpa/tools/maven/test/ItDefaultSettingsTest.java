@@ -43,7 +43,8 @@ public class ItDefaultSettingsTest extends TestCase {
     private final static String SQL_FILE = "database.sql";
     
     /** if the SQL generation has been successful, the following result should be in the SQL file */
-    private final static String VALID_SQL = "CREATE TABLE TestEntity (xint1 INTEGER NOT NULL, string1 VARCHAR(255), PRIMARY KEY (xint1));";
+    private final static String VALID_SQL = "CREATE TABLE TestEntity (xint1 INTEGER NOT NULL, myEnum VARCHAR(20), "
+                                            + "string1 VARCHAR(255), PRIMARY KEY (xint1));";
     
     private final static String TEST_ENTITY_CLASS = "org.apache.openjpa.tools.maven.testentity.TestEntity";
 

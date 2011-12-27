@@ -20,42 +20,60 @@ package org.apache.openjpa.tools.maven.testentity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 
 
 @Entity
 public class TestEntity {
 
-  @Id
-  private int xint1;
+    @Id
+    private int xint1;
 
-  private String string1;
+    private String string1;
 
-  protected TestEntity() {
-  }
+    public enum SampleEnum {
+        Option1, Option2, Option3
+    }
 
-  public TestEntity(int int1, String string1) {
-    this.xint1 = int1;
-    this.string1 = string1;
-  }
+    @Enumerated(EnumType.STRING)
+    private SampleEnum myEnum;
 
-  public int getInt1() {
-    return xint1;
-  }
 
-  public void setInt1(int int1) {
-    this.xint1 = int1;
-  }
+    protected TestEntity() {
+    }
 
-  public String getString1() {
-    return string1;
-  }
+    public TestEntity(int int1, String string1) {
+        this.xint1 = int1;
+        this.string1 = string1;
+    }
 
-  public void setString1(String string1) {
-    this.string1 = string1;
-  }
+    public int getInt1() {
+        return xint1;
+    }
 
-  public String toString()  {
-    return xint1 + ":" + string1;
-  }
+    public void setInt1(int int1) {
+        this.xint1 = int1;
+    }
+
+    public String getString1() {
+        return string1;
+    }
+
+    public void setString1(String string1) {
+        this.string1 = string1;
+    }
+
+    public String toString()  {
+        return xint1 + ":" + string1;
+    }
+
+    public SampleEnum getMyEnum() {
+        return myEnum;
+    }
+
+    public void setMyEnum(SampleEnum myEnum) {
+        this.myEnum = myEnum;
+    }
 
 }
