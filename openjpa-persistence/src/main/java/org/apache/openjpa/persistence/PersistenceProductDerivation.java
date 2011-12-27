@@ -702,9 +702,9 @@ public class PersistenceProductDerivation
                 String dc = oconf.getDataCache();
                 String rcp = oconf.getRemoteCommitProvider();
                 // If the datacache is set and is something other than false
-                if (dc != null && dc.equals("false") == false) {
+                if (dc != null && !"false".equals(dc)) {
                     // If RCP is null or empty, set it to sjvm.
-                    if (rcp == null || (rcp != null && rcp.equals("") == false)) {
+                    if (rcp == null || "".equals(rcp)) {
                         oconf.setRemoteCommitProvider("sjvm");
                     }
                 }
