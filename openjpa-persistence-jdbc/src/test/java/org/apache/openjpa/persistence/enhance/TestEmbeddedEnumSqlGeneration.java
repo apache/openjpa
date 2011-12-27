@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.enhance;
 
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingTool;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -44,11 +43,13 @@ public class TestEmbeddedEnumSqlGeneration
 
     public void testEnumEnhancement()
     throws IOException {
-        JDBCConfiguration conf = new JDBCConfigurationImpl();
-        try {
-            return MappingTool.run(conf, args, opts);
-        } finally {
-            conf.close();
-        }
+        EntityManager em= currentEntityManager();
+        OpenJPAEntityManager kem = OpenJPAPersistence.cast(em);
+
+        MappingTool tool = new MappingTool((JDBCConfiguration)
+                ((OpenJPAEntityManagerSPI) kem).getConfiguration(),
+                MappingTool.ACTION_REFRESH, false);
+        tool.run(EntityWithEnum.class);
+        tool.record();
     }
 }
