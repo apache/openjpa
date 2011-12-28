@@ -74,7 +74,7 @@ public abstract class AbstractResult
 
     private static final Joins JOINS = new NoOpJoins();
 
-    private Map<Object,Object> _eager = null;
+    private Map _eager = null;
     private ClassMapping _base = null;
     private int _index = 0;
     private boolean _gotEager = false;
@@ -86,14 +86,14 @@ public abstract class AbstractResult
     private Object _mappedByValue = null;
 
     public Object getEager(FieldMapping key) {
-        Map<Object,Object> map = getEagerMap(true);
+        Map map = getEagerMap(true);
         return (map == null) ? null : map.get(key);
     }
 
     public void putEager(FieldMapping key, Object res) {
-        Map<Object,Object> map = getEagerMap(false);
+        Map map = getEagerMap(false);
         if (map == null) {
-            map = new HashMap<Object,Object>();
+            map = new HashMap();
             setEagerMap(map);
         }
         map.put(key, res);
@@ -104,7 +104,7 @@ public abstract class AbstractResult
      *
      * @param client whether the client is accessing eager information
      */
-    protected Map<Object,Object> getEagerMap(boolean client) {
+    protected Map getEagerMap(boolean client) {
         if (client)
             _gotEager = true;
         return _eager;
@@ -113,7 +113,7 @@ public abstract class AbstractResult
     /**
      * Raw eager information.
      */
-    protected void setEagerMap(Map<Object,Object> eager) {
+    protected void setEagerMap(Map eager) {
         _eager = eager;
     }
 
@@ -129,9 +129,11 @@ public abstract class AbstractResult
     /**
      * Close all results in eager map.
      */
-    protected void closeEagerMap(Map<Object,Object> eager) {
+    protected void closeEagerMap(Map eager) {
         if (eager != null) {
-            for (Object res : eager.values()) {
+            Object res;
+            for (Iterator itr = eager.values().iterator(); itr.hasNext();) {
+                res = itr.next();
                 if (res != this && res instanceof Closeable)
                     try {
                         ((Closeable) res).close();

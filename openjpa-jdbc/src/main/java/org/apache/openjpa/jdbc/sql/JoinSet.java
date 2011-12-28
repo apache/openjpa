@@ -39,9 +39,9 @@ class JoinSet {
     // efficient representation with O(1) lookup, add, remove operations for
     // typical sets of joins, and it means we'd have to create a graph anyway
     // when joinIterator() is called
-    private final List<Node> _graph = new ArrayList<Node>();
+    private final List _graph = new ArrayList();
     private int _size = 0;
-    private List<Join> _sorted = null;
+    private List _sorted = null;
 
     public JoinSet() {
     }
@@ -51,7 +51,7 @@ class JoinSet {
             if (copy._graph.get(i) == null)
                 _graph.add(null);
             else
-                _graph.add((Node) copy._graph.get(i).clone());
+                _graph.add(((Node) copy._graph.get(i)).clone());
         }
         _size = copy._size;
         _sorted = copy._sorted;
@@ -95,14 +95,14 @@ class JoinSet {
     /**
      * Iterator over joins that prepares them for SQL translation.
      */
-    public Iterator<Join> joinIterator() {
+    public Iterator joinIterator() {
         if (_size < 2)
             return iterator();
         if (_sorted != null)
             return _sorted.iterator();
 
-        List<Join> sorted = new ArrayList<Join>(_size);
-        LinkedList<Node> queue = new LinkedList<Node>();
+        List sorted = new ArrayList(_size);
+        LinkedList queue = new LinkedList();
         BitSet seen = new BitSet(_graph.size() * _graph.size()
             + _graph.size());
 
@@ -183,8 +183,8 @@ class JoinSet {
             return false;
 
         boolean added = false;
-        for (Iterator<Join> itr = js.iterator(); itr.hasNext();)
-            added = add(itr.next()) || added;
+        for (Iterator itr = js.iterator(); itr.hasNext();)
+            added = add((Join) itr.next()) || added;
         return added;
     }
 
@@ -198,7 +198,7 @@ class JoinSet {
         while (_graph.size() < size)
             _graph.add(null);
 
-        Node node = _graph.get(join.getIndex1());
+        Node node = (Node) _graph.get(join.getIndex1());
         if (node == null)
             _graph.set(join.getIndex1(), new Node(join, true));
         else {
@@ -207,7 +207,7 @@ class JoinSet {
             node.next = new Node(join, true);
         }
 
-        node = _graph.get(join.getIndex2());
+        node = (Node) _graph.get(join.getIndex2());
         if (node == null)
             _graph.set(join.getIndex2(), new Node(join, false));
         else {
@@ -218,8 +218,8 @@ class JoinSet {
         _size++;
     }
 
-    public Iterator<Join> iterator() {
-        return new Iterator<Join>() {
+    public Iterator iterator() {
+        return new Iterator() {
             private Node _next = null;
             private int _idx = -1;
 
@@ -237,7 +237,7 @@ class JoinSet {
                 return false;
             }
 
-            public Join next() {
+            public Object next() {
                 if (!hasNext())
                     throw new NoSuchElementException();
                 Join j = _next.join;
@@ -289,16 +289,16 @@ class JoinSet {
 
     public boolean removeAll(JoinSet js) {
         boolean remd = false;
-        for (Iterator<Join> itr = js.iterator(); itr.hasNext();)
-            remd = remove(itr.next()) || remd;
+        for (Iterator itr = js.iterator(); itr.hasNext();)
+            remd = remove((Join) itr.next()) || remd;
         return remd;
     }
 
     public boolean retainAll(JoinSet js) {
         boolean remd = false;
         Join join;
-        for (Iterator<Join> itr = iterator(); itr.hasNext();) {
-            join = itr.next();
+        for (Iterator itr = iterator(); itr.hasNext();) {
+            join = (Join) itr.next();
             if (!js.contains(join))
                 remd = remove(join);
         }
@@ -318,8 +318,8 @@ class JoinSet {
     public boolean containsAll(JoinSet js) {
         if (js._size > _size || js._graph.size() > _graph.size())
             return false;
-        for (Iterator<Join> itr = js.iterator(); itr.hasNext();)
-            if (!contains(itr.next()))
+        for (Iterator itr = js.iterator(); itr.hasNext();)
+            if (!contains((Join) itr.next()))
                 return false;
         return true;
     }
@@ -347,7 +347,7 @@ class JoinSet {
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
-        for (Iterator<Join> itr = iterator(); itr.hasNext();) {
+        for (Iterator itr = iterator(); itr.hasNext();) {
             buf.append("<").append(itr.next()).append(">");
             if (itr.hasNext())
                 buf.append(", ");

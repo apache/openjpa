@@ -102,7 +102,7 @@ public interface Select
     /**
      * Return this select's subselects, or empty collection if none.
      */
-    public List<Select> getSubselects();
+    public List getSubselects();
 
     /**
      * Return the parent of this select, if it is a subselect.
@@ -149,7 +149,7 @@ public interface Select
     /**
      * Return the set of all used table aliases.
      */
-    public Collection<String> getTableAliases();
+    public Collection getTableAliases();
 
     /**
      * Return the actual {@link Val}s and {@link Column}s that were
@@ -157,22 +157,22 @@ public interface Select
      *
      * @since 1.1.0
      */
-    public List<Object> getSelects();
+    public List getSelects();
 
     /**
      * Return the aliases of all selected columns and all selected buffers,
      * in the order they were selected. Each alias may be either a string
      * or a {@link SQLBuffer}.
      */
-    public List<Object> getSelectAliases();
+    public List getSelectAliases();
 
     /**
      * Get the aliases for identifier columns that can be used in COUNT
      * selects to find the number of matches. Each alias will be a
      * string. If no identifier columns have been nominated, then all
-     * column aliases are returned.
+     * column alises are returned.
      */
-    public List<String> getIdentifierAliases();
+    public List getIdentifierAliases();
 
     /**
      * Return the ordering SQL for this select.
@@ -209,7 +209,7 @@ public interface Select
     /**
      * Return the top-level {@link Join} elements for this select.
      */
-    public Iterator<Join> getJoinIterator();
+    public Iterator getJoinIterator();
 
     /**
      * The result start index.
@@ -751,22 +751,22 @@ public interface Select
     /**
      * Set joined table metadatas for polymorphic queries
      */
-    public void setJoinedTableClassMeta(List<ClassMapping> meta);
+    public void setJoinedTableClassMeta(List meta);
 
     /**
      * get joined table metadatas for polymorphic queries
      */
-    public List<ClassMapping> getJoinedTableClassMeta();
+    public List getJoinedTableClassMeta();
 
     /**
      * Set joined table metadatas excluded for polymorphic queries
      */
-    public void setExcludedJoinedTableClassMeta(List<ClassMapping> meta);
+    public void setExcludedJoinedTableClassMeta(List meta);
 
     /**
      * get joined table metadatas excluded for polymorphic queries
      */
-    public List<ClassMapping> getExcludedJoinedTableClassMeta();
+    public List getExcludedJoinedTableClassMeta();
     
     public DBDictionary getDictionary() ; 
 }
