@@ -1356,11 +1356,8 @@ public class SelectImpl
             return;
         }
 
-        Column[] fromCols = fk.getColumns();
-        Column[] toCols = fk.getPrimaryKeyColumns();
-        Column[] constCols = fk.getConstantColumns();
-        Object[] consts = fk.getConstants();
-        where(oid, mapping, toCols, fromCols, consts, constCols,
+        where(oid, mapping, fk.getPrimaryKeyColumns(), fk.getColumns(), 
+        		fk.getConstants(), fk.getConstantColumns(),
             getJoins(joins, true), store);
     }
 
@@ -1378,16 +1375,38 @@ public class SelectImpl
             return;
         }
 
-        // only bother to pack pk values into array if app id
+
+        SQLBuffer buf = new SQLBuffer(_dict);
+        Object[] params = getBindParameter(oid, mapping, toCols, fromCols, pj, store);
+        bindParameter(buf, params, fromCols, pj);
+        
+        if (constCols != null && constCols.length > 0) {
+            bindParameter(buf, vals, constCols, pj);
+        }
+
+        where(buf, pj);
+    }
+    
+    /**
+     * Gets the binding parameter values to join the given object identifier.
+     * @param oid the object identifier
+     * @param mapping the class mapping of the identifier
+     * @param toCols the target column(s)
+     * @param fromCols the source column(s)
+     * @param pj joins
+     * @param store data store
+     * @return
+     */
+    Object[] getBindParameter(Object oid, ClassMapping mapping, Column[] toCols,
+            Column[] fromCols, PathJoins pj, JDBCStore store) {
         Object[] pks = null;
         boolean relationId = RelationStrategies.isRelationId(fromCols); 
         if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
-
-        SQLBuffer buf = new SQLBuffer(_dict);
-        Joinable join;
         Object val;
         int count = 0;
+        Joinable join;
+        Object[] result = new Object[toCols.length];
         for (int i = 0; i < toCols.length; i++, count++) {
             if (pks == null) {
                 val = (oid == null) ? null : relationId ? oid : ((Id) oid).getId();
@@ -1397,32 +1416,26 @@ public class SelectImpl
                 val = pks[mapping.getField(join.getFieldIndex()).getPrimaryKeyIndex()];
                 val = join.getJoinValue(val, toCols[i], store);
             }
-
-            if (count > 0)
-                buf.append(" AND ");
-            buf.append(getColumnAlias(fromCols[i], pj));
-            if (val == null)
-                buf.append(" IS ");
-            else
-                buf.append(" = ");
-            buf.appendValue(val, fromCols[i]);
+            result[i] = val;
         }
-
-        if (constCols != null && constCols.length > 0) {
-            for (int i = 0; i < constCols.length; i++, count++) {
-                if (count > 0)
-                    buf.append(" AND ");
-                buf.append(getColumnAlias(constCols[i], pj));
-
-                if (vals[i] == null)
-                    buf.append(" IS ");
-                else
-                    buf.append(" = ");
-                buf.appendValue(vals[i], constCols[i]);
-            }
-        }
-
-        where(buf, pj);
+        return result;
+    }
+    
+    /**
+     * Binds the parameters to the given SQL buffer.
+     * @param buf
+     * @param params
+     * @param fromCols
+     * @param pj
+     */
+    void bindParameter(SQLBuffer buf, Object[] params, Column[] fromCols, PathJoins pj) {
+    	for (int i = 0; i < params.length; i++) {
+          if (i > 0)
+              buf.append(" AND ");
+          buf.append(getColumnAlias(fromCols[i], pj));
+	      buf.append(params[i] == null ? " IS " : " = ");
+	      buf.appendValue(params[i], fromCols[i]);
+    	}
     }
 
     /**
