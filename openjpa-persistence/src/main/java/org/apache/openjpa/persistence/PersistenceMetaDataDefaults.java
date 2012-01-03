@@ -628,10 +628,15 @@ public class PersistenceMetaDataDefaults
         }
 
         PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient);
-        if (strat == null || strat == PersistenceStrategy.TRANSIENT)
+        if (strat == null) {
+            warn(meta, _loc.get("no-pers-strat", name));
             return false;
-        return true;
-	}
+        } else if (strat == PersistenceStrategy.TRANSIENT) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
     private boolean isAnnotatedTransient(Member member) {
         return member instanceof AnnotatedElement
