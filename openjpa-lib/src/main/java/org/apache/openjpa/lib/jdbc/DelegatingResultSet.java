@@ -881,5 +881,15 @@ public class DelegatingResultSet implements ResultSet, Closeable {
     public void updateSQLXML(String columnLabel, SQLXML xmlObject) throws SQLException {
         _rs.updateSQLXML(columnLabel, xmlObject);
     }
+    
+    // Java 7 methods follow
+    
+    public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }
 

@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import org.apache.openjpa.lib.util.Closeable;
 
@@ -509,5 +510,27 @@ public class DelegatingConnection implements Connection, Closeable {
 
     public void setClientInfo(String name, String value) throws SQLClientInfoException {
         _conn.setClientInfo(name, value);
+    }
+    
+    // Java 7 methods follow
+    
+    public void abort(Executor executor) throws SQLException {
+    	throw new UnsupportedOperationException();
+    }
+    
+    public int getNetworkTimeout() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public String getSchema() throws SQLException {
+    	throw new UnsupportedOperationException(); 
+    }
+    
+    public void setSchema(String schema)throws SQLException {
+    	throw new UnsupportedOperationException();
     }
 }

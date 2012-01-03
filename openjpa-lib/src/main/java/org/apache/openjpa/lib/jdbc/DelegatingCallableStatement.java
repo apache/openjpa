@@ -1026,4 +1026,22 @@ public class DelegatingCallableStatement
     public void setPoolable(boolean poolable) throws SQLException {
         _stmnt.setPoolable(poolable);
     }
+    
+    // Java 7 methods follow
+    
+    public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public boolean isCloseOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void closeOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }

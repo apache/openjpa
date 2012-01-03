@@ -298,4 +298,14 @@ public class DistributedTemplate<T extends Statement>
     public void setPoolable(boolean arg0) throws SQLException {
         throw new UnsupportedOperationException();
     }
+    
+    // Java 7 methods follow
+    
+    public boolean isCloseOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void closeOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }

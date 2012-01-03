@@ -25,8 +25,10 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
@@ -216,6 +218,11 @@ public class SimpleDriverDataSource
         else
             return null;
     }
-
+    
+    // Java 7 methods follow
+    
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException{
+    	throw new SQLFeatureNotSupportedException();
+    }
 }
 

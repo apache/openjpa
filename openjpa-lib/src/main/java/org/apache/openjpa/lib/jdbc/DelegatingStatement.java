@@ -293,4 +293,14 @@ public class DelegatingStatement implements Statement, Closeable {
     public boolean isPoolable() throws SQLException {
         return _stmnt.isPoolable();
     }
+    
+    // Java 7 methods follow
+    
+    public boolean isCloseOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void closeOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }

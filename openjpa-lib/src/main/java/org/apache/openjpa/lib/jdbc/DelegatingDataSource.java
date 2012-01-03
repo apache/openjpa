@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -152,5 +154,11 @@ public class DelegatingDataSource implements DataSource, Closeable {
         } catch (Throwable t) {
             return false;
         }
+    }
+    
+    // Java 7 methods follow
+    
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException{
+    	throw new SQLFeatureNotSupportedException();
     }
 }

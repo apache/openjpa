@@ -36,6 +36,7 @@ import java.sql.Struct;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * A virtual connection that contains multiple physical connections.
@@ -335,5 +336,27 @@ public class DistributedConnection implements Connection {
     public void setClientInfo(String arg0, String arg1)
         throws SQLClientInfoException {
         throw new UnsupportedOperationException();
+    }
+    
+    // Java 7 methods follow
+    
+    public void abort(Executor executor) throws SQLException {
+    	throw new UnsupportedOperationException();
+    }
+    
+    public int getNetworkTimeout() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public String getSchema() throws SQLException {
+    	throw new UnsupportedOperationException(); 
+    }
+    
+    public void setSchema(String schema)throws SQLException {
+    	throw new UnsupportedOperationException();
     }
 }

@@ -555,4 +555,14 @@ public class DelegatingPreparedStatement
     public void setPoolable(boolean poolable) throws SQLException {
         _stmnt.setPoolable(poolable);
     }
+    
+    // Java 7 methods follow
+    
+    public boolean isCloseOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void closeOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }

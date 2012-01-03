@@ -822,4 +822,15 @@ public class DelegatingDatabaseMetaData implements DatabaseMetaData {
     public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
         return _metaData.supportsStoredFunctionsUsingCallSyntax();
     }
+    
+    // Java 7 methods follow
+    
+    public boolean generatedKeyAlwaysReturned() throws SQLException {
+    	throw new UnsupportedOperationException();
+    }
+    
+    public ResultSet getPseudoColumns(String catalog, String schemaPattern, 
+    	String tableNamepattern, String columnNamePattern) throws SQLException {
+    	throw new UnsupportedOperationException();
+    }
 }

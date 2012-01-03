@@ -345,4 +345,14 @@ public class DistributedPreparedStatement
     public void setSQLXML(int arg0, SQLXML arg1) throws SQLException {
         throw new UnsupportedOperationException();
     }
+    
+    // Java 7 methods follow
+    
+    public boolean isCloseOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public void closeOnCompletion() throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }

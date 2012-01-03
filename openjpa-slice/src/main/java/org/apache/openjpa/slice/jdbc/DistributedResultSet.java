@@ -909,4 +909,14 @@ public class DistributedResultSet implements ResultSet {
     public void updateSQLXML(String arg0, SQLXML arg1) throws SQLException {
         throw new UnsupportedOperationException();
     }
+    
+    // Java 7 methods follow
+    
+    public <T>T getObject(String columnLabel, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
+    
+    public <T>T getObject(int columnIndex, Class<T> type) throws SQLException{
+    	throw new UnsupportedOperationException();
+    }
 }
