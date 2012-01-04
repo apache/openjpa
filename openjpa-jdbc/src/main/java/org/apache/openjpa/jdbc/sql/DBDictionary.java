@@ -1399,6 +1399,9 @@ public class DBDictionary
         } else if (val instanceof Calendard) {
             cald = (Calendard) val;
             val = cald.value;
+        } else if (val instanceof BindParameter) {
+        	BindParameter bParm = (BindParameter) val;
+        	val = bParm.getValue();
         }
 
         if (val == null)
