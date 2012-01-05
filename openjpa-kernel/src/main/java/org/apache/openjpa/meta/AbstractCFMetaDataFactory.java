@@ -780,8 +780,7 @@ public abstract class AbstractCFMetaDataFactory
                         if (log.isTraceEnabled())
                             log.trace(_loc.get("resource-url", urlString));
                         if (peMap != null) {
-                        	//OPENJPA-2102: decode the URL to remove such things a spaces (' ') encoded as '%20'
-                            if (puUrlString != null && decode(urlString).indexOf(decode(puUrlString)) != -1) 
+                            if (puUrlString != null && urlString.indexOf(puUrlString) != -1) 
                                 urls.add(url);
                             if (mappingFileNames != null && mappingFileNames.size() != 0) {
                                 for (String mappingFileName : mappingFileNames) {
@@ -858,66 +857,6 @@ public abstract class AbstractCFMetaDataFactory
                 log.trace(_loc.get("scan-found-names", newNames, debugContext));
             names.addAll(newNames);
         }
-    }
-    
-    /**
-     * Decodes a URL-encoded path string.  For example, an encoded
-     * space (%20) is decoded into a normal space (' ') character.
-     * Added via OPENJPA-2102.
-     * @param String encoded - the encoded URL string
-     * @return String decoded - the decoded string.
-     */
-    public static String decode(String s) {
-       if (s == null) {
-          return null;
-       }
-
-       int i = s.indexOf('%');
-       if (i == -1) {
-          return s;
-       }
-
-       StringBuilder builder = new StringBuilder();
-       int begin = 0;
-
-       do {
-          builder.append(s, begin, i);
-          begin = i + 3;
-
-          char ch = (char) Integer.parseInt(s.substring(i + 1, begin), 16);
-
-          if ((ch & 0x80) != 0) {
-             // Decode "modified UTF-8".
-
-             if (s.charAt(begin++) != '%') {
-                throw new IllegalArgumentException();
-             }
-
-             char ch2 = (char) Integer.parseInt(s.substring(begin, begin + 2), 16);
-             begin += 2;
-
-             if ((ch & 0xe0) == 0xc0) {
-                ch = (char) (((ch & 0x1f) << 6) | (ch2 & 0x3f));
-             } else if ((ch & 0xf0) == 0xe0) {
-                if (s.charAt(begin++) != '%') {
-                   throw new IllegalArgumentException();
-                }
-
-                char ch3 = (char) Integer.parseInt(s.substring(begin, begin + 2), 16);
-                begin += 2;
-
-                ch = (char) (((ch & 0x0f) << 12) | ((ch2 & 0x3f) << 6) | (ch3 & 0x3f));
-             } else {
-                throw new IllegalArgumentException();
-             }
-          }
-
-          builder.append(ch);
-       } while ((i = s.indexOf('%', begin)) != -1);
-
-       builder.append(s, begin, s.length());
-
-       return builder.toString();
     }
 
     /**
