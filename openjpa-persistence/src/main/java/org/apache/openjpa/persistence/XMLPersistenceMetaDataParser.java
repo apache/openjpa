@@ -280,6 +280,14 @@ public class XMLPersistenceMetaDataParser
         if (repos != null
             && (repos.getValidate() & MetaDataRepository.VALIDATE_RUNTIME) != 0)
             setParseComments(false);
+        
+        if (repos != null) {
+            // Determine if the Thread Context Classloader needs to be temporally overridden to the Classloader
+            // that loaded the OpenJPA classes, to avoid a potential deadlock issue with the way Xerces
+            // handles parsers and classloaders.
+            this.setOverrideContextClassloader(repos.getConfiguration().getCompatibilityInstance().
+                getOverrideContextClassloader());
+        }
     }
 
     /**
