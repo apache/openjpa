@@ -70,7 +70,7 @@ public class Compatibility {
     private boolean _checkDatabaseForCascadePersistToDetachedEntity = true;
     private boolean _parseAnnotationsForQueryMode = true;  
     private boolean _resetFlushFlagForCascadePersist = false;//OPENJPA-2051
-    private boolean _overrideContextClassloader = true; //OPENJPA-1993
+    private boolean _overrideContextClassloader = false; //OPENJPA-1993
 
     /**
      * Whether to require exact identity value types when creating object
