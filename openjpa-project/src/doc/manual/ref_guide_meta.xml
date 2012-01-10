@@ -980,5 +980,65 @@ public class Magazine
 </programlisting>
             </example>
         </section>
+                <section id="ref_guide_meta_xml">
+        	<title>
+        		XML extensions
+        	</title>
+        	<para>
+OpenJPA has extended the JPA 2.0 schema to include elements and attributes corresponding
+to OpenJPA extended metadata and mapping annotations. The schema are contained in 2
+files: <ulink url="http://openjpa.apache.org/builds/latest/docs/schema/extendable-orm.xsd">
+extendable-orm.xsd</ulink> and
+<ulink url="http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd">openjpa-orm.xsd</ulink>.
+The extendable-orm.xsd file provides copies of some of the JPA 2.0 schema elements with additional schema to make it 
+extendable.
+The openjpa-orm.xsd file extends the extendable-orm.xsd with OpenJPA specific elements and attributes representing
+OpenJPA annotations. Currently, only a subset of annotations have actually been implemented, and some of those
+have been partially tested. The current status can be found by comments in the
+<ulink url="http://openjpa.apache.org/builds/latest/docs/schema/openjpa-orm.xsd">openjpa-orm.xsd</ulink>
+schema file.    	
+        	</para>
+        	<para>
+In order to use the OpenJPA extensions in your mapping file you must include the namespaces for these 2 new
+schemas as well as for the schema for JPA 2.0, as shown in the following example:        	
+        	</para>
+        	<example id="ref_guide_schema_ex">
+        		<title>
+        			OpenJPA Schema Extensions
+        		</title>
+<programlisting>
+&lt;entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable" 
+    xmlns:openjpa="http://www.apache.org/openjpa/ns/orm" 
+    xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    version="2.0"&gt;
+
+    &lt;entity class="org.apache.openjpa.persistence.jdbc.annotations.MultiColumnVersionPC"
+        metadata-complete="true"&gt;
+        &lt;table name="MCV"/&gt;
+        &lt;attributes&gt;
+            &lt;id name="id"&gt;
+                &lt;orm:generated-value/&gt;
+            &lt;/id&gt;
+            &lt;basic name="id"/&gt;
+            &lt;basic name="name"/&gt;
+        &lt;/attributes&gt;
+        &lt;openjpa:entity version-strategy="version-numbers"&gt;
+            &lt;openjpa:version-columns&gt;
+                &lt;openjpa:version-column name="v1"/&gt;
+                &lt;openjpa:version-column name="v2"/&gt;
+                &lt;openjpa:version-column name="v3"
+                    column-definition="FLOAT"
+                    scale="3"
+                    precision="10"/&gt;
+            &lt;/openjpa:version-columns&gt;	
+        &lt;/openjpa:entity&gt;
+    &lt;/entity&gt;
+    
+&lt;/entity-mappings&gt;    
+
+</programlisting>
+        	</example>
+        </section>
     </section>
 </chapter>
