@@ -39,10 +39,10 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
+import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
@@ -60,9 +60,11 @@ import org.apache.openjpa.util.Proxy;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 public abstract class StoreCollectionFieldStrategy
     extends ContainerFieldStrategy {
-
+	protected SelectExecutor _executor;
+	
     /**
      * Return the foreign key used to join to the owning field for the given
      * element mapping from {@link #getIndependentElementMappings} (or null).
@@ -94,8 +96,7 @@ public abstract class StoreCollectionFieldStrategy
      *
      * @see FieldMapping#joinRelation
      */
-    protected abstract Joins joinElementRelation(Joins joins,
-        ClassMapping elem);
+    protected abstract Joins joinElementRelation(Joins joins, ClassMapping elem);
 
     /**
      * Join to the owning field table for the given element mapping from
@@ -112,9 +113,9 @@ public abstract class StoreCollectionFieldStrategy
      * Convert the field value to a collection. Handles collections and
      * arrays by default.
      */
-    protected Collection toCollection(Object val) {
+    protected Collection<?> toCollection(Object val) {
         if (field.getTypeCode() == JavaTypes.COLLECTION)
-            return (Collection) val;
+            return (Collection<?>) val;
         return JavaTypes.toList(val, field.getElement().getType(), false);
     }
 
@@ -159,7 +160,7 @@ public abstract class StoreCollectionFieldStrategy
             final ClassMapping[] elems = getIndependentElementMappings(true);
             Union union = (Union) sel;
             if (fetch.getSubclassFetchMode(field.getElementMapping().
-                getTypeMapping()) != fetch.EAGER_JOIN)
+                getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
@@ -180,8 +181,7 @@ public abstract class StoreCollectionFieldStrategy
         if (fetch.hasFetchInnerJoin(field.getFullName(false)))
             outer = false;
         selectEager(sel, getDefaultElementMapping(true), sm, store, fetch, 
-            JDBCFetchConfiguration.EAGER_JOIN, false,
-            outer);
+            JDBCFetchConfiguration.EAGER_JOIN, false, outer);
     }
 
     public boolean isEagerSelectToMany() {
@@ -194,7 +194,7 @@ public abstract class StoreCollectionFieldStrategy
     private void selectEager(Select sel, ClassMapping elem,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         int eagerMode, boolean selectOid, boolean outer) {
-        // force distinct if there was a to-many join to avoid dups, but
+        // force distinct if there was a to-many join to avoid duplicates, but
         // if this is a parallel select don't make distinct based on the
         // eager joins alone if the original wasn't distinct
         if (eagerMode == JDBCFetchConfiguration.EAGER_PARALLEL) {
@@ -214,8 +214,7 @@ public abstract class StoreCollectionFieldStrategy
         joins = join(joins, elem);
 
         // order, ref cols
-        if (field.getOrderColumn() != null || field.getOrders().length > 0
-            || !selectOid) {
+        if (field.getOrderColumn() != null || field.getOrders().length > 0 || !selectOid) {
             if (outer)
                 joins = sel.outer(joins);
             if (!selectOid) {
@@ -360,14 +359,11 @@ public abstract class StoreCollectionFieldStrategy
                 // get the StateManager of this toMany value
                 // and find the value of the inverse mappedBy field (Customer)
                 // for this toMacdny field
-                PersistenceCapable pc = (PersistenceCapable)
-                    ((Collection) coll).iterator().next();
-                OpenJPAStateManager sm1 = (OpenJPAStateManager) pc.
-                    pcGetStateManager();
+                PersistenceCapable pc = (PersistenceCapable)((Collection) coll).iterator().next();
+                OpenJPAStateManager sm1 = (OpenJPAStateManager) pc.pcGetStateManager();
                 
                 ClassMapping clm = ((ClassMapping) sm1.getMetaData());
-                FieldMapping fm = (FieldMapping) clm.getField(
-                    mappedByFieldMapping.getName());
+                FieldMapping fm = (FieldMapping) clm.getField(mappedByFieldMapping.getName());
                 if (fm == mappedByFieldMapping)
                     res.setMappedByValue(sm1.fetchObject(fm.getIndex()));
             } else {
@@ -513,8 +509,7 @@ public abstract class StoreCollectionFieldStrategy
                 Result res = sel.execute(store, fetch);
                 try {
                     res.next();
-                    coll.getChangeTracker().setNextSequence
-                        (res.getInt(field) + 1);
+                    coll.getChangeTracker().setNextSequence(res.getInt(field) + 1);
                 } finally {
                     res.close();
                 }
@@ -522,17 +517,20 @@ public abstract class StoreCollectionFieldStrategy
             sm.storeObjectField(field.getIndex(), coll);
             return;
         }
-
-        // select data for this sm
+        // select data for this state manager
         final ClassMapping[] elems = getIndependentElementMappings(true);
         final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
-        Union union = store.getSQLFactory().newUnion
-            (Math.max(1, elems.length));
+        Union union;
+        if (_executor == null) {
+        	union = store.getSQLFactory().newUnion(Math.max(1, elems.length));
+        	_executor = union;
+        } else {
+        	union = (Union)_executor;
+        }
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
                 ClassMapping elem = (elems.length == 0) ? null : elems[idx];
-                resJoins[idx] = selectAll(sel, elem, sm, store, fetch,
-                    JDBCFetchConfiguration.EAGER_PARALLEL);
+                resJoins[idx] = selectAll(sel, elem, sm, store, fetch, JDBCFetchConfiguration.EAGER_PARALLEL);
             }
         });
 
@@ -555,8 +553,7 @@ public abstract class StoreCollectionFieldStrategy
                 if (ct != null && field.getOrderColumn() != null)
                     seq = res.getInt(field.getOrderColumn());
                 setMappedBy(sm.getObjectId(), sm, coll, res);
-               	add(store, coll, loadElement(sm, store, fetch, res,
-           	        resJoins[res.indexOf()]));
+               	add(store, coll, loadElement(sm, store, fetch, res, resJoins[res.indexOf()]));
             }
             if (ct != null && field.getOrderColumn() != null)
                 ct.setNextSequence(seq + 1);
@@ -565,11 +562,12 @@ public abstract class StoreCollectionFieldStrategy
         }
 
         // set into sm
-        if (field.getTypeCode() == JavaTypes.ARRAY)
+        if (field.getTypeCode() == JavaTypes.ARRAY) {
             sm.storeObject(field.getIndex(), JavaTypes.toArray
                 ((Collection) coll, field.getElement().getType()));
-        else
+        } else {
             sm.storeObject(field.getIndex(), coll);
+        }
     }
 
     /**
@@ -581,13 +579,17 @@ public abstract class StoreCollectionFieldStrategy
         ForeignKey fk = getJoinForeignKey(elem);
         Object oid = getObjectIdForJoin(fk, sm);
         sel.whereForeignKey(fk, oid, field.getDefiningMapping(), store);
-
-        // order first, then select so that if the projection introduces
-        // additional ordering, it will be after our required ordering
-        field.orderLocal(sel, elem, null);
-        Joins joins = joinElementRelation(sel.newJoins(), elem);
-        field.orderRelation(sel, elem, joins);
-        selectElement(sel, elem, store, fetch, eagerMode, joins);
+        Joins joins;
+        if (!sel.isReadOnly()) {
+	        // order first, then select so that if the projection introduces
+	        // additional ordering, it will be after our required ordering
+	        field.orderLocal(sel, elem, null);
+	        joins = joinElementRelation(sel.newJoins(), elem);
+	        field.orderRelation(sel, elem, joins);
+	        selectElement(sel, elem, store, fetch, eagerMode, joins);
+        } else {
+        	joins = joinElementRelation(sel.newJoins(), elem);
+        }
         return joins;
     }
 
@@ -623,5 +625,9 @@ public abstract class StoreCollectionFieldStrategy
             return ((OpenJPAId)oid).getIdObject();
         }
         return oid;
+    }
+    
+    public String toString() {
+    	return getClass().getSimpleName() + '[' + field.getName() + ']';
     }
 }

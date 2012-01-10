@@ -584,4 +584,25 @@ public final class SQLBuffer
     	}
     }
     
+    /**
+     * Binds the given value to a parameter representing the given column.
+     * The column must be bound before this call.
+     * @param o a parameter value
+     * @param col a column to which the value is to be bound
+     * @return this same buffer
+     * @exception IllegalArgumentException is no parameter represents the given column 
+     */
+    public SQLBuffer bind(Object o, Column col) {
+    	boolean bound = false;
+    	for (int i = 0; i < _params.size(); i++) {
+    		BindParameter param = _params.get(i);
+    		if (param.getColumn() == col) {
+    			param.setValue(o);
+    			bound = true;
+    		}
+    	}
+    	if (!bound)
+    		throw new IllegalArgumentException("Column " + col + " does not exist to bind " + o);
+    	return this;
+    }
 }

@@ -915,6 +915,10 @@ public class LogicalUnion
         public DBDictionary getDictionary() { 
             return dict; 
         }
+        
+        public boolean isReadOnly() {
+        	return sel.isReadOnly();
+        }
     }
 
     /**

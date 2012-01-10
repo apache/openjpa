@@ -751,22 +751,42 @@ public interface Select
     /**
      * Set joined table metadatas for polymorphic queries
      */
-    public void setJoinedTableClassMeta(List meta);
+    public void setJoinedTableClassMeta(List<ClassMapping> meta);
 
     /**
      * get joined table metadatas for polymorphic queries
      */
-    public List getJoinedTableClassMeta();
+    public List<ClassMapping> getJoinedTableClassMeta();
 
     /**
      * Set joined table metadatas excluded for polymorphic queries
      */
-    public void setExcludedJoinedTableClassMeta(List meta);
+    public void setExcludedJoinedTableClassMeta(List<ClassMapping> meta);
 
     /**
      * get joined table metadatas excluded for polymorphic queries
      */
-    public List getExcludedJoinedTableClassMeta();
+    public List<ClassMapping> getExcludedJoinedTableClassMeta();
     
+    /**
+     * Gets the database dictionary used by this select to form the target SQL
+     * statement.
+     * 
+     * @return the immutable database dictionary.
+     */
     public DBDictionary getDictionary() ; 
+    
+    /**
+     * Affirms if this select is structurally immutable.
+     * A select becomes immutable upon {@link #execute(JDBCStore, JDBCFetchConfiguration) execution}.
+     * There is no explicit way to turn a select into read-only status.
+     * <br>
+     * The immutable contract does not prevent {@link SQLBuffer#bind(Object, Column) binding} 
+     * new values to {@link BindParameter parameters}.  
+     * 
+     * @return false on construction, true after execution.
+     * 
+     * @since 2.2.0
+     */
+    boolean isReadOnly();
 }

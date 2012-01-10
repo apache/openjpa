@@ -74,7 +74,7 @@ public abstract class AbstractResult
 
     private static final Joins JOINS = new NoOpJoins();
 
-    private Map _eager = null;
+    private Map<Object,Object> _eager = null;
     private ClassMapping _base = null;
     private int _index = 0;
     private boolean _gotEager = false;
@@ -86,14 +86,14 @@ public abstract class AbstractResult
     private Object _mappedByValue = null;
 
     public Object getEager(FieldMapping key) {
-        Map map = getEagerMap(true);
+        Map<Object,Object> map = getEagerMap(true);
         return (map == null) ? null : map.get(key);
     }
 
     public void putEager(FieldMapping key, Object res) {
-        Map map = getEagerMap(false);
+        Map<Object,Object> map = getEagerMap(false);
         if (map == null) {
-            map = new HashMap();
+            map = new HashMap<Object,Object>();
             setEagerMap(map);
         }
         map.put(key, res);
@@ -104,7 +104,7 @@ public abstract class AbstractResult
      *
      * @param client whether the client is accessing eager information
      */
-    protected Map getEagerMap(boolean client) {
+    protected Map<Object,Object> getEagerMap(boolean client) {
         if (client)
             _gotEager = true;
         return _eager;
@@ -113,7 +113,7 @@ public abstract class AbstractResult
     /**
      * Raw eager information.
      */
-    protected void setEagerMap(Map eager) {
+    protected void setEagerMap(Map<Object,Object> eager) {
         _eager = eager;
     }
 
@@ -129,11 +129,9 @@ public abstract class AbstractResult
     /**
      * Close all results in eager map.
      */
-    protected void closeEagerMap(Map eager) {
+    protected void closeEagerMap(Map<Object,Object> eager) {
         if (eager != null) {
-            Object res;
-            for (Iterator itr = eager.values().iterator(); itr.hasNext();) {
-                res = itr.next();
+           for (Object res : eager.values()) {
                 if (res != this && res instanceof Closeable)
                     try {
                         ((Closeable) res).close();
@@ -891,9 +889,6 @@ public abstract class AbstractResult
             return this;
         }
 
-        public void appendTo(SQLBuffer buf) {
-        }
-
         public Joins setCorrelatedVariable(String var) {
             return this;
         }
@@ -904,5 +899,10 @@ public abstract class AbstractResult
         
         public void moveJoinsToParent() {
         }
+
+		@Override
+		public StringBuilder path() {
+			return null;
+		}
     }
 }
