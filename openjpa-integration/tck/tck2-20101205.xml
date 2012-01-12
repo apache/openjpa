@@ -209,8 +209,9 @@ databaseName=${db.name}
         <attribute name="dir" default="${tck.dir}/src" />
         <attribute name="buildfile" />
         <attribute name="target" />
+        <attribute name="tmo" default="7200000" />
         <sequential>
-            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="14400000" resultproperty="tsant.result">
+            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="@{tmo}" resultproperty="tsant.result">
                 <arg value="-emacs" />
                 <arg value="-buildfile" />
                 <arg value="@{buildfile}" />
@@ -311,17 +312,18 @@ databaseName=${db.name}
         <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
+        <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
             <isset property="jpatck.pkg.dir" />
         <then>
             <echo>Calling TCK build.xml for pkg.dir=${jpatck.pkg.dir}</echo>
             <property name="dir" value="${tck.dir}/src/${jpatck.pkg.dir}" />
-            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" />
+            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>
-            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" />
+            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" tmo="${jpatck.run.tmo}" />
         </else>
         </if>
 
