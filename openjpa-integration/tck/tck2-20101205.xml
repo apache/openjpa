@@ -7,15 +7,15 @@
  to you under the Apache License, Version 2.0 (the
  "License"); you may not use this file except in compliance
  with the License.  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing,
  software distributed under the License is distributed on an
  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  KIND, either express or implied.  See the License for the
  specific language governing permissions and limitations
- under the License.   
+ under the License.
 -->
 
 <!--
@@ -38,8 +38,8 @@
 
     Other options are documented in the Maven pom.xml which calls this script.
 -->
-<!-- 
-    Please keep the project tag on one line to avoid confusing 
+<!--
+    Please keep the project tag on one line to avoid confusing
     the release plugin.
 -->
 <project name="JPA2TCK" default="run-tck">
@@ -142,7 +142,7 @@ database.classes=
 openjpa.properties=${openjpa.properties}
 toplink.properties=${toplink.properties}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
-# This includes a few different possible locations; only one of them needs to 
+# This includes a few different possible locations; only one of them needs to
 # actually work for a given environment.
 sigTestClasspath=${JAVA_HOME}/lib/rt.jar${path.separator}${JAVA_HOME}/jre/lib/rt.jar${path.separator}${JAVA_HOME}/../Classes/classes.jar${path.separator}$${jpa.classes}
 persistence.unit.properties.file.full.path=${provider.properties}
@@ -155,7 +155,7 @@ databaseName=${db.name}
         </echo>
 
         <!-- convert backslashes and known paths with spaces
-            to get around a problem with the TCK testrunner 
+            to get around a problem with the TCK testrunner
             on windows -->
         <echo>Update directory paths if running on Windows</echo>
         <replace summary="yes" file="${jpatck.config}.tmp" replacefilterfile="windows-replacefilter.properties" />
@@ -209,8 +209,9 @@ databaseName=${db.name}
         <attribute name="dir" default="${tck.dir}/src" />
         <attribute name="buildfile" />
         <attribute name="target" />
+        <attribute name="tmo" default="7200000" />
         <sequential>
-            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="7200000" resultproperty="tsant.result">
+            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="@{tmo}" resultproperty="tsant.result">
                 <arg value="-emacs" />
                 <arg value="-buildfile" />
                 <arg value="@{buildfile}" />
@@ -311,17 +312,18 @@ databaseName=${db.name}
         <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
+        <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
             <isset property="jpatck.pkg.dir" />
         <then>
             <echo>Calling TCK build.xml for pkg.dir=${jpatck.pkg.dir}</echo>
             <property name="dir" value="${tck.dir}/src/${jpatck.pkg.dir}" />
-            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" />
+            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>
-            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" />
+            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" tmo="${jpatck.run.tmo}" />
         </else>
         </if>
 
@@ -330,7 +332,7 @@ databaseName=${db.name}
         <!-- archive the results and check for test failures -->
         <antcall target="zip-artifacts">
             <param name="results.name" value="tck" />
-        </antcall> 
+        </antcall>
     </target>
 
 
