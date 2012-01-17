@@ -2330,8 +2330,7 @@ public class SelectImpl
         extends ResultSetResult
         implements PathJoins {
 
-        private SelectImpl _sel = null;
-        private Map<Column, Object> _cachedColumnAlias = null;
+        private SelectImpl _sel;
 
         // position in selected columns list where we expect the next load
         private int _pos = 0;
@@ -2414,14 +2413,12 @@ public class SelectImpl
         protected boolean containsInternal(Object obj, Joins joins) {
             // we key directly on objs and join-less cols, or on the alias
             // for cols with joins
+        	if (_sel._selects.isOptimizable()) {
+        		return obj instanceof Column && _sel._selects.getObjectIndex((Column)obj) != null;
+        	}
             PathJoins pj = getJoins(joins);
             if (pj != null && pj.path() != null) {
                 Object columnAlias = getColumnAlias((Column) obj, pj);
-                if (joins == null) {
-                    if (_cachedColumnAlias == null)
-                        _cachedColumnAlias = new HashMap<Column, Object>();
-                    _cachedColumnAlias.put((Column) obj, columnAlias);
-                }
                 return columnAlias != null && _sel._selects.contains(columnAlias);
             }
             return obj != null && _sel._selects.contains(obj);
@@ -2460,8 +2457,16 @@ public class SelectImpl
             return super.nextInternal();
         }
 
+        
+        /**
+         * Finds index of the given object with optional join information.
+         * The index refers to the position of the value in the JDBC result set. 
+         */
         protected int findObject(Object obj, Joins joins)
             throws SQLException {
+        	if (_sel._selects.isOptimizable()) {
+        		return _sel._selects.getObjectIndex((Column)obj);
+        	}
             if (_pos == _sel._selects.size())
                 _pos = 0;
 
@@ -2472,21 +2477,16 @@ public class SelectImpl
             if (pj != null && pj.path() != null) {
                 Column col = (Column) obj;
                 pk = (col.isPrimaryKey()) ? Boolean.TRUE : Boolean.FALSE;
-                if (joins == null && _cachedColumnAlias != null) {
-                    obj = _cachedColumnAlias.get(col);
-                    if (obj == null)
-                        obj = getColumnAlias(col, pj);
-                } else {
-                    obj = getColumnAlias(col, pj);
-                }
+                obj = getColumnAlias(col, pj);
                 if (obj == null)
                     throw new SQLException(col.getTable() + ": "
                         + pj.path() + " (" + _sel._aliases + ")");
             }
 
             // we load in the same order we select, more or less...
-            if (_sel._selects.get(_pos).equals(obj))
+            if (_sel._selects.get(_pos).equals(obj)) {
                 return ++_pos;
+            }
 
             // if we're looking for a primary key, try back a couple places,
             // since pks might be selected in a slightly different order than
@@ -2496,8 +2496,9 @@ public class SelectImpl
                     ? Boolean.TRUE : Boolean.FALSE;
             if (pk.booleanValue()) {
                 for (int i = _pos - 1; i >= 0 && i >= _pos - 3; i--)
-                    if (_sel._selects.get(i).equals(obj))
+                    if (_sel._selects.get(i).equals(obj)) {
                         return i + 1;
+                    }
             }
 
             // search forward on the assumption that we might be skipping
@@ -2515,8 +2516,9 @@ public class SelectImpl
             // position marker at its current place cause subsequent loads will
             // still probably start from there
             for (int i = 0; i < _pos; i++)
-                if (_sel._selects.get(i).equals(obj))
+                if (_sel._selects.get(i).equals(obj)) {
                     return i + 1;
+                }
 
             // somethings's wrong...
             throw new SQLException(obj.toString());
@@ -3087,6 +3089,7 @@ public class SelectImpl
         protected Map<Object,String> _selectAs = null;
         protected DBDictionary _dict = null;
 
+        
         /**
          * Add all aliases from another instance.
          */
@@ -3266,7 +3269,71 @@ public class SelectImpl
             _selectAs = null;
             _idents = null;
         }
+        
+        // Selected column lookup optimization. 
+        private Boolean _optimizable;
+    	Map<String,Integer> _indices = new HashMap<String, Integer>();
+    	
+    	/**
+    	 * A set of selected terms become optimized for lookup if all the terms 
+    	 * are columns (may be some with joins) but their names are distinct
+    	 * In such case, an index lookup is possible only by the name of the column
+    	 * without any need to recompute alias every time (i.e. for every term for
+    	 * every row) during lookup.
+    	 * <br>
+    	 * This routine computes once and only once per instance to determine
+    	 * whether such optimization is permissible.
+    	 * If {@link JDBCConfiguration#getSelectCacheEnabled()} select caching is in effect, 
+    	 * then the same {@link Selects projection term} will be reused and such optimization
+    	 * may prove useful. 
+    	 */
+        boolean isOptimizable() {
+        	if (_optimizable != null) {
+        		return _optimizable.booleanValue();
+        	}
+        	_optimizable = true;
+        	int N = size();
+    		String columnName = null;
+        	for (int i = 0; i < N; i++) {
+        		Object key = get(i);
+        		if (key instanceof Column) {
+        			columnName = ((Column) key).getIdentifier().getName();
+        		} else if (key instanceof String) {
+        			int dot = ((String)key).lastIndexOf('.');
+        			if (dot != -1) {
+        				columnName = ((String)key).substring(dot+1);
+        			}
+        		} else {
+        			columnName = null;
+        		}
+        		if (columnName != null && !_indices.containsKey(columnName)) {
+        			_indices.put(columnName, i+1);
+        		} else {
+        			_indices.clear();
+        			_optimizable = false;
+        			break;
+        		}
+        	}
+        	return _optimizable;
+        }
+
+        /**
+         * Gets index of the given column assuming that this instance is optimized. 
+         * @return JDBC index of the given column
+         * @see #isOptimizable()
+         */
+        Integer getObjectIndex(Column col) {
+        	return _indices.get(col.getIdentifier().getName());
+        }
+        
+        // for debugging
+        String toString(Object o) {
+        	if (o == null) return "null";
+        	return o.toString() + '[' + o.getClass().getSimpleName() + '@' 
+        	     + Integer.toHexString(System.identityHashCode(o)) + ']';
+        }
     }
+    // ------------- end of SelectImpl$Selects -----------------------------------------
 
     public Joins setCorrelatedVariable(String var) {
         if (var == null)
