@@ -255,6 +255,8 @@ public class SelectImpl
     }
 
     public SQLBuffer toSelect(boolean forUpdate, JDBCFetchConfiguration fetch) {
+    	if (_readOnly)
+    		return _full;
         _full = _dict.toSelect(this, forUpdate, fetch);
         return _full;
     }
@@ -378,12 +380,10 @@ public class SelectImpl
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
-        return execute(store.getContext(), store, fetch,
-            fetch.getReadLockLevel());
+        return execute(store.getContext(), store, fetch, fetch.getReadLockLevel());
     }
 
-    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch,
-        int lockLevel)
+    public Result execute(JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel)
         throws SQLException {
         if (fetch == null)
             fetch = store.getFetchConfiguration();
@@ -394,8 +394,7 @@ public class SelectImpl
      * Execute this select in the context of the given store manager. The
      * context is passed in separately for profiling purposes.
      */
-    protected Result execute(StoreContext ctx, JDBCStore store, 
-        JDBCFetchConfiguration fetch, int lockLevel)
+    protected Result execute(StoreContext ctx, JDBCStore store, JDBCFetchConfiguration fetch, int lockLevel)
         throws SQLException {
         boolean forUpdate = false;
         if (!isAggregate() && _grouping == null) {
@@ -678,6 +677,7 @@ public class SelectImpl
     }
 
     public void addJoinClassConditions() {
+    	assertMutable();
         if (_joins == null || _joins.joins() == null)
             return;
 
@@ -806,6 +806,7 @@ public class SelectImpl
     }
 
     public void clearSelects() {
+    	assertMutable();
         _selects.clear();
     }
 
@@ -873,6 +874,7 @@ public class SelectImpl
      * to count from the back of the select list.
      */
     public void insertPlaceholder(String sql, int pos) {
+    	assertMutable();
         Object holder = (_placeholders >= PLACEHOLDERS.length)
             ? new Placeholder() : PLACEHOLDERS[_placeholders++];
         _selects.insertAlias(pos, holder, sql);
@@ -882,14 +884,17 @@ public class SelectImpl
      * Clear selected placeholders, and return removed select indexes.
      */
     public void clearPlaceholderSelects() {
+    	assertMutable();
         _selects.clearPlaceholders();
     }
 
     public boolean select(Column col) {
+    	assertMutable();
         return select(col, (Joins) null);
     }
 
     public boolean select(Column col, Joins joins) {
+    	assertMutable();
         if (!isGrouping())
             return select(col, getJoins(joins, true), false);
         groupBy(col, joins);
@@ -897,10 +902,12 @@ public class SelectImpl
     }
 
     public int select(Column[] cols) {
+    	assertMutable();
         return select(cols, null);
     }
 
     public int select(Column[] cols, Joins joins) {
+    	assertMutable();
         if (cols == null || cols.length == 0)
             return 0;
         if (isGrouping()) {
@@ -919,6 +926,7 @@ public class SelectImpl
      * Select the given column after making the given joins.
      */
     private boolean select(Column col, PathJoins pj, boolean ident) {
+    	assertMutable();
         // we cache on column object if there are no joins so that when
         // looking up columns in the result we don't have to create a string
         // buffer for the table + column alias; if there are joins, then
@@ -940,12 +948,14 @@ public class SelectImpl
 
     public void select(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+    	assertMutable();
         select(mapping, subclasses, store, fetch, eager, null);
     }
 
     public void select(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
+    	assertMutable();
         select(this, mapping, subclasses, store, fetch, eager, joins, false);
     }
 
@@ -994,10 +1004,12 @@ public class SelectImpl
     }
 
     public boolean selectIdentifier(Column col) {
+    	assertMutable();
         return selectIdentifier(col, (Joins) null);
     }
 
     public boolean selectIdentifier(Column col, Joins joins) {
+    	assertMutable();
         if (!isGrouping())
             return select(col, getJoins(joins, true), true);
         groupBy(col, joins);
@@ -1005,10 +1017,12 @@ public class SelectImpl
     }
 
     public int selectIdentifier(Column[] cols) {
+    	assertMutable();
         return selectIdentifier(cols, null);
     }
 
     public int selectIdentifier(Column[] cols, Joins joins) {
+    	assertMutable();
         if (cols == null || cols.length == 0)
             return 0;
         if (isGrouping()) {
@@ -1025,20 +1039,24 @@ public class SelectImpl
 
     public void selectIdentifier(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager) {
+    	assertMutable();
         selectIdentifier(mapping, subclasses, store, fetch, eager, null);
     }
 
     public void selectIdentifier(ClassMapping mapping, int subclasses,
         JDBCStore store, JDBCFetchConfiguration fetch, int eager,
         Joins joins) {
+    	assertMutable();
         select(this, mapping, subclasses, store, fetch, eager, joins, true);
     }
 
     public int selectPrimaryKey(ClassMapping mapping) {
+    	assertMutable();
         return selectPrimaryKey(mapping, null);
     }
 
     public int selectPrimaryKey(ClassMapping mapping, Joins joins) {
+    	assertMutable();
         return primaryKeyOperation(mapping, true, null, joins, false);
     }
 
@@ -1047,6 +1065,7 @@ public class SelectImpl
      */
     private int primaryKeyOperation(ClassMapping mapping, boolean sel,
         Boolean asc, Joins joins, boolean aliasOrder) {
+    	assertMutable();
         if (!sel && asc == null)
             return 0;
 
@@ -1134,6 +1153,7 @@ public class SelectImpl
      * Append ordering information to our internal buffer.
      */
     private void appendOrdering(Object orderBy, boolean asc) {
+    	assertMutable();
         if (_ordering == null)
             _ordering = new SQLBuffer(_dict);
         else
@@ -1169,10 +1189,12 @@ public class SelectImpl
     }
 
     public boolean orderBy(Column col, boolean asc, boolean sel) {
+    	assertMutable();
         return orderBy(col, asc, null, sel);
     }
 
     public boolean orderBy(Column col, boolean asc, Joins joins, boolean sel) {
+    	assertMutable();
         return orderBy(col, asc, joins, sel, false);
     }
 
@@ -1181,15 +1203,18 @@ public class SelectImpl
      */
     boolean orderBy(Column col, boolean asc, Joins joins, boolean sel,
         boolean aliasOrder) {
+    	assertMutable();
         return columnOperation(col, sel, (asc) ? Boolean.TRUE : Boolean.FALSE,
             getJoins(joins, true), aliasOrder);
     }
 
     public int orderBy(Column[] cols, boolean asc, boolean sel) {
+    	assertMutable();
         return orderBy(cols, asc, null, sel);
     }
 
     public int orderBy(Column[] cols, boolean asc, Joins joins, boolean sel) {
+    	assertMutable();
         return orderBy(cols, asc, joins, sel, false);
     }
 
@@ -1198,6 +1223,7 @@ public class SelectImpl
      */
     int orderBy(Column[] cols, boolean asc, Joins joins, boolean sel,
         boolean aliasOrder) {
+    	assertMutable();
         PathJoins pj = getJoins(joins, true);
         int seld = 0;
         for (int i = 0; i < cols.length; i++)
@@ -1207,29 +1233,28 @@ public class SelectImpl
         return seld;
     }
 
-    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs)
-    {
+    public boolean orderBy(SQLBuffer sql, boolean asc, boolean sel, Value selAs) {
+    	assertMutable();
         return orderBy(sql, asc, (Joins) null, sel, selAs);
     }
 
-    public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,
-        boolean sel, Value selAs) {
+    public boolean orderBy(SQLBuffer sql, boolean asc, Joins joins,  boolean sel, Value selAs) {
+    	assertMutable();
         return orderBy(sql, asc, joins, sel, false, selAs);
     }
 
     /**
      * Allow unions to set aliases on order columns.
      */
-    boolean orderBy(SQLBuffer sql, boolean asc, Joins joins, boolean sel,
-        boolean aliasOrder, Value selAs) {
+    boolean orderBy(SQLBuffer sql, boolean asc, Joins joins, boolean sel, boolean aliasOrder, Value selAs) {
+    	assertMutable();
         return orderBy((Object) sql, asc, joins, sel, aliasOrder, selAs);
     }
 
     /**
      * Order on a SQL buffer or string.
      */
-    private boolean orderBy(Object sql, boolean asc, Joins joins, boolean sel,
-        boolean aliasOrder, Value selAs) {
+    private boolean orderBy(Object sql, boolean asc, Joins joins, boolean sel, boolean aliasOrder, Value selAs) {
     	assertMutable();
         Object order = sql;
         if (aliasOrder) {
@@ -1255,22 +1280,25 @@ public class SelectImpl
     }
 
     public boolean orderBy(String sql, boolean asc, boolean sel) {
+    	assertMutable();
         return orderBy(sql, asc, null, sel);
     }
 
     public boolean orderBy(String sql, boolean asc, Joins joins, boolean sel) {
+    	assertMutable();
         return orderBy(sql, asc, joins, sel, false);
     }
 
     /**
      * Allow unions to set aliases on order columns.
      */
-    boolean orderBy(String sql, boolean asc, Joins joins, boolean sel,
-        boolean aliasOrder) {
+    boolean orderBy(String sql, boolean asc, Joins joins, boolean sel,  boolean aliasOrder) {
+    	assertMutable();
         return orderBy((Object) sql, asc, joins, sel, aliasOrder, null);
     }
 
     public void clearOrdering() {
+    	assertMutable();
         _ordering = null;
         _orders = 0;
     }
@@ -1279,9 +1307,9 @@ public class SelectImpl
      * Allow unions to record the select list indexes of items we order by.
      */
     void setRecordOrderedIndexes(boolean record) {
-        if (record)
+        if (record) {
             _flags |= RECORD_ORDERED;
-        else {
+        } else {
             _ordered = null;
             _flags &= ~RECORD_ORDERED;
         }
@@ -1300,8 +1328,7 @@ public class SelectImpl
         return idxs;
     }
 
-    public void wherePrimaryKey(Object oid, ClassMapping mapping,
-        JDBCStore store) {
+    public void wherePrimaryKey(Object oid, ClassMapping mapping, JDBCStore store) {
         wherePrimaryKey(oid, mapping, null, store);
     }
 
@@ -1311,8 +1338,7 @@ public class SelectImpl
      * primary key, we will recursively join to its superclass until we find
      * an ancestor that does.
      */
-    private void wherePrimaryKey(Object oid, ClassMapping mapping, Joins joins,
-        JDBCStore store) {
+    private void wherePrimaryKey(Object oid, ClassMapping mapping, Joins joins,  JDBCStore store) {
         // if this mapping's identifiers include something other than
         // the pk values, join to super and recurse
         if (!mapping.isPrimaryKeyObjectId(false)) {
@@ -1325,12 +1351,10 @@ public class SelectImpl
         }
 
         Column[] cols = mapping.getPrimaryKeyColumns();
-        where(oid, mapping, cols, cols, null, null, getJoins(joins, true),
-            store);
+        where(oid, mapping, cols, cols, null, null, getJoins(joins, true), store);
     }
 
-    public void whereForeignKey(ForeignKey fk, Object oid,
-        ClassMapping mapping, JDBCStore store) {
+    public void whereForeignKey(ForeignKey fk, Object oid, ClassMapping mapping, JDBCStore store) {
         whereForeignKey(fk, oid, mapping, null, store);
     }
 
@@ -1340,8 +1364,7 @@ public class SelectImpl
      *
      * @see #wherePrimaryKey
      */
-    private void whereForeignKey(ForeignKey fk, Object oid,
-        ClassMapping mapping, Joins joins, JDBCStore store) {
+    private void whereForeignKey(ForeignKey fk, Object oid, ClassMapping mapping, Joins joins, JDBCStore store) {
         // if this mapping's identifiers include something other than
         // the pk values, or if this foreign key doesn't link to only
         // identifiers, join to table and do a getPrimaryKey
@@ -1364,8 +1387,7 @@ public class SelectImpl
         }
 
         where(oid, mapping, fk.getPrimaryKeyColumns(), fk.getColumns(), 
-        		fk.getConstants(), fk.getConstantColumns(),
-            getJoins(joins, true), store);
+        		fk.getConstants(), fk.getConstantColumns(), getJoins(joins, true), store);
     }
 
     /**
@@ -1505,10 +1527,12 @@ public class SelectImpl
 
 
     public void having(SQLBuffer sql) {
+    	assertMutable();
         having(sql, (Joins) null);
     }
 
     public void having(SQLBuffer sql, Joins joins) {
+    	assertMutable();
         having(sql, getJoins(joins, true));
     }
 
@@ -1516,6 +1540,7 @@ public class SelectImpl
      * Add the given condition to the HAVING clause.
      */
     private void having(SQLBuffer sql, PathJoins pj) {
+    	assertMutable();
         // no need to use joins...
         if (sql == null || sql.isEmpty())
             return;
@@ -1528,37 +1553,45 @@ public class SelectImpl
     }
 
     public void groupBy(SQLBuffer sql) {
+    	assertMutable();
         groupBy(sql, (Joins) null);
     }
 
     public void groupBy(SQLBuffer sql, Joins joins) {
+    	assertMutable();
         getJoins(joins, true);
         groupByAppend(sql.getSQL());
     }
 
     public void groupBy(String sql) {
+    	assertMutable();
         groupBy(sql, (Joins) null);
     }
 
     public void groupBy(String sql, Joins joins) {
+    	assertMutable();
         getJoins(joins, true);
         groupByAppend(sql);
     }
 
     public void groupBy(Column col) {
+    	assertMutable();
         groupBy(col, null);
     }
 
     public void groupBy(Column col, Joins joins) {
+    	assertMutable();
         PathJoins pj = getJoins(joins, true);
         groupByAppend(getColumnAlias(col, pj));
     }
 
     public void groupBy(Column[] cols) {
+    	assertMutable();
         groupBy(cols, null);
     }
 
     public void groupBy(Column[] cols, Joins joins) {
+    	assertMutable();
         PathJoins pj = getJoins(joins, true);
         for (int i = 0; i < cols.length; i++) {
             groupByAppend(getColumnAlias(cols[i], pj));
@@ -1566,6 +1599,7 @@ public class SelectImpl
     }
     
     private void groupByAppend(String sql) {
+    	assertMutable();
         if (_grouped == null || !_grouped.contains(sql)) {
             if (_grouping == null) {
                 _grouping = new SQLBuffer(_dict);
@@ -1580,11 +1614,13 @@ public class SelectImpl
 
     public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch) {
+    	assertMutable();
         groupBy(mapping, subclasses, store, fetch, null);
     }
 
     public void groupBy(ClassMapping mapping, int subclasses, JDBCStore store,
         JDBCFetchConfiguration fetch, Joins joins) {
+    	assertMutable();
         // we implement this by putting ourselves into grouping mode, where
         // all select invocations are re-routed to group-by invocations instead.
         // this allows us to utilize the same select APIs of the store manager
@@ -1593,8 +1629,7 @@ public class SelectImpl
         boolean wasGrouping = isGrouping();
         _flags |= GROUPING;
         try {
-            select(mapping, subclasses, store, fetch, 
-                EagerFetchModes.EAGER_NONE, joins);
+            select(mapping, subclasses, store, fetch, EagerFetchModes.EAGER_NONE, joins);
         } finally {
             if (!wasGrouping)
                 _flags &= ~GROUPING;
@@ -1627,7 +1662,7 @@ public class SelectImpl
         else if (!pre) {
             if ((_flags & OUTER) != 0)
                 pj = (PathJoins) outer(pj);
-            if (record) {
+            if (record && !_readOnly) {
                 if (!pj.isEmpty()) {
                     if (_joins == null)
                         _joins = new SelectJoins(this);
@@ -1818,6 +1853,7 @@ public class SelectImpl
     }
 
     public void append(SQLBuffer buf, Joins joins) {
+    	assertMutable();
         if (joins == null || joins.isEmpty())
             return;
         if (_joinSyntax == JoinSyntaxes.SYNTAX_SQL92)
@@ -1846,6 +1882,7 @@ public class SelectImpl
     }
 
     public Joins and(Joins joins1, Joins joins2) {
+    	assertMutable();
         return and((PathJoins) joins1, (PathJoins) joins2, true);
     }
 
@@ -1857,6 +1894,7 @@ public class SelectImpl
      * Combine the given joins.
      */
     private SelectJoins and(PathJoins j1, PathJoins j2, boolean nullJoins) {
+    	assertMutable();
         if ((j1 == null || j1.isEmpty())
             && (j2 == null || j2.isEmpty()))
             return null;
@@ -1894,6 +1932,7 @@ public class SelectImpl
     }
 
     public Joins or(Joins joins1, Joins joins2) {
+    	assertMutable();
         PathJoins j1 = (PathJoins) joins1;
         PathJoins j2 = (PathJoins) joins2;
 
@@ -2190,32 +2229,38 @@ public class SelectImpl
     }
 
     public Joins join(ForeignKey fk, boolean inverse, boolean toMany) {
+    	assertMutable();
         return new SelectJoins(this).join(fk, inverse, toMany);
     }
 
     public Joins outerJoin(ForeignKey fk, boolean inverse, boolean toMany) {
+    	assertMutable();
         return new SelectJoins(this).outerJoin(fk, inverse, toMany);
     }
 
     public Joins joinRelation(String name, ForeignKey fk, ClassMapping target,
         int subs, boolean inverse, boolean toMany) {
+    	assertMutable();
         return new SelectJoins(this).joinRelation(name, fk, target, subs, 
             inverse, toMany);
     }
 
     public Joins outerJoinRelation(String name, ForeignKey fk, 
         ClassMapping target, int subs, boolean inverse, boolean toMany) {
+    	assertMutable();
         return new SelectJoins(this).outerJoinRelation(name, fk, target, subs, 
             inverse, toMany);
     }
 
     public Joins setVariable(String var) {
+    	assertMutable();
         if (var == null)
             return this;
         return new SelectJoins(this).setVariable(var);
     }
 
     public Joins setSubselect(String alias) {
+    	assertMutable();
         if (alias == null)
             return this;
         return new SelectJoins(this).setSubselect(alias);
@@ -2312,6 +2357,10 @@ public class SelectImpl
          */
         public void setSelect(SelectImpl sel) {
             _sel = sel;
+            if (_sel.isReadOnly()) {
+            	_preJoins = new Stack<Joins>();
+            	_preJoins.push(_sel.getJoins());
+            }
         }
 
         public Object getEager(FieldMapping key) {
@@ -3016,6 +3065,7 @@ public class SelectImpl
     }
     
     protected Selects newSelects() {
+    	assertMutable();
         return new Selects();
     }
     
@@ -3235,6 +3285,7 @@ public class SelectImpl
     }
 
     public void moveJoinsToParent() {
+    	assertMutable();
     }
     
     /**

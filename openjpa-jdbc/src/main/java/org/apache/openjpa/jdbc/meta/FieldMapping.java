@@ -81,19 +81,19 @@ public class FieldMapping
     private boolean _outer = false;
     private int _fetchMode = Integer.MAX_VALUE;
     private Unique[] _joinTableUniques; // Unique constraints on JoinTable
-    private Boolean _bidirectionalJoinTableOwner = null;
-    private Boolean _bidirectionalJoinTableNonOwner = null;
+    private Boolean _bidirectionalJoinTableOwner;
+    private Boolean _bidirectionalJoinTableNonOwner;
     
-    private Boolean _bi_MTo1_JT = null;
-    private Boolean _uni_1ToM_FK = null;
-    private Boolean _uni_MTo1_JT = null;
-    private Boolean _uni_1To1_JT = null;
-    private Boolean _bi_1To1_JT = null;
+    private Boolean _bidirectionalManyToOneJoinTable;
+    private Boolean _unidirectionalOneToManyForeignKey;
+    private Boolean _unidirectionalManyToOneJoinTable;
+    private Boolean _unidirectionalOneToOneJoinTable;
+    private Boolean _bidirectionalOneToOneJoinTable;
     
-    private FieldMapping _bi_1ToM_JT_Field = null;
-    private FieldMapping _bi_MTo1_JT_Field = null;
-    private ForeignKey _bi_1ToM_Join_FK = null;
-    private ForeignKey _bi_1ToM_Elem_FK = null;
+    private FieldMapping _bidirectionalOneToManyJoinTableField;
+    private FieldMapping _bidirectionalManyToOneJoinTableField;
+    private ForeignKey _bidirectionalOneToManyJoinForeignKey;
+    private ForeignKey _bidirectionalOneToManyElementForeignKey;
     
     private boolean _hasMapsIdCols = false;
         
@@ -1271,85 +1271,90 @@ public class FieldMapping
         return _bidirectionalJoinTableNonOwner.booleanValue();
     }
     
-    public boolean isBiMTo1JT() {
-        if (_bi_MTo1_JT == null) {
-            _bi_MTo1_JT = getMappingRepository().isBiMTo1JT(this);
+    public boolean isBidirectionalManyToOneJoinTable() {
+        if (_bidirectionalManyToOneJoinTable == null) {
+            _bidirectionalManyToOneJoinTable = getMappingRepository().isBidirectionalManyToOneJoinTable(this);
         }
-        return _bi_MTo1_JT;
+        return _bidirectionalManyToOneJoinTable;
     }
 
-    public boolean isUni1ToMFK() {
-        if (_uni_1ToM_FK == null)
-            _uni_1ToM_FK = getMappingRepository().isUni1ToMFK(this);
-        return _uni_1ToM_FK;
+    public boolean isUnidirectionalOneToManyForeignKey() {
+        if (_unidirectionalOneToManyForeignKey == null)
+            _unidirectionalOneToManyForeignKey = getMappingRepository().isUnidirectionalOneToManyForeignKey(this);
+        return _unidirectionalOneToManyForeignKey;
     }
     
-    public boolean isUniMTo1JT() {
-        if (_uni_MTo1_JT == null)
-            _uni_MTo1_JT = getMappingRepository().isUniMTo1JT(this);
-        return _uni_MTo1_JT;
+    public boolean isUnidirectionalManyToOneJoinTable() {
+        if (_unidirectionalManyToOneJoinTable == null)
+            _unidirectionalManyToOneJoinTable = getMappingRepository().isUnidirectionalManyToOneJoinTable(this);
+        return _unidirectionalManyToOneJoinTable;
     }
 
-    public boolean isUni1To1JT() {
-        if (_uni_1To1_JT == null)
-            _uni_1To1_JT = getMappingRepository().isUni1To1JT(this);
-        return _uni_1To1_JT;
+    public boolean isUnidirectionalOneToOneJoinTable() {
+        if (_unidirectionalOneToOneJoinTable == null)
+            _unidirectionalOneToOneJoinTable = getMappingRepository().isUnidirectionalOneToOneJoinTable(this);
+        return _unidirectionalOneToOneJoinTable;
     }
 
-    public boolean isBi1To1JT() {
-        if (_bi_1To1_JT == null)
-            _bi_1To1_JT = getMappingRepository().isBi1To1JT(this);
-        return _bi_1To1_JT;
+    public boolean isBidirectionalOneToOneJoinTable() {
+        if (_bidirectionalOneToOneJoinTable == null)
+            _bidirectionalOneToOneJoinTable = getMappingRepository().isBidirectionalOneToOneJoinTable(this);
+        return _bidirectionalOneToOneJoinTable;
     }
     
-    public FieldMapping getBi_1ToM_JTField() {
-        if (_bi_1ToM_JT_Field == null) {
-            _bi_1ToM_JT_Field = getMappingRepository().getBi_1ToM_JoinTableField(this);
+    public FieldMapping getBidirectionalOneToManyJoinTableField() {
+        if (_bidirectionalOneToManyJoinTableField == null) {
+            _bidirectionalOneToManyJoinTableField = 
+            	getMappingRepository().getBidirectionalOneToManyJoinTableField(this);
         }
-        return _bi_1ToM_JT_Field;
+        return _bidirectionalOneToManyJoinTableField;
     }
     
-    public FieldMapping getBi_MTo1_JTField() {
-        if (_bi_MTo1_JT_Field == null) {
-            _bi_MTo1_JT_Field = getMappingRepository().getBi_MTo1_JoinTableField(this);
+    public FieldMapping getBidirectionalManyToOneJoinTableField() {
+        if (_bidirectionalManyToOneJoinTableField == null) {
+            _bidirectionalManyToOneJoinTableField = 
+            	getMappingRepository().getBidirectionalManyToOneJoinTableField(this);
         }
-        return _bi_MTo1_JT_Field;
+        return _bidirectionalManyToOneJoinTableField;
     }
 
-    public ForeignKey getBi1ToMJoinFK() {
-        if (_bi_1ToM_Join_FK == null) {
-            getBi_1ToM_JTField();
-            if (_bi_1ToM_JT_Field != null)
-                _bi_1ToM_Join_FK = _bi_1ToM_JT_Field.getJoinForeignKey();
+    public ForeignKey getBidirectionalOneToManyJoinForeignKey() {
+        if (_bidirectionalOneToManyJoinForeignKey == null) {
+            getBidirectionalOneToManyJoinTableField();
+            if (_bidirectionalOneToManyJoinTableField != null)
+                _bidirectionalOneToManyJoinForeignKey = _bidirectionalOneToManyJoinTableField.getJoinForeignKey();
         }
-        return _bi_1ToM_Join_FK;
+        return _bidirectionalOneToManyJoinForeignKey;
     }
     
-    public ForeignKey getBi1ToMElemFK() {
-        if (_bi_1ToM_Elem_FK == null) {
-            getBi_1ToM_JTField();
-            if (_bi_1ToM_JT_Field != null)
-                _bi_1ToM_Elem_FK = _bi_1ToM_JT_Field.getElementMapping().getForeignKey();
+    public ForeignKey getBidirectionalOneToManyElementForeignKey() {
+        if (_bidirectionalOneToManyElementForeignKey == null) {
+            getBidirectionalOneToManyJoinTableField();
+            if (_bidirectionalOneToManyJoinTableField != null)
+                _bidirectionalOneToManyElementForeignKey = 
+                	_bidirectionalOneToManyJoinTableField.getElementMapping().getForeignKey();
         }
-        return _bi_1ToM_Elem_FK;
+        return _bidirectionalOneToManyElementForeignKey;
     }
     
-    public void setBi1MJoinTableInfo() {
+    public void setBidirectionalOneToManyJoinTableInfo() {
         if (getAssociationType() == FieldMetaData.ONE_TO_MANY) {
-            FieldMapping mapped = getBi_MTo1_JTField();
+            FieldMapping mapped = getBidirectionalManyToOneJoinTableField();
             if (mapped != null) {
                 FieldMappingInfo info = getMappingInfo();
                 FieldMappingInfo mappedInfo = mapped.getMappingInfo();
                 info.setTableIdentifier(mappedInfo.getTableIdentifier());
                 info.setColumns(mapped.getElementMapping().getValueInfo().getColumns());
-                getElementMapping().getValueInfo().setColumns(
-                    mappedInfo.getColumns());
+                getElementMapping().getValueInfo().setColumns(mappedInfo.getColumns());
             }
         }
     }
    
     public boolean isNonDefaultMappingUsingJoinTableStrategy() {
-        return isBi1To1JT() || isUni1To1JT() || isUniMTo1JT() || isBiMTo1JT();
+        return isBidirectionalOneToOneJoinTable() 
+            || isUnidirectionalOneToOneJoinTable() 
+            || isUnidirectionalManyToOneJoinTable() 
+            || isBidirectionalManyToOneJoinTable();
     }
     
     public void setMapsIdCols(boolean hasMapsIdCols) {

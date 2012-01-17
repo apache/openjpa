@@ -43,6 +43,8 @@ import org.apache.openjpa.jdbc.sql.MaxDBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.StoreContext;
+import org.apache.openjpa.lib.conf.BooleanValue;
+import org.apache.openjpa.lib.conf.ImmutableBooleanValue;
 import org.apache.openjpa.lib.conf.IntValue;
 import org.apache.openjpa.lib.conf.ObjectValue;
 import org.apache.openjpa.lib.conf.PluginValue;
@@ -87,6 +89,7 @@ public class JDBCConfigurationImpl
     public PluginValue driverDataSourcePlugin;
     public MappingFactoryValue mappingFactoryPlugin;
     public ObjectValue identifierUtilPlugin;
+    public ImmutableBooleanValue cacheSelect;
 
     // used internally
     private String firstUser = null;
@@ -350,6 +353,9 @@ public class JDBCConfigurationImpl
         identifierUtilPlugin.setString(aliases[0]);
         identifierUtilPlugin.setInstantiatingGetter("getIdentifierUtilInstance");
 
+        cacheSelect = new ImmutableBooleanValue("jdbc.CachesSelect");
+        addValue(cacheSelect);
+        cacheSelect.setDefault("false");
         
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's
@@ -996,5 +1002,13 @@ public class JDBCConfigurationImpl
     public void setIdentifierUtil(DBIdentifierUtil util) {
         identifierUtilPlugin.set(util);
     }
+    
+    public boolean getSelectCacheEnabled() {
+    	return cacheSelect.get();
+    }
+    public void setSelectCacheEnabled(boolean enable) {
+    	cacheSelect.set(enable);
+    }
+
 
 }

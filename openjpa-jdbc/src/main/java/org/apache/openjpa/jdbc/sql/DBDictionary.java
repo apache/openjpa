@@ -1894,7 +1894,8 @@ public class DBDictionary
     public SQLBuffer toSelectCount(Select sel) {
         SQLBuffer selectSQL = new SQLBuffer(this);
         SQLBuffer from;
-        sel.addJoinClassConditions();
+        if (!sel.isReadOnly())
+        	sel.addJoinClassConditions();
         if (sel.getFromSelect() != null)
             from = getFromSelect(sel, false);
         else

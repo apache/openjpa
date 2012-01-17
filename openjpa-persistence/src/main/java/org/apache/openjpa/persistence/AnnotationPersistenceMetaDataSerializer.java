@@ -1511,11 +1511,9 @@ public class AnnotationPersistenceMetaDataSerializer
      * then name order.
      */
     private class FieldComparator
-        implements Comparator {
+        implements Comparator<FieldMetaData> {
 
-        public int compare(Object o1, Object o2) {
-            FieldMetaData fmd1 = (FieldMetaData) o1;
-            FieldMetaData fmd2 = (FieldMetaData) o2;
+        public int compare(FieldMetaData fmd1, FieldMetaData fmd2) {
             if (fmd1.isPrimaryKey()) {
                 if (fmd2.isPrimaryKey())
                     return fmd1.compareTo(fmd2);

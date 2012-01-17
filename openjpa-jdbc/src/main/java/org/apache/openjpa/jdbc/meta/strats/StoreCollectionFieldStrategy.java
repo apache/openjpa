@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -57,8 +58,13 @@ import org.apache.openjpa.util.Proxy;
  * insert/update/delete behavior as well as overriding
  * {@link FieldStrategy#toDataStoreValue}, {@link FieldStrategy#join}, and
  * {@link FieldStrategy#joinRelation} if necessary.
+ * <br>
+ * The strategy may reuse the same {@link SelectExecutor select} if the 
+ * {@link JDBCConfiguration#getSelectCacheEnabled() configuration option}
+ * instructs to do so. 
  *
  * @author Abe White
+ * @author Pinaki Poddar (select caching)
  */
 @SuppressWarnings("serial")
 public abstract class StoreCollectionFieldStrategy
@@ -194,6 +200,7 @@ public abstract class StoreCollectionFieldStrategy
     private void selectEager(Select sel, ClassMapping elem,
         OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
         int eagerMode, boolean selectOid, boolean outer) {
+    	if (sel.isReadOnly()) return;
         // force distinct if there was a to-many join to avoid duplicates, but
         // if this is a parallel select don't make distinct based on the
         // eager joins alone if the original wasn't distinct
@@ -523,7 +530,9 @@ public abstract class StoreCollectionFieldStrategy
         Union union;
         if (_executor == null) {
         	union = store.getSQLFactory().newUnion(Math.max(1, elems.length));
-        	_executor = union;
+        	if (store.getConfiguration().getSelectCacheEnabled()) {
+        		_executor = union;
+        	}
         } else {
         	union = (Union)_executor;
         }
@@ -571,25 +580,24 @@ public abstract class StoreCollectionFieldStrategy
     }
 
     /**
-     * Select data for loading, starting in field table.
+     * Selects data for loading, starting in field table.
+     * 
      */
     protected Joins selectAll(Select sel, ClassMapping elem,
-        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch,
-        int eagerMode) {
+        OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
         ForeignKey fk = getJoinForeignKey(elem);
         Object oid = getObjectIdForJoin(fk, sm);
         sel.whereForeignKey(fk, oid, field.getDefiningMapping(), store);
-        Joins joins;
-        if (!sel.isReadOnly()) {
-	        // order first, then select so that if the projection introduces
-	        // additional ordering, it will be after our required ordering
-	        field.orderLocal(sel, elem, null);
-	        joins = joinElementRelation(sel.newJoins(), elem);
-	        field.orderRelation(sel, elem, joins);
-	        selectElement(sel, elem, store, fetch, eagerMode, joins);
-        } else {
-        	joins = joinElementRelation(sel.newJoins(), elem);
+        if (sel.isReadOnly()) {
+        	return sel.getJoins();
         }
+        // order first, then select so that if the projection introduces
+        // additional ordering, it will be after our required ordering
+        field.orderLocal(sel, elem, null);
+        Joins joins = joinElementRelation(sel.newJoins(), elem);
+        field.orderRelation(sel, elem, joins);
+        selectElement(sel, elem, store, fetch, eagerMode, joins);
+        
         return joins;
     }
 

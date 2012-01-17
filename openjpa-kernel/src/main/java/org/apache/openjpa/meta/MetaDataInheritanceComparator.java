@@ -25,10 +25,11 @@ package org.apache.openjpa.meta;
  * @author Abe White
  * @nojavadoc
  */
+@SuppressWarnings("serial")
 public class MetaDataInheritanceComparator
     extends InheritanceComparator {
 
-    protected Class toClass(Object elem) {
+    protected Class<?> toClass(Object elem) {
         if (elem == null)
             return null;
         return ((ClassMetaData) elem).getDescribedType();

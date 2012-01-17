@@ -87,7 +87,7 @@ public class HandlerRelationMapTableFieldStrategy
         union.select(new Union.Selector() {
             public void select(Select sel, int idx) {
                 sel.select(_kcols);
-                if (field.isUni1ToMFK()) {
+                if (field.isUnidirectionalOneToManyForeignKey()) {
                     sel.whereForeignKey(field.getElementMapping().getForeignKey(),
                         sm.getObjectId(), field.getElementMapping().getDeclaredTypeMapping(), store);
                     sel.select(vals[idx], field.getElementMapping().
@@ -146,10 +146,11 @@ public class HandlerRelationMapTableFieldStrategy
             throw new MetaDataException(_loc.get("not-relation", val));
         
         FieldMapping mapped = field.getMappedByMapping();
-        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) { 
+        if (field.isUnidirectionalOneToManyForeignKey() 
+        || (!field.isBidirectionalManyToOneJoinTable() && mapped != null)) { 
             // map to the owner table
             handleMappedByForeignKey(adapt);
-        } else if (field.isBiMTo1JT() || mapped == null) { 
+        } else if (field.isBidirectionalManyToOneJoinTable() || mapped == null) { 
             // map to a separate table
             field.mapJoin(adapt, true);
             if (val.getTypeMapping().isMapped()) {
@@ -186,11 +187,11 @@ public class HandlerRelationMapTableFieldStrategy
         if (map == null || map.isEmpty())
             return;
         
-        if (!field.isBiMTo1JT() && field.getMappedBy() != null)
+        if (!field.isBidirectionalManyToOneJoinTable() && field.getMappedBy() != null)
             return;
 
         Row row = null;
-        if (!field.isUni1ToMFK()) {
+        if (!field.isUnidirectionalOneToManyForeignKey()) {
             row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);
             row.setForeignKey(field.getJoinForeignKey(), field.getJoinColumnIO(),
                 sm);
@@ -204,7 +205,7 @@ public class HandlerRelationMapTableFieldStrategy
             entry = (Map.Entry) itr.next();
             valsm = RelationStrategies.getStateManager(entry.getValue(),
                 ctx);
-            if (field.isUni1ToMFK()){
+            if (field.isUnidirectionalOneToManyForeignKey()){
                 row = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                     Row.ACTION_UPDATE, valsm, true);
                 row.wherePrimaryKey(valsm);
@@ -223,7 +224,7 @@ public class HandlerRelationMapTableFieldStrategy
             // from the view point of the owned side
             PersistenceCapable obj = sm.getPersistenceCapable();
             if (!populateKey(row, valsm, obj, ctx, rm, store)) {
-                if (!field.isUni1ToMFK())
+                if (!field.isUnidirectionalOneToManyForeignKey())
                     rm.flushSecondaryRow(row);
             }
         }
@@ -238,7 +239,7 @@ public class HandlerRelationMapTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !field.isBiMTo1JT())
+        if (field.getMappedBy() != null && !field.isBidirectionalManyToOneJoinTable())
             return;
 
         Map map = (Map) sm.fetchObject(field.getIndex());
@@ -269,7 +270,7 @@ public class HandlerRelationMapTableFieldStrategy
         Object mkey;
         if (canChange && !change.isEmpty()) {
             Row changeRow = null;
-            if (!field.isUni1ToMFK()) {
+            if (!field.isUnidirectionalOneToManyForeignKey()) {
                 changeRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_UPDATE);
                 changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
@@ -278,7 +279,7 @@ public class HandlerRelationMapTableFieldStrategy
             for (Iterator itr = change.iterator(); itr.hasNext();) {
                 mkey = itr.next();
                 valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
-                if (field.isUni1ToMFK()){
+                if (field.isUnidirectionalOneToManyForeignKey()){
                     changeRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                         Row.ACTION_UPDATE, valsm, true);
                     changeRow.wherePrimaryKey(valsm);
@@ -288,7 +289,7 @@ public class HandlerRelationMapTableFieldStrategy
                 }
                 
                 HandlerStrategies.where(key, mkey, store, changeRow, _kcols);
-                if (!field.isUni1ToMFK())
+                if (!field.isUnidirectionalOneToManyForeignKey())
                     rm.flushSecondaryRow(changeRow);
             }
         }
@@ -297,14 +298,14 @@ public class HandlerRelationMapTableFieldStrategy
         Collection rem = ct.getRemoved();
         if (!rem.isEmpty() || (!canChange && !change.isEmpty())) {
             Row delRow = null;
-            if (!field.isUni1ToMFK()) {
+            if (!field.isUnidirectionalOneToManyForeignKey()) {
                 delRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_DELETE);
                 delRow.whereForeignKey(field.getJoinForeignKey(), sm);
             }
             for (Iterator itr = rem.iterator(); itr.hasNext();) {
                 mkey = itr.next();
-                if (field.isUni1ToMFK()){
+                if (field.isUnidirectionalOneToManyForeignKey()){
                     updateSetNull(sm, mkey, store, rm);
                 } else {
                     HandlerStrategies.where(key, mkey, store, delRow, _kcols);
@@ -314,7 +315,7 @@ public class HandlerRelationMapTableFieldStrategy
             if (!canChange && !change.isEmpty()) {
                 for (Iterator itr = change.iterator(); itr.hasNext();) {
                     mkey = itr.next();
-                    if (field.isUni1ToMFK()){
+                    if (field.isUnidirectionalOneToManyForeignKey()){
                         updateSetNull(sm, mkey, store, rm);
                     } else { 
                         HandlerStrategies.where(key, itr.next(), store, delRow,  _kcols);
@@ -328,7 +329,7 @@ public class HandlerRelationMapTableFieldStrategy
         Collection add = ct.getAdded();
         if (!add.isEmpty() || (!canChange && !change.isEmpty())) {
             Row addRow = null;
-            if (!field.isUni1ToMFK()) {
+            if (!field.isUnidirectionalOneToManyForeignKey()) {
                 addRow = rm.getSecondaryRow(field.getTable(),
                         Row.ACTION_INSERT);
                 addRow.setForeignKey(field.getJoinForeignKey(),
@@ -337,7 +338,7 @@ public class HandlerRelationMapTableFieldStrategy
             for (Iterator itr = add.iterator(); itr.hasNext();) {
                 mkey = itr.next();
                 valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
-                if (field.isUni1ToMFK()){
+                if (field.isUnidirectionalOneToManyForeignKey()){
                     addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                         Row.ACTION_UPDATE, valsm, true);
                     addRow.wherePrimaryKey(valsm);
@@ -348,14 +349,14 @@ public class HandlerRelationMapTableFieldStrategy
                 
                 HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                     _kio, true);
-                if (!field.isUni1ToMFK())
+                if (!field.isUnidirectionalOneToManyForeignKey())
                     rm.flushSecondaryRow(addRow);
             }
             if (!canChange && !change.isEmpty()) {
                 for (Iterator itr = change.iterator(); itr.hasNext();) {
                     mkey = itr.next();
                     valsm = RelationStrategies.getStateManager(map.get(mkey), ctx);
-                    if (field.isUni1ToMFK()){
+                    if (field.isUnidirectionalOneToManyForeignKey()){
                         addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                             Row.ACTION_UPDATE, valsm, true);
                         addRow.wherePrimaryKey(valsm);
@@ -366,7 +367,7 @@ public class HandlerRelationMapTableFieldStrategy
                     
                     HandlerStrategies.set(key, mkey, store, addRow, _kcols,
                         _kio, true);
-                    if (!field.isUni1ToMFK())
+                    if (!field.isUnidirectionalOneToManyForeignKey())
                         rm.flushSecondaryRow(addRow);
                 }
             }
@@ -413,9 +414,9 @@ public class HandlerRelationMapTableFieldStrategy
     
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if ((field.getMappedBy() != null && !field.isBiMTo1JT()))
+        if ((field.getMappedBy() != null && !field.isBidirectionalManyToOneJoinTable()))
             return;
-        if (field.isUni1ToMFK()) {
+        if (field.isUnidirectionalOneToManyForeignKey()) {
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
             updateSetNull(sm, store, rm, mapObj.keySet());
             return;

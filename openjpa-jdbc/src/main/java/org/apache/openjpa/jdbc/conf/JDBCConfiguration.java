@@ -628,5 +628,25 @@ public interface JDBCConfiguration
      * @param util instance of the identifier utility
      */
     public void setIdentifierUtil(DBIdentifierUtil util);
+    
+    /**
+     * Affirms if select statements are aggressively cached.
+     * An aggressive select cache assumes that {@link FetchConfiguration fetch plan}
+     * does not change between execution.
+     * 
+     * @return false by default.
+     *  
+     * @since 2.2.0
+     */
+    public boolean getSelectCacheEnabled();
+    
+    /**
+     * Sets if select statements are aggressively cached.
+     * An aggressive select cache assumes that {@link FetchConfiguration fetch plan}
+     * does not change between execution.
+     *  
+     * @since 2.2.0
+     */
+    public void setSelectCacheEnabled(boolean enable);
 
 }

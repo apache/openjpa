@@ -260,9 +260,9 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private boolean exists(ClassMapping mapping, Object oid, Object context) {
         // add where conditions on base class to avoid joins if subclass
         // doesn't use oid as identifier
-        Select sel = _sql.newSelect();
         while (mapping.getJoinablePCSuperclassMapping() != null)
             mapping = mapping.getJoinablePCSuperclassMapping();
+        Select sel = mapping.getSelect();
 
         sel.wherePrimaryKey(oid, mapping, this);
         if (_log.isTraceEnabled()) {
@@ -301,8 +301,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         FetchConfiguration fetch, Object context) {
         ConnectionInfo info = (ConnectionInfo) context;
         try {
-            return initializeState(sm, state, (JDBCFetchConfiguration) fetch, 
-                info);
+            return initializeState(sm, state, (JDBCFetchConfiguration) fetch, info);
         } catch (ClassNotFoundException cnfe) {
             throw new UserException(cnfe);
         } catch (SQLException se) {
@@ -332,27 +331,24 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 Boolean custom = customLoad(sm, mapping, state, fetch);
                 if (custom != null)
                     return custom.booleanValue();
-                res = getInitializeStateResult(sm, mapping, fetch,
-                    Select.SUBS_EXACT);
+                res = getInitializeStateResult(sm, mapping, fetch, Select.SUBS_EXACT);
                 if (res == null && !selectPrimaryKey(sm, mapping, fetch))
                     return false;
                 if (isEmptyResult(res))
                     return false;
             } else {
-                ClassMapping[] mappings = mapping.
-                    getIndependentAssignableMappings();
+                ClassMapping[] mappings = mapping.getIndependentAssignableMappings();
                 if (mappings.length == 1) {
                     mapping = mappings[0];
                     Boolean custom = customLoad(sm, mapping, state, fetch);
                     if (custom != null)
                         return custom.booleanValue();
-                    res = getInitializeStateResult(sm, mapping, fetch,
-                        Select.SUBS_ANY_JOINABLE);
+                    res = getInitializeStateResult(sm, mapping, fetch, Select.SUBS_ANY_JOINABLE);
                     if (res == null && !selectPrimaryKey(sm, mapping, fetch))
                         return false;
-                } else
-                    res = getInitializeStateUnionResult(sm, mapping, mappings,
-                        fetch);
+                } else {
+                    res = getInitializeStateUnionResult(sm, mapping, mappings, fetch);
+                }
                 if (isEmptyResult(res))
                     return false;
             }
@@ -365,8 +361,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                     mapping = res.getBaseMapping();
                 res.startDataRequest(mapping.getDiscriminator());
                 try {
-                    type = mapping.getDiscriminator().getClass(this, mapping,
-                        res);
+                    type = mapping.getDiscriminator().getClass(this, mapping, res);
                 } finally {
                     res.endDataRequest();
                 }
@@ -378,19 +373,15 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             sm.initialize(type, state);
 
             if (info != null && info.result != null) {
-                FieldMapping mappedByFieldMapping = info.result.
-                    getMappedByFieldMapping();
+                FieldMapping mappedByFieldMapping = info.result.getMappedByFieldMapping();
                 Object mappedByObject = info.result.getMappedByValue();
                 if (mappedByFieldMapping != null && mappedByObject != null)
                     if (mappedByObject instanceof OpenJPAId &&
                         mapping.getExtraFieldDataIndex(mappedByFieldMapping.getIndex()) != -1) {
-                        // The inverse relation can not be set since
-                        // we are eagerly loading this sm for
-                        // a sm owner that is still in the process of 
-                        // initializing itself.
+                        // The inverse relation can not be set since we are eagerly loading this sm for
+                        // an owner that is still in the process of initializing itself.
                         // Remember owner oid by setIntermediate().
-                        // The inverse relation is set later by
-                        // setInverseRelation() when the sm owner is fully
+                        // The inverse relation is set later by setInverseRelation() when the owner is fully
                         // initialized.
                         int index = mappedByFieldMapping.getIndex();
                         if (sm.getLoaded().get(index)) {
@@ -535,7 +526,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         FinderQueryImpl fq = getFinder(mapping, fetch);
         if (fq != null)
             return fq.execute(sm, this, fetch);
-        Select sel = _sql.newSelect();
+        Select sel = mapping.getSelect();
         if (!select(sel, mapping, subs, sm, null, fetch,
             JDBCFetchConfiguration.EAGER_JOIN, true, false))
             return null;
@@ -563,7 +554,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         final int eager = Math.min(fetch.getEagerFetchMode(),
             JDBCFetchConfiguration.EAGER_JOIN);
 
-        Union union = _sql.newUnion(mappings.length);
+        Union union = mapping.getUnion(mappings.length);
         union.setExpectedResultCount(1, false);
         if (fetch.getSubclassFetchMode(mapping) != EagerFetchModes.EAGER_JOIN)
             union.abortUnion();
@@ -592,7 +583,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         while (base.getJoinablePCSuperclassMapping() != null)
             base = base.getJoinablePCSuperclassMapping();
 
-        Select sel = _sql.newSelect();
+        Select sel = mapping.getSelect();
         sel.select(base.getPrimaryKeyColumns());
         sel.wherePrimaryKey(sm.getObjectId(), base, this);
         if (_log.isTraceEnabled()) {
@@ -645,7 +636,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             //### use it... would it be worth it to have a small shell select
             //### object that only creates a real select when actually used?
 
-            Select sel = _sql.newSelect();
+            Select sel = mapping.getSelect();
             if (select(sel, mapping, Select.SUBS_EXACT, sm, fields, jfetch,
                 EagerFetchModes.EAGER_JOIN, true, false)) {
                 sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
@@ -818,7 +809,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                     if (rops[i] != null)
                         continue;
 
-                    Select sel = _sql.newSelect();
+                    Select sel = mapping.getSelect();
                     sel.setLRS(true);
                     if (_log.isTraceEnabled()) {
                         _log.trace("executeExtent: "+mappings[i].getDescribedType());
@@ -839,13 +830,12 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             }
 
             // perform a union on all independent classes
-            Union union = _sql.newUnion(mappings.length);
+            Union union = mapping.getUnion(mappings.length);
             union.setLRS(true);
             final BitSet[] paged = new BitSet[mappings.length];
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
-                    paged[idx] = selectExtent(sel, mappings[idx], jfetch,
-                        subclasses);
+                    paged[idx] = selectExtent(sel, mappings[idx], jfetch, subclasses);
                 }
             });
 
@@ -1124,6 +1114,8 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     public boolean select(Select sel, ClassMapping mapping, int subs,
         OpenJPAStateManager sm, BitSet fields, JDBCFetchConfiguration fetch,
         int eager, boolean ident, boolean outer) {
+    	if (sel.isReadOnly())
+    		return true;
         // add class conditions so that they're cloned for any batched selects
         boolean joinedSupers = false;    
         if(needClassCondition(mapping, subs, sm)) {
@@ -1134,8 +1126,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         // and cannot be reused during the actual eager select process,
         // preventing infinite recursion
         eager = Math.min(eager, fetch.getEagerFetchMode());
-        FieldMapping eagerToMany = createEagerSelects(sel, mapping, sm, fields,
-            fetch, eager);
+        FieldMapping eagerToMany = createEagerSelects(sel, mapping, sm, fields, fetch, eager);
 
         // select all base class mappings; do this after batching so that
         // the joins needed by these selects don't get in the WHERE clause
@@ -1145,10 +1136,9 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
 
         // select eager to-many relations last because during load they
         // advance the result set and could exhaust it, so no other mappings
-        // can load afterwords
+        // can load afterwards
         if (eagerToMany != null)
-            eagerToMany.selectEagerJoin(sel, sm, this, 
-                fetch.traverseJDBC(eagerToMany), eager);
+            eagerToMany.selectEagerJoin(sel, sm, this, fetch.traverseJDBC(eagerToMany), eager);
 
         // optionally select subclass mappings
         if (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_ANY_JOINABLE)
@@ -1164,8 +1154,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         return mapping.getDiscriminator().addClassConditions(sel, subs == Select.SUBS_JOINABLE, joins);
     }
     
-    private boolean needClassCondition(ClassMapping mapping, int subs,
-        OpenJPAStateManager sm) {
+    private boolean needClassCondition(ClassMapping mapping, int subs, OpenJPAStateManager sm) {
         boolean retVal = false;
         if(sm == null || sm.getPCState() == PCState.TRANSIENT) {
             if(subs == Select.SUBS_JOINABLE || subs == Select.SUBS_NONE) {

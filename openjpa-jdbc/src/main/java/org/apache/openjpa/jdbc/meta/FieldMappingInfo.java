@@ -165,7 +165,7 @@ public class FieldMappingInfo
 
     public ForeignKey getJoinForeignKey (final FieldMapping field, Table table,
         boolean adapt) {
-        if (field.isUni1ToMFK()) {
+        if (field.isUnidirectionalOneToManyForeignKey()) {
             List<Column> cols = field.getElementMapping().getValueInfo().getColumns();
             return getJoin(field, table, adapt, cols);
         }
