@@ -74,8 +74,7 @@ public class SchemaTool {
     public static final String ACTION_DROPDB = "dropDB";
     public static final String ACTION_IMPORT = "import";
     public static final String ACTION_EXPORT = "export";
-    public static final String ACTION_DELETE_TABLE_CONTENTS = 
-        "deleteTableContents";
+    public static final String ACTION_DELETE_TABLE_CONTENTS = "deleteTableContents";
 
     public static final String[] ACTIONS = new String[]{
         ACTION_ADD,
@@ -91,8 +90,7 @@ public class SchemaTool {
         ACTION_DELETE_TABLE_CONTENTS,
     };
 
-    private static final Localizer _loc = Localizer.forPackage
-        (SchemaTool.class);
+    private static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
 
     private final JDBCConfiguration _conf;
     private final DataSource _ds;
@@ -111,7 +109,8 @@ public class SchemaTool {
     private SchemaGroup _group = null;
     private SchemaGroup _db = null;
     private boolean _fullDB = false;
-
+    private String _sqlTerminator = ";";
+    
     /**
      * Default constructor. Tools constructed this way will not have an
      * action, so the {@link #run()} method will be a no-op.
@@ -308,6 +307,10 @@ public class SchemaTool {
             _writer = (PrintWriter) writer;
         else
             _writer = new PrintWriter(writer);
+    }
+    
+    public void setSQLTerminator(String t) {
+    	_sqlTerminator = t;
     }
 
     /**
@@ -1251,7 +1254,7 @@ public class SchemaTool {
             }
         } else {
             for (int i = 0; i < sql.length; i++)
-                _writer.println(sql[i] + ";");
+                _writer.println(sql[i] + _sqlTerminator);
             _writer.flush();
         }
 

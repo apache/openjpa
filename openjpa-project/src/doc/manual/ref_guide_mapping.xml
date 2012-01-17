@@ -125,7 +125,9 @@ mappings, even if the schema already exists.
 <literal>-sqlEncode/-se &lt;encoding&gt;</literal>: Use this option
 with <literal>-sqlFile</literal> to write the SQL script in a different
 Java character set encoding than the default JVM locale, such as
-<literal>UTF-8</literal>.
+<literal>-sqlTerminator/-st &lt;terminal&gt;</literal>: Use this option
+with <literal>-sqlFile</literal> to write the SQL terminating with a 
+different character instead of a semicolon.
                 </para>
             </listitem>
             <listitem>
