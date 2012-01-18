@@ -37,6 +37,7 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
@@ -57,15 +58,15 @@ public class HandlerFieldStrategy
 
     private static final Object NULL = new Object();
 
-    private static final Localizer _loc = Localizer.forPackage
-        (HandlerFieldStrategy.class);
+    private static final Localizer _loc = Localizer.forPackage(HandlerFieldStrategy.class);
 
     protected Column[] _cols = null;
     protected ColumnIO _io = null;
     protected Object[] _args = null;
     protected boolean _load = false;
     protected boolean _lob = false;
-
+    private Select    _select;
+    
     public void map(boolean adapt) {
         if (field.getHandler() == null)
             throw new MetaDataException(_loc.get("no-handler", field));
@@ -220,9 +221,17 @@ public class HandlerFieldStrategy
                 return;
             }
         }
-
-        Select sel = store.getSQLFactory().newSelect();
-        sel.select(_cols);
+        Select sel;
+        if (_select == null) {
+        	sel = store.getSQLFactory().newSelect();
+        	if (store.getConfiguration().getSelectCacheEnabled()) {
+        		_select = sel;
+        	}
+            sel.select(_cols);
+        } else {
+        	sel = _select;
+        }
+        
         field.wherePrimaryKey(sel, sm, store);
 
         Result res = sel.execute(store, fetch);
