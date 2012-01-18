@@ -380,7 +380,7 @@ public class PersistenceProductDerivation
     }
 
     @Override
-    public List getAnchorsInFile(File file) throws IOException {
+    public List<String> getAnchorsInFile(File file) throws IOException {
         ConfigurationParser parser = new ConfigurationParser(null);
         try {
             parser.parse(file);
