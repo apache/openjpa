@@ -525,57 +525,58 @@ public abstract class StoreCollectionFieldStrategy
             return;
         }
         // select data for this state manager
-        final ClassMapping[] elems = getIndependentElementMappings(true);
-        final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
-        Union union;
-        if (_executor == null) {
-        	union = store.getSQLFactory().newUnion(Math.max(1, elems.length));
-        	if (store.getConfiguration().getSelectCacheEnabled()) {
-        		_executor = union;
-        	}
-        } else {
-        	union = (Union)_executor;
-        }
-        union.select(new Union.Selector() {
-            public void select(Select sel, int idx) {
-                ClassMapping elem = (elems.length == 0) ? null : elems[idx];
-                resJoins[idx] = selectAll(sel, elem, sm, store, fetch, JDBCFetchConfiguration.EAGER_PARALLEL);
-            }
-        });
-
-        // create proxy
-        Object coll;
-        ChangeTracker ct = null;
-        if (field.getTypeCode() == JavaTypes.ARRAY)
-            coll = new ArrayList();
-        else {
-            coll = sm.newProxy(field.getIndex());
-            if (coll instanceof Proxy)
-                ct = ((Proxy) coll).getChangeTracker();
-        }
-
-        // load values
-        Result res = union.execute(store, fetch);
-        try {
-            int seq = -1;
-            while (res.next()) {
-                if (ct != null && field.getOrderColumn() != null)
-                    seq = res.getInt(field.getOrderColumn());
-                setMappedBy(sm.getObjectId(), sm, coll, res);
-               	add(store, coll, loadElement(sm, store, fetch, res, resJoins[res.indexOf()]));
-            }
-            if (ct != null && field.getOrderColumn() != null)
-                ct.setNextSequence(seq + 1);
-        } finally {
-            res.close();
-        }
-
-        // set into sm
-        if (field.getTypeCode() == JavaTypes.ARRAY) {
-            sm.storeObject(field.getIndex(), JavaTypes.toArray
-                ((Collection) coll, field.getElement().getType()));
-        } else {
-            sm.storeObject(field.getIndex(), coll);
+        synchronized (this) {
+	        final ClassMapping[] elems = getIndependentElementMappings(true);
+	        final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
+	        Union union;
+	        if (_executor == null) {
+	        	union = store.getSQLFactory().newUnion(Math.max(1, elems.length));
+	        	if (store.getConfiguration().getSelectCacheEnabled()) {
+	        		_executor = union;
+	        	}
+	        } else {
+	        	union = (Union)_executor;
+	        }
+	        union.select(new Union.Selector() {
+	            public void select(Select sel, int idx) {
+	                ClassMapping elem = (elems.length == 0) ? null : elems[idx];
+	                resJoins[idx] = selectAll(sel, elem, sm, store, fetch, JDBCFetchConfiguration.EAGER_PARALLEL);
+	            }
+	        });
+	
+	        // create proxy
+	        Object coll;
+	        ChangeTracker ct = null;
+	        if (field.getTypeCode() == JavaTypes.ARRAY)
+	            coll = new ArrayList();
+	        else {
+	            coll = sm.newProxy(field.getIndex());
+	            if (coll instanceof Proxy)
+	                ct = ((Proxy) coll).getChangeTracker();
+	        }
+	
+	        // load values
+	        Result res = union.execute(store, fetch);
+	        try {
+	            int seq = -1;
+	            boolean ordered = ct != null && field.getOrderColumn() != null;
+	            while (res.next()) {
+	                if (ordered) seq = res.getInt(field.getOrderColumn());
+	                setMappedBy(sm.getObjectId(), sm, coll, res);
+	               	add(store, coll, loadElement(sm, store, fetch, res, resJoins[res.indexOf()]));
+	            }
+	            if (ordered) ct.setNextSequence(seq + 1);
+	        } finally {
+	            res.close();
+	        }
+	
+	        // set into sm
+	        if (field.getTypeCode() == JavaTypes.ARRAY) {
+	            sm.storeObject(field.getIndex(), 
+	            		JavaTypes.toArray((Collection<?>) coll, field.getElement().getType()));
+	        } else {
+	            sm.storeObject(field.getIndex(), coll);
+	        }
         }
     }
 

@@ -1404,15 +1404,15 @@ public class SelectImpl
             return;
         }
 
+        Object[] params = getBindParameter(oid, mapping, toCols, fromCols, pj, store);
 
         SQLBuffer buf = isReadOnly() ? _where : new SQLBuffer(_dict);
-        Object[] params = getBindParameter(oid, mapping, toCols, fromCols, pj, store);
         bindParameter(buf, params, fromCols, pj);
         
         if (constCols != null && constCols.length > 0) {
             bindParameter(buf, vals, constCols, pj);
         }
-        if (buf != _where) {
+        if (!isReadOnly()) {
         	where(buf, pj);
         }
     }
@@ -1498,22 +1498,22 @@ public class SelectImpl
     }
 
     public void where(Joins joins) {
+    	assertMutable();
         if (joins != null)
-            where((SQLBuffer) null, joins);
-    }
-
-    public void where(SQLBuffer sql) {
-        where(sql, (Joins) null);
+            getJoins(joins, true);
     }
 
     public void where(SQLBuffer sql, Joins joins) {
-        where(sql, getJoins(joins, true));
+    	assertMutable();
+    	where(joins);
+        where(sql);
     }
 
     /**
      * Add the given condition to the WHERE clause.
      */
-    private void where(SQLBuffer sql, PathJoins pj) {
+    public void where(SQLBuffer sql) {
+    	assertMutable();
         // no need to use joins...
         if (sql == null || sql.isEmpty())
             return;
@@ -3132,9 +3132,9 @@ public class SelectImpl
             }
 
             int idx;
-            if (_aliases.put(id, alias) != null)
+            if (_aliases.put(id, alias) != null) {
                 idx = _ids.indexOf(id);
-            else {
+            } else {
                 _ids.add(id);
                 idx = _ids.size() - 1;
 
