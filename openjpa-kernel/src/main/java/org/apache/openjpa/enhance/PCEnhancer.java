@@ -4707,7 +4707,6 @@ public class PCEnhancer {
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         Collection classes;
         if (args == null || args.length == 0) {
-            log.info(_loc.get("running-all-classes"));
             classes = repos.getPersistentTypeNames(true, loader);
             if (classes == null) {
             	log.warn(_loc.get("no-class-to-enhance"));
@@ -4730,8 +4729,8 @@ public class PCEnhancer {
         int status;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             Object o = itr.next();
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("enhance-running", o));
+            if (log.isInfoEnabled())
+                log.info(_loc.get("enhance-running", o));
 
             if (o instanceof String)
                 bc = project.loadClass((String) o, loader);
