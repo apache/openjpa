@@ -19,11 +19,15 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.util.Iterator;
+
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.relations.entity.LrsEntityA;
+import org.apache.openjpa.persistence.relations.entity.LrsEntityB;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**
@@ -37,7 +41,7 @@ public class TestLRS
     private long id;
 
     public void setUp() {
-        setUp(LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
+        setUp(LrsEntityA.class, LrsEntityB.class, LRSEntity.class, BasicEntity.class, CLEAR_TABLES,
             "openjpa.Compatibility", "default(copyOnDetach=true," +
             		"cascadeWithDetach=true)");
         
@@ -88,6 +92,20 @@ public class TestLRS
         assertMerge(lrs);
     }
 
+    public void testRelationships(){
+        OpenJPAEntityManager em = emf.createEntityManager();
+        LrsEntityA a = new LrsEntityA("name");
+        LrsEntityB b = new LrsEntityB("name-b", a);
+
+        em.getTransaction().begin();
+        em.persist(a);
+        em.persist(b);
+        em.getTransaction().commit();
+        em.clear();
+        
+        LrsEntityA a1 = em.find(LrsEntityA.class, a.getId());
+        assertEquals(1, a1.getEntitybs().size());
+    }
     private void assertLRS(LRSEntity lrs, String name) {
         assertNotNull(lrs);
         assertEquals(name, lrs.getName());
@@ -113,6 +131,7 @@ public class TestLRS
         em.close();
     }
 
+    
     public static void main(String[] args) {
         TestRunner.run(TestLRS.class);
     }
