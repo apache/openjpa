@@ -43,7 +43,6 @@ public class LrsEntityA implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Index(name = "lrsa_index", unique = true)
     @GeneratedValue(strategy=GenerationType.AUTO)
     Integer id;
 
@@ -52,9 +51,8 @@ public class LrsEntityA implements Serializable {
     @Basic(fetch = FetchType.LAZY)
     int age;
 
-    @OneToMany(mappedBy = "entitya", cascade = CascadeType.ALL)
-    // if fk creates table need cascadeRemove on inverse
     @LRS
+    @OneToMany(mappedBy = "entitya", cascade = CascadeType.ALL)
     public Collection<LrsEntityB> entitybs;
 
     public LrsEntityA() {
