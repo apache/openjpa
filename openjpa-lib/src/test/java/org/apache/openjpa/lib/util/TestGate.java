@@ -66,7 +66,7 @@ public class TestGate extends TestCase {
 			};
 			futures.add(threadPool.submit(r));
 		}
-		
+		Thread.sleep(THREAD_TIME*10);
 		for (Future<?> f : futures) {
 			try {
 				f.get();

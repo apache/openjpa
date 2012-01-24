@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
+import org.apache.openjpa.jdbc.schema.Column;
 
 /**
  * Interface for configuring and executing a SQL select.
@@ -151,4 +152,19 @@ public interface SelectExecutor {
      * @since 2.0.0
      */
     public boolean hasMultipleSelects();
+    
+    /**
+     * Affirms if this select is structurally immutable.
+     * A select becomes immutable upon {@link #execute(JDBCStore, JDBCFetchConfiguration) execution}.
+     * There is no explicit way to turn a select into read-only status.
+     * <br>
+     * The immutable contract does not prevent {@link SQLBuffer#bind(Object, Column) binding} 
+     * new values to {@link BindParameter parameters}.  
+     * 
+     * @return false on construction, true after execution.
+     * 
+     * @since 2.2.0
+     */
+    boolean isReadOnly();
+
 }

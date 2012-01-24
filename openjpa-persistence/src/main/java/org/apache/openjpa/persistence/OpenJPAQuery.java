@@ -87,22 +87,22 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      * Return the candidate collection, or <code>null</code> if an
      * extent was specified instead of a collection.
      */
-    public Collection getCandidateCollection();
+    public Collection<?> getCandidateCollection();
 
     /**
      * Set a collection of candidates.
      */
-    public OpenJPAQuery<X> setCandidateCollection(Collection coll);
+    public OpenJPAQuery<X> setCandidateCollection(Collection<?> coll);
 
     /**
      * Query result element type.
      */
-    public Class getResultClass();
+    public Class<?> getResultClass();
 
     /**
      * Query result element type.
      */
-    public OpenJPAQuery<X> setResultClass(Class type);
+    public OpenJPAQuery<X> setResultClass(Class<?> type);
 
     /**
      * Whether subclasses are included in the query results.
@@ -150,7 +150,7 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
     /**
      * Set parameters.
      */
-    public OpenJPAQuery<X> setParameters(Map params);
+    public OpenJPAQuery<X> setParameters(Map<?,?> params);
 
     /**
      * Set parameters.
@@ -169,7 +169,7 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      *
      * @param params the named parameter map for the query invocation
      */
-    public String[] getDataStoreActions(Map params);
+    public String[] getDataStoreActions(Map<?,?> params);
 
     public OpenJPAQuery<X> setMaxResults(int maxResult);
 
@@ -207,7 +207,7 @@ public interface OpenJPAQuery<X> extends TypedQuery<X> {
      * Gets whether the type of user-supplied bind parameter value and the type of target persistent 
      * property they bind to are checked with strong or weak constraint.
      * 
-     * @return the booelan state. False by default, i.e. the type of a bind parameter value is checked
+     * @return the boolean state. False by default, i.e. the type of a bind parameter value is checked
      * strongly against the target property type.  
      */
     public boolean getRelaxBindParameterTypeChecking();

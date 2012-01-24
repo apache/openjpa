@@ -58,6 +58,7 @@ import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ThreadGate;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -93,6 +94,7 @@ public class RelationFieldStrategy
     private Boolean _fkOid = null;
     
     private SelectExecutor _executor;
+    private ThreadGate _lock = new ThreadGate();
     
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.PC || field.isEmbeddedPC())
@@ -775,56 +777,63 @@ public class RelationFieldStrategy
         // back to our fk table if not an inverse mapping (in which case we
         // can just make sure the inverse cols == our pk values)
         Union union;
-        if (_executor == null) {
-        	union = store.getSQLFactory().newUnion(rels.length);
-            union.setExpectedResultCount(1, false);
-            if (fetch.getSubclassFetchMode(field.getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
-                    union.abortUnion();
-            if (((JDBCConfiguration)field.getMappingRepository().getConfiguration()).getSelectCacheEnabled()) {
-            	_executor = union;
-            }
-        } else {
-        	union = (Union)_executor;
-        }
-        union.select(new Union.Selector() {
-            public void select(Select sel, int idx) {
-            	ForeignKey fk = field.getForeignKey(rels[idx]);
-            	ClassMapping mapping = field.getDefiningMapping();
-            	Object oid = sm.getObjectId();
-                if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE) {
-                    sel.whereForeignKey(fk, oid, mapping, store);
-                } else {
-                    if (!field.isBidirectionalManyToOneJoinTable()) {
-                    	if (sel.isReadOnly()) {
-                    		resJoins[idx] = sel.getJoins();
-                    	} else {
-                    		resJoins[idx] = sel.newJoins().joinRelation(field.getName(), fk, rels[idx],
-                                subs, false, false);
-                    	}
-                        field.wherePrimaryKey(sel, sm, store);
-                    } else {
-                    	if (sel.isReadOnly()) {
-                    		resJoins[idx] = sel.getJoins();
-                    	} else { 
-                    		resJoins[idx] = sel.newJoins().joinRelation(null, 
-                    				field.getBidirectionalOneToManyJoinForeignKey(), rels[idx],
-                                    subs, false, false);
-                    	}
-                        sel.whereForeignKey(field.getBidirectionalOneToManyElementForeignKey(), oid, mapping, store);
-                    }
-                }
-                if (!sel.isReadOnly()) {
-                	sel.select(rels[idx], subs, store, fetch, JDBCFetchConfiguration.EAGER_JOIN, resJoins[idx]);
-                }
-            }
-        });
-
-        Result res = union.execute(store, fetch);
         try {
-            Object val = (res.next()) ? res.load(rels[res.indexOf()], store, fetch, resJoins[res.indexOf()]) : null;
-            sm.storeObject(field.getIndex(), val);
+        	_lock.lock();
+	        if (_executor == null) {
+	        	union = store.getSQLFactory().newUnion(rels.length);
+	            union.setExpectedResultCount(1, false);
+	            if (fetch.getSubclassFetchMode(field.getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
+	                    union.abortUnion();
+	            if (((JDBCConfiguration)field.getMappingRepository().getConfiguration()).getSelectCacheEnabled()) {
+	            	_executor = union;
+	            }
+	        } else {
+	        	union = (Union)_executor;
+	        }
+	        union.select(new Union.Selector() {
+	            public void select(Select sel, int idx) {
+	            	ForeignKey fk = field.getForeignKey(rels[idx]);
+	            	ClassMapping mapping = field.getDefiningMapping();
+	            	Object oid = sm.getObjectId();
+	                if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE) {
+	                    sel.whereForeignKey(fk, oid, mapping, store);
+	                } else {
+	                    if (!field.isBidirectionalManyToOneJoinTable()) {
+	                    	if (sel.isReadOnly()) {
+	                    		resJoins[idx] = sel.getJoins();
+	                    	} else {
+	                    		resJoins[idx] = sel.newJoins().joinRelation(field.getName(), fk, rels[idx],
+	                                subs, false, false);
+	                    	}
+	                        field.wherePrimaryKey(sel, sm, store);
+	                    } else {
+	                    	if (sel.isReadOnly()) {
+	                    		resJoins[idx] = sel.getJoins();
+	                    	} else { 
+	                    		resJoins[idx] = sel.newJoins().joinRelation(null, 
+	                    				field.getBidirectionalOneToManyJoinForeignKey(), rels[idx],
+	                                    subs, false, false);
+	                    	}
+	                        sel.whereForeignKey(field.getBidirectionalOneToManyElementForeignKey(), 
+	                        		oid, mapping, store);
+	                    }
+	                }
+	                if (!sel.isReadOnly()) {
+	                	sel.select(rels[idx], subs, store, fetch, 
+	                			JDBCFetchConfiguration.EAGER_JOIN, resJoins[idx]);
+	                }
+	            }
+	        });
+	
+	        Result res = union.execute(store, fetch);
+	        try {
+	        	sm.storeObject(field.getIndex(), res.next()
+	            	? res.load(rels[res.indexOf()], store, fetch, resJoins[res.indexOf()]) : null);
+	        } finally {
+	            res.close();
+	        }
         } finally {
-            res.close();
+        	_lock.unlock();
         }
     }
 

@@ -213,14 +213,14 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 		return this;
 	}
 
-	public Class getResultClass() {
-		Class res = _query.getResultType();
+	public Class<?> getResultClass() {
+		Class<?> res = _query.getResultType();
 		if (res != null)
 			return res;
 		return _query.getCandidateType();
 	}
 
-	public OpenJPAQuery<X> setResultClass(Class cls) {
+	public OpenJPAQuery<X> setResultClass(Class<?> cls) {
 		_em.assertNotCloseInvoked();
 		if (ImplHelper.isManagedType(_em.getConfiguration(), cls))
 			_query.setCandidateType(cls, true);

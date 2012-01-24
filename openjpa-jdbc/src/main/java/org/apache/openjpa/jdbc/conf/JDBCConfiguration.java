@@ -644,6 +644,8 @@ public interface JDBCConfiguration
      * Sets if select statements are aggressively cached.
      * An aggressive select cache assumes that {@link FetchConfiguration fetch plan}
      * does not change between execution.
+     * <br>
+     * This setting can be changed once and only once.
      *  
      * @since 2.2.0
      */

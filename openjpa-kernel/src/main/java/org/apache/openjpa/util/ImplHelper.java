@@ -58,11 +58,11 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 public class ImplHelper {
 
     // Cache for from/to type assignments
-    private static final Map _assignableTypes =
+    private static final Map<Class<?>,Map<?,?>> _assignableTypes =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
     // map of all new unenhanced instances active in this classloader
-    public static final Map _unenhancedInstanceMap =
+    public static final Map<Object,PersistenceCapable> _unenhancedInstanceMap =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD) {
 
             protected boolean eq(Object x, Object y) {
@@ -91,13 +91,13 @@ public class ImplHelper {
      * @see StoreManager#loadAll
      * @since 0.4.0
      */
-    public static Collection loadAll(Collection sms, StoreManager store,
+    public static Collection<Object> loadAll(Collection<OpenJPAStateManager> sms, StoreManager store,
         PCState state, int load, FetchConfiguration fetch, Object context) {
-        Collection failed = null;
+        Collection<Object> failed = null;
         OpenJPAStateManager sm;
         LockManager lm;
-        for (Iterator itr = sms.iterator(); itr.hasNext();) {
-            sm = (OpenJPAStateManager) itr.next();
+        for (Iterator<OpenJPAStateManager> itr = sms.iterator(); itr.hasNext();) {
+            sm = itr.next();
             if (sm.getManagedInstance() == null) {
                 if (!store.initialize(sm, state, fetch, context))
                     failed = addFailedId(sm, failed);
@@ -110,23 +110,23 @@ public class ImplHelper {
             } else if (!store.exists(sm, context))
                 failed = addFailedId(sm, failed);
         }
-        return (failed == null) ? Collections.EMPTY_LIST : failed;
+        if (failed == null) return Collections.emptyList();
+        return failed;
     }
 
     /**
      * Add identity of given instance to collection.
      */
-    private static Collection addFailedId(OpenJPAStateManager sm,
-        Collection failed) {
+    private static Collection<Object> addFailedId(OpenJPAStateManager sm, Collection<Object> failed) {
         if (failed == null)
-            failed = new ArrayList();
+            failed = new ArrayList<Object>();
         failed.add(sm.getId());
         return failed;
     }
 
     /**
      * Generate a value for the given metadata, or return null. Generates
-     * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
+     * values for the following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
     public static Object generateIdentityValue(StoreContext ctx,
@@ -136,7 +136,7 @@ public class ImplHelper {
 
     /**
      * Generate a value for the given metadata, or return null. Generates
-     * values for hte following strategies: {@link ValueStrategies#SEQUENCE},
+     * values for the following strategies: {@link ValueStrategies#SEQUENCE},
      * {@link ValueStrategies#UUID_STRING}, {@link ValueStrategies#UUID_HEX}
      */
     public static Object generateFieldValue(StoreContext ctx,
@@ -218,11 +218,9 @@ public class ImplHelper {
      *
      * @since 1.0.0
      */
-    public static boolean isManagedType(OpenJPAConfiguration conf, Class type) {
-        return (PersistenceCapable.class.isAssignableFrom(type)
-            || (type != null
-                && (conf == null || conf.getRuntimeUnenhancedClassesConstant()
-                    == RuntimeUnenhancedClassesModes.SUPPORTED)
+    public static boolean isManagedType(OpenJPAConfiguration conf, Class<?> type) {
+        return (type != null && PersistenceCapable.class.isAssignableFrom(type)
+            || ((conf == null || conf.getRuntimeUnenhancedClassesConstant()== RuntimeUnenhancedClassesModes.SUPPORTED)
                 && PCRegistry.isRegistered(type)));
     }
 
@@ -246,7 +244,7 @@ public class ImplHelper {
      * @param to second class instance to be checked for assignability
      * @return true if the "to" class is assignable to the "from" class
      */
-    public static boolean isAssignable(Class from, Class to) {
+    public static boolean isAssignable(Class<?> from, Class<?> to) {
         if (from == null || to == null)
             return false;
 
@@ -308,8 +306,7 @@ public class ImplHelper {
         }
     }
 
-    public static void registerPersistenceCapable(
-        ReflectingPersistenceCapable pc) {
+    public static void registerPersistenceCapable(ReflectingPersistenceCapable pc) {
         _unenhancedInstanceMap.put(pc.getManagedInstance(), pc);
     }
 

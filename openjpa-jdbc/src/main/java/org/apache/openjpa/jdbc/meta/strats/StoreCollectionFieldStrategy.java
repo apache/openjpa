@@ -40,10 +40,10 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
-import org.apache.openjpa.jdbc.sql.SelectImpl;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
+import org.apache.openjpa.lib.util.ThreadGate;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
@@ -70,6 +70,7 @@ import org.apache.openjpa.util.Proxy;
 public abstract class StoreCollectionFieldStrategy
     extends ContainerFieldStrategy {
 	protected SelectExecutor _executor;
+	protected ThreadGate _lock = new ThreadGate();
 	
     /**
      * Return the foreign key used to join to the owning field for the given
@@ -165,6 +166,7 @@ public abstract class StoreCollectionFieldStrategy
         else {
             final ClassMapping[] elems = getIndependentElementMappings(true);
             Union union = (Union) sel;
+            if (union.isReadOnly())
             if (fetch.getSubclassFetchMode(field.getElementMapping().
                 getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
                 union.abortUnion();
@@ -182,6 +184,7 @@ public abstract class StoreCollectionFieldStrategy
         // we limit further eager fetches to joins, because after this point
         // the select has been modified such that parallel clones may produce
         // invalid sql
+    	if (sel.isReadOnly()) return;
         boolean outer = field.getNullValue() != FieldMapping.NULL_EXCEPTION;
         // force inner join for inner join fetch 
         if (fetch.hasFetchInnerJoin(field.getFullName(false)))
@@ -359,8 +362,7 @@ public abstract class StoreCollectionFieldStrategy
                 mappedByValue = owner.getPersistenceCapable();
                 res.setMappedByFieldMapping(mappedByFieldMapping);
                 res.setMappedByValue(mappedByValue);
-            } else if (coll instanceof Collection && 
-                ((Collection) coll).size() > 0) {
+            } else if (coll instanceof Collection && !((Collection) coll).isEmpty()) {
                 // Customer (1) <--> Orders(n)
                 // coll contains the values of the toMany field (Orders)
                 // get the StateManager of this toMany value
@@ -525,7 +527,11 @@ public abstract class StoreCollectionFieldStrategy
             return;
         }
         // select data for this state manager
-        synchronized (this) {
+        // Select can be configured for reuse. The locking mechanics ensures that
+        // under reuse scenario, the Select structure is built under a thread gate
+        // but later usage is unguarded because a reused select is (almost) immutable.
+        try {
+        	_lock.lock();
 	        final ClassMapping[] elems = getIndependentElementMappings(true);
 	        final Joins[] resJoins = new Joins[Math.max(1, elems.length)];
 	        Union union;
@@ -577,6 +583,8 @@ public abstract class StoreCollectionFieldStrategy
 	        } else {
 	            sm.storeObject(field.getIndex(), coll);
 	        }
+        } finally {
+        	_lock.unlock();
         }
     }
 
@@ -635,6 +643,7 @@ public abstract class StoreCollectionFieldStrategy
         }
         return oid;
     }
+        
     
     public String toString() {
     	return getClass().getSimpleName() + '[' + field.getName() + ']';

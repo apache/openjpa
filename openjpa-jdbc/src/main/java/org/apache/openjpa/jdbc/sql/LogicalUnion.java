@@ -112,6 +112,15 @@ public class LogicalUnion
         return false;
     }
 
+	@Override
+	public boolean isReadOnly() {
+		for (int i = 0; i < sels.length; i++) {
+			if (sels[i].isReadOnly())
+				return true;
+		}
+		return false;
+	}
+	
     public void abortUnion() {
     }
 
@@ -235,8 +244,7 @@ public class LogicalUnion
         if (getExpectedResultCount() == 1) {
             AbstractResult res;
             for (int i = 0; i < sels.length; i++) {
-                res = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel);
+                res = (AbstractResult) sels[i].execute(store, fetch, lockLevel);
                 res.setBaseMapping(mappings[i]);
                 res.setIndexOf(i);
 
@@ -267,8 +275,7 @@ public class LogicalUnion
         try {
             List l;
             for (int i = 0; i < res.length; i++) {
-                res[i] = (AbstractResult) sels[i].execute(store, fetch,
-                    lockLevel);
+                res[i] = (AbstractResult) sels[i].execute(store, fetch, lockLevel);
                 res[i].setBaseMapping(mappings[i]);
                 res[i].setIndexOf(i);
 
@@ -999,4 +1006,5 @@ public class LogicalUnion
             return a1.length - a2.length;
         }
     }
+
 }

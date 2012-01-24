@@ -24,13 +24,22 @@ import org.apache.openjpa.jdbc.schema.Column;
 /**
  * A binding parameter in a SQL statement.
  * <br>
- * A binding parameter is used in <tt>WHERE<tt> clause. The parameter is identified by an
- * immutable key and has a value. The parameter is further qualified by whether it is
- * user specified (e.g. from a query parameter) or internally generated (e.g. a discriminator
- * value for inheritance join). A database column can also be optionally associated with 
- * a binding parameter.
+ * A binding parameter is used in <tt>WHERE</tt> clause. The parameter is identified by an
+ * immutable key and has a value. The value of a parameter is bound to a thread and hence
+ * different thread may see different value. These parameters are associated with a {@link Select}
+ * and they are the only mutable components of an otherwise {@link SelectExecutor#isReadOnly() immutable}  
+ * select. 
+ * <br><b>NOTE:</b>
+ * The primary assumption of usage is that the binding parameter values to a cached select and
+ * executing it are carried out in the same thread. 
+ * <br> 
+ * The parameter is further qualified by whether it is user specified (e.g. from a query parameter) 
+ * or internally generated (e.g. a discriminator value for inheritance join). A database column can 
+ * also be optionally associated with a binding parameter. Currently {@link SQLBuffer#bind(Object, Column)
+ * rebinding} a parameter to a value is only possible if the parameter is associated with a column.
  * 
  * @see SQLBuffer#appendValue(Object, Column, org.apache.openjpa.kernel.exps.Parameter)
+ * @see SQLBuffer#bind(Object, Column)
  * 
  * @author Pinaki Poddar
  *
@@ -42,7 +51,7 @@ public class BindParameter {
 	private final Column  _column;
 	// key of this parameter
 	private final Object  _key;
-	private Object _value;
+	private ThreadLocal<Object> _value = new ThreadLocal<Object>();
 	
 	/**
 	 * Constructs a parameter with given key, column and user flag.
@@ -58,21 +67,21 @@ public class BindParameter {
 		_key = key;
 		_user = user;
 		_column = column;
-		_value  = value;
+		_value.set(value);
 	}
 	
 	/**
 	 * Gets the value bound to this parameter. Can be null.
 	 */
 	public Object getValue() {
-		return _value;
+		return _value.get();
 	}
 	
 	/**
 	 * Binds the given value to this parameter. Can be null.
 	 */
 	public void setValue(Object value) {
-		_value = value;
+		_value.set(value);
 	}
 
 	/**
