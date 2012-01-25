@@ -18,10 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.lib.util.FlexibleThreadLocal;
 
 
 /**
@@ -54,7 +52,7 @@ public class BindParameter {
 	private final Column  _column;
 	// key of this parameter
 	private final Object  _key;
-	private Map<Thread, Object> _value = new HashMap<Thread, Object>();
+	private FlexibleThreadLocal<Object> _values = new FlexibleThreadLocal<Object>();
 	
 	/**
 	 * Constructs a parameter with given key, column and user flag.
@@ -70,7 +68,7 @@ public class BindParameter {
 		_key = key;
 		_user = user;
 		_column = column;
-		_value.put(Thread.currentThread(), value);
+		_values.set(value);
 	}
 	
 	/**
@@ -80,26 +78,14 @@ public class BindParameter {
 	 * to this parameter.
 	 */
 	public Object getValue() {
-		Thread current = Thread.currentThread();
-		if (!_value.containsKey(current)) {
-			// calling thread may be a child of the thread that inserted the value.
-			// This is for SliceThread
-			for (Map.Entry<Thread, Object> e : _value.entrySet()) {
-				if (isEquivalent(e.getKey(), current)) 
-					return e.getValue();
-			}
-			throw new IllegalStateException("No value for " + current 
-					+ ". Known threads " + _value.keySet());
-			
-		}
-		return _value.get(current);
+		return _values.get();
 	}
 	
 	/**
 	 * Binds the given value to this parameter. Can be null.
 	 */
 	public void setValue(Object value) {
-		_value.put(Thread.currentThread(),value);
+		_values.set(value);
 	}
 
 	/**
@@ -124,8 +110,4 @@ public class BindParameter {
 		return _key;
 	}	
 	
-	boolean isEquivalent(Thread a, Thread b) {
-		if (a == b) return true;
-		return a.equals(b) || b.equals(a);
-	}
 }
