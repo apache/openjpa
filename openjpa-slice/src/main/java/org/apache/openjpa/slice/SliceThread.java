@@ -50,6 +50,36 @@ public class SliceThread extends Thread {
         return _parent;
     }
     
+    /**
+     * This thread equals itself (of course), its parent and any of its siblings.
+     * Essentially all slice threads are equal.
+     * <br>
+     * Note: this definition of equality breaks the core definition i.e. if 
+     * <tt>P</tt> is parent thread of a slice child <tt>S</tt>, then
+     * <tt>S.equals(P)</tt>, but <em>not</em> <tt>P.equals(S)</tt>.
+     */
+    @Override
+    public boolean equals(Object other) {
+    	if (other == this) return true;
+    	if (other instanceof SliceThread) {
+    		return ((SliceThread)other)._parent == this._parent;
+    	}
+    	return this._parent == other; 
+    }
+    
+    /**
+     * Hash code of this thread is same as its parent.
+     */
+    @Override
+    public int hashCode() {
+    	return _parent.hashCode();
+    }
+    
+    @Override 
+    public String toString() {
+    	return '[' + getClass().getSimpleName() + '-'+ getName() + " child of " + _parent + ']';
+    }
+    
     /** 
      * Create a cached pool of <em>slice</em> threads.
      * The thread factory creates specialized threads for preferential locking treatment.

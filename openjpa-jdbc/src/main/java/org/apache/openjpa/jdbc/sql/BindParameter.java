@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.openjpa.jdbc.schema.Column;
 
 
@@ -31,7 +34,7 @@ import org.apache.openjpa.jdbc.schema.Column;
  * select. 
  * <br><b>NOTE:</b>
  * The primary assumption of usage is that the binding parameter values to a cached select and
- * executing it are carried out in the same thread. 
+ * executing it are carried out in the same (or <em>equivalent</em>) thread. 
  * <br> 
  * The parameter is further qualified by whether it is user specified (e.g. from a query parameter) 
  * or internally generated (e.g. a discriminator value for inheritance join). A database column can 
@@ -51,7 +54,7 @@ public class BindParameter {
 	private final Column  _column;
 	// key of this parameter
 	private final Object  _key;
-	private ThreadLocal<Object> _value = new ThreadLocal<Object>();
+	private Map<Thread, Object> _value = new HashMap<Thread, Object>();
 	
 	/**
 	 * Constructs a parameter with given key, column and user flag.
@@ -67,21 +70,34 @@ public class BindParameter {
 		_key = key;
 		_user = user;
 		_column = column;
-		_value.set(value);
+		_value.put(Thread.currentThread(), value);
 	}
 	
 	/**
-	 * Gets the value bound to this parameter. Can be null.
+	 * Gets the value bound to this parameter for the calling thread. Can be null.
+	 * 
+	 * @exception if the current thread or its equivalent never bound a value
+	 * to this parameter.
 	 */
 	public Object getValue() {
-		return _value.get();
+		Thread current = Thread.currentThread();
+		if (!_value.containsKey(current)) {
+			// calling thread may be a child of the thread that inserted the value.
+			// This is for SliceThread
+			for (Map.Entry<Thread, Object> e : _value.entrySet()) {
+				if (isEquivalent(e.getKey(), current)) 
+					return e.getValue();
+			}
+			throw new IllegalStateException("No value for " + current + ". Known threads " + _value.keySet());
+		}
+		return _value.get(current);
 	}
 	
 	/**
 	 * Binds the given value to this parameter. Can be null.
 	 */
 	public void setValue(Object value) {
-		_value.set(value);
+		_value.put(Thread.currentThread(),value);
 	}
 
 	/**
@@ -105,4 +121,9 @@ public class BindParameter {
 	public Object getKey() {
 		return _key;
 	}	
+	
+	boolean isEquivalent(Thread a, Thread b) {
+		if (a == b) return true;
+		return a.equals(b) || b.equals(a);
+	}
 }

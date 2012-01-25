@@ -63,11 +63,39 @@ import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.InternalException;
 
 /**
- * Standard {@link Select} implementation. Usage note: though this class
- * implements {@link Joins}, it should not be used for joining directly.
- * Instead, use the return value of {@link #newJoins}.
+ * Standard {@link Select} implementation. 
+ * <br>
+ * This critical construct holds information to form a SQL <tt>SELECT</tt> statement.
+ * The structure imitates SQL components such a {@link Selects projection terms}, 
+ * {@link SelectImpl#_where <tt>WHERE</tt>} clause, {@link SelectImpl#_ordering 
+ * <tt>ORDER BY</tt>} clause, {@link SelectImpl#_subsels sub-queries} etc. 
+ * It also maintains tables and columns involved in the selection along with
+ * their join information. 
+ * <br>
+ * This structure is capable of holding other independent instances for fetching
+ * data for related fields by either eager or parallel execution. 
+ * <br>
+ * This instance is {@link #execute(JDBCStore, JDBCFetchConfiguration) executable}.
+ * After execution, this instance becomes {@link #isReadOnly() immutable} i.e. any 
+ * structural modification is {@link #assertMutable() prohibited}. The only modification 
+ * possible is by {@link #bindParameter(SQLBuffer, Object[], Column[], PathJoins) binding}
+ * different values to existing {@link BindParameter parameters}.
+ * <br>
+ * The {@link SelectResult result} from executing this instance of a <tt>JDBC</tt>-enabled
+ * database is available for field values to be populated in in-memory persistent entities.
+ * The access mechanics is critical to performance, and hence an {@link Selects#isOptimizable() 
+ * heuristics} is applied for optimization.
+ * <br>
+ * Usage note: 
+ * <LI>a) though this class implements {@link Joins}, it should not be used for 
+ * joining directly. Instead, use the return value of {@link #newJoins}.
+ * <LI>b) if this instance is concurrently shared based on {@link JDBCConfiguration#getSelectCacheEnabled()
+ * <tt>openjpa.jdbc.CachesSelect</tt>} setting, then the caller must ensure that the 
+ * parameters are bound in the same or {@link BindParameter#isEquivalent(Thread, Thread) equivalent}
+ * thread in which this instance is executed. 
  *
  * @author Abe White
+ * @author Pinaki Poddar
  * @nojavadoc
  */
 public class SelectImpl
