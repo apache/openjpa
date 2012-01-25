@@ -88,7 +88,9 @@ public class BindParameter {
 				if (isEquivalent(e.getKey(), current)) 
 					return e.getValue();
 			}
-			throw new IllegalStateException("No value for " + current + ". Known threads " + _value.keySet());
+			throw new IllegalStateException("No value for " + current 
+					+ ". Known threads " + _value.keySet());
+			
 		}
 		return _value.get(current);
 	}
