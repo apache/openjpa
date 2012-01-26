@@ -43,7 +43,7 @@ import org.apache.openjpa.lib.util.FlexibleThreadLocal;
  * @see SQLBuffer#bind(Object, Column)
  * 
  * @author Pinaki Poddar
- *
+ * @since 2.2.0
  */
 public class BindParameter {
 	// Is this parameter specified by user or our own runtime
@@ -109,5 +109,4 @@ public class BindParameter {
 	public Object getKey() {
 		return _key;
 	}	
-	
 }

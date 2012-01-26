@@ -25,13 +25,14 @@ import java.util.Map;
  * A thread-specific storage similar to {@link ThreadLocal}.
  *  
  * @author Pinaki Poddar
- *
+ * @since 2.2.0
  */
 public class FlexibleThreadLocal<T>  {
 	private final Map<Thread, T> _values = new HashMap<Thread, T>();
 	
 	/**
-	 * Gets the value associated with the calling thread or its equivalent.
+	 * Gets the value associated with the calling thread or its 
+	 * {@link #isEquivalent(Thread, Thread) equivalent}.
 	 * 
 	 * @see #isEquivalent(Thread, Thread)
 	 */
