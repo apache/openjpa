@@ -816,7 +816,7 @@ public class FetchConfigurationImpl
         if (!includes(fm))
             return FETCH_NONE;
         
-        Class<?> type = getRelationType(fm);
+        Class<?> type = fm.getRelationType();
         if (type == null)
             return FETCH_LOAD;
         if (_availableDepth == 0)
@@ -842,7 +842,7 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration traverse(FieldMetaData fm) {
-        Class<?> type = getRelationType(fm);
+        Class<?> type = fm.getRelationType();
         if (type == null)
             return this;
 
@@ -943,18 +943,6 @@ public class FetchConfigurationImpl
         return Math.min(max, avail);
     }
 
-    /**
-     * Return the relation type of the given field.
-     */
-    private static Class<?> getRelationType(FieldMetaData fm) {
-        if (fm.isDeclaredTypePC())
-            return fm.getDeclaredType();
-        if (fm.getElement().isDeclaredTypePC())
-            return fm.getElement().getDeclaredType();
-        if (fm.getKey().isDeclaredTypePC())
-            return fm.getKey().getDeclaredType();
-        return null;
-    }
 
     /**
      * Reduce the given logical depth by 1.

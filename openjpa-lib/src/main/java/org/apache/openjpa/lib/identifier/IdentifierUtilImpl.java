@@ -542,7 +542,8 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
 
 
     protected boolean needsConversion(IdentifierConfiguration config) {
-        return !(config.getConversionKey().equals(getIdentifierConfiguration().getConversionKey()));
+    	return (config != getIdentifierConfiguration()) 
+           && !(config.getConversionKey().equals(getIdentifierConfiguration().getConversionKey()));
     }
 
     private IdentifierRule[] getNamingRules(String[] rules) {
