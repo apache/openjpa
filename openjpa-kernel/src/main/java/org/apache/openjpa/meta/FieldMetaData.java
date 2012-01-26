@@ -307,7 +307,7 @@ public class FieldMetaData
     /**
      * The declaring class.
      */
-    public Class getDeclaringType() {
+    public Class<?> getDeclaringType() {
         return (_dec == null) ? _owner.getDescribedType() : _dec;
     }
 
