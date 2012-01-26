@@ -312,7 +312,6 @@ public class XMLPersistenceMappingParser
                 ret = startDatastoreIdCol(attrs);
                 break;
             case INDEX:
-                System.out.println("++++++++++++ INDEX");
                 ret = startIndex(attrs);
                 break;
             case FK:
