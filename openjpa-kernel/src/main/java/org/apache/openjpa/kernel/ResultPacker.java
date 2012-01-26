@@ -53,7 +53,7 @@ public class ResultPacker {
 
     private static final Localizer _loc = Localizer.forPackage
         (ResultPacker.class);
-    private static final Set _stdTypes = new HashSet();
+    private static final Set<Class<?>> _stdTypes = new HashSet<Class<?>>();
 
     static {
         _stdTypes.add(Object[].class);
@@ -79,11 +79,11 @@ public class ResultPacker {
         _stdTypes.add(GregorianCalendar.class);
     }
 
-    private final Class _resultClass;
+    private final Class<?> _resultClass;
     private final String[] _aliases;
     private final Member[] _sets;
     private final Method _put;
-    private final Constructor _constructor;
+    private final Constructor<?> _constructor;
     
     /**
      * Protected constructor to bypass this implementation but allow extension.
@@ -99,7 +99,7 @@ public class ResultPacker {
     /**
      * Constructor for result class without a projection.
      */
-    public ResultPacker(Class candidate, String alias, Class resultClass) {
+    public ResultPacker(Class<?> candidate, String alias, Class<?> resultClass) {
         this(candidate, null, new String[]{ alias }, resultClass);
     }
 
@@ -110,7 +110,7 @@ public class ResultPacker {
      * @param aliases the alias for each projection value
      * @param resultClass the class to pack into
      */
-    public ResultPacker(Class[] types, String[] aliases, Class resultClass) {
+    public ResultPacker(Class<?>[] types, String[] aliases, Class<?> resultClass) {
         this(null, types, aliases, resultClass);
     }
 
@@ -186,9 +186,9 @@ public class ResultPacker {
     /**
      * Ensure that conversion is possible.
      */
-    private void assertConvertable(Class candidate, Class[] types,
-        Class resultClass) {
-        Class c = (types == null) ? candidate : types[0];
+    private void assertConvertable(Class<?> candidate, Class<?>[] types,
+        Class<?> resultClass) {
+        Class<?> c = (types == null) ? candidate : types[0];
         if ((types != null && types.length != 1) || (c != null
             && c != Object.class && !Filters.canConvert(c, resultClass, true)))
             throw new UserException(_loc.get("cant-convert-result",
@@ -208,7 +208,7 @@ public class ResultPacker {
         if (_resultClass == Object[].class)
             return new Object[]{ result };
         if (_resultClass == HashMap.class || _resultClass == Map.class) {
-            HashMap map = new HashMap(1, 1F);
+            HashMap<String,Object> map = new HashMap<String,Object>(1, 1F);
             map.put(_aliases[0], result);
             return map;
         }
@@ -249,7 +249,7 @@ public class ResultPacker {
         if (_resultClass == Object.class)
             return result[0];
         if (_resultClass == HashMap.class || _resultClass == Map.class) {
-            Map map = new HashMap(result.length);
+            Map<String,Object> map = new HashMap<String,Object>(result.length);
             for (int i = 0; i < _aliases.length; i++)
                 map.put(_aliases[i], result[i]);
             return map;
@@ -304,7 +304,7 @@ public class ResultPacker {
     /**
      * Return the set method for the given property.
      */
-    private static Member findSet(String alias, Class type, Field[] fields,
+    private static Member findSet(String alias, Class<?> type, Field[] fields,
         Method[] methods) {
         if (StringUtils.isEmpty(alias))
             return null;
@@ -336,7 +336,7 @@ public class ResultPacker {
         String setName = "set" + StringUtils.capitalize(alias);
         Method method = null;
         boolean eqName = false;
-        Class[] params;
+        Class<?>[] params;
         for (int i = 0; i < methods.length; i++) {
             if (!methods[i].getName().equalsIgnoreCase(setName))
                 continue;

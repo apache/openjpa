@@ -52,7 +52,7 @@ class InterfaceImplGenerator {
     private static final String POSTFIX = "openjpaimpl";
 
     private final MetaDataRepository _repos;
-    private final Map _impls = new WeakHashMap();
+    private final Map<Class<?>,Class<?>> _impls = new WeakHashMap<Class<?>,Class<?>>();
     private final Project _project = new Project();
  
     // distinct project / loader for enhanced version of class
@@ -69,11 +69,11 @@ class InterfaceImplGenerator {
      * Create a concrete implementation of the given type, possibly
      * returning a cached version of the class.
      */
-    public synchronized Class createImpl(ClassMetaData meta) {
-        Class iface = meta.getDescribedType();
+    public synchronized Class<?> createImpl(ClassMetaData meta) {
+        Class<?> iface = meta.getDescribedType();
 
         // check cache.
-        Class impl = (Class) _impls.get(iface);
+        Class<?> impl = _impls.get(iface);
         if (impl != null)
             return impl;
 
@@ -98,12 +98,12 @@ class InterfaceImplGenerator {
         }
 
         FieldMetaData[] fields = meta.getDeclaredFields();
-        Set methods = new HashSet();
+        Set<Method> methods = new HashSet<Method>();
         for (int i = 0; i < fields.length; i++) 
             addField(bc, iface, fields[i], methods);
         invalidateNonBeanMethods(bc, iface, methods);
 
-        // first load the base class as the enhancer requires the class
+        // first load the base Class<?> as the enhancer requires the class
         // to be available
         try {
             meta.setInterfaceImpl(Class.forName(bc.getName(), true, loader));
@@ -111,7 +111,7 @@ class InterfaceImplGenerator {
             throw new InternalException(_loc.get("interface-load", iface, 
                 loader), t).setFatal(true);
         }
-        // copy the BCClass into the enhancer project.
+        // copy the BCClass<?> into the enhancer project.
         bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()), 
             loader);
         PCEnhancer enhancer = new PCEnhancer(_repos, bc, meta);
@@ -121,7 +121,7 @@ class InterfaceImplGenerator {
             throw new InternalException(_loc.get("interface-badenhance", 
                 iface)).setFatal(true);
         try {
-            // load the class for real.
+            // load the Class<?> for real.
             impl = Class.forName(bc.getName(), true, enhLoader);
         } catch (Throwable t) {
             throw new InternalException(_loc.get("interface-load2", iface, 
@@ -136,10 +136,10 @@ class InterfaceImplGenerator {
      * Add bean getters and setters, also recording seen methods
      * into the given set.
      */
-    private void addField (BCClass bc, Class iface, FieldMetaData fmd, 
-        Set methods) {
+    private void addField (BCClass bc, Class<?> iface, FieldMetaData fmd, 
+        Set<Method> methods) {
         String name = fmd.getName();
-        Class type = fmd.getDeclaredType();
+        Class<?> type = fmd.getDeclaredType();
         BCField field = bc.declareField(name, type);
         field.setAccessFlags(Constants.ACCESS_PRIVATE);
 
@@ -172,13 +172,13 @@ class InterfaceImplGenerator {
     /**
      * Invalidate methods on the interface which are not managed.
      */
-    private void invalidateNonBeanMethods(BCClass bc, Class iface, 
-        Set methods) {
+    private void invalidateNonBeanMethods(BCClass bc, Class<?> iface, 
+        Set<Method> methods) {
         Method[] meths = (Method[]) AccessController.doPrivileged(
             J2DoPrivHelper.getDeclaredMethodsAction(iface)); 
         BCMethod meth;
         Code code;
-        Class type = _repos.getMetaDataFactory().getDefaults().
+        Class<?> type = _repos.getMetaDataFactory().getDefaults().
             getUnimplementedExceptionType();
         for (int i = 0; i < meths.length; i++) {
             if (methods.contains(meths[i]))
@@ -197,17 +197,17 @@ class InterfaceImplGenerator {
     }
 
     /**
-     * Return a unique class name.
+     * Return a unique Class<?> name.
      */
     protected final String getClassName(ClassMetaData meta) {
-        Class iface = meta.getDescribedType();
+        Class<?> iface = meta.getDescribedType();
         return iface.getName() + "$" + System.identityHashCode(iface) + POSTFIX;
     }
 
     /**
      * Convenience method to return the given method / arg.
      */
-    private static Method getMethodSafe(Class iface, String name, Class arg) {
+    private static Method getMethodSafe(Class<?> iface, String name, Class<?> arg) {
         try {
             return AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(
@@ -217,7 +217,7 @@ class InterfaceImplGenerator {
         }
     }
 
-    private static boolean isGetter(Class iface, FieldMetaData fmd) {
+    private static boolean isGetter(Class<?> iface, FieldMetaData fmd) {
         if (fmd.getType() != boolean.class && fmd.getType() != Boolean.class)
             return true;
         try {
@@ -229,13 +229,13 @@ class InterfaceImplGenerator {
         return true;
     }
 
-    boolean isImplType(Class cls) {
+    boolean isImplType(Class<?> cls) {
         return (cls.getName().endsWith(POSTFIX)
             && cls.getName().indexOf('$') != -1);
     }
 
-    public Class toManagedInterface(Class cls) {
-        Class[] ifaces = cls.getInterfaces();
+    public Class<?> toManagedInterface(Class<?> cls) {
+        Class<?>[] ifaces = cls.getInterfaces();
         for (int i = 0; i < ifaces.length; i++) {
             if (_impls.get(ifaces[i]) == cls)
                 return ifaces[i];

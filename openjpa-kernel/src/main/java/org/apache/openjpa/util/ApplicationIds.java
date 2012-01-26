@@ -98,7 +98,7 @@ public class ApplicationIds {
         // default to reflection
         if (meta.isObjectIdTypeShared())
             oid = ((ObjectId) oid).getId();
-        Class oidType = oid.getClass();
+        Class<?> oidType = oid.getClass();
         for (int i = 0; i < fmds.length; i++) {
             if (AccessCode.isField(meta.getAccessType()))
                 pks[i] = Reflection.get(oid, Reflection.findField(oidType, 
@@ -227,7 +227,7 @@ public class ApplicationIds {
         }
 
         // default to reflection
-        Class oidType = meta.getObjectIdType();
+        Class<?> oidType = meta.getObjectIdType();
         if (Modifier.isAbstract(oidType.getModifiers()))
             throw new UserException(_loc.get("objectid-abstract", meta));
         Object copy = null;
@@ -267,7 +267,7 @@ public class ApplicationIds {
 
         if (meta.isOpenJPAIdentity()) {
             // use meta type instead of oid type in case it's a subclass
-            Class cls = meta.getDescribedType();
+            Class<?> cls = meta.getDescribedType();
             OpenJPAId koid = (OpenJPAId) oid;
             FieldMetaData pk = meta.getPrimaryKeyFields()[0];
             switch (pk.getObjectIdFieldTypeCode()) {
@@ -330,7 +330,7 @@ public class ApplicationIds {
         // oid instance
         if (!Modifier.isAbstract(meta.getDescribedType().getModifiers())
             && !hasPCPrimaryKeyFields(meta)) {
-            Class type = meta.getDescribedType();
+            Class<?> type = meta.getDescribedType();
             PersistenceCapable pc = PCRegistry.newInstance(type, null, oid, 
                  false);
             Object copy = pc.pcNewObjectIdInstance();
@@ -367,7 +367,7 @@ public class ApplicationIds {
         if (oid == null)
             return null;
 
-        Class oidType = oid.getClass();
+        Class<?> oidType = oid.getClass();
         Object copy = null;
         try {
             copy = AccessController.doPrivileged(
@@ -408,7 +408,7 @@ public class ApplicationIds {
             return ((OpenJPAId) oid).getIdObject();
 
         ClassMetaData meta = fmd.getDefiningMetaData();
-        Class oidType = oid.getClass();
+        Class<?> oidType = oid.getClass();
         if (AccessCode.isField(meta.getAccessType()))
             return Reflection.get(oid, Reflection.findField(oidType, 
                 fmd.getName(), true));
@@ -512,7 +512,7 @@ public class ApplicationIds {
         if (mappedByIdFieldName.length() != 0) {
             if (((ObjectId)id).getId() == null)
                 return false;        	
-            Class idClass = ((ObjectId)id).getId().getClass();
+            Class<?> idClass = ((ObjectId)id).getId().getClass();
             val = Reflection.get(key, 
                     Reflection.findField(idClass, mappedByIdFieldName, true)); 
         } else

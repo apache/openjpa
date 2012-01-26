@@ -131,7 +131,7 @@ public abstract class StoreCollectionFieldStrategy
      * By default, assumes the structure is a collection.
      */
     protected void add(JDBCStore store, Object coll, Object obj) {
-        ((Collection) coll).add(obj);
+        ((Collection<Object>) coll).add(obj);
     }
 
     /**
