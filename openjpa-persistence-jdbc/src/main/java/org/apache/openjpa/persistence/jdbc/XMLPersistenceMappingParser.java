@@ -729,7 +729,7 @@ public class XMLPersistenceMappingParser
                     }
                     // else no break
                 case JavaTypes.COLLECTION:
-                    if(fm.isElementCollection()) { 
+                if (!fm.getValue().isSerialized()) {
                         fm.getElementMapping().getValueInfo().setColumns(_cols);
                     } else  {
                         fm.getValueInfo().setColumns(_cols);
