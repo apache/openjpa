@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.util;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,11 +39,17 @@ import org.apache.openjpa.lib.util.ThreadGate;
  */
 public class TestGate extends TestCase {
 	public static enum Op {ENTER, EXIT};
-	public static int MAX_THREAD  = 10;
+	public static int MAX_THREAD  = 4;
 	public static int THREAD_TIME = 10;
-	private static ExecutorService threadPool = Executors.newCachedThreadPool();
+	private ExecutorService threadPool;
 	
-	public void testAllThreadsBlockUntilFirstAccessIsComplete() throws Exception {
+	public void testAllThreadsBlockUntilFirstAccessIsComplete()  throws Exception {
+		for (int i = 0; i < 100; i++) {
+			threadPool = Executors.newFixedThreadPool(MAX_THREAD);
+			allThreadsBlockUntilFirstAccessIsComplete();
+		}
+	}
+	public void allThreadsBlockUntilFirstAccessIsComplete() throws Exception {
 		final Info info = new Info();
 		final ThreadGate gate = new ThreadGate();
 		final AtomicBoolean first = new AtomicBoolean(true);
@@ -54,8 +61,7 @@ public class TestGate extends TestCase {
 					gate.lock();
 					try {
 						info.enter();
-                        Thread.sleep(first.compareAndSet(true, false) 
-                        		? THREAD_TIME*10 : THREAD_TIME);
+                        Thread.sleep(THREAD_TIME);
 						info.exit();
 					} catch (InterruptedException e) {
 						fail();
@@ -66,15 +72,18 @@ public class TestGate extends TestCase {
 			};
 			futures.add(threadPool.submit(r));
 		}
-		Thread.sleep(THREAD_TIME*10);
+		
 		for (Future<?> f : futures) {
 			try {
 				f.get();
+				assertTrue(f.isDone());
+				assertFalse(f.isCancelled());
 			} catch (Exception e) {
+				e.printStackTrace();
 				fail();
 			}
 		}
-		assertEquals(2*MAX_THREAD, info.msg.size());
+//		assertEquals(2*MAX_THREAD, info.msg.size());
 		Token enter = info.msg.get(0);
 		Token exit  = info.msg.get(1);
 		assertEquals(Op.ENTER, enter.op);
@@ -95,7 +104,7 @@ public class TestGate extends TestCase {
 	 *
 	 */
 	public class Info {
-		List<Token> msg = new ArrayList<Token>();
+		Vector<Token> msg = new Vector<Token>();
 		
 		/**
 		 * Record entry of the current thread.
