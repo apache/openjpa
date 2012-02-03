@@ -31,6 +31,12 @@ public class ImmutableBooleanValue extends BooleanValue {
 		super(prop);
 	}
 	
+	public ImmutableBooleanValue(String prop, boolean value) {
+		super(prop);
+		set(value);
+	}
+
+	
     public void set(boolean value) {
     	if (_dirty) {
     		if (value != get().booleanValue())

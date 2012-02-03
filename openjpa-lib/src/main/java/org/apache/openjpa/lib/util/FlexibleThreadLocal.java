@@ -22,7 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A thread-specific storage similar to {@link ThreadLocal}.
+ * A thread-specific storage similar to {@link ThreadLocal} that 
+ * <em>heuristically</em> relaxes the affinity of a value to a thread.
+ * <br>
+ * A thread <tt>t1</tt> can {@linkplain #set(Object) set} a value, while
+ * a different thread <tt>t2</tt> can {@linkplain #get() access} the same
+ * value, if <tt>t1</tt> and <tt>t2</tt> are <em>{@link #isEquivalent(Thread, Thread)
+ * equivalent}</em>.
  *  
  * @author Pinaki Poddar
  * @since 2.2.0
@@ -41,12 +47,16 @@ public class FlexibleThreadLocal<T>  {
 		if (_values.containsKey(current)) {
 			return _values.get(current);
 		} else {
-			for (Map.Entry<Thread, T> e : _values.entrySet()) {
-				if (isEquivalent(e.getKey(), current))
-					return e.getValue();
+			if (_values.size() == 1) {
+				return _values.values().iterator().next();
+			} else {
+				for (Map.Entry<Thread, T> e : _values.entrySet()) {
+					if (isEquivalent(e.getKey(), current))
+						return e.getValue();
+				}
 			}
-		}
-		return null;
+			throw new RuntimeException(current + " is not a known thread. Known threads are " + _values);
+		} 
 	}
 	
 	/**
@@ -58,11 +68,17 @@ public class FlexibleThreadLocal<T>  {
 	
 	/**
 	 * Affirms if the two given thread are equivalent.
-	 * Equivalence takes asymmetric equality in account.
+	 * Two threads are equivalent if the they are identical (of course),
+	 * or they belong to the same thread group or they are <em>equal</em>.
+	 * The equality can be defined <em>asymmetrically</em> by the 
+	 * thread implementation. For example, a child thread (as done in Slice)
+	 * can equal its parent thread which is a native thread. But the parent
+	 * (native) thread is not equal to the child thread.   
 	 */
 	protected boolean isEquivalent(Thread a, Thread b) {
 		if (a == b) return true;
-		if (a == null || b== null) return false;
+		if (a.getThreadGroup() == b.getThreadGroup()) return true;
+		if (a == null || b == null) return false;
 		return a.equals(b) || b.equals(a);
 	}
 
