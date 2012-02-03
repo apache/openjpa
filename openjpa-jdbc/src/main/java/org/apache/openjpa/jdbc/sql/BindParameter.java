@@ -109,8 +109,4 @@ public class BindParameter {
 	public Object getKey() {
 		return _key;
 	}	
-	
-	public String toString() {
-		return _key + ":" + getValue();
-	}
 }
