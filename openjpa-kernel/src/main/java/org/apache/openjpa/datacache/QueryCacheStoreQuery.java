@@ -701,7 +701,7 @@ public class QueryCacheStoreQuery
     /**
      * Struct to recognize cached oids.
      */
-    private static class CachedObjectId {
+    private static class CachedObjectId implements java.io.Serializable {
 
         public final Object oid;
 
