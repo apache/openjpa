@@ -18,8 +18,10 @@
  */
 package org.apache.openjpa.lib.util;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+
 
 /**
  * A thread-specific storage similar to {@link ThreadLocal} that 
@@ -27,43 +29,42 @@ import java.util.Map;
  * <br>
  * A thread <tt>t1</tt> can {@linkplain #set(Object) set} a value, while
  * a different thread <tt>t2</tt> can {@linkplain #get() access} the same
- * value, if <tt>t1</tt> and <tt>t2</tt> are <em>{@link #isEquivalent(Thread, Thread)
+ * value, if <tt>t1</tt> and <tt>t2</tt> are <em>{@link #eq(Object, Object)
  * equivalent}</em>.
  *  
  * @author Pinaki Poddar
  * @since 2.2.0
  */
-public class FlexibleThreadLocal<T>  {
-	private final Map<Thread, T> _values = new HashMap<Thread, T>();
+public class FlexibleThreadLocal  extends ConcurrentReferenceHashMap {
 	
 	/**
-	 * Gets the value associated with the calling thread or its 
-	 * {@link #isEquivalent(Thread, Thread) equivalent}.
-	 * 
-	 * @see #isEquivalent(Thread, Thread)
+	 * Must not hold hard reference to the threads used as keys.
 	 */
-	public T get() {
+    public FlexibleThreadLocal() {
+		super(ReferenceMap.WEAK, ReferenceMap.HARD);
+	}
+	
+	/**
+	 * Gets the value associated with the calling thread or its equivalent.
+	 * 
+	 * @see #eq(Object, Object)
+	 */
+	public Object get() {
 		Thread current = Thread.currentThread();
-		if (_values.containsKey(current)) {
-			return _values.get(current);
+		if (containsKey(current)) {
+			return super.get(current);
 		} else {
-			if (_values.size() == 1) {
-				return _values.values().iterator().next();
-			} else {
-				for (Map.Entry<Thread, T> e : _values.entrySet()) {
-					if (isEquivalent(e.getKey(), current))
-						return e.getValue();
-				}
-			}
-			throw new RuntimeException(current + " is not a known thread. Known threads are " + _values);
+			if (size() == 1)
+				return ((Map.Entry)entrySet().iterator().next()).getValue();
+			throw new RuntimeException(current + " is not a known thread. Known threads are " + keySet());
 		} 
 	}
 	
 	/**
 	 * Associates the value to the current thread.
 	 */
-	public T set(T t) {
-		return _values.put(Thread.currentThread(), t);
+	public void set(Object t) {
+		super.put(Thread.currentThread(), t);
 	}
 	
 	/**
@@ -75,11 +76,14 @@ public class FlexibleThreadLocal<T>  {
 	 * can equal its parent thread which is a native thread. But the parent
 	 * (native) thread is not equal to the child thread.   
 	 */
-	protected boolean isEquivalent(Thread a, Thread b) {
+	@Override
+	protected boolean eq(Object a, Object b) {
 		if (a == b) return true;
-		if (a.getThreadGroup() == b.getThreadGroup()) return true;
 		if (a == null || b == null) return false;
+		if (a instanceof Thread && b instanceof Thread) 
+			if (((Thread)a).getThreadGroup() == ((Thread)b).getThreadGroup()) 
+				return true;
 		return a.equals(b) || b.equals(a);
 	}
-
+	
 }
