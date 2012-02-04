@@ -353,7 +353,7 @@ public class JDBCConfigurationImpl
         identifierUtilPlugin.setString(aliases[0]);
         identifierUtilPlugin.setInstantiatingGetter("getIdentifierUtilInstance");
 
-        cacheSelect = new ImmutableBooleanValue("jdbc.CachesSelect");
+        cacheSelect = new ImmutableBooleanValue("jdbc.CachesSelect", false);
         addValue(cacheSelect);
         cacheSelect.setDefault("false");
         
