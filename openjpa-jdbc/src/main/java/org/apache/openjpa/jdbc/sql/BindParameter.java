@@ -52,7 +52,7 @@ public class BindParameter {
 	private final Column  _column;
 	// key of this parameter
 	private final Object  _key;
-	private FlexibleThreadLocal<Object> _values = new FlexibleThreadLocal<Object>();
+	private FlexibleThreadLocal _values = new FlexibleThreadLocal();
 	
 	/**
 	 * Constructs a parameter with given key, column and user flag.
