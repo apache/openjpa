@@ -593,7 +593,8 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         		PersistenceCapable pc = (PersistenceCapable) member;
             
 	            OpenJPAStateManager sm = (OpenJPAStateManager) pc.pcGetStateManager();
-	            ClassMapping cm = (ClassMapping)_conf.getMetaDataRepositoryInstance().getCachedMetaData(pc.getClass());
+	            ClassMapping cm = (ClassMapping)_conf.getMetaDataRepositoryInstance()
+	                              .getCachedMetaData(pc.getClass());
 	            FieldMapping[] fmd = cm.getFieldMappings();
 	            for (int j = 0; j < fmd.length; j++) {
 	                if (fmd[j].isTypePC()) {
