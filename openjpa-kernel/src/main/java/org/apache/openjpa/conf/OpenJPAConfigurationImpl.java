@@ -177,6 +177,7 @@ public class OpenJPAConfigurationImpl
     public ObjectValue instrumentationManager;
     public PluginListValue instrumentationProviders;
     public BooleanValue postLoadOnMerge;
+    public BooleanValue optimizeIdCopy;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -402,6 +403,10 @@ public class OpenJPAConfigurationImpl
         postLoadOnMerge.setDefault("false");
         postLoadOnMerge.set(false);
 
+        optimizeIdCopy = addBoolean("OptimizeIdCopy");
+        optimizeIdCopy.setDefault("false");
+        optimizeIdCopy.set(false);
+        
         autoClear = addInt("AutoClear");
         aliases =
             new String[] { "datastore",
@@ -1856,5 +1861,18 @@ public class OpenJPAConfigurationImpl
             setPostLoadOnMerge(postLoadOnMerge.booleanValue());
     }
 
+    public boolean getOptimizeIdCopy() {
+        return optimizeIdCopy.get();
+    }
+    
+    public void setOptimizeIdCopy(boolean optimizeId) {
+        optimizeIdCopy.set(optimizeId);
+    }
+
+    public void setOptimizeIdCopy(Boolean optimizeId) {
+        if (optimizeId != null) {
+            setOptimizeIdCopy(optimizeId.booleanValue());
+        }
+    }
 }
 

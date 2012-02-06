@@ -576,6 +576,14 @@ public class ApplicationIds {
     }
 
     /**
+     * Sets the underlying id of an ObjectId.  Should only
+     * be used with simple (idclass) types.
+     */
+    public static void setAppId(ObjectId id, Object newId) {
+        id.setId(newId);
+    }
+
+    /**
      * Helper class used to transfer pk values to/from application oids.
      */
     private static class PrimaryKeyFieldManager

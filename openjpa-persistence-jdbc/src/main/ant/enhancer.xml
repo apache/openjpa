@@ -31,12 +31,12 @@
         <istrue value="${maven.test.skip}" />
     </condition>
 
-	<condition property="skip.enhance">
-		<or>
+    <condition property="skip.enhance">
+        <or>
         <equals arg1="${test}" arg2="false" />
-			<equals arg1="${build.enhance}" arg2="false" />
-			<istrue value="${maven.test.skip}" />
-			<istrue value="${skipTests}" />
+        <equals arg1="${build.enhance}" arg2="false" />
+        <istrue value="${maven.test.skip}" />
+        <istrue value="${skipTests}" />
         </or>
     </condition>
 
@@ -83,7 +83,8 @@
             <exclude name="org/apache/openjpa/enhance/EnhancedSubClass.class"/>
             <exclude name="**/AbstractUnenhanced*.class" />
             <exclude name="**/unenhanced/*.class" />
-			<exclude name="**/persistence/property/AccessModsEntity.class"/>
+            <exclude name="**/persistence/property/AccessModsEntity.class"/>
+            <exclude name="org/apache/openjpa/enhance/ids/*.class"/>
         </fileset>
         <openjpac>
             <classpath refid="cp" />
@@ -99,17 +100,17 @@
                 <include name="**/detach/serializable/*.class" />
                 <!--  include files from orm.xml -->
                 <include name="**/xml/*.class" />
-				<exclude name="**/persistence/delimited/identifiers/xml/*.class"/>
+                <exclude name="**/persistence/delimited/identifiers/xml/*.class"/>
                 <exclude name="**/Test*.class" />
             </fileset>
             <config log="${openjpa.Log}" />
         </openjpac>
-		<!-- Enhance with private persistent properties compatibility option -->
+        <!-- Enhance with private persistent properties compatibility option -->
         <openjpac>
             <config propertiesFile="${project.build.testOutputDirectory}/META-INF/nopriv_persistence.xml" />
             <classpath refid="cp" />
             <fileset dir="${project.build.testOutputDirectory}">
-				<include name="**/persistence/property/AccessModsEntity.class"/>
+            <include name="**/persistence/property/AccessModsEntity.class"/>
             </fileset>
             <config log="${openjpa.Log}" />
         </openjpac>
@@ -132,15 +133,24 @@
             </fileset>
             <config log="${openjpa.Log}" />
         </openjpac>
-		<!-- Enhance delimited identifiers XML-based entities separately -->
+        <!-- Enhance delimited identifiers XML-based entities separately -->
         <openjpac>
             <config propertiesFile="${project.build.testOutputDirectory}/META-INF/delim_persistence.xml" />
             <classpath refid="cp" />
             <fileset dir="${project.build.testOutputDirectory}">
-				<include name="**/persistence/delimited/identifiers/xml/*.class"/>
-				<exclude name="**/persistence/delimited/identifiers/xml/Test*.class"/>
+                <include name="**/persistence/delimited/identifiers/xml/*.class"/>
+                <exclude name="**/persistence/delimited/identifiers/xml/Test*.class"/>
             </fileset>
             <config log="${openjpa.Log}"/>
+        </openjpac>
+        <!-- Enhance with optimized id copy option -->
+        <openjpac>
+            <config propertiesFile="${project.build.testOutputDirectory}/META-INF/optidcpy_persistence.xml" />
+            <classpath refid="cp" />
+            <fileset dir="${project.build.testOutputDirectory}">
+                <include name="org/apache/openjpa/enhance/ids/*.class"/>
+            </fileset>
+            <config log="${openjpa.Log}" />
         </openjpac>
     </target>
 </project>

@@ -1918,5 +1918,37 @@ public interface OpenJPAConfiguration
       */
      public void setPostLoadOnMerge(Boolean postLoadOnMerge);
     
+     /**
+      * Whether to attempt to optimize id class copy operations during the
+      * enhancement process.  Optimization is only applicable for simple id classes
+      * that have a constructor with the proper construction parameters and
+      * direct assignments to fields within the id class during construction. 
+      * If the optimization cannot occur, the enhancer will fallback to the 
+      * noraml behavior.
+      * @since 2.2.0
+      */
+     public boolean getOptimizeIdCopy();
+     
+     /**
+      * Whether to attempt to optimize id class copy operations during the
+      * enhancement process.  Optimization is only applicable for simple id classes
+      * that have a constructor with the proper construction parameters and
+      * direct assignments to fields within the id class during construction. 
+      * If the optimization cannot occur, the enhancer will fallback to the 
+      * normal behavior.
+      * @since 2.2.0
+      */
+     public void setOptimizeIdCopy(boolean optimizeIds);
+
+     /**
+      * Whether to attempt to optimize id class copy operations during the
+      * enhancement process.  Optimization is only applicable for simple id classes
+      * that have a constructor with the proper construction parameters and
+      * direct assignments to fields within the id class during construction. 
+      * If the optimization cannot occur, the enhancer will fallback to the 
+      * normal behavior.
+      * @since 2.2.0
+      */
+      public void setOptimizeIdCopy(Boolean optimizeIds);
 }
 
