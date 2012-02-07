@@ -1351,4 +1351,29 @@ for a JPQL query.
 </para>
  
     </section>
+    <section id="ref_guide_cache_select">
+        <title>Select Cache</title>
+        <indexterm zone="ref_guide_cache_select">
+            <primary>caching</primary>
+            <secondary>Select Cache</secondary>
+        </indexterm>
+    <para>
+    OpenJPA generates SQL SELECT statements to fetch database records and populates the persistent entity states
+    from the result data. Under certain assumptions, these select statements are invariant for an entity
+    or its relations except that their binding parameters vary between executions. In version 2.2.0, OpenJPA
+    allows these select statements be reused. Such reuse avoids the cost of regenerating these statements in
+    every execution. 
+    </para>  
+    <para>
+    This facility can be activated by <programlisting>openjpa.jdbc.CachesSelect</programlisting> configuration
+    property. This property accepts boolean value of <programlisting>true</programlisting> or 
+    <programlisting>false</programlisting>. By default, the property value is <programlisting>false</programlisting>.
+    The property value can be changed once and only once.
+    </para> 
+    <para>
+    The assumption that a select statement for a persistent entity is invariant holds only if the fetch plan
+    is not dynamically modified. OpenJPA runtime currently makes no attempt to ensure that the assumption
+    is held true i.e. the application is not modifying the fetch plan dynamically.  
+    </para> 
+    </section>
 </chapter>

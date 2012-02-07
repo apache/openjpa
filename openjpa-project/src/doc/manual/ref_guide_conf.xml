@@ -3427,6 +3427,43 @@ levels are equivalent. Lock levels <literal>pessimistic-read</literal>,
         <para>
 The following properties apply exclusively to the OpenJPA JDBC back-end.
         </para>
+        
+        <section id="openjpa.jdbc.CachesSelect">
+            <title>
+                openjpa.jdbc.CachesSelect
+            </title>
+            <indexterm zone="openjpa.jdbc.CachesSelect">
+                <primary>
+                    Select Cache
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.jdbc.CachesSelect">
+                <primary>
+                    caching
+                </primary>
+                <secondary>
+                    Select Cache
+                </secondary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name:</emphasis>
+<literal>openjpa.jdbc.CachesSelect</literal>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property:</emphasis> 
+<literal>CachesSelect</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default:</emphasis> <literal>false</literal>.
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> A plugin string (see 
+<xref linkend="ref_guide_conf_plugins"/>) describing the options to reuse SQL SELECT 
+statements generated to load persistent entity and its relations.
+See <xref linkend="ref_guide_cache_select"/> for details.
+            </para>
+        </section>
+        
         <section id="openjpa.jdbc.ConnectionDecorators">
             <title>
                 openjpa.jdbc.ConnectionDecorators
