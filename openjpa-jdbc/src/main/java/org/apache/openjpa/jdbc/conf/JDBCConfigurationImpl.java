@@ -356,6 +356,7 @@ public class JDBCConfigurationImpl
         cacheSelect = new ImmutableBooleanValue("jdbc.CachesSelect");
         addValue(cacheSelect);
         cacheSelect.setDefault("false");
+        cacheSelect.set(false);  // Disable openjpa.CachesSelect until openjpa-2099 is complete
         
         // this static initializer is to get past a weird
         // ClassCircularityError that happens only under IBM's
