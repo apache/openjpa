@@ -598,7 +598,11 @@ public class SourceCode {
             codeLines.add(tab + line);
             return this;
         }
-	    // if tabInc = true, the current line, and all following lines will be tabbed. If false, a tab will be removed.
+
+        /**
+         * if tabInc = true, the current line, and all following lines will be tabbed.
+         *  If false, a tab will be removed.
+         */
         public Method addCodeLine(String line, boolean tabInc) {
             setTab(tabInc);
             return addCodeLine(line);
