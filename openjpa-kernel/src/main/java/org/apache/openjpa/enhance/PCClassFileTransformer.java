@@ -30,6 +30,8 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+
+import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 import serp.bytecode.lowlevel.ConstantPoolTable;
 
@@ -150,8 +152,9 @@ public class PCClassFileTransformer
 
             if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
                 return null;
-            returnBytes = enhancer.getPCBytecode().toByteArray();
-            return AsmAdaptor.toByteArray(enhancer.getPCBytecode(), returnBytes);
+            BCClass pcb = enhancer.getPCBytecode();
+            returnBytes = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
+            return returnBytes;
         } catch (Throwable t) {
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
