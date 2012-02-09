@@ -98,7 +98,12 @@ public class XMLValueHandler
         if (val == null) 
             return null;
         try {
-            String packageName = vm.getDeclaredType().getPackage().getName();
+            String className  = vm.getDeclaredType().getName();
+            int i = className.lastIndexOf('.');
+            String packageName = className;
+            if (i != -1) {
+                packageName = className.substring(0, i);
+            }
             JAXBContext jc = JAXBContext.newInstance(packageName);
             Unmarshaller u = jc.createUnmarshaller();
             return u.unmarshal(new StreamSource(new StringReader
