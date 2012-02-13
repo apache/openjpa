@@ -112,10 +112,10 @@ public abstract class MapTableFieldStrategy
             throw new MetaDataException(_loc.get("mapped-by-key", field));
 
         // Non-default mapping Uni-/OneToMany/ForeignKey allows schema components
-        if (field.isUnidirectionalOneToManyForeignKey())  
+        if (field.isUni1ToMFK())  
             return;
-        if (field.isBidirectionalManyToOneJoinTable())
-            field.setBidirectionalOneToManyJoinTableInfo();
+        if (field.isBiMTo1JT())
+            field.setBi1MJoinTableInfo();
         field.getValueInfo().assertNoSchemaComponents(field, !adapt);
     }
     

@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.Reflection;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
@@ -45,8 +44,6 @@ import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
-import org.apache.openjpa.jdbc.sql.SelectExecutor;
-import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
@@ -63,22 +60,17 @@ import org.apache.openjpa.util.OpenJPAId;
 
 /**
  * Specialization of metadata for relational databases.
- * <br>
- * The mapping may reuse the same {@link SelectExecutor select} if the 
- * {@link JDBCConfiguration#getSelectCacheEnabled() configuration option}
- * instructs to do so. 
  *
  * @author Abe White
- * @author Pinaki Poddar (select caching)
  */
-@SuppressWarnings("serial")
 public class ClassMapping
     extends ClassMetaData
     implements ClassStrategy {
 
     public static final ClassMapping[] EMPTY_MAPPINGS = new ClassMapping[0];
 
-    private static final Localizer _loc = Localizer.forPackage(ClassMapping.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (ClassMapping.class);
 
     private final ClassMappingInfo _info;
     private final Discriminator _discrim;
@@ -96,9 +88,6 @@ public class ClassMapping
 
     // maps columns to joinables
     private final Map _joinables = new ConcurrentHashMap();
-    
-    private Select _select;
-    private Union  _union;
 
     /**
      * Constructor. Supply described type and owning repository.
@@ -1119,49 +1108,5 @@ public class ClassMapping
         if (strat != null && strat.equals(VerticalClassStrategy.ALIAS))
             return true;
         return false;
-    }
-    
-    /**
-     * Gets the {@link Select select} used for selecting instances of this mapping.
-     * If {@link JDBCConfiguration#getSelectCacheEnabled() aggressive caching} of
-     * select statements is enabled, then a select is generated for the first call,
-     * cached in this mapping and subsequently returned. A cached select becomes 
-     * {@link Select#isReadOnly() immutable} i.e. no structural modification is
-     * allowed <em>after</em> its corresponding SQL has been executed on the database.
-     * 
-     * @return a new or cached select to select instances of this mapping.  
-     */
-    public Select getSelect() {
-    	Select result = _select;
-    	if (result == null) {
-    		JDBCConfiguration conf = (JDBCConfiguration)getMappingRepository().getConfiguration();
-    		result = conf.getSQLFactoryInstance().newSelect();
-    		if (conf.getSelectCacheEnabled()) {
-    			_select = result;
-    		}
-    	}
-    	return result;
-    }
-    
-    /**
-     * Gets the {@link Union union} used for selecting instances of this mapping.
-     * If {@link JDBCConfiguration#getSelectCacheEnabled() aggressive caching} of
-     * union statements is enabled, then a union is generated for the first call,
-     * cached in this mapping and subsequently returned. A cached union becomes 
-     * {@link Select#isReadOnly() immutable} i.e. no structural modification is
-     * allowed <em>after</em> its corresponding SQL has been executed on the database.
-     * 
-     * @return a new or cached union to select instances of this mapping.  
-     */
-    public Union getUnion(int selects) {
-    	Union result = _union;
-    	if (result == null) {
-    		JDBCConfiguration conf = (JDBCConfiguration)getMappingRepository().getConfiguration();
-    		result = conf.getSQLFactoryInstance().newUnion(selects);
-    		if (conf.getSelectCacheEnabled()) {
-    			_union = result;
-    		}
-    	}
-    	return result;
     }
 }

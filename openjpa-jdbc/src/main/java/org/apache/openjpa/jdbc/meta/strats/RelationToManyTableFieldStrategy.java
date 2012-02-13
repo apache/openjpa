@@ -113,7 +113,7 @@ public abstract class RelationToManyTableFieldStrategy
         // Bi-directional oneToMany relation with join table strategy
         // ==> should not mapped in the owner's table
         if (mapped != null) {
-            if (!field.isBidirectionalManyToOneJoinTable()) {
+            if (!field.isBiMTo1JT()) {
                 if (mapped.getElement().getTypeCode() != JavaTypes.PC) {
                     throw new MetaDataException(_loc.get("not-inv-relation-coll",
                             field, mapped));
@@ -134,9 +134,9 @@ public abstract class RelationToManyTableFieldStrategy
             }
         }
 
-        if (mapped == null || field.isBidirectionalManyToOneJoinTable()) {
-            if (field.isBidirectionalManyToOneJoinTable())
-                field.setBidirectionalOneToManyJoinTableInfo();
+        if (mapped == null || field.isBiMTo1JT()) {
+            if (field.isBiMTo1JT())
+                field.setBi1MJoinTableInfo();
             field.mapJoin(adapt, true);
             if (elem.getTypeMapping().isMapped()) {
                 ForeignKey fk = vinfo.getTypeJoin(elem, "element", false, adapt);
@@ -157,7 +157,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void insert(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() == null || field.isBidirectionalManyToOneJoinTable()) 
+        if (field.getMappedBy() == null || field.isBiMTo1JT()) 
             insert(sm, rm, sm.fetchObject(field.getIndex()));
     }
 
@@ -188,7 +188,7 @@ public abstract class RelationToManyTableFieldStrategy
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !field.isBidirectionalManyToOneJoinTable())
+        if (field.getMappedBy() != null && !field.isBiMTo1JT())
             return;
 
         Object obj = sm.fetchObject(field.getIndex());

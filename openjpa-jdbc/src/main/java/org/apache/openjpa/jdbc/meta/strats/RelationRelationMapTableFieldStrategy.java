@@ -82,7 +82,7 @@ public class RelationRelationMapTableFieldStrategy
         kunion.select(new Union.Selector() {
             public void select(Select sel, int idx) {
                 ForeignKey joinFK = null;
-                if (field.isUnidirectionalOneToManyForeignKey()) {
+                if (field.isUni1ToMFK()) {
                     ValueMapping val = field.getElementMapping();
                     ValueMappingInfo vinfo = val.getValueInfo();
                     Table table = vinfo.getTable(val);
@@ -117,7 +117,7 @@ public class RelationRelationMapTableFieldStrategy
         vunion.setLRS(lrs);
         vunion.select(new Union.Selector() {
             public void select(Select sel, int idx) {
-                if (field.isUnidirectionalOneToManyForeignKey()) {
+                if (field.isUni1ToMFK()) {
                     sel.orderBy(field.getKeyMapping().getColumns(), true, true);
                     sel.select(vals[idx], field.getElementMapping().
                         getSelectSubclasses(), store, fetch, eagerMode, null);
@@ -203,11 +203,10 @@ public class RelationRelationMapTableFieldStrategy
         FieldMapping mapped = field.getMappedByMapping();
         DBDictionary dict = field.getMappingRepository().getDBDictionary();
         DBIdentifier keyName = null;
-        if (field.isUnidirectionalOneToManyForeignKey() 
-        || (!field.isBidirectionalManyToOneJoinTable() && mapped != null)) { 
+        if (field.isUni1ToMFK() || (!field.isBiMTo1JT() && mapped != null)) { 
             handleMappedByForeignKey(adapt);
             keyName = dict.getValidColumnName(DBIdentifier.newColumn("vkey"), field.getTable());
-        } else if (field.isBidirectionalManyToOneJoinTable() || mapped == null) { 
+        } else if (field.isBiMTo1JT() || mapped == null) { 
             field.mapJoin(adapt, true);
             mapTypeJoin(val, DBIdentifier.newColumn("value"), adapt);
             keyName = dict.getValidColumnName(DBIdentifier.newColumn("key"), field.getTable());
@@ -246,11 +245,11 @@ public class RelationRelationMapTableFieldStrategy
         if (map == null || map.isEmpty())
             return;
         
-        if (!field.isBidirectionalManyToOneJoinTable() && field.getMappedBy() != null)
+        if (!field.isBiMTo1JT() && field.getMappedBy() != null)
             return;
 
         Row row = null;
-        if (!field.isUnidirectionalOneToManyForeignKey()) {
+        if (!field.isUni1ToMFK()) {
             row = rm.getSecondaryRow(field.getTable(), Row.ACTION_INSERT);
             row.setForeignKey(field.getJoinForeignKey(), field.getJoinColumnIO(),
                 sm);
@@ -264,7 +263,7 @@ public class RelationRelationMapTableFieldStrategy
             entry = (Map.Entry) itr.next();
             keysm = RelationStrategies.getStateManager(entry.getKey(), ctx);
             valsm = RelationStrategies.getStateManager(entry.getValue(), ctx);
-            if (field.isUnidirectionalOneToManyForeignKey()){
+            if (field.isUni1ToMFK()){
                 row = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                     Row.ACTION_UPDATE, valsm, true);
                 row.wherePrimaryKey(valsm);
@@ -282,14 +281,14 @@ public class RelationRelationMapTableFieldStrategy
             // from the view point of the owned side
             PersistenceCapable obj = sm.getPersistenceCapable();
             if (!populateKey(row, valsm, obj, ctx, rm, store))
-                if (!field.isUnidirectionalOneToManyForeignKey())
+                if (!field.isUni1ToMFK())
                     rm.flushSecondaryRow(row);
         }
     }
 
     public void update(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.getMappedBy() != null && !field.isBidirectionalManyToOneJoinTable())
+        if (field.getMappedBy() != null && !field.isBiMTo1JT())
             return;
         
         Map map = (Map) sm.fetchObject(field.getIndex());
@@ -320,7 +319,7 @@ public class RelationRelationMapTableFieldStrategy
         Object mkey;
         if (canChange && !change.isEmpty()) {
             Row changeRow = null;
-            if (!field.isUnidirectionalOneToManyForeignKey()) {
+            if (!field.isUni1ToMFK()) {
                 changeRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_UPDATE);
                 changeRow.whereForeignKey(field.getJoinForeignKey(), sm);
@@ -340,7 +339,7 @@ public class RelationRelationMapTableFieldStrategy
                 keysm = RelationStrategies.getStateManager(mkey, ctx);
                 valsm = RelationStrategies.getStateManager(mval, ctx);
                 key.whereForeignKey(changeRow, keysm);
-                if (field.isUnidirectionalOneToManyForeignKey()){
+                if (field.isUni1ToMFK()){
                     changeRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                         Row.ACTION_UPDATE, valsm, true);
                     changeRow.wherePrimaryKey(valsm);
@@ -356,7 +355,7 @@ public class RelationRelationMapTableFieldStrategy
         Collection rem = ct.getRemoved();
         if (!rem.isEmpty() || (!canChange && !change.isEmpty())) {
             Row delRow = null;
-            if (!field.isUnidirectionalOneToManyForeignKey()) {
+            if (!field.isUni1ToMFK()) {
                 delRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_DELETE);
                 delRow.whereForeignKey(field.getJoinForeignKey(), sm);
@@ -364,7 +363,7 @@ public class RelationRelationMapTableFieldStrategy
 
             for (Iterator itr = rem.iterator(); itr.hasNext();) {
                 Object pc = itr.next();
-                if (field.isUnidirectionalOneToManyForeignKey()){
+                if (field.isUni1ToMFK()){
                     updateSetNull(sm, rm, pc);
                 } else {
                     keysm = RelationStrategies.getStateManager(pc, ctx);
@@ -375,7 +374,7 @@ public class RelationRelationMapTableFieldStrategy
             if (!canChange && !change.isEmpty()) {
                 for (Iterator itr = change.iterator(); itr.hasNext();) {
                     Object pc = itr.next();
-                    if (field.isUnidirectionalOneToManyForeignKey()){
+                    if (field.isUni1ToMFK()){
                         updateSetNull(sm, rm, pc);
                     } else { 
                         keysm = RelationStrategies.getStateManager(pc, ctx);
@@ -390,7 +389,7 @@ public class RelationRelationMapTableFieldStrategy
         Collection add = ct.getAdded();
         if (!add.isEmpty() || (!canChange && !change.isEmpty())) {
             Row addRow = null;
-            if (!field.isUnidirectionalOneToManyForeignKey()) {
+            if (!field.isUni1ToMFK()) {
                 addRow = rm.getSecondaryRow(field.getTable(),
                     Row.ACTION_INSERT);
                 addRow.setForeignKey(field.getJoinForeignKey(),
@@ -410,7 +409,7 @@ public class RelationRelationMapTableFieldStrategy
                     continue;
                 keysm = RelationStrategies.getStateManager(mkey, ctx);
                 valsm = RelationStrategies.getStateManager(mval, ctx);
-                if (field.isUnidirectionalOneToManyForeignKey()){
+                if (field.isUni1ToMFK()){
                     addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                         Row.ACTION_UPDATE, valsm, true);
                     addRow.wherePrimaryKey(valsm);
@@ -437,7 +436,7 @@ public class RelationRelationMapTableFieldStrategy
                         continue;
                     keysm = RelationStrategies.getStateManager(mkey, ctx);
                     valsm = RelationStrategies.getStateManager(mval, ctx);
-                    if (field.isUnidirectionalOneToManyForeignKey()){
+                    if (field.isUni1ToMFK()){
                         addRow = rm.getRow(field.getElementMapping().getDeclaredTypeMapping().getTable(),
                             Row.ACTION_UPDATE, valsm, true);
                         addRow.wherePrimaryKey(valsm);
@@ -504,7 +503,7 @@ public class RelationRelationMapTableFieldStrategy
     
     public void delete(OpenJPAStateManager sm, JDBCStore store, RowManager rm)
         throws SQLException {
-        if (field.isUnidirectionalOneToManyForeignKey()) {
+        if (field.isUni1ToMFK()) {
             Map mapObj = (Map)sm.fetchObject(field.getIndex());
             updateSetNull(sm, store, rm, mapObj.keySet());
             return;

@@ -356,18 +356,5 @@ public class TestBasic extends SliceTestCase {
         assertNotNull(newP);
         assertEquals("newslice", SlicePersistence.getSlice(newP));
     }
-    
-    public void testSliceThreadEqualsParentAndSiblings() {
-    	Thread parent = new Thread();
-    	SliceThread s1 = new SliceThread(parent, null);
-    	SliceThread s2 = new SliceThread(parent, null);
-    	
-    	assertEquals(s1, parent);
-    	assertEquals(s2, parent);
-    	assertEquals(s1, s2);
-    	assertNotSame(parent, s1);
-    	assertNotSame(parent, s2);
-    	assertNotSame(s1, s2);
-    }
 
 }

@@ -546,12 +546,12 @@ public interface Select
     /**
      * Add the given where conditions.
      */
-//    public void where(String sql);
+    public void where(String sql);
 
     /**
      * Add the given where conditions.
      */
-//    public void where(String sql, Joins joins);
+    public void where(String sql, Joins joins);
 
     /**
      * Add the given having conditions.
@@ -566,12 +566,12 @@ public interface Select
     /**
      * Add the given having conditions.
      */
-//    public void having(String sql);
+    public void having(String sql);
 
     /**
      * Add the given having conditions.
      */
-//    public void having(String sql, Joins joins);
+    public void having(String sql, Joins joins);
 
     /**
      * Group by the given column.
@@ -606,12 +606,12 @@ public interface Select
     /**
      * Add a GROUP BY clause.
      */
-//    public void groupBy(String sql);
+    public void groupBy(String sql);
 
     /**
      * Add a GROUP BY clause.
      */
-//    public void groupBy(String sql, Joins joins);
+    public void groupBy(String sql, Joins joins);
 
     /**
      * Group by the columns of the given mapping, possibly including subclasses.
@@ -751,29 +751,22 @@ public interface Select
     /**
      * Set joined table metadatas for polymorphic queries
      */
-    public void setJoinedTableClassMeta(List<ClassMapping> meta);
+    public void setJoinedTableClassMeta(List meta);
 
     /**
      * get joined table metadatas for polymorphic queries
      */
-    public List<ClassMapping> getJoinedTableClassMeta();
+    public List getJoinedTableClassMeta();
 
     /**
      * Set joined table metadatas excluded for polymorphic queries
      */
-    public void setExcludedJoinedTableClassMeta(List<ClassMapping> meta);
+    public void setExcludedJoinedTableClassMeta(List meta);
 
     /**
      * get joined table metadatas excluded for polymorphic queries
      */
-    public List<ClassMapping> getExcludedJoinedTableClassMeta();
+    public List getExcludedJoinedTableClassMeta();
     
-    /**
-     * Gets the database dictionary used by this select to form the target SQL
-     * statement.
-     * 
-     * @return the immutable database dictionary.
-     */
     public DBDictionary getDictionary() ; 
-    
 }

@@ -271,14 +271,11 @@ public class DelegatingQuery
         }
     }
 
-    public void setCandidateType(Class<?> cls, boolean subs) {
+    public void setCandidateType(Class cls, boolean subs) {
         try {
-        	lock();
             _query.setCandidateType(cls, subs);
         } catch (RuntimeException re) {
             throw translate(re);
-        } finally {
-        	unlock();
         }
     }
 
@@ -292,12 +289,9 @@ public class DelegatingQuery
 
     public void setReadOnly(boolean readOnly) {
         try {
-        	lock();
             _query.setReadOnly(readOnly);
         } catch (RuntimeException re) {
             throw translate(re);
-        } finally {
-        	unlock();
         }
     }
 

@@ -83,14 +83,13 @@ import org.apache.openjpa.util.UserException;
  * @author Abe White
  * @nojavadoc
  */
-@SuppressWarnings({ "serial", "deprecation" })
 public class JDBCStoreQuery 
     extends ExpressionStoreQuery {
 
     private static final Table INVALID = new Table();
 
     // add all standard filter and aggregate listeners to these maps
-    private static final Map<String,FilterListener> _listeners = new HashMap<String, FilterListener>();
+    private static final Map _listeners = new HashMap();
 
     static {
         // deprecated extensions
@@ -187,8 +186,8 @@ public class JDBCStoreQuery
         ExpContext ctx = new ExpContext(_store, params, fetch);
 
         // add selects with populate WHERE conditions to list
-        List<Select> sels = new ArrayList<Select>(mappings.length);
-        List<ClassMapping> selMappings = new ArrayList<ClassMapping>(mappings.length);
+        List sels = new ArrayList(mappings.length);
+        List selMappings = new ArrayList(mappings.length);
         BitSet subclassBits = new BitSet();
         BitSet nextBits = new BitSet();
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
@@ -336,8 +335,8 @@ public class JDBCStoreQuery
      * Generate the selects with WHERE conditions needed to execute the query
      * for the given mappings.
      */
-    private boolean createWhereSelects(List<Select> sels, ClassMapping[] mappings,
-        List<ClassMapping> selMappings, boolean subclasses, BitSet subclassBits,
+    private boolean createWhereSelects(List sels, ClassMapping[] mappings,
+        List selMappings, boolean subclasses, BitSet subclassBits,
         BitSet nextBits, ExpressionFactory[] facts, QueryExpressions[] exps,
         QueryExpressionsState[] states, ExpContext ctx, int subclassMode) {
         Number optHint = (Number) ctx.fetch.getHint
@@ -365,12 +364,12 @@ public class JDBCStoreQuery
             else if (this.ctx.isUnique())
                 sel.setExpectedResultCount(1, false);
             
-            List<ClassMapping> selectFrom = getJoinedTableMeta(sel);
+            List selectFrom = getJoinedTableMeta(sel);
             int size = 0;
             if (selectFrom != null) {
                 size = selectFrom.size();
                 for (int j = 0; j < size; j++) {
-                    ClassMapping vert = selectFrom.get(j); 
+                    ClassMapping vert = (ClassMapping)selectFrom.get(j); 
                     selMappings.add(vert);
                     if (j == size - 1) {
                         nextBits.set(sels.size());
@@ -389,7 +388,7 @@ public class JDBCStoreQuery
                         nextBits.set(sels.size());
                         sels.add(sel);
                     } else
-                        sels.add((Select)sel.fullClone(1));
+                        sels.add(sel.fullClone(1));
                 }
             }
             
@@ -401,17 +400,17 @@ public class JDBCStoreQuery
         return unionable;
     }
     
-    private List<ClassMapping> getJoinedTableMeta(Select sel) {
-        List<ClassMapping> selectFrom = sel.getJoinedTableClassMeta();
-        List<ClassMapping> exSelectFrom = sel.getExcludedJoinedTableClassMeta();
+    private List getJoinedTableMeta(Select sel) {
+        List selectFrom = sel.getJoinedTableClassMeta();
+        List exSelectFrom = sel.getExcludedJoinedTableClassMeta();
         if (exSelectFrom == null)
             return selectFrom;
         if (selectFrom == null)
             return null;
         int size = selectFrom.size();
-        List<ClassMapping> retList = new ArrayList<ClassMapping>(size);
+        List retList = new ArrayList(size);
         for (int i = 0; i < size; i++) {
-        	ClassMapping obj = selectFrom.get(i);
+            Object obj = selectFrom.get(i);
             if (!exSelectFrom.contains(obj))
                 retList.add(obj);
         }
@@ -431,15 +430,15 @@ public class JDBCStoreQuery
             || !hasVerticalSubclasses(mapping))
             return new ClassMapping[] { mapping };
 
-        List<ClassMapping> subs = new ArrayList<ClassMapping>(4);
+        List subs = new ArrayList(4);
         addSubclasses(mapping, subs);
-        return subs.toArray(new ClassMapping[subs.size()]);
+        return (ClassMapping[]) subs.toArray(new ClassMapping[subs.size()]);
     }
 
     /**
      * Recursive helper to add mappings for subclasses to the given list.
      */
-    private void addSubclasses(ClassMapping mapping, Collection<ClassMapping> subs) {
+    private void addSubclasses(ClassMapping mapping, Collection subs) {
         // possible future optimizations:
         // - if no fields in meta or its subclasses (and not in an
         //   already-selected table) are in the current fetch
@@ -700,8 +699,8 @@ public class JDBCStoreQuery
         ExpContext ctx = new ExpContext(_store, params, fetch);
 
         // add selects with populate WHERE conditions to list
-        List<Select> sels = new ArrayList<Select>(mappings.length);
-        List<ClassMapping> selMappings = new ArrayList<ClassMapping>(mappings.length);
+        List sels = new ArrayList(mappings.length);
+        List selMappings = new ArrayList(mappings.length);
         BitSet subclassBits = new BitSet();
         BitSet nextBits = new BitSet();
         boolean unionable = createWhereSelects(sels, mappings, selMappings,
@@ -798,11 +797,11 @@ public class JDBCStoreQuery
             (org.apache.openjpa.jdbc.kernel.exps.Math) value;
         Val value1 = mathVal.getVal1();
         Object val1 = getValue(value1, ob, params, sm);
-        Class<?> c1 = value1.getType();
+        Class c1 = value1.getType();
 
         Val value2 = mathVal.getVal2();
         Object val2 = getValue(value2, ob, params, sm);
-        Class<?> c2 = value2.getType();
+        Class c2 = value2.getType();
 
         String op = mathVal.getOperation();
         if (op.equals(org.apache.openjpa.jdbc.kernel.exps.Math.ADD)) 
@@ -943,7 +942,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.Abs absVal = 
             (org.apache.openjpa.jdbc.kernel.exps.Abs) value;
         Object val = getValue(absVal.getValue(), ob, params, sm);
-        Class<?> c = val.getClass();
+        Class c = val.getClass();
         if (c == Integer.class)
             return Integer.valueOf(java.lang.Math.abs(((Integer) val).intValue()));
         else if (c == Float.class)
@@ -960,7 +959,7 @@ public class JDBCStoreQuery
         org.apache.openjpa.jdbc.kernel.exps.Sqrt sqrtVal = 
             (org.apache.openjpa.jdbc.kernel.exps.Sqrt) value;
         Object val = getValue(sqrtVal.getValue(), ob, params, sm);
-        Class<?> c = val.getClass();
+        Class c = val.getClass();
         if (c == Integer.class)
             return Double.valueOf(java.lang.Math.sqrt(((Integer) val).doubleValue()));
         else if (c == Float.class)

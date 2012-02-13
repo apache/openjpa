@@ -105,14 +105,15 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class MappingRepository extends MetaDataRepository {
 
-    private static final Localizer _loc = Localizer.forPackage(MappingRepository.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (MappingRepository.class);
 
     private transient DBDictionary _dict = null;
     private transient MappingDefaults _defaults = null;
     
+    // object->queryresultmapping
     private Map<Object, QueryResultMapping> _results = new HashMap<Object, QueryResultMapping>(); 
     private SchemaGroup _schema = null;
     private StrategyInstaller _installer = null;
@@ -259,10 +260,12 @@ public class MappingRepository extends MetaDataRepository {
     public QueryResultMapping[] getQueryResultMappings() {
         if (_locking) {
             synchronized (this) {
-                return _results.values().toArray(new QueryResultMapping[_results.size()]);
+                Collection values = _results.values();
+                return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
             }
         } else {
-            return _results.values().toArray(new QueryResultMapping[_results.size()]);
+            Collection values = _results.values();
+            return (QueryResultMapping[]) values.toArray(new QueryResultMapping[values.size()]);
         }
     }
 
@@ -270,7 +273,7 @@ public class MappingRepository extends MetaDataRepository {
      * Return the cached query result mapping with the given name, or null if
      * none.
      */
-    public QueryResultMapping getCachedQueryResultMapping(Class<?> cls, String name) {
+    public QueryResultMapping getCachedQueryResultMapping(Class cls, String name) {
         if (_locking) {
             synchronized (this) {
                 return (QueryResultMapping) _results.get(getQueryResultKey(cls, name));
@@ -283,7 +286,7 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Add a query result mapping.
      */
-    public QueryResultMapping addQueryResultMapping(Class<?> cls, String name) {
+    public QueryResultMapping addQueryResultMapping(Class cls, String name) {
         if (_locking) {
             synchronized (this) {
                 return addQueryResultMappingInternal(cls, name);
@@ -293,7 +296,7 @@ public class MappingRepository extends MetaDataRepository {
         }
     }
 
-    private QueryResultMapping addQueryResultMappingInternal(Class<?> cls, String name) {
+    private QueryResultMapping addQueryResultMappingInternal(Class cls, String name) {
         QueryResultMapping res = new QueryResultMapping(name, this);
         res.setDefiningType(cls);
         _results.put(getQueryResultKey(res), res);
@@ -316,7 +319,7 @@ public class MappingRepository extends MetaDataRepository {
     /**
      * Remove a query result mapping.
      */
-    public boolean removeQueryResultMapping(Class<?> cls, String name) {
+    public boolean removeQueryResultMapping(Class cls, String name) {
         if (_locking) {
             synchronized (this) {
                 if (name == null)
@@ -1005,7 +1008,8 @@ public class MappingRepository extends MetaDataRepository {
     protected FieldStrategy handlerCollectionStrategy(FieldMapping field, 
         ValueHandler ehandler, boolean installHandlers) {
         // TODO: JPA 2.0 should ignore this flag and not to serialize
-        if (getConfiguration().getCompatibilityInstance().getStoreMapCollectionInEntityAsBlob())
+        if (getConfiguration().getCompatibilityInstance()
+            .getStoreMapCollectionInEntityAsBlob())
             return null;
         if (installHandlers)
             field.getElementMapping().setHandler(ehandler);
@@ -1020,7 +1024,8 @@ public class MappingRepository extends MetaDataRepository {
         ValueHandler khandler, ValueHandler vhandler, boolean krel, 
         boolean vrel,  boolean installHandlers) {
         // TODO: JPA 2.0 should ignore this flag and not to serialize
-        if (getConfiguration().getCompatibilityInstance().getStoreMapCollectionInEntityAsBlob())
+        if (getConfiguration().getCompatibilityInstance()
+            .getStoreMapCollectionInEntityAsBlob())
             return null;
         if (installHandlers) {
             field.getKeyMapping().setHandler(khandler);
@@ -1043,13 +1048,14 @@ public class MappingRepository extends MetaDataRepository {
         FieldMapping mapped = field.getMappedByMapping();
         if (mapped != null) {
             //bi-/M-1/JoinTable ==> join table strategy
-            if (isBidirectionalManyToOneJoinTable(field)) 
+            if (isBiMTo1JT(field)) 
                 return false;
             if (mapped.getTypeCode() == JavaTypes.PC || mapped.getTypeCode() == JavaTypes.PC_UNTYPED)
                 return true;
             if (mapped.getElement().getTypeCode() == JavaTypes.PC)
                 return false;
-            throw new MetaDataException(_loc.get("bad-mapped-by", field, mapped));
+            throw new MetaDataException(_loc.get("bad-mapped-by", field,
+                mapped));
         }
 
         // without a mapped-by, we have to look for clues as to the mapping.
@@ -1058,84 +1064,82 @@ public class MappingRepository extends MetaDataRepository {
         // an association table
         FieldMappingInfo info = field.getMappingInfo();
         ValueMapping elem = field.getElementMapping();
-        boolean useInverseKeyMapping = DBIdentifier.isNull(info.getTableIdentifier()) 
-                                    && info.getColumns().isEmpty()
-                                    && !elem.getValueInfo().getColumns().isEmpty();
+        boolean useInverseKeyMapping = DBIdentifier.isNull(info.getTableIdentifier()) && info.getColumns().isEmpty()
+            && !elem.getValueInfo().getColumns().isEmpty();
         
         // JPA 2.0: non-default mapping: uni-/1-M/JoinColumn ==> foreign key strategy
-        if (isUnidirectionalOneToManyForeignKey(field)) {
+        if (isUni1ToMFK(field)) {
             return true;
         }
         return useInverseKeyMapping;
     }
         
     public boolean isNonDefaultMappingAllowed() {
-        return getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(getConfiguration());
+        OpenJPAConfiguration conf = getConfiguration();
+        return getMetaDataFactory().getDefaults().isNonDefaultMappingAllowed(conf);
     }
     
-    public boolean isUnidirectionalManyToOneJoinTable(FieldMapping field) {
-        if (isNonDefaultMappingAllowed() 
-         && field.getAssociationType() == FieldMetaData.MANY_TO_ONE 
-         && hasJoinTable(field) 
-         && !isBidirectional(field))  {
+    public boolean isUniMTo1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.MANY_TO_ONE &&
+            hasJoinTable(field) && 
+            !isBidirectional(field))  {
             field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
             return true;
         }
         return false;
     }
 
-    public boolean isUnidirectionalOneToOneJoinTable(FieldMapping field) {
-        if (isNonDefaultMappingAllowed() 
-         && field.getAssociationType() == FieldMetaData.ONE_TO_ONE 
-         && hasJoinTable(field) 
-         && !isBidirectional(field)) {
+    public boolean isUni1To1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
+            hasJoinTable(field) && 
+            !isBidirectional(field)) {
             field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
             return true;
         }
         return false;
     }
 
-    public boolean isBidirectionalOneToOneJoinTable(FieldMapping field) {
-        if (isNonDefaultMappingAllowed() 
-         && field.getAssociationType() == FieldMetaData.ONE_TO_ONE 
-         && hasJoinTable(field) 
-         && isBidirectional(field)) {
+    public boolean isBi1To1JT(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
+            hasJoinTable(field) && 
+            isBidirectional(field)) {
             field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
             return true;
         }
         return false;
     }
     
-    public boolean isUnidirectionalOneToManyForeignKey(FieldMapping field) {
-        if (isNonDefaultMappingAllowed() 
-         && field.getAssociationType() == FieldMetaData.ONE_TO_MANY 
-         && hasJoinColumn(field) 
-         && !isBidirectional(field)) {
+    public boolean isUni1ToMFK(FieldMapping field) {
+        if (isNonDefaultMappingAllowed() && 
+            field.getAssociationType() == FieldMetaData.ONE_TO_MANY &&
+            hasJoinColumn(field) &&
+            !isBidirectional(field)) {
             field.getElementMapping().getValueInfo().setColumns(field.getValueInfo().getColumns());
             return true;
         }
         return false;
     }
     
-    public boolean isBidirectionalManyToOneJoinTable(FieldMapping field) {
+    public boolean isBiMTo1JT(FieldMapping field) {
         FieldMapping mapped = field.getMappedByMapping();
         if (isNonDefaultMappingAllowed()) {
             if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY ) {
                 if (mapped != null && hasJoinTable(mapped))
                     return true;
             } else if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
-                if (getBidirectionalOneToManyJoinTableField(field) != null)
+                if (getBi_1ToM_JoinTableField(field) != null)
                     return true;
             }
         }
         return false;
     }
 
-    /**
-     * Gets the inverse field of bidirectional many to one relation using join table strategy
-     * for the given field.
-     */
-    public FieldMapping getBidirectionalOneToManyJoinTableField(FieldMapping field) {
+    // return the inverse field of bidirectional many to one
+    // relation using join table strategy
+    public FieldMapping getBi_1ToM_JoinTableField(FieldMapping field) {
         if (isNonDefaultMappingAllowed()) {
             if (field.getAssociationType() == FieldMetaData.ONE_TO_MANY) {
                 FieldMapping mappedBy = field.getMappedByMapping();
@@ -1155,10 +1159,9 @@ public class MappingRepository extends MetaDataRepository {
         return null;
     }
 
-    /**
-     * Gets the owning field of bidirectional one to many relation using join table strategy of the given field.
-     */
-    public FieldMapping getBidirectionalManyToOneJoinTableField(FieldMapping field) {
+    // return the owning field of bidirectional one to many
+    // relation using join table strategy
+    public FieldMapping getBi_MTo1_JoinTableField(FieldMapping field) {
         if (isNonDefaultMappingAllowed()) {
             if (field.getAssociationType() == FieldMetaData.MANY_TO_ONE) {
                 if (!hasJoinTable(field))

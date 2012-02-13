@@ -106,7 +106,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // system sequence
     private SequenceMetaData _sysSeq = null;
-    // cache of parsed metadata, oid class to class, and interface class to metadatas
+    // cache of parsed metadata, oid class to class, and interface class
+    // to metadatas
     private Map<Class<?>, ClassMetaData> _metas = new HashMap<Class<?>, ClassMetaData>();
     private Map<String, ClassMetaData> _metaStringMap = new ConcurrentHashMap<String, ClassMetaData>();
     private Map<Class<?>, Class<?>> _oids = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
@@ -123,8 +124,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private Map<Class<?>, Class<?>> _metamodel = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
 
     // map of classes to lists of their subclasses
-    private Map<Class<?>, Collection<Class<?>>> _subs = 
-    	Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
+    private Map<Class<?>, List<Class<?>>> _subs = Collections.synchronizedMap(new HashMap<Class<?>, List<Class<?>>>());
 
     // xml mapping
     protected final XMLMetaData[] EMPTY_XMLMETAS;
@@ -283,7 +283,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     /**
-     * Affirms if this repository will load all known persistent classes at initialization.
+     * Sets whether this repository will load all known persistent classes at initialization.
      * Defaults to false.
      */
     public boolean getPreload() {
@@ -304,11 +304,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * MetaData for all persistent classes and will remove locking from this class. 
      */
     public synchronized void preload() {
-        if (!_preload) {
+        if (_preload == false) {
             return;
         }
         // If pooling EMFs, this method may be invoked more than once. Only perform this work once.
-        if (_preloadComplete) {
+        if (_preloadComplete == true) {
             return;
         }
 
@@ -316,7 +316,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         MultiClassLoader multi = AccessController.doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
         multi.addClassLoader(AccessController.doPrivileged(J2DoPrivHelper
-        		.getClassLoaderAction(MetaDataRepository.class)));
+            .getClassLoaderAction(MetaDataRepository.class)));
         // If a ClassLoader was passed into Persistence.createContainerEntityManagerFactory on the PersistenceUnitInfo
         // we need to add that loader to the chain of classloaders
         ClassResolver resolver = _conf.getClassResolverInstance();
@@ -359,7 +359,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             }
         }
         
-        // Hook in this class as a listener and process registered classes list to populate _aliases list.
+        // Hook in this class as a listener and process registered classes list to populate _aliases
+        // list.
         PCRegistry.addRegisterClassListener(this);
         processRegisteredClasses(multi);
         _locking = false;
@@ -855,8 +856,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
     
     private ClassMetaData[] getMetaDatasInternal() {
-            // prevent concurrent modification errors when resolving one metadata introduces others
-            ClassMetaData[] metas = _metas.values().toArray(new ClassMetaData[_metas.size()]);
+            // prevent concurrent mod errors when resolving one metadata
+            // introduces others
+            ClassMetaData[] metas = (ClassMetaData[]) _metas.values().toArray(new ClassMetaData[_metas.size()]);
             for (int i = 0; i < metas.length; i++)
                 if (metas[i] != null)
                     getMetaData(metas[i].getDescribedType(), metas[i].getEnvClassLoader(), true);
@@ -1798,8 +1800,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Add the given value to the collection cached in the given map under the given key.
      */
-    private void addToCollection(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, Class<?> value, 
-    		boolean inheritance) {
+    private void addToCollection(Map map, Class<?> key, Class<?> value, boolean inheritance) {
         if (_locking) {
             synchronized (map) {
                 addToCollectionInternal(map, key, value, inheritance);
@@ -1809,17 +1810,15 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private void addToCollectionInternal(Map<Class<?>, Collection<Class<?>>> map, Class<?> key, 
-    		Class<?> value, boolean inheritance) {
-        Collection<Class<?>> coll = map.get(key);
+    private void addToCollectionInternal(Map map, Class<?> key, Class<?> value, boolean inheritance) {
+        Collection coll = (Collection) map.get(key);
         if (coll == null) {
             if (inheritance) {
                 InheritanceComparator comp = new InheritanceComparator();
                 comp.setBase(key);
                 coll = new TreeSet<Class<?>>(comp);
-            } else {
+            } else
                 coll = new LinkedList<Class<?>>();
-            }
             map.put(key, coll);
         }
         coll.add(value);
@@ -1893,7 +1892,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _aliases = new HashMap<String, List<Class<?>>>();
             _pawares = new HashMap<Class<?>, NonPersistentMetaData>();
             _nonMapped = new HashMap<Class<?>, NonPersistentMetaData>();
-            _subs = new HashMap<Class<?>, Collection<Class<?>>>();
+            _subs = new HashMap<Class<?>, List<Class<?>>>();
             // Wait till we're done loading MetaData to flip _lock boolean.
         }            
     }

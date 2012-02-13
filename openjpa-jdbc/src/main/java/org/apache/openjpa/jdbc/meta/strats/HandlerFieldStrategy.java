@@ -37,10 +37,8 @@ import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
-import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ThreadGate;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.InternalException;
@@ -51,26 +49,23 @@ import org.apache.openjpa.util.UserException;
  * Mapping for a single-valued field that delegates to a {@link ValueHandler}.
  *
  * @author Abe White
- * @author Pinaki Poddar (select cache)
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
 public class HandlerFieldStrategy
     extends AbstractFieldStrategy
     implements Joinable, Embeddable {
 
     private static final Object NULL = new Object();
 
-    private static final Localizer _loc = Localizer.forPackage(HandlerFieldStrategy.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (HandlerFieldStrategy.class);
 
     protected Column[] _cols = null;
     protected ColumnIO _io = null;
     protected Object[] _args = null;
     protected boolean _load = false;
     protected boolean _lob = false;
-    private Select    _executor;
-    private ThreadGate _lock = new ThreadGate();
-    
+
     public void map(boolean adapt) {
         if (field.getHandler() == null)
             throw new MetaDataException(_loc.get("no-handler", field));
@@ -225,34 +220,21 @@ public class HandlerFieldStrategy
                 return;
             }
         }
-        Select sel;
+
+        Select sel = store.getSQLFactory().newSelect();
+        sel.select(_cols);
+        field.wherePrimaryKey(sel, sm, store);
+
+        Result res = sel.execute(store, fetch);
+        Object val = null;
         try {
-        	_lock.lock();
-	        if (_executor == null) {
-	        	sel = store.getSQLFactory().newSelect();
-	        	if (store.getConfiguration().getSelectCacheEnabled()) {
-	        		_executor = sel;
-	        	}
-	            sel.select(_cols);
-	        } else {
-	        	sel = _executor;
-	        }
-	        
-	        field.wherePrimaryKey(sel, sm, store);
-	
-	        Result res = sel.execute(store, fetch);
-	        Object val = null;
-	        try {
-	            if (res.next())
-	                val = HandlerStrategies.loadDataStore(field, res, null, _cols);
-	        } finally {
-	            res.close();
-	        }
-	
-	        loadEmbedded(sm, store, fetch, val);
+            if (res.next())
+                val = HandlerStrategies.loadDataStore(field, res, null, _cols);
         } finally {
-        	_lock.unlock();
+            res.close();
         }
+
+        loadEmbedded(sm, store, fetch, val);
     }
 
     public Object toDataStoreValue(Object val, JDBCStore store) {

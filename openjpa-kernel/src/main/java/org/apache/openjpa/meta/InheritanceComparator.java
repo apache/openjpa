@@ -27,20 +27,19 @@ import java.util.Comparator;
  * @author Abe White
  * @nojavadoc
  */
-@SuppressWarnings("serial")
 public class InheritanceComparator
     implements Comparator, Serializable {
 
-    private Class<?> _base = Object.class;
+    private Class _base = Object.class;
 
     /**
      * Set the least-derived type possible; defaults to <code>null</code>.
      */
-    public void setBase(Class<?> base) {
+    public void setBase(Class base) {
         _base = base;
     }
 
-    public Class<?> getBase() {
+    public Class getBase() {
         return _base;
     }
 
@@ -48,8 +47,8 @@ public class InheritanceComparator
      * Subclasses can override this method to extract the class to compare
      * on from the elements of the collection.
      */
-    protected Class<?> toClass(Object elem) {
-        return (Class<?>) elem;
+    protected Class toClass(Object elem) {
+        return (Class) elem;
     }
 
     public int compare(Object o1, Object o2) {
@@ -60,8 +59,8 @@ public class InheritanceComparator
         if (o2 == null)
             return 1;
 
-        Class<?> c1 = toClass(o1);
-        Class<?> c2 = toClass(o2);
+        Class c1 = toClass(o1);
+        Class c2 = toClass(o2);
         if (c1 == c2)
             return 0;
         if (c1 == null)
@@ -90,7 +89,7 @@ public class InheritanceComparator
     /**
      * Count the levels of inheritance between this class and our base class.
      */
-    private int levels(Class<?> to) {
+    private int levels(Class to) {
         if (to.isInterface())
             return to.getInterfaces().length;
         for (int i = 0; to != null; i++, to = to.getSuperclass())

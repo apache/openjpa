@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.ReflectingPersistenceCapable;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -38,6 +37,7 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.FieldStrategy;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.MappingInfo;
+import org.apache.openjpa.jdbc.meta.ValueHandler;
 import org.apache.openjpa.jdbc.meta.ValueMapping;
 import org.apache.openjpa.jdbc.meta.ValueMappingImpl;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
@@ -55,14 +55,13 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
+import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.ThreadGate;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InternalException;
@@ -75,34 +74,27 @@ import org.apache.openjpa.util.UnsupportedException;
 /**
  * Mapping for a single-valued relation to another entity.
  *
- * <br>
- * The strategy may reuse the same {@link SelectExecutor select} if the 
- * {@link JDBCConfiguration#getSelectCacheEnabled() configuration option}
- * instructs to do so. 
-
  * @author Abe White
- * @author Pinaki Poddar (select caching)
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
 public class RelationFieldStrategy
     extends AbstractFieldStrategy
     implements Joinable, Embeddable {
 
-    private static final Localizer _loc = Localizer.forPackage(RelationFieldStrategy.class);
+    private static final Localizer _loc = Localizer.forPackage
+        (RelationFieldStrategy.class);
 
     private Boolean _fkOid = null;
-    
-    private SelectExecutor _executor;
-    private ThreadGate _lock = new ThreadGate();
     
     public void map(boolean adapt) {
         if (field.getTypeCode() != JavaTypes.PC || field.isEmbeddedPC())
             throw new MetaDataException(_loc.get("not-relation", field));
 
-        field.getKeyMapping().getValueInfo().assertNoSchemaComponents(field.getKey(), !adapt);
+        field.getKeyMapping().getValueInfo().assertNoSchemaComponents
+            (field.getKey(), !adapt);
         if (!field.isNonDefaultMappingUsingJoinTableStrategy())
-            field.getElementMapping().getValueInfo().assertNoSchemaComponents(field.getElement(), !adapt);
+            field.getElementMapping().getValueInfo().assertNoSchemaComponents
+                (field.getElement(), !adapt);
         boolean criteria = field.getValueInfo().getUseClassCriteria();
 
         // check for named inverse
@@ -110,33 +102,40 @@ public class RelationFieldStrategy
         if (mapped != null) {
             field.getMappingInfo().assertNoSchemaComponents(field, !adapt);
             field.getValueInfo().assertNoSchemaComponents(field, !adapt);
-            mapped.resolve(MetaDataModes.MODE_META | MetaDataModes.MODE_MAPPING);
+            mapped.resolve(mapped.MODE_META | mapped.MODE_MAPPING);
 
             if (!mapped.isMapped() || mapped.isSerialized())
-                throw new MetaDataException(_loc.get("mapped-by-unmapped", field, mapped));
+                throw new MetaDataException(_loc.get("mapped-by-unmapped",
+                    field, mapped));
 
             if (mapped.getTypeCode() == JavaTypes.PC) {
-                if (mapped.getJoinDirection() == FieldMapping.JOIN_FORWARD) {
-                    field.setJoinDirection(FieldMapping.JOIN_INVERSE);
-                    field.setColumns(mapped.getDefiningMapping().getPrimaryKeyColumns());
+                if (mapped.getJoinDirection() == mapped.JOIN_FORWARD) {
+                    field.setJoinDirection(field.JOIN_INVERSE);
+                    field.setColumns(mapped.getDefiningMapping().
+                        getPrimaryKeyColumns());
                 } else if (isTypeUnjoinedSubclass(mapped))
                     throw new MetaDataException(_loc.get
-                        ("mapped-inverse-unjoined", field.getName(), field.getDefiningMapping(), mapped));
+                        ("mapped-inverse-unjoined", field.getName(),
+                            field.getDefiningMapping(), mapped));
 
-                field.setForeignKey(mapped.getForeignKey(field.getDefiningMapping()));
+                field.setForeignKey(mapped.getForeignKey
+                    (field.getDefiningMapping()));
             } else if (mapped.getElement().getTypeCode() == JavaTypes.PC) {
                 if (isTypeUnjoinedSubclass(mapped.getElementMapping()))
                     throw new MetaDataException(_loc.get
-                        ("mapped-inverse-unjoined", field.getName(), field.getDefiningMapping(), mapped));
+                        ("mapped-inverse-unjoined", field.getName(),
+                            field.getDefiningMapping(), mapped));
 
                 // warn the user about making the collection side the owner
                 Log log = field.getRepository().getLog();
                 if (log.isInfoEnabled())
                     log.info(_loc.get("coll-owner", field, mapped));
-                field.setForeignKey(mapped.getElementMapping().getForeignKey());
-            } else {
-                throw new MetaDataException(_loc.get("not-inv-relation", field, mapped));
-            }
+                field.setForeignKey(mapped.getElementMapping().
+                    getForeignKey());
+            } else
+                throw new MetaDataException(_loc.get("not-inv-relation",
+                    field, mapped));
+
             field.setUseClassCriteria(criteria);
             return;
         } 
@@ -158,22 +157,24 @@ public class RelationFieldStrategy
             field.getMappingInfo().setColumns(null);
         }
         
-        if (!field.isBidirectionalManyToOneJoinTable())
+        if (!field.isBiMTo1JT())
             field.mapJoin(adapt, false);
         if (field.getTypeMapping().isMapped()) {
             if (field.getMappedByIdValue() != null) 
                 setMappedByIdColumns();            
              
-            if (!field.isBidirectionalManyToOneJoinTable()) {
-                ForeignKey fk = vinfo.getTypeJoin(field, field.getName(), true, adapt);
+            if (!field.isBiMTo1JT()) {
+                ForeignKey fk = vinfo.getTypeJoin(field, field.getName(), true,
+                    adapt);
                 field.setForeignKey(fk);
             }
             field.setColumnIO(vinfo.getColumnIO());
-            if (vinfo.getJoinDirection() == MappingInfo.JOIN_INVERSE)
-                field.setJoinDirection(FieldMapping.JOIN_INVERSE);
-        } else {
-            RelationStrategies.mapRelationToUnmappedPC(field, field.getName(), adapt);
-        }
+            if (vinfo.getJoinDirection() == vinfo.JOIN_INVERSE)
+                field.setJoinDirection(field.JOIN_INVERSE);
+        } else
+            RelationStrategies.mapRelationToUnmappedPC(field, field.getName(),
+                adapt);
+
         field.setUseClassCriteria(criteria);
         field.mapPrimaryKey(adapt);
         PrimaryKey pk = field.getTable().getPrimaryKey();
@@ -208,10 +209,11 @@ public class RelationFieldStrategy
         }
     }
 
-    private List<Column> getMappedByIdColumns(FieldMapping pk) {
-        ClassMetaData embeddedId = ((ValueMappingImpl)pk.getValue()).getEmbeddedMetaData();
+    private List getMappedByIdColumns(FieldMapping pk) {
+        ClassMetaData embeddedId = ((ValueMappingImpl)pk.getValue()).
+            getEmbeddedMetaData();
         Column[] pkCols = null;
-        List<Column> cols = new ArrayList<Column>();
+        List cols = new ArrayList();
         String mappedByIdValue = field.getMappedByIdValue();
         if (embeddedId != null) {
             FieldMetaData[] fmds = embeddedId.getFields();
@@ -219,19 +221,20 @@ public class RelationFieldStrategy
                 if ((fmds[i].getName().equals(mappedByIdValue)) ||
                     mappedByIdValue.length() == 0) {
                     if (fmds[i].getValue().getEmbeddedMetaData() != null) {
-                        EmbedValueHandler.getEmbeddedIdCols((FieldMapping)fmds[i], cols);
-                    } else {
-                        EmbedValueHandler.getIdColumns((FieldMapping)fmds[i], cols);
-                    }
+                        EmbedValueHandler.getEmbeddedIdCols(
+                                (FieldMapping)fmds[i], cols);
+                    } else 
+                        EmbedValueHandler.getIdColumns(
+                                (FieldMapping)fmds[i], cols);
                 }
             }
             return cols;
         } else { // primary key is single-value
-            Class<?> pkType = pk.getDeclaredType();
+            Class pkType = pk.getDeclaredType();
             FieldMetaData[] pks = field.getValue().getDeclaredTypeMetaData().
                     getPrimaryKeyFields();
             if (pks.length != 1 || pks[0].getDeclaredType() != pkType)
-                return Collections.emptyList();
+                return Collections.EMPTY_LIST;
             pkCols = pk.getColumns();
             for (int i = 0; i < pkCols.length; i++)
                 cols.add(pkCols[i]);
@@ -268,11 +271,11 @@ public class RelationFieldStrategy
 
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE)
+        if (field.getJoinDirection() == field.JOIN_INVERSE)
             updateInverse(sm, rel, store, rm);
         else {
             Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
-            if (row != null && !field.isBidirectionalManyToOneJoinTable()) {
+            if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
@@ -292,7 +295,7 @@ public class RelationFieldStrategy
         if (mapField == null)
             return;
         
-        Map<Object,Object> mapObj = (Map<Object,Object>)rel.fetchObjectField(mapField.getIndex());
+        Map mapObj = (Map)rel.fetchObjectField(mapField.getIndex());
         Object keyObj = getMapKeyObj(mapObj, sm.getPersistenceCapable());
         ValueMapping key = mapField.getKeyMapping();
         if (!key.isEmbedded()) {
@@ -308,11 +311,14 @@ public class RelationFieldStrategy
         } else {
             // key is an embeddable or basic type
             FieldStrategy strategy = mapField.getStrategy(); 
-            if (strategy instanceof HandlerRelationMapTableFieldStrategy) {
-                HandlerRelationMapTableFieldStrategy strat = (HandlerRelationMapTableFieldStrategy) strategy;
+            if (strategy instanceof  
+                    HandlerRelationMapTableFieldStrategy) {
+                HandlerRelationMapTableFieldStrategy strat = 
+                    (HandlerRelationMapTableFieldStrategy) strategy;
                 Column[] kcols = strat.getKeyColumns((ClassMapping)meta);
                 ColumnIO kio = strat.getKeyColumnIO();
-                HandlerStrategies.set(key, keyObj, store, row, kcols, kio, true);
+                HandlerStrategies.set(key, keyObj, store, row, kcols,
+                        kio, true);
             }
         } 
     }
@@ -321,18 +327,19 @@ public class RelationFieldStrategy
         FieldMapping[] fields = ((ClassMapping)meta).getFieldMappings();
         for (int i = 0; i < fields.length; i++) {
             FieldMetaData mappedBy = fields[i].getMappedByMetaData();
-            if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP && mappedBy == field)  
+            if (fields[i].getDeclaredTypeCode() == JavaTypes.MAP &&
+                mappedBy == field)  
                 return fields[i];
         } 
         return null;    
     }
     
-    private Object getMapKeyObj(Map<Object,Object> mapObj, Object value) {
+    private Object getMapKeyObj(Map mapObj, Object value) {
         if (value instanceof ReflectingPersistenceCapable)
             value = ((ReflectingPersistenceCapable)value).getManagedInstance(); 
 
-        Set<Map.Entry<Object,Object>> entries = mapObj.entrySet();
-        for (Map.Entry<Object,Object> entry : entries) {
+        Set<Map.Entry> entries = mapObj.entrySet();
+        for (Map.Entry entry : entries) {
             if (entry.getValue() == value)
                 return entry.getKey();
         }
@@ -348,7 +355,7 @@ public class RelationFieldStrategy
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
 
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE) {
+        if (field.getJoinDirection() == field.JOIN_INVERSE) {
             nullInverse(sm, rm);
             updateInverse(sm, rel, store, rm);
         } else {
@@ -356,22 +363,22 @@ public class RelationFieldStrategy
                     field.isBidirectionalJoinTableMappingNonOwner()) ?
                     Row.ACTION_DELETE : Row.ACTION_UPDATE;
             Row row = field.getRow(sm, store, rm, action);
-            if (row != null && !field.isBidirectionalManyToOneJoinTable()) {
+            if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
                 // map are stored in the table of the mapped-by entity  
                 setMapKey(sm, rel, store, row);
             }
             
-            if (field.isBidirectionalManyToOneJoinTable()) { // also need to update the join table
+            if (field.isBiMTo1JT()) { // also need to update the join table
                 PersistenceCapable invPC = (PersistenceCapable)sm.fetchObject(
-                    field.getBidirectionalOneToManyJoinTableField().getIndex());
+                    field.getBi_1ToM_JTField().getIndex());
                 Row secondaryRow = null;
                 if (invPC != null) {
-                    secondaryRow = rm.getSecondaryRow(field.getBidirectionalOneToManyJoinForeignKey().getTable(),
+                    secondaryRow = rm.getSecondaryRow(field.getBi1ToMJoinFK().getTable(),
                         Row.ACTION_INSERT);
-                    secondaryRow.setForeignKey(field.getBidirectionalOneToManyElementForeignKey(), null, sm);
-                    secondaryRow.setForeignKey(field.getBidirectionalOneToManyJoinForeignKey(), null, 
+                    secondaryRow.setForeignKey(field.getBi1ToMElemFK(), null, sm);
+                    secondaryRow.setForeignKey(field.getBi1ToMJoinFK(), null, 
                         RelationStrategies.getStateManager(invPC,
                         store.getContext()));
                     rm.flushSecondaryRow(secondaryRow);
@@ -385,7 +392,7 @@ public class RelationFieldStrategy
         if (field.getMappedBy() != null)
             return;
 
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE) {
+        if (field.getJoinDirection() == field.JOIN_INVERSE) {
             if (sm.getLoaded().get(field.getIndex())) {
                 OpenJPAStateManager rel = RelationStrategies.getStateManager(sm.
                     fetchObjectField(field.getIndex()), store.getContext());
@@ -497,7 +504,7 @@ public class RelationFieldStrategy
     public int supportsSelect(Select sel, int type, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch) {
         if (type == Select.TYPE_JOINLESS)
-            return (field.getJoinDirection() != FieldMapping.JOIN_INVERSE
+            return (field.getJoinDirection() != field.JOIN_INVERSE
                 && sel.isSelected(field.getTable())) ? 1 : 0;
         if (type == Select.TYPE_TWO_PART)
             return 1;
@@ -528,15 +535,17 @@ public class RelationFieldStrategy
         final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch, final int eagerMode) {
         final ClassMapping[] clss = field.getIndependentTypeMappings();
-        if (!(sel instanceof Union)) {
+        if (!(sel instanceof Union))
             selectEagerParallel((Select) sel, clss[0], store, fetch, eagerMode);
-        } else {
+        else {
             Union union = (Union) sel;
-            if (fetch.getSubclassFetchMode (field.getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
+            if (fetch.getSubclassFetchMode (field.getTypeMapping()) 
+                != JDBCFetchConfiguration.EAGER_JOIN)
                 union.abortUnion();
             union.select(new Union.Selector() {
                 public void select(Select sel, int idx) {
-                    selectEagerParallel(sel, clss[idx], store, fetch, eagerMode);
+                    selectEagerParallel(sel, clss[idx], store, fetch,
+                        eagerMode);
                 }
             });
         }
@@ -547,7 +556,7 @@ public class RelationFieldStrategy
      */
     private void selectEagerParallel(Select sel, ClassMapping cls,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
-        if (field.isBidirectionalManyToOneJoinTable())
+        if (field.isBiMTo1JT())
             return;
         sel.selectPrimaryKey(field.getDefiningMapping());
         // set a variable name that does not conflict with any in the query;
@@ -562,7 +571,7 @@ public class RelationFieldStrategy
 
     public void selectEagerJoin(Select sel, OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, int eagerMode) {
-        if (field.isBidirectionalManyToOneJoinTable()) 
+        if (field.isBiMTo1JT()) 
             return;
 
         // limit the eager mode to single on recursive eager fetching b/c
@@ -581,7 +590,7 @@ public class RelationFieldStrategy
      * Add the joins needed to select/load eager data.
      */
     private Joins eagerJoin(Joins joins, ClassMapping cls, boolean forceInner) {
-        boolean inverse = field.getJoinDirection() == FieldMapping.JOIN_INVERSE;
+        boolean inverse = field.getJoinDirection() == field.JOIN_INVERSE;
         if (!inverse) {
             joins = join(joins, false);
             joins = setEmbeddedVariable(joins);
@@ -609,7 +618,7 @@ public class RelationFieldStrategy
 
     public int select(Select sel, OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, int eagerMode) {
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE)
+        if (field.getJoinDirection() == field.JOIN_INVERSE)
             return -1;
         // already cached oid?
         if (sm != null && sm.getIntermediate(field.getIndex()) != null)
@@ -624,11 +633,11 @@ public class RelationFieldStrategy
         JDBCFetchConfiguration fetch, Object res)
         throws SQLException {
         // process batched results if we haven't already
-        Map<Object,Object> rels;
+        Map rels;
         if (res instanceof Result)
             rels = processEagerParallelResult(sm, store, fetch, (Result) res);
         else
-            rels = (Map<Object,Object>) res;
+            rels = (Map) res;
 
         // store object for this oid in instance
         sm.storeObject(field.getIndex(), rels.remove(sm.getObjectId()));
@@ -638,7 +647,7 @@ public class RelationFieldStrategy
     /**
      * Process the given batched result.
      */
-    private Map<Object,Object> processEagerParallelResult(OpenJPAStateManager sm,
+    private Map processEagerParallelResult(OpenJPAStateManager sm,
         JDBCStore store, JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
         // do same joins as for load
@@ -648,7 +657,7 @@ public class RelationFieldStrategy
         Joins joins = res.newJoins().setVariable("*");
         eagerJoin(joins, clss[0], true);
 
-        Map<Object,Object> rels = new HashMap<Object,Object>();
+        Map rels = new HashMap();
         ClassMapping owner = field.getDefiningMapping();
         ClassMapping cls;
         Object oid;
@@ -667,7 +676,7 @@ public class RelationFieldStrategy
     public void loadEagerJoin(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
-        if (field.isBidirectionalManyToOneJoinTable())
+        if (field.isBiMTo1JT())
             return;
         ClassMapping cls = field.getIndependentTypeMappings()[0];
 
@@ -710,7 +719,7 @@ public class RelationFieldStrategy
     public void load(OpenJPAStateManager sm, JDBCStore store,
         JDBCFetchConfiguration fetch, Result res)
         throws SQLException {
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE)
+        if (field.getJoinDirection() == field.JOIN_INVERSE)
             return;
         // cached oid?
         if (sm != null && sm.getIntermediate(field.getIndex()) != null)
@@ -723,7 +732,7 @@ public class RelationFieldStrategy
         // get the related object's oid
         ClassMapping relMapping = field.getTypeMapping();
         Object oid = null;
-        if (relMapping.isMapped() && !field.isBidirectionalManyToOneJoinTable()) { 
+        if (relMapping.isMapped() && !field.isBiMTo1JT()) { 
             oid = relMapping.getObjectId(store, res, field.getForeignKey(),
                     field.getPolymorphic() != ValueMapping.POLY_FALSE, null);
         } else {
@@ -737,7 +746,8 @@ public class RelationFieldStrategy
                 if (cols.length == 1) {
                     Object val = res.getObject(cols[0], null, null);
                     if (val != null)
-                        oid = ApplicationIds.fromPKValues(new Object[]{ val }, relMapping);
+                        oid = ApplicationIds.fromPKValues(new Object[]{ val },
+                            relMapping);
                 } else {
                     Object[] vals = new Object[cols.length];
                     for (int i = 0; i < cols.length; i++) {
@@ -757,7 +767,8 @@ public class RelationFieldStrategy
             sm.setIntermediate(field.getIndex(), oid);
     }
 
-    public void load(final OpenJPAStateManager sm, final JDBCStore store, final JDBCFetchConfiguration fetch)
+    public void load(final OpenJPAStateManager sm, final JDBCStore store,
+        final JDBCFetchConfiguration fetch)
         throws SQLException {
         // check for cached oid value, or load oid if no way to join
         if (Boolean.TRUE.equals(_fkOid)) {
@@ -776,64 +787,44 @@ public class RelationFieldStrategy
         // select related mapping columns; joining from the related type
         // back to our fk table if not an inverse mapping (in which case we
         // can just make sure the inverse cols == our pk values)
-        Union union;
+        Union union = store.getSQLFactory().newUnion(rels.length);
+        union.setExpectedResultCount(1, false);
+        if (fetch.getSubclassFetchMode(field.getTypeMapping())
+            != JDBCFetchConfiguration.EAGER_JOIN)
+            union.abortUnion();
+        union.select(new Union.Selector() {
+            public void select(Select sel, int idx) {
+                if (field.getJoinDirection() == field.JOIN_INVERSE)
+                    sel.whereForeignKey(field.getForeignKey(rels[idx]),
+                        sm.getObjectId(), field.getDefiningMapping(), store);
+                else {
+                    if (!field.isBiMTo1JT()) {
+                        resJoins[idx] = sel.newJoins().joinRelation(field.getName(),
+                            field.getForeignKey(rels[idx]), rels[idx],
+                            field.getSelectSubclasses(), false, false);
+                        field.wherePrimaryKey(sel, sm, store);
+                    } else {
+                        resJoins[idx] = sel.newJoins().joinRelation(null,
+                            field.getBi1ToMJoinFK(), rels[idx],
+                            field.getSelectSubclasses(), false, false);
+                        sel.whereForeignKey(field.getBi1ToMElemFK(), sm.getObjectId(), 
+                            field.getDefiningMapping(), store);
+                    }
+                }
+                sel.select(rels[idx], subs, store, fetch, fetch.EAGER_JOIN, 
+                    resJoins[idx]);
+            }
+        });
+
+        Result res = union.execute(store, fetch);
         try {
-        	_lock.lock();
-	        if (_executor == null) {
-	        	union = store.getSQLFactory().newUnion(rels.length);
-	            union.setExpectedResultCount(1, false);
-	            if (fetch.getSubclassFetchMode(field.getTypeMapping()) != JDBCFetchConfiguration.EAGER_JOIN)
-	                    union.abortUnion();
-	            if (((JDBCConfiguration)field.getMappingRepository().getConfiguration()).getSelectCacheEnabled()) {
-	            	_executor = union;
-	            }
-	        } else {
-	        	union = (Union)_executor;
-	        }
-	        union.select(new Union.Selector() {
-	            public void select(Select sel, int idx) {
-	            	ForeignKey fk = field.getForeignKey(rels[idx]);
-	            	ClassMapping mapping = field.getDefiningMapping();
-	            	Object oid = sm.getObjectId();
-	                if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE) {
-	                    sel.whereForeignKey(fk, oid, mapping, store);
-	                } else {
-	                    if (!field.isBidirectionalManyToOneJoinTable()) {
-	                    	if (sel.isReadOnly()) {
-	                    		resJoins[idx] = sel.getJoins();
-	                    	} else {
-	                    		resJoins[idx] = sel.newJoins().joinRelation(field.getName(), fk, rels[idx],
-	                                subs, false, false);
-	                    	}
-	                        field.wherePrimaryKey(sel, sm, store);
-	                    } else {
-	                    	if (sel.isReadOnly()) {
-	                    		resJoins[idx] = sel.getJoins();
-	                    	} else { 
-	                    		resJoins[idx] = sel.newJoins().joinRelation(null, 
-	                    				field.getBidirectionalOneToManyJoinForeignKey(), rels[idx],
-	                                    subs, false, false);
-	                    	}
-	                        sel.whereForeignKey(field.getBidirectionalOneToManyElementForeignKey(), 
-	                        		oid, mapping, store);
-	                    }
-	                }
-	                if (!sel.isReadOnly()) {
-	                	sel.select(rels[idx], subs, store, fetch, 
-	                			JDBCFetchConfiguration.EAGER_JOIN, resJoins[idx]);
-	                }
-	            }
-	        });
-	
-	        Result res = union.execute(store, fetch);
-	        try {
-	        	sm.storeObject(field.getIndex(), res.next()
-	            	? res.load(rels[res.indexOf()], store, fetch, resJoins[res.indexOf()]) : null);
-	        } finally {
-	            res.close();
-	        }
+            Object val = null;
+            if (res.next())
+                val = res.load(rels[res.indexOf()], store, fetch,
+                    resJoins[res.indexOf()]);
+            sm.storeObject(field.getIndex(), val);
         } finally {
-        	_lock.unlock();
+            res.close();
         }
     }
 
@@ -846,7 +837,7 @@ public class RelationFieldStrategy
         // because it'll be in the primary table) and see if fk cols are null;
         // if inverse, then we have to do a sub-select to see if any inverse
         // objects point back to this field's owner
-        if (field.getJoinDirection() != FieldMapping.JOIN_INVERSE) {
+        if (field.getJoinDirection() != field.JOIN_INVERSE) {
             //### probably need some sort of subselect here on fk constants
             joins = join(joins, false);
             Column[] cols = field.getColumns();
@@ -855,9 +846,8 @@ public class RelationFieldStrategy
             else
                 sql.append(sel.getColumnAlias(cols[0], joins)).
                     append(" IS ").appendValue(null, cols[0]);
-        } else {
+        } else
             testInverseNull(sql, sel, joins, true);
-        }
     }
 
     public void appendIsNotNull(SQLBuffer sql, Select sel, Joins joins) {
@@ -865,7 +855,7 @@ public class RelationFieldStrategy
         // because it'll be in the primary table) and see if fk cols aren't
         // null; if inverse, then we have to do a sub-select to see if any
         // inverse objects point back to this field's owner
-        if (field.getJoinDirection() != FieldMapping.JOIN_INVERSE) {
+        if (field.getJoinDirection() != field.JOIN_INVERSE) {
             //### probably need some sort of subselect here on fk constants
             joins = join(joins, false);
             Column[] cols = field.getColumns();
@@ -896,27 +886,30 @@ public class RelationFieldStrategy
             sql.append("0 < ");
 
         ForeignKey fk = field.getForeignKey();
-        ContainerFieldStrategy.appendJoinCount(sql, sel, joins, dict, field, fk);
+        ContainerFieldStrategy.appendJoinCount(sql, sel, joins, dict, field,
+            fk);
     }
 
     public Joins join(Joins joins, boolean forceOuter) {
         // if we're not in an inverse object table join normally, otherwise
         // already traversed the relation; just join back to owner table
-        if (field.getJoinDirection() != FieldMapping.JOIN_INVERSE)
+        if (field.getJoinDirection() != field.JOIN_INVERSE)
             return field.join(joins, forceOuter, false);
         ClassMapping[] clss = field.getIndependentTypeMappings();
         if (clss.length != 1)
             throw RelationStrategies.uninversable(field);
         if (forceOuter)
             return joins.outerJoinRelation(field.getName(),
-                field.getForeignKey(), clss[0], field.getSelectSubclasses(), true, false);
+                field.getForeignKey(), clss[0], field.getSelectSubclasses(), 
+                true, false);
         return joins.joinRelation(field.getName(), field.getForeignKey(),
             clss[0], field.getSelectSubclasses(), true, false);
     }
 
-    public Joins joinRelation(Joins joins, boolean forceOuter, boolean traverse) {
+    public Joins joinRelation(Joins joins, boolean forceOuter,
+        boolean traverse) {
         // if this is an inverse mapping it's already joined to the relation
-        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE)
+        if (field.getJoinDirection() == field.JOIN_INVERSE)
             return joins;
         ClassMapping[] clss = field.getIndependentTypeMappings();
         if (clss.length != 1) {
@@ -953,7 +946,8 @@ public class RelationFieldStrategy
             long id = res.getLong(col, joins);
             if (field.getObjectIdFieldTypeCode() == JavaTypes.LONG)
                 return id;
-            return store.newDataStoreId(id, relmapping, field.getPolymorphic() != ValueMapping.POLY_FALSE);
+            return store.newDataStoreId(id, relmapping, field.getPolymorphic() 
+                != ValueMapping.POLY_FALSE);
         }
 
         if (relmapping.isOpenJPAIdentity())
@@ -1006,21 +1000,27 @@ public class RelationFieldStrategy
             fieldVal = store.getContext().getObjectId(fieldVal);
         if (fieldVal instanceof OpenJPAId)
             fieldVal = ((OpenJPAId) fieldVal).getIdObject();
-        if (relmapping.getObjectIdType() != null && relmapping.getObjectIdType().isInstance(fieldVal)) {
+        if (relmapping.getObjectIdType() != null
+            && relmapping.getObjectIdType().isInstance(fieldVal)) {
             Object[] pks = ApplicationIds.toPKValues(fieldVal, relmapping);
-            fieldVal = pks[relmapping.getField(j.getFieldIndex()).getPrimaryKeyIndex()];
+            fieldVal = pks[relmapping.getField(j.getFieldIndex()).
+                getPrimaryKeyIndex()];
         } else if (relmapping.getObjectIdType() == ObjectId.class && 
             relmapping.getPrimaryKeyFieldMappings()[0].getValueMapping().isEmbedded()) {
-            return j.getJoinValue((fieldVal == null) ? savedFieldVal : fieldVal, col, store);
+            if (fieldVal == null)
+                return j.getJoinValue(savedFieldVal, col, store);
+            return j.getJoinValue(fieldVal, col, store);
         }
         return j.getJoinValue(fieldVal, col, store);
     }
 
-    public Object getJoinValue(OpenJPAStateManager sm, Column col, JDBCStore store) {
+    public Object getJoinValue(OpenJPAStateManager sm, Column col,
+        JDBCStore store) {
         return getJoinValue(sm.fetch(field.getIndex()), col, store);
     }
 
-    public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store, Column col, Object autoInc) {
+    public void setAutoAssignedValue(OpenJPAStateManager sm, JDBCStore store,
+        Column col, Object autoInc) {
         throw new UnsupportedException();
     }
 
@@ -1048,7 +1048,8 @@ public class RelationFieldStrategy
         return UNSUPPORTED;
     }
 
-    public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store, JDBCFetchConfiguration fetch, Object val)
+    public void loadEmbedded(OpenJPAStateManager sm, JDBCStore store,
+        JDBCFetchConfiguration fetch, Object val)
         throws SQLException {
         ClassMapping relMapping = field.getTypeMapping();
         Object oid;
@@ -1058,7 +1059,8 @@ public class RelationFieldStrategy
             oid = store.newDataStoreId(((Number) val).longValue(), relMapping,
                 field.getPolymorphic() != ValueMapping.POLY_FALSE);
         else {
-            Object[] pks = (getColumns().length == 1) ? new Object[]{ val } : (Object[]) val;
+            Object[] pks = (getColumns().length == 1) ? new Object[]{ val }
+                : (Object[]) val;
             boolean nulls = true;
             for (int i = 0; nulls && i < pks.length; i++)
                 nulls = pks[i] == null;
@@ -1066,15 +1068,17 @@ public class RelationFieldStrategy
                 oid = null;
             else {
                 oid = ApplicationIds.fromPKValues(pks, relMapping);
-                if (field.getPolymorphic() == ValueMapping.POLY_FALSE && oid instanceof OpenJPAId) {
-                    ((OpenJPAId) oid).setManagedInstanceType(relMapping.getDescribedType());
+                if (field.getPolymorphic() == ValueMapping.POLY_FALSE
+                    && oid instanceof OpenJPAId) {
+                    ((OpenJPAId) oid).setManagedInstanceType(relMapping.
+                        getDescribedType());
                 }
             }
         }
 
-        if (oid == null) {
+        if (oid == null)
             sm.storeObject(field.getIndex(), null);
-        } else {
+        else {
             if (JavaTypes.maybePC(field.getValue()) &&
                 field.getElement().getEmbeddedMetaData() == null) {
                 Object obj = store.find(oid, field, fetch);

@@ -102,10 +102,4 @@ public interface Joins {
      * Move joins that belong to subquery's parent
      */
     public void moveJoinsToParent();
-    
-    /**
-     * Gets the current path as a mutable string.
-     * @return
-     */
-    public StringBuilder path();
 }
