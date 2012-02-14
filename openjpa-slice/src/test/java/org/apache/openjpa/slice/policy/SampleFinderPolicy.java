@@ -49,7 +49,9 @@ public class SampleFinderPolicy implements FinderTargetPolicy {
         }
         if (cls == Manufacturer.class) {
         	String name = (String)oid;
-        	return new String[]{slices.get("BMW".equalsIgnoreCase(name) ? 0 : "HONDA".equalsIgnoreCase(name) ? 1 : 2)};
+            return new String[] {
+                    slices.get("BMW".equalsIgnoreCase(name) ? 0 : "HONDA".equalsIgnoreCase(name) ? 1 : 2)
+                };
         }
 		return null; // look in all slices
 	}
