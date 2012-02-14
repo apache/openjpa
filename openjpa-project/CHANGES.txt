@@ -222,6 +222,7 @@ Bug
     [OPENJPA-2117] - XML overriding column names for 1xM attributes causes exception.
     [OPENJPA-2119] - Update org.apache.openjpa.persistence.util.SourceCode
     [OPENJPA-2122] - VerifyError with Java 7 when using javaagent or dynamic container enhancement
+    [OPENJPA-2124] - Use of XMLValueHandler results in a NullPointerException when classloader does not provide package support
 
 Improvement
 
@@ -251,7 +252,10 @@ Improvement
     [OPENJPA-2084] - Upgrade Derby dependency to 10.8.x
     [OPENJPA-2085] - Improve enhancement process to support JAVA 7 compliant class file generation
     [OPENJPA-2087] - Remove or limit the use of the ConcreteClassGenerator
+    [OPENJPA-2116] - Scrape the barrel for performance juice
     [OPENJPA-2120] - Add new option to eliminate reflection calls from enhancer generated IdClass PC copy operations
+    [OPENJPA-2128] - Add a boolean to FieldMetaData to denote whether or not a field has a @EmbeddedId annotation.
+    [OPENJPA-2130] - Enable Java 7 testing by allowing test cases to compile targeting to 1.7
 
 New Feature
 
@@ -259,7 +263,6 @@ New Feature
     [OPENJPA-1859] - Create a sample to demonstrate usage of JEST
     [OPENJPA-1934] - contribute an openjpa-maven-plugin
     [OPENJPA-2108] - Allow an option to terminate MappingTool-generated SQL with a character other than semicolon
-    [OPENJPA-2111] - Optimize column based ResultSet lookup whereever feasible
 
 Task
 
