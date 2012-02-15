@@ -228,6 +228,7 @@ Improvement
 
     [OPENJPA-302] - PCEnhancer needs target classes on classpath
     [OPENJPA-487] - Generated SUBSTRING SQL is ugly and inefficient
+    [OPENJPA-758] - OpenJPA doesn't find ValueHandlers with an applicable class loader
     [OPENJPA-1555] - SQLBuffer code cleanup
     [OPENJPA-1777] - Allow setting of diagonstic context for each slice in a more flexible manner
     [OPENJPA-1778] - Improved error information for unenhanced classes.
