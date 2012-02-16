@@ -143,9 +143,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/2.2.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/2.2.x</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/2.2.x</url>
     </scm>
 
     <modules>
