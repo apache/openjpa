@@ -69,6 +69,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.ValueStrategies;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.BigDecimalId;
@@ -102,6 +103,7 @@ import serp.bytecode.LoadInstruction;
 import serp.bytecode.LookupSwitchInstruction;
 import serp.bytecode.MethodInstruction;
 import serp.bytecode.Project;
+import serp.bytecode.PutFieldInstruction;
 import serp.bytecode.TableSwitchInstruction;
 import serp.bytecode.ClassInstruction;
 import serp.util.Strings;
@@ -212,6 +214,8 @@ public class PCEnhancer {
     private boolean _isAlreadySubclassed = false;
     private boolean _bcsConfigured = false;
 
+    private boolean _optimizeIdCopy = false; // whether to attempt optimizing id copy
+    
     /**
      * Constructor. Supply configuration and type to enhance. This will look
      * up the metadata for <code>type</code> from <code>conf</code>'s
@@ -280,6 +284,8 @@ public class PCEnhancer {
         } else
             _repos = repos;
         _meta = _repos.getMetaData(type.getType(), loader, false);
+        
+        configureOptimizeIdCopy();
     }
 
     /**
@@ -2010,11 +2016,52 @@ public class PCEnhancer {
         // id.<field> = pc.<field>;
         FieldMetaData[] fmds = getCreateSubclass() ? _meta.getFields()
             : _meta.getDeclaredFields();
-        Class type;
+        Class<?> type; 
         String name;
         Field field;
         Method setter;
         boolean reflect;
+        // If optimizeIdCopy is enabled and not a field manager method, try to
+        // optimize the copyTo by using a public constructor instead of reflection
+        if (_optimizeIdCopy && !fieldManager) {
+            ArrayList<Integer> pkfields = optimizeIdCopy(oidType, fmds);
+            if (pkfields != null) {
+                // search for a constructor on the IdClass that can be used
+                // to construct the IdClass
+                int parmOrder[] = getIdClassConstructorParmOrder(oidType, pkfields, fmds);
+                if (parmOrder != null) {
+                    // found a matching constructor.  parm array is constructor parm order
+                    code.anew().setType(oidType);
+                    code.dup();
+                    // build the parm list in order
+                    Class<?>[] clsArgs = new Class<?>[parmOrder.length];
+                    for (int i = 0; i < clsArgs.length; i++) {
+                        int parmIndex = parmOrder[i];
+                        clsArgs[i] = fmds[parmIndex].getObjectIdFieldType();
+                        loadManagedInstance(code, false);
+                        addGetManagedValueCode(code, fmds[parmIndex]);
+                    }
+                    // invoke the public constructor to create a new local id
+                    code.invokespecial().setMethod(oidType, "<init>", void.class, clsArgs);
+                    int ret = code.getNextLocalsIndex();
+                    code.astore().setLocal(ret);
+
+                    // swap out the app id with the new one
+                    code.aload().setLocal(1);
+                    code.checkcast().setType(ObjectId.class);
+                    code.aload().setLocal(ret);
+                    code.invokestatic().setMethod(ApplicationIds.class, 
+                            "setAppId", void.class, new Class[] { ObjectId.class,
+                            Object.class });
+                    code.vreturn();
+
+                    code.calculateMaxStack();
+                    code.calculateMaxLocals();
+                    return;
+                }
+            }
+        }
+        
         for (int i = 0; i < fmds.length; i++) {
             if (!fmds[i].isPrimaryKey())
                 continue;
@@ -2428,17 +2475,28 @@ public class PCEnhancer {
                     if (Modifier.isPublic(field.getModifiers()))
                         code.getfield().setField(field);
                     else {
-                        // Reflection.getXXX(oid, Reflection.findField(...));
-                        code.classconstant().setClass(oidType);
-                        code.constant().setValue(name);
-                        code.constant().setValue(true);
-                        code.invokestatic().setMethod(Reflection.class,
-                            "findField", Field.class, new Class[] { 
-                            Class.class, String.class, boolean.class });
-                        code.invokestatic().setMethod
-                            (getReflectionGetterMethod(type, Field.class));
-                        if (!type.isPrimitive() && type != Object.class)
-                            code.checkcast().setType(type);
+                        boolean usedFastOid = false;
+                        if (_optimizeIdCopy) {
+                            // If fastOids, ignore access type and try to use a public getter
+                            getter = Reflection.findGetter(oidType, name, false);
+                            if (getter != null && Modifier.isPublic(getter.getModifiers())) {
+                                usedFastOid = true;
+                                code.invokevirtual().setMethod(getter);
+                            }
+                        }
+                        if (!usedFastOid) {
+                            // Reflection.getXXX(oid, Reflection.findField(...));
+                            code.classconstant().setClass(oidType);
+                            code.constant().setValue(name);
+                            code.constant().setValue(true);
+                            code.invokestatic().setMethod(Reflection.class,
+                                "findField", Field.class, new Class[] { 
+                                Class.class, String.class, boolean.class });
+                            code.invokestatic().setMethod
+                                (getReflectionGetterMethod(type, Field.class));
+                            if (!type.isPrimitive() && type != Object.class)
+                                code.checkcast().setType(type);
+                        }
                     }
                 } else {
                     getter = Reflection.findGetter(oidType, name, true);
@@ -4707,7 +4765,6 @@ public class PCEnhancer {
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         Collection classes;
         if (args == null || args.length == 0) {
-            log.info(_loc.get("running-all-classes"));
             classes = repos.getPersistentTypeNames(true, loader);
             if (classes == null) {
             	log.warn(_loc.get("no-class-to-enhance"));
@@ -4730,8 +4787,8 @@ public class PCEnhancer {
         int status;
         for (Iterator itr = classes.iterator(); itr.hasNext();) {
             Object o = itr.next();
-            if (log.isTraceEnabled())
-                log.trace(_loc.get("enhance-running", o));
+            if (log.isInfoEnabled())
+                log.info(_loc.get("enhance-running", o));
 
             if (o instanceof String)
                 bc = project.loadClass((String) o, loader);
@@ -4823,5 +4880,117 @@ public class PCEnhancer {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Read the optimizedIdCopy value from the config (if available)
+     */
+    private void configureOptimizeIdCopy() {
+        if (_repos != null && _repos.getConfiguration() != null) {
+            _optimizeIdCopy = _repos.getConfiguration().getOptimizeIdCopy();
+        }
+    }
+
+    /*
+     * Cycles through all primary keys verifying whether they can and should
+     * be used for faster oid copy.  The field must be private and must
+     * not have a public setter.  If this is the case, the list of pk fields is
+     * returned.  If not, returns null.
+     */
+    private ArrayList<Integer> optimizeIdCopy(Class<?> oidType, FieldMetaData[] fmds) {
+        // collect all object id fields and verify they 
+        // a) have a private field
+        // b) do not have a public setter 
+        ArrayList<Integer> pkFields = new ArrayList<Integer>();
+        // build list of primary key fields
+        for (int i = 0; i < fmds.length; i++) {
+            if (!fmds[i].isPrimaryKey())
+                continue;
+            // optimizing copy with PC type not (yet) supported
+            if (fmds[i].getDeclaredTypeCode() == JavaTypes.PC) {
+                return null;
+            }
+            String name = fmds[i].getName();
+            Field fld = Reflection.findField(oidType, name, false);
+            if (fld == null || Modifier.isPublic(fld.getModifiers())) {
+                return null;
+            }
+            Method setter = Reflection.findSetter(oidType, name, false);
+            if (setter == null || !Modifier.isPublic(setter.getModifiers())) {
+                pkFields.add(i);
+            } else {
+                return null;
+            }
+        }
+        return pkFields.size() > 0 ? pkFields : null;
+    }
+
+    /*
+     * Cycles through all constructors of an IdClass and examines the instructions to find
+     * a matching constructor for the provided pk fields.  If a match is found, it returns
+     * the order (relative to the field metadata) of the constructor parameters.  If a match
+     * is not found, returns null.
+    */
+    private int[] getIdClassConstructorParmOrder(Class<?> oidType, ArrayList<Integer> pkfields,
+            FieldMetaData[] fmds) {
+        Project project = new Project();
+        BCClass bc = project.loadClass(oidType);
+        BCMethod[] methods = bc.getDeclaredMethods("<init>");
+        if (methods == null || methods.length == 0) {
+            return null;
+        }
+        
+        int parmOrder[] = new int[pkfields.size()];
+        for (BCMethod method : methods) {
+            // constructor must be public
+            if (!method.isPublic()) {
+                continue;
+            }
+            Class<?>[] parmTypes = method.getParamTypes();
+            // make sure the constructors have the same # of parms as 
+            // the number of pk fields
+            if (parmTypes.length != pkfields.size()) {
+                continue;
+            }
+            
+            int parmOrderIndex = 0;
+            Code code = method.getCode(false);
+            Instruction[] ins = code.getInstructions();
+            for (int i = 0; i < ins.length; i++) {
+                if (ins[i] instanceof PutFieldInstruction) {
+                    PutFieldInstruction pfi = (PutFieldInstruction)ins[i];
+                    for (int j = 0; j < pkfields.size(); j++) {
+                        int fieldNum = pkfields.get(j);
+                        // Compare the field being set with the current pk field
+                        String parmName = fmds[fieldNum].getName();
+                        Class<?> parmType = fmds[fieldNum].getType();
+                        if (parmName.equals(pfi.getFieldName())) {
+                            // backup and examine the load instruction parm
+                            if (i > 0 && ins[i-1] instanceof LoadInstruction) {
+                                LoadInstruction li = (LoadInstruction)ins[i-1];
+                                // Get the local index from the instruction.  This will be the index
+                                // of the constructor parameter.  must be less than or equal to the 
+                                // max parm index to prevent from picking up locals that could have
+                                // been produced within the constructor.  Also make sure the parm type
+                                // matches the fmd type
+                                int parm = li.getLocal();
+                                if (parm <= pkfields.size() && parmTypes[parm-1].equals(parmType)) {
+                                    parmOrder[parmOrderIndex] = fieldNum;
+                                    parmOrderIndex++;
+                                }
+                            } else {
+                                // Some other instruction found. can't make a determination of which local/parm
+                                // is being used on the putfield.
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (parmOrderIndex == pkfields.size()) {
+                return parmOrder;
+            }
+        }
+        return null;
     }
 }

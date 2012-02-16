@@ -26,20 +26,20 @@ import org.apache.openjpa.lib.log.*;
  * Simple default log implementation to test whether certain messages
  * are logged or not.
  *
- * @author <a href="mailto:marc@solarmetric.com">Marc Prud'hommeaux</a>
+ * @author Marc Prud'hommeaux
  */
 public class BufferedLogFactory
     extends LogFactoryImpl {
 
     private int bufferSize = 10000;
-    private List buffer = new ArrayList();
-    private List disallowedMessages = new LinkedList();
+    private List<String> buffer = new ArrayList<String>();
+    private List<String> disallowedMessages = new LinkedList<String>();
 
     protected LogImpl newLogImpl() {
         return new BufferedLog();
     }
 
-    public List getBuffer() {
+    public List<String> getBuffer() {
         return Collections.unmodifiableList(buffer);
     }
 
@@ -59,7 +59,7 @@ public class BufferedLogFactory
         return disallowedMessages.remove(regexp);
     }
 
-    public List getDisallowedMessages() {
+    public List<String> getDisallowedMessages() {
         return Collections.unmodifiableList(disallowedMessages);
     }
 
@@ -91,8 +91,8 @@ public class BufferedLogFactory
                 buffer.iterator().remove();
 
             if (disallowedMessages.size() > 0) {
-                for (Iterator i = disallowedMessages.iterator(); i.hasNext();) {
-                    String regex = (String) i.next();
+                for (Iterator<String> i = disallowedMessages.iterator(); i.hasNext();) {
+                    String regex = i.next();
                     AbstractTestCase.assertNotMatches(regex, message);
                 }
             }

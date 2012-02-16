@@ -1356,8 +1356,11 @@ public class SelectImpl
             return;
         }
 
-        where(oid, mapping, fk.getPrimaryKeyColumns(), fk.getColumns(), 
-        		fk.getConstants(), fk.getConstantColumns(),
+        Column[] fromCols = fk.getColumns();
+        Column[] toCols = fk.getPrimaryKeyColumns();
+        Column[] constCols = fk.getConstantColumns();
+        Object[] consts = fk.getConstants();
+        where(oid, mapping, toCols, fromCols, consts, constCols,
             getJoins(joins, true), store);
     }
 
@@ -1375,67 +1378,52 @@ public class SelectImpl
             return;
         }
 
-
-        SQLBuffer buf = new SQLBuffer(_dict);
-        Object[] params = getBindParameter(oid, mapping, toCols, fromCols, pj, store);
-        bindParameter(buf, params, fromCols, pj);
-        
-        if (constCols != null && constCols.length > 0) {
-            bindParameter(buf, vals, constCols, pj);
-        }
-
-        where(buf, pj);
-    }
-    
-    /**
-     * Gets the binding parameter values to join the given object identifier.
-     * @param oid the object identifier
-     * @param mapping the class mapping of the identifier
-     * @param toCols the target column(s)
-     * @param fromCols the source column(s)
-     * @param pj joins
-     * @param store data store
-     * @return
-     */
-    Object[] getBindParameter(Object oid, ClassMapping mapping, Column[] toCols,
-            Column[] fromCols, PathJoins pj, JDBCStore store) {
+        // only bother to pack pk values into array if app id
         Object[] pks = null;
         boolean relationId = RelationStrategies.isRelationId(fromCols); 
         if (!relationId && mapping.getIdentityType() == ClassMapping.ID_APPLICATION)
             pks = ApplicationIds.toPKValues(oid, mapping);
+
+        SQLBuffer buf = new SQLBuffer(_dict);
+        Joinable join;
         Object val;
         int count = 0;
-        Joinable join;
-        Object[] result = new Object[toCols.length];
         for (int i = 0; i < toCols.length; i++, count++) {
             if (pks == null) {
                 val = (oid == null) ? null : relationId ? oid : ((Id) oid).getId();
             } else {
                 // must be app identity; use pk index to get correct pk value
                 join = mapping.assertJoinable(toCols[i]);
-                val = pks[mapping.getField(join.getFieldIndex()).getPrimaryKeyIndex()];
+                val = pks[mapping.getField(join.getFieldIndex()).
+                    getPrimaryKeyIndex()];
                 val = join.getJoinValue(val, toCols[i], store);
             }
-            result[i] = val;
+
+            if (count > 0)
+                buf.append(" AND ");
+            buf.append(getColumnAlias(fromCols[i], pj));
+            if (val == null)
+                buf.append(" IS ");
+            else
+                buf.append(" = ");
+            buf.appendValue(val, fromCols[i]);
         }
-        return result;
-    }
-    
-    /**
-     * Binds the parameters to the given SQL buffer.
-     * @param buf
-     * @param params
-     * @param fromCols
-     * @param pj
-     */
-    void bindParameter(SQLBuffer buf, Object[] params, Column[] fromCols, PathJoins pj) {
-    	for (int i = 0; i < params.length; i++) {
-          if (i > 0)
-              buf.append(" AND ");
-          buf.append(getColumnAlias(fromCols[i], pj));
-	      buf.append(params[i] == null ? " IS " : " = ");
-	      buf.appendValue(params[i], fromCols[i]);
-    	}
+
+        if (constCols != null && constCols.length > 0) {
+            for (int i = 0; i < constCols.length; i++, count++) {
+                if (count > 0)
+                    buf.append(" AND ");
+                buf.append(getColumnAlias(constCols[i], pj));
+
+                if (vals[i] == null)
+                    buf.append(" IS ");
+                else
+                    buf.append(" = ");
+                buf.appendValue(vals[i], constCols[i]);
+            }
+        }
+
+        where(buf, pj);
     }
 
     /**
@@ -1459,7 +1447,7 @@ public class SelectImpl
 
     public void where(Joins joins) {
         if (joins != null)
-            where((SQLBuffer) null, joins);
+            where((String) null, joins);
     }
 
     public void where(SQLBuffer sql) {
@@ -1485,6 +1473,28 @@ public class SelectImpl
         _where.append(sql);
     }
 
+    public void where(String sql) {
+        where(sql, (Joins) null);
+    }
+
+    public void where(String sql, Joins joins) {
+        where(sql, getJoins(joins, true));
+    }
+
+    /**
+     * Add the given condition to the WHERE clause.
+     */
+    private void where(String sql, PathJoins pj) {
+        // no need to use joins...
+        if (StringUtils.isEmpty(sql))
+            return;
+
+        if (_where == null)
+            _where = new SQLBuffer(_dict);
+        else if (!_where.isEmpty())
+            _where.append(" AND ");
+        _where.append(sql);
+    }
 
     public void having(SQLBuffer sql) {
         having(sql, (Joins) null);
@@ -1500,6 +1510,29 @@ public class SelectImpl
     private void having(SQLBuffer sql, PathJoins pj) {
         // no need to use joins...
         if (sql == null || sql.isEmpty())
+            return;
+
+        if (_having == null)
+            _having = new SQLBuffer(_dict);
+        else if (!_having.isEmpty())
+            _having.append(" AND ");
+        _having.append(sql);
+    }
+
+    public void having(String sql) {
+        having(sql, (Joins) null);
+    }
+
+    public void having(String sql, Joins joins) {
+        having(sql, getJoins(joins, true));
+    }
+
+    /**
+     * Add the given condition to the HAVING clause.
+     */
+    private void having(String sql, PathJoins pj) {
+        // no need to use joins...
+        if (StringUtils.isEmpty(sql))
             return;
 
         if (_having == null)
@@ -2018,6 +2051,10 @@ public class SelectImpl
 
         // not found; create alias
         i = aliasSize(false, null);
+//        System.out.println("GetTableIndex\t"+
+//                ((_parent != null) ? "Sub" :"") +
+//                " created alias: "+
+//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }
@@ -2076,6 +2113,10 @@ public class SelectImpl
 
     private int createAlias(Table table, Object key) {
         Integer i = ctx().nextAlias();
+//        System.out.println("\t"+
+//                ((_parent != null) ? "Sub" :"") +
+//                "Query created alias: "+ 
+//                i.intValue()+ " "+ key);
         recordTableAlias(table, key, i);
         return i.intValue();
     }

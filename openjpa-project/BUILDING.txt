@@ -80,7 +80,7 @@ Checked out revision 1065345.
 
 $ cd trunk/
 
-$ mvn clean install -DfailIfNoTests=false -Dtest= 
+$ mvn clean install -DskipTests -DfailIfNoTests=false 
 
 [INFO] Scanning for projects...
 [INFO] Reactor build order: 
@@ -91,6 +91,8 @@ $ mvn clean install -DfailIfNoTests=false -Dtest=
 [INFO]   OpenJPA Persistence
 [INFO]   OpenJPA Persistence JDBC
 [INFO]   OpenJPA Persistence Locking Tests
+[INFO]   OpenJPA tools
+[INFO]   OpenJPA Maven Plugin
 [INFO]   OpenJPA XML Store
 [INFO]   OpenJPA Slice
 [INFO]   OpenJPA JEST
@@ -119,42 +121,42 @@ $ mvn clean install -DfailIfNoTests=false -Dtest=
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] ------------------------------------------------------------------------
-[INFO] OpenJPA Parent POM .................................... SUCCESS [1:23.143s]
-[INFO] OpenJPA Utilities Library ............................. SUCCESS [13.749s]
-[INFO] OpenJPA Kernel ........................................ SUCCESS [19.251s]
-[INFO] OpenJPA JDBC .......................................... SUCCESS [14.351s]
-[INFO] OpenJPA Persistence ................................... SUCCESS [10.254s]
-[INFO] OpenJPA Persistence JDBC .............................. SUCCESS [46.774s]
-[INFO] OpenJPA Persistence Locking Tests ..................... SUCCESS [15.183s]
-[INFO] OpenJPA XML Store ..................................... SUCCESS [11.788s]
-[INFO] OpenJPA Slice ......................................... SUCCESS [4.437s]
-[INFO] OpenJPA JEST .......................................... SUCCESS [4.854s]
-[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [10.729s]
-[INFO] OpenJPA Aggregate Jar with Dependencies ............... SUCCESS [6.761s]
-[INFO] OpenJPA Project Docs and Assemblies ................... SUCCESS [1:41.937s]
-[INFO] OpenJPA Examples ...................................... SUCCESS [0.663s]
-[INFO] OpenJPA Examples - Simple ............................. SUCCESS [1.475s]
-[INFO] OpenJPA Examples - image-gallery ...................... SUCCESS [3.920s]
-[INFO] OpenJPA Examples - OpenBooks .......................... SUCCESS [12.961s]
-[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.381s]
-[INFO] OpenJPA Integration Tests - Daytrader ................. SUCCESS [7.565s]
-[INFO] OpenJPA Integration Tests - Examples .................. SUCCESS [0.269s]
-[INFO] OpenJPA Integration Tests - SLF4JLogFactory ........... SUCCESS [1.977s]
-[INFO] OpenJPA Integration Tests - JPA TCK ................... SUCCESS [0.248s]
-[INFO] OpenJPA Integration Tests - Bean Validation ........... SUCCESS [3.213s]
-[INFO] OpenJPA Integration Tests - JMX Platform MBeans ....... SUCCESS [7.729s]
+[INFO] OpenJPA Parent POM .................................... SUCCESS [2:11.649s]
+[INFO] OpenJPA Utilities Library ............................. SUCCESS [31.576s]
+[INFO] OpenJPA Kernel ........................................ SUCCESS [39.863s]
+[INFO] OpenJPA JDBC .......................................... SUCCESS [27.326s]
+[INFO] OpenJPA Persistence ................................... SUCCESS [23.530s]
+[INFO] OpenJPA Persistence JDBC .............................. SUCCESS [1:14.696s]
+[INFO] OpenJPA Persistence Locking Tests ..................... SUCCESS [30.881s]
+[INFO] OpenJPA tools ......................................... SUCCESS [0.968s]
+[INFO] OpenJPA Maven Plugin .................................. SUCCESS [2:45.320s]
+[INFO] OpenJPA XML Store ..................................... SUCCESS [25.335s]
+[INFO] OpenJPA Slice ......................................... SUCCESS [10.456s]
+[INFO] OpenJPA JEST .......................................... SUCCESS [8.861s]
+[INFO] OpenJPA Aggregate Jar ................................. SUCCESS [50.297s]
+[INFO] OpenJPA Aggregate Jar with Dependencies ............... SUCCESS [13.871s]
+[INFO] OpenJPA Project Docs and Assemblies ................... SUCCESS [1:12.215s]
+[INFO] OpenJPA Examples ...................................... SUCCESS [1.241s]
+[INFO] OpenJPA Examples - Simple ............................. SUCCESS [5.165s]
+[INFO] OpenJPA Examples - image-gallery ...................... SUCCESS [6.933s]
+[INFO] OpenJPA Examples - OpenBooks .......................... SUCCESS [26.761s]
+[INFO] OpenJPA Integration Tests ............................. SUCCESS [0.957s]
+[INFO] OpenJPA Integration Tests - Daytrader ................. SUCCESS [21.631s]
+[INFO] OpenJPA Integration Tests - Examples .................. SUCCESS [0.143s]
+[INFO] OpenJPA Integration Tests - SLF4JLogFactory ........... SUCCESS [6.690s]
+[INFO] OpenJPA Integration Tests - JPA TCK ................... SUCCESS [0.321s]
+[INFO] OpenJPA Integration Tests - Bean Validation ........... SUCCESS [10.694s]
+[INFO] OpenJPA Integration Tests - JMX Platform MBeans ....... SUCCESS [19.434s]
 [INFO] ------------------------------------------------------------------------
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESSFUL
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 6 minutes 26 seconds
-[INFO] Finished at: Sun Jan 30 19:43:50 CET 2011
-[INFO] Final Memory: 92M/158M
+[INFO] Total time: 13 minutes 33 seconds
+[INFO] Finished at: Thu Feb 09 10:25:05 CST 2012
+[INFO] Final Memory: 118M/232M
 [INFO] ------------------------------------------------------------------------
 
 $ ls openjpa-project/target/site/downloads/
 
 apache-openjpa-2.2.0-SNAPSHOT-binary.zip
 apache-openjpa-2.2.0-SNAPSHOT-source.zip
- 
-

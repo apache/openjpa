@@ -307,7 +307,7 @@ public class FieldMetaData
     /**
      * The declaring class.
      */
-    public Class getDeclaringType() {
+    public Class<?> getDeclaringType() {
         return (_dec == null) ? _owner.getDescribedType() : _dec;
     }
 
@@ -2390,5 +2390,19 @@ public class FieldMetaData
     public void setPersistentCollection(boolean persistentCollection) {
         _persistentCollection = persistentCollection;
     }
-    
+    private Class<?> _relationType = Unknown.class;
+    public Class<?> getRelationType() {
+    	if (_relationType == Unknown.class) {
+            if (isDeclaredTypePC())
+            	_relationType = getDeclaredType();
+            else if (getElement().isDeclaredTypePC())
+            	_relationType = getElement().getDeclaredType();
+            else if (getKey().isDeclaredTypePC())
+            	_relationType = getKey().getDeclaredType();
+            else
+            	_relationType = null;
+    	}
+    	return _relationType;
+    }
+    private class Unknown{};
 }

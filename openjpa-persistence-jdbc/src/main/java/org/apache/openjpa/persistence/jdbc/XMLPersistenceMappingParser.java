@@ -312,7 +312,6 @@ public class XMLPersistenceMappingParser
                 ret = startDatastoreIdCol(attrs);
                 break;
             case INDEX:
-                System.out.println("++++++++++++ INDEX");
                 ret = startIndex(attrs);
                 break;
             case FK:
@@ -730,7 +729,7 @@ public class XMLPersistenceMappingParser
                     }
                     // else no break
                 case JavaTypes.COLLECTION:
-                    if(fm.isElementCollection()) { 
+                    if (!fm.getValue().isSerialized()) {
                         fm.getElementMapping().getValueInfo().setColumns(_cols);
                     } else  {
                         fm.getValueInfo().setColumns(_cols);

@@ -1,4 +1,4 @@
-Apache OpenJPA 2.2.0-SNAPSHOT
+Apache OpenJPA 2.2.0
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ License
 
 Notices
 -------
-   Copyright 2006,2011 The Apache Software Foundation.
+   Copyright 2006,2012 The Apache Software Foundation.
    Apache, the Apache feather logo and OpenJPA are trademarks of
    The Apache Software Foundation.
 
@@ -67,7 +67,7 @@ Notices
    CDDL license.  You can obtain a copy of the License at:
        https://glassfish.dev.java.net/public/CDDL+GPL.html
    The source code is available at:
-       https://glassfish.dev.java.net/source/browse/glassfish/
+       http://java.net/projects/glassfish
 
    The complete list of notices can be found in NOTICE.txt included in each
    assembly.
@@ -112,888 +112,167 @@ Getting Involved
           https://issues.apache.org/jira/browse/OPENJPA
 
 
-Included Changes in OpenJPA 2.2.0-SNAPSHOT
-------------------------------------------
-
-    * TBD
-
-
-Included Changes in OpenJPA 2.1.0
-------------------------------------------
-
-    * TBD
-
-
-Included Changes in OpenJPA 2.0.1
+Included Changes in OpenJPA 2.2.0
 ---------------------------------
 
 Sub-task
---------
-    * [OPENJPA-1635] - Reduce lock contention in MetaDataRepository.processRegisteredClasses
-    * [OPENJPA-1638] - Add test variation to TestNamedQueryLockMode
+
+    [OPENJPA-1593] - Create an OSGiManagedRuntime
+    [OPENJPA-2081] - Provide subset of XML support for OpenJPA annotations
 
 Bug
----
-    * [OPENJPA-1424] - Out of bounds exception using fetch plan
-    * [OPENJPA-1641] - SybaseDictionary should try both JDBC column names and Sybase specific column names
-    * [OPENJPA-1668] - User's ''DBDictionary.sequenceSQL' setting not being honored on zOS 
-    * [OPENJPA-1678] - SQL Parameter values may contain sensitive information and should not be logged by default.
-    * [OPENJPA-1679] - Index name too long for DB2 zOS when schema is present
-    * [OPENJPA-1690] - DistinctResultList is not Serializable
-    * [OPENJPA-1704] - PCEnhancer incorrectly generates readExternal 
-    * [OPENJPA-1713] - OutOfMemory caused by EntityManagerImpl.push/popFetchPlan processing
-    * [OPENJPA-1714] - Consider openjpa.Optimistic setting when calculating the default lock mode to apply to a named query
-    * [OPENJPA-1715] - OpenJPA generates wrong SQL if a result variable that references an aggregate expression is used in ORDER BY clause
-    * [OPENJPA-1719] - Prepared SQL cache ordering problem with subqueries. 
-    * [OPENJPA-1722] - Problem serializing DistinctResultList when EntityManager is closed
-    * [OPENJPA-1737] - The openjpa-2.0.0.jar does not have its MANIFEST.MF has the first entry
-    * [OPENJPA-1742] - Recover if connectionFactory on EntityManagerFactory is invalid but cf on EntityManager is valid. 
-    * [OPENJPA-1749] - Throw exception if using datacache / synchronize mappings and specifying datasource name at EM creation.
-    * [OPENJPA-1753] - TestMixedLockManagerLockPermutation: Timing issue determines the pass/no-pass of the test case
+
+    [OPENJPA-478] - Contradictory text in manual section 10.2.6. JPQL GROUP BY, HAVING
+    [OPENJPA-867] - Unexpected Behaviour of DBDictionary.indexOf() method
+    [OPENJPA-1343] - Incorrect example of openjpa.Sequence property
+    [OPENJPA-1376] - @SequenceGenerator allocationSize incorrect implementation
+    [OPENJPA-1650] - Adding a slice dynamically should be done via persistence unit only
+    [OPENJPA-1651] - Unique colums automatically defined as non-nullable (part 2)
+    [OPENJPA-1657] - Postgres connection throws NPE with null properties
+    [OPENJPA-1686] - Persistence of Dynamic and Generic Type
+    [OPENJPA-1725] - Schemaname wrongly included in DBDictionary.checkNameLength after Tablename correctly truncated
+    [OPENJPA-1746] - NullPointerException when a null value is set in the properties map passed to Entity.createEntityManagerFactory
+    [OPENJPA-1768] - StackOverflowError when finding an Entity with an Eager ManyToMany relationship.
+    [OPENJPA-1787] - Bean validation fails merging a new entity
+    [OPENJPA-1845] - the prepared query cache doesn't currently work correclty with 'SELECT IN' statements
+    [OPENJPA-1856] - Executing bulk updates should evict stale data from the DataCache
+    [OPENJPA-1873] - EntityManager#merge sometimes passes wrong entity values to @PostLoad EntityListeners
+    [OPENJPA-1876] - Slow JDBC tests
+    [OPENJPA-1896] - OpenJPA cannot store POJOs if a corresponding record already exists
+    [OPENJPA-1898] - TestQueryMultiThreaded fails with OOME "unable to create new native thread"
+    [OPENJPA-1900] - ClassCastException when serializing an entity if DetachedStateField=true
+    [OPENJPA-1901] - QueryCacheStoreQuery$CachedObjectId that is not Serializable
+    [OPENJPA-1902] - SQLServer reserved words may not be used as identifiers
+    [OPENJPA-1903] - Some queries only work the first time they are executed
+    [OPENJPA-1904] - OptimisticLockException during refresh(*,PESSIMISTIC_*) with eagar fetch on relationship fields
+    [OPENJPA-1905] - jar-file validation should be deferred until after OpenJPA is confirmed to be the application's chosen provider
+    [OPENJPA-1906] - Issue info / warning message when connection retain mode is always
+    [OPENJPA-1909] - enhance unit tests with the correct persistence.xml
+    [OPENJPA-1910] - openjpa uses application ClassLoader for resolving BrokerFactory (revisited)
+    [OPENJPA-1911] - InvalidStateException is thrown when merge an entity with derived identiy
+    [OPENJPA-1912] - enhancer generates invalid code if fetch-groups is activated
+    [OPENJPA-1915] - missing license header
+    [OPENJPA-1918] - MetaDataRepository.preload() ignores class loader returned by PersistenceUnitInfo.getClassLoader()
+    [OPENJPA-1923] - Allow flexible (non-standard) syntax for collection-valued parameters in IN() expresseion of JPQL query
+    [OPENJPA-1928] - Resolving factory method does not allow method overriding
+    [OPENJPA-1932] - Documentation corrections
+    [OPENJPA-1935] - Informix lock exceptions are not mapped properly by OpenJPA
+    [OPENJPA-1938] - Typo of time data type in SQLServerdictionary for MSSQL 2008
+    [OPENJPA-1939] - index identifier max length for DB2 v9 is 128.
+    [OPENJPA-1940] - ReverseMapping tool does not find primary keys with Oracle
+    [OPENJPA-1941] - Criteria query returns wrong result when query cache is enabled
+    [OPENJPA-1943] - Query timeout hint not honored consistently when pessimistic lock is issued to database requires multi-statements locking scheme
+    [OPENJPA-1944] - Extra select statements executed when version column is null.
+    [OPENJPA-1951] - missing key "cant-set-value" in localizer properties org.apache.openjpa.jdbc.meta.strats
+    [OPENJPA-1953] - Copying data from inputStream to OuputStream needs appropriate buffer size
+    [OPENJPA-1954] - ArrayIndexOutOfBoundsException when querying on a version field that is in a MappedSuperclass
+    [OPENJPA-1957] - XML overriding column names for ArrayList attributes causes exception.
+    [OPENJPA-1958] - IndexOutOfBoundsException in BatchingPreparedStatementManagerImpl
+    [OPENJPA-1959] - RuntimeExceptionTranslator should be transient in DelegatingQuery
+    [OPENJPA-1960] - openjpa.InitializeEagerly breaks bean-validation integration
+    [OPENJPA-1965] - ClassCastException when using JAXB and MetaModel annotation processor
+    [OPENJPA-1968] - SQLServerDictionery not using DATETIME2 for jdbc driver other than MS JDBC driver
+    [OPENJPA-1969] - SQLServer / DataDirect SQLCode=HYT00 not handled
+    [OPENJPA-1974] - StackOverflowError when performing multiple subquery in collection field with eager fetch
+    [OPENJPA-1975] - Only obtain default schema name when needed (DB2)
+    [OPENJPA-1981] - Improper cleanup in SchemaGenerator
+    [OPENJPA-1983] - Merge of lazily fetched fields, and merge of managed entities deviates from spec
+    [OPENJPA-1984] - Incorrect ViolationContraint getRootBean when removing bean with embedded entity validation
+    [OPENJPA-1985] - ClassCastException in max(Timestamp) function on PostgreSQL
+    [OPENJPA-1986] - Extra queries being generated when cascading a persist
+    [OPENJPA-1987] - Postgres / Ingres does not support null table for getImportedKeys
+    [OPENJPA-1989] - *ToOne relationships specified as LAZY in xml aren't honored
+    [OPENJPA-1992] - java.lang.ArrayIndexOutOfBoundsException if positional parameter are not started from 1
+    [OPENJPA-1994] - Index is a reserved word for MySQL
+    [OPENJPA-1996] - OpenJPA Samples fail on MacOS X
+    [OPENJPA-1998] - NPE getTableNameForMetadata when running SchemaTool reflect against Postgres DB
+    [OPENJPA-2000] - Wrong PostgreSQL data type for REAL - "float8", must be "float4"
+    [OPENJPA-2005] - PostgresDictionary.isOwnedSequence needs a null check
+    [OPENJPA-2006] - Sequence generated ids may fail to get assigned when flushing a graph with bi-directional relationships
+    [OPENJPA-2007] - Setting query hint "openjpa.FetchPlan.Isolation" results in misleading warning
+    [OPENJPA-2008] - OpenJPA does not work with native queries in a distributed (Slice) environment
+    [OPENJPA-2010] - Duplicate meta data warning logged due to parsing the same location twice
+    [OPENJPA-2011] - Prevent reparsing annotation metadata for queries
+    [OPENJPA-2013] - columnDefinition for TEXT types ends up in wrong sql statement
+    [OPENJPA-2025] - Byte[] and Char[] should be treated as SingularAttributes, not lists by the metamodel generator
+    [OPENJPA-2027] - Metamodel genereated at runtime expects ListAttribute for all arrays - not just PersistentCollections.
+    [OPENJPA-2034] - Update H2 Database sql error codes as per the changes in v1.3.154
+    [OPENJPA-2036] - DynamicEnhancer should look for tools.jar in java.home/lib for all JDKs, not just the IBM SDK.
+    [OPENJPA-2039] - FKs for EAGER fields that are not in the current fetchplan aren't selected
+    [OPENJPA-2044] - Invalid header in MetaModel classes generated by AnnotationProcessor
+    [OPENJPA-2045] - NAME is a valid column name for H2 databases.
+    [OPENJPA-2051] - Entities in a relationship are not properly cascaded after a EntityManager.flush is executed.
+    [OPENJPA-2056] - Postgres V9.1 issue with LIKE clause and Escape Strings
+    [OPENJPA-2059] - Missing localizer.properties for org.apache.openjpa.persistence.util.SourceCode
+    [OPENJPA-2060] - AnnotationProcess failed to generate metadata for List<String>[] attribute in entity
+    [OPENJPA-2065] - JPA 2.0 Spec. Violation? EntityManager#createNamedQuery(String, Class) bombs with non-entity Class parameter
+    [OPENJPA-2066] - Edge case in openJPA-1227. openJPA fails to create a join and thus returns wrong data when a collection is selected from superclass and another field is selected from subclass twoor more levels down the hierarchy.
+    [OPENJPA-2069] - Natvie sequence problems uncovered after OPENJPA-1376
+    [OPENJPA-2070] - Error processing while populating Metamodel classes needs improvement
+    [OPENJPA-2071] - NPE during ResultPacker interface processing
+    [OPENJPA-2073] - MappingTools requires live connection to DB2 server to retrieve default schema name
+    [OPENJPA-2076] - Minor fix-ups to messages
+    [OPENJPA-2077] - Pom references to org.codehaus.mojo openjpa-maven-plugin cause problems
+    [OPENJPA-2083] - Unmapped fields silently treated as transient
+    [OPENJPA-2100] - openjpa-maven-plugin fails to create SQL for entities which contain enums
+    [OPENJPA-2101] - PersistenceProductDerivation overwrites the RemoteCommitProvider configuration
+    [OPENJPA-2104] - BindParameter is not a valid query parameter as processed in DBDictionary's setUnknown()
+    [OPENJPA-2105] - Document changes no longer being uploaded
+    [OPENJPA-2107] - ManagedCache conflict due adding an entity 2 times in the same query.
+    [OPENJPA-2117] - XML overriding column names for 1xM attributes causes exception.
+    [OPENJPA-2119] - Update org.apache.openjpa.persistence.util.SourceCode
+    [OPENJPA-2122] - VerifyError with Java 7 when using javaagent or dynamic container enhancement
+    [OPENJPA-2124] - Use of XMLValueHandler results in a NullPointerException when classloader does not provide package support
 
 Improvement
------------
-    * [OPENJPA-1637] - Upgrade to latest Geronimo Specs for JPA2 and Bean Validation
-    * [OPENJPA-1673] - Update MetaDataRepository docs
-    * [OPENJPA-1712] - Upgrade builds to use Apache hosted Nexus repo
-    * [OPENJPA-1735] - Mark commons-logging as provided in the build to remove transient maven dependency
-    * [OPENJPA-1771] - Upgrade to latest Apache BVAL for testing and apache-rat plugin
 
-Test
-----
-    * [OPENJPA-1639] - Simple openjpa-xmlstore tests
-    * [OPENJPA-1660] - Add support to test with Apache Bean Validation provider
-
-
-Included Changes in OpenJPA 2.0.0
----------------------------------
-
-Sub-task
---------
-    * [OPENJPA-1179] - openjpa.jdbc.QuerySQLCache plugin values
-
-Bug
----
-    * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
-    * [OPENJPA-1510] - Documentation corrections
-    * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
-    * [OPENJPA-1559] - DataCacheManager initialization isn't thread safe.
-    * [OPENJPA-1569] - @Strategy triggers an InvalidStateException for fields which are declared as Java interfaces
-    * [OPENJPA-1597] - Need Compatibility setting for new OPENJPA-1097 Proxies and DetachedStateField behavior
-    * [OPENJPA-1599] - Cache mode properties passes in to em.find and lock methods are not transient
-    * [OPENJPA-1602] - Query with lock mode set to PESSIMISTIC_WRITE does not have for update clause attached to the sql when runs twice
-    * [OPENJPA-1604] - Setting PessimisticLockManager fails to append "for update clause" to the select statement
-    * [OPENJPA-1605] - ReverseMappingTool (SchemaGenerator) bug
-    * [OPENJPA-1608] - PESSIMISTIC_WRITE is not working in Informix
-    * [OPENJPA-1609] - PessimisticLockException instead of LockTimeoutException thrown on DB2V9 for ZOS
-    * [OPENJPA-1611] - Wrong PersistentAttributeType returned for @Embedded types
-    * [OPENJPA-1618] - Exception during factory creation due to javax.persistence.transactionType
-    * [OPENJPA-1625] - Inconsistent creation of StateManagerImpl in BrokerImpl
-    * [OPENJPA-1630] - NPE in MetaDataRepository when preloading is enabled under heavy stress.
-    * [OPENJPA-1631] - MetaDataRepository preload doesn't load JAXB meta data
-
-Improvement
------------
-    * [OPENJPA-1382] - make org.apache.openjpa.persistence.meta.AnnotationProcessor6 as service
-    * [OPENJPA-1545] - Add new Detach processing
-    * [OPENJPA-1603] - Decouple the QueryCache from the DataCache
-    * [OPENJPA-1622] - Invoking MetaModel generator
-    * [OPENJPA-1628] - Output control for generated canonical metamodel source code
-
-Task
-----
-    * [OPENJPA-1178] - Backwards Compatibility Issues
-
-Test
-----
-    * [OPENJPA-1336] - Intermittent test failure in org.apache.openjpa.persistence.generationtype.TestGeneratedValues when running on MySQL
-    * [OPENJPA-1606] - Add JPQL tests for element collection
-    * [OPENJPA-1614] - Testcase failures in TextException on MSSQL
-    * [OPENJPA-1616] - Fix TestTimeoutException test failures on MSSQL, MySQL, HSQLDB, Oracle and re-enable for DB2
-    * [OPENJPA-1619] - Fix intermittent TestTimestampVersion failures on various DBs when running on Windows
-    * [OPENJPA-1620] - Fix TestJDBCEscapeDate test for MSSQL and HSQLDB
-    * [OPENJPA-1621] - Fix TestGeneratedValues for DB2
-    * [OPENJPA-1623] - New tests for query qualified paths
-    * [OPENJPA-1624] - Fix intermittent datacache timeout failures in TestSJVMCache and CacheTest
-
-
-Included Changes in OpenJPA 2.0.0 Beta 3
-----------------------------------------
-
-Sub-task
---------
-    * [OPENJPA-1101] - OSGi Integration tests
-    * [OPENJPA-1505] - Add a boolean provision CallbackOptions.AllowsDuplicateListener 
-
-Bug
----
-    * [OPENJPA-740] - In MySQL use LONGBLOB, MEDIUMBLOB etc.. when needed, cause BLOB only holds 64kb of data.
-    * [OPENJPA-774] - Executing native queries with Firebird
-    * [OPENJPA-1097] - Detachment processing of our proxied mutable types (Date, Timestamp, etc) needs to be consistent
-    * [OPENJPA-1234] - Make AllowFailure configurable
-    * [OPENJPA-1248] - LOB streaming does not work as expected
-    * [OPENJPA-1360] - ReverseMappingTool omits nullable, length, etc. when ClassMapping.setEmbedded(true) is called
-    * [OPENJPA-1395] - MappingTool attempts to create table in Oracle even when the table already exist
-    * [OPENJPA-1406] - (In)Compatibility section in OpenJPA doc needs some work...
-    * [OPENJPA-1410] - Class linkage exception when creating an EMF with OpenJPA M3
-    * [OPENJPA-1438] - Fail to remove an entity which has derived identity
-    * [OPENJPA-1455] - SynchronizeMapping ALTER TABLE ADD COLUMN fails with column already exist exception
-    * [OPENJPA-1458] - Named parameters are not handled by OpenJPA correctly
-    * [OPENJPA-1477] - Multithreaded attempt to set Query parameter occassionally fails
-    * [OPENJPA-1482] - NoSuchMethodError when calling setVersion on an enhanced property access Entity
-    * [OPENJPA-1486] - Lazy fetched embeddable should not be materialized in the query result
-    * [OPENJPA-1491] - org.apache.openjpa.kernel.Bootstrap uses the application classloader to load OpenJPA internals
-    * [OPENJPA-1500] - DataCache types and excludedTypes are case sensitive
-    * [OPENJPA-1503] - Metamodel class loading fails with security manager
-    * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
-    * [OPENJPA-1524] - ManagedRuntime does not work for OSGi
-    * [OPENJPA-1535] - Inconsistency in exceptions thrown from MetaDataRepository.resolve()
-    * [OPENJPA-1536] - SQL with outer join cannot handle null columns when inheritance is involved
-    * [OPENJPA-1538] - Move hard coded text in OpenJPAVersion.java to localizer.properties
-    * [OPENJPA-1542] - Support openjpa.DataCache Types and ExcludedTypes configuration
-    * [OPENJPA-1543] - Need to change fragmented messages that are combined by PreparedQueryImpl and PreparedQueryCacheImpl to complete messages
-    * [OPENJPA-1544] - Remove WebSphere version number from org/apache/ee/localizer.properties
-    * [OPENJPA-1546] - OpenJPA doesn't work as internal JPA inside web applicaion in JBoss AS
-    * [OPENJPA-1547] - NOT IN with MEMBER OF returns syntax error
-    * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
-    * [OPENJPA-1556] - Exception thrown on first use of @Strategy in @Embeddable classes
-    * [OPENJPA-1558] - Many side of a MxO relationship contains null reference if One side is loaded first.
-    * [OPENJPA-1562] - EntityManager:Refresh on Removed entity does not trigger IllegalArgumentException
-    * [OPENJPA-1565] - QueryTimeOut and LockTimeOut exceptions are not raised correctly
-    * [OPENJPA-1568] - Make createConnectionFactory() in JDBCConfigurationImpl public
-    * [OPENJPA-1570] - Exception using @Strategy in @MappedSuperclass or @Embeddable classes
-    * [OPENJPA-1571] - The change in the element collection is not persisted to the database during merging a detached entity
-    * [OPENJPA-1573] - Incorrect SQL for HAVING = entity variable
-    * [OPENJPA-1575] - Query parameter on externalized field breaks Prepared Query Cache
-    * [OPENJPA-1576] - maven plugin broken as of 3/16/2010 2:30 AM PST using openjpa-2.0.0-SNAPSHOT 
-    * [OPENJPA-1577] - Using @Strategy in Queries not working properly
-    * [OPENJPA-1578] - CacheStoreMode.REFRESH is not recognized
-    * [OPENJPA-1580] - Using firstResult and maxResults in queries is not working properly
-    * [OPENJPA-1581] - getCache() should throw IllegalStateException if the EMF has been closed. 
-    * [OPENJPA-1583] - Update by query fails on entities using Timestamp as Version field
-    * [OPENJPA-1588] - modify 925451 revision for setProperty processing for enums
-    * [OPENJPA-1596] - Index name too long for DB2 zOS
-
-Improvement
------------
-    * [OPENJPA-979] - Define process for contributions 
-    * [OPENJPA-1118] - code changes towards broader use of JDK5 features
-    * [OPENJPA-1443] - Turn on some additional DataCache and PCData testcases
-    * [OPENJPA-1492] - Change access on ReverseMappingTool#getAnnotationsForMeta(Object) from private to public
-    * [OPENJPA-1498] - Update localizer.properties files for easier translation
-    * [OPENJPA-1530] - MySQL storage engine support
-    * [OPENJPA-1531] - The DataCache EvictionSchedule property should accept other time formats.
-    * [OPENJPA-1539] - DataCacheManager should cache whether or not a given type is cacheable or not.
-    * [OPENJPA-1548] - Miscellaneous ClassMetaData performance improvements
-    * [OPENJPA-1549] - StateManagerImpl performance improvement
-    * [OPENJPA-1551] - Allow connectionFactoryName to be specified when creating an EntityManager
-    * [OPENJPA-1552] - Enable EntityManager to perform property QueryImpl creation by its subclass
-    * [OPENJPA-1557] - Logging configuration is difficult for running tests
-    * [OPENJPA-1561] - Cache Criteria Query
-    * [OPENJPA-1566] - Provide all the cached prepared query strings in QueryStatistics
-    * [OPENJPA-1585] - Additional trace to relate SQL pushdowns with entity action or JPQL query
-    * [OPENJPA-1591] - Refactor various parts to allow for greater extensibility
-
-Test
-----
-    * [OPENJPA-1411] - Include DayTrader test case to OpenJpa
-    * [OPENJPA-1560] - Additional tests for JDBC date/timestamp literals in JPQL
-    * [OPENJPA-1579] - Additional test for qualified path in HAVING clause
-    * [OPENJPA-1586] - Additional test single valued path expression which references qualified path in JPQL
-
-
-Included Changes in OpenJPA 2.0.0 Beta 2
-----------------------------------------
-
-Bug
----
-    * [OPENJPA-1001] - java.lang.IndexOutOfBoundsException when executing attached test case
-    * [OPENJPA-1367] - H2 Database Engine does support cross join
-    * [OPENJPA-1460] - Fix scope visibility of orm.xml when it is packaged in both ear file and war file
-    * [OPENJPA-1483] - count (Distinct e) in JPQL gives wrong result when the id field is a compound primary key
-    * [OPENJPA-1485] - isLoaded util method does not behave per spec for collection attributes and basic type
-    * [OPENJPA-1494] - Criteria query IN predicate generates incorrect SQL
-    * [OPENJPA-1496] - Fail to set temporal parameter
-    * [OPENJPA-1504] - Validation junits should not rely on Hibernate Impl
-    * [OPENJPA-1506] - ConfigurationImpl.equals fails using a OpenJPA derived provider
-    * [OPENJPA-1507] - NPE with a non-JDBC store manager
-    * [OPENJPA-1509] - Enum field types cannot be modified in an in-memory JPQL bulk update statement
-    * [OPENJPA-1518] - Remove WARN messages for uncacheable finder select statements
-    * [OPENJPA-1533] - JPA2 select math mix with aggregate reports syntax error
-
-Improvement
------------
-    * [OPENJPA-924] - Cache Finder Query for performance enhancement
-    * [OPENJPA-1475] - Performance improvement - don't call syncVersion() when no version is specified
-    * [OPENJPA-1493] - Performance improvement in SelectImpl.getTableIndex() for JPQL without subselect
-    * [OPENJPA-1502] - Improve msg for unrecognized EntityManager properties
-    * [OPENJPA-1512] - Include a BundleActivator to register ourselves as a javax.persistence.provider for Apache Aries
-    * [OPENJPA-1516] - Introduce new "clear" method on EntityManagerImpl
-    * [OPENJPA-1517] - Reduce locking in LifecycleEventManager
-    * [OPENJPA-1520] - Move trunk (2.0.x) to require Java 6 to build (but target 1.5 runtime)
-    * [OPENJPA-1525] - TestCacheMarshallerEndToEnd.Log requires to implement warn() method
-    * [OPENJPA-1528] - Upgrade to latest MySQL 5.1.12 for junit tests
-
-** Test
-    * [OPENJPA-1408] - Create test case binary and source jars in module
-    * [OPENJPA-1529] - Create new tests for bean caching mode
-
-
-Included Changes in OpenJPA 2.0.0 Beta
---------------------------------------
-
-Sub-task
---------
-    * [OPENJPA-1103] - Remove early-access disclaimer from the NOTICE files once the spec is released
-    * [OPENJPA-1115] - Finish support for delimited identifiers
-    * [OPENJPA-1345] - Update to JPA Spec Version EA9 (dated 10-08-2009)
-    * [OPENJPA-1347] - Upgrade to Validation API 1.0.0.GA
-    * [OPENJPA-1353] - Add legal info to the docs
-    * [OPENJPA-1358] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
-    * [OPENJPA-1404] - Add find method that accepts properties to entity manager
-    * [OPENJPA-1405] - Add refresh method that accepts properties to entity manager
-    * [OPENJPA-1453] - Add support for testing with final JPA 2.0 TCK
-    * [OPENJPA-1476] - Turn off QueryCache by default
-
-Bug
----
-    * [OPENJPA-123] - Test framework should allow tests that are expected to fail to be checked in
-    * [OPENJPA-459] - Problem with bulk updates in mySQL
-    * [OPENJPA-714] - "Encountered unmanaged object in persistent field" error while merging object tree
-    * [OPENJPA-748] - Disable QuerySQLCache by default
-    * [OPENJPA-757] - Map existing OpenJPA extensions to new features of JPA 2.0
-    * [OPENJPA-859] - OpenJPA requires all persistent fields to be specified on an XML defined entity
-    * [OPENJPA-944] - FetchAttribute.recursionDepth = -1 does not load properly self referenced entities in a complex relation
-    * [OPENJPA-993] - PCEnhancer can't execute if a non-OpenJPA PU is found
-    * [OPENJPA-1005] - Add PersistenceXMLSchemaVersion(); support
-    * [OPENJPA-1020] - eager fetching of PersistentCollection of a primitive type fails
-    * [OPENJPA-1025] - AbstractResultList.subList throws UnsupportedOperationException
-    * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
-    * [OPENJPA-1141] - NPE at org.apache.openjpa.jdbc.meta.MappingInfo.mergeJoinColumn(MappingInfo.java:1400)
-    * [OPENJPA-1142] - OptimisticLockException thrown on Query.getResultList() when Pessimistic Lock is applied
-    * [OPENJPA-1173] - Update PostgreSQL support for 8.4.x
-    * [OPENJPA-1185] - Subquery overhaul
-    * [OPENJPA-1189] - Column names do not contain delimiters when obtained from DatabaseMetaData
-    * [OPENJPA-1197] - NativeQueries fail with MySQL
-    * [OPENJPA-1224] - OpenJPA MySQL BigDecimal ignoring Precision/Scale column Annotation when generating tables
-    * [OPENJPA-1263] - TestReaderLob.testUpdateWithNull() fails on MySQL
-    * [OPENJPA-1276] - Support CQL for Criteria Query
-    * [OPENJPA-1289] - Oracle driver throws exception due to incorrect mapping of XMLType column
-    * [OPENJPA-1293] - JUnit test failure when using Derby 10.5.3.0
-    * [OPENJPA-1294] - Nested JDBC calls fail for certain database
-    * [OPENJPA-1306] - Extended lock scope support
-    * [OPENJPA-1308] - shouldn't always use CAST with UPPER and LOWER for DB2
-    * [OPENJPA-1321] - Documentation inaccuracies
-    * [OPENJPA-1326] - ReverseMappingTool and SchemaTool failing for Sybase
-    * [OPENJPA-1328] - Move cacheable class configuration to ClassMetaData
-    * [OPENJPA-1341] - PostRemove not invoked after database record was deleted
-    * [OPENJPA-1344] - Query [get|set]LockMode & Em getLockMode not throwing correct exceptions
-    * [OPENJPA-1349] - Compatibility options are not set appropriately for spec level when emf is created by JEE container
-    * [OPENJPA-1350] - Race condition in the MetaDataRepository
-    * [OPENJPA-1351] - java.lang.ClassCastException: javax.naming.Reference incompatible with javax.sql.DataSource
-    * [OPENJPA-1352] - Merge fails if an entity has an element collection which is contructed using Arrays.asList
-    * [OPENJPA-1354] - Configuring DBCP connection pool with connection properties breaks when user/pasword is specifed and javax.* configuration is set to DBCP Driver
-    * [OPENJPA-1355] - Recent snaphot versions of openjpa have problem with postgresPreparedStatementImpl constructor making Postgres impossible to use
-    * [OPENJPA-1357] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
-    * [OPENJPA-1370] - JPA2 missing implementation for createNamedQuery(String name, Class<T> resultClass)
-    * [OPENJPA-1374] - Enable junits to be executed against an in-memory Derby 10.5.3.0 db
-    * [OPENJPA-1375] - OutOfMemory runs in container environment in a long stress run
-    * [OPENJPA-1377] - JPA property to enum conversion failure
-    * [OPENJPA-1379] - Locking problem when using timestamp QueryCache eviction policy.
-    * [OPENJPA-1380] - Query not getting evicted from QueryCache
-    * [OPENJPA-1381] - IllegalStateException on query method call after named query is created twice.
-    * [OPENJPA-1383] - tests rely on US date formatting without setting the correct Locale
-    * [OPENJPA-1384] - ClassNotFoundException for custom DBDictionary used by EJB
-    * [OPENJPA-1385] - Parameter in having clause of Criteria query not recognized
-    * [OPENJPA-1386] - Metamodel Generator does not handle field types that can hide another
-    * [OPENJPA-1387] - Unique colums automatically defined as non-nullable
-    * [OPENJPA-1388] - JPQL named parameter using a reserved word resulting in ArgumentException
-    * [OPENJPA-1390] - Criteria API untyped join(String attr) implies any attribute not a singular attribute
-    * [OPENJPA-1391] - Handle generic/unspecified type arguments for persistent fields during metamodel generation
-    * [OPENJPA-1392] - CriteriaBuilder.size() must return Integer as value
-    * [OPENJPA-1393] - CriteriaBuilder.countDistinct() does not return correct result
-    * [OPENJPA-1394] - Pessimistic Lock not honour when ORDER BY clause is used
-    * [OPENJPA-1396] - metadata-complete in the orm file does not override @Transition annotation
-    * [OPENJPA-1397] - NULL in columns part of an @IdClass composite key leads to "disappearing" (null) returned objects
-    * [OPENJPA-1400] - Unable to persist a relationship to a detached Entity
-    * [OPENJPA-1401] - Inheritance using Join Strategy may fail in cross join JPQL
-    * [OPENJPA-1402] - Improve (avoid) lock on relation field per 2.0 spec semantics
-    * [OPENJPA-1408] - Create test case binary and source jars in module
-    * [OPENJPA-1409] - Improve type preservation for currentDate/Time expression in queries
-    * [OPENJPA-1413] - NPE when update using CASE statement on Derby
-    * [OPENJPA-1414] - Performance improvements for detach
-    * [OPENJPA-1419] - Access path metadata set incorrectly for fetch joins in Criteria Query
-    * [OPENJPA-1425] - Literal value in projection can not be parameterized for all databases
-    * [OPENJPA-1431] - @Temporal annotation overrides the @Column annotation when using in conjunction with @ElementCollection
-    * [OPENJPA-1432] - openjpa.Compatibility property for JPA 2.0 behavior may be overwritten if this property is an argument to createEntityManagerFactory
-    * [OPENJPA-1435] - Multi-1xm relation of same type in entity yields extra null in result collection
-    * [OPENJPA-1439] - Metamodel instantiation fails on InputStream properties
-    * [OPENJPA-1441] - NPE when enhancing a Serializable, versioned class
-    * [OPENJPA-1442] - java.sql.Date, java.math.BigDecimal, or java.math.BigInteger types as derived primary keys are not Enhanced correctly
-    * [OPENJPA-1444] - Criteria Query with fetch joins does not return correct DISTINCT result
-    * [OPENJPA-1445] - Support Enum as external value
-    * [OPENJPA-1452] - OpenJPA 2.0.0-M3 attempts to mutate unmodifiable map in Glassfish
-    * [OPENJPA-1461] - Incorrect Oracle CREATE TABLE DDL for XML column
-    * [OPENJPA-1463] - JPQL new operator arguments should be more flexible in matching constructor arguments
-    * [OPENJPA-1464] - PreparedQuery fails with enum query parameter
-    * [OPENJPA-1467] - java.lang.IllegalMonitorStateException in ConcurrentDataCache.writeUnlock()
-    * [OPENJPA-1470] - PCEnhancer is overly verbose
-    * [OPENJPA-1478] - OpenJPA is no longer available as an OSGi bundle
-
-Improvement
------------
-    * [OPENJPA-250] - Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
-    * [OPENJPA-709] - Better naming for unique constraints
-    * [OPENJPA-716] - Improve the documentation about Streaming LOB Support
-    * [OPENJPA-839] - change pom.xml to publish sources as well.
-    * [OPENJPA-1085] - Add toString() method to PCState classes
-    * [OPENJPA-1172] - Use java.util.concurrent.ConcurrentHashMap rather than a synchronized HashMap in ClassMapping.
-    * [OPENJPA-1236] - Finish support of delimiters other than double-quotes
-    * [OPENJPA-1258] - make warning message more friendly when other persistence provider configured by application
-    * [OPENJPA-1356] - Use maven-enforcer-plugin to verify proper Java and Maven levels
-    * [OPENJPA-1363] - Upgrade to latest commons-pool maintenance release
-    * [OPENJPA-1366] - Remove need for an EMF from OpenJPAPersistenceUtil and TraversableResolverImpl
-    * [OPENJPA-1368] - Upgrade to HSQLDB 1.8.0.10 and in-memory db for unit tests
-    * [OPENJPA-1415] - Performance improvement by reduced logging of batched OLE
-    * [OPENJPA-1440] - Allow COUNT(*) instead of COUNT(t0.id) for simple queries as an option
-    * [OPENJPA-1456] - Replace StringBuffer usage with StringBuilder
-    * [OPENJPA-1468] - Upgrade build to use final Bean Validation spec API from Geronimo
+    [OPENJPA-302] - PCEnhancer needs target classes on classpath
+    [OPENJPA-487] - Generated SUBSTRING SQL is ugly and inefficient
+    [OPENJPA-758] - OpenJPA doesn't find ValueHandlers with an applicable class loader
+    [OPENJPA-1555] - SQLBuffer code cleanup
+    [OPENJPA-1777] - Allow setting of diagonstic context for each slice in a more flexible manner
+    [OPENJPA-1778] - Improved error information for unenhanced classes.
+    [OPENJPA-1798] - Improve messages in localize.properties
+    [OPENJPA-1803] - Unwrap EntityManager to Connection
+    [OPENJPA-1847] - Use a single connection when generating schema
+    [OPENJPA-1863] - update HSQL dictionary for HSQLDB 2.0
+    [OPENJPA-1917] - Cache column alias in SelectImpl
+    [OPENJPA-1937] - Document OpenJPAEntityManager.evict methods
+    [OPENJPA-1945] - Improve aspects of the OpenBooks sample
+    [OPENJPA-1972] - DB2 V9.7 changed the default behavior concerning blocking behavior with isolation levels greater then read uncommitted
+    [OPENJPA-1990] - Skip getting extend exception text when running on DB2
+    [OPENJPA-1999] - Optional support for non-sequential positional parameters
+    [OPENJPA-2014] - Allow proxies to stay in place when Detaching
+    [OPENJPA-2020] - Make some members of StateManagerImpl protected to allow for greater extensability
+    [OPENJPA-2031] - Unable to import maven projects with m2e version 1.0
+    [OPENJPA-2042] - Diagnostics for Application Managed EntityManagerFactory leaks.
+    [OPENJPA-2043] - OpenJPAId hashCode() value needs to be consistent after serialization process
+    [OPENJPA-2047] - Document the impact of Persistence Aware classes
+    [OPENJPA-2068] - Improve performance of java.util.Calendar fields
+    [OPENJPA-2075] - Abstract out parameter handling / validation from org.apache.openjpa.persistence.QueryImpl to allow for greater extensibility
+    [OPENJPA-2084] - Upgrade Derby dependency to 10.8.x
+    [OPENJPA-2085] - Improve enhancement process to support JAVA 7 compliant class file generation
+    [OPENJPA-2087] - Remove or limit the use of the ConcreteClassGenerator
+    [OPENJPA-2116] - Scrape the barrel for performance juice
+    [OPENJPA-2120] - Add new option to eliminate reflection calls from enhancer generated IdClass PC copy operations
+    [OPENJPA-2128] - Add a boolean to FieldMetaData to denote whether or not a field has a @EmbeddedId annotation.
+    [OPENJPA-2130] - Enable Java 7 testing by allowing test cases to compile targeting to 1.7
 
 New Feature
------------
-    * [OPENJPA-773] - Upgrade to JPA 2
-    * [OPENJPA-1181] - Metamodel Generation must be more selective and controllable
-    * [OPENJPA-1276] - Support CQL for Criteria Query
-    * [OPENJPA-1332] - Allow configuration property to be declared for internal usage only
-    * [OPENJPA-1334] - Support instance level distribution policy for named cache partitions
-    * [OPENJPA-1337] - OpenJPA 2.0 iteration 12 primary task
-    * [OPENJPA-1357] - Support CacheRetrieve/StoreMode properties for find()/refresh() operation
-    * [OPENJPA-1373] - OpenJPA 2.0 iteration 13 primary task
-    * [OPENJPA-1426] - OpenJPA 2.0 iteration 14 primary task
+
+    [OPENJPA-184] - use DB2 Diagnostic interface to report extended error diagnostics on SQL Exception
+    [OPENJPA-1859] - Create a sample to demonstrate usage of JEST
+    [OPENJPA-1934] - contribute an openjpa-maven-plugin
+    [OPENJPA-2108] - Allow an option to terminate MappingTool-generated SQL with a character other than semicolon
 
 Task
-----
-    * [OPENJPA-1183] - Ergonomics of metamodel generation process
-    * [OPENJPA-1290] - Document Criteria API
+
+    [OPENJPA-1786] - Upgrade to latest JPA 2.0 TCK
+    [OPENJPA-1834] - Upgrade trunk to use Deby 10.6.2.1 for junits
+    [OPENJPA-1875] - Add generics to the Graph code
+    [OPENJPA-2089] - upgrade bval to latest 0.3-incubating
+    [OPENJPA-2091] - update docbook maven plugin
 
 Test
-----
-    * [OPENJPA-1153] - Test suite speed-up outside SingleEMFTestCase
-    * [OPENJPA-1342] - Build a mechanics to test JTA transaction semantics within JSE
-    * [OPENJPA-1466] - Some JUnit test failures on Oracle backeend
 
-
-Included Changes in OpenJPA 2.0.0 Milestone 3
----------------------------------------------
-
-Sub-task
---------
-    * [OPENJPA-849] - Add metadata-type getter methods to EntityManager
-    * [OPENJPA-946] - Oracle create table(s) exceptions
-    * [OPENJPA-1013] - Build strictly-typed Criteria API
-    * [OPENJPA-1033] - Update supported database and driver matrix
-    * [OPENJPA-1076] - PersistenceProviderResolver interface and PersistenceProviderResolverHolder class
-    * [OPENJPA-1078] - Cache mode elements added to persistence.xml
-    * [OPENJPA-1082] - Validation target groups via persistence.xml or createEMF properties Map
-    * [OPENJPA-1083] - org.apache.openjpa.persistence.kernel.TestEJBState fails with two exceptions ORA-00904 and ORA-02275 against oracleDB.
-    * [OPENJPA-1105] - OpenJPA 2.0 iteration 8 primary task
-    * [OPENJPA-1106] - Integration tests for Bean Validation providers - Part 1
-    * [OPENJPA-1107] - Provide TraversableResolver for use with Bean Validation Factory
-    * [OPENJPA-1111] - Validation mode of callback should cause a PersistenceException when no provider is available
-    * [OPENJPA-1112] - JPA2 Query result of embeddable object can not be further updated
-    * [OPENJPA-1130] - Use maven-jar-plugin to create a o-p-j-tests.jar to share base TestCase classes across modules
-    * [OPENJPA-1131] - Upgrade to maven-jar-plugin-2.2
-    * [OPENJPA-1149] - Add embeddables sample to the examples module
-    * [OPENJPA-1155] - BrokerImpl.detachAllInternal() does not detach newly loaded entities
-    * [OPENJPA-1157] - Integration tests for Bean Validation providers - Part 2
-    * [OPENJPA-1164] - Make sleepTime in SimpleWBCallback configurable
-    * [OPENJPA-1167] - Use Geronimo EA4 JPA spec jar
-    * [OPENJPA-1175] - Implement PersistenceUtil and isLoaded methods on the provider
-    * [OPENJPA-1176] - Properties marked as private are no longer persistent
-    * [OPENJPA-1177] - Upgrade to Bean Validation JSR-303 1.0 CR3 Spec API
-    * [OPENJPA-1182] - PreUpdate and PostUpdate behavior
-    * [OPENJPA-1190] - Use Geronimo EA5 JPA spec jar
-    * [OPENJPA-1191] - Implement Tuple interface
-    * [OPENJPA-1194] - LockManager tests call platformSpeedTest() for every test method
-    * [OPENJPA-1202] - Compile against Geronimo JPA EA6
-    * [OPENJPA-1208] - Set specification level based upon persistence.xml version
-    * [OPENJPA-1210] - Specify derby timeouts via properties.
-    * [OPENJPA-1213] - query.setParameter() behaviour 
-    * [OPENJPA-1214] - RelationFieldStrategy behaviour
-    * [OPENJPA-1215] - detach()/detachCopy() behaviour
-    * [OPENJPA-1220] - Disable DynhamicEnhancerAgent for maven builds
-    * [OPENJPA-1223] - Update documentation for autoOff config option
-    * [OPENJPA-1228] - Change in default value of exclude-unlisted-classes in JPA 2.0
-    * [OPENJPA-1231] - Bean Validation sample
-    * [OPENJPA-1232] - Keys in an EmbeddedCollection are returned as PCData objects when DataCache is enabled
-    * [OPENJPA-1233] - Update DerbyDictionary with new reserved words
-    * [OPENJPA-1235] - Support for optional name property on UniqueConstraint annotation and XML
-    * [OPENJPA-1237] - WriteBehind configuration exception not thrown when it should be
-    * [OPENJPA-1238] - Upgrade to latest commons-pool and commons-dbcp
-    * [OPENJPA-1240] - Lob, Temporal, Enumerated on element collections annotations and in XML
-    * [OPENJPA-1246] - Add configuration example for Ingres to User manual
-    * [OPENJPA-1247] - WriteBehindCallback sleepTime interval of one EMF datacache adversely impacting other EMF datacache
-    * [OPENJPA-1252] - Include a Derby Network Server test profile
-    * [OPENJPA-1261] - JPQL query result shape for multi-selections including multi-select-new-constructor
-    * [OPENJPA-1264] - Support shared-cache-mode element
-    * [OPENJPA-1266] - JDBC date/timestamp literals in JPQL
-    * [OPENJPA-1270] - Assert that relationships defined in a mapped superclass must be unidirectional
-    * [OPENJPA-1271] - Support CacheStoreMode and CacheRetrieveMode properties for EntityManager
-    * [OPENJPA-1272] - Add tests for element collection association overrides defined in XML
-    * [OPENJPA-1274] - Support cascade-detach via orm.xml
-    * [OPENJPA-1282] - Update validation spec api and provider dependencies to spec level CR5
-    * [OPENJPA-1292] - NullPointerException when handling WriteBehindConfigurationException
-    * [OPENJPA-1298] - WriteBehindCache Callback Singleton
-    * [OPENJPA-1301] - EntityManagerFactoryImpl
-    * [OPENJPA-1309] - DB2 requires CAST for argument passed to datastore MOD function
-    * [OPENJPA-1310] - SQLServer requires XML in UTF-16 instead of UTF-8
-    * [OPENJPA-1315] - org.apache.openjpa.persistence.QueryImpl
-    * [OPENJPA-1319] - EntityManagerImpl
-    * [OPENJPA-1323] - Relax em.refresh TransactionRequireException thown condition
-    * [OPENJPA-1327] - Document JPQL Query updates
-
-Bug
----
-    * [OPENJPA-386] - org.apache.openjpa.meta.ClassMetaData.validateAppIdClass() does not take @MappedSuperclass into account
-    * [OPENJPA-466] - Primary key constraint violated using (Oracle) sequence to generate ID in multithreaded app
-    * [OPENJPA-525] - Inserts new entity with NULL value for Clob column actually inserts empty string
-    * [OPENJPA-890] - Typos and inconsistent method signature styles in the user manual
-    * [OPENJPA-922] - setByteArrayInputStream being used in stead of setBytes
-    * [OPENJPA-932] - Runtime enhancer doesn't work propery if there is a trailing persistence.xml file on the classpath.
-    * [OPENJPA-934] - Oversight in TestSequenceGenerator
-    * [OPENJPA-973] - Allow DB2 JCC driver to work with Informix database
-    * [OPENJPA-1002] - Select range doesn't work on Oracle JDBC driver
-    * [OPENJPA-1043] - JPQL queries do not support queries on a MappedSuperclass
-    * [OPENJPA-1049] - Query against a MappedSuperclass is not supported
-    * [OPENJPA-1061] - Entities extending from a Mapped Superclass that defines the ID fields share the same ObjectID type parameter
-    * [OPENJPA-1065] - Prepared Query Cache does not work with DataCache 
-    * [OPENJPA-1074] - OrderColumn does not maintain index upon inter-list element removal - Phase 1
-    * [OPENJPA-1100] - @Version-Annotation on Column with unsupported type (e.g. BigDecimal) is silently ignored, but should raise an error
-    * [OPENJPA-1116] - Annotation Strategy not working
-    * [OPENJPA-1117] - Missing AgentClass attribute in openjpa-all-xxx.jar manifest.mf
-    * [OPENJPA-1119] - NPE in InstrumentationFactory
-    * [OPENJPA-1120] - idEquals() broken in BigDecimalId and BigIntegerId
-    * [OPENJPA-1121] - Enums cause a ClassNotFoundException in the MappingTool
-    * [OPENJPA-1125] - A message is logged about dynamically loading the class enhancer even though I'm using the -javaagent
-    * [OPENJPA-1127] - Typos in user manual and log messages
-    * [OPENJPA-1132] - Dropping constraints fails on MySQL
-    * [OPENJPA-1133] - DBDictionary.getPlaceholderValueString returns 0 for boolean which fails in PostgreSQL database.
-    * [OPENJPA-1135] - Overrides are not applied when embeddables are defined in XML
-    * [OPENJPA-1139] - checkstyle results in velocity errors in build output
-    * [OPENJPA-1156] - Path length issues on Windows 
-    * [OPENJPA-1158] - Incorrect handling of long values in AbstractResult
-    * [OPENJPA-1159] - Bad error message for find of an Entity with compound primary key if parameter of wrong class
-    * [OPENJPA-1163] - Data consistency issues while modifying collections.
-    * [OPENJPA-1168] - NPE in UUIDGenerator.initializeForType1()
-    * [OPENJPA-1170] - Upgrade to Bean Validation JSR-303 1.0 CR2 Spec API
-    * [OPENJPA-1174] - OpenJPA performs differently with orm.xml and annotations
-    * [OPENJPA-1184] - Inverse relations not set for MapKey field when using parallel eager select
-    * [OPENJPA-1200] - Incorrect Entity is returned if ElementClassCriteria is not selected.
-    * [OPENJPA-1201] - "Mapped by" field not set when contained in superclass 
-    * [OPENJPA-1203] - JPA2 - createEMF should return null for unhandled PUs
-    * [OPENJPA-1204] - Argument type mismatch when an EmbeddedId contains an Emun type 
-    * [OPENJPA-1205] - Cannot retrieve Map<PersistenceCapable, PersistenceCapable> fields when DataCache is on
-    * [OPENJPA-1206] - Bean validation call to provider not Java 2 Enabled
-    * [OPENJPA-1211] - Enable string navigation in a From expression.
-    * [OPENJPA-1217] - Ensure comparisons do not contain two parameters with Derby (ie SELECT ... WHERE ? = ?)
-    * [OPENJPA-1218] - Cache.evict(Clazz) should remove subclasses as well
-    * [OPENJPA-1221] - Change openjpa-integration module pom's to reflect proper artifact-id
-    * [OPENJPA-1226] - Can not merge entity with nested embeddable
-    * [OPENJPA-1227] - SQL generation error when using data cache
-    * [OPENJPA-1230] - javax.persistence.validation.mode property in createEMF map failed to create emf
-    * [OPENJPA-1239] - Explicit access type set incorrectly within collection of embeddable with nested embeddable
-    * [OPENJPA-1242] - Unable to cascade delete an entity in an embeddable
-    * [OPENJPA-1250] - @ElementCollection with eagar fetch of a List<String> collection is causing a ClassCastException on a em.find(entity).
-    * [OPENJPA-1253] - JoinColumn annotation not allowed in conjunction with *ToMany annotation
-    * [OPENJPA-1256] - get java.lang.ClassCastException when IdClass contains an Enum Field
-    * [OPENJPA-1260] - Wrong sequence is generated for custom native sequence generator from getIdGenerator.
-    * [OPENJPA-1269] - The table attribute in the MapKeyColumn annotation is not honored
-    * [OPENJPA-1279] - Query results are not inserted into StoreCache properly
-    * [OPENJPA-1281] - Reparameter is not working properly for some sql if PreparedQueryCache is on
-    * [OPENJPA-1283] - Incorrect SQL for JPQL query selecting Map value from an elementCollection of a Map and the map the value is an embeddable
-    * [OPENJPA-1284] - Fix missing 1.0 schema license headers
-    * [OPENJPA-1286] - Relationships in mapped superclass must be unidirectional
-    * [OPENJPA-1294] - Nested JDBC calls fail for certain database
-    * [OPENJPA-1295] - Query with Escape '\' fails in MySQL
-    * [OPENJPA-1302] - Ehcache product derivation isn't detected when running in WebSphere
-    * [OPENJPA-1305] - WriteBehind 'callback; broker should always be unmanaged
-    * [OPENJPA-1333] - Oracle driver returns incorrect update count on batched insert
-    * [OPENJPA-1335] - Alternating manual delim id tests fail
-    * [OPENJPA-1338] - Allow comparison for VALUE(e) that maps to basic type
-    * [OPENJPA-1371] - Insert is called instead of Update when merge() with derived Identity
-
-Improvement
------------
-    * [OPENJPA-5] - OpenJPA doesn't compile with JDBC 4
-    * [OPENJPA-250] - Reduce synchronization bottlenecks in data cache, metadata repository, and lifecycle event manager
-    * [OPENJPA-651] - Disable dangerous "fallback enhancement", make openjpa.RuntimeUnenhancedClasses=unsupported the default
-    * [OPENJPA-703] - Cache ResultObjectProvider data to improve query performance
-    * [OPENJPA-952] - Utilize Sun JDK's Attach API to dynamically load the OpenJPA enhancer agent
-    * [OPENJPA-968] - Change in default detach() behavior for JPA 2.0
-    * [OPENJPA-1000] - Consistent usage of serialVersionUID
-    * [OPENJPA-1050] - Use generic types and remove casts wherever applicable
-    * [OPENJPA-1122] - Remove JDBC 3 related reflection from DBDictionary
-    * [OPENJPA-1126] - Note on Calendar and Java 1.3 no longer needed in user manual
-    * [OPENJPA-1136] - Add .gitignore for git users
-    * [OPENJPA-1146] - Shaded RuntimeUnenhancedClass(s)esModes
-    * [OPENJPA-1151] - Cache the current-time timestamp in AbstractQueryCache.onTypesChanged()
-    * [OPENJPA-1171] - Use StringBuilder instead of StringBuffer in SQLBuffer
-    * [OPENJPA-1180] - Query Parameter processing in JPA 2.0
-    * [OPENJPA-1245] - Move locking tests to a separate module
-    * [OPENJPA-1285] - Dynamic JDBC4 connection wrapper should maintain constructor refernce for faster instantiation
-    * [OPENJPA-1287] - Criteria query to generate 'optimize for 1 row' for DB2 if selection is an aggregate function
-
-New Feature
------------
-    * [OPENJPA-918] - Stored procedures not handling returns properly
-    * [OPENJPA-948] - Ingres DBDictionary
-    * [OPENJPA-1008] - Generate meta-model for JPA 2.0
-    * [OPENJPA-1009] - Populate canonical meta-model for strictly typed Criteria Query building
-    * [OPENJPA-1010] - Instantiate meta-model classes for JPA 2.0 from source code annotations
-    * [OPENJPA-1014] - Build weakly-typed Criteria API
-    * [OPENJPA-1089] - Provide for password encryption within persistence.xml
-    * [OPENJPA-1123] - MySQL query hints support
-    * [OPENJPA-1150] - Add WriteBehind mode to cache updates before flushing to backing store
-    * [OPENJPA-1152] - OpenJPA 2.0 iteration 9 primary task
-    * [OPENJPA-1187] - Output control for generated canonical metamodel source code
-    * [OPENJPA-1195] - Allow datastore function as query expression
-    * [OPENJPA-1198] - Query by Example
-    * [OPENJPA-1209] - OpenJPA 2.0 iteration 10 primary task
-    * [OPENJPA-1225] - Improve query result processing with composite pattern
-    * [OPENJPA-1241] - Add support for joining via keys of a Map attribute for Criteria query
-    * [OPENJPA-1251] - Add setProperty() method for JPA 2.0 EntityManager
-    * [OPENJPA-1265] - Support Edit on Criteria Query
-    * [OPENJPA-1267] - Support JDBC Escape syntax for temporal types on Criteria Query
-    * [OPENJPA-1268] - OpenJPA 2.0 iteration 11 primary task
-    * [OPENJPA-1276] - Support CQL for Criteria Query
-    * [OPENJPA-1277] - Support JPQL to Criteria Query conversion
-    * [OPENJPA-1278] - Define interfaces for OpenJPA specific extension to Criteria Query API
-    * [OPENJPA-1288] - Support alias() on Criteria Query API
-    * [OPENJPA-1330] - Support uni-/bi-directional Many-To-One mapping using Join Table Strategy
-    * [OPENJPA-1331] - Support bi-/uni-directional One-to-One mappin using Join Table Strategy
-
-Task
-----
-    * [OPENJPA-1143] - Synch JPA 2.0 development with evolving JPA 2.0 Spec
-    * [OPENJPA-1229] - OpenJPA 2.0 milestone 3 distribution
-    * [OPENJPA-1262] - Update to JPA Spec Version EA7 (dated 08-19-2009)
-    * [OPENJPA-1275] - Update to JPA Spec Version Public Draft Version 2 (dated 08-31-2009)
-    * [OPENJPA-1290] - Document Criteria API
-
-Test
-----
-    * [OPENJPA-1071] - Derby test suit speed-up
-    * [OPENJPA-1124] - TestDateQueries and TestQueryTimeout are locale dependent
-    * [OPENJPA-1147] - Streaming LOB tests and TestAutoIncrement not executed by test suite
-    * [OPENJPA-1148] - Build failures with 64bit Sun JDK6 on Linux due to PermGen space
-    * [OPENJPA-1222] - Enable Criteria testcases
-
-
-
-Included Changes in OpenJPA 2.0.0 Milestone 2
----------------------------------------------
-
-Sub-task
---------
-    * [OPENJPA-722] - persist - clear - merge scenario doesn't work
-    * [OPENJPA-744] - Extra SQL on LAZY/EAGER  ManyToOne relation
-    * [OPENJPA-754] - Un-scheduled pre/postUpdate callbacks from persist.
-    * [OPENJPA-765] - Check for insertable or updateable before checking value for null
-    * [OPENJPA-769] - Add compatibility option to use previous column naming convention
-    * [OPENJPA-770] - Use annotations instead of excluding tests in pom.xml
-    * [OPENJPA-782] - Support for collections of embeddables and basic types
-    * [OPENJPA-803] - Update SequenceGenerator to support schema and catalog
-    * [OPENJPA-804] - JPA 2.0 spec API update - iteration 1
-    * [OPENJPA-805] - JPQL updates - iteration 1
-    * [OPENJPA-809] - Support JPA 2.0 Cache Interface
-    * [OPENJPA-823] - Add JPA 2.0 schemas and appropriately validate for version
-    * [OPENJPA-837] - OpenJPA 2.0: Update OpenJPA documentation with new persistence schemas
-    * [OPENJPA-849] - Add metadata-type getter methods to EntityManager
-    * [OPENJPA-850] - Support equivalent names for plug-in value
-    * [OPENJPA-851] - Support for enhanced map collection (and corresponding annotations)
-    * [OPENJPA-855] - JPA2 Query support for Index function
-    * [OPENJPA-856] - JPA2 Query support for entity type expressions
-    * [OPENJPA-861] - Update the manual for XML column support for MySQL
-    * [OPENJPA-865] - JPA2 Query support for collection-valued input parameters in IN Expression predicate
-    * [OPENJPA-869] - Support @OrderColumn annotation and XML-based definition - phase 2
-    * [OPENJPA-870] - Support orphanRemoval attribute on relationships
-    * [OPENJPA-871] - Support derived identity 
-    * [OPENJPA-878] - Support default query hint for query timeout
-    * [OPENJPA-879] - JPA2 Query support for general and qualified identification variable 
-    * [OPENJPA-880] - Use maven-remote-resources-plugin to generate required legal files
-    * [OPENJPA-885] - Support clear methods on EntityManager, including new CascadeType.CLEAR 
-    * [OPENJPA-891] - JPA2 LockTypeMode Support
-    * [OPENJPA-903] - org.apache.openjpa.persistence.exception.TestException hangs when run using PostgreSQL 8.3 database 
-    * [OPENJPA-905] - org.apache.openjpa.persistence.kernel.TestProxies2
-    * [OPENJPA-906] - org.apache.openjpa.persistence.jpql.expressions.TestEntityTypeExpression
-    * [OPENJPA-907] - org.apache.openjpa.persistence.jdbc.update.TestParentChild
-    * [OPENJPA-908] - org.apache.openjpa.persistence.annotations.TestOneToOne
-    * [OPENJPA-926] - Support explicit access types including @Access annotation and AccessType enum and XML
-    * [OPENJPA-930] - @AttributeOverride updates 
-    * [OPENJPA-931] - Support derived identity (spec 2.4.1.2 Ex 5(a), 6 (a))
-    * [OPENJPA-937] - @AssociationOverride updates 
-    * [OPENJPA-946] - Oracle create table(s) exceptions
-    * [OPENJPA-957] - Support lock timeout hint on applicable methods
-    * [OPENJPA-959] - Support lock mode on Query interface
-    * [OPENJPA-960] - Support unwrap methods on EntityManager and Query interfaces
-    * [OPENJPA-961] - Support projection of element collection from a JPQL query
-    * [OPENJPA-962] - Support the use of delimited-identifiers
-    * [OPENJPA-963] - Add query timeout tests for PU and Map properties
-    * [OPENJPA-964] - Finish updating sql-error-state- codes.xml for query timeout support on other DBs
-    * [OPENJPA-967] - JPA2 Query support for selction of KEY, VALUE, ENTRY of a Map value
-    * [OPENJPA-972] - Support standard provider properties in PersistenceProvider class
-    * [OPENJPA-978] - Allow third argument of JPQL SUBSTRING function to be optional
-    * [OPENJPA-990] - setHint should return IllegalArgumentException for invalid query/lock timeout values
-    * [OPENJPA-1012] - Test failures in TestManagedInterface with @ManagedInterface annotation when using JDK6
-    * [OPENJPA-1016] - JPA2 Query support for embeddables; nested embeddables; relationships from embeddables
-    * [OPENJPA-1023] - Message files contain windows EOL characters
-    * [OPENJPA-1024] - JPA2 Query scalar expression  in subquery 
-    * [OPENJPA-1026] - Ensure newlines at end of fie
-    * [OPENJPA-1027] - Document changes for detach methods
-    * [OPENJPA-1032] - Revert OpenJPAQuery.getPositionalParameters method signature back to 1.x signature
-    * [OPENJPA-1033] - Update supported database and driver matrix
-    * [OPENJPA-1034] - Removal of OrderColumn attributes per latest spec draft
-    * [OPENJPA-1035] - JPA2 Query allow map key/value path as argument of scalar functions
-    * [OPENJPA-1055] - Added MapKeyEnumerated and MapKeyTemporal annotations and XML. 
-    * [OPENJPA-1062] - Include OSGi bundle metadata
-    * [OPENJPA-1064] - JPA2 Query comparisons over instances of embeddable class are not supported
-    * [OPENJPA-1068] - Support Bean Validation: Entity validation upon lifecycle events
-    * [OPENJPA-1069] - OrderBy annotation applied to an element collection of basic type doesn't require property or field name 
-    * [OPENJPA-1076] - PersistenceProviderResolver interface and PersistenceProviderResolverHolder class
-    * [OPENJPA-1077] - Validation-mode element support added to persistence.xml and to createEMF properties Map
-    * [OPENJPA-1078] - Cache mode elements added to persistence.xml
-    * [OPENJPA-1082] - Validation target groups via persistence.xml or createEMF properties Map
-    * [OPENJPA-1090] - Oracle failures due to the following warning "This database dictionary "Oracle" does not support auto-assigned column values.  The column "pid" may not behave as desired."
-    * [OPENJPA-1094] - JPA2 Query support for KEY appear in subquery
-    * [OPENJPA-1098] - JPA2 Query support subselect_identification_variable
-    * [OPENJPA-1101] - OSGi Integration tests
-    * [OPENJPA-1102] - Support application/container provided ValidatorFactory
-    * [OPENJPA-1103] - Remove early-access disclaimer from the NOTICE files once the spec is released
-    * [OPENJPA-1106] - Integration tests for Bean Validation providers
-    * [OPENJPA-1111] - Validation mode of callback should cause a PersistenceException when no provider is available
-    * [OPENJPA-1113] - Reflection class performance improvement
-    * [OPENJPA-1114] - Bean Validation APIs should be an optional runtime dependency
-    * [OPENJPA-1115] - Finish support for delimited identifiers
-
-Bug
----
-    * [OPENJPA-207] - failure when composite ID has another composite ID as a field 
-    * [OPENJPA-218] - pcNewInstance and ApplicationId
-    * [OPENJPA-377] - RuntimeUnenhancedClasses support can go into a "half baked" state
-    * [OPENJPA-466] - Primary key constraint violated using (Oracle) sequence to generate ID in multithreaded app
-    * [OPENJPA-557] - Primary key sequences broken with postgres schemas
-    * [OPENJPA-580] - Need a better algorithm to find DBDictionary classname in DBDictionaryFactory
-    * [OPENJPA-732] - Updates to entities via Lifecycle callback methods 
-    * [OPENJPA-751] - Typos in the manual
-    * [OPENJPA-755] - OpenJPA thows EntityExistsException trying persist a preexisting, detached entity
-    * [OPENJPA-761] - SchemaTool failed with a NPE in ForeignKey.join
-    * [OPENJPA-762] - Batch execution fails for Oracle when batch limit set to -1 (unlimited batch size)
-    * [OPENJPA-764] - Query parsing error with IN expression and String functions such as UPPER()
-    * [OPENJPA-777] - Exception is thrown during retrieval of an entity which contains a persistent collection of embeddable
-    * [OPENJPA-787] - slices query.getSingleResult is broken
-    * [OPENJPA-792] - An entity persist may fail when @MappedSupercalss is specified. 
-    * [OPENJPA-795] - enhancer throws an exception when parsing column name "first.name" because it thinks 'first' is a table name
-    * [OPENJPA-798] - slices does can not work with sequences properly (no adding objects?)
-    * [OPENJPA-811] - With Oracle, OpenJPA allows setting non-nullable field to null
-    * [OPENJPA-815] - Exception is thrown when retrieving an entity which contains an embeddable and the embeddable contains a toMany relation 
-    * [OPENJPA-818] - TCK module should use Geronimo JPA 2.0 EA jar
-    * [OPENJPA-819] - NPE when no metadata is defined for a persistent class
-    * [OPENJPA-828] - Externalizer fails with ClassCastException with runtime enhancement
-    * [OPENJPA-834] - State field mapped to XML column has incorrect value when loaded from database
-    * [OPENJPA-835] - Loading nested toMany EAGER relation resuled in PersistenceException
-    * [OPENJPA-836] - after em.clear the datacache is inconsistent
-    * [OPENJPA-838] - fix parameter setting problem when QuerySQLCache is on
-    * [OPENJPA-843] - Unnecessary version update on inverse-side of a 1-m relationship
-    * [OPENJPA-847] - Retrieving database generated keys gets never enabled
-    * [OPENJPA-853] - Informix cursor not open problem if synchronizeMapping set true
-    * [OPENJPA-863] - Unexpected mere-cascade behavior when cascade.all/merge specified on both sides of relationships !!!
-    * [OPENJPA-864] - Subquery problems with SYNTAX_DATABASE (Oracle)
-    * [OPENJPA-866] - DBDictionary.maxTableNameLength is not checked when using SynchronizeMappings
-    * [OPENJPA-872] - Compound custom id in bidirectional many-to-one
-    * [OPENJPA-873] - @MappedSuperClass Cause Null Pointer Exception in Class With IdClass
-    * [OPENJPA-883] - Documentation is out of date for some MySQLDictionary properties
-    * [OPENJPA-884] - Logging oversight in DB2Dictionary
-    * [OPENJPA-886] - Certain query failing after svn:739123
-    * [OPENJPA-887] - Assertion oversight in TestLibService
-    * [OPENJPA-890] - Typos and inconsistent method signature styles in the user manual
-    * [OPENJPA-892] - Incorrect package name of javax.jdo for Query class image
-    * [OPENJPA-896] - Several source files include Windows EoL chars
-    * [OPENJPA-898] - hints don't work for NamedNativeQuery
-    * [OPENJPA-912] - Potential NPE in setInverseRelation
-    * [OPENJPA-913] - A deadlock issue happens when DirtyListener is used
-    * [OPENJPA-916] - DistributedTemplate is incorrectly setting some attributes on the statements
-    * [OPENJPA-917] - stored procedures throw InvalidStateException when using getSingleResult() or getResultList()
-    * [OPENJPA-919] - JUnit for Bi-directional OneToOne with null relationships
-    * [OPENJPA-922] - setByteArrayInputStream being used in stead of setBytes
-    * [OPENJPA-923] - Update documentation for properly configuring Oracle, PostgreSQL, and DB2
-    * [OPENJPA-925] - Bidirectional OneToOne relation incorrectly set in loadEagerJoin
-    * [OPENJPA-927] - Fix definition of javax.persistence.query.timeout property
-    * [OPENJPA-928] - getSupportedProperties() shows wsjpa property by default
-    * [OPENJPA-933] - Database version detection in MySQLDictionary is not reliable
-    * [OPENJPA-935] - Removing entities with Embedded field issue multiple delete statements
-    * [OPENJPA-947] - Overly verbose TestCases
-    * [OPENJPA-951] - Javadoc jar file does not contain legal files
-    * [OPENJPA-954] - openjpa-slice build fails due to tests relying on openjpa-persistence-jdbc/src/test/java/org/apache/openjpa/persistence/test/AllowFailure.java
-    * [OPENJPA-955] - MethodQL parameter passing broken
-    * [OPENJPA-965] - Open up FinderCacheImpl for non-JDBC or JDBC-like  implementation of preparing statement/query execution
-    * [OPENJPA-970] - SchemaToolTask does not have "dropTables" argument
-    * [OPENJPA-973] - Allow DB2 JCC driver to work with Informix database
-    * [OPENJPA-974] - Docs:  Add new Exception types
-    * [OPENJPA-981] - @Replicated is only recognized for root instance but not the instanes reachable from the root during persist() operation.
-    * [OPENJPA-992] - Failed to throw EntityExistException on duplicated persist in DB2
-    * [OPENJPA-999] - Missing sql-warning in the localizer.properties
-    * [OPENJPA-1002] - Select range doesn't work on Oracle JDBC driver
-    * [OPENJPA-1004] - Derived Identity fails when parent id is auto-generated
-    * [OPENJPA-1006] - Disabling QueryCaching at runtime does not work
-    * [OPENJPA-1028] - ClassCastException during findBy when embeddable is involved
-    * [OPENJPA-1029] - SQLServerDictionary causes NumberFormatException if MS SQL Server JDBC driver is used
-    * [OPENJPA-1031] - Update docs that refer to OpenJPAEntityManager.getExtent(..)
-    * [OPENJPA-1040] - Fix code formatting errors introduced by OPENJPA-1010
-    * [OPENJPA-1041] - OrderBy on nested embeddables is not working
-    * [OPENJPA-1046] - Unique Constraint on MappedSupperClass causes NullPointerException
-    * [OPENJPA-1047] - Unique Constraint on sibling classes causes name conflict
-    * [OPENJPA-1049] - Query against a MappedSuperclass is not supported
-    * [OPENJPA-1051] - [patch] Mappingtool doesn't check name conflicts if MappingDefaultsImpl is called with multiple columns.
-    * [OPENJPA-1053] - Updating an entity by setting an embeddable to it does not work properly if the embeddable has a cascade delete relationship with another entity
-    * [OPENJPA-1054] - Large result sets do not work with MySQL
-    * [OPENJPA-1057] - Foreign keys are not properly set for ConstraintUpdateManager to determine the correct order of the sql
-    * [OPENJPA-1058] - Duplicate rows in DB when UniqueConstraint set
-    * [OPENJPA-1060] - Attempting to returning a list over RMI/IIOP results in serialization exception
-    * [OPENJPA-1067] - SetQueryTimeout(x) where x != 0 causes SQLException with DB2 on Z/OS
-    * [OPENJPA-1070] - Restore support for composite foreign keys on MySQL
-    * [OPENJPA-1072] - Nested embeddable with a relationship to an Entity with a generated id doesn't persist the relationship
-    * [OPENJPA-1088] - Build updates for openjpa-examples and openjpa-integration/examples
-    * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
-    * [OPENJPA-1099] - <xmp> tag in Javadoc comments causes Javadoc corruption
-
-Improvement
------------
-    * [OPENJPA-213] - @Column with precision and scale should result in NUMERIC(precision, scale)
-    * [OPENJPA-736] - Combine insert and select SQL together for generated Id strategy=GenerationType.IDENTITY 
-    * [OPENJPA-742] - Add line number and column number to QueryMetaData
-    * [OPENJPA-752] - ProxySetupStateManager.setProxyData routing through PersistanceCapable caused "PersistenceException: null"
-    * [OPENJPA-772] - Proper maven pluginManagement and use ianal-maven-plugin for enforcing legal files
-    * [OPENJPA-775] - Some Firedird setup tricks
-    * [OPENJPA-776] - Firebird 2 dictionary which supports sequences
-    * [OPENJPA-778] - cleaning up build for openjpa-kernel
-    * [OPENJPA-779] - patch for eclipse .project and .classpath files...
-    * [OPENJPA-780] - code review for DistributedStoreManager
-    * [OPENJPA-781] - openjpa-jdbc depends on postgres driver, should be "provided"
-    * [OPENJPA-783] - openjpa-lib/pom.xml has extraneous code
-    * [OPENJPA-784] - more pom.xml dependency cleanup
-    * [OPENJPA-817] - Order of inserts lost when using ConstraintUpdateManager
-    * [OPENJPA-854] - Testcases should not specify log level
-    * [OPENJPA-858] - Allow postPersist be invoked immediately after persist()
-    * [OPENJPA-876] - Better test profiles for proprietary databases (DB2, Oracle) and continuous build
-    * [OPENJPA-881] - Enable connection pooling for testcases. 
-    * [OPENJPA-882] - Upgrade to latest Geronimo Spec releases
-    * [OPENJPA-901] - Use hosted JAI artifacts as the default for the docbook build
-    * [OPENJPA-910] - Allow multiple keys for the same property to be specified at different levels
-    * [OPENJPA-949] - Allow override of Surefire test excludes from cmdline
-    * [OPENJPA-952] - Utilize Sun JDK's Attach API to dynamically load the OpenJPA enhancer agent
-    * [OPENJPA-968] - Change in default detach() behavior for JPA 2.0
-    * [OPENJPA-975] - Oracle needs ability to not have an escape character for search strings.
-    * [OPENJPA-983] - FirebirdDictionary improvements
-    * [OPENJPA-988] - Refactor JPA2/MixedLockManager to conform architectual module dependency
-    * [OPENJPA-1000] - Consistent usage of serialVersionUID
-    * [OPENJPA-1022] - Support distinct LockModeType.READ/OPTIMISTIC & WRITE/OPTIMISTIC_FORCE_INCREMENT
-    * [OPENJPA-1038] - Enhancer java.lang.StackOverflowError exception when circular dependencies are encountered within embeddables
-    * [OPENJPA-1045] - Add opt-in and opt-out configuration for L2 DataCache
-    * [OPENJPA-1056] - Add support for Sybase in the query timeout tests
-    * [OPENJPA-1063] - Create a new openjpa-all artifact to include runtime depends
-    * [OPENJPA-1066] - Generated ID starting with 0 can cause unexpected results
-    * [OPENJPA-1079] - Allow client to access the distributed JDBC connection
-
-New Feature
------------
-    * [OPENJPA-723] - Feature request for PostgreSQL XML Column Mapping
-    * [OPENJPA-767] - Better OSGi Integration
-    * [OPENJPA-773] - Upgrade to JPA 2
-    * [OPENJPA-800] - OpenJPA 2.0 iteration 1 primary task 
-    * [OPENJPA-807] - OpenJPA 2.0 iteration 2 primary task
-    * [OPENJPA-808] - OpenJPA 2.0 iteration 3 primary task
-    * [OPENJPA-831] - OpenJPA 2.0 iteration 1.5 (holiday) primary task
-    * [OPENJPA-846] - XML column support for MySQL
-    * [OPENJPA-875] - OpenJPA 2.0 iteration 4 primary task
-    * [OPENJPA-918] - Stored procedures not handling returns properly
-    * [OPENJPA-956] - OpenJPA 2.0 iteration 5 primary task
-    * [OPENJPA-966] - Support Replication-enabled MySQL  
-    * [OPENJPA-985] - Support dynamic addition of slices
-    * [OPENJPA-1005] - Add PersistenceXMLSchemaVersion(); support
-    * [OPENJPA-1007] - OpenJPA 2.0 iteration 6 primary task
-
-Test
-----
-    * [OPENJPA-247] - new-delete-new-find doesn't work
-    * [OPENJPA-833] - An improved test case for XML column mapping
-    * [OPENJPA-998] - Add @Ignore annotation support for testcases
-    * [OPENJPA-1015] - Enforce 80-column line width for source code
-    * [OPENJPA-1071] - Derby test suit speed-up
-    * [OPENJPA-1073] - Upgrade to latest maven-surefire-plugin
-    * [OPENJPA-1092] - enable test case for jpql
-
-
-
-Included Changes in OpenJPA 2.0.0 Milestone 1
----------------------------------------------
-
-Sub-task
---------
-    * [OPENJPA-765] - Check for insertable or updateable before checking value for null
-    * [OPENJPA-802] - Support @OrderColumn annotation and XML-based definition
-    * [OPENJPA-806] - Support Criteria API for JPA 2.0 - Iteration 1
-    * [OPENJPA-857] - Detect and store JPA version
-    * [OPENJPA-899] - Add support for JPA2.0 method Query.getHints()
-    * [OPENJPA-900] - Add support for JPA2.0 method Query.getSupportedHints()
-    * [OPENJPA-958] - Support lock mode on Named Query
-    * [OPENJPA-1013] - Build strictly-typed Criteria API
-
-Bug
----
-    * [OPENJPA-645] - Date millisecond precision lost for Informix IDS and SQLServer
-    * [OPENJPA-662] - Version field returns null when explicitly projected in SELECT clause
-    * [OPENJPA-677] - Single Table Inheritance Strategy causes entity identity issues
-    * [OPENJPA-680] - Flush followed by refresh on a new instance returns an instance with all fields but id cleared
-    * [OPENJPA-699] - SQLWarnings not handled properly with WarningAction set to "handle"
-    * [OPENJPA-794] - issues with closing/opening entity manager (slices) (can't seem to be able to create multiple entityManagers )
-    * [OPENJPA-799] - slices: can not handle multiple projections in one query ( select count(*), max(fieldA) .......)
-    * [OPENJPA-801] - slices: basic query is failing on sort.. not sure why
-    * [OPENJPA-812] - slices: aggregate queries fail if any slice has empty results
-    * [OPENJPA-821] - slices: DistributedStoreQuery$UpdateExecutor calls executeDelete by mistake
-    * [OPENJPA-824] - org.apache.openjpa.lib.util.ParseException when try to get property descriptor for property: CacheMarshallers
-    * [OPENJPA-825] - slices: hangs with multithreaded true
-    * [OPENJPA-828] - Externalizer fails with ClassCastException with runtime enhancement
-    * [OPENJPA-845] - Ordering across slice fails when ordering terms are not included in projection items
-    * [OPENJPA-886] - Certain query failing after svn:739123
-    * [OPENJPA-955] - MethodQL parameter passing broken
-    * [OPENJPA-1039] - Dynamic query predicates must not treat AND OR operators as associative
-
-Improvement
------------
-    * [OPENJPA-703] - Cache ResultObjectProvider data to improve query performance
-    * [OPENJPA-760] - Better DBDictionary autodetection
-    * [OPENJPA-841] - Create structures to hold Slice information with StateManangers
-    * [OPENJPA-858] - Allow postPersist be invoked immediately after persist()
-    * [OPENJPA-968] - Change in default detach() behavior for JPA 2.0
-    * [OPENJPA-620] - An eagerly initialized configuration with fail-fast behavior on persistent class resolution    
-
-New Feature
------------
-    * [OPENJPA-800] - OpenJPA 2.0 iteration 1 primary task 
-    * [OPENJPA-807] - OpenJPA 2.0 iteration 2 primary task
-    * [OPENJPA-831] - OpenJPA 2.0 iteration 1.5 (holiday) primary task
-    * [OPENJPA-966] - Support Replication-enabled MySQL  
-    * [OPENJPA-1008] - Generate meta-model for JPA 2.0
-    * [OPENJPA-1009] - Populate canonical meta-model for strictly typed Criteria Query building
-    * [OPENJPA-1010] - Instantiate meta-model classes for JPA 2.0 from source code annotations
-    * [OPENJPA-1011] - Instantiate meta-model classes for JPA 2.0 from XML descriptors
-    * [OPENJPA-1014] - Build weakly-typed Criteria API
-
-Task
-----
-    * [OPENJPA-995] - Migrate existing Criteria Query implementation as OpenJPA extension to prepare for upcoming JPA 2.0 spec changes
-
-Test
-----
-    * [OPENJPA-766] - Tests that currently fail should be committed to the repository
-
+    [OPENJPA-2029] - Add PreparedQuery tests for non-sequential positional parameters support

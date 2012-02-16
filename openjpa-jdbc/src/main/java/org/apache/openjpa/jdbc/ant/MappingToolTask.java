@@ -50,22 +50,22 @@ import org.apache.openjpa.util.MultiLoaderClassResolver;
  * <li><code>schemaFile</code></li>
  * <li><code>sqlFile</code></li>
  * <li><code>sqlEncode</code></li>
+ * <li><code>sqlTerminator</code></li>
  * <li><code>tmpClassLoader</code></li>
  * </ul> Of these arguments, only <code>action</code> is required.
  */
 public class MappingToolTask
     extends AbstractTask {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (MappingToolTask.class);
+    private static final Localizer _loc = Localizer.forPackage(MappingToolTask.class);
 
     protected MappingTool.Flags flags = new MappingTool.Flags();
-    protected String file = null;
-    protected String schemaFile = null;
-    protected String sqlFile = null;
-    protected String sqlEncode = null;
+    protected String file;
+    protected String schemaFile;
+    protected String sqlFile;
+    protected String sqlEncode;
     protected boolean tmpClassLoader = true;
-
+    
     /**
      * Set the enumerated MappingTool action type.
      */
@@ -169,6 +169,14 @@ public class MappingToolTask
      */
     public void setSQLEncode(String sqlEncode) {
         this.sqlEncode = sqlEncode;
+    }
+    
+    /**
+     * Sets the characters used to terminate a generated SQL.
+     * By default, a semicolon.
+     */
+    public void setSQLTerminator(String t) {
+        flags.sqlTerminator = t;
     }
 
     /**

@@ -46,7 +46,7 @@
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>${project.basedir}/../openjpa-project/checkstyle.xml</checkstyle.config.location>
-        <site.deploy.url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
+        <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
@@ -77,6 +77,11 @@
         <postgresql.version>8.4-701.jdbc3</postgresql.version>
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
+        <!-- Compile Java source/target class level -->
+        <compile.class.source>1.6</compile.class.source>
+        <compile.class.target>1.6</compile.class.target>
+        <compile.testclass.source>1.6</compile.testclass.source>
+        <compile.testclass.target>1.6</compile.testclass.target>
     </properties>
 
     <licenses>
@@ -138,9 +143,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/2.2.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/2.2.x</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/2.2.x</url>
     </scm>
 
     <modules>
@@ -614,8 +619,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>${compile.class.source}</source>
+                        <target>${compile.class.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
@@ -1046,6 +1051,19 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>test-source-compile</id>
+                        <phase>process-test-sources</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <source>${compile.testclass.source}</source>
+                            <target>${compile.testclass.target}</target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

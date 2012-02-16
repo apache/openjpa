@@ -67,6 +67,14 @@
             <outputDirectory>docs/javadoc</outputDirectory>
         </fileSet>
         <fileSet>
+        	<directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
+        	<outputDirectory>docs/schema</outputDirectory>
+        	<includes>
+        		<include>extendable-orm.xsd</include>
+        		<include>openjpa-orm.xsd</include>
+        	</includes>
+        </fileSet>        
+        <fileSet>
             <directory>../openjpa-examples/image-gallery</directory>
             <outputDirectory>examples/image-gallery</outputDirectory>
             <excludes>

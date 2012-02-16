@@ -22,8 +22,8 @@
     This ANT build file is used to run the JPA 2.0 TCK. It assumes that you have
     the TCK, config  and patches zip files located at:
 
-        ${user.home}/.m2/privaterepos/jpatck-2.0_05-Dec-2010.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_05-Dec-2010_config.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Aug-2011.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Aug-2011_config.zip
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" and "tck_patches.zip" system property.
@@ -54,7 +54,7 @@
                       then extracts them.
      -->
     <target name="init">
-        <property name="tck.level" value="jpatck-2.0_05-Dec-2010" />
+        <property name="tck.level" value="jpatck-2.0_15-Aug-2011" />
         <property name="tck.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}.zip" />
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
@@ -323,7 +323,7 @@ databaseName=${db.name}
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>
-            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all.tests" tmo="${jpatck.run.tmo}" />
+            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all" tmo="${jpatck.run.tmo}" />
         </else>
         </if>
 

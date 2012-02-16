@@ -45,10 +45,10 @@ public class BeanLifecycleCallbacks
     /**
      * Constructor. Make the callback on an instance of the given type.
      *
-     * @arg whether another argunent is expected such as AfterDetach
+     * @arg whether another argument is expected such as AfterDetach
      */
-    public BeanLifecycleCallbacks(Class cls, String method, boolean arg,
-        Class type) {
+    public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg,
+        Class<?> type) {
         this(cls, getMethod(cls, method, arg ? new Class[]{ Object.class,
             type } : new Class[]{ type }), arg);
     }
@@ -56,12 +56,12 @@ public class BeanLifecycleCallbacks
     /**
      * Constructor. Make the callback on an instance of the given type.
      */
-    public BeanLifecycleCallbacks(Class cls, Method method, boolean arg) {
+    public BeanLifecycleCallbacks(Class<?> cls, Method method, boolean arg) {
         super(method, arg);
         _listener = newListener(cls);
     }
     
-    private Object newListener(Class cls) {
+    private Object newListener(Class<?> cls) {
         try {
             return AccessController.doPrivileged(
                 J2DoPrivHelper.newInstanceAction(cls));
@@ -88,7 +88,7 @@ public class BeanLifecycleCallbacks
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
         super.readExternal(in);
-        Class cls = (Class) in.readObject();
+        Class<?> cls = (Class<?>) in.readObject();
         _listener = newListener(cls);
     }
 

@@ -127,7 +127,7 @@ public class SourceCode {
 	 * @param name fully-qualified name of a class
 	 * @return an existing class name instance or a new one. 
 	 */
-	ClassName getOrCreateImport(String name) {
+	public ClassName getOrCreateImport(String name) {
 	    for (Import i : imports) {
 	        if (i.name.getFullName().equals(name))
 	            return i.name;
@@ -368,6 +368,7 @@ public class SourceCode {
 		private List<ClassName> interfaces = new ArrayList<ClassName>();
 	    private Set<Field> fields   = new TreeSet<Field>();
 	    private Set<Method> methods = new TreeSet<Method>();
+	    private Set<Constructor> constructors = new TreeSet<Constructor>();
 		
 		public Class(String name) {
 			super(name, getOrCreateImport(name));
@@ -439,6 +440,13 @@ public class SourceCode {
 	        return method;
 	    }
 
+	    public Constructor addConstructor(){
+	        Constructor c = new Constructor(type.simpleName);
+	           if (!constructors.add(c)) 
+	                throw new IllegalArgumentException(_loc.get(
+	                    "src-duplicate-constructor", c, this).toString());
+	            return c;
+	    }
 	    public void write(PrintWriter out, int tab) {
 			super.write(out, tab);
 			if (isAbstract) 
@@ -452,6 +460,9 @@ public class SourceCode {
 			out.println(SPACE + BLOCK_DELIMITER.start);
 	        for (Field field:fields) 
 	            field.write(out, 1);
+	        for(Constructor ctor : constructors){
+	            ctor.write(out, 1);
+	        }
 	        for (Method method:methods) 
 	            method.write(out, 1);
 	        out.println(BLOCK_DELIMITER.end);
@@ -536,11 +547,13 @@ public class SourceCode {
 	 * 
 	 *
 	 */
-	class Method  extends Element<Method> {
+	public class Method extends Element<Method> {
 		private boolean isAbstract;
 		private List<Argument<ClassName,String>> args = new ArrayList<Argument<ClassName,String>>();
 		private List<String> codeLines = new ArrayList<String>();
-		
+		int tabCount = 0;
+		String tab = "";
+
         Method(String n, String t) {
             this(n, getOrCreateImport(t));
         }
@@ -555,15 +568,45 @@ public class SourceCode {
 			return this;
 		}
 		
-		public Method addCodeLine(String line) {
-			if (isAbstract)
-                throw new IllegalStateException("abstract method " + name 
-				    + " can not have body");
-			if (!line.endsWith(SEMICOLON))
-			    line = line + SEMICOLON;
-			codeLines.add(line);
-			return this;
+		public Method addArgument(String className, String argName){
+		    ClassName cn = getOrCreateImport(className);
+		    args.add(new Argument<ClassName, String>(cn, argName," "));
+		    return this;
 		}
+		
+        public void setTab(boolean inc) {
+            if (inc)
+                tabCount++;
+            else
+                tabCount--;
+            tab = "";
+            for (int i = 0; i < tabCount * TABSIZE; i++) {
+                tab += SPACE;
+            }
+        }
+
+        public Method addCodeLine(String line) {
+            if (isAbstract)
+                throw new IllegalStateException("abstract method " + name + " can not have body");
+            // This doesn't handle try{ ... catch(){ if{
+            if (line.endsWith("{") || line.endsWith("}")) {
+
+            }
+            if (!line.endsWith(SEMICOLON)
+                && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
+                line = line + SEMICOLON;
+            codeLines.add(tab + line);
+            return this;
+        }
+
+        /**
+         * if tabInc = true, the current line, and all following lines will be tabbed.
+         *  If false, a tab will be removed.
+         */
+        public Method addCodeLine(String line, boolean tabInc) {
+            setTab(tabInc);
+            return addCodeLine(line);
+        }
 		
 		public Method makeAbstract() {
 			if (codeLines.isEmpty())
@@ -607,6 +650,75 @@ public class SourceCode {
 		}
 	}
 	
+	public class Constructor extends Element<Constructor> {
+	    private List<Argument<ClassName,String>> args = new ArrayList<Argument<ClassName,String>>();
+        private List<String> codeLines = new ArrayList<String>();
+        int tabCount = 0;
+        String tab = "";
+        
+	    public Constructor(String name) {
+	        super(name, null);
+	        makePublic();
+        }
+        
+        public Constructor addArgument(Argument<ClassName,String> arg) {
+            args.add(arg);
+            return this;
+        }
+
+        public Constructor addArgument(String className, String argName) {
+            ClassName cn = getOrCreateImport(className);
+            args.add(new Argument<ClassName, String>(cn, argName, " "));
+            return this;
+        }
+        
+        public Constructor addCodeLine(String line) {
+            // This doesn't handle try{ ... catch(){ if{
+            if (line.endsWith("{") || line.endsWith("}")) {
+
+            }
+            if (!line.endsWith(SEMICOLON)
+                && !(line.isEmpty() || line.endsWith("{") || line.endsWith("}") || line.startsWith("if")))
+                line = line + SEMICOLON;
+            codeLines.add(tab + line);
+            return this;
+        }
+        /**
+         *  if tabInc = true, the current line, and all following lines will be tabbed. If false, a tab will be removed.
+         */
+        public Constructor addCodeLine(String line, boolean tabInc) {
+            setTab(tabInc);
+            return addCodeLine(line);
+        }
+        
+        public void setTab(boolean inc) {
+            if (inc)
+                tabCount++;
+            else
+                tabCount--;
+            tab = "";
+            for (int i = 0; i < tabCount * TABSIZE; i++) {
+                tab += SPACE;
+            }
+        }
+        
+        @Override
+        public void write(PrintWriter out, int tab) {
+            out.println(BLANK);
+            super.write(out, tab);
+            out.print(name);
+            writeList(out, BLANK, args, ARGS_DELIMITER, true);
+
+            out.println(SPACE + BLOCK_DELIMITER.start);
+            for (String line : codeLines) {
+                tab(out, tab+1);
+                out.println(line);
+            }
+            tab(out, tab);
+            out.println(BLOCK_DELIMITER.end);
+        }
+	    
+	}
 	/**
 	 * Represents <code>import</code> statement.
 	 *
@@ -875,7 +987,7 @@ public class SourceCode {
 	    final char end;
 	    
         public Delimiter() {
-            this((char)0, (char)0);
+            this((char)' ', (char)' ');
         }
 
 	    public Delimiter(String pair) {

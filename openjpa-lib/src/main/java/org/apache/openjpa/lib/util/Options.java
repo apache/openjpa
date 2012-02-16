@@ -177,7 +177,7 @@ public class Options extends TypedProperties {
         // set all defaults that have no explicit value
         Map.Entry entry = null;
         if (defaults != null) {
-            for (Iterator itr = defaults.entrySet().iterator(); itr.hasNext();) {
+            for (Iterator<?> itr = defaults.entrySet().iterator(); itr.hasNext();) {
                 entry = (Map.Entry) itr.next();
                 if (!containsKey(entry.getKey()))
                     setInto(obj, entry);
@@ -187,7 +187,7 @@ public class Options extends TypedProperties {
         // set from main map
         Options invalidEntries = null;
         Map.Entry e;
-        for (Iterator itr = entrySet().iterator(); itr.hasNext();) {
+        for (Iterator<?> itr = entrySet().iterator(); itr.hasNext();) {
             e = (Map.Entry) itr.next();
             if (!setInto(obj, e)) {
                 if (invalidEntries == null)
@@ -310,7 +310,7 @@ public class Options extends TypedProperties {
         String get = "get" + base;
 
         // look for a setter/getter matching the key; look for methods first
-        Class type = match[0].getClass();
+        Class<? extends Object> type = match[0].getClass();
         Method[] meths = type.getMethods();
         Method setMeth = null;
         Method getMeth = null;
@@ -366,7 +366,7 @@ public class Options extends TypedProperties {
             // if no getter or current inner is null, try to create a new
             // inner instance and set it in object
             if (inner == null && setter != null) {
-                Class innerType = getType(setter)[0];
+                Class<?> innerType = getType(setter)[0];
                 try {
                     inner = AccessController.doPrivileged(
                         J2DoPrivHelper.newInstanceAction(innerType));
@@ -387,7 +387,7 @@ public class Options extends TypedProperties {
     /**
      * Return the types of the parameters needed to set the given member.
      */
-    private static Class[] getType(Object member) {
+    private static Class<?>[] getType(Object member) {
         if (member instanceof Method)
             return ((Method) member).getParameterTypes();
         return new Class[]{ ((Field) member).getType() };
@@ -463,7 +463,7 @@ public class Options extends TypedProperties {
     /**
      * Returns the default value for the given parameter type.
      */
-    private Object getDefaultValue(Class type) {
+    private Object getDefaultValue(Class<?> type) {
         for (int i = 0; i < _primWrappers.length; i++)
             if (_primWrappers[i][0] == type)
                 return _primWrappers[i][2];

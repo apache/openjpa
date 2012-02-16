@@ -440,22 +440,22 @@ public class JavaTypes {
      * Helper method to return the given array value as a collection.
      */
     @SuppressWarnings("unchecked")
-    public static List toList(Object val, Class<?> elem, boolean mutable) {
+    public static <T> List<T> toList(Object val, Class<T> elem, boolean mutable) {
         if (val == null)
             return null;
 
-        List l;
+        List<T> l;
         if (!elem.isPrimitive()) {
             // if an object array, use built-in list function
-            l = Arrays.asList((Object[]) val);
+            l = Arrays.asList((T[]) val);
             if (mutable)
-                l = new ArrayList(l);
+                l = new ArrayList<T>(l);
         } else {
             // convert to list of wrapper objects
             int length = Array.getLength(val);
-            l = new ArrayList(length);
+            l = new ArrayList<T>(length);
             for (int i = 0; i < length; i++)
-                l.add(Array.get(val, i));
+                l.add((T)Array.get(val, i));
         }
         return l;
     }

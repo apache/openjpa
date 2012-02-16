@@ -1399,9 +1399,6 @@ public class DBDictionary
         } else if (val instanceof Calendard) {
             cald = (Calendard) val;
             val = cald.value;
-        } else if (val instanceof BindParameter) {
-        	BindParameter bParm = (BindParameter) val;
-        	val = bParm.getValue();
         }
 
         if (val == null)
@@ -2286,7 +2283,7 @@ public class DBDictionary
                     if (join.isCorrelated() && join.getForeignKey() != null) {
                         SQLBuffer where = new SQLBuffer(this);
                         where.append("(").append(toTraditionalJoin(join)).append(")");
-                        sel.where(where);
+                        sel.where(where.getSQL());
                     }                
                 }
             }
@@ -2346,7 +2343,7 @@ public class DBDictionary
                 if (join.getForeignKey() != null){
                     SQLBuffer where = new SQLBuffer(this);
                     where.append("(").append(toTraditionalJoin(join)).append(")");
-                    sel.where(where);
+                    sel.where(where.getSQL());
                 }                
                 break;
             }
@@ -2496,7 +2493,7 @@ public class DBDictionary
         if (join.getForeignKey() != null){
             SQLBuffer where = new SQLBuffer(this);
             where.append("(").append(toTraditionalJoin(join)).append(")");
-            sel.where(where);
+            sel.where(where.getSQL());
         }
 
         return null;

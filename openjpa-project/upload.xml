@@ -34,6 +34,7 @@
             <patternset>
                 <include name="**/javadoc/**" />
                 <include name="**/docbook/**" />
+            	<include name="**/schema/**"/>
             </patternset>
         </unzip>
     	
@@ -41,6 +42,7 @@
             <fileset dir="target/site/tempDocs">
                 <include name="**/javadoc/**"/>
                 <include name="**/docbook/**"/>
+            	<include name="**/schema/**"/>
                 <exclude name="docs/**"/>
             </fileset>
         </zip>

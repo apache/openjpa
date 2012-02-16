@@ -40,6 +40,7 @@ import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.InvalidStateException;
+import org.apache.openjpa.util.LRSProxy;
 import org.apache.openjpa.util.MapChangeTracker;
 import org.apache.openjpa.util.ObjectId;
 import org.apache.openjpa.util.Proxies;
@@ -154,7 +155,9 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     }
 
     /**
-     * If the current field is a usable proxy, return it; else return null.
+     * If the current field is a usable proxy and it should be a proxy, return it; else return null.
+     * 
+     * This method will skim out Calendar instances that were proxied before we knew if they need to be proxied.
      */
     private Proxy checkProxy(FieldMetaData fmd) {
         if (!(objval instanceof Proxy))
@@ -162,7 +165,8 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
 
         Proxy proxy = (Proxy) objval;
         if (proxy.getOwner() == null || Proxies.isOwner(proxy, _sm, field)) {
-            if(fmd.getProxyType().isAssignableFrom(proxy.getClass())){
+            if (fmd.getProxyType().isAssignableFrom(proxy.getClass()) 
+                    || (fmd.isLRS() && (objval instanceof LRSProxy))) {
                 return proxy;
             }
         }

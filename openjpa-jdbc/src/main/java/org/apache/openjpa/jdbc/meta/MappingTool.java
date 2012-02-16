@@ -100,8 +100,7 @@ public class MappingTool
         ACTION_IMPORT,
     };
 
-    private static final Localizer _loc =
-        Localizer.forPackage(MappingTool.class);
+    private static final Localizer _loc = Localizer.forPackage(MappingTool.class);
 
     private final JDBCConfiguration _conf;
     private final Log _log;
@@ -499,6 +498,7 @@ public class MappingTool
                             tool.setDropSequences(flags.dropSequences);
                             tool.setWriter(flags.sqlWriter);
                             tool.setOpenJPATables(flags.openjpaTables);
+                            tool.setSQLTerminator(flags.sqlTerminator);
                         }
 
                         tool.setSchemaGroup(getSchemaGroup());
@@ -980,6 +980,7 @@ public class MappingTool
         String schemaFileName = opts.removeProperty("schemaFile", "sf", null);
         String sqlFileName = opts.removeProperty("sqlFile", "sql", null);
         String sqlEncoding = opts.removeProperty("sqlEncode", "se", null);
+        String sqlTerminator = opts.removeProperty("sqlTerminator", "st", ";");
         String schemas = opts.removeProperty("s");
         if (schemas != null)
             opts.setProperty("schemas", schemas);
@@ -996,7 +997,7 @@ public class MappingTool
             flags.sqlWriter = Files.getWriter(sqlFileName, loader, sqlEncoding);
         else
             flags.sqlWriter = Files.getWriter(sqlFileName, loader);
-
+        flags.sqlTerminator = sqlTerminator;
         return run(conf, args, flags, loader);
     }
 
@@ -1133,6 +1134,7 @@ public class MappingTool
         public boolean primaryKeys = false;
         public boolean foreignKeys = false;
         public boolean indexes = false;
+        public String  sqlTerminator = ";";
     }
 
     /**

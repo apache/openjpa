@@ -74,7 +74,7 @@ public final class AsmAdaptor {
     }
 
     public static byte[] toByteArray(BCClass bc, byte[] returnBytes) throws IOException {
-        if (returnBytes.length >= 8 && (returnBytes[6] << 8 + returnBytes[7]) >= Java7_MajorVersion) {
+        if (bc.getMajorVersion() >= Java7_MajorVersion) {
             returnBytes = toJava7ByteArray(bc, returnBytes);
         }
         return returnBytes;

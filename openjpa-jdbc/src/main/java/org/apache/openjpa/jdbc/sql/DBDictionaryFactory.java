@@ -148,7 +148,7 @@ public class DBDictionaryFactory {
         String dclass, String props, Connection conn) {
         DBDictionary dict = null;
         try {
-            Class c = Class.forName(dclass, true,
+            Class<?> c = Class.forName(dclass, true,
                 AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(
                         DBDictionary.class)));
@@ -158,7 +158,7 @@ public class DBDictionaryFactory {
             // if the dictionary was not found, make another attempt
             // at loading the dictionary using the current thread.
             try {
-                Class c = Thread.currentThread().getContextClassLoader().loadClass(dclass);
+                Class<?> c = Thread.currentThread().getContextClassLoader().loadClass(dclass);
                 dict = (DBDictionary) AccessController.doPrivileged(
                         J2DoPrivHelper.newInstanceAction(c));
             } catch (Exception e) {
