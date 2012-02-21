@@ -1156,11 +1156,14 @@ public class EntityManagerImpl
     public void prepareForPooling() {
         assertNotCloseInvoked();
         clear();
-        _broker.lock();  // since this direct close path is not protected...
-        try {
-            _broker.getStoreManager().close();
-        } finally {
-            _broker.unlock();
+        // Do not close connection if ConnectionRetainMode is set to Always...
+        if (getConnectionRetainMode() != ConnectionRetainMode.ALWAYS) {
+            _broker.lock();  // since this direct close path is not protected...
+            try {
+                _broker.getStoreManager().close();
+            } finally {
+                _broker.unlock();
+            }
         }
     }
     
