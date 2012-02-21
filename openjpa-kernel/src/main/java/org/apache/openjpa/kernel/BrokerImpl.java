@@ -3457,6 +3457,9 @@ public class BrokerImpl
         if (_transAdditions != null) {
             _transAdditions.clear();
         }
+        if (_pending != null) {
+            _pending = null;
+        }
         if (_dmLite == null) {
             _dmLite = new DetachManagerLite(_conf);
         }

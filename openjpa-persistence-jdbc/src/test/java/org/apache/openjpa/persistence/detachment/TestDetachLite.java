@@ -45,6 +45,16 @@ public class TestDetachLite extends TestDetach {
         root = createData();
     }
 
+    public void testPendingClear() {
+        EntityManager em = emf.createEntityManager();
+        DMCustomer dm = em.find(DMCustomer.class, root.getId());
+        dm.setLastName(System.currentTimeMillis() + "--last");
+        em.clear();
+        em.getTransaction().begin();
+        // Pre OPENJPA-2136 this commit call would fail.
+        em.getTransaction().commit();
+    }
+
     public void testLeaveProxy() {
         Object[] p = props;
         p[1] = "loaded(LiteAutoDetach=true,DetachProxyFields=false)";
