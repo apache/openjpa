@@ -115,7 +115,7 @@ public class StateManagerImpl
     // information about the instance
     private transient PersistenceCapable _pc = null;
     private transient ClassMetaData _meta = null;
-    private BitSet _loaded = null;
+    protected BitSet _loaded = null;
     private BitSet _dirty = null;
     private BitSet _flush = null;
     private int _flags = 0;
@@ -130,7 +130,7 @@ public class StateManagerImpl
 
     // the managing persistence manager and lifecycle state
     private transient BrokerImpl _broker; // this is serialized specially
-    private PCState _state = PCState.TRANSIENT;
+    protected PCState _state = PCState.TRANSIENT;
 
     // the current and last loaded version indicators, and the lock object
     private Object _version = null;
@@ -167,8 +167,7 @@ public class StateManagerImpl
     /**
      * Constructor; supply id, type metadata, and owning persistence manager.
      */
-    protected StateManagerImpl(Object id, ClassMetaData meta, 
-        BrokerImpl broker) {
+    protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
         _meta = meta;
         _broker = broker;
