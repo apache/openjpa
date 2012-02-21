@@ -20,10 +20,8 @@ package org.apache.openjpa.lib.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.security.AccessController;
 import java.sql.Array;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -48,18 +46,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
-        LoggingCallableStatement;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
-        LoggingDatabaseMetaData;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
-        LoggingPreparedStatement;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
-        LoggingResultSet;
-import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator.LoggingConnection.
-        LoggingStatement;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
@@ -98,7 +85,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
     private int _prettyPrintLineLength = 60;
     private int _warningAction = WARN_IGNORE;
     private SQLWarningHandler _warningHandler;
-    private boolean _trackParameters = true;
     private boolean _printParameters = false;
 
     /**
@@ -141,20 +127,6 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
      */
     public int getPrettyPrintLineLength() {
         return _prettyPrintLineLength;
-    }
-
-    /**
-     * <p>Whether to track parameters for the purpose of reporting exceptions.</p>
-     */
-    public void setTrackParameters(boolean trackParameters) {
-        _trackParameters = trackParameters;
-    }
-
-    /**
-     * Whether to track parameters for the purpose of reporting exceptions.
-     */
-    public boolean getTrackParameters() {
-        return _trackParameters;
     }
 
     /**
@@ -1608,7 +1580,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             private boolean shouldTrackParameters() {
-                return _trackParameters || _logs.isSQLEnabled();
+                return _printParameters || _logs.isSQLEnabled();
             }
 
             private void setLogParameter(int index, boolean val) {
@@ -2324,7 +2296,7 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
             }
 
             private boolean shouldTrackParameters() {
-                return _trackParameters || _logs.isSQLEnabled();
+                return _printParameters || _logs.isSQLEnabled();
             }
 
             private void setLogParameter(int index, boolean val) {
