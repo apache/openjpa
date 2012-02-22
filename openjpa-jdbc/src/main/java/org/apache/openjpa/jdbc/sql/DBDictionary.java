@@ -44,7 +44,6 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.text.DateFormatSymbols;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,8 +60,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
-import java.util.spi.TimeZoneNameProvider;
 
 import javax.sql.DataSource;
 
@@ -288,6 +285,7 @@ public class DBDictionary
     public boolean storageLimitationsFatal = false;
     public boolean storeLargeNumbersAsStrings = false;
     public boolean storeCharsAsNumbers = true;
+    public boolean trimStringColumns = false;
     public boolean useGetBytesForBlobs = false;
     public boolean useSetBytesForBlobs = false;
     public boolean useGetObjectForBlobs = false;
@@ -883,7 +881,11 @@ public class DBDictionary
      */
     public String getString(ResultSet rs, int column)
         throws SQLException {
-        return rs.getString(column);
+        String res = rs.getString(column);
+        if ((res != null) && trimStringColumns) {
+            res = res.trim();
+        }
+        return res;
     }
 
     /**
