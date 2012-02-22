@@ -86,6 +86,11 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     protected Map<String, Object> normalProps;
     protected Map<String, Object> extendedProps;
 
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+    
     protected void commonSetUp(Class<?>... eClasses ) {
         normalProps = new HashMap<String, Object>();
         extendedProps = new HashMap<String, Object>();

@@ -34,6 +34,11 @@ public class TestMixedLockManagerNonVersion extends SQLListenerTestCase {
 
     private String empTableName;
 
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     public void setUp() {
         setUp(LockEmployeeNonVersion.class
             , "openjpa.LockManager", "mixed"

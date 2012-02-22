@@ -40,6 +40,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestNamedQueryLockMode extends SQLListenerTestCase {
     String lockClause = "FOR UPDATE";
     
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     public void setUp() {
         super.setUp(CLEAR_TABLES, LockEmployee.class, 
             "openjpa.LockManager", "pessimistic", 

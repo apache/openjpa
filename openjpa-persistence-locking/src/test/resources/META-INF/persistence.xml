@@ -20,7 +20,7 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
-    <persistence-unit name="test">
+    <persistence-unit name="locking-test">
         <properties>
             <!--
             These properties are instead passed via System properties

@@ -56,6 +56,11 @@ public class TestPessimisticLocks extends SQLListenerTestCase {
     private DBDictionary dict = null;
     private int lockWaitTime = 2000;
 
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     public void setUp() {
         // Disable tests for any DB that has supportsQueryTimeout==false, like Postgres
         OpenJPAEntityManagerFactorySPI tempEMF = emf;

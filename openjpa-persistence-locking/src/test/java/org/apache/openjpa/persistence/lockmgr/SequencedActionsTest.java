@@ -81,6 +81,11 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     private String empTableName;
     private List<TestThread> threads = null;
 
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     @SuppressWarnings("deprecation")
     protected void commonSetUp() {
         empTableName = getMapping(LockEmployee.class).getTable().getFullName();

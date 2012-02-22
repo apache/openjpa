@@ -26,6 +26,12 @@ import javax.persistence.LockModeType;
  * Test JPA 2.0 LockMode type permutation behaviors with "mixed" lock manager.
  */
 public class TestMixedLockManagerLockPermutation extends SequencedActionsTest {
+
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     public void setUp() {
         setUp(LockEmployee.class
             , "openjpa.LockManager", "mixed"

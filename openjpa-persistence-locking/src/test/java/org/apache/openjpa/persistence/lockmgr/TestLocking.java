@@ -32,6 +32,11 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 public class TestLocking extends SQLListenerTestCase {
     String _phone = "5075555555";
 
+    @Override
+    protected String getPersistenceUnitName() {
+        return "locking-test";
+    }
+
     public void setUp() {
         super.setUp(CLEAR_TABLES, Person.class, PhoneNumber.class
         // ,"openjpa.Log", "SQL=trace"
