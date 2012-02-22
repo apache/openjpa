@@ -3325,6 +3325,21 @@ and the token <literal>{0}</literal> to represent the string.
 Defaults to <literal>"TRIM(LEADING {1} FROM {0})"</literal>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.TrimStringColumns">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            String
+                        </primary>
+                        <secondary>
+                            TrimStringColumns
+                        </secondary>
+                    </indexterm>
+<literal>TrimStringColumns</literal>: When <literal>true</literal>, the resulting String from
+<methodname>ResultSet.getString</methodname> will be trimmed of trailing white space.  Defaults
+to <literal>false</literal>.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.TrimTrailingFunction">
                     <para>
                     <indexterm>
