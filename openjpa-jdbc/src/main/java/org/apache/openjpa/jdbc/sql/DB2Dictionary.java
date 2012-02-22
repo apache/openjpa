@@ -914,7 +914,7 @@ public class DB2Dictionary
 
     public void createIndexIfNecessary(Schema schema, DBIdentifier table,
             Column pkColumn) {
-        if (isDB2ZOSV8xOrLater()) {
+        if (db2ServerType == db2ZOSV8xOrLater) {
             // build the index for the sequence tables
             // the index name will be the fully qualified table name + _IDX
             Table tab = schema.getTable(table);
@@ -971,7 +971,7 @@ public class DB2Dictionary
     @Override
     public void setQueryTimeout(PreparedStatement stmnt, int timeout)
         throws SQLException {
-        if(isDB2ZOSV8xOrLater()) { 
+        if (db2ServerType == db2ZOSV8xOrLater) { 
             try { 
                 super.setQueryTimeout(stmnt, timeout);
             }
