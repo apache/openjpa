@@ -2542,6 +2542,11 @@ public class XMLPersistenceMetaDataParser
         parseCommonExtendedAttributes(fmd, attrs);
         parseTypeAttr(fmd, attrs);
         // TODO - handle attributes
+        String val = attrs.getValue("fetch");
+        if (val != null) {
+            fmd.setInDefaultFetchGroup("EAGER".equals(val));
+        }
+
         switch (fmd.getDeclaredTypeCode()) {
         case JavaTypes.ARRAY:
             if (fmd.getDeclaredType() == byte[].class

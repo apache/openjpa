@@ -1087,10 +1087,6 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                     if (processed != eres)
                         res.putEager(fms[i], processed);
                 } else {
-                    boolean lazyEmbeddable = fms[i].getValueMapping().isEmbedded() &&
-                        fms[i].getEmbeddedMetaData() != null && 
-                        fetch.requiresFetch(fms[i]) == FetchConfiguration.FETCH_NONE;
-                    if (!lazyEmbeddable)    
                         fms[i].load(sm, this, fetch.traverseJDBC(fms[i]), res);
                 }
             } finally {
