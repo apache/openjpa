@@ -27,6 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.lib.util.Localizer;
@@ -64,6 +67,7 @@ public class LifecycleEventManager
     private boolean _firing = false;
     private boolean _fail = false;
     private boolean _failFast = false;
+    private ReadWriteLock _rwLock = new ReentrantReadWriteLock();
 
     /**
      * Whether to fail after first exception when firing events to listeners.
@@ -83,55 +87,65 @@ public class LifecycleEventManager
      * Register a lifecycle listener for the given classes. If the classes
      * array is null, register for all classes.
      */
-    public synchronized void addListener(Object listener, Class<?>[] classes) {
+    public void addListener(Object listener, Class<?>[] classes) {
         if (listener == null)
             return;
         if (classes != null && classes.length == 0)
             return;
-        if (_firing) {
-            _addListeners.add(listener);
-            _addListeners.add(classes);
-            return;
-        }
-
-        if (classes == null) {
-            if (_listeners == null)
-                _listeners = new ListenerList(5);
-            _listeners.add(listener);
-            return;
-        }
-
-        if (_classListeners == null)
-            _classListeners = new HashMap<Class<?>, ListenerList>();
-        ListenerList listeners;
-        for (int i = 0; i < classes.length; i++) {
-            listeners = (ListenerList) _classListeners.get(classes[i]);
-            if (listeners == null) {
-                listeners = new ListenerList(3);
-                _classListeners.put(classes[i], listeners);
+        _rwLock.writeLock().lock();
+        try {
+            if (_firing) {
+                _addListeners.add(listener);
+                _addListeners.add(classes);
+                return;
             }
-            listeners.add(listener);
+    
+            if (classes == null) {
+                if (_listeners == null)
+                    _listeners = new ListenerList(5);
+                _listeners.add(listener);
+                return;
+            }
+    
+            if (_classListeners == null)
+                _classListeners = new HashMap<Class<?>, ListenerList>();
+            ListenerList listeners;
+            for (int i = 0; i < classes.length; i++) {
+                listeners = (ListenerList) _classListeners.get(classes[i]);
+                if (listeners == null) {
+                    listeners = new ListenerList(3);
+                    _classListeners.put(classes[i], listeners);
+                }
+                listeners.add(listener);
+            }
+        } finally {
+            _rwLock.writeLock().unlock();
         }
     }
 
     /**
      * Remove the given listener.
      */
-    public synchronized void removeListener(Object listener) {
-        if (_firing) {
-            _remListeners.add(listener);
-            return;
-        }
-
-        if (_listeners != null && _listeners.remove(listener))
-            return;
-        if (_classListeners != null) {
-            ListenerList listeners;
-            for (Iterator<ListenerList> itr = _classListeners.values().iterator();
-                itr.hasNext();) {
-                listeners = (ListenerList) itr.next();
-                listeners.remove(listener);
+    public void removeListener(Object listener) {
+        _rwLock.writeLock().lock();
+        try {
+            if (_firing) {
+                _remListeners.add(listener);
+                return;
             }
+    
+            if (_listeners != null && _listeners.remove(listener))
+                return;
+            if (_classListeners != null) {
+                ListenerList listeners;
+                for (Iterator<ListenerList> itr = _classListeners.values().iterator();
+                    itr.hasNext();) {
+                    listeners = (ListenerList) itr.next();
+                    listeners.remove(listener);
+                }
+            }
+        } finally {
+            _rwLock.writeLock().unlock();
         }
     }
 
@@ -266,63 +280,68 @@ public class LifecycleEventManager
     /**
      * Fire lifecycle event to all registered listeners.
      */
-    public synchronized Exception[] fireEvent(Object source, Object related,
+    public Exception[] fireEvent(Object source, Object related,
         ClassMetaData meta, int type) {
-        boolean reentrant = _firing;
-        _firing = true;
-        List<Exception> exceptions = (reentrant) ? new LinkedList<Exception>() : _exceps;
-        MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
-            getDefaults();
-
-        boolean callbacks = def.getCallbacksBeforeListeners(type);
-        if (callbacks)
-            makeCallbacks(source, related, meta, type, exceptions);
-
-        LifecycleEvent ev = (LifecycleEvent) fireEvent(null, source, related,
-            type, _listeners, false, exceptions);
-
-        if (_classListeners != null) {
-            Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
-            do {
-                ev = (LifecycleEvent) fireEvent(ev, source, related, type,
-                    (ListenerList) _classListeners.get(c), false, exceptions);
-                c = c.getSuperclass();
-            } while (c != null && c != Object.class);
+        _rwLock.writeLock().lock();
+        try {
+            boolean reentrant = _firing;
+            _firing = true;
+            List<Exception> exceptions = (reentrant) ? new LinkedList<Exception>() : _exceps;
+            MetaDataDefaults def = meta.getRepository().getMetaDataFactory().
+                getDefaults();
+    
+            boolean callbacks = def.getCallbacksBeforeListeners(type);
+            if (callbacks)
+                makeCallbacks(source, related, meta, type, exceptions);
+    
+            LifecycleEvent ev = (LifecycleEvent) fireEvent(null, source, related,
+                type, _listeners, false, exceptions);
+    
+            if (_classListeners != null) {
+                Class<?> c = source == null ? meta.getDescribedType() : source.getClass();
+                do {
+                    ev = (LifecycleEvent) fireEvent(ev, source, related, type,
+                        (ListenerList) _classListeners.get(c), false, exceptions);
+                    c = c.getSuperclass();
+                } while (c != null && c != Object.class);
+            }
+    
+            // make system listeners
+            if (!meta.getLifecycleMetaData().getIgnoreSystemListeners()) {
+                ListenerList system = meta.getRepository().getSystemListeners();
+                fireEvent(ev, source, related, type, system, false, exceptions);
+            }
+    
+            if (!callbacks)
+                makeCallbacks(source, related, meta, type, exceptions);
+    
+            // create return array before clearing exceptions
+            Exception[] ret;
+            if (exceptions.isEmpty())
+                ret = EMPTY_EXCEPTIONS;
+            else
+                ret = (Exception[]) exceptions.toArray
+                    (new Exception[exceptions.size()]);
+    
+            // if this wasn't a reentrant call, catch up with calls to add
+            // and remove listeners made while firing
+            if (!reentrant) {
+                _firing = false;
+                _fail = false;
+                if (!_addListeners.isEmpty())
+                    for (Iterator<Object> itr = _addListeners.iterator(); itr.hasNext();)
+                        addListener(itr.next(), (Class[]) itr.next());
+                if (!_remListeners.isEmpty())
+                    for (Iterator<Object> itr = _remListeners.iterator(); itr.hasNext();)
+                        removeListener(itr.next());
+                _addListeners.clear();
+                _remListeners.clear();
+                _exceps.clear();
+            }
+            return ret;
+        } finally {
+            _rwLock.writeLock().unlock();
         }
-
-        // make system listeners
-        if (!meta.getLifecycleMetaData().getIgnoreSystemListeners()) {
-            ListenerList system = meta.getRepository().getSystemListeners();
-            fireEvent(ev, source, related, type, system, false, exceptions);
-        }
-
-        if (!callbacks)
-            makeCallbacks(source, related, meta, type, exceptions);
-
-        // create return array before clearing exceptions
-        Exception[] ret;
-        if (exceptions.isEmpty())
-            ret = EMPTY_EXCEPTIONS;
-        else
-            ret = (Exception[]) exceptions.toArray
-                (new Exception[exceptions.size()]);
-
-        // if this wasn't a reentrant call, catch up with calls to add
-        // and remove listeners made while firing
-        if (!reentrant) {
-            _firing = false;
-            _fail = false;
-            if (!_addListeners.isEmpty())
-                for (Iterator<Object> itr = _addListeners.iterator(); itr.hasNext();)
-                    addListener(itr.next(), (Class[]) itr.next());
-            if (!_remListeners.isEmpty())
-                for (Iterator<Object> itr = _remListeners.iterator(); itr.hasNext();)
-                    removeListener(itr.next());
-            _addListeners.clear();
-            _remListeners.clear();
-            _exceps.clear();
-        }
-        return ret;
     }
 
     /**
@@ -632,8 +651,8 @@ public class LifecycleEventManager
             if (listener instanceof AttachListener) {
                 types |= 2 << LifecycleEvent.BEFORE_ATTACH;
                 types |= 2 << LifecycleEvent.AFTER_ATTACH;
-			}
-			return types;
-		}
-	}
+            }
+            return types;
+        }
+    }
 }
