@@ -43,6 +43,7 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Embeddable;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
+import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.meta.ValueMappingInfo;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -62,7 +63,9 @@ import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
@@ -406,6 +409,14 @@ public class EmbedFieldStrategy
             sm.storeObject(field.getIndex(), null);
             return;
         }
+        
+        // handling of lazy embeddables.  if the embedded field is not part of any
+        // fetch group and the result does not contain any embeddable columns, 
+        // do not load the embeddable.
+        if (fetch.requiresFetch(field) == FetchConfiguration.FETCH_NONE &&
+            !containsEmbeddedResult(fetch, res)) {
+            return;
+        }
 
         //### note: without a null indicator column, the above indicatesNull()
         //### call will always return false, meaning we always have to assume
@@ -424,6 +435,52 @@ public class EmbedFieldStrategy
                 JDBCFetchConfiguration.FETCH_LOAD) {
           em.load(fetch);
         }
+    }
+
+    /*
+     * finds an eager fetch field and searches for it in the result.  
+     * if the result does not contain it, assume that it contains no embeddable
+     * column data.  this is a fairly safe assumption given that the entire 
+     * embeddable was marked lazy.
+     */
+    private boolean containsEmbeddedResult(FetchConfiguration fetch, Result res) {
+        FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
+        for (int i = 0; i < fields.length; i++) {
+            boolean load = (fetch.requiresFetch(fields[i]) == FetchConfiguration.FETCH_LOAD);
+            if (load) {
+                // check the first eager fetch field
+                return checkResult(fields[i],res);
+            }
+        }
+        // if all fields are lazy and in the default fetch group, populate the embeddable 
+        // so its attributes can be loaded when accessed.
+        return fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT);
+    }
+    
+    private boolean checkResult(FieldMapping fm, Result res) {
+        if (fm.getStrategy() instanceof Joinable) {
+            Joinable strat = (Joinable)fm.getStrategy();
+            Column[] cols = strat.getColumns();
+            for (Column col : cols) {
+                try {
+                    if (res.contains(col)) {
+                        return true;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        // if the field is a collection, also check for an eager result which could result from
+        // a non-lazy relationship in the embeddable
+        int type = fm.getTypeCode();
+        if ((type == JavaTypes.ARRAY || 
+             type == JavaTypes.COLLECTION || 
+             type == JavaTypes.MAP)
+            && res.getEager(fm) != null) {
+            return true;
+        }
+        return false;
     }
 
     private boolean loadFields(OpenJPAStateManager em, JDBCStore store,
