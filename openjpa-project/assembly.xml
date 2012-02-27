@@ -145,6 +145,7 @@
                 <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include>
                 <include>org.apache.bval:org.apache.bval.bundle</include>
                 <include>commons-beanutils:commons-beanutils</include>
+                <include>asm:asm</include>
             </includes>
         </dependencySet>
     </dependencySets>
