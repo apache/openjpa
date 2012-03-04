@@ -29,7 +29,7 @@
     the "tck.zip" and "tck_patches.zip" system property.
 
     The TCK running process will do the following:
-        1. Fine the TCK zip file and extract it
+        1. Find the TCK zip file and extract it
         2. Create an openjpa-provider.properties file with the OpenJPA config
         3. Modify the TCK's main configuration file (ts.jte) to use OpenJPA
         4. Run the database initialization script
@@ -44,8 +44,8 @@
 -->
 <project name="JPA2TCK" default="run-tck">
 
-    <!-- Import ant-contrib for If/then/else support -->
-    <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
+    <!-- Import antlib/ant-contrib for If/then/else/for support -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
     <!--
         Target:  init
@@ -285,6 +285,11 @@ databaseName=${db.name}
         Target:  run-tck
         Description:  This is the main routine that runs the TCK, after
                       all other setup steps have been performed.
+        Input: jpatck.pkg.dir System property defines a commna-spearated list of test cases to be run.
+               If not set or set to empty string, all tck tests will be exercised.
+        Note: Beaware if jpatck.pkg.dir includes pluggability test in the dir hierarchy, the pluggability
+              test will fail (5 failures) due to [enable|disable].ts.persistence.provider targets are 
+              not invoked, which is required for the pluggability tests.
      -->
     <target name="run-tck">
         <echo>Running JPA 2.0 TCK tests</echo>
@@ -309,21 +314,47 @@ databaseName=${db.name}
 
         <!-- first initialize the database -->
         <echo>Calling TCK initdb.xml</echo>
-        <tsant buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
+        <tsant dir="${tck.dir}/bin" buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
         <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
-            <isset property="jpatck.pkg.dir" />
+        	<and>
+                <isset property="jpatck.pkg.dir" />
+        		<not>
+        			<length string="${jpatck.pkg.dir}" trim="true" length="0" /> 
+        		</not>
+            </and>
         <then>
-            <echo>Calling TCK build.xml for pkg.dir=${jpatck.pkg.dir}</echo>
-            <property name="dir" value="${tck.dir}/src/${jpatck.pkg.dir}" />
-            <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
+            <for list="${jpatck.pkg.dir}" param="for.test" trim="true">
+                <sequential>        	
+        	        <if>
+                        <contains string="@{for.test}" substring="pluggability"/>
+                    <then>
+                        <echo>Calling enable.ts.persistence.provider for pluggability test.</echo>
+                        <tsant buildfile="${tck.dir}/bin/build.xml" target="enable.ts.persistence.provider" />
+                    </then>
+                    </if>
+        	
+                    <echo>Calling TCK build.xml for pkg.dir=@{for.test}</echo>
+                    <property name="dir" value="${tck.dir}/src/@{for.test}" />
+                    <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
+        	
+        	        <if>
+                        <contains string="@{for.test}" substring="pluggability"/>
+                    <then>
+                        <echo>Calling disable.ts.persistence.provider for pluggability test.</echo>
+                        <tsant buildfile="${tck.dir}/bin/build.xml" target="disable.ts.persistence.provider" />
+                    </then>
+                    </if>
+                </sequential>
+            </for>        	
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>
-            <tsant buildfile="${tck.dir}/bin/build.xml" target="run.all" tmo="${jpatck.run.tmo}" />
+            <property name="dir.all" value="${tck.dir}/bin" />
+            <tsant dir="${dir.all}" buildfile="${dir.all}/build.xml" target="run.all" tmo="${jpatck.run.tmo}"/>
         </else>
         </if>
 
@@ -374,4 +405,3 @@ databaseName=${db.name}
     </target>
 
 </project>
-
