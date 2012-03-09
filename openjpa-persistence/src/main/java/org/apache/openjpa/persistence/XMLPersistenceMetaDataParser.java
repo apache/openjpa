@@ -1849,7 +1849,7 @@ public class XMLPersistenceMetaDataParser
         meta.setQueryString(attrs.getValue("query"));
         String lockModeStr = attrs.getValue("lock-mode");
         LockModeType lmt = processNamedQueryLockModeType(log, lockModeStr, name);
-        if (lmt != null) {
+        if (lmt != null && lmt != LockModeType.NONE) {
             meta.addHint("openjpa.FetchPlan.ReadLockMode", lmt);
         }
         Locator locator = getLocation().getLocator();
