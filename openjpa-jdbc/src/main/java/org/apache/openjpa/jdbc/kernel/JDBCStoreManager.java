@@ -1157,7 +1157,11 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private boolean getJoinedSupers(Select sel, ClassMapping mapping, int subs, boolean outer) {
         loadSubclasses(mapping); 
         Joins joins = (outer) ? sel.newOuterJoins() : null;
-        return mapping.getDiscriminator().addClassConditions(sel, subs == Select.SUBS_JOINABLE, joins);
+        boolean includeSubs = false;
+        if (subs == Select.SUBS_JOINABLE || subs == Select.SUBS_ANY_JOINABLE) {
+            includeSubs = true;
+        }        
+        return mapping.getDiscriminator().addClassConditions(sel, includeSubs, joins);
     }
     
     private boolean needClassCondition(ClassMapping mapping, int subs,
