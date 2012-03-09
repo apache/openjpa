@@ -64,7 +64,7 @@
     <bookinfo>
         <title>Apache OpenJPA 2.2 User's Guide</title>
         <copyright>
-            <year>2006-2011</year>
+            <year>2006-2012</year>
             <holder>The Apache Software Foundation</holder>
         </copyright>
         <releaseinfo>Built from OpenJPA version <?eval ${openjpa.version}?> revision <?eval ${buildNumber}?>.</releaseinfo>
