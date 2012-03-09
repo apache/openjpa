@@ -1871,7 +1871,7 @@ public class AnnotationPersistenceMetaDataParser
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
             LockModeType lmt = processNamedQueryLockModeType(query);
-            if (lmt != null) {
+            if (lmt != null && lmt != LockModeType.NONE) {
                 meta.addHint("openjpa.FetchPlan.ReadLockMode", lmt);
             }
 
