@@ -58,7 +58,7 @@
                 <include name="docs.zip"/>
             </fileset>
         </scp>
-        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs" trust="true" />
+        <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm -Rf ${build.dir}/apache-openjpa-${project.version}/docs ${build.dir}/apache-openjpa-${project.version}/examples" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="unzip -qq -d ${build.dir}/ ${build.dir}/docs.zip" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="rm ${build.dir}/docs.zip" trust="true" />
 
