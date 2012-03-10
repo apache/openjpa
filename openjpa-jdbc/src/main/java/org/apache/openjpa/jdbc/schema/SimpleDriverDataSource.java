@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -146,8 +147,7 @@ public class SimpleDriverDataSource
         return _connectionFactoryProperties;
     }
 
-    @SuppressWarnings("unchecked")
-    public List createConnectionDecorators() {
+    public List<ConnectionDecorator> createConnectionDecorators() {
         return null;
     }
 
@@ -206,8 +206,7 @@ public class SimpleDriverDataSource
     
 
     // java.sql.Wrapper implementation (JDBC 4)
-    @SuppressWarnings("unchecked")
-    public boolean isWrapperFor(Class iface) {
+    public boolean isWrapperFor(Class<?> iface) {
         return iface.isAssignableFrom(SimpleDriverDataSource.class);
     }
 
@@ -218,9 +217,9 @@ public class SimpleDriverDataSource
         else
             return null;
     }
-    
+
     // Java 7 methods follow
-    
+
     public Logger getParentLogger() throws SQLFeatureNotSupportedException{
     	throw new SQLFeatureNotSupportedException();
     }

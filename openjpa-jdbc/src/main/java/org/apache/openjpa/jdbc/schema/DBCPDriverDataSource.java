@@ -37,7 +37,7 @@ import org.apache.openjpa.lib.util.Closeable;
  * as it WILL NOT fall back to non-DBCP mode if they are missing. For automatic
  * usage of Commons DBCP when available, use AutoDriverDataSource instead.
  */
-public abstract class DBCPDriverDataSource
+public class DBCPDriverDataSource
 extends SimpleDriverDataSource implements Configurable, Closeable {
 
     private static String DBCPPACKAGENAME = "org.apache.commons.dbcp";
