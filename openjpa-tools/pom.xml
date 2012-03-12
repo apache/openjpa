@@ -43,4 +43,14 @@
     <modules>
         <module>openjpa-maven-plugin</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>test-dynamic-enhancer</id>
+            <properties>
+                <policy.file>${basedir}/../../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
+            </properties>
+        </profile>    
+    </profiles>
+
 </project>

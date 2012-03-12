@@ -49,6 +49,15 @@
         <module>openbooks</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>test-dynamic-enhancer</id>
+            <properties>
+                <policy.file>${basedir}/../../openjpa-persistence-jdbc/src/test/resources/j2.security.test.policy</policy.file>
+            </properties>
+        </profile>    
+    </profiles>
+
     <build>
         <pluginManagement>
             <plugins>
