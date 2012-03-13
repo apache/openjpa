@@ -2023,13 +2023,30 @@ public class PCEnhancer {
         boolean reflect;
         // If optimizeIdCopy is enabled and not a field manager method, try to
         // optimize the copyTo by using a public constructor instead of reflection
-        if (_optimizeIdCopy && !fieldManager) {
+        if (_optimizeIdCopy) {
             ArrayList<Integer> pkfields = optimizeIdCopy(oidType, fmds);
             if (pkfields != null) {
                 // search for a constructor on the IdClass that can be used
                 // to construct the IdClass
                 int parmOrder[] = getIdClassConstructorParmOrder(oidType, pkfields, fmds);
                 if (parmOrder != null) {
+                    // If using a field manager, values must be loaded into locals so they can be properly ordered
+                    // as constructor parameters.
+                    int[] localIndexes = new int[fmds.length];
+                    if (fieldManager) {
+                        for (int k = 0; k < fmds.length; k++) {
+                            if (!fmds[k].isPrimaryKey())
+                                continue;
+                            code.aload().setParam(0);
+                            code.constant().setValue(k);
+                            code.iload().setLocal(inherited);
+                            code.iadd();
+                            code.invokeinterface().setMethod(getFieldSupplierMethod(fmds[k].getObjectIdFieldType()));
+                            localIndexes[k] = code.getNextLocalsIndex();
+                            storeLocalValue(code, localIndexes[k], fmds[k].getObjectIdFieldTypeCode());
+                        }
+                    }
+                    
                     // found a matching constructor.  parm array is constructor parm order
                     code.anew().setType(oidType);
                     code.dup();
@@ -2038,8 +2055,25 @@ public class PCEnhancer {
                     for (int i = 0; i < clsArgs.length; i++) {
                         int parmIndex = parmOrder[i];
                         clsArgs[i] = fmds[parmIndex].getObjectIdFieldType();
-                        loadManagedInstance(code, false);
-                        addGetManagedValueCode(code, fmds[parmIndex]);
+                        if (!fieldManager) {
+                            loadManagedInstance(code, false);
+                            addGetManagedValueCode(code, fmds[parmIndex]);
+                        } else {
+                            // Load constructor parameters in appropriate order
+                            loadLocalValue(code, localIndexes[parmIndex], fmds[parmIndex].getObjectIdFieldTypeCode());
+                            if (fmds[parmIndex].getObjectIdFieldTypeCode() == JavaTypes.OBJECT &&
+                                !fmds[parmIndex].getDeclaredType().isEnum()) {
+                                code.checkcast().setType(ObjectId.class);
+                                code.invokevirtual().setMethod(ObjectId.class, "getId", 
+                                    Object.class, null);                    
+                            }
+                            // if the type of this field meta data is
+                            // non-primitive and non-string, be sure to cast
+                            // to the appropriate type.
+                            if (!clsArgs[i].isPrimitive()
+                                && !clsArgs[i].getName().equals(String.class.getName()))
+                                code.checkcast().setType(clsArgs[i]);
+                        }
                     }
                     // invoke the public constructor to create a new local id
                     code.invokespecial().setMethod(oidType, "<init>", void.class, clsArgs);
@@ -2047,7 +2081,7 @@ public class PCEnhancer {
                     code.astore().setLocal(ret);
 
                     // swap out the app id with the new one
-                    code.aload().setLocal(1);
+                    code.aload().setLocal( fieldManager ? 2 : 1);
                     code.checkcast().setType(ObjectId.class);
                     code.aload().setLocal(ret);
                     code.invokestatic().setMethod(ApplicationIds.class, 
@@ -2142,6 +2176,60 @@ public class PCEnhancer {
 
         code.calculateMaxStack();
         code.calculateMaxLocals();
+    }
+
+    /**
+     * Adds the appropriate load method for the given type and local
+     * index.
+     */
+    private void loadLocalValue(Code code, int locidx, int typeCode) {
+        switch (typeCode) {
+            case JavaTypes.CHAR:
+            case JavaTypes.BYTE:
+            case JavaTypes.SHORT:
+            case JavaTypes.INT:
+                code.iload().setLocal(locidx);
+                break;
+            case JavaTypes.DOUBLE:
+                code.dload().setLocal(locidx);
+                break;
+            case JavaTypes.FLOAT:
+                code.fload().setLocal(locidx);
+                break;
+            case JavaTypes.LONG:
+                code.lload().setLocal(locidx);
+                break;
+            default:
+                code.aload().setLocal(locidx);
+                break;
+        }
+    }
+
+    /**
+     * Adds the appropriate store method for the given type and local
+     * index.
+     */
+    private void storeLocalValue(Code code, int locidx, int typeCode) {
+        switch (typeCode) {
+            case JavaTypes.CHAR:
+            case JavaTypes.BYTE:
+            case JavaTypes.SHORT:
+            case JavaTypes.INT:
+                code.istore().setLocal(locidx);
+                break;
+            case JavaTypes.DOUBLE:
+                code.dstore().setLocal(locidx);
+                break;
+            case JavaTypes.FLOAT:
+                code.fstore().setLocal(locidx);
+                break;
+            case JavaTypes.LONG:
+                code.lstore().setLocal(locidx);
+                break;
+            default:
+                code.astore().setLocal(locidx);
+                break;
+        }
     }
 
     /**
