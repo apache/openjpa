@@ -105,8 +105,6 @@ public class SourceCode {
      */
 	private boolean addImport(ClassName name) {
 		String pkgName = name.getPackageName();
-		if ("java.lang".equals(pkgName))
-			return false;
 		for (Import i : imports) {
 		    if (i.getClassName().hides(name)) {
 		        i.getClassName().useFullName();
