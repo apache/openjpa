@@ -361,7 +361,8 @@ public class SourceCode {
 	 *
 	 */
 	public class Class extends Element<Class> {
-		private boolean isAbstract;
+        private boolean isAbstract;
+		private boolean isFinal;
 		private ClassName superCls;
 		private List<ClassName> interfaces = new ArrayList<ClassName>();
 	    private Set<Field> fields   = new TreeSet<Field>();
@@ -383,10 +384,20 @@ public class SourceCode {
 			return this;
 		}
 		
-		public Class makeAbstract() {
-			isAbstract = true;
-			return this;
-		}
+        public Class makeAbstract() {
+            if (isFinal)
+                throw new IllegalArgumentException(_loc.get("src-invalid-modifier").toString());
+
+            isAbstract = true;
+            return this;
+        }
+
+        public Class makeFinal() {
+            if (isAbstract)
+                throw new IllegalArgumentException(_loc.get("src-invalid-modifier").toString());
+            isFinal = true;
+            return this;
+        }
 		
 	    /**
 	     * Adds getters and setters to every non-public field.
@@ -449,6 +460,8 @@ public class SourceCode {
 			super.write(out, tab);
 			if (isAbstract) 
 			    out.append("abstract ");
+			if(isFinal)
+			    out.append("final ");
 			out.print("class ");
 			out.print(type.simpleName);
 			writeList(out, BLANK, params, PARAMS_DELIMITER, false);
