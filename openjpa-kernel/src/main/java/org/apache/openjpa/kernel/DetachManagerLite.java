@@ -81,13 +81,15 @@ public class DetachManagerLite {
             // need to null out LRS fields.
             nullField(fieldIndex, pc, sm, fm);
         } else {
-            if (!_detachProxies) {
-                return;
-            }
             Object o = sm.fetchObject(fieldIndex);
             if (o instanceof Proxy) {
                 // Get unproxied object and replace
                 Proxy proxy = (Proxy) o;
+                if (!_detachProxies) {
+                    // Even if we're not detaching proxies, we need to remove the reference to the SM.
+                    proxy.setOwner(null, -1);
+                    return;
+                }
                 Object unproxied = proxy.copy(proxy);
                 fm.storeObjectField(fieldIndex, unproxied);
                 sm.replaceField(pc, fm, fieldIndex);
