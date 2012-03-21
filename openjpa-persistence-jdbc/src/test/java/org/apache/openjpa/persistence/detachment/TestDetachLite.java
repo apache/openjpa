@@ -76,6 +76,9 @@ public class TestDetachLite extends TestDetach {
 
                 assertTrue(beforeDetachCal instanceof Proxy);
                 assertTrue(afterDetachCal instanceof Proxy);
+                
+                // Make sure that we get rid of the StateManager.
+                assertNull(((Proxy)afterDetachCal).getOwner());
             } finally {
                 if (iem.getTransaction().isActive()) {
                     iem.getTransaction().rollback();
