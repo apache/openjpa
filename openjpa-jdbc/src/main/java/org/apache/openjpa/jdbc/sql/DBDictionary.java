@@ -295,6 +295,7 @@ public class DBDictionary
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
     public int datePrecision = MILLI;
+    public boolean roundTimeToMillisec = true;
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
     public String bigintTypeName = "BIGINT";
@@ -775,7 +776,10 @@ public class DBDictionary
 
         // get the fractional seconds component, rounding away anything beyond
         // milliseconds
-        int fractional = (int) Math.round(tstamp.getNanos() / (double) MILLI);
+        int fractional = 0;
+        if (roundTimeToMillisec) {
+            fractional = (int) Math.round(tstamp.getNanos() / (double) MILLI);
+        }
 
         // get the millis component; some JDBC drivers round this to the
         // nearest second, while others do not
