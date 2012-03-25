@@ -4970,7 +4970,7 @@ public class BrokerImpl
      * Unique id for state managers of new datastore instances without assigned
      * object ids.
      */
-    private static class StateManagerId
+    public static class StateManagerId
         implements Serializable {
 
         public static final String STRING_PREFIX = "openjpasm:";
