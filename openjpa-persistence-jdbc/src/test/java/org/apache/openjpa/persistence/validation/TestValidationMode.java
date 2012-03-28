@@ -19,8 +19,11 @@ import java.util.Map;
 import javax.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.event.LifecycleEvent;
+import org.apache.openjpa.event.PersistListener;
+import org.apache.openjpa.event.StoreListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.query.SimpleEntity;
@@ -246,6 +249,91 @@ public class TestValidationMode extends SingleEMFTestCase {
         }
     }
 
+    /**
+     * Scenario being tested:
+     *   8) Life cycle event should be entity manager (Broker) specific.
+     */
+    public void testUniqueLifecycleManager() {
+        getLog().trace("testUniqueLifecycleManager() - Life cycle event tests");
+        // create our EMF
+        Map<String,String> prop = new HashMap<String,String>();
+        prop.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
+//        prop.put("openjpa.SingletonLifecycleEventManager", "true");
+        OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
+            OpenJPAPersistence.createEntityManagerFactory(
+                "simple",
+                "org/apache/openjpa/persistence/validation/persistence.xml",
+                prop);
+        assertNotNull(emf);
+        try {
+            final OpenJPAEntityManagerSPI em = emf.createEntityManager();
+            final OpenJPAEntityManagerSPI em2 = emf.createEntityManager();
+            UniqueLifecycleListener l1 = new UniqueLifecycleListener();
+            UniqueLifecycleListener l2 = new UniqueLifecycleListener();
+            em.addLifecycleListener(l1, (Class<?>[])null);
+            em2.addLifecycleListener(l2, (Class<?>[])null);
+
+            l1.assertCounts(0, 0, 0, 0);
+            l2.assertCounts(0, 0, 0, 0);
+
+            em.getTransaction().begin();
+            SimpleEntity e1 = new SimpleEntity();
+            em.persist(e1);
+            l1.assertCounts(1, 1, 0, 0);
+            l2.assertCounts(0, 0, 0, 0);
+
+            em2.getTransaction().begin();
+            SimpleEntity e2 = new SimpleEntity();
+            em2.persist(e2);
+            l1.assertCounts(1, 1, 0, 0);
+            l2.assertCounts(1, 1, 0, 0);
+
+            em2.getTransaction().commit();
+            l1.assertCounts(1, 1, 0, 0);
+            l2.assertCounts(1, 1, 1, 1);
+
+            em.getTransaction().commit();
+            l1.assertCounts(1, 1, 1, 1);
+            l2.assertCounts(1, 1, 1, 1);
+        } finally {
+            cleanup(emf);
+        }
+    }
+
+    class UniqueLifecycleListener implements PersistListener, StoreListener {
+
+        public int beforePersistCount;
+        public int afterPersistCount;
+        public int beforeStoreCount;
+        public int afterStoreCount;
+
+        @Override
+        public void beforePersist(LifecycleEvent event) {
+            beforePersistCount++;
+        }
+
+        @Override
+        public void afterPersist(LifecycleEvent event) {
+            afterPersistCount++;
+        }
+
+        @Override
+        public void beforeStore(LifecycleEvent event) {
+            beforeStoreCount++;
+        }
+
+        @Override
+        public void afterStore(LifecycleEvent event) {
+            afterStoreCount++; 
+        }
+
+        public void assertCounts(int beforePersist, int afterPersist, int beforeStore, int afterStore) {
+            assertEquals(beforePersist, beforePersistCount);
+            assertEquals(afterPersist, afterPersistCount);
+            assertEquals(beforeStore, beforeStoreCount);
+            assertEquals(afterStore, afterStoreCount);
+        }
+    }
     
     /**
      * Helper method to remove entities and close the emf an any open em's.
