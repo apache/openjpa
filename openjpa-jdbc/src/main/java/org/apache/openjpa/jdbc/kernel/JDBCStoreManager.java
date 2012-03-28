@@ -242,7 +242,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     }
     
     protected DataSource getDataSource() {
-    	return _ds;
+        return _ds;
     }
 
     public boolean exists(OpenJPAStateManager sm, Object context) {
@@ -641,31 +641,37 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 && mapping.customLoad(sm, this, null, jfetch))
                 removeLoadedFields(sm, fields);
 
+            
             //### select is kind of a big object, and in some cases we don't
             //### use it... would it be worth it to have a small shell select
             //### object that only creates a real select when actually used?
+            //### Delayed proxy specific optimization: If the only fields that 
+            //### need to be loaded are delayed proxies, building the select is 
+            //### not necessary.
 
-            Select sel = _sql.newSelect();
-            if (select(sel, mapping, Select.SUBS_EXACT, sm, fields, jfetch,
-                EagerFetchModes.EAGER_JOIN, true, false)) {
-                sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
-                if (_log.isTraceEnabled()) {
-                    _log.trace("load: "+mapping.getDescribedType()+" oid: "+sm.getObjectId()); 
-                }
-                res = sel.execute(this, jfetch, lockLevel);
-                try {
-                 	if (isEmptyResult(res))
-                        return false;
-                    load(mapping, sm, jfetch, res);
-                } finally {
-                    res.close();
-                }
+            if (!isDelayedLoadOnly(sm, fields, mapping)) {
+	            Select sel = _sql.newSelect();
+	            if (select(sel, mapping, Select.SUBS_EXACT, sm, fields, jfetch,
+	                EagerFetchModes.EAGER_JOIN, true, false)) {
+	                sel.wherePrimaryKey(sm.getObjectId(), mapping, this);
+	                if (_log.isTraceEnabled()) {
+	                    _log.trace("load: "+mapping.getDescribedType()+" oid: "+sm.getObjectId()); 
+	                }
+	                res = sel.execute(this, jfetch, lockLevel);
+	                try {
+	                    if (isEmptyResult(res))
+	                        return false;
+	                    load(mapping, sm, jfetch, res);
+	                } finally {
+	                    res.close();
+	                }
+	            }
             }
 
             // now allow the fields to load themselves individually too
             FieldMapping[] fms = mapping.getFieldMappings();
             for (int i = 0; i < fms.length; i++)
-                if (fields.get(i) && !sm.getLoaded().get(i)) {
+                if (fields.get(i) && (!sm.getLoaded().get(i) || sm.isDelayed(i))) {
                     if (_log.isTraceEnabled()) {
                         _log.trace("load field: '"+ fms[i].getName() + "' for oid="+sm.getObjectId()
                             +" "+mapping.getDescribedType());
@@ -681,6 +687,30 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
     }
 
+    private boolean isDelayedLoadOnly(OpenJPAStateManager sm, BitSet fields, ClassMapping mapping) {
+        if (!sm.getContext().getConfiguration().getProxyManagerInstance().getDelayCollectionLoading()) {
+            return false;
+        }
+        boolean allDelayed = false;
+        if (!fields.isEmpty()) {
+            FieldMapping[] fms = mapping.getFieldMappings();
+            int fCount = 0;
+            int dfCount = 0;
+            for (int i = fields.nextSetBit(0); i < fms.length; i++) {
+                if (fields.get(i)) {
+                    fCount++;
+                    if (!(fms[i].isDelayCapable() && (!sm.getLoaded().get(i) || sm.isDelayed(i)))) {
+                        break;
+                    } else {
+                        dfCount++;
+                    }
+                }
+            }
+            allDelayed = (fCount == dfCount);
+        }
+        return allDelayed;
+    }
+    
     /**
      * Return a list formed by removing all loaded fields from the given one.
      */
@@ -1080,10 +1110,10 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                         eagerToMany = fms[i];
                     else
                         fms[i].loadEagerJoin(sm, this, 
-                        	fetch.traverseJDBC(fms[i]), res);
+                            fetch.traverseJDBC(fms[i]), res);
                 } else if (eres != null) {
                     processed = fms[i].loadEagerParallel(sm, this, 
-                    	fetch.traverseJDBC(fms[i]), eres);
+                        fetch.traverseJDBC(fms[i]), eres);
                     if (processed != eres)
                         res.putEager(fms[i], processed);
                 } else {
@@ -1332,18 +1362,18 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             if (esel != null) {
                 if (esel == sel)
                     fms[i].selectEagerJoin(sel, sm, this, 
-                    	fetch.traverseJDBC(fms[i]), eager);
+                        fetch.traverseJDBC(fms[i]), eager);
                 else
                     fms[i].selectEagerParallel(esel, sm, this, 
-                    	fetch.traverseJDBC(fms[i]), eager);
+                        fetch.traverseJDBC(fms[i]), eager);
                 seld = Math.max(0, seld);
             } else if (requiresSelect(fms[i], sm, fields, fetch)) {
                 fseld = fms[i].select(sel, sm, this, 
-                	fetch.traverseJDBC(fms[i]), eager);
+                    fetch.traverseJDBC(fms[i]), eager);
                 seld = Math.max(fseld, seld);
             } else if (optSelect(fms[i], sel, sm, fetch)) {
                 fseld = fms[i].select(sel, sm, this, 
-                	fetch.traverseJDBC(fms[i]), EagerFetchModes.EAGER_NONE);
+                    fetch.traverseJDBC(fms[i]), EagerFetchModes.EAGER_NONE);
 
                 // don't upgrade seld to > 0 based on these fields, since
                 // they're not in the calculated field set
@@ -1425,12 +1455,12 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             fms = subMappings[i].getDefinedFieldMappings();
             for (int j = 0; j < fms.length; j++) {
                 // make sure in one of configured fetch groups
-            	if (fetch.requiresFetch(fms[j]) != FetchConfiguration.FETCH_LOAD
+                if (fetch.requiresFetch(fms[j]) != FetchConfiguration.FETCH_LOAD
                     && ((!fms[j].isInDefaultFetchGroup() 
                     && fms[j].isDefaultFetchGroupExplicit())
                     || fms[j].supportsSelect(sel, Select.TYPE_TWO_PART, sm, this, 
                     fetch) <= 0)) 
-            		continue;
+                    continue;
 
                 // if we can join to the subclass, do so; much better chance
                 // that the field will be able to select itself without joins

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.FieldManager;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -42,13 +43,13 @@ import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StateManagerImpl;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.Proxy;
+import org.apache.openjpa.util.DelayedProxy;
 
 /**
  * Base class for strategies that are stored as a collection, even if
@@ -491,8 +492,20 @@ public abstract class StoreCollectionFieldStrategy
     public void load(final OpenJPAStateManager sm, final JDBCStore store,
         final JDBCFetchConfiguration fetch)
         throws SQLException {
+        
+        Object coll = null;
+        boolean delayed = sm.isDelayed(field.getIndex());
+        if (!delayed && field.isDelayCapable()) {
+            coll = sm.newProxy(field.getIndex());
+            if (coll instanceof DelayedProxy) {
+                sm.storeObject(field.getIndex(), coll);
+                sm.setDelayed(field.getIndex(), true);
+                return;
+            }
+        }
+        
         if (field.isLRS()) {
-            Proxy coll = newLRSProxy();
+            Proxy pcoll = newLRSProxy();
 
             // if this is ordered we need to know the next seq to use in case
             // objects are added to the collection
@@ -513,13 +526,13 @@ public abstract class StoreCollectionFieldStrategy
                 Result res = sel.execute(store, fetch);
                 try {
                     res.next();
-                    coll.getChangeTracker().setNextSequence
+                    pcoll.getChangeTracker().setNextSequence
                         (res.getInt(field) + 1);
                 } finally {
                     res.close();
                 }
             }
-            sm.storeObjectField(field.getIndex(), coll);
+            sm.storeObjectField(field.getIndex(), pcoll);
             return;
         }
 
@@ -537,14 +550,27 @@ public abstract class StoreCollectionFieldStrategy
         });
 
         // create proxy
-        Object coll;
         ChangeTracker ct = null;
-        if (field.getTypeCode() == JavaTypes.ARRAY)
-            coll = new ArrayList();
-        else {
-            coll = sm.newProxy(field.getIndex());
+        if (delayed) {
+            if (sm.isDetached() || sm.getOwner() == null) {
+                sm.getPersistenceCapable().pcProvideField(field.getIndex());
+                coll = 
+                    ((FieldManager)sm.getPersistenceCapable().pcGetStateManager()).fetchObjectField(field.getIndex());
+            } else {
+                coll = sm.fetchObjectField(field.getIndex());
+            }
             if (coll instanceof Proxy)
                 ct = ((Proxy) coll).getChangeTracker();
+        } else {
+            if (field.getTypeCode() == JavaTypes.ARRAY)
+                coll = new ArrayList();
+            else {
+                if (coll == null) {
+                    coll = sm.newProxy(field.getIndex());
+                }
+                if (coll instanceof Proxy)
+                    ct = ((Proxy) coll).getChangeTracker();
+            }
         }
 
         // load values
@@ -564,12 +590,14 @@ public abstract class StoreCollectionFieldStrategy
             res.close();
         }
 
-        // set into sm
-        if (field.getTypeCode() == JavaTypes.ARRAY)
-            sm.storeObject(field.getIndex(), JavaTypes.toArray
-                ((Collection) coll, field.getElement().getType()));
-        else
-            sm.storeObject(field.getIndex(), coll);
+        // if not a delayed collection, set into sm
+        if (!delayed) {
+            if (field.getTypeCode() == JavaTypes.ARRAY)
+                sm.storeObject(field.getIndex(), JavaTypes.toArray
+                    ((Collection) coll, field.getElement().getType()));
+            else
+                sm.storeObject(field.getIndex(), coll);
+        }
     }
 
     /**

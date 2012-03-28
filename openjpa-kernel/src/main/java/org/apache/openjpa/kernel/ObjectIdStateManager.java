@@ -739,4 +739,19 @@ public class ObjectIdStateManager
             Reflection.set(_oid, Reflection.findSetter(_oid.getClass(),
                 fmd.getName(), fmd.getDeclaredType(), true), val);
 	}
+    
+    @Override
+    public boolean isDelayed(int field) {
+        return false;
+    }
+
+    @Override
+    public void setDelayed(int field, boolean delay) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void loadDelayedField(int field) {
+        throw new UnsupportedOperationException();
+    }
 }

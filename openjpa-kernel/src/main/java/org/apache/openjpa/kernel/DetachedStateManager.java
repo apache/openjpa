@@ -995,4 +995,19 @@ public class DetachedStateManager
         if (_lock != null)
             _lock.unlock();
     }
+    
+    @Override
+    public boolean isDelayed(int field) {
+        return false;
+    }
+    
+    @Override
+    public void setDelayed(int field, boolean delay) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void loadDelayedField(int field) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -118,6 +118,7 @@ public class StateManagerImpl
     protected BitSet _loaded = null;
     private BitSet _dirty = null;
     private BitSet _flush = null;
+    private BitSet _delayed = null;
     private int _flags = 0;
 
     // id is the state manager identity; oid is the persistent identity.  oid
@@ -1597,6 +1598,58 @@ public class StateManagerImpl
             beforeAccessField(field);
         } catch (RuntimeException re) {
             throw translate(re);
+        }
+    }
+
+    public boolean isDelayed(int field) {
+        if (_delayed == null) {
+            return false;
+        }
+        return _delayed.get(field);
+    }
+
+    public void setDelayed(int field, boolean delay) {
+        if (_delayed == null) {
+            _delayed = new BitSet();
+        }
+        if (delay) {
+            _delayed.set(field);
+        } else {
+            _delayed.clear(field);
+        }
+    }
+
+    /**
+     * Loads a delayed access field.
+     * @param field
+     */
+    public void loadDelayedField(int field) {
+        if (!isDelayed(field)) {
+            return;
+        }
+
+        try {
+            beforeRead(field);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+        lock();
+        try {
+            boolean active = _broker.isActive();
+            int lockLevel = calculateLockLevel(active, false, null);
+            BitSet fields = new BitSet();
+            fields.set(field);
+            if (!_broker.getStoreManager().load(this, fields, _broker.getFetchConfiguration(), lockLevel, null)) {
+                throw new ObjectNotFoundException(_loc.get("del-instance", _meta.getDescribedType(), _oid)).
+                    setFailedObject(getManagedInstance());
+            }
+            // Cleared the delayed bit
+            _delayed.clear(field);
+            obtainLocks(active, false, lockLevel, null, null);
+        } catch (RuntimeException re) {
+            throw translate(re);
+        } finally {
+            unlock();
         }
     }
 
@@ -3419,5 +3472,9 @@ public class StateManagerImpl
     
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
+    }
+
+    public void setBroker(BrokerImpl ctx) {
+        _broker = ctx;
     }
 }

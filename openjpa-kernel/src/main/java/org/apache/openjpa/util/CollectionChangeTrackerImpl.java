@@ -31,9 +31,9 @@ public class CollectionChangeTrackerImpl
     extends AbstractChangeTracker
     implements CollectionChangeTracker {
 
-    private final Collection _coll;
-    private final boolean _dups;
-    private final boolean _order;
+    protected final Collection _coll;
+    protected final boolean _dups;
+    protected final boolean _order;
 
     /**
      * Constructor.
