@@ -1738,6 +1738,16 @@ public interface OpenJPAConfiguration
     public void setLifecycleEventManager(String eventMgr);
 
     /**
+     * Returns if lifecycle event manager is a singlton configuration.
+     */
+    public boolean isSingletonLifecycleEventManager();
+
+    /**
+     * Sets the lifecycle event manager singleton state.
+     */
+    public void setSingletonLifecycleEventManager(boolean singleton);
+
+    /**
      * Gets the validation groups for pre-persist
      * 
      * @Since 2.0.0

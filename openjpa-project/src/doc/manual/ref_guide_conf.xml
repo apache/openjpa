@@ -1811,6 +1811,36 @@ long-running application where the initial cost of class generation is offset by
 memory and speed optimization over time.
             </para>
         </section>
+        <section id="openjpa.DynamicEnhancementAgent">
+            <title>openjpa.DynamicEnhancementAgent</title>
+            <para> 
+                <emphasis role="bold">Property name: </emphasis>
+                <literal>openjpa.DynamicEnhancementAgent</literal>
+            </para>
+            <para>
+                 <emphasis role="bold">Configuration API: </emphasis>
+                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicEnhancementAgent()">org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicEnhancementAgent</ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config property:</emphasis>
+                DynamicEnhancementAgent
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis>
+                <literal>true</literal>
+                
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis>
+                The DynamicEnhancementAgent property controls whether or not
+                OpenJPA will attempt to dynamically load the PCEnhancer 
+                javaagent.
+            </para>
+            <para>
+                See the reference guide for more information 
+                <xref linkend="ref_guide_pc_enhance_dynamic"/>
+            </para>            
+        </section>
         <section id="openjpa.FetchBatchSize">
             <title>
                 openjpa.FetchBatchSize
@@ -3181,36 +3211,6 @@ serious problems.
                 <xref linkend="ref_guide_pc_enhance_unenhanced_types"/>
             </para>
         </section>
-        <section id="openjpa.DynamicEnhancementAgent">
-            <title>openjpa.DynamicEnhancementAgent</title>
-            <para> 
-                <emphasis role="bold">Property name: </emphasis>
-                <literal>openjpa.DynamicEnhancementAgent</literal>
-            </para>
-            <para>
-                 <emphasis role="bold">Configuration API: </emphasis>
-                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicEnhancementAgent()">org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicEnhancementAgent</ulink>
-            </para>
-            <para>
-                <emphasis role="bold">Resource adaptor config property:</emphasis>
-                DynamicEnhancementAgent
-            </para>
-            <para>
-                <emphasis role="bold">Default: </emphasis>
-                <literal>true</literal>
-                
-            </para>
-            <para>
-                <emphasis role="bold">Description:</emphasis>
-                The DynamicEnhancementAgent property controls whether or not
-                OpenJPA will attempt to dynamically load the PCEnhancer 
-                javaagent.
-            </para>
-            <para>
-                See the reference guide for more information 
-                <xref linkend="ref_guide_pc_enhance_dynamic"/>
-            </para>            
-        </section>
         <section id="openjpa.SavepointManager">
             <title>
                 openjpa.SavepointManager
@@ -3277,6 +3277,32 @@ Sequence</literal>
 org.apache.openjpa.kernel.Seq</classname></ulink> implementation to use for the
 system sequence. See <xref linkend="ref_guide_sequence"/> for more
 information.
+            </para>
+        </section>
+        <section id="openjpa.SingletonLifecycleEventManager">
+            <title>openjpa.SingletonLifecycleEventManager</title>
+            <para>
+                <emphasis role="bold">Property name: </emphasis>
+                <literal>openjpa.SingletonLifecycleEventManager</literal>
+            </para>
+            <para>
+                 <emphasis role="bold">Configuration API: </emphasis>
+                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#isSingletonLifecycleEventManager()">org.apache.openjpa.conf.OpenJPAConfiguration.isSingletonLifecycleEventManager</ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config property:</emphasis>
+                SingletonLifecycleEventManager
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis>
+                <literal>false</literal>                
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis>
+                This property controls whether each EntityManager has its own life cycle event manager.
+                By default, each EntityManager only fires events to the registered listeners to the entities
+                it manages. If the life cycle event manager is a singleton, events will be fired to listeners
+                registered to all instances of EntityManager in the same persistence unit.
             </para>
         </section>
         <section id="openjpa.Specification">
