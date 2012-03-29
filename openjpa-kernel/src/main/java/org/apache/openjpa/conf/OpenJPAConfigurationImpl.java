@@ -167,8 +167,7 @@ public class OpenJPAConfigurationImpl
     public StringValue validationMode;
     public ObjectValue validationFactory;
     public ObjectValue validator;
-    public LEMValue lifecycleEventManager;
-    public SingletonLEMValue singletonLifecycleEventManager;
+    public ObjectValue lifecycleEventManager;
     public StringValue validationGroupPrePersist;
     public StringValue validationGroupPreUpdate;
     public StringValue validationGroupPreRemove;
@@ -574,7 +573,7 @@ public class OpenJPAConfigurationImpl
         queryTimeout.setDefault("-1");
         queryTimeout.setDynamic(true);
       
-        lifecycleEventManager = addValue(new LEMValue("LifecycleEventManager", false));
+        lifecycleEventManager = addPlugin("LifecycleEventManager", true);
         aliases = new String[] {
             "default", LifecycleEventManager.class.getName(),
             "validating", ValidatingLifecycleEventManager.class.getName(),
@@ -583,11 +582,6 @@ public class OpenJPAConfigurationImpl
         lifecycleEventManager.setDefault(aliases[0]);
         lifecycleEventManager.setString(aliases[0]);
         lifecycleEventManager.setInstantiatingGetter("getLifecycleEventManagerInstance");
-
-        singletonLifecycleEventManager = (SingletonLEMValue) addValue(new SingletonLEMValue(
-                "SingletonLifecycleEventManager"));
-        singletonLifecycleEventManager.setDefault("false");
-        singletonLifecycleEventManager.set(false);
 
         dynamicEnhancementAgent  = addBoolean("DynamicEnhancementAgent");
         dynamicEnhancementAgent.setDefault("true");
@@ -1754,9 +1748,9 @@ public class OpenJPAConfigurationImpl
     }
 
     public LifecycleEventManager getLifecycleEventManagerInstance() {
-        LifecycleEventManager lem = (LifecycleEventManager)
-            lifecycleEventManager.get();
-        if (lem == null) {
+        LifecycleEventManager lem = null;
+        if (!getCompatibilityInstance().isSingletonLifecycleEventManager() ||
+                (lem = (LifecycleEventManager)lifecycleEventManager.get()) == null) {
             lem = (LifecycleEventManager)lifecycleEventManager
                 .instantiate(LifecycleEventManager.class, this);
         }
@@ -1774,41 +1768,6 @@ public class OpenJPAConfigurationImpl
         } else {
             // If the configuration is frozen this will result in a warning message and/or an exception.
             lifecycleEventManager.setString(lem);
-        }
-    }
-
-    class LEMValue extends PluginValue {
-        boolean singleton;
-
-        public LEMValue(String prop, boolean singleton) {
-            super(prop, true);
-            this.singleton = singleton;
-        }
-
-        public Object get() {
-            return this.singleton ? super.get() : null;
-        }
-    }
-
-    public boolean isSingletonLifecycleEventManager() {
-        return singletonLifecycleEventManager.get();
-    }
-
-    public void setSingletonLifecycleEventManager(boolean singleton) {
-        singletonLifecycleEventManager.set(singleton);
-    }
-
-    class SingletonLEMValue extends BooleanValue {
-
-        public SingletonLEMValue(String prop) {
-            super(prop);
-        }
-
-        public void set(boolean value) {
-            super.set(value);
-            if (value && !lifecycleEventManager.singleton) {
-                lifecycleEventManager.singleton = true;
-            }
         }
     }
 

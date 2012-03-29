@@ -3279,32 +3279,6 @@ system sequence. See <xref linkend="ref_guide_sequence"/> for more
 information.
             </para>
         </section>
-        <section id="openjpa.SingletonLifecycleEventManager">
-            <title>openjpa.SingletonLifecycleEventManager</title>
-            <para>
-                <emphasis role="bold">Property name: </emphasis>
-                <literal>openjpa.SingletonLifecycleEventManager</literal>
-            </para>
-            <para>
-                 <emphasis role="bold">Configuration API: </emphasis>
-                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#isSingletonLifecycleEventManager()">org.apache.openjpa.conf.OpenJPAConfiguration.isSingletonLifecycleEventManager</ulink>
-            </para>
-            <para>
-                <emphasis role="bold">Resource adaptor config property:</emphasis>
-                SingletonLifecycleEventManager
-            </para>
-            <para>
-                <emphasis role="bold">Default: </emphasis>
-                <literal>false</literal>                
-            </para>
-            <para>
-                <emphasis role="bold">Description:</emphasis>
-                This property controls whether each EntityManager has its own life cycle event manager.
-                By default, each EntityManager only fires events to the registered listeners to the entities
-                it manages. If the life cycle event manager is a singleton, events will be fired to listeners
-                registered to all instances of EntityManager in the same persistence unit.
-            </para>
-        </section>
         <section id="openjpa.Specification">
             <title>
                 openjpa.Specification

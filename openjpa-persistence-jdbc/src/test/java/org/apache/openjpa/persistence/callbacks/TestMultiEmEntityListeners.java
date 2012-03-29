@@ -26,7 +26,7 @@ public class TestMultiEmEntityListeners extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(CLEAR_TABLES, ListenerInEntity.class, AddListenerEntity.class
-//                , "openjpa.SingletonLifecycleEventManager", "true"
+//                , "openjpa.Compatibility", "SingletonLifecycleEventManager=true"
             );
     }
 

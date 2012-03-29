@@ -258,7 +258,8 @@ public class TestValidationMode extends SingleEMFTestCase {
         // create our EMF
         Map<String,String> prop = new HashMap<String,String>();
         prop.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-//        prop.put("openjpa.SingletonLifecycleEventManager", "true");
+//        prop.put("openjpa.Compatibility", "SingletonLifecycleEventManager=true");
+
         OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
             OpenJPAPersistence.createEntityManagerFactory(
                 "simple",
