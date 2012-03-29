@@ -392,7 +392,7 @@ public class DBDictionary
 
     // NamingConfiguration properties
     private boolean delimitIdentifiers = false;
-    public boolean supportsDelimitedIdentifiers = true;
+    public Boolean supportsDelimitedIdentifiers = null;
     public String leadingDelimiter = "\"";
     public String trailingDelimiter = "\"";
     public String nameConcatenator = "_";
@@ -474,7 +474,8 @@ public class DBDictionary
             }
             
             // Configure the naming utility
-            configureNamingUtil(metaData);
+            if (supportsDelimitedIdentifiers == null) // not explicitly set
+                configureNamingUtil(metaData);
 
             // Auto-detect generated keys retrieval support
             // unless user specified it.
@@ -5380,20 +5381,27 @@ public class DBDictionary
      * @return the supportsDelimitedIds
      */
     public boolean getSupportsDelimitedIdentifiers() {
-        return supportsDelimitedIdentifiers;
+        return (supportsDelimitedIdentifiers == null ? false : supportsDelimitedIdentifiers);
     }
-
+    
     /**
      * @param supportsDelimitedIds the supportsDelimitedIds to set
      */
-    public void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
+    public void setSupportsDelimitedIdentifiers(boolean supportsDelimitedIds) {
+        supportsDelimitedIdentifiers = Boolean.valueOf(supportsDelimitedIds);
+    }
+
+    /**
+     * @param metadata the DatabaseMetaData to use to determine whether delimiters can be supported
+     */
+    private void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
         try {
-            supportsDelimitedIdentifiers = 
+            supportsDelimitedIdentifiers = Boolean.valueOf(
                 metaData.supportsMixedCaseQuotedIdentifiers() ||
                 metaData.storesLowerCaseQuotedIdentifiers() ||
-                metaData.storesUpperCaseQuotedIdentifiers();
+                metaData.storesUpperCaseQuotedIdentifiers());
         } catch (SQLException e) {
-            supportsDelimitedIdentifiers = false;
+            supportsDelimitedIdentifiers = Boolean.valueOf(false);
             getLog().warn(_loc.get("unknown-delim-support", e));
         }
     }
@@ -5508,11 +5516,17 @@ public class DBDictionary
     }
 
     public String toDBName(DBIdentifier name) {
-        return getNamingUtil().toDBName(name);
+        if (!getSupportsDelimitedIdentifiers())
+            return name.getName();
+        else
+            return getNamingUtil().toDBName(name);
     }
 
     public String toDBName(DBIdentifier name, boolean delimit) {
-        return getNamingUtil().toDBName(name, delimit);
+        if (!getSupportsDelimitedIdentifiers())
+            return name.getName();
+        else
+            return getNamingUtil().toDBName(name, delimit);
     }
 
     public DBIdentifier fromDBName(String name, DBIdentifierType id) {
