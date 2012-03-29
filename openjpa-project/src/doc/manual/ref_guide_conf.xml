@@ -1811,6 +1811,36 @@ long-running application where the initial cost of class generation is offset by
 memory and speed optimization over time.
             </para>
         </section>
+        <section id="openjpa.DynamicEnhancementAgent">
+            <title>openjpa.DynamicEnhancementAgent</title>
+            <para> 
+                <emphasis role="bold">Property name: </emphasis>
+                <literal>openjpa.DynamicEnhancementAgent</literal>
+            </para>
+            <para>
+                 <emphasis role="bold">Configuration API: </emphasis>
+                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicEnhancementAgent()">org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicEnhancementAgent</ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config property:</emphasis>
+                DynamicEnhancementAgent
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis>
+                <literal>true</literal>
+                
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis>
+                The DynamicEnhancementAgent property controls whether or not
+                OpenJPA will attempt to dynamically load the PCEnhancer 
+                javaagent.
+            </para>
+            <para>
+                See the reference guide for more information 
+                <xref linkend="ref_guide_pc_enhance_dynamic"/>
+            </para>            
+        </section>
         <section id="openjpa.FetchBatchSize">
             <title>
                 openjpa.FetchBatchSize
@@ -3180,36 +3210,6 @@ serious problems.
                 information 
                 <xref linkend="ref_guide_pc_enhance_unenhanced_types"/>
             </para>
-        </section>
-        <section id="openjpa.DynamicEnhancementAgent">
-            <title>openjpa.DynamicEnhancementAgent</title>
-            <para> 
-                <emphasis role="bold">Property name: </emphasis>
-                <literal>openjpa.DynamicEnhancementAgent</literal>
-            </para>
-            <para>
-                 <emphasis role="bold">Configuration API: </emphasis>
-                 <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getDynamicEnhancementAgent()">org.apache.openjpa.conf.OpenJPAConfiguration.getDynamicEnhancementAgent</ulink>
-            </para>
-            <para>
-                <emphasis role="bold">Resource adaptor config property:</emphasis>
-                DynamicEnhancementAgent
-            </para>
-            <para>
-                <emphasis role="bold">Default: </emphasis>
-                <literal>true</literal>
-                
-            </para>
-            <para>
-                <emphasis role="bold">Description:</emphasis>
-                The DynamicEnhancementAgent property controls whether or not
-                OpenJPA will attempt to dynamically load the PCEnhancer 
-                javaagent.
-            </para>
-            <para>
-                See the reference guide for more information 
-                <xref linkend="ref_guide_pc_enhance_dynamic"/>
-            </para>            
         </section>
         <section id="openjpa.SavepointManager">
             <title>

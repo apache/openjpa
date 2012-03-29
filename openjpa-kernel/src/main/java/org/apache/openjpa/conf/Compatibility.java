@@ -74,7 +74,7 @@ public class Compatibility {
     private boolean _useListAttributeForArrays = false; 
     private boolean _metaFactoriesAreStrict = false; 
     private boolean _resetFlushFlagForCascadePersist = true;//OPENJPA-2051
-
+    private boolean _singletonLifecycleEventManager = false;
     
     /**
      * Whether to require exact identity value types when creating object
@@ -695,5 +695,22 @@ public class Compatibility {
      */
     public void setResetFlushFlagForCascadePersist(boolean b){
         _resetFlushFlagForCascadePersist = b;
+    }
+
+    /**
+     * Returns true if life cycle event manager is a singleton configuration.
+     */
+    public boolean isSingletonLifecycleEventManager() {
+        return _singletonLifecycleEventManager;
+    }
+
+    /**
+     * This property set whether each EntityManager has its own life cycle event manager.
+       By default, each EntityManager only fires events to the registered listeners to the entities
+       it manages. If the life cycle event manager is a singleton, events will be fired to listeners
+       registered to all instances of EntityManager in the same persistence unit.
+     */
+    public void setSingletonLifecycleEventManager(boolean singleton) {
+        _singletonLifecycleEventManager = singleton;
     }
 }

@@ -68,7 +68,6 @@ import org.apache.openjpa.lib.encryption.EncryptionProvider;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 import org.apache.openjpa.lib.instrumentation.InstrumentationProvider;
 import org.apache.openjpa.lib.log.Log;
-import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.ClassResolver;
@@ -88,7 +87,7 @@ public class OpenJPAConfigurationImpl
     extends ConfigurationImpl
     implements OpenJPAConfiguration {
 
-    private static final Localizer _loc = Localizer.forPackage(OpenJPAConfigurationImpl.class);
+    // private static final Localizer _loc = Localizer.forPackage(OpenJPAConfigurationImpl.class);
 
     // cached state; some of this is created in getter methods, so make
     // protected in case subclasses want to access without creating
@@ -1749,9 +1748,9 @@ public class OpenJPAConfigurationImpl
     }
 
     public LifecycleEventManager getLifecycleEventManagerInstance() {
-        LifecycleEventManager lem = (LifecycleEventManager)
-            lifecycleEventManager.get();
-        if (lem == null) {
+        LifecycleEventManager lem = null;
+        if (!getCompatibilityInstance().isSingletonLifecycleEventManager() ||
+                (lem = (LifecycleEventManager)lifecycleEventManager.get()) == null) {
             lem = (LifecycleEventManager)lifecycleEventManager
                 .instantiate(LifecycleEventManager.class, this);
         }

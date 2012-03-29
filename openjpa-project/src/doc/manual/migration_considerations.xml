@@ -426,7 +426,7 @@
                             <para> Regenerate the canonical metamodel classes</para>
                         </listitem>
                         <listitem>
-                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>true</literal>in persistence.xml 
+                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>true</literal> in persistence.xml 
                                 <programlisting> &lt;property name="openjpa.Compatibility" value="UseListAttributeForArrays=true"/&gt;</programlisting>
                             </para>
                         </listitem>
