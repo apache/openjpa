@@ -29,7 +29,11 @@ package org.apache.openjpa.kernel;
 class PNewState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+            return;
+
         context.setLoaded(true);
         context.setDirty(true);
         context.saveFields(false);

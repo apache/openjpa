@@ -37,7 +37,11 @@ class PNonTransState
     private static final Localizer _loc = Localizer.forPackage
         (PNonTransState.class);
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+            return;
+        
         // spec says all proxies to second class objects should be reset
         context.proxyFields(true, false);
 

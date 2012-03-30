@@ -291,7 +291,7 @@ public class StateManagerImpl
             else
                 _broker.removeFromTransaction(this);
 
-            _state.initialize(this);
+            _state.initialize(this, prev);
             if (_state.isDeleted() && !wasDeleted)
                 fireLifecycleEvent(LifecycleEvent.AFTER_DELETE);
         } finally {
@@ -356,27 +356,16 @@ public class StateManagerImpl
         _flush = new BitSet(fmds.length);
         _dirty = new BitSet(fmds.length);
 
-        for (int i = 0; i < fmds.length; i++) {
-            // mark primary key and non-persistent fields as loaded
-            if (fmds[i].isPrimaryKey()
-                || fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
-                _loaded.set(i);
-            
-            if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
-                String mappedByIdValue = fmds[i].getMappedByIdValue(); 
-                if (mappedByIdValue != null) { 
-                    if (!ApplicationIds.isIdSet(_id, _meta, mappedByIdValue)) {
-                        if (_mappedByIdFields == null)
-                            _mappedByIdFields = new ArrayList<FieldMetaData>();
-                        _mappedByIdFields.add(fmds[i]);
-                    }
-                }
-            }
-            // record whether there are any managed inverse fields
-            if (_broker.getInverseManager() != null
-                && fmds[i].getInverseMetaDatas().length > 0)
-                _flags |= FLAG_INVERSES;
+        // mark primary key and non-persistent fields as loaded
+        for(int i : _meta.getPkAndNonPersistentManagedFmdIndexes()){
+            _loaded.set(i);
         }
+            
+        _mappedByIdFields = _meta.getMappyedByIdFields();
+        
+        // record whether there are any managed inverse fields
+        if (_broker.getInverseManager() != null && _meta.hasInverseManagedFields())
+            _flags |= FLAG_INVERSES;
 
         pc.pcSetDetachedState(null);
         _pc = pc;
@@ -1592,12 +1581,12 @@ public class StateManagerImpl
 
     public void accessingField(int field) {
         // possibly change state
-        try {           
+        try {
             // If this field is loaded, and not a PK field allow pass through
             // TODO -- what about version fields? Could probably UT this
             if(_loaded.get(field) && !_meta.getField(field).isPrimaryKey())
                 return;
-            
+                
             beforeRead(field);
             beforeAccessField(field);
         } catch (RuntimeException re) {

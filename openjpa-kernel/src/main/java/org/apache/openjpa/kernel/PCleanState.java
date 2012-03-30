@@ -29,7 +29,11 @@ package org.apache.openjpa.kernel;
 class PCleanState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+            return;
+
         context.setDirty(false);
     }
 

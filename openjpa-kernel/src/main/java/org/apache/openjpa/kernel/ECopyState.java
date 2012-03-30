@@ -29,7 +29,8 @@ package org.apache.openjpa.kernel;
 class ECopyState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
         // no need to save fields, because this transition doesn't happen
         // until the flush process begins
         context.setLoaded(true);

@@ -219,7 +219,11 @@ public class ClassMetaData
     private boolean _abstract = false;
     private Boolean _hasAbstractPKField = null;
     private Boolean _hasPKFieldsFromAbstractClass = null;
-    
+    private int[] _pkAndNonPersistentManagedFmdIndexes = null;
+    private Boolean inverseManagedFields = null;
+    private List<FieldMetaData> _mappedByIdFields;
+    private boolean _mappedByIdFieldsSet = false;
+
     /**
      * Constructor. Supply described type and repository.
      */
@@ -2763,5 +2767,53 @@ public class ClassMetaData
     public String getSourceName(){
         return _srcName; 
     }
-}
+    
+    public int[] getPkAndNonPersistentManagedFmdIndexes() {
+        if (_pkAndNonPersistentManagedFmdIndexes == null) {
+            List<Integer> ids = new ArrayList<Integer>();
+            for (FieldMetaData fmd : getFields()) {
+                if (fmd.isPrimaryKey() || fmd.getManagement() != FieldMetaData.MANAGE_PERSISTENT) {
+                    ids.add(fmd.getIndex());
+                }
+            }
+            int idsSize = ids.size();
+            _pkAndNonPersistentManagedFmdIndexes = new int[idsSize];
+            for(int i = 0; i<idsSize; i++){
+                _pkAndNonPersistentManagedFmdIndexes[i] = ids.get(i).intValue();
+            }
+        }
+        return _pkAndNonPersistentManagedFmdIndexes;
+    }
 
+    public boolean hasInverseManagedFields() {
+        if (inverseManagedFields == null) {
+            for(FieldMetaData fmd: getFields()){
+                if(fmd.getInverseMetaDatas().length > 0){
+                    inverseManagedFields = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+        return inverseManagedFields.booleanValue();
+    }
+    
+    public List<FieldMetaData> getMappyedByIdFields() {
+        if (!_mappedByIdFieldsSet) {
+            List<FieldMetaData> fmdArray = null;
+            for (FieldMetaData fmd : getFields()) {
+                if (getIdentityType() == ClassMetaData.ID_APPLICATION) {
+                    String mappedByIdValue = fmd.getMappedByIdValue();
+                    if (mappedByIdValue != null) {
+                        if (fmdArray == null) {
+                            fmdArray = new ArrayList<FieldMetaData>();
+                        }
+                        fmdArray.add(fmd);
+                    }
+                }
+            }
+            _mappedByIdFields = fmdArray;
+            _mappedByIdFieldsSet = true;
+        }
+        return _mappedByIdFields;
+    }
+}

@@ -30,10 +30,14 @@ package org.apache.openjpa.kernel;
 class ENonTransState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+            return;
+        
         // spec says all proxies to second class objects should be reset
         context.proxyFields(true, true);
-
+        
         context.setDirty(false);
         context.clearSavedFields();
     }

@@ -161,7 +161,7 @@ public class PCState
     /**
      * Called when this state is first assigned to the given state manager.
      */
-    void initialize(StateManagerImpl context) {
+    void initialize(StateManagerImpl context, PCState previousState) {
     }
 
     /**
