@@ -477,6 +477,26 @@
 					to <literal>true</literal>.
 				</para>
             </section>
+            <section id="jpa_2.2_LifecycleEventManager">
+                <title>
+                    Life Cycle Event Manager Callback Behavior 
+                </title>
+                <!-- See OPENJPA-2163 for details. -->
+                <para>
+                    Life cycle event manager is used to manage entity's life cycle event callback.
+                    In previous releases, Life cycle event manager is scoped to EntityManagerFactory.
+                    This means listeners registered to an individual EntityManager may get life cycle
+                    event callbacks for entity that it does not manage. 
+                </para>
+                <para>
+                    From 2.2.1 release, the default callback behavior of the life cycle event manager
+                    is changed to scope to each EntityManager.                     
+                    To revert this behavior to the previous release, set the
+                    value of the <literal>openjpa.Compatibility</literal>
+                    property <literal>SingletonLifecycleEventManager</literal>
+                    to <literal>true</literal>.
+                </para>
+            </section>
         </section>
     </section>
 </appendix>
