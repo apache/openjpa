@@ -2967,7 +2967,8 @@ public class StateManagerImpl
         try {
             for (FieldMetaData fmd : _meta.getProxyFields()) {
                 int index = fmd.getIndex();
-                if (_loaded.get(index)) {
+                // only reload if dirty
+                if (_loaded.get(index) && _dirty.get(index)) {
                     provideField(_pc, _single, index);
                     if (_single.proxy(reset, replaceNull)) {
                         replaceField(_pc, _single, index);

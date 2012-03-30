@@ -38,11 +38,11 @@ class PNonTransState
         (PNonTransState.class);
 
     void initialize(StateManagerImpl context) {
-        context.setDirty(false);
-        context.clearSavedFields();
-
         // spec says all proxies to second class objects should be reset
         context.proxyFields(true, false);
+
+        context.setDirty(false);
+        context.clearSavedFields();
     }
 
     PCState delete(StateManagerImpl context) {

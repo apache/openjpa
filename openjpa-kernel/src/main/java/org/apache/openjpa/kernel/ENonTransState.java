@@ -31,11 +31,11 @@ class ENonTransState
     extends PCState {
 
     void initialize(StateManagerImpl context) {
-        context.setDirty(false);
-        context.clearSavedFields();
-
         // spec says all proxies to second class objects should be reset
         context.proxyFields(true, true);
+
+        context.setDirty(false);
+        context.clearSavedFields();
     }
 
     PCState delete(StateManagerImpl context) {

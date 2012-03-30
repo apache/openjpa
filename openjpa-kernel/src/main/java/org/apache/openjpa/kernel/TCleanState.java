@@ -31,13 +31,13 @@ class TCleanState
     extends PCState {
 
     void initialize(StateManagerImpl context) {
-        context.clearSavedFields();
-        context.setLoaded(true);
-        context.setDirty(false);
-
         // need to replace the second class objects with proxies that
         // listen for dirtying so we can track changes to these objects
         context.proxyFields(true, false);
+
+        context.clearSavedFields();
+        context.setLoaded(true);
+        context.setDirty(false);
     }
 
     PCState persist(StateManagerImpl context) {
