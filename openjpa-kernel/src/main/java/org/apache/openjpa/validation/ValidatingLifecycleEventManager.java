@@ -97,6 +97,14 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         return _validator.validating(source, LifecycleEvent.BEFORE_DELETE) ||
             super.hasDeleteListeners(source, meta);
     }
+    
+    @Override
+    public boolean hasHandlers(Object source, ClassMetaData meta, int type) {
+        if (_validator == null) {            
+            return super.hasHandlers(source, meta, type);
+        }
+        return true;
+    }
 
     @Override
     public Exception[] fireEvent(Object source,

@@ -209,7 +209,7 @@ public class LifecycleEventManager
             || hasHandlers(source, meta, LifecycleEvent.AFTER_ATTACH);
     }
 
-    private boolean hasHandlers(Object source, ClassMetaData meta, int type) {
+    public boolean hasHandlers(Object source, ClassMetaData meta, int type) {
         return hasCallbacks(source, meta, type)
             || hasListeners(source, meta, type);
     }
