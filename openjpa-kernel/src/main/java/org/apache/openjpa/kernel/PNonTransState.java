@@ -40,12 +40,13 @@ class PNonTransState
     @Override
     void initialize(StateManagerImpl context, PCState previous) {
         if (previous == null)
-            return;
-        
-        // spec says all proxies to second class objects should be reset
-        context.proxyFields(true, false);
-
-        context.setDirty(false);
+         return;
+        // If our previous state is clean, we don't need to do any sort of cleanup
+        if (previous != PCLEAN) {
+            // spec says all proxies to second class objects should be reset
+            context.proxyFields(true, false);
+            context.setDirty(false);
+        }
         context.clearSavedFields();
     }
 
