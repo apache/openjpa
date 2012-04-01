@@ -44,7 +44,7 @@ public class DelayedArrayListProxy extends ArrayList
   private transient Broker _broker = null;
   private transient OpenJPAStateManager _delayedSm;
   private transient int _delayedField; 
-  private transient boolean dirtyCollection = true;
+  private transient boolean _detached = false;
   
   public DelayedArrayListProxy()
   {
@@ -65,8 +65,11 @@ public class DelayedArrayListProxy extends ArrayList
     // If clearing the owner of this proxy, store away what is necessary for 
     // delayed loading 
     if (paramOpenJPAStateManager == null && paramInt == -1 && sm != null) {
+        _detached = true;
         _delayedSm = sm;
         _delayedField = field;
+    } else {
+        _detached = false;
     }
     
     this.sm = paramOpenJPAStateManager;
@@ -426,5 +429,10 @@ public class DelayedArrayListProxy extends ArrayList
   @Override
   public OpenJPAStateManager getOwnerStateManager() {
     return _ownerSm;
+  }
+  
+  @Override
+  public boolean isDetached() {
+      return _detached;
   }
 }

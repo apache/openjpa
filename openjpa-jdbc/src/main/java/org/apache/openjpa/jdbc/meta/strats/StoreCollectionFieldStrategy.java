@@ -494,12 +494,13 @@ public abstract class StoreCollectionFieldStrategy
         throws SQLException {
         
         Object coll = null;
-        boolean delayed = sm.isDelayed(field.getIndex());
+        final int fieldIndex = field.getIndex();
+        final boolean delayed = sm.isDelayed(fieldIndex);
         if (!delayed && field.isDelayCapable()) {
-            coll = sm.newProxy(field.getIndex());
+            coll = sm.newProxy(fieldIndex);
             if (coll instanceof DelayedProxy) {
-                sm.storeObject(field.getIndex(), coll);
-                sm.setDelayed(field.getIndex(), true);
+                sm.storeObject(fieldIndex, coll);
+                sm.setDelayed(fieldIndex, true);
                 return;
             }
         }
@@ -532,7 +533,7 @@ public abstract class StoreCollectionFieldStrategy
                     res.close();
                 }
             }
-            sm.storeObjectField(field.getIndex(), pcoll);
+            sm.storeObjectField(fieldIndex, pcoll);
             return;
         }
 
@@ -553,11 +554,11 @@ public abstract class StoreCollectionFieldStrategy
         ChangeTracker ct = null;
         if (delayed) {
             if (sm.isDetached() || sm.getOwner() == null) {
-                sm.getPersistenceCapable().pcProvideField(field.getIndex());
+                sm.getPersistenceCapable().pcProvideField(fieldIndex);
                 coll = 
-                    ((FieldManager)sm.getPersistenceCapable().pcGetStateManager()).fetchObjectField(field.getIndex());
+                    ((FieldManager)sm.getPersistenceCapable().pcGetStateManager()).fetchObjectField(fieldIndex);
             } else {
-                coll = sm.fetchObjectField(field.getIndex());
+                coll = sm.fetchObjectField(fieldIndex);
             }
             if (coll instanceof Proxy)
                 ct = ((Proxy) coll).getChangeTracker();
@@ -566,7 +567,7 @@ public abstract class StoreCollectionFieldStrategy
                 coll = new ArrayList();
             else {
                 if (coll == null) {
-                    coll = sm.newProxy(field.getIndex());
+                    coll = sm.newProxy(fieldIndex);
                 }
                 if (coll instanceof Proxy)
                     ct = ((Proxy) coll).getChangeTracker();
@@ -593,10 +594,10 @@ public abstract class StoreCollectionFieldStrategy
         // if not a delayed collection, set into sm
         if (!delayed) {
             if (field.getTypeCode() == JavaTypes.ARRAY)
-                sm.storeObject(field.getIndex(), JavaTypes.toArray
+                sm.storeObject(fieldIndex, JavaTypes.toArray
                     ((Collection) coll, field.getElement().getType()));
             else
-                sm.storeObject(field.getIndex(), coll);
+                sm.storeObject(fieldIndex, coll);
         }
     }
 

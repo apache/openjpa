@@ -688,27 +688,19 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     }
 
     private boolean isDelayedLoadOnly(OpenJPAStateManager sm, BitSet fields, ClassMapping mapping) {
-        if (!sm.getContext().getConfiguration().getProxyManagerInstance().getDelayCollectionLoading()) {
+        if (!sm.getContext().getConfiguration().getProxyManagerInstance().getDelayCollectionLoading() 
+            || fields.isEmpty()) {
             return false;
         }
-        boolean allDelayed = false;
-        if (!fields.isEmpty()) {
-            FieldMapping[] fms = mapping.getFieldMappings();
-            int fCount = 0;
-            int dfCount = 0;
-            for (int i = fields.nextSetBit(0); i < fms.length; i++) {
-                if (fields.get(i)) {
-                    fCount++;
-                    if (!(fms[i].isDelayCapable() && (!sm.getLoaded().get(i) || sm.isDelayed(i)))) {
-                        break;
-                    } else {
-                        dfCount++;
-                    }
+        FieldMapping[] fms = mapping.getFieldMappings();
+        for (int i = 0; i < fms.length; i++) {
+            if (fields.get(i)) {
+                if (!(fms[i].isDelayCapable() && (!sm.getLoaded().get(i) || sm.isDelayed(i)))) {
+                    return false;
                 }
             }
-            allDelayed = (fCount == dfCount);
         }
-        return allDelayed;
+        return true;
     }
     
     /**

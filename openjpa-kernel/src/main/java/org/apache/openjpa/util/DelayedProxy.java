@@ -38,4 +38,6 @@ public interface DelayedProxy {
     OpenJPAStateManager getDelayedOwner();
     
     int getDelayedField();
+    
+    boolean isDetached();
 }

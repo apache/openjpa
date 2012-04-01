@@ -590,13 +590,13 @@ public class ProxyCollections
             // If the broker assigned to this proxy is null, closed or no longer
             // manages the pc, produce a new one
             Broker broker = sm.getContext().getBroker();
-            if (broker == null || broker.isClosed() 
+            if (dProxy.isDetached() || broker == null || broker.isClosed() 
                 || (!broker.isClosed() && !broker.isPersistent(sm.getPersistenceCapable()))) {
                 state[0] = true;
                 broker = dProxy.getBroker();
                 ((StateManagerImpl)sm).setBroker((BrokerImpl)broker);
             }
-            if (sm.getPersistenceCapable().pcGetStateManager() == null) {
+            if (dProxy.isDetached() || sm.getPersistenceCapable().pcGetStateManager() == null) {
                 state[1] = true;
                 if (dProxy.getOwnerStateManager() != null) {
                     sm.getPersistenceCapable().pcReplaceStateManager(dProxy.getOwnerStateManager());
