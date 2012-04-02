@@ -99,14 +99,6 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
     }
     
     @Override
-    public boolean hasHandlers(Object source, ClassMetaData meta, int type) {
-        if (_validator == null) {            
-            return super.hasHandlers(source, meta, type);
-        }
-        return true;
-    }
-
-    @Override
     public Exception[] fireEvent(Object source,
         ClassMetaData meta, int type) {
         
@@ -145,6 +137,16 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
             }
         }
         return evx;
+    }
+
+    /**
+     * Whether this LifeCycleEventManager has had at least one listener or callback
+     * registered.  Used for a quick test when firing events.
+     * @return boolean
+     */
+    @Override
+    public boolean isActive(ClassMetaData meta) {
+        return isValidationEnabled();
     }
 
     public boolean isValidationEnabled() {

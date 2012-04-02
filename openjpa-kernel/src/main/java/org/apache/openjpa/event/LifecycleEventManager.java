@@ -64,6 +64,18 @@ public class LifecycleEventManager
     private boolean _firing = false;
     private boolean _fail = false;
     private boolean _failFast = false;
+    private boolean _activated = false;  // set to true once modified
+
+    /**
+     * Whether this LifeCycleEventManager has had at least one listener or callback
+     * registered.  Used for a quick test when firing events.
+     * @return boolean
+     */
+    public boolean isActive(ClassMetaData meta) {
+        return _activated ||
+            meta.getLifecycleMetaData().is_activated() ||
+            meta.getRepository().is_systemListenersActivated();
+    }
 
     /**
      * Whether to fail after first exception when firing events to listeners.
@@ -88,6 +100,7 @@ public class LifecycleEventManager
             return;
         if (classes != null && classes.length == 0)
             return;
+        _activated = true;
         if (_firing) {
             _addListeners.add(listener);
             _addListeners.add(classes);
@@ -209,7 +222,7 @@ public class LifecycleEventManager
             || hasHandlers(source, meta, LifecycleEvent.AFTER_ATTACH);
     }
 
-    public boolean hasHandlers(Object source, ClassMetaData meta, int type) {
+    private boolean hasHandlers(Object source, ClassMetaData meta, int type) {
         return hasCallbacks(source, meta, type)
             || hasListeners(source, meta, type);
     }
