@@ -148,7 +148,7 @@ public class TestOracleXmlColumn extends AbstractPersistenceTestCase {
     }
 
     private String xmlResult(String xml) {
-        xml = xml.replace("\r", " ").replace("\n", " ").replace("/>", "></" + projectStr + ">").trim();
+        xml = xml.replace("\r", "").replace("\n", "").replace("/>", "></" + projectStr + ">").trim();
         return xml;
     }
 }
