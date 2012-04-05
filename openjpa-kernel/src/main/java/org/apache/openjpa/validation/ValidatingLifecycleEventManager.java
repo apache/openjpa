@@ -146,7 +146,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
      */
     @Override
     public boolean isActive(ClassMetaData meta) {
-        return isValidationEnabled();
+        return isValidationEnabled() || super.isActive(meta);
     }
 
     public boolean isValidationEnabled() {
