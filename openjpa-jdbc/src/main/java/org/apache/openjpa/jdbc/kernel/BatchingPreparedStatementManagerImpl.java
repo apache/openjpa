@@ -96,8 +96,12 @@ public class BatchingPreparedStatementManagerImpl extends
                 break;
             case 1:
                 // single entry in cache, direct SQL execution. 
-                super.flushAndUpdate((RowImpl) _batchedRows.get(0));
-                _batchedRows.clear();
+                try {
+                    super.flushAndUpdate((RowImpl) _batchedRows.get(0));
+                } finally {
+                    _batchedSql = null;
+                    _batchedRows.clear();
+                }
                 break;
             default:
                 // flush all entries in cache in batch.
