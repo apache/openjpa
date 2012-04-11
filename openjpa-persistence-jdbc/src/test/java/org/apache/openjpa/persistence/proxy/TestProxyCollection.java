@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
+import java.util.LinkedHashSet;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -36,7 +38,7 @@ import org.apache.openjpa.util.ProxyCollection;
  */
 public class TestProxyCollection extends SingleEMFTestCase {
 	public void setUp() {
-		super.setUp(CLEAR_TABLES, TreeNode.class);
+		super.setUp(CLEAR_TABLES, TreeNode.class, ConcreteEntity.class, AbstractEntity.class);
 	}
 	/**
 	 * Tests that a uniform tree is created with expected fan outs at each 
@@ -103,6 +105,24 @@ public class TestProxyCollection extends SingleEMFTestCase {
 		int[] modifier = {1,2,3}; // remove 1 from each Level 
 		createModifyAndMerge(original, modifier);
 	}
+	
+    public void testCreateCorrectType() {
+        ConcreteEntity ce = new ConcreteEntity();
+        ce.addItem(ce);
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        em.persist(ce);
+        em.getTransaction().commit();
+        em.clear();
+
+        ce = em.find(ConcreteEntity.class, ce.getId());
+        assertNotNull(ce);
+        Class<?> proxyCls = ce.getItems().getClass();
+        assertTrue(proxyCls + " is not assignableFrom " + LinkedHashSet.class,
+            LinkedHashSet.class.isAssignableFrom(proxyCls));
+    }
 	/**
 	 * Create a uniform tree with original fanout.
 	 * Persist.

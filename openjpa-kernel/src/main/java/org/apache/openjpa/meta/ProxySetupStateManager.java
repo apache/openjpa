@@ -19,6 +19,7 @@
 package org.apache.openjpa.meta;
 
 import java.io.ObjectOutput;
+import java.lang.reflect.Modifier;
 import java.util.Calendar;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -46,9 +47,9 @@ class ProxySetupStateManager
     public void setProxyData(PersistenceCapable pc, ClassMetaData meta) {
         FieldMetaData[] fmds = meta.getFields();
         for (int i = 0; i < fmds.length; i++) {
-            if (fmds[i].getDefiningMetaData() != meta)
-                continue;
-
+            // This method only gets called for concrete types. We need to do this processing for fields that might 
+            // not be owned by pc. 
+            
             switch (fmds[i].getDeclaredTypeCode()) {
                 case JavaTypes.CALENDAR:
                     pc.pcProvideField(fmds[i].getIndex());
