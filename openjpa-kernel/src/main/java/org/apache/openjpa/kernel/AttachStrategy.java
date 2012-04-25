@@ -90,9 +90,31 @@ abstract class AttachStrategy
             newInstance = pc.pcNewInstance(null, false);
         else // application identity: use existing fields
             newInstance = pc.pcNewInstance(null, appId, false);
-
-        return (StateManagerImpl) manager.getBroker().persist
-            (newInstance, appId, explicit, manager.getBehavior());
+        
+        StateManagerImpl sm = (StateManagerImpl) manager.getBroker().persist
+                (newInstance, appId, explicit, manager.getBehavior());
+            
+        attachPCKeyFields(pc, sm, meta, manager);
+            
+        return sm;
+    }
+    
+    private void attachPCKeyFields(PersistenceCapable fromPC, 
+        StateManagerImpl sm, ClassMetaData meta, AttachManager manager) {
+        
+        
+        if (fromPC.pcGetStateManager() == null) {
+            fromPC.pcReplaceStateManager(sm);
+        
+            FieldMetaData[] fmds = meta.getDefinedFields();
+            for (FieldMetaData fmd : fmds) {
+                if (fmd.isPrimaryKey() && fmd.getDeclaredTypeCode() == JavaTypes.PC) {
+                    attachField(manager, fromPC, sm, fmd, true);
+                }
+            }
+        
+            fromPC.pcReplaceStateManager(null);
+        }
     }
 
     /**

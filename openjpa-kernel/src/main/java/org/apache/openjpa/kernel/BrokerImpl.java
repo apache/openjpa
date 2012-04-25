@@ -174,6 +174,7 @@ public class BrokerImpl
     // ref to producing factory and configuration
     private transient AbstractBrokerFactory _factory = null;
     private transient OpenJPAConfiguration _conf = null;
+    private transient MetaDataRepository _repo = null;
 
     // cache class loader associated with the broker
     private transient ClassLoader _loader = null;
@@ -322,8 +323,10 @@ public class BrokerImpl
         _initializeWasInvoked = true;
         _loader = AccessController.doPrivileged(
             J2DoPrivHelper.getContextClassLoaderAction());
-        if (!fromDeserialization)
+        if (!fromDeserialization) {
             _conf = factory.getConfiguration();
+            _repo = _conf.getMetaDataRepositoryInstance();
+        }
         _compat = _conf.getCompatibilityInstance();
         _factory = factory;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -4412,9 +4415,17 @@ public class BrokerImpl
 
     public Object getObjectId(Object obj) {
         assertOpen();
-        if (ImplHelper.isManageable(obj))
-            return (ImplHelper.toPersistenceCapable(obj, _conf))
-                .pcFetchObjectId();
+        if (ImplHelper.isManageable(obj)) {
+            PersistenceCapable pc = ImplHelper.toPersistenceCapable(obj, _conf);
+            if (pc != null) {
+                if (pc.pcGetStateManager() == null) {
+                    // If the statemanager is null the call to pcFetchObjectId always returns null. Create a new object
+                    // id.
+                    return ApplicationIds.create(pc, _repo.getMetaData(pc.getClass(), null, true));
+                }
+                return pc.pcFetchObjectId();
+            }
+        }
         return null;
     }
 
