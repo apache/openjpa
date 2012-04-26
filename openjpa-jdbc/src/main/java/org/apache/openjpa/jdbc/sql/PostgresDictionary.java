@@ -143,7 +143,7 @@ public class PostgresDictionary
     public PostgresDictionary() {
         platform = "PostgreSQL";
         validationSQL = "SELECT NOW()";
-        datePrecision = CENTI;
+        datePrecision = MICRO;
         supportsAlterTableWithDropColumn = false;
         supportsDeferredConstraints = true;
         supportsSelectStartIndex = true;
