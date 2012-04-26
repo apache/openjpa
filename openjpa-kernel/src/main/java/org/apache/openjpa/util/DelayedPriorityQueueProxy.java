@@ -19,12 +19,11 @@
 package org.apache.openjpa.util;
 
 import java.io.ObjectStreamException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.PriorityQueue;
+import java.util.SortedSet;
 
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -33,17 +32,17 @@ import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
 /**
- * ArrayList proxy with delay loading capability.  Allows non-indexed
+ * PriorityQueue proxy with delay loading capability.  Allows non-indexed
  * add and remove operations to occur on an unloaded collection.  Operations
  * that require a load will trigger a load.
  */
 @SuppressWarnings({"rawtypes","unchecked"})
-public class DelayedArrayListProxy extends ArrayList implements ProxyCollection, DelayedProxy {
-
+public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCollection, DelayedProxy {
     private transient OpenJPAStateManager sm;
     private transient int field;
     private transient CollectionChangeTracker changeTracker;
-    private transient Class<?> elementType;
+    private transient Class elementType;
+
     private transient OpenJPAStateManager _ownerSm;
     private transient boolean _directAccess = false;
     private transient BrokerFactory _brokerFactory = null;
@@ -52,17 +51,30 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
     private transient int _delayedField;
     private transient boolean _detached = false;
 
-    public DelayedArrayListProxy() {
-    }
-
-    public DelayedArrayListProxy(Collection paramCollection) {
-        super(paramCollection);
-    }
-
-    public DelayedArrayListProxy(int paramInt) {
+    public DelayedPriorityQueueProxy(int paramInt) {
         super(paramInt);
     }
 
+    public DelayedPriorityQueueProxy(int paramInt, Comparator paramComparator) {
+        super(paramInt, paramComparator);
+    }
+
+    public DelayedPriorityQueueProxy(Collection paramCollection) {
+        super(paramCollection);
+    }
+
+    public DelayedPriorityQueueProxy(PriorityQueue paramPriorityQueue) {
+        super(paramPriorityQueue);
+    }
+
+    public DelayedPriorityQueueProxy(SortedSet paramSortedSet) {
+        super(paramSortedSet);
+    }
+
+    public DelayedPriorityQueueProxy() {
+    }
+
+    @Override
     public void setOwner(OpenJPAStateManager paramOpenJPAStateManager,
             int paramInt) {
         // If clearing the owner of this proxy, store away what is necessary for
@@ -95,30 +107,17 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return false;
     }
 
-    public int getDelayedField() {
-        if (field == -1 || _detached) {
-            return _delayedField;
-        }
-        return field;
-    }
-
-    public OpenJPAStateManager getDelayedOwner() {
-        if (sm == null || _detached) {
-            return _delayedSm;
-        }
-        return sm;
-    }
-
     public OpenJPAStateManager getOwner() {
-        return sm;
+        return this.sm;
     }
 
     public int getOwnerField() {
-        return field;
+        return this.field;
     }
 
-    public Object clone() {
-        if (isDirectAccess()) {
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        if (_directAccess) {
             return super.clone();
         }
         if (isDelayLoad()) {
@@ -133,55 +132,42 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return this.changeTracker;
     }
 
-    protected void setChangeTracker(CollectionChangeTracker ct) {
-        changeTracker = ct;
-    }
-
     public Object copy(Object paramObject) {
-        if (isDelayLoad()) {
-            load();
-        }
-        return new ArrayList((Collection) paramObject);
+        return new PriorityQueue((PriorityQueue) paramObject);
     }
 
     public Class getElementType() {
         return this.elementType;
     }
 
-    protected void setElementType(Class<?> elemType) {
-        elementType = elemType;
-    }
-
-    @Override
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {
-        DelayedArrayListProxy proxy = new DelayedArrayListProxy();
-        proxy.elementType = paramClass;
-        proxy.changeTracker = new DelayedCollectionChangeTrackerImpl(proxy,
-                true, true, paramBoolean2);
-        return proxy;
+        DelayedPriorityQueueProxy localproxy = new DelayedPriorityQueueProxy();
+        localproxy.elementType = paramClass;
+        if (paramBoolean1)
+            localproxy.changeTracker = new DelayedCollectionChangeTrackerImpl(
+                    localproxy, true, false, paramBoolean2);
+        return localproxy;
     }
 
+    @Override
     public boolean add(Object paramObject) {
         if (_directAccess) {
             return super.add(paramObject);
         }
         ProxyCollections.beforeAdd(this, paramObject);
-        boolean bool = super.add(paramObject);
+        boolean bool = false;
+        try {
+            setDirectAccess(true);
+            bool = super.add(paramObject);
+        } finally {
+            setDirectAccess(false);
+        }
         return ProxyCollections.afterAdd(this, paramObject, bool);
     }
 
-    public void add(int paramInt, Object paramObject) {
-        if (!_directAccess) {
-            if (isDelayLoad()) {
-                load();
-            }
-        }
-        ProxyCollections.beforeAdd(this, paramInt, paramObject);
-        super.add(paramInt, paramObject);
-    }
-
+    @Override
     public void clear() {
         if (!_directAccess) {
             if (isDelayLoad()) {
@@ -192,56 +178,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         super.clear();
     }
 
-    public boolean addAll(int paramInt, Collection paramCollection) {
-        if (isDelayLoad()) {
-            load();
-        }
-        return ProxyCollections.addAll(this, paramInt, paramCollection);
-    }
-
-    public boolean addAll(Collection paramCollection) {
-        if (_directAccess) {
-            return super.addAll(paramCollection);
-        }
-        return ProxyCollections.addAll(this, paramCollection);
-    }
-
-    public boolean remove(Object paramObject) {
-        if (_directAccess) {
-            return super.remove(paramObject);
-        }
-        ProxyCollections.beforeRemove(this, paramObject);
-        setDirectAccess(true);
-        boolean bool = super.remove(paramObject);
-        setDirectAccess(false);
-        return ProxyCollections.afterRemove(this, paramObject, bool);
-    }
-
-    public Object remove(int paramInt) {
-        if (_directAccess) {
-            return super.remove(paramInt);
-        }
-        if (isDelayLoad()) {
-            load();
-        }
-        ProxyCollections.beforeRemove(this, paramInt);
-        Object localObject = super.remove(paramInt);
-        return ProxyCollections.afterRemove(this, paramInt, localObject);
-    }
-
-    public Object set(int paramInt, Object paramObject) {
-        if (_directAccess) {
-            return super.set(paramInt, paramObject);
-        }
-        if (isDelayLoad()) {
-            load();
-        }
-        ProxyCollections.beforeSet(this, paramInt, paramObject);
-        Object localObject = super.set(paramInt, paramObject);
-        return ProxyCollections.afterSet(this, paramInt, paramObject,
-                localObject);
-    }
-
+    @Override
     public Iterator iterator() {
         if (_directAccess) {
             return super.iterator();
@@ -253,29 +190,67 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.afterIterator(this, localIterator);
     }
 
-    public ListIterator listIterator(int paramInt) {
+    @Override
+    public boolean remove(Object paramObject) {
         if (_directAccess) {
-            return super.listIterator(paramInt);
+            return super.remove(paramObject);
         }
+        ProxyCollections.beforeRemove(this, paramObject);
+        setDirectAccess(true);
+        boolean bool = super.remove(paramObject);
+        setDirectAccess(false);
+        return ProxyCollections.afterRemove(this, paramObject, bool);
+    }
+
+    @Override
+    public Object poll() {
+        if (_directAccess) {
+            return super.poll();
+        }
+        // queue operations require proper ordering. the collection
+        // must be loaded in order to ensure order.
         if (isDelayLoad()) {
             load();
         }
-        ListIterator localListIterator = super.listIterator(paramInt);
-        return ProxyCollections.afterListIterator(this, paramInt,
-                localListIterator);
+        ProxyCollections.beforePoll(this);
+        Object localObject = super.poll();
+        return ProxyCollections.afterPoll(this, localObject);
     }
 
-    public ListIterator listIterator() {
+    @Override
+    public boolean offer(Object paramObject) {
         if (_directAccess) {
-            return super.listIterator();
+            return super.offer(paramObject);
         }
+        ProxyCollections.beforeOffer(this, paramObject);
+        boolean bool = super.offer(paramObject);
+        return ProxyCollections.afterOffer(this, paramObject, bool);
+    }
+
+    @Override
+    public boolean addAll(Collection paramCollection) {
+        if (_directAccess) {
+            return super.addAll(paramCollection);
+        }
+        return ProxyCollections.addAll(this, paramCollection);
+    }
+
+    @Override
+    public Object remove() {
+        if (_directAccess) {
+            return super.remove();
+        }
+        // queue operations require proper ordering. the collection
+        // must be loaded in order to ensure order.
         if (isDelayLoad()) {
             load();
         }
-        ListIterator localListIterator = super.listIterator();
-        return ProxyCollections.afterListIterator(this, localListIterator);
+        ProxyCollections.beforeRemove(this);
+        Object localObject = super.remove();
+        return ProxyCollections.afterRemove(this, localObject);
     }
 
+    @Override
     public boolean removeAll(Collection paramCollection) {
         if (_directAccess) {
             return super.removeAll(paramCollection);
@@ -283,6 +258,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return ProxyCollections.removeAll(this, paramCollection);
     }
 
+    @Override
     public boolean retainAll(Collection paramCollection) {
         if (_directAccess) {
             return super.retainAll(paramCollection);
@@ -300,56 +276,12 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return Proxies.writeReplace(this, true);
     }
 
-    public boolean isDelayLoad() {
-        return ProxyCollections.isDelayed(this);
-    }
-
     @Override
-    public Object get(int location) {
+    public int size() {
         if (!_directAccess && isDelayLoad()) {
             load();
         }
-        return super.get(location);
-    }
-
-    @Override
-    public int indexOf(Object object) {
-        if (!_directAccess && isDelayLoad()) {
-            load();
-        }
-        return super.indexOf(object);
-    }
-
-    @Override
-    public int lastIndexOf(Object object) {
-        if (!_directAccess && isDelayLoad()) {
-            load();
-        }
-        return super.lastIndexOf(object);
-    }
-
-    @Override
-    public List subList(int start, int end) {
-        if (!_directAccess && isDelayLoad()) {
-            load();
-        }
-        return super.subList(start, end);
-    }
-
-    @Override
-    public boolean contains(Object object) {
-        if (!_directAccess && isDelayLoad()) {
-            load();
-        }
-        return super.contains(object);
-    }
-
-    @Override
-    public boolean containsAll(Collection collection) {
-        if (!_directAccess && isDelayLoad()) {
-            load();
-        }
-        return super.containsAll(collection);
+        return super.size();
     }
 
     @Override
@@ -361,11 +293,11 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
     }
 
     @Override
-    public int size() {
+    public boolean contains(Object object) {
         if (!_directAccess && isDelayLoad()) {
             load();
         }
-        return super.size();
+        return super.contains(object);
     }
 
     @Override
@@ -384,6 +316,31 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.toArray(array);
     }
 
+    @Override
+    public boolean containsAll(Collection c) {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.containsAll(c);
+    }
+
+    @Override
+    public Object element() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.element();
+    }
+
+    @Override
+    public Object peek() {
+        if (!_directAccess && isDelayLoad()) {
+            load();
+        }
+        return super.peek();
+    }
+
+    @Override
     public boolean equals(Object paramObject) {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -391,6 +348,7 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.equals(paramObject);
     }
 
+    @Override
     public int hashCode() {
         if (!_directAccess && isDelayLoad()) {
             load();
@@ -398,10 +356,31 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
         return super.hashCode();
     }
 
+    // //////////////////////////////////////
+    // DelayedProxy methods
+    // //////////////////////////////////////
+    @Override
+    public int getDelayedField() {
+        if (field == -1 || _detached) {
+            return _delayedField;
+        }
+        return field;
+    }
+
+    @Override
+    public OpenJPAStateManager getDelayedOwner() {
+        if (sm == null || _detached) {
+            return _delayedSm;
+        }
+        return sm;
+    }
+
+    @Override
     public boolean isDirectAccess() {
         return _directAccess;
     }
 
+    @Override
     public void setDirectAccess(boolean direct) {
         _directAccess = direct;
     }
@@ -442,5 +421,9 @@ public class DelayedArrayListProxy extends ArrayList implements ProxyCollection,
     @Override
     public boolean isDetached() {
         return _detached;
+    }
+
+    public boolean isDelayLoad() {
+        return ProxyCollections.isDelayed(this);
     }
 }

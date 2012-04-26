@@ -21,23 +21,64 @@ package org.apache.openjpa.util;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 
+/**
+ * Implemented by proxy classes which are delay-load capable. Delay-load
+ * proxies are lazily loaded and provide some operations
+ * which allow manipulation of proxy without necessarily needing to
+ * load the proxied object. 
+ */
 public interface DelayedProxy {
     
+    /**
+     * Load the proxy if it was delay-loaded.
+     */
     void load();
 
+    /**
+     * Returns whether the caller has direct-call access to the proxied
+     * object.  Direct access allows calls to be made on the object
+     * without triggering a load or proxy state tracking callbacks. 
+     */
     boolean isDirectAccess();
     
+    /**
+     * Sets whether the caller has direct-call access to the proxied
+     * object.  Direct access allows calls to be made on the object
+     * without triggering a load or proxy state tracking callbacks. 
+     */
     void setDirectAccess(boolean direct);
-    
+        
+    /**
+     * Get the broker that is used to service this proxy.
+     */
     Broker getBroker();
 
+    /**
+     * Close the broker that is used to service this proxy.
+     */
     void closeBroker();
 
+    /**
+     * Returns the state manager of the owning instance.
+     */
     OpenJPAStateManager getOwnerStateManager();
     
+    /**
+     * Returns a state manager that can service this proxy even if
+     * the collection was detached.
+     */
     OpenJPAStateManager getDelayedOwner();
     
+    /**
+     * Returns the expected field index even if this collection
+     * was detached.
+     * @return
+     */
     int getDelayedField();
     
+    /**
+     * Returns whether the proxy is detached.
+     * @return
+     */
     boolean isDetached();
 }

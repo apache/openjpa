@@ -1362,6 +1362,6 @@ public class FieldMapping
     
     @Override
     public boolean isDelayCapable() {
-        return (getOrderColumn() == null && super.isDelayCapable());
+        return (getOrderColumn() == null && !isInDefaultFetchGroup() && super.isDelayCapable());
     }
 }

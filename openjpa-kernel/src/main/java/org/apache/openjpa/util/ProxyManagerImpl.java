@@ -497,13 +497,42 @@ public class ProxyManagerImpl
      */
     protected Class loadBuildTimeProxy(Class type, ClassLoader loader) {
         try {
-            if (_delayedCollectionLoading && type.equals(java.util.ArrayList.class)) {
-                return org.apache.openjpa.util.DelayedArrayListProxy.class;
+            Class<?> proxyClass = null;
+            if (_delayedCollectionLoading) {
+                proxyClass = loadDelayedProxy(type);
+                if (proxyClass != null) {
+                    return proxyClass;
+                }
             }
             return Class.forName(getProxyClassName(type, false), true, loader);
         } catch (Throwable t) {
             return null;
         }
+    }
+    
+    protected Class<?> loadDelayedProxy(Class<?> type) {
+        if (type.equals(java.util.ArrayList.class)) {
+            return org.apache.openjpa.util.DelayedArrayListProxy.class;
+        }
+        if (type.equals(java.util.HashSet.class)) {
+            return org.apache.openjpa.util.DelayedHashSetProxy.class;
+        }
+        if (type.equals(java.util.LinkedList.class)) {
+            return org.apache.openjpa.util.DelayedLinkedListProxy.class;
+        }
+        if (type.equals(java.util.Vector.class)) {
+            return org.apache.openjpa.util.DelayedVectorProxy.class;
+        }
+        if (type.equals(java.util.LinkedHashSet.class)) {
+            return org.apache.openjpa.util.DelayedLinkedHashSetProxy.class;
+        }
+        if (type.equals(java.util.SortedSet.class) || type.equals(java.util.TreeSet.class)) {
+            return org.apache.openjpa.util.DelayedTreeSetProxy.class;
+        }
+        if (type.equals(java.util.PriorityQueue.class)) {
+            return org.apache.openjpa.util.DelayedPriorityQueueProxy.class;
+        }
+        return null;
     }
 
     /**
