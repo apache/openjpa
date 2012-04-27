@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.proxy.delayed;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,6 +33,7 @@ public class Certification  implements Serializable, Comparable<Certification> {
 
     private String name;
     
+    @Column(name="DC_CERT_LVL")
     private String level;
     
     @Temporal(TemporalType.DATE)
