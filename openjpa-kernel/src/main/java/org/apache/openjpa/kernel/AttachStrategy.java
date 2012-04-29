@@ -93,7 +93,7 @@ abstract class AttachStrategy
             newInstance = pc.pcNewInstance(null, appId, false);
 
         StateManagerImpl sm = (StateManagerImpl) manager.getBroker().persist
-                (newInstance, appId, explicit, manager.getBehavior());
+                (newInstance, appId, explicit, manager.getBehavior(), !manager.getCopyNew());
             
         attachPCKeyFields(pc, sm, meta, manager);
             
