@@ -20,38 +20,27 @@ package org.apache.openjpa.persistence.merge;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-@Entity
-@IdClass(GrandChildPK.class)
-@Table(name = "MRG_GRANDCHILD")
-public class GrandChild implements Serializable {
+public class GrandChildPK implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @JoinColumns({ @JoinColumn(name = "KEY_1", referencedColumnName = "KEY_1"),
-        @JoinColumn(name = "KEY_2", referencedColumnName = "KEY_2"),
-        @JoinColumn(name = "KEY_3", referencedColumnName = "KEY_3") })
-    @ManyToOne
-    private Child child;
+    private ChildPK child;
 
-    @Id
-    @Column(name = "KEY_4")
     private Integer grandChildKey;
 
-    public Child getChild() {
+    public ChildPK getChild() {
         return child;
     }
 
-    public void setChild(Child child) {
+    public void setChild(ChildPK child) {
         this.child = child;
+    }
+
+    public Integer getGrandChildKey() {
+        return grandChildKey;
+    }
+
+    public void setGrandChildKey(Integer grandChildKey) {
+        this.grandChildKey = grandChildKey;
     }
 
     @Override
@@ -59,6 +48,9 @@ public class GrandChild implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((child == null) ? 0 : child.hashCode());
+        result =
+            prime * result
+                + ((grandChildKey == null) ? 0 : grandChildKey.hashCode());
         return result;
     }
 
@@ -70,21 +62,17 @@ public class GrandChild implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GrandChild other = (GrandChild) obj;
+        GrandChildPK other = (GrandChildPK) obj;
         if (child == null) {
             if (other.child != null)
                 return false;
         } else if (!child.equals(other.child))
             return false;
+        if (grandChildKey == null) {
+            if (other.grandChildKey != null)
+                return false;
+        } else if (!grandChildKey.equals(other.grandChildKey))
+            return false;
         return true;
-    }
-
-    public Integer getGrandChildKey() {
-        return grandChildKey;
-    }
-
-    public void setGrandChildKey(Integer grandChildKey) {
-        this.grandChildKey = grandChildKey;
-
     }
 }
