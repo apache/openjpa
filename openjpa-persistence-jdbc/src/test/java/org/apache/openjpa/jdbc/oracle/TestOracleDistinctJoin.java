@@ -82,16 +82,11 @@ public class TestOracleDistinctJoin extends AbstractPersistenceTestCase {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(Course.class, Lecturer.class, SomeEmbeddable.class,
                 "openjpa.jdbc.SchemaFactory", "native",
-                "openjpa.jdbc.DBDictionary", "org.apache.openjpa.jdbc.sql.OracleDictionary",
                 "openjpa.jdbc.SynchronizeMappings",  "buildSchema(ForeignKeys=true)",
                 "openjpa.jdbc.QuerySQLCache", "false",
-                "openjpa.DataCache", "false",
-                "openjpa.PostLoadOnMerge", "true",
-                "openjpa.DetachState", "loaded(DetachedStateField=true)",
-                "openjpa.Compatibility", "IgnoreDetachedStateFieldForProxySerialization=true",
-                "openjpa.jdbc.MappingDefaults", "ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict");
+                "openjpa.DataCache", "false" );
 
-                JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
+        JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
         DBDictionary dict = conf.getDBDictionaryInstance();
 
         if (skipTest(dict)) {
