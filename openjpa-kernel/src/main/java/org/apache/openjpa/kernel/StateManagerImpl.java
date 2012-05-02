@@ -114,7 +114,7 @@ public class StateManagerImpl
 
     // information about the instance
     private transient PersistenceCapable _pc = null;
-    private transient ClassMetaData _meta = null;
+    protected transient ClassMetaData _meta = null;
     protected BitSet _loaded = null;
     private BitSet _dirty = null;
     private BitSet _flush = null;
