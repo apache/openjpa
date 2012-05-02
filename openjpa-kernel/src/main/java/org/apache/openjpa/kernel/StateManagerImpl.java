@@ -169,7 +169,7 @@ public class StateManagerImpl
         if (broker.getMultithreaded())
         	_instanceLock = new ReentrantLock();
 
-        if (_meta.getIdentityType() == ClassMetaData.ID_UNKNOWN)
+        if (_meta.getIdentityType() == ClassMetaData.ID_UNKNOWN && !_meta.isEmbeddable())
             throw new UserException(_loc.get("meta-unknownid", _meta));
     }
 
