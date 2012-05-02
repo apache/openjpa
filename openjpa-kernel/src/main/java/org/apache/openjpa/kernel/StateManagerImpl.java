@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -113,7 +114,7 @@ public class StateManagerImpl
 
     // information about the instance
     private transient PersistenceCapable _pc = null;
-    private transient ClassMetaData _meta = null;
+    protected transient ClassMetaData _meta = null;
     protected BitSet _loaded = null;
     private BitSet _dirty = null;
     private BitSet _flush = null;
@@ -169,7 +170,7 @@ public class StateManagerImpl
      */
     protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
-        setMeta(meta);
+        _meta = meta;
         _broker = broker;
         _single = new SingleFieldManager(this, broker);
         if (broker.getMultithreaded())
@@ -274,7 +275,6 @@ public class StateManagerImpl
             boolean wasDeleted = _state.isDeleted();
             boolean wasDirty = _state.isDirty();
             boolean wasPending = _state.isPendingTransactional();
-
             _state = state;
 
             // enlist/delist from transaction
@@ -323,7 +323,7 @@ public class StateManagerImpl
                     _oid = ApplicationIds.fromPKValues(pkFields, sub);
                 }
             }
-            setMeta(sub);
+            _meta = sub;
         }
 
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
@@ -402,8 +402,9 @@ public class StateManagerImpl
     public boolean isIntercepting() {
         if (getMetaData().isIntercepting())
             return true;
-        // TODO:JRB Intercepting
-        if (AccessCode.isProperty(getMetaData().getAccessType()) && _pc instanceof DynamicPersistenceCapable)
+        // TODO:JRB Intercepting 
+        if (AccessCode.isProperty(getMetaData().getAccessType())
+            && _pc instanceof DynamicPersistenceCapable)
             return true;
         return false;
     }
@@ -3427,8 +3428,8 @@ public class StateManagerImpl
         // non-null when reconstituting ReflectingPC instances. Sadly, this
         // penalizes the serialization footprint of non-ReflectingPC SMs also.
         Class managedType = (Class) in.readObject();
-        setMeta(_broker.getConfiguration().getMetaDataRepositoryInstance()
-            .getMetaData(managedType, null, true));
+        _meta = _broker.getConfiguration().getMetaDataRepositoryInstance()
+            .getMetaData(managedType, null, true);
 
         _pc = readPC(in);
     }
@@ -3467,13 +3468,8 @@ public class StateManagerImpl
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
     }
-    
-    protected void setMeta(ClassMetaData cmd){
-        _meta = cmd;
-    }
 
     public void setBroker(BrokerImpl ctx) {
         _broker = ctx;
     }
-
 }
