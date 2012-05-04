@@ -189,6 +189,18 @@ public class JavaTypes {
     /**
      * Check the given name against the same set of standard packages used
      * when parsing metadata.
+     * 
+     * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. 
+     * If true no attempt to use a different classloader will be made. If false the 
+     * ClassResolver from the configuration will be used.
+     */
+    public static Class<?> classForName(String name, ClassMetaData context, ClassLoader loader, boolean mustExist) {
+    	return classForName(name, context, context.getDescribedType(), null, loader, mustExist);
+    }  
+    
+    /**
+     * Check the given name against the same set of standard packages used
+     * when parsing metadata.
      */
     public static Class classForName(String name, ValueMetaData context) {
         return classForName(name, context, null);

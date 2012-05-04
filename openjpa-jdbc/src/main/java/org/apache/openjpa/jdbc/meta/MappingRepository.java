@@ -547,7 +547,7 @@ public class MappingRepository
                 strat = JavaTypes.classForName(name, cls,
                     (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            ClassStrategy.class)));
+                            ClassStrategy.class)), false);
             ClassStrategy strategy = 
                 (ClassStrategy) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(strat));
@@ -580,7 +580,7 @@ public class MappingRepository
         try {
             Class c = JavaTypes.classForName(name, field,
                 (ClassLoader) AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)), false);
             if (FieldStrategy.class.isAssignableFrom(c)) {
                 FieldStrategy strat = (FieldStrategy)
                     AccessController.doPrivileged(
@@ -654,7 +654,7 @@ public class MappingRepository
                     discrim.getClassMapping(),
                     (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            DiscriminatorStrategy.class)));
+                            DiscriminatorStrategy.class)), false);
             DiscriminatorStrategy strategy = (DiscriminatorStrategy)
                 AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(strat));
@@ -718,7 +718,7 @@ public class MappingRepository
                     version.getClassMapping(),
                     (ClassLoader) AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            VersionStrategy.class)));
+                            VersionStrategy.class)), false);
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), name), e);
