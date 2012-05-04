@@ -546,7 +546,7 @@ public class MappingRepository extends MetaDataRepository {
                 strat = JavaTypes.classForName(name, cls,
                     AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            ClassStrategy.class)));
+                            ClassStrategy.class)), false);
             ClassStrategy strategy = 
                 (ClassStrategy) AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(strat));
@@ -579,7 +579,7 @@ public class MappingRepository extends MetaDataRepository {
         try {
             Class<?> c = JavaTypes.classForName(name, field,
                 AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)));
+                    J2DoPrivHelper.getClassLoaderAction(FieldStrategy.class)), false);
             if (FieldStrategy.class.isAssignableFrom(c)) {
                 FieldStrategy strat = (FieldStrategy)
                     AccessController.doPrivileged(
@@ -653,7 +653,7 @@ public class MappingRepository extends MetaDataRepository {
                     discrim.getClassMapping(),
                     AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            DiscriminatorStrategy.class)));
+                            DiscriminatorStrategy.class)), false);
             DiscriminatorStrategy strategy = (DiscriminatorStrategy)
                 AccessController.doPrivileged(
                     J2DoPrivHelper.newInstanceAction(strat));
@@ -719,7 +719,7 @@ public class MappingRepository extends MetaDataRepository {
                     version.getClassMapping(),
                     AccessController.doPrivileged(
                         J2DoPrivHelper.getClassLoaderAction(
-                            VersionStrategy.class)));
+                            VersionStrategy.class)), false);
         } catch (Exception e) {
             throw new MetaDataException(_loc.get("bad-version-strategy",
                 version.getClassMapping(), name), e);
