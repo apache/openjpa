@@ -1485,6 +1485,23 @@ if you attempt to add an element to a collection or map that is not assignable
 to the element type declared in metadata.  Defaults to <literal>false</literal>.
                         </para>
                     </listitem>
+                    <listitem>
+                        <para>
+<literal>DelayCollectionLoading</literal>: Whether to delay loading elements of a
+lazily loaded collection.  Delay loading allows non-indexed add and remove
+operations to occur without prior loading of the collection from the data store.  This can
+improve performance of some applications by allowing them to perform simple add or remove
+operations on collections without requiring them to be loaded. Delayed proxies are
+loaded when an operation is performed that requires loading, such
+as iteration, size, serialization, and indexOf.  They can also be loaded by casting the
+proxy to a <ulink url="../javadoc/org/apache/openjpa/util/DelayedProxy.html"><classname>
+org.apache.openjpa.util.DelayedProxy</classname></ulink> and invoking the
+<methodname>load</methodname> method. If a broker factory is available after detaching the owning
+entity, a collection may be available for delayed loading after the persistence context has been
+cleared. In post-detachment, entities that are loaded are not associated with a persistence context.
+Defaults to <literal>false</literal>.
+                        </para>
+                    </listitem>
                 </itemizedlist>
                 <para>
 The default proxy manager can proxy the standard methods of any 
