@@ -98,6 +98,7 @@ public class ProxyManagerImpl
     private final Map _proxies = new NullSafeConcurrentHashMap();
     private boolean _trackChanges = true;
     private boolean _assertType = false;
+    private boolean _delayedCollectionLoading = false;
 
     public ProxyManagerImpl() {
         _unproxyable.add(TimeZone.class.getName());
@@ -138,7 +139,26 @@ public class ProxyManagerImpl
     public void setAssertAllowedType(boolean assertType) {
         _assertType = assertType;
     }
-
+    
+    /**
+     * Whether loading of collections should be delayed until an operation
+     * is performed that requires them to be loaded.  This property only
+     * applies to proxies that implement java.util.Collection (ie. not arrays
+     * or maps).  Defaults to false.
+     * @return 
+     */
+    public boolean getDelayCollectionLoading() {
+        return _delayedCollectionLoading;
+    }
+    
+    /**
+     * Whether loading of collections should be delayed until an operation
+     * is performed that requires them to be loaded.  Defaults to false.
+     */
+    public void setDelayCollectionLoading(boolean delay) {
+        _delayedCollectionLoading = delay;
+    }
+       
     /**
      * Return a mutable view of class names we know cannot be proxied  
      * correctly by this manager.
@@ -477,10 +497,42 @@ public class ProxyManagerImpl
      */
     protected Class loadBuildTimeProxy(Class type, ClassLoader loader) {
         try {
+            Class<?> proxyClass = null;
+            if (_delayedCollectionLoading) {
+                proxyClass = loadDelayedProxy(type);
+                if (proxyClass != null) {
+                    return proxyClass;
+                }
+            }
             return Class.forName(getProxyClassName(type, false), true, loader);
         } catch (Throwable t) {
             return null;
         }
+    }
+    
+    protected Class<?> loadDelayedProxy(Class<?> type) {
+        if (type.equals(java.util.ArrayList.class)) {
+            return org.apache.openjpa.util.DelayedArrayListProxy.class;
+        }
+        if (type.equals(java.util.HashSet.class)) {
+            return org.apache.openjpa.util.DelayedHashSetProxy.class;
+        }
+        if (type.equals(java.util.LinkedList.class)) {
+            return org.apache.openjpa.util.DelayedLinkedListProxy.class;
+        }
+        if (type.equals(java.util.Vector.class)) {
+            return org.apache.openjpa.util.DelayedVectorProxy.class;
+        }
+        if (type.equals(java.util.LinkedHashSet.class)) {
+            return org.apache.openjpa.util.DelayedLinkedHashSetProxy.class;
+        }
+        if (type.equals(java.util.SortedSet.class) || type.equals(java.util.TreeSet.class)) {
+            return org.apache.openjpa.util.DelayedTreeSetProxy.class;
+        }
+        if (type.equals(java.util.PriorityQueue.class)) {
+            return org.apache.openjpa.util.DelayedPriorityQueueProxy.class;
+        }
+        return null;
     }
 
     /**

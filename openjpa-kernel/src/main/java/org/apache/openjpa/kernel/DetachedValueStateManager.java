@@ -595,5 +595,20 @@ public class DetachedValueStateManager
     public Object replaceObjectField(PersistenceCapable pc, int idx) {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public boolean isDelayed(int field) {
+        return false;
+    }
+    
+    @Override
+    public void setDelayed(int field, boolean delay) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void loadDelayedField(int field) {
+        throw new UnsupportedOperationException();
+    }
 }
 

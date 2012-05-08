@@ -18,11 +18,17 @@
  */
 package org.apache.openjpa.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.apache.openjpa.kernel.Broker;
+import org.apache.openjpa.kernel.BrokerImpl;
+import org.apache.openjpa.kernel.DetachedValueStateManager;
+import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 
 /**
  * Utility methods used by collection proxies.
@@ -54,7 +60,10 @@ public class ProxyCollections
      */
     public static void beforeAdd(ProxyCollection coll, Object value) {
         assertAllowedType(value, coll.getElementType());
-        dirty(coll, false);
+        // Must only dirty the collection outside of a delayed load
+        if (!isDirectAccess(coll)) {
+            dirty(coll, false);
+        }
     }
 
     /**
@@ -65,8 +74,11 @@ public class ProxyCollections
      */
     public static boolean afterAdd(ProxyCollection coll, Object value, 
         boolean added) {
-        if (added && coll.getChangeTracker() != null)
+        if (!isDirectAccess(coll) && added && coll.getChangeTracker() != null) {
+            setDirectAccess(coll,true);
             ((CollectionChangeTracker) coll.getChangeTracker()).added(value);
+            setDirectAccess(coll,false);
+        }
         return added;
     }
 
@@ -139,7 +151,7 @@ public class ProxyCollections
      */
     public static boolean addAll(ProxyCollection coll, Collection values) {
         boolean added = false;
-        for (Iterator itr = values.iterator(); itr.hasNext();)
+        for (Iterator<?> itr = values.iterator(); itr.hasNext();)
             added |= coll.add(itr.next());
         return added;
     }
@@ -149,7 +161,7 @@ public class ProxyCollections
      */
     public static void beforeClear(ProxyCollection coll) {
         dirty(coll, true);
-        for (Iterator itr = coll.iterator(); itr.hasNext();)
+        for (Iterator<?> itr = coll.iterator(); itr.hasNext();)
             removed(coll, itr.next(), false);
     }
 
@@ -304,7 +316,10 @@ public class ProxyCollections
      * Call before invoking {@link Collection#remove} on super.
      */
     public static void beforeRemove(ProxyCollection coll, Object o) {
-        dirty(coll, false);
+        // Must only dirty the collection outside of a delayed load
+        if (!isDirectAccess(coll)) {
+            dirty(coll, false);
+        }
     }
 
     /**
@@ -315,12 +330,38 @@ public class ProxyCollections
      */ 
     public static boolean afterRemove(ProxyCollection coll, Object o, 
         boolean removed){
-        if (!removed)
-            return false;
-        if (coll.getChangeTracker() != null)
+        boolean isDelayed = isDelayed(coll);
+        boolean direct = isDirectAccess(coll);
+        if (!isDelayed) {
+            if (!removed)
+                return false;
+        }
+        if (!direct && coll.getChangeTracker() != null) {
+            // switch on direct access to prevent the removed op from 
+            // inadvertently loading the collection
+            setDirectAccess(coll, true);
             ((CollectionChangeTracker) coll.getChangeTracker()).removed(o);
-        removed(coll, o, false);
+            setDirectAccess(coll, false);
+        }
+        if (!isDelayed) {
+            removed(coll, o, false);
+        }
         return true;
+    }
+
+    private static boolean isDirectAccess(ProxyCollection coll) {
+        if (coll instanceof DelayedProxy) {
+            DelayedProxy dpxy = (DelayedProxy)coll;
+            return dpxy.isDirectAccess();
+        }
+        return false;
+    }
+    
+    private static void setDirectAccess(ProxyCollection coll, boolean direct) {
+        if (coll instanceof DelayedProxy) {
+            DelayedProxy dpxy = (DelayedProxy)coll;
+            dpxy.setDirectAccess(direct);
+        }
     }
 
     /**
@@ -400,9 +441,9 @@ public class ProxyCollections
     /**
      * Override for {@link Collection#removeAll}.
      */
-    public static boolean removeAll(ProxyCollection coll, Collection vals) {
+    public static boolean removeAll(ProxyCollection coll, Collection<?> vals) {
         boolean removed = false;
-        for (Iterator itr = vals.iterator(); itr.hasNext();)
+        for (Iterator<?> itr = vals.iterator(); itr.hasNext();)
             removed |= coll.remove(itr.next());
         return removed;
     }
@@ -410,9 +451,9 @@ public class ProxyCollections
     /**
      * Override for {@link Collection#retainAll}.
      */
-    public static boolean retainAll(ProxyCollection coll, Collection vals) {
+    public static boolean retainAll(ProxyCollection coll, Collection<?> vals) {
         int size = coll.size();
-        for (Iterator itr = coll.iterator(); itr.hasNext();)
+        for (Iterator<?> itr = coll.iterator(); itr.hasNext();)
             if (!vals.contains(itr.next()))
                 itr.remove();
         return coll.size() < size;
@@ -468,5 +509,111 @@ public class ProxyCollections
      */
     public static interface ProxyListIterator 
         extends ProxyIterator, ListIterator {
+    }
+
+    public static void loadCollection(ProxyCollection proxy) {
+        loadCollection(proxy, false);
+    }
+
+    public static void loadCollection(ProxyCollection proxy, boolean detaching) {
+        if (!isDelayed(proxy)) {
+            return;
+        }
+        DelayedProxy dProxy = (DelayedProxy)proxy;
+        if (dProxy.isDirectAccess()) {
+            return;
+        }
+        boolean state[] = new boolean[2];
+        try {
+            dProxy.setDirectAccess(true);
+            state = checkState(proxy);
+            boolean tracking = false;
+            ChangeTracker ct = proxy.getChangeTracker();
+            Collection<?> added = null;
+            Collection<?> removed = null;
+            if (ct != null && ct.isTracking() ) {
+                if (!ct.getAdded().isEmpty()) {
+                    added = new ArrayList(ct.getAdded());
+                }
+                if (!ct.getRemoved().isEmpty()) {
+                    removed = new ArrayList(ct.getRemoved());
+                }
+                tracking = true;
+                ct.stopTracking();
+            }
+            if (proxy.size() > 0) {
+                proxy.clear();
+            }
+            dProxy.getDelayedOwner().loadDelayedField(dProxy.getDelayedField());
+            if (!detaching && tracking && !ct.isTracking()) {
+                ct.startTracking();
+            }
+            // add new elements
+            if (added != null && added.size() > 0) {
+                dProxy.setDirectAccess(false);
+                proxy.addAll(added);
+                added.clear();
+            }
+            // purge removed elements
+            if (removed != null && removed.size() > 0) {
+                dProxy.setDirectAccess(false);
+                proxy.removeAll(removed);
+                removed.clear();
+            }
+        } finally {
+            dProxy.setDirectAccess(false);
+            if (state[0]) {
+                dProxy.closeBroker();
+            }
+            if (state[1]) {
+                clearStateManager(proxy);
+            }
+        }
+    }
+    
+    public static boolean isDelayed(ProxyCollection proxy) {
+        if (proxy instanceof DelayedProxy) {
+            DelayedProxy dProxy = (DelayedProxy)proxy;
+            OpenJPAStateManager sm = dProxy.getDelayedOwner();
+            return (sm != null &&
+                    sm.isDelayed(dProxy.getDelayedField()));
+        }
+        return false;
+    }
+    
+    private static boolean[] checkState(ProxyCollection proxy) {
+        boolean[] state = new boolean[2];
+        DelayedProxy dProxy = (DelayedProxy)proxy;
+
+        OpenJPAStateManager sm = dProxy.getDelayedOwner();
+        if (sm != null) {
+            // If the broker assigned to this proxy is null, closed or no longer
+            // manages the pc, produce a new one
+            Broker broker = sm.getContext().getBroker();
+            if (dProxy.isDetached() || broker == null || broker.isClosed() 
+                || (!broker.isClosed() && !broker.isPersistent(sm.getPersistenceCapable()))) {
+                state[0] = true;
+                broker = dProxy.getBroker();
+                ((StateManagerImpl)sm).setBroker((BrokerImpl)broker);
+            }
+            if (dProxy.isDetached() || sm.getPersistenceCapable().pcGetStateManager() == null) {
+                state[1] = true;
+                if (dProxy.getOwnerStateManager() != null) {
+                    sm.getPersistenceCapable().pcReplaceStateManager(dProxy.getOwnerStateManager());
+                    ((StateManagerImpl)dProxy.getOwnerStateManager()).setBroker((BrokerImpl)broker);
+                } else {
+                    sm.getPersistenceCapable().pcReplaceStateManager(
+                            new DetachedValueStateManager(sm.getPersistenceCapable(), sm.getContext()));
+                }
+            }
+        }
+        return state;
+    }
+    
+    private static void clearStateManager(ProxyCollection proxy) {
+        OpenJPAStateManager sm = proxy.getOwner();
+        if (sm != null) {
+            sm.getPersistenceCapable().pcReplaceStateManager(null);
+        }
     }
 }

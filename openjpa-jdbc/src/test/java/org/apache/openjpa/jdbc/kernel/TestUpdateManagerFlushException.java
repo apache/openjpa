@@ -690,6 +690,18 @@ public class TestUpdateManagerFlushException extends /* Abstract */TestCase {
         public String fetchStringField(int fieldIndex) {
             return null;
         }
+
+        @Override
+        public boolean isDelayed(int field) {
+            return false;
+        }
+
+        @Override
+        public void setDelayed(int field, boolean delay) {
+        }
+
+        public void loadDelayedField(int field) {
+        }
     }
 
     /*

@@ -1359,4 +1359,9 @@ public class FieldMapping
     public boolean hasMapsIdCols() {
         return _hasMapsIdCols;
     }
+    
+    @Override
+    public boolean isDelayCapable() {
+        return (getOrderColumn() == null && !isInDefaultFetchGroup() && super.isDelayCapable());
+    }
 }

@@ -1252,6 +1252,21 @@ public class EmbedFieldStrategy
         public Object replaceObjectField(PersistenceCapable pc, int field) {
             throw new InternalException();
         }
+
+        @Override
+        public boolean isDelayed(int field) {
+            return false;
+        }
+        
+        @Override
+        public void setDelayed(int field, boolean delay) {
+            throw new InternalException();
+        }
+        
+        @Override
+        public void loadDelayedField(int field) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**

@@ -61,6 +61,7 @@ import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAException;
+import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
@@ -222,6 +223,7 @@ public class FieldMetaData
 
     private boolean _persistentCollection = false; 
 
+    private Boolean _delayCapable = null;
     /**
      * Constructor.
      *
@@ -2405,4 +2407,27 @@ public class FieldMetaData
     	return _relationType;
     }
     private class Unknown{};
+    
+    public boolean isDelayCapable() {
+        if (_delayCapable != null) {
+            return _delayCapable.booleanValue();
+        }
+        if (getTypeCode() != JavaTypes.COLLECTION || isLRS()) {
+           _delayCapable = Boolean.FALSE;
+           return _delayCapable;
+        } else {
+            // Verify the proxy manager is configured to handle delay loading
+            ProxyManager pm = getRepository().getConfiguration().getProxyManagerInstance();
+            if (pm != null) {
+                _delayCapable = pm.getDelayCollectionLoading();
+            } else {
+                _delayCapable = Boolean.FALSE;
+            }
+        }
+        return _delayCapable;
+    }
+    
+    public void setDelayCapable(Boolean delayCapable) {
+        _delayCapable = delayCapable;
+    }
 }
