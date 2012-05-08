@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import javax.persistence.Version;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.List;
  * This is a test entity to demonstrate OPENJPA-2179
  */
 @Entity
+@Table(name="ORACOURSE")
 public class Course implements Serializable
 {
 
