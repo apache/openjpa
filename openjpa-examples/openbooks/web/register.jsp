@@ -23,7 +23,7 @@
 <%@page import="openbook.domain.Customer"%>
 <%@page import="java.util.List"%>
 
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 
 <%-- ====================================================================  --%>
 <%-- Associates the current session with OpenBookService, if the request   --%>

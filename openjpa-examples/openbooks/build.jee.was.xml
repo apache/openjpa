@@ -121,7 +121,7 @@
          Deploying OpenBooks demo application
    	</echo>
    	<wsInstallApp wasHome="${was.home}" 
-   	              ear="openbooks.war" 
+   	              ear="${target.dir}/openbooks.war" 
    	              options="-usedefaultbindings -contextroot OpenBooks -appname OpenBooks"/>
    
    	<echo>
@@ -164,7 +164,7 @@
    	</echo>
    
    	<wsInstallApp wasHome="${was.home}" 
-   	              ear="openbooks.war" 
+   	              ear="${target.dir}/openbooks.war" 
    	              conntype="${was.conntype}"
    	              host="${was.server}"
    	              port="${was.port}"

@@ -59,7 +59,7 @@
   <A href="http://www.ibm.com/developerworks/java/library/j-typesafejpa/" target="_blank">here</A>.
 </div>
 
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 <%!
      public static String getParameter(HttpServletRequest request, String param) {
           return getParameter(request, param, true);
@@ -92,7 +92,7 @@ Fill in the details for a book you are searching for.
                <input type="text" name="<%= FORM_PRICE_MAX %>" value="<%= getParameter(request, FORM_PRICE_MIN) %>" 
                       style="width:6em"><br>
   <br>
-  <input type="image" src="images/search.gif" width="60px" height="22px" border="0">
+  <input type="submit" src="images/search.gif" width="60px" height="22px" border="0">
 </form>
 <p></p>
 <b>Search Tips</b>: 

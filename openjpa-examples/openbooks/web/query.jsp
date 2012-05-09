@@ -51,7 +51,7 @@
 </div>
 
 
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 <%!
      /**
       * Concatenates the names of the given list of Authors.

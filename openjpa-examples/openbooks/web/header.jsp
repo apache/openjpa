@@ -85,7 +85,7 @@
   if (activeSession) {
 %>
      <div style="float:right;text-align: right;margin-right:1em">
-           <%= currentUser.toString() %>&nbsp;&nbsp;
+           Hello, <%= currentUser.toString() %>&nbsp;&nbsp;
            <A HREF="cart.jsp"><img src="images/Add2Cart.jpg" 
               border="0" width="25px" height="25px"></A>
      </div>

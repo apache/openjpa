@@ -26,6 +26,7 @@ public class Range<N extends Number> {
     private N max;
     private final Class<N> type;
     
+    @SuppressWarnings("unchecked")
     public Range(Object min, Object max) {
         this((N)min, (N)max);
     }
@@ -36,6 +37,7 @@ public class Range<N extends Number> {
      * @param min non-null minimum value.
      * @param max non-null maximum value.
      */
+    @SuppressWarnings("unchecked")
     public Range(N min, N max) {
         if (min == null || max == null)
             throw new IllegalArgumentException("Supplied Min or Max is null");
