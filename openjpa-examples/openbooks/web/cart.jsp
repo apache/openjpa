@@ -45,7 +45,7 @@
    it to the server when a Purchase Order is to be placed. 
 
 </div>
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 
 <% 
    OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 

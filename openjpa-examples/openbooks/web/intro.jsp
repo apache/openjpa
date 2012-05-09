@@ -47,7 +47,7 @@ corresponding Java code</a> executed on the server side.
 </div>
 
 
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 <% 
     Object service = session.getAttribute(KEY_SERVICE);
     

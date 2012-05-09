@@ -59,7 +59,7 @@ are no more available.
 </ul>
 </div>
 
-<div id="content" style="display: block">
+<div id="content" style="width: 600px; display: block">
 
 <% 
    OpenBookService service = (OpenBookService)session.getAttribute(KEY_SERVICE); 

@@ -34,7 +34,7 @@
 		<antcall target="jee.uninstall"/>
 		<mkdir dir="${classes.dir}/META-INF"/>
 		<antcall target="jee.pre-package"/>
-		<war destfile="openbooks.war" webxml="${rsrc.dir}/META-INF/web.xml" filesonly="true">
+		<war destfile="${target.dir}/openbooks.war" webxml="${rsrc.dir}/META-INF/web.xml" filesonly="true">
 			<fileset dir="${web.dir}"/>
 			<classes dir="${classes.dir}">
 				<include name="META-INF/persistence.xml"/>
@@ -96,7 +96,7 @@
    
    <target name="install"
       description="Default application installation">
-		<move file="openbooks.war" todir="${deploy.dir}" overwrite="true"/>
+		<move file="${target.dir}/openbooks.war" todir="${deploy.dir}" overwrite="true"/>
 	</target>
 
 	<target name="compile"

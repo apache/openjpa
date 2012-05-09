@@ -93,6 +93,7 @@
 	
 	<target name="clean" description="Removes all *.class and generated metamodel source files">
 		<delete dir="${target.dir}" failonerror="false"/>
+        <mkdir dir="${deploy.dir}"/>
 		<delete>
 			<fileset refid="canonical.metamodel"/>
 		</delete>
@@ -130,7 +131,6 @@
 		<condition property="build.mode.is.jee">
 			<equals arg1="${build.mode}" arg2="jee" casesensitive="true" trim="true"/>
 		</condition>
-		<mkdir dir="${deploy.dir}"/>
 		
 		<available file="${antlr.lib}"     property="antlr.exists"/>
 <!--
