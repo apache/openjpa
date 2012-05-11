@@ -94,6 +94,7 @@ import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
+import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -273,6 +274,7 @@ public class DBDictionary
     public boolean useGetObjectForBlobs = false;
     public boolean useGetStringForClobs = false;
     public boolean useSetStringForClobs = false;
+    public boolean useJDBC4SetBinaryStream = false;//OPENJPA-2067
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
@@ -378,6 +380,11 @@ public class DBDictionary
     // 0  = no batch
     // any positive number = batch limit
     public int batchLimit = NO_BATCH;
+
+    /**
+     * Set when we reflectively find a JDBC 4.0 version of the 'setBinaryStream' method.
+     */
+    Method _setBinaryStream = null;
     
     public final Map<Integer,Set<String>> sqlStateCodes = 
     	new HashMap<Integer, Set<String>>();
@@ -873,6 +880,39 @@ public class DBDictionary
     public void setBinaryStream(PreparedStatement stmnt, int idx,
         InputStream val, int length, Column col)
         throws SQLException {
+    	
+    	//OPENJPA-2067: If the user has set the 'useJDBC4SetBinaryStream' property
+    	//then an attempt will be made, using reflections, to obtain the necessary
+    	//setBinaryStream method.
+		if (useJDBC4SetBinaryStream) {
+			try {
+				if (_setBinaryStream == null) {
+					_setBinaryStream = PreparedStatement.class.getMethod(
+							"setBinaryStream", int.class, InputStream.class);
+				}
+
+				//If here, the necessary 'setBinaryStream' method exists so call it now.
+	            PreparedStatement inner = stmnt;
+	            PreparedStatement outer = stmnt;
+	            if (stmnt instanceof DelegatingPreparedStatement) {
+	                inner = (PreparedStatement) ((DelegatingPreparedStatement)stmnt).getInnermostDelegate();
+	                outer = (PreparedStatement) ((DelegatingPreparedStatement)stmnt).getDelegate();
+	            }
+	            
+	            _setBinaryStream.invoke(inner, new Object[] { idx, val } );
+	            // Direct invocation of setClob on the Oracle driver bypasses OpenJPA's built-in
+	            // parameter logging via decorators.  Log the parameter directly.
+	            LoggingConnectionDecorator.logStatementParameter(outer, idx, "setBinaryStream", val);
+				return;
+			} catch (Throwable t) {
+				//If we didn't find the proper setBinaryStream method, lets set 
+				//'useJDBC4SetBinaryStream' to false to avoid lots of message
+				//warnings.
+				useJDBC4SetBinaryStream=false;
+				log.warn(_loc.get("jdbc4-setbinarystream-unsupported"), t);
+			}
+		}
+
         stmnt.setBinaryStream(idx, val, length);
     }
 
