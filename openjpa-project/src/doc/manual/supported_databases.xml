@@ -503,7 +503,7 @@ databases that have been fully tested against this release, please refer to the
                 </row>
                 <row>
                     <entry colname="dbname">
-                        <link linkend="dbsupport_solidDB">IBM solidDB</link>
+                        <link linkend="dbsupport_soliddb">IBM solidDB</link>
                     </entry>
                     <entry colname="dbversion">
                         6.5.0.0

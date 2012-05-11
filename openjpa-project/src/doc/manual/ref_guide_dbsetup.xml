@@ -776,6 +776,19 @@ class.
                 <para>
                 <indexterm>
                     <primary>
+                        H2
+                    </primary>
+                </indexterm>
+<literal>h2</literal>: Dictionary for the H2 Database Engine. This is an
+alias for the
+<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/H2Dictionary.html">
+<classname>org.apache.openjpa.jdbc.sql.H2Dictionary</classname></ulink> class.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
                         Hypersonic SQL
                     </primary>
                 </indexterm>
@@ -877,6 +890,20 @@ class.
 <literal>postgres</literal>: Dictionary for PostgreSQL. This is an alias for
 the <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/PostgresDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.PostgresDictionary</classname></ulink>
+class.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
+                        SolidDB
+                    </primary>
+                </indexterm>
+<literal>soliddb</literal>: Dictionary for IBM's SolidDB database.
+This is an alias for the
+<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SolidDBDictionary.html">
+<classname>org.apache.openjpa.jdbc.sql.SolidDBDictionary</classname></ulink>
 class.
                 </para>
             </listitem>
