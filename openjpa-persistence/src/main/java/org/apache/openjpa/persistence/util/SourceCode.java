@@ -842,9 +842,10 @@ public class SourceCode {
 			name = p;
 		}
 		
-		public void write(PrintWriter out, int tab) {
-			out.println("package " + name + SEMICOLON);
-		}
+        public void write(PrintWriter out, int tab) {
+            if (name != null && !name.isEmpty())
+                out.println("package " + name + SEMICOLON);
+        }
 	}
 	
 	class Comment {
