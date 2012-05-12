@@ -1494,7 +1494,13 @@ public class LoggingConnectionDecorator implements ConnectionDecorator {
                 setLogParameter(i1, "InputStream", is);
                 super.setBinaryStream(i1, is, i2);
             }
-
+            
+            public void setBinaryStream(int i1, InputStream is)
+            throws SQLException {
+            	setLogParameter(i1, "InputStream", is);
+            	super.setBinaryStream(i1, is);            	
+            }
+            
             public void clearParameters() throws SQLException {
                 clearLogParameters(false);
                 super.clearParameters();
