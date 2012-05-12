@@ -107,6 +107,9 @@ public abstract class AbstractQueryCache
                     AccessController.doPrivileged(J2DoPrivHelper
                         .getContextClassLoaderAction()));
             
+            if(perTypes == null)
+                return;
+            
             // Pre-load all the entity types into the HashMap to handle 
             // synchronization on the map efficiently
             for (Object o : perTypes)
