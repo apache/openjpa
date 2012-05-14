@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -291,6 +292,7 @@ public class DBDictionary
     public boolean useGetObjectForBlobs = false;
     public boolean useGetStringForClobs = false;
     public boolean useSetStringForClobs = false;
+    public boolean useJDBC4SetBinaryStream = false;//OPENJPA-2067
     public int maxEmbeddedBlobSize = -1;
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
@@ -968,6 +970,19 @@ public class DBDictionary
     public void setBinaryStream(PreparedStatement stmnt, int idx,
         InputStream val, int length, Column col)
         throws SQLException {
+    	
+    	//OPENJPA-2067: If the user has set the 'useJDBC4SetBinaryStream' property
+    	//then lets use the JDBC 4.0 version of the setBinaryStream method.
+		if (useJDBC4SetBinaryStream) {
+			if (isJDBC4){
+				stmnt.setBinaryStream(idx, val);
+				return;
+			}
+			else {
+				log.warn(_loc.get("jdbc4-setbinarystream-unsupported"));
+			}
+		}
+
         stmnt.setBinaryStream(idx, val, length);
     }
 
