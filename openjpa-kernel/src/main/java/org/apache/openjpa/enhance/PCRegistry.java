@@ -21,12 +21,12 @@ package org.apache.openjpa.enhance;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.util.UserException;
 import org.apache.openjpa.util.InvalidStateException;
 
@@ -47,7 +47,9 @@ public class PCRegistry {
         (ReferenceMap.WEAK, ReferenceMap.HARD);
 
     // register class listeners
-    private static final Collection _listeners = new LinkedList();
+    // Weak reference prevents OutOfMemeoryError as described in OPENJPA-2042
+    private static final Collection<RegisterClassListener> _listeners = 
+                    new ConcurrentReferenceHashSet<RegisterClassListener>(ConcurrentReferenceHashSet.WEAK);
 
     /**
      * Register a {@link RegisterClassListener}.
@@ -209,8 +211,11 @@ public class PCRegistry {
             _metas.put(pcClass, meta);
         }
         synchronized (_listeners) {
-            for (Iterator i = _listeners.iterator(); i.hasNext();)
-                ((RegisterClassListener) i.next()).register(pcClass);
+            for (RegisterClassListener r : _listeners) {
+                if (r != null) {
+                    r.register(pcClass);
+                }
+            }
         }
     }
 

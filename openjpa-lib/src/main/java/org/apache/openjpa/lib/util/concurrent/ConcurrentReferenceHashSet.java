@@ -35,7 +35,7 @@ import org.apache.commons.collections.set.MapBackedSet;
  * @author Abe White
  * @nojavadoc
  */
-public class ConcurrentReferenceHashSet implements Set, Serializable {
+public class ConcurrentReferenceHashSet<E> implements Set<E>, Serializable {
 
     /**
      * Hard reference marker.
@@ -54,7 +54,7 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
 
     private static final Object DUMMY_VAL = new Object();
 
-    private final Set _set;
+    private final Set<E> _set;
 
     /**
      * Construct a set with the given reference type.
@@ -70,11 +70,11 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
         }
     }
 
-    public boolean add(Object obj) {
+    public boolean add(E obj) {
         return _set.add(obj);
     }
 
-    public boolean addAll(Collection coll) {
+    public boolean addAll(Collection<? extends E> coll) {
         return _set.addAll(coll);
     }
 
@@ -86,7 +86,7 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
         return _set.contains(obj);
     }
 
-    public boolean containsAll(Collection coll) {
+    public boolean containsAll(Collection<?> coll) {
         return _set.containsAll(coll);
     }
 
@@ -94,7 +94,7 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
         return _set.isEmpty();
     }
 
-    public Iterator iterator() {
+    public Iterator<E> iterator() {
         return _set.iterator();
     }
 
@@ -102,11 +102,11 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
         return _set.remove(obj);
     }
 
-    public boolean removeAll(Collection coll) {
+    public boolean removeAll(Collection<?> coll) {
         return _set.removeAll(coll);
     }
 
-    public boolean retainAll(Collection coll) {
+    public boolean retainAll(Collection<?> coll) {
         return _set.retainAll(coll);
     }
 
@@ -118,7 +118,7 @@ public class ConcurrentReferenceHashSet implements Set, Serializable {
         return _set.toArray();
     }
 
-    public Object[] toArray(Object[] arr) {
+    public <T> T[] toArray(T[] arr) {
         return _set.toArray(arr);
     }
 
