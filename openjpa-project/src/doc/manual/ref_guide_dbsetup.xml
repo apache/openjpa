@@ -3451,6 +3451,27 @@ ResultSet.getString</methodname> will be used to obtain clob data rather than
 <methodname>ResultSet.getCharacterStream</methodname>.
                     </para>
                 </listitem>
+
+                <listitem id="DBDictionary.UseJDBC4SetBinaryStream">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            JDBC
+                        </primary>
+                        <secondary>
+                            UseJDBC4SetBinaryStream
+                        </secondary>
+                    </indexterm>
+<literal>UseJDBC4SetBinaryStream</literal>: When true, an attempt will be made to obtain
+a JDBC 4.0 version of <methodname>PreparedStatement.setBinaryStream</methodname>.  
+When false, a <methodname>setBinaryStream</methodname> is used which takes the length of the
+stream.  OpenJPA uses a -1 for the length since OpenJPA doesn't know the length of the stream.
+A few JDBC drivers check the length and throw an exception when the length is less than zero.
+When this property is set to true, and an applicable JDK and JDBC 4.0 driver is available, a
+version of <methodname>setBinaryStream</methodname> will be used which does not take a length. 
+The default value of this property is true.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.UseNativeSequenceCache">
                     <para>
                     <indexterm>
