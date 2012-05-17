@@ -161,8 +161,17 @@ public class HandlerCollectionTableFieldStrategy
                 Collection rels = new ArrayList();
                 if (isEmbedded) {
                     getRelations(esm, rels, ctx);
+                    Map<ClassMapping,Integer> targets = new HashMap<ClassMapping,Integer>();
                     for (Object rel : rels) {
-                        elem.setForeignKey(row, (StateManagerImpl)rel);
+                        StateManagerImpl relSm = (StateManagerImpl)rel;
+                        ClassMapping cm =(ClassMapping) relSm.getMetaData();
+                        if(!targets.containsKey(cm)){
+                            targets.put(cm, 0);
+                        }
+                        Integer n = targets.get(cm);
+                        elem.setForeignKey(row, (StateManagerImpl)rel, n);
+                        n++;
+                        targets.put(cm, n);
                     }
                 }
             }
