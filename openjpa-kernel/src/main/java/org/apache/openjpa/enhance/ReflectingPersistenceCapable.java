@@ -73,7 +73,7 @@ public class ReflectingPersistenceCapable
     }
 
     public void pcProvideField(int i) {
-        switch (meta.getField(i).getTypeCode()) {
+        switch (meta.getField(i).getDeclaredTypeCode()) {
             case JavaTypes.BOOLEAN:
                 sm.providedBooleanField(this, i,
                     ((Boolean) getValue(i, o)).booleanValue());
