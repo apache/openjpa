@@ -51,6 +51,14 @@ public class ListenerImpl {
         postLoadCount++;
     }
 
+    // dummy methods for testing OPENJPA-2197
+    public void postLoad(int someotherValue, String dummyParameter) {
+        // do nothing. This just breaks the other method ... ;)
+    }
+    public void postLoad(int someotherValue) {
+        // do nothing. This just breaks the other method ... ;)
+    }
+
     @PreUpdate
     public void preUpdate(Object o) {
         preUpdateCount++;

@@ -2017,14 +2017,33 @@ public class AnnotationPersistenceMetaDataParser
                 if (c1.isAssignableFrom(c2))
                     return -1;
                 else
-					return 1;
-			}
-			int compare = m1.getName ().compareTo (m2.getName ());
-			if (compare == 0)
-				return m1.hashCode () - m2.hashCode ();
-			return compare;
-		}
-	}
+                    return 1;
+            }
+            int compare = m1.getName().compareTo(m2.getName ());
+            if (compare != 0) {
+                return compare;
+            }
+
+            Class<?>[] params1 = m1.getParameterTypes();
+            Class<?>[] params2 = m2.getParameterTypes();
+            compare = params1.length - params2.length;
+            if (compare != 0) {
+                return compare;
+            }
+
+            // Just using the Method#hashCode() is not enough as it only contains
+            // the hash of the class + the hash of the NAME of the method...
+            // Thus if they have the same number of parameters, we need to compare them all
+            for (int i = 0; i < params1.length; i++) {
+                compare = params1[i].hashCode() - params2[i].hashCode();
+                if (compare != 0) {
+                    return compare;
+                }
+            }
+
+            return 0;
+        }
+    }
     
     /**
      * An internal class used to mimic the FetchGroup annotation.
