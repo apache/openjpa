@@ -53,6 +53,8 @@ import serp.util.Strings;
 /**
  * {@link JDBCSeq} implementation that uses a database sequences
  * to generate numbers.
+ * Supports allocation (caching). In order for allocation to work properly, the database sequence must be defined
+ * with INCREMENT BY value equal to allocate * increment.
  *
  * @see JDBCSeq
  * @see AbstractJDBCSeq
@@ -71,9 +73,12 @@ public class NativeJDBCSeq
     private String _seqName = "OPENJPA_SEQUENCE";
     private int _increment = 1;
     private int _initial = 1;
-    private int _allocate = 0;
+    private int _allocate = 50;
     private Sequence _seq = null;
     private String _select = null;
+    private long _nextValue = 0;
+    private long _maxValue = -1;
+    
 
     // for deprecated auto-configuration support
     private String _format = null;
@@ -188,27 +193,74 @@ public class NativeJDBCSeq
 
     public void endConfiguration() {
         buildSequence();
-
-        DBDictionary dict = _conf.getDBDictionaryInstance();
-        if (_format == null) {
-            _format = dict.nextSequenceQuery;
-            if (_format == null)
-                throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
-        }
+        
         if (_tableName == null)
             _tableName = "DUAL";
 
+        DBDictionary dict = _conf.getDBDictionaryInstance();
         String name = dict.getFullName(_seq);
-        Object[] subs = (_subTable) ? new Object[]{ name, _tableName }
+        
+        if (dict.useNativeSequenceCache){
+            if (_format == null) {
+            	_format = dict.nextSequenceQuery;
+            	if (_format == null)
+            		throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
+            }
+            
+            Object[] subs = (_subTable) ? new Object[]{ name, _tableName }
             : new Object[]{ name };
-        _select = MessageFormat.format(_format, subs);
+            _select = MessageFormat.format(_format, subs);
+        }
+        else {           
+        	String format = dict.nextSequenceQuery;
+            if (format == null) {
+                throw new MetaDataException(_loc.get("no-seq-sql", _seqName));
+            }
+            
+            // Increment step is needed for Firebird which uses non-standard sequence fetch syntax.
+            // Use String.valueOf to get rid of possible locale-specific number formatting.
+            _select = MessageFormat.format(format, new Object[]{name, String.valueOf(_allocate * _increment)});            
+        }       
+        
+        type = dict.nativeSequenceType;
     }
     
-    protected Object nextInternal(JDBCStore store, ClassMapping mapping)
+    protected synchronized Object nextInternal(JDBCStore store, ClassMapping mapping)
         throws SQLException {
+        DBDictionary dict = _conf.getDBDictionaryInstance();
+        
+        //To maintain existing behavior call allocateInternal to get the next 
+        //sequence value, which it stores in _nextValue, and simply return the value.
+        if (dict.useNativeSequenceCache){
+        	allocateInternal(0, store, mapping);
+        	return Numbers.valueOf(_nextValue);
+        }
+        
+        if (_nextValue < _maxValue) {
+            long result = _nextValue;
+            _nextValue += _increment;
+            return Numbers.valueOf(result);
+        }
+
+        allocateInternal(0, store, mapping);
+        long result = _nextValue;
+        _nextValue += _increment;
+        return Numbers.valueOf(result);
+    }
+
+    /**
+     * Allocate additional sequence values.
+     * @param additional ignored - the allocation size is fixed and determined by allocate and increment properties. 
+     * @param store used to obtain connection
+     * @param mapping ignored
+     */
+    protected synchronized void allocateInternal(int additional, JDBCStore store, ClassMapping mapping)
+        throws SQLException {
+    	
         Connection conn = getConnection(store);
         try {
-            return Numbers.valueOf(getSequence(conn));
+            _nextValue = getSequence(conn);
+            _maxValue = _nextValue + _allocate * _increment;            
         } finally {
             closeConnection(conn);
         }
@@ -272,9 +324,7 @@ public class NativeJDBCSeq
         ResultSet rs = null;
         try {
             stmnt = conn.prepareStatement(_select);
-            synchronized(this) {
-                rs = stmnt.executeQuery();
-            }
+            rs = stmnt.executeQuery();
             if (rs.next())
                 return rs.getLong(1);
 
@@ -299,8 +349,8 @@ public class NativeJDBCSeq
      *  Where the following options are recognized.
      * <ul>
      * <li><i>-properties/-p &lt;properties file or resource&gt;</i>: The
-     * path or resource name of a OpenJPA properties file containing
-     * information such as the license key	and connection data as
+     * path or resource name of an OpenJPA properties file containing
+     * information such as connection data as
      * outlined in {@link JDBCConfiguration}. Optional.</li>
      * <li><i>-&lt;property name&gt; &lt;property value&gt;</i>: All bean
      * properties of the OpenJPA {@link JDBCConfiguration} can be set by

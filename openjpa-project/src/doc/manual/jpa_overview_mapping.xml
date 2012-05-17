@@ -960,16 +960,17 @@ default.
                             allocationSize property
                         </secondary>
                     </indexterm>
-<literal>int allocationSize</literal>: Some databases can pre-allocate groups
-of sequence values. This allows the database to service sequence requests from
-cache, rather than physically incrementing the sequence with every request. This
-allocation size defaults to 50.
+<literal>int allocationSize</literal>: The number of values to allocate in
+memory for each trip to the database. Allocating values in memory allows the JPA
+runtime to avoid accessing the database for every sequence request.
+This number also specifies the amount that the sequence value is incremented
+each time the sequence is accessed. Defaults to 50.
                     </para>
                 </listitem>
             </itemizedlist>
             <note>
                 <para>
-OpenJPA allows you to use describe one of OpenJPA's built-in generator
+OpenJPA allows you to use one of OpenJPA's built-in generator
 implementations in the <literal>sequenceName</literal> property. You can also
 set the <literal>sequenceName</literal> to <literal>system</literal> to use the
 system sequence defined by the <link linkend="openjpa.Sequence"><literal>

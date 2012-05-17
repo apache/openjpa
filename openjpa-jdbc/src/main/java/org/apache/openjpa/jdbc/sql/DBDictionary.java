@@ -83,6 +83,7 @@ import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
@@ -305,6 +306,8 @@ public class DBDictionary
     public String sequenceSQL = null;
     public String sequenceSchemaSQL = null;
     public String sequenceNameSQL = null;
+    public int nativeSequenceType= Seq.TYPE_TRANSACTIONAL;
+    public boolean useNativeSequenceCache = true;
 
     protected JDBCConfiguration conf = null;
     protected Log log = null;
@@ -2943,8 +2946,14 @@ public class DBDictionary
         buf.append(getFullName(seq));
         if (seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
-        if (seq.getIncrement() > 1)
-            buf.append(" INCREMENT BY ").append(seq.getIncrement());
+        
+        if (seq.getIncrement() > 1 && useNativeSequenceCache){
+        	buf.append(" INCREMENT BY ").append(seq.getIncrement());
+        }
+        else if ((seq.getIncrement() > 1) || (seq.getAllocate() > 1)){
+            buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
+        }
+        
         return new String[]{ buf.toString() };
     }
 

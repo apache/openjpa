@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
@@ -33,9 +32,9 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
  */
 public abstract class SQLListenerTestCase
     extends SingleEMFTestCase {
-
+    private static String _nl = System.getProperty("line.separator");
     protected List<String> sql = new ArrayList<String>();
-
+    
     @Override
     public void setUp(Object... props) {
         Object[] copy = new Object[props.length + 2];
@@ -92,14 +91,96 @@ public abstract class SQLListenerTestCase
         fail("Expected regular expression <" + sqlExp + "> to be"
             + " contained in SQL statements: " + sql);
     }
+    
+    /**
+     * Gets the number of SQL issued since last reset.
+     */
+    public int getSQLCount() {
+    	return sql.size();
+    }
+    
+    /**
+     * Resets SQL count.
+     * @return number of SQL counted since last reset.
+     */
+    public int resetSQL() {
+        int tmp = sql.size();
+        sql.clear();
+        return tmp;
+    }
 
     public class Listener
         extends AbstractJDBCListener {
 
         @Override
         public void beforeExecuteStatement(JDBCEvent event) {
-            if (event.getSQL() != null && sql != null)
+            if (event.getSQL() != null && sql != null) {
                 sql.add(event.getSQL());
+            }
 		}
 	}
+    
+    public void assertSQLOrder(String... expected) {
+        int hits = 0;
+
+        for (String executedSQL : sql) {
+            if (executedSQL.matches(expected[hits])) {
+                hits++;
+            }
+        }
+
+        if (hits != expected.length) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
+
+    /**
+     * Confirm the list of expected SQL expressions have been executed in the
+     * exact number and order specified.
+     * 
+     * @param expected
+     *            SQL expressions. E.g., ("SELECT FOO .*", "UPDATE .*")
+     */
+    public void assertAllExactSQLInOrder(String... expected) {
+        assertSQLInOrder(true, expected);
+    }
+
+    private void assertSQLInOrder(boolean exact, String... expected) {
+        boolean match = false;
+        int sqlSize = sql.size();
+        if (expected.length <= sqlSize) {
+            int hits = 0;
+            for (String executedSQL : sql) {
+                if (executedSQL.matches(expected[hits])) {
+                    if (++hits == expected.length)
+                        break;
+                }
+            }
+            match = hits == (exact ? sqlSize : expected.length);
+        }
+
+        if (!match) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Did not find SQL in expected order : ").append(_nl);
+            for (String s : expected) {
+                sb.append(s).append(_nl);
+            }
+
+            sb.append("SQL Statements issued : ");
+            for (String s : sql) {
+                sb.append(s).append(_nl);
+            }
+            fail(sb.toString());
+        }
+    }
 }
