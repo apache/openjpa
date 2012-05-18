@@ -108,6 +108,10 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
         return this.changeTracker;
     }
 
+    protected void setChangeTracker(CollectionChangeTracker ct) {
+        changeTracker = ct;
+    }
+    
     @Override
     public Object copy(Object paramObject) {
         return new LinkedList((Collection) paramObject);
@@ -116,6 +120,10 @@ public class DelayedLinkedListProxy extends LinkedList implements ProxyCollectio
     @Override
     public Class getElementType() {
         return this.elementType;
+    }
+
+    protected void setElementType(Class<?> elemType) {
+        elementType = elemType;
     }
 
     @Override
