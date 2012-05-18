@@ -408,8 +408,12 @@ public class RelationFieldStrategy
 
             // if our foreign key has a delete action, we need to set the
             // related object so constraints can be evaluated
+            Object lastRelPc = sm.fetchObjectField(field.getIndex());
+            if( lastRelPc == null) {
+            	lastRelPc = sm.fetchInitialField(field.getIndex());
+            }
             OpenJPAStateManager rel = RelationStrategies.getStateManager
-                (sm.fetchObjectField(field.getIndex()), store.getContext());
+                (lastRelPc, store.getContext());
             if (rel != null) {
                 ForeignKey fk = field.getForeignKey((ClassMapping)
                     rel.getMetaData());
