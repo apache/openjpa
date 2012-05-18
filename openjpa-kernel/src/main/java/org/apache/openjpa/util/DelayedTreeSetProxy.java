@@ -109,6 +109,10 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         return this.changeTracker;
     }
 
+    protected void setChangeTracker(CollectionChangeTracker ct) {
+        changeTracker = ct;
+    }
+    
     public Object copy(Object paramObject) {
         return new TreeSet((SortedSet) paramObject);
     }
@@ -117,6 +121,10 @@ public class DelayedTreeSetProxy extends TreeSet implements ProxyCollection, Del
         return this.elementType;
     }
 
+    protected void setElementType(Class<?> elemType) {
+        elementType = elemType;
+    }
+    
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {

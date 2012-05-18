@@ -110,6 +110,10 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
         return this.changeTracker;
     }
 
+    protected void setChangeTracker(CollectionChangeTracker ct) {
+        changeTracker = ct;
+    }
+
     @Override
     public Object copy(Object paramObject) {
         return new HashSet((Collection) paramObject);
@@ -117,6 +121,10 @@ public class DelayedHashSetProxy extends HashSet implements DelayedProxy, ProxyC
 
     public Class getElementType() {
         return this.elementType;
+    }
+
+    protected void setElementType(Class<?> elemType) {
+        elementType = elemType;
     }
 
     public ProxyCollection newInstance(Class paramClass,

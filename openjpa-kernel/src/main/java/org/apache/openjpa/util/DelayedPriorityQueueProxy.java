@@ -132,6 +132,10 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         return this.changeTracker;
     }
 
+    protected void setChangeTracker(CollectionChangeTracker ct) {
+        changeTracker = ct;
+    }
+    
     public Object copy(Object paramObject) {
         return new PriorityQueue((PriorityQueue) paramObject);
     }
@@ -140,6 +144,10 @@ public class DelayedPriorityQueueProxy extends PriorityQueue implements ProxyCol
         return this.elementType;
     }
 
+    protected void setElementType(Class<?> elemType) {
+        elementType = elemType;
+    }
+    
     public ProxyCollection newInstance(Class paramClass,
             Comparator paramComparator, boolean paramBoolean1,
             boolean paramBoolean2) {

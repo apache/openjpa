@@ -198,6 +198,10 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
         return this.changeTracker;
     }
 
+    protected void setChangeTracker(CollectionChangeTracker ct) {
+        changeTracker = ct;
+    }
+    
     @Override
     public Object copy(Object paramObject) {
         if (isDelayLoad()) {
@@ -209,6 +213,10 @@ public class DelayedVectorProxy extends Vector implements ProxyCollection, Delay
     @Override
     public Class getElementType() {
         return this.elementType;
+    }
+
+    protected void setElementType(Class<?> elemType) {
+        elementType = elemType;
     }
 
     @Override
