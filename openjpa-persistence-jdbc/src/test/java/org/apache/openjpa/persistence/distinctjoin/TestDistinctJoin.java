@@ -72,7 +72,12 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
         return tmp;
     }
 
-    public void disabledtestJoinOnly() throws SQLException {
+    public void testJoinOnly() throws SQLException {
+
+        log.error("THIS TEST IS CURRENTLY DISABLED!");
+        if (true) return;
+
+
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(Course.class, Lecturer.class, LocalizedText.class,
                 "openjpa.jdbc.SchemaFactory", "native",
