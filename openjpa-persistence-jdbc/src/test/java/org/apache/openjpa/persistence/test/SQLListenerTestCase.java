@@ -20,13 +20,8 @@ package org.apache.openjpa.persistence.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.openjpa.jdbc.sql.SybaseDictionary;
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 
 /**
@@ -216,10 +211,10 @@ public abstract class SQLListenerTestCase
     }
 
     public String toString(List<String> list) {
-    	StringBuffer buf = new StringBuffer();
-    	for (String s : list)
-    		buf.append(s).append("\r\n");
-    	return buf.toString();
+        StringBuffer buf = new StringBuffer();
+        for (String s : list)
+            buf.append(s).append("\r\n");
+        return buf.toString();
     }
 
     /**
