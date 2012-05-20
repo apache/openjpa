@@ -22,38 +22,31 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
+import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 
 /**
  * This test case demonstrates that we currently do way too much sub selects
- * on Oracle if &#064;Embedded fields with a &#064;Lob are involved.
+ * if &#064;Embedded fields with a &#064;Lob are involved.
  *
  * For running the test you can use the following commandline in
  * openjpa-persistence-jdbc:
  *
- *
- * <pre>
- * mvn clean test -Dtest=TestOracleDistinctJoin -Doracle.artifactid=ojdbc14 -Doracle.version=10.2.0.4.0
- *                -Dopenjpa.oracle.url="jdbc:oracle:thin:@192.168.1.6/XE"
- *                -Dopenjpa.oracle.username=username -Dopenjpa.oracle.password=yourpwd
- *                -Dopenjpa.Log=DefaultLevel=TRACE -Dtest-oracle
- * </pre>
- *
- * Of course you need to set the correct IP address, username and password of your Oracle server.
- * This also assumes that you have downloaded the oracle JDBC driver and locally installed it to maven.
  */
 public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
-    private static String projectStr = "project";
+    protected List<String> sql = new ArrayList<String>();
 
     private Log log;
 
-
+    @Override
     public void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
@@ -62,13 +55,32 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
         emf.close();
     }
 
-    public void testJoinOnly() throws SQLException {
+    /**
+     * Gets the number of SQL issued since last reset.
+     */
+    public int getSQLCount() {
+        return sql.size();
+    }
+
+    /**
+     * Resets SQL count.
+     * @return number of SQL counted since last reset.
+     */
+    public int resetSQL() {
+        int tmp = sql.size();
+        sql.clear();
+        return tmp;
+    }
+
+    public void disabledtestJoinOnly() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf =
             createEMF(Course.class, Lecturer.class, LocalizedText.class,
                 "openjpa.jdbc.SchemaFactory", "native",
                 "openjpa.jdbc.SynchronizeMappings",  "buildSchema(ForeignKeys=true)",
                 "openjpa.jdbc.QuerySQLCache", "false",
-                "openjpa.DataCache", "false" );
+                "openjpa.DataCache", "false",
+                "openjpa.jdbc.JDBCListeners", new JDBCListener[] { new FilteringJDBCListener(sql) }
+        );
 
         Long id;
 
@@ -121,70 +133,97 @@ public class TestDistinctJoin extends AbstractPersistenceTestCase {
             em.close();
         }
 
+        String msg;
+
         {
-            log.info("\n\nDistinct and Join"); // this one does sub-selects for LocalizedString and changeLog
+            msg = "Distinct and Join";
+            log.info("\n\n" + msg); // this one does sub-selects for LocalizedString and changeLog
             EntityManager em = emf.createEntityManager();
             EntityTransaction tran = em.getTransaction();
             tran.begin();
+            resetSQL();
 
             Query q = em.createQuery("select distinct c from Course c join  c.lecturers l ");
             List<Course> courses = q.getResultList();
             assertFalse(courses.isEmpty());
             assertNotNull(courses.get(0));
+            assertMaxQueries(msg, 2);
 
             tran.commit();
             em.close();
         }
         
         {
-            log.info("\n\nDistinct"); // creates NO sub-query!
+            msg = "Distinct"; // creates NO sub-query!
+            log.info("\n\n" + msg);
             EntityManager em = emf.createEntityManager();
 
             Query q = em.createQuery("select distinct c from Course c");
             List<Course> courses = q.getResultList();
             assertFalse(courses.isEmpty());
             assertNotNull(courses.get(0));
+            assertMaxQueries(msg, 2);
 
             em.close();
         }
         
         {
-            log.info("\n\nJoin"); // creates NO sub-query!
+            msg = "Join"; // creates NO sub-query!
+            log.info("\n\n" + msg);
             EntityManager em = emf.createEntityManager();
 
             Query q = em.createQuery("select c from Course c join c.lecturers l ");
             List<Course> courses = q.getResultList();
             assertFalse(courses.isEmpty());
             assertNotNull(courses.get(0));
+            assertMaxQueries(msg, 2);
 
             em.close();
         }
         
         {
-            log.info("\n\nDistinct inverse join"); // this one does sub-selects for LocalizedString and changeLog
+            msg = "Distinct inverse join"; // this one does sub-selects for LocalizedString and changeLog
+            log.info("\n\n" + msg);
             EntityManager em = emf.createEntityManager();
 
             Query q = em.createQuery("select distinct c from Lecturer l join l.course c");
             List<Course> courses = q.getResultList();
             assertFalse(courses.isEmpty());
             assertNotNull(courses.get(0));
+            assertMaxQueries(msg, 2);
 
             em.close();
         }
         
         {
-            log.info("\n\nInverse join"); // this one does sub-selects for LocalizedString and changeLog
+            msg = "Inverse join"; // this one does sub-selects for LocalizedString and changeLog
+            log.info("\n\n" + msg);
             EntityManager em = emf.createEntityManager();
 
             Query q = em.createQuery("select c from Lecturer l join l.course c");
             List<Course> courses = q.getResultList();
             assertFalse(courses.isEmpty());
             assertNotNull(courses.get(0));
+            assertMaxQueries(msg, 2);
 
             em.close();
         }
 
 
         emf.close();
+    }
+
+    private void assertMaxQueries(String msg, int queriesAllowed) {
+        int queryCount = getSQLCount();
+        if (queryCount > queriesAllowed) {
+            StringBuilder sb = new StringBuilder("The following queries got executed\n");
+            for (String query : sql) {
+                sb.append(query).append('\n');
+            }
+            log.error(sb.toString());
+
+            fail("got too many queries executed(" + queryCount + ") but only " + queriesAllowed+ " expected in " + msg);
+        }
+        resetSQL();
     }
 }
