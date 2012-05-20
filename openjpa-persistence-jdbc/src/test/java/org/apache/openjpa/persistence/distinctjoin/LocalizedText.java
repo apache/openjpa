@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.jdbc.oracle;
+package org.apache.openjpa.persistence.distinctjoin;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
@@ -27,26 +27,31 @@ import javax.persistence.Lob;
  * single sub selects for each Embedded field in Oracle.
  */
 @Embeddable
-public class SomeEmbeddable {
+public class LocalizedText {
     @Lob
-    String valA;
+    String textEn;
 
     @Lob
-    String valB;
+    String textDe;
 
-    public String getValA() {
-        return valA;
+    public LocalizedText() {
+        System.out.println("Just for having a debug breakpoint...");
     }
 
-    public void setValA(String valA) {
-        this.valA = valA;
+
+    public String getTextDe() {
+        return textDe;
     }
 
-    public String getValB() {
-        return valB;
+    public void setTextDe(String textDe) {
+        this.textDe = textDe;
     }
 
-    public void setValB(String valB) {
-        this.valB = valB;
+    public String getTextEn() {
+        return textEn;
+    }
+
+    public void setTextEn(String textEn) {
+        this.textEn = textEn;
     }
 }

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.jdbc.oracle;
+package org.apache.openjpa.persistence.distinctjoin;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -16,20 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
-package org.apache.openjpa.jdbc.oracle;
+package org.apache.openjpa.persistence.distinctjoin;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
@@ -53,26 +47,16 @@ import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
  * Of course you need to set the correct IP address, username and password of your Oracle server.
  * This also assumes that you have downloaded the oracle JDBC driver and locally installed it to maven.
  */
-public class TestOracleDistinctJoin extends AbstractPersistenceTestCase {
+public class TestDistinctJoin extends AbstractPersistenceTestCase {
 
     private static String projectStr = "project";
 
     private Log log;
 
-    private boolean skipTest(DBDictionary dict) {
-        return !(dict instanceof OracleDictionary);
-    }
 
     public void setUp() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf = createEMF();
 
-        JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
-        DBDictionary dict = conf.getDBDictionaryInstance();
-
-        if (skipTest(dict)) {
-            emf.close();
-            return;
-        }
         log = emf.getConfiguration().getLog("Tests");
 
         emf.close();
@@ -80,21 +64,13 @@ public class TestOracleDistinctJoin extends AbstractPersistenceTestCase {
 
     public void testJoinOnly() throws SQLException {
         OpenJPAEntityManagerFactorySPI emf =
-            createEMF(Course.class, Lecturer.class, SomeEmbeddable.class,
+            createEMF(Course.class, Lecturer.class, LocalizedText.class,
                 "openjpa.jdbc.SchemaFactory", "native",
                 "openjpa.jdbc.SynchronizeMappings",  "buildSchema(ForeignKeys=true)",
                 "openjpa.jdbc.QuerySQLCache", "false",
                 "openjpa.DataCache", "false" );
 
-        JDBCConfiguration conf = ((JDBCConfiguration) emf.getConfiguration());
-        DBDictionary dict = conf.getDBDictionaryInstance();
-
-        if (skipTest(dict)) {
-            emf.close();
-            return;
-        }
-
-        Long id = null;
+        Long id;
 
         {
             EntityManager em = emf.createEntityManager();
@@ -113,10 +89,16 @@ public class TestOracleDistinctJoin extends AbstractPersistenceTestCase {
             tran.begin();
 
             Course course = new Course();
-            SomeEmbeddable emb = new SomeEmbeddable();
-            emb.setValA("a");
-            emb.setValB("b");
-            course.setAnEmbeddable(emb);
+            LocalizedText objective = new LocalizedText();
+            objective.setTextDe("de-objective");
+            objective.setTextEn("en-objective");
+            course.setObjective(objective);
+
+            LocalizedText title = new LocalizedText();
+            title.setTextDe("title-de");
+            title.setTextEn("title-en");
+            course.setObjective(title);
+
             course.setLobColumn("oh this could be a very looooong text...");
             course.setCourseNumber("4711");
 

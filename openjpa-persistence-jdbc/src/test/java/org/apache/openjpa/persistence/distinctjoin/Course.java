@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.jdbc.oracle;
+package org.apache.openjpa.persistence.distinctjoin;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -59,9 +59,14 @@ public class Course implements Serializable
 
 
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name = "valA", column = @Column(name = "objectiveDe")),
-                         @AttributeOverride(name = "valB", column = @Column(name = "objectiveEn"))})
-    private SomeEmbeddable anEmbeddable;
+    @AttributeOverrides({@AttributeOverride(name = "textDe", column = @Column(name = "objectiveDe")),
+                         @AttributeOverride(name = "textEn", column = @Column(name = "objectiveEn"))})
+    private LocalizedText objective;
+
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name = "textDe", column = @Column(name = "titleDe")),
+            @AttributeOverride(name = "textEn", column = @Column(name = "titleEn"))})
+    private LocalizedText title;
 
 
     @Lob
@@ -86,13 +91,20 @@ public class Course implements Serializable
         this.courseNumber = courseNumber;
     }
 
-
-    public SomeEmbeddable getAnEmbeddable() {
-        return anEmbeddable;
+    public LocalizedText getObjective() {
+        return objective;
     }
 
-    public void setAnEmbeddable(SomeEmbeddable anEmbeddable) {
-        this.anEmbeddable = anEmbeddable;
+    public void setObjective(LocalizedText objective) {
+        this.objective = objective;
+    }
+
+    public LocalizedText getTitle() {
+        return title;
+    }
+
+    public void setTitle(LocalizedText title) {
+        this.title = title;
     }
 
     public String getLobColumn() {
