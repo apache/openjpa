@@ -135,7 +135,7 @@ public abstract class SingleEMFTestCase
      * for the class is its simple name.
      */
     public int count(Class<?> c) {
-    	return count(getAlias(c));
+        return count(getAlias(c));
     }
     
     /**
@@ -154,8 +154,8 @@ public abstract class SingleEMFTestCase
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> getAll(EntityManager em, Class<T> t) {
-    	return (List<T>)em.createQuery("SELECT p FROM " + getAlias(t) + " p")
-				   .getResultList();
+        return (List<T>)em.createQuery("SELECT p FROM " + getAlias(t) + " p")
+                .getResultList();
     }
     
     public String getAlias(Class<?> t) {
