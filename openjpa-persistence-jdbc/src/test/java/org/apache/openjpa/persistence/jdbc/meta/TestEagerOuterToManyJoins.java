@@ -31,18 +31,12 @@ package org.apache.openjpa.persistence.jdbc.meta;
 import java.util.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAQuery;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.jdbc.common.apps.EagerOuterJoinPC;
 

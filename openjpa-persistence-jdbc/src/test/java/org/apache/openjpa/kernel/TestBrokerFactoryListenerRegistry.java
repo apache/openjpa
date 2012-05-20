@@ -21,7 +21,6 @@ package org.apache.openjpa.kernel;
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.event.AbstractLifecycleListener;

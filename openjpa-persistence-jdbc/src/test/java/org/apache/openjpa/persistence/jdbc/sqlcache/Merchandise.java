@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;

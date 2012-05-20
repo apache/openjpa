@@ -18,12 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.io.*;
-import java.util.*;
-
-
-import serp.util.*;
-
 public interface HorizAppA {
 
     public void setPk1(String pk1);

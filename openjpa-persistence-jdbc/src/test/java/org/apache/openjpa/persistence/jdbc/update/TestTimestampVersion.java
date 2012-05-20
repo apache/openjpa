@@ -25,9 +25,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.Version;
-import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

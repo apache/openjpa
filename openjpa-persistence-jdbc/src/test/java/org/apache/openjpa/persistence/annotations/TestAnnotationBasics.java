@@ -18,15 +18,9 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import javax.persistence.*;
-
-import org.apache.openjpa.jdbc.meta.*;
 import org.apache.openjpa.meta.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
-
-import org.apache.openjpa.persistence.common.utils.*;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;

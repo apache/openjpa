@@ -22,9 +22,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
-
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 @Entity
 public class UnenhancedIdentityIdPropertyAccess {

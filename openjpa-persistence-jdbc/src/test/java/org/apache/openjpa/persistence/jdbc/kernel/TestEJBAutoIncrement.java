@@ -20,14 +20,9 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.utils.*;
-
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC1;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC2;
 import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3;
-import org.apache.openjpa.persistence.jdbc.common.apps.AutoIncrementPC3Id;
-
-import junit.framework.*;
 
 public class TestEJBAutoIncrement extends BaseJDBCTest
 {

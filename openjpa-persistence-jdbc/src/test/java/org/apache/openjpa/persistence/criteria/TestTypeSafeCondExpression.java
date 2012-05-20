@@ -46,7 +46,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.openjpa.persistence.criteria.AbstractCriteriaTestCase.QueryDecorator;
-import org.apache.openjpa.persistence.test.DatabasePlatform;
 
 /**
  * Tests type-strict version of Criteria API. The test scenarios are adapted

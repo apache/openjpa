@@ -18,9 +18,7 @@
  */
 package org.apache.openjpa.persistence.relations;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

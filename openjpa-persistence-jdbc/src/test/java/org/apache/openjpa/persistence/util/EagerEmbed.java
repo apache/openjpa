@@ -19,12 +19,8 @@
 package org.apache.openjpa.persistence.util;
 
 import java.sql.Date;
-import java.util.Set;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 

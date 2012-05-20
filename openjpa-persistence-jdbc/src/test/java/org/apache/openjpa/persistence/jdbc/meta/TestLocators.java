@@ -35,15 +35,9 @@ import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 
 public class TestLocators

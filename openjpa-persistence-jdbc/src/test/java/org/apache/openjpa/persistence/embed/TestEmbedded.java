@@ -24,7 +24,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEmbedded extends SQLListenerTestCase {
     public void setUp() {

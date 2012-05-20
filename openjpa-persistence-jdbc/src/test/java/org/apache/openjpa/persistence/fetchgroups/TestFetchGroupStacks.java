@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.apache.openjpa.persistence.PersistenceException;
 
 public class TestFetchGroupStacks extends SingleEMTestCase {
 

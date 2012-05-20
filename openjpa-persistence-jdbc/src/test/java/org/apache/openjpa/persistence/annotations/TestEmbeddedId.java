@@ -23,11 +23,8 @@ import javax.persistence.*;
 import org.apache.openjpa.enhance.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import junit.framework.*;
-
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.common.utils.*;
 
 /**
  * <p>Test embedded id classes.</p>

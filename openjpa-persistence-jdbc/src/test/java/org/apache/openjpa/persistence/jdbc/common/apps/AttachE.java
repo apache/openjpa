@@ -18,16 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import org.apache.openjpa.kernel.*;
-
 import java.util.*;
 import java.io.*;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
-
-import java.lang.annotation.Annotation;
 
 @Entity
 @Table(name="JDBC_AttachE")

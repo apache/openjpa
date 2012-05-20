@@ -24,7 +24,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NamedQuery;
 
 import org.apache.openjpa.datacache.ConcurrentQueryCache;
-import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity1;
 import org.apache.openjpa.persistence.querycache.common.apps.Entity2;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;

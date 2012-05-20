@@ -31,13 +31,9 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;

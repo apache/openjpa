@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import java.util.ArrayList;
-
 import javax.persistence.*;
 
 @Entity

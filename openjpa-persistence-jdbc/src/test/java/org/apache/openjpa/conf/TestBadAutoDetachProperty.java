@@ -22,11 +22,9 @@ import java.util.HashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
 import org.apache.openjpa.lib.util.ParseException;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestBadAutoDetachProperty extends AbstractPersistenceTestCase {

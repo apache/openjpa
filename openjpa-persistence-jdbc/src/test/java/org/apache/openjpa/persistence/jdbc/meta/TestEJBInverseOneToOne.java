@@ -21,11 +21,8 @@ package org.apache.openjpa.persistence.jdbc.meta;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-import org.apache.openjpa.persistence.common.utils.*;
-
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertA;
 import org.apache.openjpa.persistence.jdbc.common.apps.InvertB;
-import junit.framework.*;
 
 public class TestEJBInverseOneToOne
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {

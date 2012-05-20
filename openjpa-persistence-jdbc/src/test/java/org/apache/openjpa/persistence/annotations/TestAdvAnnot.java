@@ -18,15 +18,12 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import junit.framework.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 

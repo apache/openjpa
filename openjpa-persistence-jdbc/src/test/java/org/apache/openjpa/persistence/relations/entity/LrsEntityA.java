@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.annotation.Generated;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,7 +34,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.openjpa.persistence.LRS;
-import org.apache.openjpa.persistence.jdbc.Index;
 
 @Entity
 @Table(name = "LrsEntityB")

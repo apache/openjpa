@@ -22,12 +22,8 @@ import java.util.Iterator;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.utils.*;
-
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC4;
 import org.apache.openjpa.persistence.jdbc.common.apps.ConstantJoinPC5;
-
-import junit.framework.*;
 
 public class TestEJBConstantJoinOnSameRefTable
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {

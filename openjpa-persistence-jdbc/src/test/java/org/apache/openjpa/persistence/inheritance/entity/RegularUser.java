@@ -23,8 +23,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
-import org.apache.openjpa.persistence.jdbc.Nonpolymorphic;
-
 @Entity
 @DiscriminatorValue("user")
 public class RegularUser extends ComputerUser {

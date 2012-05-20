@@ -24,17 +24,12 @@ import java.util.*;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import javax.persistence.Persistence;
+
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.kernel.StoreManager;
 import org.apache.openjpa.kernel.DelegatingStoreManager;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;

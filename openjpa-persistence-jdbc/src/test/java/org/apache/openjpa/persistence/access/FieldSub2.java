@@ -25,8 +25,6 @@ import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Access(AccessType.FIELD)

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.meta;
 import java.util.Collection;
 
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;

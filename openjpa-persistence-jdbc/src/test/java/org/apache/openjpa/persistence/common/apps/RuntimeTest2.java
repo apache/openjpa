@@ -20,9 +20,6 @@ package org.apache.openjpa.persistence.common.apps;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
 
 
 /**

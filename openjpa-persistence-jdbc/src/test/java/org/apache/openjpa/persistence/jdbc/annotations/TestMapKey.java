@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.annotations;
 
-import javax.persistence.EntityManager;
 import javax.persistence.MapKey;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;

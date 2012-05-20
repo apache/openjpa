@@ -23,10 +23,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

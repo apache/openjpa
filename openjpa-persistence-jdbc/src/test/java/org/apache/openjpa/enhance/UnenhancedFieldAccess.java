@@ -29,8 +29,6 @@ import javax.persistence.Table;
 import javax.persistence.Basic;
 import javax.persistence.FetchType;
 
-import org.apache.openjpa.persistence.DetachedState;
-
 @Entity
 @Table(name="UN_FIELD")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

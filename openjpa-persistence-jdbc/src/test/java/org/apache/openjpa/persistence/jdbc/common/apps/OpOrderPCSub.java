@@ -21,8 +21,6 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.lang.annotation.Annotation;
-import java.util.*;
 
 @Entity
 public class OpOrderPCSub

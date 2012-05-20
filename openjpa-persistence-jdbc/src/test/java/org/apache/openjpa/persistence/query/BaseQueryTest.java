@@ -31,17 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.persistence.EntityManager;
-
-
 
 
 import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 public abstract class BaseQueryTest

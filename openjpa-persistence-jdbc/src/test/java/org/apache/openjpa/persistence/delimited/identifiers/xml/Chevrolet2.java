@@ -18,9 +18,6 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.xml;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 //@Entity
 //@DiscriminatorValue("Chevrolet")
 public class Chevrolet2 extends Car2 {

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.annotations.xml;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
 
 /**
  * Used to test effect of metadata-complete tag. 

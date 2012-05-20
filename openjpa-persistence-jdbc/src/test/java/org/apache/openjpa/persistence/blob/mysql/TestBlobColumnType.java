@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.blob.mysql;
 
-import javax.persistence.EntityManager;
-
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

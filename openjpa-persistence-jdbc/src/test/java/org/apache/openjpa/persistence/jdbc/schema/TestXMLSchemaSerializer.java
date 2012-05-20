@@ -31,22 +31,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.*;
+
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.SchemaParser;
 import org.apache.openjpa.jdbc.schema.SchemaSerializer;
 import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
 import org.apache.openjpa.jdbc.schema.XMLSchemaSerializer;
-
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestXMLSchemaSerializer extends TestXMLSchemaParser{

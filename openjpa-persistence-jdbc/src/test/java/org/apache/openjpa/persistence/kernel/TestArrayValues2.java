@@ -26,7 +26,6 @@ import java.util.Date;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.ArraysTest;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import junit.framework.AssertionFailedError;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 

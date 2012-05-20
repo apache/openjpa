@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.strategy;
 
-import java.util.*;
 import javax.persistence.*;
 
 import org.apache.openjpa.persistence.jdbc.Strategy;

@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
@@ -30,11 +29,6 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 

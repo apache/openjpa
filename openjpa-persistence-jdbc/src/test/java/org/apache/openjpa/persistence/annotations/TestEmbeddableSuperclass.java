@@ -18,21 +18,11 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import java.sql.*;
-
-import org.apache.openjpa.jdbc.conf.*;
-import org.apache.openjpa.jdbc.meta.*;
-import org.apache.openjpa.jdbc.meta.strats.*;
-import org.apache.openjpa.jdbc.sql.*;
-import org.apache.openjpa.meta.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.common.utils.*;
-
-import junit.framework.*;
 
 /**
  * <p>Test embeddable superclasses.</p>

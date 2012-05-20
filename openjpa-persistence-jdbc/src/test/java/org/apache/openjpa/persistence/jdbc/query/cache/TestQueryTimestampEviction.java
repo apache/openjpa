@@ -27,11 +27,8 @@ import org.apache.openjpa.datacache.ConcurrentQueryCache;
 import org.apache.openjpa.datacache.QueryCache;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.embed.attrOverrides.TestAssocOverridesXML.SQLListener;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestQueryTimestampEviction extends AbstractQueryCacheTest {

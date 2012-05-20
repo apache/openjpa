@@ -27,7 +27,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -46,7 +45,6 @@ import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 /**
  * Base test class providing persistence utilities.

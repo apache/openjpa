@@ -21,9 +21,7 @@ package org.apache.openjpa.persistence.proxy;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -31,7 +29,6 @@ import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import org.apache.openjpa.persistence.proxy.entities.Address;

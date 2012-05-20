@@ -18,13 +18,11 @@
  */
 package org.apache.openjpa.persistence.jdbc.mapping.bidi;
 
-import java.util.Arrays;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**

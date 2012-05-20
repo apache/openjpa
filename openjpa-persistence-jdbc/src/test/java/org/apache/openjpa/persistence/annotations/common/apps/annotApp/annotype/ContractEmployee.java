@@ -19,8 +19,6 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
-import java.util.ArrayList;
-
 import javax.persistence.*;
 
 @Entity

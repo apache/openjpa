@@ -19,9 +19,8 @@
 package org.apache.openjpa.persistence.models.company;
 
 import java.beans.*;
-import java.io.*;
 import java.util.*;
-import javax.persistence.*;
+
 import junit.framework.*;
 import org.apache.openjpa.persistence.test.*;
 

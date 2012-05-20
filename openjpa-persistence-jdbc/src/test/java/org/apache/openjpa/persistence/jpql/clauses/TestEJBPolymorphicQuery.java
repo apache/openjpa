@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jpql.clauses;
 import java.util.List;
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.apps.Entity1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest1;
 import org.apache.openjpa.persistence.common.apps.RuntimeTest2;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;

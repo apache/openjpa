@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity

@@ -29,7 +29,6 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.StoreCache;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 public class TestCacheExclusions extends AbstractCachedEMFTestCase {
 

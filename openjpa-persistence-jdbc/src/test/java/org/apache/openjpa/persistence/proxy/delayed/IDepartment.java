@@ -19,10 +19,6 @@
 package org.apache.openjpa.persistence.proxy.delayed;
 
 import java.util.Collection;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 public interface IDepartment { 
 

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.proxy.delayed.alist;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;

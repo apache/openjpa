@@ -24,7 +24,6 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.mappingApp.*;
 import org.apache.openjpa.persistence.common.utils.*;
-import junit.framework.*;
 
 
 public class TestCompositeIdTraversalInSQLMapping extends AbstractTestCase {

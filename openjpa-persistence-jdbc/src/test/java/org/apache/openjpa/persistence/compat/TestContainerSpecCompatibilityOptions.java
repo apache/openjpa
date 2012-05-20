@@ -33,9 +33,7 @@ import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
-import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
 import org.apache.openjpa.persistence.test.ContainerEMFTest;
 
 // Tests same functionality as TestSpecCompatibilityOptions, except that 

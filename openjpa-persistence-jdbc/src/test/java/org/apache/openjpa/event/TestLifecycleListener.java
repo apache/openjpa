@@ -20,7 +20,6 @@ package org.apache.openjpa.event;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 

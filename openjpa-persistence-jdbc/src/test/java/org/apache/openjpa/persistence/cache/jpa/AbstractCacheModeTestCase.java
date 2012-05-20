@@ -24,11 +24,8 @@ import javax.persistence.Cache;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 
 import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.cache.jpa.model.CacheEntity;

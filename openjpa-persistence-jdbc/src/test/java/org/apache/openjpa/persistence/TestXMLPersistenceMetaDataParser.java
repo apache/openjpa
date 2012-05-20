@@ -22,10 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
-import org.apache.openjpa.jdbc.meta.ClassMapping;
-import org.apache.openjpa.jdbc.meta.FieldMapping;
+
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import javax.persistence.*;
 

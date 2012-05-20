@@ -18,24 +18,13 @@
  */
 package org.apache.openjpa.persistence.annotations;
 
-import java.sql.*;
-
-import javax.persistence.*;
-
-import org.apache.openjpa.jdbc.conf.*;
-import org.apache.openjpa.jdbc.meta.*;
-import org.apache.openjpa.jdbc.meta.strats.*;
-import org.apache.openjpa.jdbc.sql.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 //import kodo.persistence.test.*;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.test.AllowFailure;
-
-import junit.framework.*;
 
 /**
  * Test for embedded

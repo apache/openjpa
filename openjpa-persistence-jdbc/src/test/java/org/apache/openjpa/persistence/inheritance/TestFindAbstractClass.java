@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.inheritance;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.InheritanceType;
 
 import junit.textui.TestRunner;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

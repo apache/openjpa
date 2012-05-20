@@ -23,15 +23,11 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import java.sql.*;
 import java.util.*;
 import org.apache.openjpa.kernel.Broker;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.sql.ResultSetResult;

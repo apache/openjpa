@@ -22,10 +22,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.utils.*;
-
 import org.apache.openjpa.persistence.kernel.common.apps.RuntimeTest1;
-import junit.framework.*;
 
 public class TestEJBQLSelectNPlusOne
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {

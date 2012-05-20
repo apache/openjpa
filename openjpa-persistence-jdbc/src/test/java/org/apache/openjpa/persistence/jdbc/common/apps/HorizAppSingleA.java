@@ -23,8 +23,6 @@ import java.util.*;
 
 import javax.persistence.Entity;
 
-import serp.util.*;
-
 @Entity
 public class HorizAppSingleA
     implements HorizAppA {

@@ -30,8 +30,6 @@ import javax.persistence.LockModeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryHints;

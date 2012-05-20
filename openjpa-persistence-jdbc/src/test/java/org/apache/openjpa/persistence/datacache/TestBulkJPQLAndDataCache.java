@@ -19,7 +19,7 @@
 package org.apache.openjpa.persistence.datacache;
 
 import java.util.List;
-import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;

@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Version;
 
 /**
  * Domain class used by meta-model testing.

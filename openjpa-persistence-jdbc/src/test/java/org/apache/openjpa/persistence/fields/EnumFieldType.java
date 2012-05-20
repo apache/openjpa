@@ -24,9 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Entity;
 
-import org.apache.openjpa.persistence.DetachedState;
 import org.apache.openjpa.persistence.PersistentCollection;
-import org.apache.openjpa.persistence.kernel.common.apps.PCDirectory;
 
 @Entity
 //@DetachedState(enabled = false) // ##### shouldn't need this

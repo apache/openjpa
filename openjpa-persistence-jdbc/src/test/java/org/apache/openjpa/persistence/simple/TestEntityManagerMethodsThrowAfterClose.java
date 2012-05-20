@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.simple;
 
-import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 

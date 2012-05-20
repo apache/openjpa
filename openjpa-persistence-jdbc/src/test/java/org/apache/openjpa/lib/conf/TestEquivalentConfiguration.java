@@ -22,20 +22,12 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.TestEnhancementWithMultiplePUs;
-import org.apache.openjpa.jdbc.schema.DataSourceFactory;
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-import org.apache.openjpa.persistence.test.AllowFailure;
 import org.apache.openjpa.persistence.test.DatabasePlatform;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
-
-import junit.framework.TestCase;
 
 /**
  * Tests that configuration properties can be specified both as new

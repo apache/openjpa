@@ -22,9 +22,7 @@ import javax.persistence.*;
 
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
-import org.apache.openjpa.persistence.common.utils.*;
 
-import junit.framework.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 /**

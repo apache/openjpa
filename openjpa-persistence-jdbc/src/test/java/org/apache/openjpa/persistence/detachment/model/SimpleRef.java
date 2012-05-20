@@ -20,8 +20,6 @@
 package org.apache.openjpa.persistence.detachment.model;
 
 import javax.persistence.*;
-import java.util.Set;
-import java.util.LinkedHashSet;
 
 @Entity
 public class SimpleRef {

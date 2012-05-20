@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;

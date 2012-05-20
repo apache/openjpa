@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 @Entity

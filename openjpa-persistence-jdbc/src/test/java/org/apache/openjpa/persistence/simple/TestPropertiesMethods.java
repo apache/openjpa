@@ -26,8 +26,6 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-import junit.framework.TestCase;
-
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.persistence.AutoClearType;

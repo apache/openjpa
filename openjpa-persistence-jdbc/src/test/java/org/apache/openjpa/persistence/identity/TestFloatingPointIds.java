@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.identity;
 
-import java.sql.Date;
 import javax.persistence.EntityManager;
 
 import junit.textui.TestRunner;

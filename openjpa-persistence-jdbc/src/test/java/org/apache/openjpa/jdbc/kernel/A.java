@@ -18,10 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;

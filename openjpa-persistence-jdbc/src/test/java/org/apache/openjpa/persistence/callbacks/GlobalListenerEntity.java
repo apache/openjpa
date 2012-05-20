@@ -21,9 +21,6 @@ package org.apache.openjpa.persistence.callbacks;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
-import javax.persistence.EntityListeners;
-
-import org.apache.openjpa.persistence.callbacks.ListenerImpl;
 
 @Entity
 public class GlobalListenerEntity implements ListenerTestEntity {

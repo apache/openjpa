@@ -22,7 +22,6 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 @javax.persistence.metamodel.StaticMetamodel

@@ -18,16 +18,6 @@
  */
 package org.apache.openjpa.persistence.delimited.identifiers.xml;
 
-import javax.persistence.ColumnResult;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.EntityResult;
-import javax.persistence.FieldResult;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.Table;
-
 //@SqlResultSetMapping(name="CarResultSet",
 //    entities={@EntityResult(entityClass=Car2.class,
 //        fields={

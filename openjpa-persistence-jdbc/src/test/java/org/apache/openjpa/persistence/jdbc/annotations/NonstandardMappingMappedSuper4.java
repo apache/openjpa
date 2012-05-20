@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 
 import java.awt.Point;
-import java.util.*;
 
 import javax.persistence.*;
 

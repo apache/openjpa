@@ -37,11 +37,8 @@ import org.apache.openjpa.persistence.query.common.apps.ComplexD;
 import org.apache.openjpa.persistence.query.common.apps.ComplexE;
 import org.apache.openjpa.persistence.query.common.apps.ComplexF;
 import org.apache.openjpa.persistence.query.common.apps.ComplexG;
-import junit.framework.AssertionFailedError;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAQuery;
 
 public class TestComplexQueries extends BaseQueryTest {
 

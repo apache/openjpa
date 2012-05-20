@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.exception;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;

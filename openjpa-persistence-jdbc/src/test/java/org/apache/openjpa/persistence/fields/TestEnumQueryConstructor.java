@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.persistence.fields;
 
-import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
 
 public class TestEnumQueryConstructor
     extends SingleEMTestCase {

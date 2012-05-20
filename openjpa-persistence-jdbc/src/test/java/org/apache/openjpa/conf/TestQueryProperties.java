@@ -21,7 +21,6 @@ package org.apache.openjpa.conf;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

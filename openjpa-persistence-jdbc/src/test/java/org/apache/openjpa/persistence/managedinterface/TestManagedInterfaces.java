@@ -33,7 +33,6 @@ import org.apache.openjpa.persistence.JPAFacadeHelper;
 import org.apache.openjpa.persistence.Extent;
 import org.apache.openjpa.persistence.query.SimpleEntity;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.PersistenceException;
 
 @AllowFailure(message=
     "On JDK6 Upgrade these tests are failing with wrong mapping. " +

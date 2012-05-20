@@ -28,10 +28,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.openjpa.persistence.jdbc.ForeignKey;
-import org.apache.openjpa.persistence.jdbc.ForeignKeyAction;
-import org.apache.openjpa.persistence.jdbc.Index;
-
 @Entity
 @Table(name = "LrsEntityB")
 public class LrsEntityB implements Serializable {

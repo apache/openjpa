@@ -24,7 +24,6 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /**

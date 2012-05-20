@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.jdbc.maps.m2mmapex3;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

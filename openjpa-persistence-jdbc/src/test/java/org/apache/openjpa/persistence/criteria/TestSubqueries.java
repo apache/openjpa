@@ -30,8 +30,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.openjpa.persistence.test.AllowFailure;
-
 public class TestSubqueries extends CriteriaTest {
     
     public void testExist() {

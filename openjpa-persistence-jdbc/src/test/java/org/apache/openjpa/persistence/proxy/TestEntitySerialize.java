@@ -18,12 +18,10 @@
  */
 package org.apache.openjpa.persistence.proxy;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.proxy.entities.Address;

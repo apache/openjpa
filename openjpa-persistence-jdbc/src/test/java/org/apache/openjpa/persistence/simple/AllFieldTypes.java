@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import javax.persistence.Entity;
-import javax.persistence.Version;
 import javax.persistence.OneToOne;
 import javax.persistence.OneToMany;
 

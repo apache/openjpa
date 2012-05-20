@@ -18,7 +18,6 @@
  */
  package org.apache.openjpa.persistence.jdbc.version;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.EntityManager;

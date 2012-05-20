@@ -19,10 +19,8 @@
 package org.apache.openjpa.persistence.simple;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
 import junit.textui.TestRunner;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

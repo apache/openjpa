@@ -22,7 +22,6 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.strats.HandlerHandlerMapTableFieldStrategy;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestHandlerToHandlerMaps

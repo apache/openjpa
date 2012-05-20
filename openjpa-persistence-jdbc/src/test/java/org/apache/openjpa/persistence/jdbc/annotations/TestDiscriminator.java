@@ -21,10 +21,7 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
-import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
-import org.apache.openjpa.jdbc.meta.strats.SubclassJoinDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
-import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

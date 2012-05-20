@@ -25,13 +25,8 @@ import java.util.*;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.*;
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 
 
 public class TestOperationOrderUpdateManager

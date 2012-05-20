@@ -19,7 +19,6 @@
 package org.apache.openjpa.enhance;
 
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 import javax.persistence.Entity;
 import javax.persistence.CascadeType;
 

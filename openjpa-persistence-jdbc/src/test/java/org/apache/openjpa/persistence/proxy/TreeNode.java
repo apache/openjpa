@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.proxy;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -30,7 +29,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.apache.openjpa.persistence.DetachedState;

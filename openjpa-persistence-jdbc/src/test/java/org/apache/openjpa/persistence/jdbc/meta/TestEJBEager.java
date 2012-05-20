@@ -20,10 +20,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.common.utils.*;
-
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
-import junit.framework.*;
 
 public class TestEJBEager
         extends org.apache.openjpa.persistence.jdbc.kernel.BaseJDBCTest {

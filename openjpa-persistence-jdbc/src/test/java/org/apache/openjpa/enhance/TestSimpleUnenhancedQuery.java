@@ -17,9 +17,6 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

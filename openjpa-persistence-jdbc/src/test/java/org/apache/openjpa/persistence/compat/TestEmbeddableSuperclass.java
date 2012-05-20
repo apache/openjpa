@@ -18,22 +18,10 @@
  */
 package org.apache.openjpa.persistence.compat;
 
-import java.sql.Types;
-
-import org.apache.openjpa.conf.OpenJPAVersion;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
-import org.apache.openjpa.jdbc.meta.strats.ClobValueHandler;
-import org.apache.openjpa.jdbc.meta.strats.EmbedFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
-import org.apache.openjpa.jdbc.meta.strats.MaxEmbeddedClobFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.NoneClassStrategy;
 import org.apache.openjpa.jdbc.meta.strats.RelationFieldStrategy;
-import org.apache.openjpa.jdbc.meta.strats.StringFieldStrategy;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.meta.ValueStrategies;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 /**

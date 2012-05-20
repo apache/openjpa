@@ -45,7 +45,6 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingParser;
 import org.apache.openjpa.persistence.jdbc.XMLPersistenceMappingSerializer;
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 
 public class TestOrderColumnXML extends AbstractCachedEMFTestCase {       
 

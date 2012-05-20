@@ -25,18 +25,11 @@ import java.util.List;
 import java.util.Random;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.PersistenceUtil;
-import javax.persistence.spi.LoadState;
-import javax.persistence.spi.PersistenceProvider;
-import javax.persistence.spi.ProviderUtil;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
-import org.apache.openjpa.persistence.PersistenceProviderImpl;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPersistenceUnitUtil extends SingleEMFTestCase{

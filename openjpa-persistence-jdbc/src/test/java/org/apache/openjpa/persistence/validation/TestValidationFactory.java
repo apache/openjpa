@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.persistence.ValidationMode;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.PersistenceException;

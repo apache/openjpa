@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.jdbc.annotations;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.CollectionTable;

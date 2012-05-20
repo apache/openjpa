@@ -28,21 +28,11 @@
 package org.apache.openjpa.persistence.jdbc.meta.tableperclass;
 
 
-import java.util.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.util.Id;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
-
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestUnionPlaceholderTypes

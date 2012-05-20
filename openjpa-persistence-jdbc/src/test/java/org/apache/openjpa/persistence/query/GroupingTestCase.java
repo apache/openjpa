@@ -29,7 +29,6 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.SolidDBDictionary;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
-import org.apache.openjpa.persistence.ArgumentException;
 
 /**
  * <p>Tests grouping and having capabilities.</p>

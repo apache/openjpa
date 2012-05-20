@@ -24,7 +24,6 @@ import java.util.Collections;
 import javax.persistence.Persistence;
 
 import org.apache.openjpa.persistence.test.AbstractCachedEMFTestCase;
-import org.apache.openjpa.persistence.test.PersistenceTestCase;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.JPAFacadeHelper;

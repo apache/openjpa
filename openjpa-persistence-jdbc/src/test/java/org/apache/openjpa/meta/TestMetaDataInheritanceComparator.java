@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.meta;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 import org.apache.openjpa.persistence.JPAFacadeHelper;
 

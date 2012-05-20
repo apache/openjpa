@@ -19,10 +19,7 @@
 package org.apache.openjpa.persistence.meta;
 
 import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-
-import org.apache.openjpa.persistence.PersistentCollection;
 
 @Entity
 public class ArrayMember {

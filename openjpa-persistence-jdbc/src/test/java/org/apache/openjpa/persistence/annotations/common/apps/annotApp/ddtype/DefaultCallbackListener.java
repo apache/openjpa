@@ -18,14 +18,6 @@
  */
 package org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PostPersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-import javax.persistence.PreUpdate;
-import javax.persistence.PostLoad;
-
 import org.apache.openjpa.persistence.annotations.common.apps.annotApp.ddtype.
         CallbackStorage;
 

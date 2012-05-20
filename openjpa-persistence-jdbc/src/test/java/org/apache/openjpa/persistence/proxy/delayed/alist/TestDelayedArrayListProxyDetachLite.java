@@ -18,14 +18,11 @@
  */
 package org.apache.openjpa.persistence.proxy.delayed.alist;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
-import org.apache.openjpa.persistence.proxy.delayed.DelayedProxyCollectionsTestCase;
 import org.apache.openjpa.persistence.proxy.delayed.IDepartment;
 import org.apache.openjpa.persistence.proxy.delayed.IEmployee;
 import org.apache.openjpa.util.DelayedArrayListProxy;

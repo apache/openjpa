@@ -22,7 +22,6 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.meta.ClassMetaData;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.datacache.common.apps.PObject;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

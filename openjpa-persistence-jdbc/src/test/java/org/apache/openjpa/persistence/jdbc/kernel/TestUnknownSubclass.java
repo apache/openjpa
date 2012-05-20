@@ -32,14 +32,10 @@ import javax.sql.*;
 import org.apache.openjpa.jdbc.conf.*;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 
 
-import java.lang.annotation.Annotation;
-import junit.framework.*;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 

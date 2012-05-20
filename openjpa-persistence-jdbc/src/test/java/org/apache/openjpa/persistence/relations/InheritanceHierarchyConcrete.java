@@ -19,20 +19,12 @@
 package org.apache.openjpa.persistence.relations;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
 
 import org.apache.openjpa.persistence.FetchAttribute;
 import org.apache.openjpa.persistence.FetchGroup;

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import javax.persistence.Query;
-
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 public class TestJPQLWithoutIdentificationVariable extends SingleEMTestCase {

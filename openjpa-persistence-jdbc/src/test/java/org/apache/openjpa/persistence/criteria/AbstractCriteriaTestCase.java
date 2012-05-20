@@ -39,8 +39,6 @@ import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
-import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
-import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.enhance.identity;
 import java.io.Serializable;
 
 import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;

@@ -21,9 +21,7 @@ package org.apache.openjpa.persistence.proxy.delayed.lhset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;

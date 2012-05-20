@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.detach;
 
-import javax.persistence.OptimisticLockException;
-
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 

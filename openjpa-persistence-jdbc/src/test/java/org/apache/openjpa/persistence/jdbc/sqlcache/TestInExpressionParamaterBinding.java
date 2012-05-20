@@ -31,8 +31,6 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
-import junit.framework.TestCase;
-
 /**
  * Tests parameter binding to IN() expressions. 
  * IN() expressions accept parameters in following forms according to JPA 2.0 specification<br>

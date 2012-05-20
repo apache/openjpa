@@ -27,21 +27,12 @@
  */
 package org.apache.openjpa.persistence.jdbc.schema;
 
-import java.util.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.schema.LazySchemaFactory;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.schema.Table;
 
-import org.apache.openjpa.persistence.jdbc.common.apps.*;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
-
-import java.lang.annotation.Annotation;
-import junit.framework.*;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
 
 public class TestLazySchemaFactory

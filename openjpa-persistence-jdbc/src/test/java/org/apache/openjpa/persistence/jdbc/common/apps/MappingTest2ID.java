@@ -20,8 +20,6 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
 import java.io.*;
-import java.math.*;
-import java.text.*;
 import java.util.*;
 
 

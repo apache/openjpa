@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAQuery;
-import org.apache.openjpa.persistence.QueryImpl;
 import org.apache.openjpa.persistence.test.SingleEMTestCase;
 
 /**

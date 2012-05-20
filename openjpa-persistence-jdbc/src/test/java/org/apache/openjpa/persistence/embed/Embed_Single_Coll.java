@@ -19,10 +19,8 @@
 package org.apache.openjpa.persistence.embed;
 
 import java.sql.Date;
-import java.util.HashSet;
-import java.util.Set;
+
 import javax.persistence.Embeddable;
-import javax.persistence.ElementCollection;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 

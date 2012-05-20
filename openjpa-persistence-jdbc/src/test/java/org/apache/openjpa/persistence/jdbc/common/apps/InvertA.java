@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence.jdbc.common.apps;
 
 
 import java.io.Serializable;
-import java.util.*;
+
 import javax.persistence.*;
 
 /**

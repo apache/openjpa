@@ -25,7 +25,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.persistence.OpenJPAPersistence;

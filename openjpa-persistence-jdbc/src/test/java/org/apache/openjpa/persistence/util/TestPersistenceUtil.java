@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.util;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import javax.persistence.EntityManager;

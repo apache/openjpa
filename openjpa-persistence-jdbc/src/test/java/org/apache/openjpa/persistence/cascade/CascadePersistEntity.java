@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.cascade;
 
-import java.io.Serializable;
-
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.detachment;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
-import junit.framework.TestCase;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;

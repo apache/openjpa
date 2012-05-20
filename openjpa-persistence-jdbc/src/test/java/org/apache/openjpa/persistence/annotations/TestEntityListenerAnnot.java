@@ -20,10 +20,6 @@ package org.apache.openjpa.persistence.annotations;
 
 import java.util.List;
 
-import javax.persistence.*;
-import junit.framework.*;
-
-import org.apache.openjpa.persistence.common.utils.*;
 import org.apache.openjpa.persistence.test.AllowFailure;
 
 import

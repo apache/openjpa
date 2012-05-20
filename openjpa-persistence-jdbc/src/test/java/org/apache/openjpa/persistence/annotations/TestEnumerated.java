@@ -19,10 +19,9 @@
 package org.apache.openjpa.persistence.annotations;
 
 import org.apache.openjpa.persistence.*;
-import java.util.List;
+
 import javax.persistence.*;
-import junit.framework.*;
-import org.apache.openjpa.persistence.common.utils.*;
+
 import
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype.*;
 
