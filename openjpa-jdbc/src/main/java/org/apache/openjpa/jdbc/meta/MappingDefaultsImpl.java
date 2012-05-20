@@ -38,7 +38,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.identifier.Identifier;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Strings;
@@ -529,10 +528,10 @@ public class MappingDefaultsImpl
      * <TH>JavaType
      * <TH>Default value
      * <TBODY>
-     * <TR><TD>{@link JavaTypes.INT}<TD> The hashcode of the entity name</TR>
-     * <TR><TD>{@link JavaTypes.CHAR}<TD>The first character of the entity name 
+     * <TR><TD>{@link JavaTypes#INT}<TD> The hashcode of the entity name</TR>
+     * <TR><TD>{@link JavaTypes#CHAR}<TD>The first character of the entity name
      * </TR>
-     * <TR><TD>{@link JavaTypes.STRING}<TD>The entity name</TR>
+     * <TR><TD>{@link JavaTypes#STRING}<TD>The entity name</TR>
      * </TBODY>
      * </TABLE>
      * 
