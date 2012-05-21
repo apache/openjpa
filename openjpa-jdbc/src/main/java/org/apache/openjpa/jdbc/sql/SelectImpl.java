@@ -155,7 +155,7 @@ public class SelectImpl
     private Set _eagerKeys = null;
 
     // subselect support
-    private List _subsels = null;
+    private List<SelectImpl> _subsels = null;
     private SelectImpl _parent = null;
     private String _subPath = null;
     private boolean _hasSub = false;
@@ -2050,7 +2050,7 @@ public class SelectImpl
             return -1;
 
         // not found; create alias
-        i = aliasSize(null);
+        i = aliasSize(false, null);
 //        System.out.println("GetTableIndex\t"+
 //                ((_parent != null) ? "Sub" :"") +
 //                " created alias: "+
@@ -2153,19 +2153,19 @@ public class SelectImpl
         _tables.put(alias, tableString);
     }
 
+    
     /**
      * Calculate total number of aliases.
+     * 
+     * From 1.2.x
      */
-    private int aliasSize(SelectImpl fromSub) {
-        int aliases = (_parent == null) ? 0
-            : _parent.aliasSize(this);
+    private int aliasSize(boolean fromParent, SelectImpl fromSub) {
+        int aliases = (fromParent || _parent == null) ? 0 : _parent.aliasSize(false, this);
         aliases += (_aliases == null) ? 0 : _aliases.size();
         if (_subsels != null) {
-            SelectImpl sub;
-            for (int i = 0; i < _subsels.size(); i++) {
-                sub = (SelectImpl) _subsels.get(i);
+            for (SelectImpl sub : _subsels) {
                 if (sub != fromSub)
-                    aliases += sub.aliasSize(null);
+                    aliases += sub.aliasSize(true, null);
             }
         }
         return aliases;
