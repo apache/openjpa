@@ -178,8 +178,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 		lock();
 		try {
 			if (_uncachables.put(id, exclusion) == null) {
-			    if (_log != null && _log.isTraceEnabled()) 
-			        _log.trace(_loc.get("prepared-query-uncache", id, exclusion));
+			    if (_log != null && _log.isWarnEnabled()) 
+			        _log.warn(_loc.get("prepared-query-uncache", id, exclusion));
 			}
 			return _delegate.remove(id);
 		} finally {

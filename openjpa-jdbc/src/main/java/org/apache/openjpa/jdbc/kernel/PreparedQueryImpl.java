@@ -214,7 +214,10 @@ public class PreparedQueryImpl implements PreparedQuery {
             return new Object[]{null, _loc.get("exclude-not-executor", _id)};
         _exps = ((StoreQuery.Executor)executor).getQueryExpressions();
         for (int i = 0; i < _exps.length; i++) {
-            if (isUsingExternalizedParameter(_exps[i])) {
+            QueryExpressions exp = _exps[i];
+            if (exp.hasInExpression)
+                return new Object[]{null, _loc.get("exclude-in-expression", _id)};
+            if (isUsingExternalizedParameter(exp)) {
                 return new Object[]{null, _loc.get("exclude-externalized-param", _id)};
             }
         }

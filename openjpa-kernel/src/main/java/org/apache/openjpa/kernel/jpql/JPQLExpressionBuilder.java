@@ -92,6 +92,7 @@ public class JPQLExpressionBuilder
     private OrderedMap<Object, Class<?>> parameterTypes;
     private int aliasCount = 0;
     private boolean inAssignSubselectProjection = false;
+    private boolean hasParameterizedInExpression = false;
 
     /**
      * Constructor.
@@ -309,7 +310,8 @@ public class JPQLExpressionBuilder
             exps.parameterTypes = parameterTypes;
 
         exps.accessPath = getAccessPath();
-
+        exps.hasInExpression = this.hasParameterizedInExpression;
+        
         return exps;
     }
 
@@ -1135,6 +1137,10 @@ public class JPQLExpressionBuilder
                     else
                         val2 = getValue(next);
 
+                    if (val2 instanceof Parameter) {
+                        hasParameterizedInExpression = true;
+                    }
+                    
                     // special case for <value> IN (<subquery>) or
                     // <value> IN (<single value>)
                     if (!(val2 instanceof Literal) && node.getChildCount() == 2)
