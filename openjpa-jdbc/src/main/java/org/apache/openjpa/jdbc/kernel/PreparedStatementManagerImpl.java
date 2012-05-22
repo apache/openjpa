@@ -69,7 +69,8 @@ public class PreparedStatementManagerImpl
 
     public void flush(RowImpl row) {
         try {
-            flushInternal(row);
+        	if (!row.isFlushed())
+                flushInternal(row);
         } catch (SQLException se) {
             _exceptions.add(SQLExceptions.getStore(se, _dict));
         } catch (OpenJPAException ke) {

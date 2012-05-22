@@ -32,6 +32,8 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.Strategy;
 import org.apache.openjpa.jdbc.meta.Version;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Row;
+import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -133,14 +135,17 @@ public abstract class AbstractUpdateManager
     protected Collection populateRowManager(OpenJPAStateManager sm,
         RowManager rowMgr, JDBCStore store, Collection exceps,
         Collection customs) {
+    	int action = Row.ACTION_UPDATE;
         try {
             BitSet dirty;
             if (sm.getPCState() == PCState.PNEW && !sm.isFlushed()) {
-                insert(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
+            	action = Row.ACTION_INSERT;
+            	insert(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
                     customs);
             } else if (sm.getPCState() == PCState.PNEWFLUSHEDDELETED
                 || sm.getPCState() == PCState.PDELETED) {
-                delete(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
+            	action = Row.ACTION_DELETE;
+            	delete(sm, (ClassMapping) sm.getMetaData(), rowMgr, store,
                     customs);
             } else if ((dirty = ImplHelper.getUpdateFields(sm)) != null) {
                 update(sm, dirty, (ClassMapping) sm.getMetaData(), rowMgr,
@@ -157,6 +162,10 @@ public abstract class AbstractUpdateManager
         } catch (SQLException se) {
             exceps = addException(exceps, SQLExceptions.getStore(se, dict));
         } catch (OpenJPAException ke) {
+        	RowImpl row = (RowImpl) rowMgr.getRow(((ClassMapping) sm.getMetaData()).getTable(), action, sm, false);
+            if (row != null) {
+                row.setFlushed(true);
+            } 
             exceps = addException(exceps, ke);
         }
         return exceps;

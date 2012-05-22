@@ -539,8 +539,10 @@ public class ConstraintUpdateManager
         RowImpl row;
         for (Iterator itr = rows.iterator(); itr.hasNext(); ) {
             row = (RowImpl) itr.next();
-            if (row.isValid() && !row.isDependent())
+            if (!row.isFlushed() && row.isValid() && !row.isDependent()) {
                 psMgr.flush(row);
+                row.setFlushed(true);
+            }
         }
     }
 }
