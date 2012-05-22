@@ -52,19 +52,6 @@ public class TestNativeSeqGenerator extends SQLListenerTestCase {
         entityE2 = new EntityE2("e name");
     }
     
-    public void testGetIdGeneratorSeqGen() {
-    	if (supportsNativeSequence){
-	        createEntityE2();
-	        em.getTransaction().begin();
-	        em.persist(entityE2);
-	        em.getTransaction().commit();
-	        int genId = entityE2.getId();        
-	        int nextId = (int)((Long)em.getIdGenerator(EntityE2.class).next()).longValue();
-	        assertTrue("Next value should depend on previous genid", nextId >= genId + 1);
-	        em.close();
-    	}
-    }
-
     /**
      * Asserts native sequence generator allocates values in memory
      * and requests sequence values from database only when necessary.
