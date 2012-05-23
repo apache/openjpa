@@ -1235,13 +1235,14 @@ public class DBDictionary
             val.setTime(val.getTime() + 1000);
             nanos = 0;
         }
-
-        val.setNanos(nanos);
+        
+        Timestamp valForStmnt = new Timestamp(val.getTime());
+        valForStmnt.setNanos(nanos);
 
         if (cal == null)
-            stmnt.setTimestamp(idx, val);
+            stmnt.setTimestamp(idx, valForStmnt);
         else
-            stmnt.setTimestamp(idx, val, cal);
+            stmnt.setTimestamp(idx, valForStmnt, cal);
     }
 
     /**
