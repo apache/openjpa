@@ -51,12 +51,16 @@ public class TestSimple extends BaseQueryTest {
         {
             EntityManager em = currentEntityManager();
             startTx(em);
-            List l = em.createQuery("SELECT o FROM Entity1 o "
-                + "WHERE o.stringField = 'testSimple'").getResultList();
-            assertSize(1, l);
-            endTx(em);
+            em.persist(new Entity1(1, "testSimple", 12));
+            List<Entity1> l =
+                em.createQuery("SELECT o FROM Entity1 o " + "WHERE o.stringField = 'testSimple'")
+                    .getResultList();
+            assertSize(2, l);
+            rollbackTx(em);
+            em.clear();
             endEm(em);
         }
+        
 
         // test Update
         {
