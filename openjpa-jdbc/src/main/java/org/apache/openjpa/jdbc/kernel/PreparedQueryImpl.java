@@ -389,7 +389,7 @@ public class PreparedQueryImpl implements PreparedQuery {
         Collection values, int[] indices, Object param, Broker broker) {
         int n = values.size();
         Object[] array = values.toArray();
-        if (n > indices.length || indices.length%n != 0) {
+        if (n == 0 || n > indices.length || indices.length%n != 0) {
             throw new UserException(_loc.get("uparam-coll-size", param, values, 
                 Arrays.toString(indices)));
         }
