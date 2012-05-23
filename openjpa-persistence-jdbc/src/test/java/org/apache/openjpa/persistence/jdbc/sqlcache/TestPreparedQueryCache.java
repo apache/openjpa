@@ -41,6 +41,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.jdbc.AbstractJDBCListener;
 import org.apache.openjpa.lib.jdbc.JDBCEvent;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
+import org.apache.openjpa.persistence.ArgumentException;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -1155,6 +1156,37 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         l = getAllCompaniesPaged(2, 1);
         assertEquals(1, l.size());
         assertEquals(2010, l.get(0).getStartYear());
+    }
+
+    public void testCollectionValuedParameterOfEntitiesWithEmptyList() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql1 =
+            "select d from Department d where d.name in ('Marketing', 'Sales') order by d.name";
+        List<Department> param1 =
+            (List<Department>) em.createQuery(jpql1).getResultList();
+        em.clear();
+
+        String jpql = "select e from Employee e where e.department in :param";
+
+        List<Employee> rs1 =
+            em.createQuery(jpql).setParameter("param", param1).getResultList();
+
+        for (int i = 0; i < rs1.size(); i++) {
+            Employee e = (Employee) rs1.get(i);
+            assertFalse(e.getDepartment().getName().equals("Engineering"));
+        }
+
+        // Prior to OPENJPA-2118, the following query would yeild a
+        // 'ArithmeticException: divide
+        // by zero' exception (see JIRA for details).
+        try {
+            // Pass an empty list to 'param'.
+            em.createQuery(jpql).setParameter("param",
+                new ArrayList<Department>()).getResultList();
+        } catch (ArgumentException ae) {
+            assertEquals(ae.getCause().getMessage(),
+                "Input parameter \"param\" is empty.");
+        }
     }
 
     public List<Company> getAllCompaniesPaged(int start, int max) {
