@@ -208,6 +208,8 @@
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Person</class>
 		<class>org.apache.openjpa.persistence.jdbc.sqlcache.Singer</class>
         <class>org.apache.openjpa.persistence.jdbc.sqlcache.OrderJPA</class>
+        <class>org.apache.openjpa.persistence.jdbc.sqlcache.Parent</class>
+        <class>org.apache.openjpa.persistence.jdbc.sqlcache.Child</class>
 		
 		<properties>
 		  <property name="openjpa.jdbc.QuerySQLCache"

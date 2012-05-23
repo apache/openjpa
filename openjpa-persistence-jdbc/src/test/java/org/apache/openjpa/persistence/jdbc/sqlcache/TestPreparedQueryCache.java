@@ -203,7 +203,23 @@ public class TestPreparedQueryCache extends TestCase {
         em.persist(o1);
         em.persist(o2);
         
-        
+        for (int i = 1; i < 10; i++) {
+            Parent parent = new Parent();
+            parent.setId(i);
+            parent.setName(new String("Parent "+i));
+            Address addr = new Address();
+            addr.setCity("Address "+i+i);
+            parent.setAddrId(addr);
+            em.persist(addr);
+            for (int j = 1; j < 5; j++) {
+                Child child = new Child();
+                child.setName("Child "+i+j);
+                child.setParent(parent);
+                parent.add(child);
+            }
+            em.persist(parent);
+        }
+
         em.getTransaction().commit();
 	}
 
@@ -212,6 +228,80 @@ public class TestPreparedQueryCache extends TestCase {
 	        em.close();
 		super.tearDown();
 	}
+
+    public void testCollectionValuedParameterOfEntities() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        String jpql1 = "select d from Department d where d.name in ('Marketing', 'Sales') order by d.name";
+        String jpql2 = "select d from Department d where d.name in ('Engineering', 'Marketing') order by d.name";
+        
+        List<Department> param1 = (List<Department>) em.createQuery(jpql1).getResultList();
+        List<Department> param2 = (List<Department>) em.createQuery(jpql2).getResultList();
+        em.clear();
+        
+        String jpql = "select e from Employee e where e.department in :param";
+        
+        List<Employee> rs1 = em.createQuery(jpql).setParameter("param", param1).getResultList();
+
+        for (int i = 0; i < rs1.size(); i++) {
+            Employee e = (Employee) rs1.get(i);
+            assertFalse(e.getDepartment().getName().equals("Engineering"));
+        }
+        
+        List<Employee> rs2 = (List<Employee>) em.createQuery(jpql).setParameter("param", param2).getResultList();
+        for (int i = 0; i < rs2.size(); i++) {
+            Employee e = (Employee) rs2.get(i);
+            assertFalse(e.getDepartment().getName().equals("Sales"));
+        }
+
+        em.clear();
+        String jpql3 = "select e from Employee e where e.department in (:p1, :p2, :p3)";
+        Query query = em.createQuery(jpql3);
+        query.setParameter("p1", param1.get(0));
+        query.setParameter("p2", param1.get(1));
+        query.setParameter("p3", param1.get(2));
+        List<Employee> rs3 = query.getResultList();
+        for (int i = 0; i < rs3.size(); i++) {
+            Employee e = (Employee) rs3.get(i);
+            assertTrue(e.getDepartment().getName().equals("Marketing"));
+        }
+
+        em.clear();
+        query = em.createQuery(jpql3);
+        query.setParameter("p1", param2.get(0));
+        query.setParameter("p2", param2.get(1));
+        query.setParameter("p3", param2.get(2));
+        List<Employee> rs4 = query.getResultList();
+        for (int i = 0; i < rs4.size(); i++) {
+            Employee e = (Employee) rs4.get(i);
+            assertTrue(e.getDepartment().getName().equals("Engineering"));
+        }
+
+        em.clear();
+        String jpql4 = "select p from Parent p where p.id < 3";
+        String jpql5 = "select p from Parent p where p.id > 6";
+        List<Parent> parm1 = em.createQuery(jpql4).getResultList();
+        List<Parent> parm2 = em.createQuery(jpql5).getResultList();
+        
+        em.clear();
+        String jpql6 = "select c from Child c where c.parent in ?1";
+        Query qry = em.createQuery(jpql6);
+        qry.setParameter(1, parm1);
+        List<Child> c1 = qry.getResultList();
+        for (int i = 0; i < c1.size(); i++) {
+            Child child = (Child) c1.get(i);
+            assertTrue(child.getParent().getId() < 3);
+        }
+        
+        em.clear();
+        qry = em.createQuery(jpql6);
+        qry.setParameter(1, parm2);
+        List<Child> c2 = qry.getResultList();
+        for (int i = 0; i < c2.size(); i++) {
+            Child child = (Child) c2.get(i);
+            assertTrue(child.getParent().getId() > 6);
+        }
+        
+    }
     
     public void testRepeatedParameterInSubqueryInDifferentOrderSubQLast() {
         OpenJPAEntityManager em = emf.createEntityManager();

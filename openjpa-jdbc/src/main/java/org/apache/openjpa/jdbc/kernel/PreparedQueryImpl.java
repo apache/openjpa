@@ -331,7 +331,7 @@ public class PreparedQueryImpl implements PreparedQuery {
                 setPersistenceCapableParameter(result, val, indices, broker);
             } else if (val instanceof Collection) {
                 setCollectionValuedParameter(result, (Collection)val, indices, 
-                    key);
+                    key, broker);
             } else {
                 for (int j : indices) {
                     if (val instanceof Enum) {
@@ -386,7 +386,7 @@ public class PreparedQueryImpl implements PreparedQuery {
     }
     
     private void setCollectionValuedParameter(Map<Integer,Object> result, 
-        Collection values, int[] indices, Object param) {
+        Collection values, int[] indices, Object param, Broker broker) {
         int n = values.size();
         Object[] array = values.toArray();
         if (n > indices.length || indices.length%n != 0) {
@@ -395,7 +395,11 @@ public class PreparedQueryImpl implements PreparedQuery {
         }
         int k = 0;
         for (int j : indices) {
-            result.put(j, array[k%n]);
+            Object val = array[k%n];
+            if (ImplHelper.isManageable(val))
+                setPersistenceCapableParameter(result, val, indices, broker);
+            else
+                result.put(j, val);
             k++;
         }
         
