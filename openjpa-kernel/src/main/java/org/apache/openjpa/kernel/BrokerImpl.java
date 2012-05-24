@@ -4083,10 +4083,11 @@ public class BrokerImpl
         lock();
         try {
             switch (status) {
-                case STATUS_INIT:                	
-                	if (_compat.getResetFlushFlagForCascadePersist()){//OPENJPA-2051                	
-                		_flags &= ~FLAG_FLUSHED;
-                	}
+                case STATUS_INIT:
+                    // Only reset the flushed flag is this is a new instance.
+                    if (sm.isNew() && _compat.getResetFlushFlagForCascadePersist()) {// OPENJPA-2051
+                        _flags &= ~FLAG_FLUSHED;
+                    }
                     _cache.add(sm);
                     break;
                 case STATUS_TRANSIENT:
