@@ -53,12 +53,22 @@ public class LifecycleMetaData
     private boolean _resolved = false;
     private boolean _ignoreSystem = false;
     private int _ignoreSups = 0;
+    private boolean _activated = false;
 
     /**
      * Construct with owning metadata.
      */
     LifecycleMetaData(ClassMetaData meta) {
         _meta = meta;
+    }
+
+    /**
+     * Whether the LifeCycleMetaData has had any callbacks or listeners registered.  Used
+     * for a quick test to determine whether to attempt to fire any events.
+     * @return boolean 
+     */
+    public boolean is_activated() {
+        return _activated;
     }
 
     /**
@@ -127,6 +137,7 @@ public class LifecycleMetaData
         }
         _declared[eventType] = callbacks;
         _high[eventType] = highPriority;
+        _activated = true;
     }
 
     /**
@@ -160,6 +171,7 @@ public class LifecycleMetaData
         }
         _super[eventType] = callbacks;
         _superHigh[eventType] = highPriority;
+        _activated = true;
     }
 
     /**

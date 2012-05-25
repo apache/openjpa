@@ -97,7 +97,7 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
         return _validator.validating(source, LifecycleEvent.BEFORE_DELETE) ||
             super.hasDeleteListeners(source, meta);
     }
-
+    
     @Override
     public Exception[] fireEvent(Object source,
         ClassMetaData meta, int type) {
@@ -137,6 +137,16 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
             }
         }
         return evx;
+    }
+
+    /**
+     * Whether this LifeCycleEventManager has had at least one listener or callback
+     * registered.  Used for a quick test when firing events.
+     * @return boolean
+     */
+    @Override
+    public boolean isActive(ClassMetaData meta) {
+        return isValidationEnabled() || super.isActive(meta);
     }
 
     public boolean isValidationEnabled() {

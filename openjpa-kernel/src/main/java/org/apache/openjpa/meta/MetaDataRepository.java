@@ -150,6 +150,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     // system listeners
     private LifecycleEventManager.ListenerList _listeners = new LifecycleEventManager.ListenerList(3);
+    private boolean _systemListenersActivated = false;
 
     protected boolean _preload = false;
     protected boolean _preloadComplete = false;
@@ -2271,6 +2272,15 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     /**
+     * Whether any system (default) listeners have been registered.  Used as a quick test to
+     * determine whether the callback/listener mechanism has been enabled.
+     * @return boolean
+     */
+    public boolean is_systemListenersActivated() {
+        return _systemListenersActivated;
+    }
+
+    /**
      * Add the given system lifecycle listener.
      */
     public void addSystemListener(Object listener) {
@@ -2281,11 +2291,13 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
                 listeners.add(listener);
                 _listeners = listeners;
+                _systemListenersActivated = true;
             }
         } else {
             LifecycleEventManager.ListenerList listeners = new LifecycleEventManager.ListenerList(_listeners);
             listeners.add(listener);
             _listeners = listeners;
+            _systemListenersActivated = true;
         }
     }
 

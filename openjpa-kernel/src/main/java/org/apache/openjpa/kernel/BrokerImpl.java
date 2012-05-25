@@ -793,6 +793,8 @@ public class BrokerImpl
         int eventType) {
         if (_lifeEventManager == null)
             return false;
+        if (!_lifeEventManager.isActive(meta))
+            return false;
 
         lock();
         Exception[] exs;
