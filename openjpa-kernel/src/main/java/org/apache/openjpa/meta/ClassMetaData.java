@@ -2787,12 +2787,14 @@ public class ClassMetaData
 
     public boolean hasInverseManagedFields() {
         if (inverseManagedFields == null) {
-            for(FieldMetaData fmd: getFields()){
-                if(fmd.getInverseMetaDatas().length > 0){
-                    inverseManagedFields = Boolean.TRUE;
+            Boolean res = Boolean.FALSE;
+            for (FieldMetaData fmd : getFields()) {
+                if (fmd.getInverseMetaDatas().length > 0) {
+                    res = Boolean.TRUE;
                     break;
                 }
             }
+            inverseManagedFields = res;
         }
         return inverseManagedFields.booleanValue();
     }
