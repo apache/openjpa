@@ -23,11 +23,9 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PersistenceException;
-import javax.persistence.Table;
 
 @Entity
-@Table(name="TestItemWithFailedExternalizer")
-public class TestItemWithFailedExternalizer implements Serializable {
+public class EntityWithFailedExternalizer implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
@@ -73,11 +71,11 @@ public class TestItemWithFailedExternalizer implements Serializable {
         }
     }
 
-    public TestItemWithFailedExternalizer() {
+    public EntityWithFailedExternalizer() {
         super();
     }
 
-    public TestItemWithFailedExternalizer(int iref, String name, String data) {
+    public EntityWithFailedExternalizer(int iref, String name, String data) {
         super();
         this.iref = iref;
         this.name = name;
