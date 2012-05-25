@@ -24,7 +24,7 @@ import javax.persistence.EntityTransaction;
 
 import org.apache.openjpa.persistence.PersistenceException;
 import org.apache.openjpa.persistence.RollbackException;
-import org.apache.openjpa.persistence.jdbc.common.apps.TestItemWithFailedExternalizer;
+import org.apache.openjpa.persistence.jdbc.common.apps.EntityWithFailedExternalizer;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 /*
@@ -35,7 +35,7 @@ public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
     
     @Override
     public void setUp() throws Exception {
-        setUp(DROP_TABLES, TestItemWithFailedExternalizer.class);
+        setUp(DROP_TABLES, EntityWithFailedExternalizer.class);
     }
     
     public void testCreate(){
@@ -43,10 +43,10 @@ public class TestBatchFlushWithMetadataException extends SQLListenerTestCase {
         EntityTransaction tx = em.getTransaction();
         
         tx.begin();
-        TestItemWithFailedExternalizer item1 = new TestItemWithFailedExternalizer(1001, "MyName1", "description1");
-        TestItemWithFailedExternalizer item2 = new TestItemWithFailedExternalizer(1002, "MyName2", "description2");
+        EntityWithFailedExternalizer item1 = new EntityWithFailedExternalizer(1001, "MyName1", "description1");
+        EntityWithFailedExternalizer item2 = new EntityWithFailedExternalizer(1002, "MyName2", "description2");
         item1.getExt().throwEx=true;
-        TestItemWithFailedExternalizer item3 = new TestItemWithFailedExternalizer(1003, "MyName3", "description3");  
+        EntityWithFailedExternalizer item3 = new EntityWithFailedExternalizer(1003, "MyName3", "description3");  
         
         em.persist(item1);
         em.persist(item2);

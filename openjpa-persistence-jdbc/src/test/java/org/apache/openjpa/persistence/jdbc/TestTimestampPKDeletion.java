@@ -24,17 +24,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import org.apache.openjpa.persistence.simple.TestEntityWithTimestampPK;
+import org.apache.openjpa.persistence.simple.EntityWithTimestampPK;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestTimestampPKDeletion extends SQLListenerTestCase {
 
     public void setUp() {
-        setUp(TestEntityWithTimestampPK.class);
+        setUp(EntityWithTimestampPK.class);
     }
 
     public void testTimestampPKDeletion() {
-        TestEntityWithTimestampPK testEntity = new TestEntityWithTimestampPK("test");        
+        EntityWithTimestampPK testEntity = new EntityWithTimestampPK("test");        
 
         EntityManager em = emf.createEntityManager();
 
@@ -46,10 +46,10 @@ public class TestTimestampPKDeletion extends SQLListenerTestCase {
         em = emf.createEntityManager();
         final EntityTransaction tx = em.getTransaction();
         tx.begin();       
-        final Query q = em.createQuery("SELECT testEntity FROM TestEntityWithTimestampPK testEntity ");
+        final Query q = em.createQuery("SELECT testEntity FROM EntityWithTimestampPK testEntity ");
        
-        final List<TestEntityWithTimestampPK> testEntities = q.getResultList();
-        for (TestEntityWithTimestampPK t : testEntities) {
+        final List<EntityWithTimestampPK> testEntities = q.getResultList();
+        for (EntityWithTimestampPK t : testEntities) {
               em.remove(t);
         }         
         tx.commit();
