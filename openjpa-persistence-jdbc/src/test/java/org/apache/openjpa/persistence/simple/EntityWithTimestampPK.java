@@ -25,7 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity 
-public class TestEntityWithTimestampPK {
+public class EntityWithTimestampPK {
     
     @Id
     private Timestamp idTsp; 
@@ -36,13 +36,13 @@ public class TestEntityWithTimestampPK {
         return idTsp;
     }
 
-    public TestEntityWithTimestampPK(String desc) {
+    public EntityWithTimestampPK(String desc) {
         super();
         this.idTsp = new Timestamp((new Date()).getTime());        
         this.description = desc;
     }
     
-    public TestEntityWithTimestampPK(){
+    public EntityWithTimestampPK(){
         
     }
 
