@@ -30,7 +30,8 @@ package org.apache.openjpa.kernel;
 class TransientState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
         // mark r/w ok, remove from management
         context.unproxyFields();
         context.getPersistenceCapable().pcReplaceStateManager(null);

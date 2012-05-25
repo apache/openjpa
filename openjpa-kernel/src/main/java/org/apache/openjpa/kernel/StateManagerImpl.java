@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -114,7 +113,7 @@ public class StateManagerImpl
 
     // information about the instance
     private transient PersistenceCapable _pc = null;
-    protected transient ClassMetaData _meta = null;
+    private transient ClassMetaData _meta = null;
     protected BitSet _loaded = null;
     private BitSet _dirty = null;
     private BitSet _flush = null;
@@ -170,7 +169,7 @@ public class StateManagerImpl
      */
     protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
-        _meta = meta;
+        setMeta(meta);
         _broker = broker;
         _single = new SingleFieldManager(this, broker);
         if (broker.getMultithreaded())
@@ -265,6 +264,7 @@ public class StateManagerImpl
         if (_state == state)
             return;
 
+        PCState prev = _state;
         lock();
         try {
             // notify the store manager that we're changing states; can veto
@@ -274,6 +274,7 @@ public class StateManagerImpl
             boolean wasDeleted = _state.isDeleted();
             boolean wasDirty = _state.isDirty();
             boolean wasPending = _state.isPendingTransactional();
+
             _state = state;
 
             // enlist/delist from transaction
@@ -290,8 +291,7 @@ public class StateManagerImpl
             else
                 _broker.removeFromTransaction(this);
 
-            // initialize
-            _state.initialize(this);
+            _state.initialize(this, prev);
             if (_state.isDeleted() && !wasDeleted)
                 fireLifecycleEvent(LifecycleEvent.AFTER_DELETE);
         } finally {
@@ -323,7 +323,7 @@ public class StateManagerImpl
                     _oid = ApplicationIds.fromPKValues(pkFields, sub);
                 }
             }
-            _meta = sub;
+            setMeta(sub);
         }
 
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
@@ -356,27 +356,16 @@ public class StateManagerImpl
         _flush = new BitSet(fmds.length);
         _dirty = new BitSet(fmds.length);
 
-        for (int i = 0; i < fmds.length; i++) {
-            // mark primary key and non-persistent fields as loaded
-            if (fmds[i].isPrimaryKey()
-                || fmds[i].getManagement() != fmds[i].MANAGE_PERSISTENT)
-                _loaded.set(i);
-            
-            if (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
-                String mappedByIdValue = fmds[i].getMappedByIdValue(); 
-                if (mappedByIdValue != null) { 
-                    if (!ApplicationIds.isIdSet(_id, _meta, mappedByIdValue)) {
-                        if (_mappedByIdFields == null)
-                            _mappedByIdFields = new ArrayList<FieldMetaData>();
-                        _mappedByIdFields.add(fmds[i]);
-                    }
-                }
-            }
-            // record whether there are any managed inverse fields
-            if (_broker.getInverseManager() != null
-                && fmds[i].getInverseMetaDatas().length > 0)
-                _flags |= FLAG_INVERSES;
+        // mark primary key and non-persistent fields as loaded
+        for(int i : _meta.getPkAndNonPersistentManagedFmdIndexes()){
+            _loaded.set(i);
         }
+            
+        _mappedByIdFields = _meta.getMappyedByIdFields();
+        
+        // record whether there are any managed inverse fields
+        if (_broker.getInverseManager() != null && _meta.hasInverseManagedFields())
+            _flags |= FLAG_INVERSES;
 
         pc.pcSetDetachedState(null);
         _pc = pc;
@@ -413,9 +402,8 @@ public class StateManagerImpl
     public boolean isIntercepting() {
         if (getMetaData().isIntercepting())
             return true;
-        // TODO:JRB Intercepting 
-        if (AccessCode.isProperty(getMetaData().getAccessType())
-            && _pc instanceof DynamicPersistenceCapable)
+        // TODO:JRB Intercepting
+        if (AccessCode.isProperty(getMetaData().getAccessType()) && _pc instanceof DynamicPersistenceCapable)
             return true;
         return false;
     }
@@ -1598,7 +1586,7 @@ public class StateManagerImpl
             // TODO -- what about version fields? Could probably UT this
             if(_loaded.get(field) && !_meta.getField(field).isPrimaryKey())
                 return;
-            
+                
             beforeRead(field);
             beforeAccessField(field);
         } catch (RuntimeException re) {
@@ -3439,8 +3427,8 @@ public class StateManagerImpl
         // non-null when reconstituting ReflectingPC instances. Sadly, this
         // penalizes the serialization footprint of non-ReflectingPC SMs also.
         Class managedType = (Class) in.readObject();
-        _meta = _broker.getConfiguration().getMetaDataRepositoryInstance()
-            .getMetaData(managedType, null, true);
+        setMeta(_broker.getConfiguration().getMetaDataRepositoryInstance()
+            .getMetaData(managedType, null, true));
 
         _pc = readPC(in);
     }
@@ -3479,8 +3467,13 @@ public class StateManagerImpl
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
     }
+    
+    protected void setMeta(ClassMetaData cmd){
+        _meta = cmd;
+    }
 
     public void setBroker(BrokerImpl ctx) {
         _broker = ctx;
     }
+
 }

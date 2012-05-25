@@ -32,7 +32,8 @@ package org.apache.openjpa.kernel;
 class HollowState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
         context.clearFields();
         context.clearSavedFields();
         context.setDirty(false);

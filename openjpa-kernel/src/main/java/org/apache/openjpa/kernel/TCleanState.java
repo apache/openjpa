@@ -30,11 +30,15 @@ package org.apache.openjpa.kernel;
 class TCleanState
     extends PCState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+            return;
+        
         // need to replace the second class objects with proxies that
         // listen for dirtying so we can track changes to these objects
         context.proxyFields(true, false);
-
+        
         context.clearSavedFields();
         context.setLoaded(true);
         context.setDirty(false);

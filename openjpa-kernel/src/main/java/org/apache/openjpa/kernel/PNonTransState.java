@@ -37,11 +37,16 @@ class PNonTransState
     private static final Localizer _loc = Localizer.forPackage
         (PNonTransState.class);
 
-    void initialize(StateManagerImpl context) {
-        // spec says all proxies to second class objects should be reset
-        context.proxyFields(true, false);
-
-        context.setDirty(false);
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
+        if (previous == null)
+         return;
+        // If our previous state is clean, we don't need to do any sort of cleanup
+        if (previous != PCLEAN) {
+            // spec says all proxies to second class objects should be reset
+            context.proxyFields(true, false);
+            context.setDirty(false);
+        }
         context.clearSavedFields();
     }
 

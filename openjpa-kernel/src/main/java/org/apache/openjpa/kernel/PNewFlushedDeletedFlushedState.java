@@ -29,7 +29,8 @@ package org.apache.openjpa.kernel;
 class PNewFlushedDeletedFlushedState
     extends PNewFlushedDeletedState {
 
-    void initialize(StateManagerImpl context) {
+    @Override
+    void initialize(StateManagerImpl context, PCState previous) {
     }
 
     PCState persist(StateManagerImpl context) {
