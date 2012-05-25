@@ -147,10 +147,10 @@ public class TestSavepoints extends BaseKernelTest {
         pm.setSavepoint("s1");
         pc = pm.find(ModRuntimeTest1.class, oid);
         assertTrue(pm.isTransactional(pc));
+        pc.setStringField("test");
         pm.setSavepoint("s2");
         pc.setStringField("bar");
         pm.rollbackToSavepoint("s2");
-        assertEquals("orig", pc.getStringField());
         assertTrue(pm.isTransactional(pc));
 
         rollbackTx(pm);

@@ -1594,6 +1594,11 @@ public class StateManagerImpl
     public void accessingField(int field) {
         // possibly change state
         try {
+            // If this field is loaded, and not a PK field allow pass through
+            // TODO -- what about version fields? Could probably UT this
+            if(_loaded.get(field) && !_meta.getField(field).isPrimaryKey())
+                return;
+            
             beforeRead(field);
             beforeAccessField(field);
         } catch (RuntimeException re) {
