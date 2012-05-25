@@ -109,7 +109,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     private Log _log = null;
     
     // track the pending statements so we can cancel them
-    private Set<Statement> _stmnts = Collections.synchronizedSet(new HashSet<Statement>());
+    private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<Statement>());
 
     public StoreContext getContext() {
         return _ctx;
@@ -740,7 +740,7 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         // we want to allow a different thread to be able to cancel the
         // outstanding statement on a different context
 
-        Collection<Statement> stmnts;
+        List<Statement> stmnts;
         synchronized (_stmnts) {
             if (_stmnts.isEmpty())
                 return false;

@@ -880,7 +880,7 @@ public class BrokerImpl
      * Fire given transaction event, handling any exceptions appropriately.
      */
     private void fireTransactionEvent(TransactionEvent trans) {
-        if (_transEventManager != null)
+        if (_transEventManager != null && _transEventManager.hasListeners())
             handleCallbackExceptions(_transEventManager.fireEvent(trans),
                 _transCallbackMode);
     }
