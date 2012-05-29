@@ -169,7 +169,7 @@ public class StateManagerImpl
      */
     protected StateManagerImpl(Object id, ClassMetaData meta, BrokerImpl broker) {
         _id = id;
-        setMeta(meta);
+        _meta = meta;
         _broker = broker;
         _single = new SingleFieldManager(this, broker);
         if (broker.getMultithreaded())
@@ -323,7 +323,7 @@ public class StateManagerImpl
                     _oid = ApplicationIds.fromPKValues(pkFields, sub);
                 }
             }
-            setMeta(sub);
+            _meta = sub;
         }
 
         PersistenceCapable inst = PCRegistry.newInstance(cls, this, _oid, true);
@@ -3427,8 +3427,8 @@ public class StateManagerImpl
         // non-null when reconstituting ReflectingPC instances. Sadly, this
         // penalizes the serialization footprint of non-ReflectingPC SMs also.
         Class managedType = (Class) in.readObject();
-        setMeta(_broker.getConfiguration().getMetaDataRepositoryInstance()
-            .getMetaData(managedType, null, true));
+        _meta = _broker.getConfiguration().getMetaDataRepositoryInstance()
+            .getMetaData(managedType, null, true);
 
         _pc = readPC(in);
     }
@@ -3466,10 +3466,6 @@ public class StateManagerImpl
     
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
-    }
-    
-    protected void setMeta(ClassMetaData cmd){
-        _meta = cmd;
     }
 
     public void setBroker(BrokerImpl ctx) {
