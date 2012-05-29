@@ -2676,6 +2676,55 @@ Optimistic</literal>
 pessimistic (datastore) transactional modes.
             </para>
         </section>
+        <section id="openjpa.OptimizeIdCopy">
+            <title>
+                openjpa.OptimizeIdCopy
+            </title>
+            <indexterm zone="openjpa.OptimizeIdCopy">
+                <primary>
+                    OptimizeIdCopy
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.OptimizeIdCopy">
+                <primary>
+                    id
+                </primary>
+                <secondary>
+                    enhancement
+                </secondary>
+            </indexterm>
+            <para>
+<emphasis role="bold">Property name: </emphasis><literal>openjpa.OptimizeIdCopy
+</literal>
+            </para>
+            <para>
+<emphasis role="bold">Configuration API:</emphasis>
+<ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getOptimizeIdCopy()">
+<methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getOptimizeIdCopy
+</methodname></ulink>
+            </para>
+            <para>
+<emphasis role="bold">Resource adaptor config-property: </emphasis><literal>
+OptimizeIdCopy</literal>
+            </para>
+            <para>
+<emphasis role="bold">Default: </emphasis><literal>false</literal>
+            </para>
+            <para>
+<emphasis role="bold">Description:</emphasis> Attempt to optimize id class copy operations
+used internally by the provider during various ORM operations.  This optimization is only
+applicable for entities using simple id classes (via @IdClass or XML equivalent) that do not
+have public setters, provide a public constructor with exact matching parameter types, and
+perform direct assignments to id class fields within the constructor. If these conditions
+are met, OpenJPA will use a public constructor during internal id copy operations instead
+of less optimal reflection. Optimization of id copy occurs during the enhancement phase.  
+If the enhancer determines optimization cannot occur, it will fallback to the normal behavior.
+A side effect of enabling this property is that an id class constructor will be called by
+the provider during runtime operations.  If there is logic in the constructor in addition
+to field initialization, (parameter verification, for example) that logic will also be
+executed during the operation, which could result in a change in runtime behavior.
+            </para>
+        </section>        
         <section id="openjpa.OrphanedKeyAction">
             <title>
                 openjpa.OrphanedKeyAction
