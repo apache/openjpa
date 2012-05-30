@@ -107,7 +107,17 @@ public abstract class XMLMetaDataParser extends DefaultHandler
     private int _ignore = Integer.MAX_VALUE;
 
     private boolean _parsing = false;
+    
+    private boolean _overrideContextClassloader = false;
 
+    public boolean getOverrideContextClassloader() {
+        return _overrideContextClassloader;
+    }
+    
+    public void setOverrideContextClassloader(boolean overrideCCL) {
+        _overrideContextClassloader = overrideCCL;
+    }
+    
     /*
      * Whether the parser is currently parsing.
      */
@@ -366,36 +376,69 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         try {
             setParsing(true);
             _sourceName = sourceName;
-            SAXParser parser = XMLFactory.getSAXParser(validating, true);
-            Object schema = null;
-            if (validating) {
-                schema = schemaSource;
-                if (schema == null && getDocType() != null)
-                    xml = new DocTypeReader(xml, getDocType());
+            
+            SAXParser parser = null;
+            boolean overrideCL = _overrideContextClassloader;
+            ClassLoader oldLoader = null;
+            ClassLoader newLoader = null; 
+            
+            try {
+                if (overrideCL == true) {
+                    oldLoader =
+                        (ClassLoader) AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                    newLoader = XMLMetaDataParser.class.getClassLoader();
+                    AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(newLoader));
+                    
+                    if (_log != null && _log.isTraceEnabled()) {
+                        _log.trace(_loc.get("override-contextclassloader-begin", oldLoader, newLoader));
+                    }                   
+                }
+                
+                parser = XMLFactory.getSAXParser(validating, true);
+                Object schema = null;
+                if (validating) {
+                    schema = schemaSource;
+                    if (schema == null && getDocType() != null)
+                        xml = new DocTypeReader(xml, getDocType());
+                }
+                
+                if (_parseComments || _lh != null)
+                    parser.setProperty
+                        ("http://xml.org/sax/properties/lexical-handler", this);
+
+                if (schema != null) {
+                    parser.setProperty
+                        ("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+                            "http://www.w3.org/2001/XMLSchema");
+                    parser.setProperty
+                        ("http://java.sun.com/xml/jaxp/properties/schemaSource",
+                            schema);
+                }
+
+                InputSource is = new InputSource(xml);
+                if (_systemId && sourceName != null)
+                    is.setSystemId(sourceName);
+                parser.parse(is, this);
+                finish();
+            } catch (SAXException se) {
+                IOException ioe = new IOException(se.toString());
+                ioe.initCause(se);
+                throw ioe;
+            } finally {
+                if (overrideCL == true) {
+                    // Restore the old ContextClassloader
+                    try {
+                        if (_log != null && _log.isTraceEnabled()) {
+                            _log.trace(_loc.get("override-contextclassloader-end", newLoader, oldLoader));
+                        }
+                        AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
+                    } catch (Throwable t) {
+                        if (_log != null && _log.isWarnEnabled()) {
+                            _log.warn(_loc.get("restore-contextclassloader-failed"));
+                        }
+                    }
+                }
             }
-
-            if (_parseComments || _lh != null)
-                parser.setProperty
-                    ("http://xml.org/sax/properties/lexical-handler", this);
-
-            if (schema != null) {
-                parser.setProperty
-                    ("http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-                        "http://www.w3.org/2001/XMLSchema");
-                parser.setProperty
-                    ("http://java.sun.com/xml/jaxp/properties/schemaSource",
-                        schema);
-            }
-
-            InputSource is = new InputSource(xml);
-            if (_systemId && sourceName != null)
-                is.setSystemId(sourceName);
-            parser.parse(is, this);
-            finish();
-        } catch (SAXException se) {
-            IOException ioe = new IOException(se.toString());
-            JavaVersions.initCause(ioe, se);
-            throw ioe;
         } finally {
             reset();
         }
