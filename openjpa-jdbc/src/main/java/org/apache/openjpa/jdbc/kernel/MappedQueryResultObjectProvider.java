@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -407,8 +408,16 @@ class MappedQueryResultObjectProvider
         protected Object getObjectInternal(Object obj, int metaTypeCode,
             Object arg, Joins joins)
             throws SQLException {
-            if (obj instanceof Column)
-                return _res.getObject((Column) obj, arg, joins);
+            if (obj instanceof Column){
+                Column col = (Column) obj;
+                Object resultCol = _pc.getMapping(col.toString());
+                if (resultCol != null) {
+                    int javaType = col.getJavaType();
+                    col = new Column(DBIdentifier.newColumn(resultCol.toString()), col.getTable());
+                    col.setJavaType(javaType);                    
+                }
+                return _res.getObject(col, arg, joins);
+            }                
             return _res.getObject(obj, metaTypeCode, arg);
         }
 

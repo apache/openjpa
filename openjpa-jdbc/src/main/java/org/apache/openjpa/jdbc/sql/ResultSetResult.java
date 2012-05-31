@@ -508,6 +508,7 @@ public class ResultSetResult
           DBIdentifier sName = DBIdentifier.newColumn(obj.toString());
           return getResultSet().findColumn(_dict.convertSchemaCase(sName));
         } catch (SQLException se) {
+            _dict.log.trace(se.getMessage());
             return 0;
         }
     }
