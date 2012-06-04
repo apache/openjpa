@@ -1122,6 +1122,11 @@ public class FieldMapping
         throws SQLException {
         _val.setForeignKey(row, sm);
     }
+    
+    public void setForeignKey(Row row, OpenJPAStateManager sm, int targetNumber)
+        throws SQLException {
+        _val.setForeignKey(row, sm, targetNumber);
+    }
 
     public void whereForeignKey(Row row, OpenJPAStateManager sm)
         throws SQLException {

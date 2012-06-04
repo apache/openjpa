@@ -178,6 +178,14 @@ public interface ValueMapping
      */
     public void setForeignKey(Row row, OpenJPAStateManager rel)
         throws SQLException;
+    
+    /**
+     * Sets this value's foreign key to the given related object. The object
+     * may be null. If the object is one of2or more foreign keys with the
+     * same target, the targetNumber specifies the one to set.
+     */
+    public void setForeignKey(Row row, OpenJPAStateManager rel, int targetNumber)
+        throws SQLException;
 
     /**
      * Sets this value's foreign key to the given related object. The object

@@ -159,7 +159,7 @@ public class ValueMappingImpl
             _join = JOIN_FORWARD;
     }
 
-    public ForeignKey getForeignKey(ClassMapping target) {
+    public ForeignKey getForeignKey(ClassMapping target, int targetNumber) {
         if (_fk == null && getValueMappedBy() != null)
             return getValueMappedByMapping().getForeignKey(target);
         if (target == null)
@@ -167,10 +167,14 @@ public class ValueMappingImpl
         ClassMapping embeddedMeta = (ClassMapping)getEmbeddedMetaData(); 
         if (embeddedMeta != null) {
             FieldMapping[] fields = embeddedMeta.getFieldMappings();
+            int j = 0;
             for (int i = 0; i < fields.length; i++) {
                 ValueMapping val = fields[i].getValueMapping(); 
                 if (val.getDeclaredTypeMapping() == target)
+                    if (targetNumber == j)
                     return val.getForeignKey();
+                    else
+                        j++;
             }
         }
         if (_fk == null && _cols.length == 0)
@@ -198,7 +202,9 @@ public class ValueMappingImpl
             return newfk;
         }
     }
-
+    public ForeignKey getForeignKey(ClassMapping target) {
+        return getForeignKey(target, 0);
+    }
     /**
      * Create a forward foreign key to the given target.
      */
@@ -323,11 +329,12 @@ public class ValueMappingImpl
         _join = direction;
     }
 
-    public void setForeignKey(Row row, OpenJPAStateManager rel)
+    public void setForeignKey(Row row, OpenJPAStateManager rel, int targetNumber)
         throws SQLException {
-        if (rel != null)
-            row.setForeignKey(getForeignKey((ClassMapping) rel.getMetaData()),
+        if (rel != null) {
+            row.setForeignKey(getForeignKey((ClassMapping) rel.getMetaData(), targetNumber),
                 _io, rel);
+        }
         else if (_fk != null)
             row.setForeignKey(_fk, _io, null);
         else {
@@ -339,6 +346,10 @@ public class ValueMappingImpl
                     row.setNull(_cols[i]);
             }
         }
+    }
+    public void setForeignKey(Row row, OpenJPAStateManager rel)
+        throws SQLException {
+        setForeignKey(row, rel, 0);
     }
 
     public void whereForeignKey(Row row, OpenJPAStateManager rel)
