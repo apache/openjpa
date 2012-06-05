@@ -41,6 +41,7 @@ import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
+import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
@@ -72,6 +73,7 @@ import serp.bytecode.Project;
  * <li>Class.getDeclaredFields
  * <li>Class.getDeclaredMethod
  * <li>Class.getDeclaredMethods
+ * <li>Class.getProtectionDomain
  * <li>Class.getResource
  * <li>Class.newInstance
  * <li>ClassLoader.getParent
@@ -381,6 +383,23 @@ public abstract class J2DoPrivHelper {
         };
     }
     
+    /**
+     * Return a PrivilegeAction object for class.getProtectionDomain().
+     *
+     * Requires security policy:
+     *   'permission java.lang.RuntimePermission "getProtectionDomain";'
+     *
+     * @return ProtectionDomain
+     */
+    public static final PrivilegedAction<ProtectionDomain> getProtectionDomainAction(
+        final Class<?> clazz) {
+        return new PrivilegedAction<ProtectionDomain>() {
+            public ProtectionDomain run() {
+                return clazz.getProtectionDomain();
+            }
+        };
+    }
+
     /**
      * Return a PrivilegeAction object for loader.getParent().
      * 
