@@ -145,6 +145,7 @@ public class PersistenceProductDerivation
         _hints.add(QueryHints.HINT_RECACHE_FINDER);
         _hints.add(QueryHints.HINT_RESULT_COUNT);
         _hints.add(QueryHints.HINT_SUBCLASSES);
+        _hints.add(QueryHints.HINT_RELAX_BIND_PARAM_TYPE_CHECK);
 
         _hints = Collections.unmodifiableSet(_hints);
     }
