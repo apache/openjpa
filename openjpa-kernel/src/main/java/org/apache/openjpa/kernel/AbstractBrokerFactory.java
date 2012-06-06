@@ -867,8 +867,7 @@ public abstract class AbstractBrokerFactory
                 _conf.isConnectionFactoryModeManaged(), _conf.getConnectionRetainModeConstant(), false).close();
         }
         // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're preloading.
-        Options o = Configurations.parseProperties(Configurations.getProperties(_conf.getMetaDataRepository()));
-        if (MetaDataRepository.needsPreload(o) == true) {
+        if (MetaDataRepository.needsPreload(_conf) == true) {
             MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
             mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);

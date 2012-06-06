@@ -44,6 +44,7 @@ import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -2460,8 +2461,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         return new XMLFieldMetaData(type, name);
     }
 
-    public static boolean needsPreload(Options o) {
-        if (o.getBooleanProperty(PRELOAD_STR) == true) {
+    public static boolean needsPreload(OpenJPAConfiguration conf) {
+        if (conf == null)
+            return false;
+        Options o = Configurations.parseProperties(Configurations.getProperties(conf.getMetaDataRepository()));
+        if (o.getBooleanProperty(PRELOAD_STR) == true || o.getBooleanProperty(PRELOAD_STR.toLowerCase()) == true) {
             return true;
         }
         return false;

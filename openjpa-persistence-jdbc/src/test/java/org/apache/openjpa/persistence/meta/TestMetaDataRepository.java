@@ -21,6 +21,8 @@ package org.apache.openjpa.persistence.meta;
 import java.util.Collection;
 
 import org.apache.openjpa.enhance.PCRegistry;
+import org.apache.openjpa.lib.conf.Configurations;
+import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.QueryMetaData;
@@ -97,5 +99,15 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
         } finally {
             closeEMF(emf);
         }
+    }
+	
+    public void testPreloadConfiguration() {
+        OpenJPAEntityManagerFactorySPI emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "preload=true");
+        assertTrue(MetaDataRepository.needsPreload(emf.getConfiguration()));
+        emf.close();
+
+        emf = createNamedEMF(PU_NAME, "openjpa.MetaDataRepository", "Preload=true");
+        assertTrue(MetaDataRepository.needsPreload(emf.getConfiguration()));
+        emf.close();
     }
 }
