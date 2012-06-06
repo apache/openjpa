@@ -866,8 +866,12 @@ public abstract class AbstractBrokerFactory
             newBroker(_conf.getConnectionUserName(), _conf.getConnectionPassword(),
                 _conf.isConnectionFactoryModeManaged(), _conf.getConnectionRetainModeConstant(), false).close();
         }
-        // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're preloading.
+
+        // Don't get a MetaDataRepository yet if not preloading because it is possible that someone has extended the MDR
+        // and the extension hasn't been plugged in yet.
         if (MetaDataRepository.needsPreload(_conf) == true) {
+            // Don't catch any exceptions here because we want to fail-fast if something bad happens when we're
+            // preloading.
             MetaDataRepository mdr = _conf.getMetaDataRepositoryInstance();
             mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
             mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
