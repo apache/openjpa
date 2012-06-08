@@ -323,7 +323,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     }
 
     public boolean isDelimited(IdentifierConfiguration config, IdentifierRule rule, String name) {
-        if (name == null || name.length() <= 3) {
+        if (name == null || name.length() < 3) {
             return false;
         }
         return name.startsWith(config.getLeadingDelimiter()) &&

@@ -55,6 +55,7 @@
         <mapping-file>org/apache/openjpa/persistence/enhance/identity/mapsId-orm.xml</mapping-file>
         <mapping-file>org/apache/openjpa/persistence/entity/orm.xml</mapping-file>
         <mapping-file>META-INF/arrays-orm.xml</mapping-file>
+        <mapping-file>META-INF/query-result-orm.xml</mapping-file>
         <properties>
             <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
@@ -375,6 +376,15 @@
     
     <persistence-unit name="TestCfSwitching">
         <class>org.apache.openjpa.persistence.conf.Person</class>
+    </persistence-unit>
+    
+    <persistence-unit name="query-result">
+        <mapping-file>META-INF/query-result-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.results.cls.ResultClsXml</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
     </persistence-unit>
 
 </persistence>
