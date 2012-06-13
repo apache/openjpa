@@ -48,7 +48,7 @@ import serp.util.Strings;
 public class MappingDefaultsImpl
     implements MappingDefaults, Configurable {
 
-    private transient DBDictionary dict = null;
+    protected transient DBDictionary dict = null;
     private String _baseClassStrategy = null;
     private String _subclassStrategy = null;
     private String _versionStrategy = null;
@@ -72,18 +72,7 @@ public class MappingDefaultsImpl
     private String _orderName = null;
     private String _nullIndName = null;
     private boolean _removeHungarianNotation = false;
-    private Configuration conf = null;
 
-    /**
-     * Convenient access to dictionary for mappings.
-     */
-    public DBDictionary getDBDictionary() {
-        if (dict == null) {
-            dict = ((JDBCConfiguration) conf).getDBDictionaryInstance();
-        }
-        return dict;
-    }
-    
     public boolean isRemoveHungarianNotation() {
         return _removeHungarianNotation;
     }
@@ -523,9 +512,8 @@ public class MappingDefaultsImpl
     public String getTableName(ClassMapping cls, Schema schema) {
         String name = Strings.getClassName(cls.getDescribedType()).
             replace('$', '_');
-        if (!_defMissing && getDBDictionary() != null) {
-            name = getDBDictionary().getValidTableName(name, schema);
-        }
+        if (!_defMissing)
+            name = dict.getValidTableName(name, schema);
         return name;
     }
 
@@ -538,9 +526,8 @@ public class MappingDefaultsImpl
                 tableName = tableName.substring(0, 5);
             name = tableName + "_" + name;
         }
-        if (!_defMissing && getDBDictionary() != null){
-            name = getDBDictionary().getValidTableName(name, schema);
-        }
+        if (!_defMissing)
+            name = dict.getValidTableName(name, schema);
         return name;
     }
 
@@ -562,13 +549,9 @@ public class MappingDefaultsImpl
         if (!_defMissing || _removeHungarianNotation)
         {
             String name = col.getName();
-            if (_removeHungarianNotation) {
+            if (_removeHungarianNotation)
                 name = removeHungarianNotation(name);
-            }
-            
-            if (getDBDictionary() != null) {
-                col.setName(getDBDictionary().getValidColumnName(name, table));
-            }
+            col.setName(dict.getValidColumnName(name, table));
         }
     }
 
@@ -720,23 +703,15 @@ public class MappingDefaultsImpl
      * Generate an index name.
      */
     protected String getIndexName(String name, Table table, Column[] cols) {
-        String toReturn = null;
-        
         // always use dict for index names because no spec mandates them
         // based on defaults
-        if (name == null) {
+        if (name == null)
             name = cols[0].getName();
-        }
 
-        if (_removeHungarianNotation){
+        if (_removeHungarianNotation)
             name = removeHungarianNotation(name);
-        }
-        
-        if (getDBDictionary() != null) {
-            toReturn = getDBDictionary().getValidIndexName(name, table);            
-        }
-        
-        return toReturn; 
+
+        return dict.getValidIndexName(name, table);
     }
 
     public Index getIndex(ValueMapping vm, String name, Table table,
@@ -789,7 +764,7 @@ public class MappingDefaultsImpl
     ///////////////////////////////
 
     public void setConfiguration(Configuration conf) {
-        this.conf=conf;        
+        dict = ((JDBCConfiguration) conf).getDBDictionaryInstance();
     }
 
     public void startConfiguration() {

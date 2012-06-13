@@ -612,9 +612,8 @@ public abstract class AbstractBrokerFactory
             _readOnly = true;
 
             Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-            if (log.isInfoEnabled()){
+            if (log.isInfoEnabled())
                 log.info(getFactoryInitializationBanner());
-            }
             if (log.isTraceEnabled()) {
                 Map props = _conf.toProperties(true);
                 String lineSep = J2DoPrivHelper.getLineSeparator();
@@ -651,10 +650,6 @@ public abstract class AbstractBrokerFactory
             _conf.getBrokerFactoryEventManager().fireEvent(
                 new BrokerFactoryEvent(this,
                     BrokerFactoryEvent.BROKER_FACTORY_CREATED));
-        } catch (RuntimeException e) {
-            // if the db connection is not available we need to reset the state
-            _readOnly = false;
-            throw e;
         } finally {
             unlock();
         }

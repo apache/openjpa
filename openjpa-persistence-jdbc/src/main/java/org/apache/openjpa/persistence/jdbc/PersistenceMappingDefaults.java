@@ -34,10 +34,8 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.meta.JavaTypes;
-
 import serp.util.Strings;
 
 /**
@@ -113,7 +111,7 @@ public class PersistenceMappingDefaults
         if (FlatClassStrategy.ALIAS.equals(strat))
             return new ValueMapDiscriminatorStrategy();
         if (VerticalClassStrategy.ALIAS.equals(strat)
-            && getDBDictionary() != null && getDBDictionary().joinSyntax != JoinSyntaxes.SYNTAX_TRADITIONAL)
+            && dict.joinSyntax != JoinSyntaxes.SYNTAX_TRADITIONAL)
             return new SubclassJoinDiscriminatorStrategy();
         return NoneDiscriminatorStrategy.getInstance();
     }
@@ -160,18 +158,14 @@ public class PersistenceMappingDefaults
             name = fm.getDefiningMapping().getTypeAlias();
         String targetName = ((Column) target).getName();
         String tempName = null;
-        DBDictionary dict = getDBDictionary();
-        if (dict != null && (name.length() + targetName.length()) >= dict.maxColumnNameLength){
+        if ((name.length() + targetName.length()) >= dict.maxColumnNameLength)
             tempName = name.substring(0, dict.maxColumnNameLength
                     - targetName.length() - 1);
-        }
         // suffix with '_' + target column
         if (tempName == null)
             tempName = name;
         name = tempName + "_" + targetName;
-        if (dict != null){
-            name = dict.getValidColumnName(name, foreign);
-        }
+        name = dict.getValidColumnName(name, foreign);
         col.setName(name);
     }
 
@@ -199,9 +193,7 @@ public class PersistenceMappingDefaults
 
             name = name + "_" + ((Column) target).getName();
             // No need to check for uniqueness.
-            if (getDBDictionary() != null){
-                name = getDBDictionary().getValidColumnName(name, local, false);
-            }
+            name = dict.getValidColumnName(name, local, false);
             col.setName(name);
         }
     }
