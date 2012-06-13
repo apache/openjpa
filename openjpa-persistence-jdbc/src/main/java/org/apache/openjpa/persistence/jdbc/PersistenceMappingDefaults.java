@@ -38,7 +38,6 @@ import org.apache.openjpa.jdbc.meta.strats.VerticalClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -120,7 +119,7 @@ public class PersistenceMappingDefaults
         if (FlatClassStrategy.ALIAS.equals(strat))
             return new ValueMapDiscriminatorStrategy();
         if (VerticalClassStrategy.ALIAS.equals(strat)
-            && getDBDictionary() != null && getDBDictionary().joinSyntax != JoinSyntaxes.SYNTAX_TRADITIONAL)
+            && dict.joinSyntax != JoinSyntaxes.SYNTAX_TRADITIONAL)
             return new SubclassJoinDiscriminatorStrategy();
         return NoneDiscriminatorStrategy.getInstance();
     }
@@ -199,18 +198,14 @@ public class PersistenceMappingDefaults
             sName = DBIdentifier.newColumn(fm.getDefiningMapping().getTypeAlias());
         DBIdentifier targetName = ((Column) target).getIdentifier();
         DBIdentifier tempName = DBIdentifier.NULL;
-        DBDictionary dict = getDBDictionary();
-        if (dict != null && (sName.length() + targetName.length()) >= dict.maxColumnNameLength){
+        if ((sName.length() + targetName.length()) >= dict.maxColumnNameLength)
             tempName = DBIdentifier.truncate(sName, dict.maxColumnNameLength
                     - targetName.length() - 1);
-        }
         // suffix with '_' + target column
         if (DBIdentifier.isNull(tempName))
             tempName = sName;
         sName = DBIdentifier.combine(tempName, targetName.getName());
-        if (dict != null) {
-            sName = dict.getValidColumnName(sName, foreign);
-        }
+        sName = dict.getValidColumnName(sName, foreign);
         col.setIdentifier(sName);
     }
 
@@ -247,9 +242,7 @@ public class PersistenceMappingDefaults
                 sName = sName.combine(sName, ((Column)target).getIdentifier().getName());
 
                 // No need to check for uniqueness.
-                if(getDBDictionary() != null){
-                	sName = getDBDictionary().getValidColumnName(sName, local, false);
-                }
+                sName = dict.getValidColumnName(sName, local, false);
             }
             col.setIdentifier(sName);
         }
