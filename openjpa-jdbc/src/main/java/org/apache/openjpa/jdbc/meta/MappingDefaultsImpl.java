@@ -51,7 +51,7 @@ import serp.util.Strings;
 public class MappingDefaultsImpl
     implements MappingDefaults, Configurable {
 
-    private transient DBDictionary dict = null;
+    protected transient DBDictionary dict = null;
     private String _baseClassStrategy = null;
     private String _subclassStrategy = null;
     private String _versionStrategy = null;
@@ -75,17 +75,6 @@ public class MappingDefaultsImpl
     private DBIdentifier _orderName = DBIdentifier.NULL;
     private DBIdentifier _nullIndName = DBIdentifier.NULL;
     private boolean _removeHungarianNotation = false;
-    private Configuration conf = null;
-
-    /**
-     * Convenient access to dictionary for mappings.
-     */
-    public DBDictionary getDBDictionary() {
-        if (dict == null) {
-            dict = ((JDBCConfiguration) conf).getDBDictionaryInstance();
-        }
-        return dict;
-    }
 
     public boolean isRemoveHungarianNotation() {
         return _removeHungarianNotation;
@@ -576,10 +565,8 @@ public class MappingDefaultsImpl
     public String getTableName(ClassMapping cls, Schema schema) {
         String name = Strings.getClassName(cls.getDescribedType()).
             replace(IdentifierUtil.DOLLAR_CHAR, IdentifierUtil.UNDERSCORE_CHAR);
-        if (!_defMissing && getDBDictionary() != null) {
-        	name = getDBDictionary().getValidTableName(name, schema);
-        }
-
+        if (!_defMissing)
+            name = dict.getValidTableName(name, schema);
         return name;
     }
 
@@ -598,9 +585,8 @@ public class MappingDefaultsImpl
             DBIdentifier tableName = DBIdentifier.truncate(table.getIdentifier(),5);
             sName = DBIdentifier.append(tableName, fm.getName());
         }
-        if (!_defMissing && getDBDictionary() != null){
-            sName = getDBDictionary().getValidTableName(sName, schema);
-        }
+        if (!_defMissing)
+            sName = dict.getValidTableName(sName, schema);
         return sName;
     }
 
@@ -622,14 +608,9 @@ public class MappingDefaultsImpl
         if (!_defMissing || _removeHungarianNotation)
         {
             DBIdentifier name = col.getIdentifier();
-            if (_removeHungarianNotation){
+            if (_removeHungarianNotation)
                 name = DBIdentifier.removeHungarianNotation(name);
-            }
-
-            DBIdentifier correctedName = name;
-            if (getDBDictionary() != null) {
-                correctedName = getDBDictionary().getValidColumnName(name, table);
-            }
+            DBIdentifier correctedName = dict.getValidColumnName(name, table);
             col.setIdentifier(correctedName);
             table.addCorrectedColumnName(correctedName, true);
         }
@@ -809,24 +790,16 @@ public class MappingDefaultsImpl
     }
 
     protected DBIdentifier getIndexName(DBIdentifier name, Table table, Column[] cols) {
-        DBIdentifier toReturn = null;
-
         // always use dict for index names because no spec mandates them
         // based on defaults
         DBIdentifier sName = name;
-        if (DBIdentifier.isNull(sName)){
+        if (DBIdentifier.isNull(sName))
             sName = cols[0].getIdentifier();
-        }
 
-        if (_removeHungarianNotation){
+        if (_removeHungarianNotation)
             sName = DBIdentifier.removeHungarianNotation(sName);
-        }
 
-        if (getDBDictionary() != null) {
-            toReturn = getDBDictionary().getValidIndexName(sName, table);        	
-        }
-        
-        return toReturn; 
+        return dict.getValidIndexName(sName, table);
     }
 
     /**
@@ -902,7 +875,7 @@ public class MappingDefaultsImpl
     ///////////////////////////////
 
     public void setConfiguration(Configuration conf) {
-    	this.conf=conf;    	
+        dict = ((JDBCConfiguration) conf).getDBDictionaryInstance();
     }
 
     public void startConfiguration() {

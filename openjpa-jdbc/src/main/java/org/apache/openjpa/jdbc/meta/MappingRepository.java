@@ -130,9 +130,6 @@ public class MappingRepository extends MetaDataRepository {
      * Convenient access to dictionary for mappings.
      */
     public DBDictionary getDBDictionary() {
-        if (_dict == null) {
-            _dict = ((JDBCConfiguration) getConfiguration()).getDBDictionaryInstance();
-        }
         return _dict;
     }
 
@@ -828,8 +825,6 @@ public class MappingRepository extends MetaDataRepository {
      */
     protected FieldStrategy defaultStrategy(FieldMapping field,
         boolean installHandlers, boolean adapting) {
-        DBDictionary dict = getDBDictionary();    	
-
         // not persistent?
         if (field.getManagement() != FieldMetaData.MANAGE_PERSISTENT
             || field.isVersion())
@@ -847,7 +842,7 @@ public class MappingRepository extends MetaDataRepository {
         }
 
         if (field.isSerialized()) {
-            if (dict != null && dict.maxEmbeddedBlobSize != -1)
+            if (_dict.maxEmbeddedBlobSize != -1)
                 return new MaxEmbeddedBlobFieldStrategy();
         } else {
             // check for mapped strategy
@@ -864,12 +859,12 @@ public class MappingRepository extends MetaDataRepository {
         // check for known field strategies
         if (!field.isSerialized() && (field.getType() == byte[].class
             || field.getType() == Byte[].class)) {
-            if (dict != null && dict.maxEmbeddedBlobSize != -1)
+            if (_dict.maxEmbeddedBlobSize != -1)
                 return new MaxEmbeddedByteArrayFieldStrategy();
         } else if (!field.isSerialized()
             && (field.getType() == char[].class
             || field.getType() == Character[].class)) {
-            if (dict != null && dict.maxEmbeddedClobSize != -1 && isClob(field, false))
+            if (_dict.maxEmbeddedClobSize != -1 && isClob(field, false))
                 return new MaxEmbeddedCharArrayFieldStrategy();
         } else if (!field.isSerialized()) {
             FieldStrategy strat = defaultTypeStrategy(field, installHandlers,
@@ -892,7 +887,7 @@ public class MappingRepository extends MetaDataRepository {
                 getLog().warn(_loc.get("no-field-strategy", field));
             field.setSerialized(true);
         }
-        if (dict != null && dict.maxEmbeddedBlobSize == -1) {
+        if (_dict.maxEmbeddedBlobSize == -1) {
             if (installHandlers)
                 field.setHandler(BlobValueHandler.getInstance());
             return new HandlerFieldStrategy();
@@ -918,8 +913,7 @@ public class MappingRepository extends MetaDataRepository {
             case JavaTypes.STRING:
                 if (!isClob(field, false))
                     return new StringFieldStrategy();
-                DBDictionary dict = getDBDictionary();
-                if (dict != null && dict.maxEmbeddedClobSize != -1)
+                if (_dict.maxEmbeddedClobSize != -1)
                     return new MaxEmbeddedClobFieldStrategy();
                 break;
             case JavaTypes.PC:
@@ -1267,12 +1261,9 @@ public class MappingRepository extends MetaDataRepository {
      * not take into account the named handler, if any.
      */
     protected ValueHandler defaultHandler(ValueMapping val, boolean adapting) {
-    	
-    	DBDictionary dict = getDBDictionary();
-    	
         if (val.isSerialized()) {
-            if (dict != null && dict.maxEmbeddedBlobSize != -1)
-                warnMaxEmbedded(val, dict.maxEmbeddedBlobSize);
+            if (_dict.maxEmbeddedBlobSize != -1)
+                warnMaxEmbedded(val, _dict.maxEmbeddedBlobSize);
             return BlobValueHandler.getInstance();
         }
 
@@ -1282,8 +1273,8 @@ public class MappingRepository extends MetaDataRepository {
 
         if (val.getType() == byte[].class 
             || val.getType() == Byte[].class) {
-            if (dict != null && dict.maxEmbeddedBlobSize != -1)
-                warnMaxEmbedded(val, dict.maxEmbeddedBlobSize);
+            if (_dict.maxEmbeddedBlobSize != -1)
+                warnMaxEmbedded(val, _dict.maxEmbeddedBlobSize);
             return ByteArrayValueHandler.getInstance();
         }
         if (val.getType() == char[].class
@@ -1362,13 +1353,12 @@ public class MappingRepository extends MetaDataRepository {
         Column col = (Column) cols.get(0);
         if (col.getSize() != -1 && col.getType() != Types.CLOB)
             return false;
-        
-        DBDictionary dict = getDBDictionary();
-        if (dict != null && dict.getPreferredType(Types.CLOB) != Types.CLOB)
+
+        if (_dict.getPreferredType(Types.CLOB) != Types.CLOB)
             return false;
 
-        if (warn && dict != null && dict.maxEmbeddedClobSize != -1)
-            warnMaxEmbedded(val, dict.maxEmbeddedClobSize);
+        if (warn && _dict.maxEmbeddedClobSize != -1)
+            warnMaxEmbedded(val, _dict.maxEmbeddedClobSize);
         return true;
     }
 
@@ -1496,6 +1486,7 @@ public class MappingRepository extends MetaDataRepository {
         super.endConfiguration();
 
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
+        _dict = conf.getDBDictionaryInstance();
         if (_defaults == null)
             _defaults = conf.getMappingDefaultsInstance();
         if (_schema != null && _schema instanceof Configurable) {
