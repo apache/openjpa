@@ -64,6 +64,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -347,6 +348,9 @@ public class DBDictionary
     protected final Set systemTableSet = new HashSet();
     protected final Set fixedSizeTypeNameSet = new HashSet();
     protected final Set typeModifierSet = new HashSet();
+    
+    public String leadingDelimiter = "\"";
+    public String trailingDelimiter = "\"";
     
     /**
      * Some JDBC drivers - ie DB2 type 2 on Z/OS throw exceptions on
@@ -3752,7 +3756,7 @@ public class DBDictionary
         Column c = new Column();
         c.setSchemaName(colMeta.getString("TABLE_SCHEM"));
         c.setTableName(colMeta.getString("TABLE_NAME"));
-        c.setName(colMeta.getString("COLUMN_NAME"));
+        c.setName(delimit(colMeta.getString("COLUMN_NAME")));
         c.setType(colMeta.getInt("DATA_TYPE"));
         c.setTypeName(colMeta.getString("TYPE_NAME"));
         c.setSize(colMeta.getInt("COLUMN_SIZE"));
@@ -4627,5 +4631,30 @@ public class DBDictionary
     */
     public String getMarkerForInsertUpdate(Column col, Object val) {
        return "?";
+    }
+    
+    public String getLeadingDelimiter() {
+        return leadingDelimiter;
+    }
+
+    public void setLeadingDelimiter(String delim) {
+        leadingDelimiter = delim;
+    }
+    
+    public String getTrailingDelimiter() {
+        return trailingDelimiter;
+    }
+
+    public void setTrailingDelimiter(String delim) {
+        trailingDelimiter = delim;
+    }
+    
+    public String delimit(String name) {
+        char[] chars = name.toCharArray();
+        if (!CharUtils.isAsciiAlpha(chars[0])) {
+            return getLeadingDelimiter() + name + getTrailingDelimiter();
+        }
+        
+        return name;
     }
 }

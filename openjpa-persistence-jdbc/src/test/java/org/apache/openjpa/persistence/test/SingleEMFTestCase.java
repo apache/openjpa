@@ -176,4 +176,7 @@ public abstract class SingleEMFTestCase
         super.runTest();
     }
     
+    protected DBDictionary getDBDictionary() { 
+        return  ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
+    }
 }
