@@ -472,7 +472,20 @@ public class ResultSetResult
         throws SQLException {
         if (obj instanceof Number)
             return obj;
+        // If an object is manually delimited, the delimiters need to be stripped in order for this to work
+        if (obj instanceof String)
+            return Numbers.valueOf(findObject(stripDelimiters((String)obj), joins));
+           
         return Numbers.valueOf(findObject(obj, joins));
+    }
+    
+    protected String stripDelimiters(String str) {
+        String leadingDelim = _dict.getLeadingDelimiter();
+        String trailingDelim = _dict.getTrailingDelimiter();
+        if (str.startsWith(leadingDelim) && str.endsWith(trailingDelim)) {
+            return str.substring(leadingDelim.length(), str.lastIndexOf(trailingDelim));
+        }
+        return str;
     }
 
     /**

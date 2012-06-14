@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.persistence.test;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.lib.log.Log;
 
@@ -77,5 +79,9 @@ public abstract class SingleEMFTestCase
     
     protected Log getLog() {
         return emf.getConfiguration().getLog("Tests");
+    }
+    
+    protected DBDictionary getDBDictionary() { 
+        return  ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
     }
 }

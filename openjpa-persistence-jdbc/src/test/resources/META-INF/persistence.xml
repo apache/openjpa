@@ -74,4 +74,22 @@
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="query-result">
+        <mapping-file>META-INF/query-result-orm.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.results.cls.ResultClsXml</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
+    
+    <!-- TODO: temp for debugging -->
+    <persistence-unit name="temp-debug">
+        <class>org.apache.openjpa.persistence.results.cls.ResultClsAnnotation</class>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                  value="buildSchema(ForeignKeys=true)"/>
+        </properties>
+    </persistence-unit>
 </persistence>
