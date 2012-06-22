@@ -998,7 +998,9 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         if (oid == null)
             return null;
         if (_log.isTraceEnabled()) {
-            _log.trace("find: oid="+oid+" "+vm.getDeclaredTypeMapping().getDescribedType());
+            ClassMapping declaredTypeMapping = vm.getDeclaredTypeMapping();
+            Class<?> describedType = (declaredTypeMapping != null) ? declaredTypeMapping.getDescribedType() : null;
+            _log.trace("find: oid="+oid+", describedType="+describedType);
         }
         Object pc = _ctx.find(oid, fetch, null, null, 0);
         if (pc == null && vm != null) {
