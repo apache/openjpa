@@ -246,7 +246,7 @@ public class AuditManager extends InMemorySavepointManager
 		AuditCallback(Broker broker) {
 			_broker = broker;
 		}
-
+		
 		void audit() {
 			if (_audits.isEmpty()) return;
 			Collection<Audited> news = new HashSet<Audited>();
@@ -327,6 +327,7 @@ public class AuditManager extends InMemorySavepointManager
 
 		@Override
 		public void beforeStore(LifecycleEvent event) {
+			save(AuditableOperation.UPDATE, event);
 		}
 
 		@Override
@@ -347,8 +348,9 @@ public class AuditManager extends InMemorySavepointManager
 
 		@Override
 		public void afterDirty(LifecycleEvent event) {
+			save(AuditableOperation.UPDATE, event);
 		}
-
+		
 		@Override
 		public void beforeDirtyFlushed(LifecycleEvent event) {
 		}
@@ -371,6 +373,7 @@ public class AuditManager extends InMemorySavepointManager
 
 		@Override
 		public void afterAttach(LifecycleEvent event) {
+			save(AuditableOperation.UPDATE, event);
 		}
 		
 	}
