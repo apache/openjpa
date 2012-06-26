@@ -1494,6 +1494,7 @@ public class EntityManagerImpl
             out.writeObject(factoryKey);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream innerOut = new ObjectOutputStream(baos);
+            _broker.getDelegate().putUserObject(JPAFacadeHelper.EM_KEY, null);
             innerOut.writeObject(_broker.getDelegate());
             innerOut.flush();
             out.writeObject(baos.toByteArray());
