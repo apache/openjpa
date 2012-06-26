@@ -72,10 +72,8 @@ public final class Audited {
 		BitSet dirty = _sm.getDirty();
 		String[] names = new String[dirty.cardinality()];
 		int j = 0;
-		for (int i = 0; i < dirty.size(); i++) {
-			if (dirty.get(i)) {
-				names[j++] = _sm.getMetaData().getField(i).getName();
-			}
+		for (int pos = dirty.nextSetBit(0); pos != -1; pos = dirty.nextSetBit(pos+1)) {
+			names[j++] = _sm.getMetaData().getField(pos).getName();
 		}
 		return names;
 	}
