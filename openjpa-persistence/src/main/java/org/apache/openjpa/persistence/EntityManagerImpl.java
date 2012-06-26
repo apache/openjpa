@@ -131,7 +131,7 @@ public class EntityManagerImpl
         _emf = factory;
         _broker = new DelegatingBroker(broker, _ret);
         _broker.setImplicitBehavior(this, _ret);
-        
+        _broker.putUserObject(JPAFacadeHelper.EM_KEY, this);
         _convertPositionalParams =
             factory.getConfiguration().getCompatibilityInstance().getConvertPositionalParametersToNamed();
     }
