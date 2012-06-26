@@ -43,7 +43,8 @@ public abstract class CriteriaTest extends AbstractCriteriaTestCase {
             Dependent.class, D.class, Employee.class, Exempt.class, FemaleUser.class, FrequentFlierPlan.class,
             Item.class, LineItem.class, Magazine.class, MaleUser.class, Manager.class, Movie.class, Order.class,
             Person.class, Phone.class, Photo.class, Product.class, Publisher.class, Request.class, Semester.class,
-            Student.class, TransactionHistory.class, Transaction.class, VideoStore.class, Foo.class, Bar.class};
+            Student.class, TransactionHistory.class, Transaction.class, VideoStore.class, Foo.class, Bar.class,
+            EntityWithIdClass.class};
 
     protected Class<?>[] getDomainClasses() {
         return CLASSES;

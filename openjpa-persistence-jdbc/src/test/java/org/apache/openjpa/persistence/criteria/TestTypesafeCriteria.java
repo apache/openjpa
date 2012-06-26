@@ -950,7 +950,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
             + "INNER JOIN CR_PHT t2 ON t1.VALUE_ID = t2.id WHERE " + 
             "((t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ? OR t1.KEY0 = ?) "
             + "AND 0 < (SELECT COUNT(*) FROM CR_ITEM_photos WHERE CR_ITEM_photos.ITEM_ID = t0.id))";
-
+        
         CriteriaQuery<Customer> q = cb.createQuery(Customer.class);
         Root<Item> item = q.from(Item.class);
         MapJoin<Item, String, Photo> photo = item.join(Item_.photos);
@@ -1596,5 +1596,13 @@ public class TestTypesafeCriteria extends CriteriaTest {
         assertTrue(result.get(0) instanceof BigDecimal);
     }
     
-   
+    public void testIdClass() {
+        String jpql = "select p from EntityWithIdClass p";
+        
+    	CriteriaQuery<EntityWithIdClass> cq = cb.createQuery(EntityWithIdClass.class);
+    	Root<EntityWithIdClass> c = cq.from(EntityWithIdClass.class);
+    	em.createQuery(cq).getResultList();
+    	
+        assertEquivalence(cq, jpql);
+    }
 }
