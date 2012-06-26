@@ -164,9 +164,9 @@ public class DistributedConnection implements Connection {
 
     public PreparedStatement prepareStatement(String arg0) throws SQLException {
 		// TODO: Big hack
-        if (arg0.startsWith(
-                "SELECT SEQUENCE_VALUE FROM OPENJPA_SEQUENCE_TABLE"))
+        if (arg0.indexOf("OPENJPA_SEQUENCE_TABLE") != -1) {
 			return master.prepareStatement(arg0);
+        }
 		DistributedPreparedStatement ret = new DistributedPreparedStatement(this);
 		for (Connection c : real) {
 			ret.add(c.prepareStatement(arg0));
