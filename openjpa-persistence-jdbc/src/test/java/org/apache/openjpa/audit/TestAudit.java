@@ -138,12 +138,10 @@ public class TestAudit extends TestCase {
      *  
      */
     AuditedEntry findLastAuditedEntry(AuditableOperation op) {
-    	List<AuditedEntry> entry = 
-        	em.createQuery("select a from AuditedEntry a where a.operation=:op order by a.id desc", AuditedEntry.class)
-        	  .setMaxResults(1)
-        	  .setParameter("op", op)
-        	  .getResultList();
-    	return entry.get(0);
+        List<AuditedEntry> entry =
+            em.createQuery("select a from AuditedEntry a where a.operation=:op order by a.id desc", AuditedEntry.class)
+                .setMaxResults(1).setParameter("op", op).getResultList();
+        return entry.get(0);
     }
 
 
