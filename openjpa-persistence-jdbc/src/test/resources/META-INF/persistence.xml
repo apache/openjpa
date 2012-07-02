@@ -431,17 +431,25 @@
                   value="buildSchema(ForeignKeys=true)"/>
         </properties>
     </persistence-unit>
-    
-    
-    <persistence-unit name="audit">
-        <class>org.apache.openjpa.audit.X</class>
-        <class>org.apache.openjpa.audit.AuditedEntry</class>
-        
-        <properties>
-        	<property name="openjpa.Auditor" value="org.apache.openjpa.audit.InplaceAuditor"/>
-            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
-            <property name="openjpa.DynamicEnhancementAgent"  value="false"/> 
-        </properties>
-    </persistence-unit>
 
+
+	<persistence-unit name="audit">
+		<class>org.apache.openjpa.audit.X</class>
+		<class>org.apache.openjpa.audit.AuditedEntry</class>
+
+		<properties>
+			<property name="openjpa.Auditor" value="org.apache.openjpa.audit.InplaceAuditor" />
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.DynamicEnhancementAgent" value="false" />
+		</properties>
+	</persistence-unit>
+
+	<persistence-unit name="query-result">
+		<mapping-file>META-INF/query-result-orm.xml</mapping-file>
+		<class>org.apache.openjpa.persistence.results.cls.ResultClsXml</class>
+
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
+	</persistence-unit>
 </persistence>
