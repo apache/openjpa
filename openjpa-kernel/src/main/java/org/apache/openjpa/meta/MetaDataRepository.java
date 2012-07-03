@@ -1865,7 +1865,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             _metamodel.put(entity, m2cls);
             return m2cls;
         } catch (Throwable t) {
-            if (_log.isInfoEnabled())
+            if (_log.isTraceEnabled())
                 _log.warn(_loc.get("meta-no-model", m2, entity, t));
         }
         return null;
