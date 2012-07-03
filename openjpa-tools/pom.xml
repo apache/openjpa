@@ -42,6 +42,8 @@
 
     <modules>
         <module>openjpa-maven-plugin</module>
+        <module>openjpa-fetch-statistics</module>
+
     </modules>
 
     <profiles>
