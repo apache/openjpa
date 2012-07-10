@@ -27,7 +27,7 @@
 	<name>OpenJPA Fetching Statistic Tool</name>
 	<description> OpenJPA tool to capture the fetching statistic data for the persistent fields .</description>
 	<inceptionYear>2012</inceptionYear>
-
+   
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -62,7 +62,7 @@
 			<version>3.8.1</version>
 		</dependency>
 	</dependencies>
-
+  
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
@@ -84,48 +84,6 @@
 						<exclude>org/apache/openjpa/enhance/stats/TestFetchStatistics.java</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<excludes>
-								<exclude>README-*.txt</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<!-- Create another WAS specific jar -->
-					<execution>
-						<id>was</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<finalName>${artifactId}-${version}-websphere</finalName>
-							<archive>
-								<manifest>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-								</manifest>
-								<manifestEntries>
-									<Fragment-Host>com.ibm.ws.jpa; bundle-version=8.0.0</Fragment-Host>
-									<Export-Package>org.apache.openjpa.enhance.stats</Export-Package>
-									<Bundle-SymbolicName>org.apache.openjpa.enhance.stats; singleton:=true</Bundle-SymbolicName>
-									<Bundle-Name>FetchStatisticsAuxEnhancer</Bundle-Name>
-								</manifestEntries>
-							</archive>
-							<excludes>
-								<exclude>README.txt</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
