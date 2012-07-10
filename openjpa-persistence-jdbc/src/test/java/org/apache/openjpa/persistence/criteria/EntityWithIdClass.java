@@ -23,13 +23,13 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 
 /**
- * A persistent class using a {@link TestId separate class} as its primary identifier.
+ * A persistent class using a {@link IdTestClass separate class} as its primary identifier.
  * 
  * @author Pinaki Poddar
  *
  */
 @Entity
-@IdClass(TestId.class)
+@IdClass(IdTestClass.class)
 public class EntityWithIdClass {
 	@Id
 	private String name;

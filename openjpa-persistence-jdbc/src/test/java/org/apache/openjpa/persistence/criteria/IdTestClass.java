@@ -31,7 +31,7 @@ package org.apache.openjpa.persistence.criteria;
  * @author Pinaki Poddar
  *
  */
-public class TestId {
+public class IdTestClass {
         String name;
         long   ssn;
         
@@ -52,7 +52,7 @@ public class TestId {
                         return false;
                 if (getClass() != obj.getClass())
                         return false;
-                TestId other = (TestId) obj;
+                IdTestClass other = (IdTestClass) obj;
                 if (name == null) {
                         if (other.name != null)
                                 return false;
