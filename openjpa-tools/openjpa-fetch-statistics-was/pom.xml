@@ -45,7 +45,7 @@
 	</licenses>
 
 	<build>
-		<finalName>${artifactId}-${project.version}-no-dependencies</finalName>
+		<!-- <finalName>${artifactId}-${project.version}-no-dependencies</finalName>  -->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -71,13 +71,13 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-						<finalName>${artifactId}-${project.version}</finalName>
+						<!-- <finalName>${artifactId}-${project.version}-all</finalName>  -->
 							<artifactSet>
 								<includes>
 									<include>org.apache.openjpa:*statistics</include>
 								</includes>
 							</artifactSet>
-							<shadedArtifactAttached>false</shadedArtifactAttached>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
