@@ -204,6 +204,7 @@ public class LifecycleMetaData
                 return _declared;
             if (_declared == null && _ignoreSups == 0) {
                 _high = supMeta._high;
+                _activated = true;
                 return supMeta._all;
             }
             // don't hold strong refs onto redundant info
