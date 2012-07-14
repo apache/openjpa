@@ -22,9 +22,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -703,6 +706,32 @@ public abstract class AbstractCFMetaDataFactory
                             cparser, names, true, file);
                         continue;
                     }
+                }
+                if ("vfs".equals(url.getProtocol())) {
+                    if (log.isTraceEnabled()) {
+                        log.trace(_loc.get("scanning-vfs-url", url));
+                    }
+
+                    final URLConnection conn = url.openConnection();
+                    final Object vfsContent = conn.getContent();
+                    final URL finalUrl = url;
+                    File file = AccessController.doPrivileged(new PrivilegedAction<File>() {
+                        @SuppressWarnings({ "rawtypes", "unchecked" })
+                        public File run() {
+                            try {
+                                Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
+                                Method getPhysicalFile = virtualFileClass.getDeclaredMethod("getPhysicalFile");
+                                return (File) getPhysicalFile.invoke(vfsContent);
+                            } catch (Exception e) {
+                                log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
+                            }
+                            return null;
+                        }
+                    });
+                    if (file != null)
+                        scan(new FileMetaDataIterator(file, newMetaDataFilter()), cparser, names, true, file);
+
+                    continue;
                 }
                 if ("jar".equals(url.getProtocol())) {
                     if (url.getPath().endsWith("!/")) {
