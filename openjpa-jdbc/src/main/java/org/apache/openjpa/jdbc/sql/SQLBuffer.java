@@ -189,9 +189,28 @@ public final class SQLBuffer
         }
 
         if (_userIndex != null) {
-            // fix up user parameter index
+            // fix up user parameter index(s)
             for (int i = 0; i < _userIndex.size(); i+=2) {
-                _userIndex.set(i, _userParams.indexOf(_userIndex.get(i+1)));
+            	Object param = _userIndex.get(i+1);
+                
+            	Object previousParam = (i > 0) ? _userIndex.get(i-1) : null;            	
+            	if ( param != previousParam) {
+            		_userIndex.set(i, _userParams.indexOf(param));
+            	}else{
+            		//if there are multiple parameters for the in clause or the combined PK field, 
+            		//we got duplicate param objects in _userParams list. 
+            		//In order to find the right index, we have to skip params that's checked already.
+            		int previousUserIndex = (Integer)_userIndex.get(i-2);
+            		int userParamindex = 0;
+
+                	for(Object next : _userParams){
+                        if (next == param && userParamindex > previousUserIndex) {
+                            _userIndex.set(i, userParamindex);
+                            break;
+                      }
+                      userParamindex++;
+                	}
+            	}            	
             }
         }
     }
