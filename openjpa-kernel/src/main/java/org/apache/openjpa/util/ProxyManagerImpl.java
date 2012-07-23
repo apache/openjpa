@@ -291,6 +291,9 @@ public class ProxyManagerImpl
             return (Proxy) orig;
         if (ImplHelper.isManageable(orig))
             return null;
+        if (!isProxyable(orig.getClass()))
+            return null;
+        
         if (orig instanceof Collection) {
             Comparator comp = (orig instanceof SortedSet) 
                 ? ((SortedSet) orig).comparator() : null;
@@ -597,6 +600,21 @@ public class ProxyManagerImpl
     private static void assertNotFinal(Class type) {
         if (Modifier.isFinal(type.getModifiers()))
             throw new UnsupportedException(_loc.get("no-proxy-final", type));
+    }
+    
+    private static boolean isProxyable(Class<?> cls){
+        int mod = cls.getModifiers();
+        if(Modifier.isFinal(mod))
+            return false;
+        if(Modifier.isProtected(mod) || Modifier.isPublic(mod))
+            return true;
+        // Default scoped class, we can only extend if it is in the same package as the generated proxy. Ideally
+        // we'd fix the code gen portion and place proxies in the same pacakge as the types being proxied.
+        if(cls.getPackage().getName().equals("org.apache.openjpa.util"))
+            return true;
+        
+        return false;
+                    
     }
 
     /**
