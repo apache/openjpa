@@ -43,6 +43,11 @@ public class TokenReplacedStream {
      * input stream will be replaced by the (i+1)-th String in the output writer. 
      */
     public void replace(InputStream in, Writer out, String... prs) throws IOException {
+        BufferedReader inRdr = new BufferedReader(new InputStreamReader(in));
+        replace(inRdr, out, prs);
+    }
+
+    public void replace(Reader in, Writer out, String... prs) throws IOException {
         if (prs.length%2 != 0) 
             throw new IllegalArgumentException("Even number of pattern/string pairs: " + Arrays.toString(prs) 
                 + ". Must be even number of arguments.");
