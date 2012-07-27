@@ -202,7 +202,7 @@ public class FormatPreservingProperties extends Properties {
      * Circumvents the superclass {@link #putAll} implementation,
      * putting all the key-value pairs via {@link #put}.
      */
-    public void putAll(Map m) {
+    public synchronized void putAll(Map m) {
         Map.Entry e;
         for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
             e = (Map.Entry) iter.next();
@@ -213,12 +213,12 @@ public class FormatPreservingProperties extends Properties {
     /**
      * Removes the key from the bookkeeping collectiotns as well.
      */
-    public Object remove(Object key) {
+    public synchronized Object remove(Object key) {
         newKeys.remove(key);
         return super.remove(key);
     }
 
-    public void clear() {
+    public synchronized void clear() {
         super.clear();
 
         if (source != null)
@@ -228,7 +228,7 @@ public class FormatPreservingProperties extends Properties {
         modifiedKeys.clear();
     }
 
-    public Object clone() {
+    public synchronized Object clone() {
         FormatPreservingProperties c = (FormatPreservingProperties)
             super.clone();
 
@@ -257,7 +257,7 @@ public class FormatPreservingProperties extends Properties {
         isNotDeserializing = true;
     }
 
-    public Object put(Object key, Object val) {
+    public synchronized Object put(Object key, Object val) {
         Object o = super.put(key, val);
 
         // if we're no longer loading from properties and this put
@@ -281,7 +281,7 @@ public class FormatPreservingProperties extends Properties {
      *
      * @see Properties#load
      */
-    public void load(InputStream in) throws IOException {
+    public synchronized void load(InputStream in) throws IOException {
         isLoading = true;
         try {
             loadProperties(in);
