@@ -245,9 +245,9 @@ public class QueryKey
         key._accessPathClassNames = accessPathClassNames;
         key._timeout = timeout;
         key._query = q.getQueryString();
-        if (key._query == null) {
-            // this can be a criteria query
-            key._query = parsed;
+        if (key._query == null && parsed != null) {
+            // this is a criteria query. Store the Stringified query value rather than the full cq.
+            key._query = parsed.toString();
         }
         key._ignoreChanges = q.getIgnoreChanges();
         key._rangeStart = startIdx;
