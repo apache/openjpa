@@ -30,7 +30,7 @@ public class TestSecondaryTable extends SingleEMFTestCase {
     }
 
     /**
-     * Added for OPENJPA-22229.
+     * Added for OPENJPA-2247.
      */
     public void testMappingInfo() {
         FieldMapping fm = getMapping(Parent.class).getFieldMapping("child");
