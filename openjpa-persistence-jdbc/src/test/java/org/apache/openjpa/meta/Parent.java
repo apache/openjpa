@@ -26,7 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 
-@Entity
+@Entity(name="META_PARENT")
 @SecondaryTable(name = "ParentSecondaryTable", pkJoinColumns = 
     { @PrimaryKeyJoinColumn(name = "idParent", referencedColumnName = "idParent") })
 public class Parent {
