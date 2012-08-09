@@ -45,7 +45,7 @@
             </pluginRepositories>
 
             <properties>
-                <hsqldb.version>1.8.0.7</hsqldb.version>
+                <hsqldb.version>${hsqldb.version}</hsqldb.version>
             </properties>
         </profile>
     </profiles>
