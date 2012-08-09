@@ -212,7 +212,7 @@ public class DB2Dictionary
 
         // ... and finish the cast
         if (toCast) {
-            Class c = ((Lit) val).getType();
+            Class<?> c = ((Lit) val).getType();
             int javaTypeCode = JavaTypes.getTypeCode(c);
             int jdbcTypeCode = getJDBCType(javaTypeCode, false);
             String typeName = getTypeName(jdbcTypeCode);
@@ -221,7 +221,7 @@ public class DB2Dictionary
             // if the literal is a string, use the default char col size
             // in the cast statement.
             if (String.class.equals(c))
-                selectSQL.append("(" + characterColumnSize + ")");
+                selectSQL.append("(" + getCastStringColumnSize(val) + ")");
 
             selectSQL.append(")");
         }
@@ -780,7 +780,7 @@ public class DB2Dictionary
         String type = getTypeName(getJDBCType(JavaTypes.getTypeCode(val
             .getType()), false));
         if (String.class.equals(val.getType()))
-            type = type + "(" + characterColumnSize + ")";
+            type = type + "(" + getCastStringColumnSize(val) + ")";
         fstring = "CAST(? AS " + type + ")";
         return fstring;
     }
@@ -908,7 +908,7 @@ public class DB2Dictionary
                 // case "(?" - convert to "CAST(? AS type"
                 String typeName = getTypeName(type);
                 if (String.class.equals(val.getType()))
-                    typeName = typeName + "(" + characterColumnSize + ")";
+                    typeName = typeName + "(" + getCastStringColumnSize(val) + ")";
                 String str = "CAST(? AS " + typeName + ")";
                 buf.replaceSqlString(sqlString.length() - 1,
                         sqlString.length(), str);
@@ -943,7 +943,7 @@ public class DB2Dictionary
     String nullSafe(String s) {
         return s == null ? "" : s;
     }
-    
+
     public void insertBlobForStreamingLoad(Row row, Column col, 
             JDBCStore store, Object ob, Select sel) throws SQLException {
         if (ob != null) {
@@ -1083,5 +1083,19 @@ public class DB2Dictionary
                 throw e;                
             }
         }
+    }
+
+    private int getCastStringColumnSize(Object val) {
+        int colSize = characterColumnSize;
+        if (val instanceof Lit) {
+            String literal = (String) ((Lit) val).getValue();
+            if (literal != null) {
+                int literalLen = literal.length();
+                if (literalLen > characterColumnSize) {
+                    colSize = literalLen;
+                }
+            }
+        }
+        return colSize;
     }
 }
