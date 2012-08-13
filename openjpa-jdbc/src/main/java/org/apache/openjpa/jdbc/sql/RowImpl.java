@@ -685,8 +685,6 @@ public class RowImpl
                 && col.getDefaultString() != null)
                 return;
         }
-        if (val == null && col.isNotNull())
-            val = JavaSQLTypes.getEmptyValue(col.getJavaType());
         flush(col, val, metaType, true);
     }
 

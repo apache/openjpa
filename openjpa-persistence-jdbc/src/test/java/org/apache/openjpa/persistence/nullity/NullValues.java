@@ -23,6 +23,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 /**
@@ -32,6 +34,7 @@ import javax.persistence.Version;
  *
  */
 @Entity
+@Table(uniqueConstraints=@UniqueConstraint(columnNames={"UNS"}))
 public class NullValues {
 	@Id
 	@GeneratedValue
@@ -61,6 +64,9 @@ public class NullValues {
 	@Basic(optional=false)
 	private BlobValue notOptionalBlob;
 	
+	@Column(name="UNS")
+	private String uniqueNullable;
+	
 	@Version
 	private int version;
 	
@@ -78,6 +84,7 @@ public class NullValues {
 		setNotNullableBlob(new BlobValue());
 		setOptionalBlob(new BlobValue());
 		setNotOptionalBlob(new BlobValue());
+		setUniqueNullable("");
 	}
 	
 	public long getId() {
@@ -148,6 +155,14 @@ public class NullValues {
 		this.notOptionalBlob = notOptionalBlob;
 	}
 	
+    public String getUniqueNullable() {
+        return uniqueNullable;
+    }
+	
+    public void setUniqueNullable(String s) {
+        uniqueNullable = s;
+    }
+    
 	public int getVersion() { 
 	    return version;
 	}

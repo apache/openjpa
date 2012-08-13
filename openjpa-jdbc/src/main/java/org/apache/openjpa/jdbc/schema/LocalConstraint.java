@@ -62,6 +62,9 @@ public abstract class LocalConstraint
      */
     void remove() {
         // remove all columns
+        for (Column c : _cols) {
+            c.removeConstraint(this);
+        }
         setColumns(null);
         super.remove();
     }
@@ -105,6 +108,7 @@ public abstract class LocalConstraint
 
         _colList.add(col);
         _cols = null;
+        col.addConstraint(this);
     }
 
     /**
@@ -118,6 +122,7 @@ public abstract class LocalConstraint
             return false;
         if (_colList.remove(col)) {
             _cols = null;
+            col.removeConstraint(this);
             return true;
         }
         return false;

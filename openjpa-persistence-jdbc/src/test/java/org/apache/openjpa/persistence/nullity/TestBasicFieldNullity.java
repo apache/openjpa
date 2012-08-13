@@ -18,8 +18,16 @@
  */
 package org.apache.openjpa.persistence.nullity;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.RollbackException;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.SybaseDictionary;
 import org.apache.openjpa.persistence.InvalidStateException;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
@@ -33,8 +41,10 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  */
 public class TestBasicFieldNullity extends AbstractNullityTestCase {
 
+    private DBDictionary dict = null;
     public void setUp() {
         setUp(CLEAR_TABLES, NullValues.class);
+        dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
     }
 
     public void testNullOnOptionalFieldIsAllowed() {
@@ -112,6 +122,67 @@ public class TestBasicFieldNullity extends AbstractNullityTestCase {
     	
     	pc.setNotNullableBlob(null);
     	assertCommitFails(pc, !NEW, RollbackException.class);
+    }
+    
+    
+    public void testUniqueStringColumnCanBeNull() {
+        if (!isUniqueColumnNullable()) {
+            return;
+        }
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(null);
+        assertCommitSucceeds(pc, NEW);
+    }
+    
+    public void testUniqueStringColumnAsNull() {
+        if (!isUniqueColumnNullable()) {
+            return;
+        }
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(null);
+        assertCommitSucceeds(pc, NEW);
+        
+        String jpql = "select n from NullValues n where n.uniqueNullable = :p";
+        EntityManager em = emf.createEntityManager();
+        List<NullValues> result = em.createQuery(jpql)
+                                    .setParameter("p", null)
+                                    .getResultList();
+        assertFalse(result.isEmpty());
+        for (NullValues n : result)
+            assertNull(n.getUniqueNullable());
+    }
+    
+    public void testUniqueStringColumnAsEmpty() {
+        String EMPTY_STRING = "";
+        NullValues pc = new NullValues();
+        pc.setUniqueNullable(EMPTY_STRING);
+        assertCommitSucceeds(pc, NEW);
+        
+        String jpql = "select n from NullValues n where n.uniqueNullable = :p";
+        if (dict instanceof OracleDictionary)
+            jpql = "select n from NullValues n where n.uniqueNullable IS NULL";
+        EntityManager em = emf.createEntityManager();
+        Query  query = em.createQuery(jpql);
+        if (!(dict instanceof OracleDictionary))
+            query.setParameter("p", EMPTY_STRING);
+        List<NullValues> result = query.getResultList();
+        assertFalse(result.isEmpty());
+        for (NullValues n : result) {
+            if (dict instanceof OracleDictionary) {
+                assertNull(n.getUniqueNullable());
+            }
+            else if (dict instanceof SybaseDictionary) { 
+                // Sybase converts empty strings to "" 
+                assertEquals(" ", n.getUniqueNullable());
+            }
+            else {
+                assertEquals(EMPTY_STRING, n.getUniqueNullable());
+            }
+        }
+    }
+    
+    boolean isUniqueColumnNullable() {
+        return ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance().supportsNullUniqueColumn;
     }
 }
 
