@@ -196,6 +196,7 @@ public class DBDictionary
     public boolean supportsRestrictDeleteAction = true;
     public boolean supportsCascadeDeleteAction = true;
     public boolean supportsNullDeleteAction = true;
+    public boolean supportsNullUniqueColumn = true;
     public boolean supportsDefaultDeleteAction = true;
     public boolean supportsRestrictUpdateAction = true;
     public boolean supportsCascadeUpdateAction = true;
@@ -1303,8 +1304,12 @@ public class DBDictionary
                 if (col != null && (col.getType() == Types.CLOB
                     || col.getType() == Types.LONGVARCHAR))
                     setClobString(stmnt, idx, (String) val, col);
-                else
-                    setString(stmnt, idx, (String) val, col);
+                else {
+                    if (val instanceof String)
+                        setString(stmnt, idx, (String) val, col);
+                    else
+                        setString(stmnt, idx, val.toString(), col);
+                }
                 break;
             case JavaTypes.OBJECT:
                 setBlobObject(stmnt, idx, val, col, store);
@@ -3589,7 +3594,7 @@ public class DBDictionary
         if (!alter) {
             if (col.getDefaultString() != null && !col.isAutoAssigned())
                 buf.append(" DEFAULT ").append(col.getDefaultString());
-            if (col.isNotNull())
+            if (col.isNotNull() || (!supportsNullUniqueColumn && col.hasConstraint(Unique.class)))
                 buf.append(" NOT NULL");
         }
         if (col.isAutoAssigned()) {

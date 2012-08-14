@@ -68,6 +68,7 @@ public class DerbyDictionary
         supportsSimpleCaseExpression = false;
 
         supportsComments = true;
+        supportsNullUniqueColumn = false;
 
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "BIGINT", "INTEGER",

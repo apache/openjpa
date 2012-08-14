@@ -128,6 +128,7 @@ public class DB2Dictionary
         supportsDefaultDeleteAction = false;
         supportsAlterTableWithDropColumn = false;
         supportsLockingWithOrderClause = true;
+        supportsNullUniqueColumn = false;
 
         supportsNullTableForGetColumns = false;
         requiresCastForMathFunctions = true;

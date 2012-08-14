@@ -573,6 +573,7 @@ public class ForeignKey
         if (_joins == null)
             _joins = new LinkedHashMap();
         _joins.put(local, toPK);
+        local.addConstraint(this);
         if (_joinsPK == null)
             _joinsPK = new LinkedHashMap();
         _joinsPK.put(toPK, local);
@@ -629,6 +630,7 @@ public class ForeignKey
 
         if (_joins != null) {
             rem = _joins.remove(col);
+            col.removeConstraint(this);
             if (rem != null) {
                 _locals = null;
                 _pks = null;
