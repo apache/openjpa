@@ -693,12 +693,19 @@ public class Configurations {
     public static Object removeProperty(String partialKey, Map props) {
         if (partialKey == null || props == null || props.isEmpty())
             return null;
- 	if (containsProperty(partialKey, props))
-	    return props.remove(ProductDerivations.getConfigurationKey(partialKey, props));
-	else 
-	    return null;
+        
+        if (containsProperty(partialKey, props))
+            return props.remove(ProductDerivations.getConfigurationKey(partialKey, props));
+        else 
+            return null;
     }
 
+    public static void removeProperty(String partialKey, Map<?,?> remaining, Map<?,?> props) {
+        if (removeProperty(partialKey, remaining) != null) {
+            removeProperty(partialKey, props);
+        }
+    }
+    
     /**
      * Runs <code>runnable</code> against all the anchors in the configuration
      * pointed to by <code>opts</code>. Each invocation gets a fresh clone of 
