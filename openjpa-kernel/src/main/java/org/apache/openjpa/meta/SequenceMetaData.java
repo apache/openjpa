@@ -275,10 +275,20 @@ public class SequenceMetaData
             PluginValue plugin = newPluginValue("sequence-plugin");
             plugin.setString(_plugin);
             String clsName = plugin.getClassName();
-
-            Class cls = Class.forName(clsName, true,
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(Seq.class)));
+            Class cls = null;
+            
+            try {
+                cls = Class.forName(clsName, true,
+                    AccessController.doPrivileged(
+                        J2DoPrivHelper.getClassLoaderAction(Seq.class)));
+            } catch (ClassNotFoundException cnfe) {
+                // Target sequence type is loaded by the ClassLoader responsible for OpenJPA classes.
+                // This can happen if the custom sequence implementation is a class that belongs to
+                // a child ClassLoader - a situation that can easily happen in a JEE environment.
+                // Fall back to the envLoader to try load the class.
+                cls = Class.forName(clsName, true, envLoader);
+            }
+            
             StringBuilder props = new StringBuilder();
             if (plugin.getProperties() != null)
                 props.append(plugin.getProperties());
