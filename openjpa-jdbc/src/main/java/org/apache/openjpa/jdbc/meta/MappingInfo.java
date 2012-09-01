@@ -738,7 +738,8 @@ public abstract class MappingInfo
                 type = dict.getPreferredType(otype);
             }
             typeName = given.getTypeName();
-            size = given.getSize();
+            if (given.getSize() > 0)
+                size = given.getSize();
             decimals = given.getDecimalDigits();
 
             // leave this info as the template defaults unless the user
