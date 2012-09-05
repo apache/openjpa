@@ -118,7 +118,7 @@ public class ConfigurationImpl
     private boolean _globals = false;
     private String _auto = null;
     private final List<Value> _vals = new ArrayList<Value>();
-    private Set<String> _supportedKeys;
+    private Set<String> _supportedKeys = new TreeSet<String>();
     
     // property listener helper
     private PropertyChangeSupport _changeSupport = null;
@@ -697,16 +697,16 @@ public class ConfigurationImpl
      * The Values that are {@linkplain Value#makePrivate() marked private} are filtered out. 
      */
     public Set<String> getPropertyKeys() {
-        if (_supportedKeys != null) 
-            return _supportedKeys;
-        
-        _supportedKeys = new TreeSet<String>();
-        for (Value val : _vals) {
-            if (val.isPrivate())
-                continue;
-            List<String> keys = val.getPropertyKeys();
-            for (String key : keys) {
-                _supportedKeys.add(fixPrefix(key));
+        synchronized (_supportedKeys) {
+            if (_supportedKeys.size() == 0) {
+                for (Value val : _vals) {
+                    if (val.isPrivate())
+                        continue;
+                    List<String> keys = val.getPropertyKeys();
+                    for (String key : keys) {
+                        _supportedKeys.add(fixPrefix(key));
+                    }
+                }
             }
         }
         return _supportedKeys;
