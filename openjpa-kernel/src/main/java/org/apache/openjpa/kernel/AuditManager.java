@@ -43,7 +43,7 @@ import org.apache.openjpa.event.TransactionListener;
 /**
  * Controller for audit facility.
  * This controller performs the following basic duties:
- * <LI> Records auditable types at class laoding time
+ * <LI> Records auditable types at class loading time
  * <LI> Listens to instance life cycle changes and transaction.
  * <LI> Collects auditable instances on instance life cycle changes.
  * <LI> Delegates real auditing to the {@link Auditor} at transaction boundary.
@@ -143,24 +143,32 @@ public class AuditManager extends InMemorySavepointManager
 		}
 	}
 	
+	private void forget(Broker broker) {
+		AuditCallback cb = _saved.remove(broker);
+		if (cb != null) {
+			broker.removeLifecycleListener(cb);
+			cb.clear();
+		}
+	}
+	
 	@Override
 	public void afterCommit(TransactionEvent event) {
-		_saved.remove(event.getSource());
+		forget((Broker)event.getSource());
 	}
 
 	@Override
 	public void afterRollback(TransactionEvent event) {
-		_saved.remove(event.getSource());
+		forget((Broker)event.getSource());
 	}
 
 	@Override
 	public void afterCommitComplete(TransactionEvent event) {
-		_saved.remove(event.getSource());
+		forget((Broker)event.getSource());
 	}
 
 	@Override
 	public void afterRollbackComplete(TransactionEvent event) {
-		_saved.remove(event.getSource());
+		forget((Broker)event.getSource());
 	}
 	
 	@Override
@@ -292,6 +300,10 @@ public class AuditManager extends InMemorySavepointManager
 				copy.pcReplaceStateManager(null);
 				_audits.put(sm, copy);
 			}
+		}
+		
+		void clear() {
+			_audits.clear();
 		}
 		
 		/**

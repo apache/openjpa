@@ -22,6 +22,8 @@ import java.util.BitSet;
 
 import org.apache.openjpa.audit.AuditableOperation;
 import org.apache.openjpa.enhance.PersistenceCapable;
+import org.apache.openjpa.enhance.Reflection;
+import org.apache.openjpa.meta.FieldMetaData;
 
 /**
  * Carries immutable information about an audited persistent instance.
@@ -73,9 +75,39 @@ public final class Audited {
 		String[] names = new String[dirty.cardinality()];
 		int j = 0;
 		for (int pos = dirty.nextSetBit(0); pos != -1; pos = dirty.nextSetBit(pos+1)) {
-			names[j++] = _sm.getMetaData().getField(pos).getName();
+			names[j++] = _sm.getMetaData().getField(pos).getName();		
 		}
 		return names;
+	}
+	
+	/**
+	 * Gets the value of the given field of the managed object.
+	 * 
+	 * @param field name of a persistent property
+	 * @return value of the given field in the managed instance
+	 * @exception IllegalArgumentException if the named field is not a persistent property 
+	 */
+	public Object getManangedFieldValue(String field) {
+		FieldMetaData fmd = _sm.getMetaData().getField(field);
+		if (fmd == null) {
+			throw new IllegalArgumentException(field + " does not exist in " + _original);
+		}
+		return _sm.fetch(fmd.getIndex());
+	}
+	
+	/**
+	 * Gets the value of the given field of the original state of the object.
+	 * 
+	 * @param field name of a persistent property
+	 * @return value of the given field in the original instance
+	 * @exception IllegalArgumentException if the named field is not a persistent property 
+	 */
+	public Object getOriginalFieldValue(String field) {
+		try {
+			return Reflection.getValue(_original, field, true);
+		} catch (Exception e) {
+			throw new IllegalArgumentException(field + " does not exist in " + _original);
+		}
 	}
 	
 	/**
