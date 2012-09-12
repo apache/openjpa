@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.audit;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -34,18 +36,25 @@ import javax.persistence.Id;
 @Auditable
 public class X {
 	@Id
-	@GeneratedValue
 	private long id;
 	
 	private String name;
 	private int price;
 	
+	private static AtomicLong ID_GENERATOR = new AtomicLong(System.currentTimeMillis());
+	
+	public X() {
+		id = ID_GENERATOR.getAndIncrement();
+	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	public int getPrice() {
 		return price;
 	}

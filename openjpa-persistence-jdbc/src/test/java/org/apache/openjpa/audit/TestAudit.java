@@ -19,6 +19,8 @@
 package org.apache.openjpa.audit;
 
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -132,6 +134,37 @@ public class TestAudit extends TestCase {
     	assertTrue(entry.getUpdatedFields().contains("price"));
     }
     
+    public void testAuditDoesNotLeakMemory() {
+    	int N = 1000;
+    	EntityManager em = emf.createEntityManager();
+	   	long m2 = insert(N, em);
+    	em = Persistence.createEntityManagerFactory("no-audit").createEntityManager();
+    	assertNull(OpenJPAPersistence.cast(em).getEntityManagerFactory().getConfiguration().getAuditorInstance());
+		long m0 = insert(N, em);
+    	System.err.println("Memory used with no auditor " + m0);
+    	System.err.println("Memory used with auditor " + m2);
+		double pct = 100.0*(m2-m0)/m0;
+		System.err.println("Extra memory with auditor " + pct);
+    	assertTrue(pct < 10.0);
+    }
+    
+    private long insert(int N, EntityManager em) {
+    	assertTrue(ensureGarbageCollection());
+    	long m1 = Runtime.getRuntime().freeMemory();
+    	em.getTransaction().begin();
+    	for (int i = 0; i < N; i++) {
+    		X x = new X();
+    		x.setName("X"+System.currentTimeMillis());
+    		em.persist(x);
+    	}
+    	em.getTransaction().commit();
+    	assertTrue(ensureGarbageCollection());
+    	long m2 = Runtime.getRuntime().freeMemory();
+    	long mused = m1-m2;
+    	
+    	return mused;
+    }
+    
     /**
      * Finds the latest audit entry of the given operation type.
      * The <em>latest</em> is determined by a sort on identifier which is assumed to be monotonically ascending.
@@ -143,6 +176,21 @@ public class TestAudit extends TestCase {
                 .setMaxResults(1).setParameter("op", op).getResultList();
         return entry.get(0);
     }
+    
+	public boolean ensureGarbageCollection() {
+		ReferenceQueue<Object> detector = new ReferenceQueue<Object>();
+		Object marker = new Object();
+		WeakReference<Object> ref = new WeakReference<Object>(marker, detector);
+		marker = null;
+		System.gc();
+		try {
+			return detector.remove() == ref;
+		} catch (InterruptedException e) {
+			
+		}
+		return false;
+	}
+
 
 
 }

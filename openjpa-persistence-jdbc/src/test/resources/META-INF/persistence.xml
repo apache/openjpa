@@ -452,6 +452,15 @@
 			<property name="openjpa.DynamicEnhancementAgent" value="false" />
 		</properties>
 	</persistence-unit>
+	<persistence-unit name="no-audit">
+		<class>org.apache.openjpa.audit.X</class>
+		<class>org.apache.openjpa.audit.AuditedEntry</class>
+
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+			<property name="openjpa.DynamicEnhancementAgent" value="false" />
+		</properties>
+	</persistence-unit>
 
 	<persistence-unit name="query-result">
 		<mapping-file>META-INF/query-result-orm.xml</mapping-file>
