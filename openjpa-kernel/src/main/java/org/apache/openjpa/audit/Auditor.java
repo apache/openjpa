@@ -27,14 +27,14 @@ import org.apache.openjpa.lib.util.Closeable;
 
 /**
  * An auditor is responsible for recoding the audited information.
- * OpenJPA runtime will track the auditable instances and invoke
+ * OpenJPA runtime tracks the {@link Auditable auditable} instances and invoke
  * implementation of this interface within a transaction.
  * <br>
  * The user implementation of this interface is configurable via
  * standard OpenJPA plug-in configuration framework.
  * 
  * @author Pinaki Poddar
- *
+ * @since 2.2.0
  */
 public interface Auditor extends Configurable, Closeable {
 	/**

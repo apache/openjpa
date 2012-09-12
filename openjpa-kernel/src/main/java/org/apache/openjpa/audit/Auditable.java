@@ -30,6 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * By default, this annotation enables all operations. 
  * 
  * @author Pinaki Poddar
+ * @since 2.2.0
  *
  */
 @Target({TYPE})
