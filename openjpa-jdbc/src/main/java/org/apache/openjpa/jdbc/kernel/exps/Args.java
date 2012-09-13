@@ -171,11 +171,17 @@ public class Args
         return 0;
     }
 
-    public void appendTo(Select sel, ExpContext ctx, ExpState state, 
-        SQLBuffer sql, int index) {
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index) {
+        appendTo(sel, ctx, state, sql, index, null);
+    }
+    
+    public void appendTo(Select sel, ExpContext ctx, ExpState state, SQLBuffer sql, int index, String operator) {
         ArgsExpState astate = (ArgsExpState) state;
         for (int i = 0; i < _args.length; i++) {
             _args[i].appendTo(sel, ctx, astate.states[i], sql, index);
+            if( operator != null ) {
+                sql.addCastForParam(operator, _args[i]);
+            }
             if (i < _args.length-1)
                 sql.append(", ");
         }
