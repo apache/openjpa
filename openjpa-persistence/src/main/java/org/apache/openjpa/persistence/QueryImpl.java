@@ -572,15 +572,6 @@ public class QueryImpl<X> implements OpenJPAQuerySPI<X>, Serializable {
             }
             return false;
         }
-        
-        // Determine if the query has NULL parameters.  If so, then do not use a PreparedQuery from the cache
-        for (Object val : params.values()) {
-            if (val == null) {
-                ignorePreparedQuery();
-                return false;
-            }
-        }
-        
         Boolean registered = cache.register(_id, _query, fetch);
         boolean alreadyCached = (registered == null);
         String lang = _query.getLanguage();
