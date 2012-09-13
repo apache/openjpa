@@ -46,12 +46,16 @@ public class DatastoreFunction extends UnaryOp {
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
         Args args = (Args) getValue();
-        if (!ctx.store.getDBDictionary().requiresCastForMathFunctions || args.getValues().length == 1) {
+        if (!ctx.store.getDBDictionary().requiresCastForMathFunctions || args.getValues().length == 1)
             super.appendTo(sel, ctx, state, sql, index);
-        } else {
+        else {
             sql.append(getOperator());
             sql.append("(");            
-            args.appendTo(sel, ctx, state, sql, 0, getOperator());
+            args.appendTo(sel, ctx, state, sql, 0);
+            Val[] vals = args.getVals();
+            for (int i = 1; i < vals.length; i++) {
+                sql.addCastForParam(getOperator(), vals[i]);
+            }
             sql.append(")");
         }            
     }

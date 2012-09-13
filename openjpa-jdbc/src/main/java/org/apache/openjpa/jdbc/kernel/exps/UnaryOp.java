@@ -139,16 +139,7 @@ abstract class UnaryOp
         sql.append(getOperator());
         sql.append(_noParen ? " " : "(");
         _val.appendTo(sel, ctx, state, sql, 0);
-       
-        // OPENJPA-2149: If _val (Val) is an 'Arg', we need to get the Val[]
-        // from it, and the single element it contains because the
-        // 'addCastForParam' method gets the 'type' from the Val it receives.
-        // In the case where _val is an Arg, when addCastForParam gets the
-        // type, it will be getting the type of the Val (an Object) rather
-        // the type of the Arg.
-        sql.addCastForParam(getOperator(),
-            (_val instanceof Args) ? (((Args) _val).getVals())[0]
-                                   : _val);
+        sql.addCastForParam(getOperator(), _val);
         if (!_noParen)
             sql.append(")");
     }
