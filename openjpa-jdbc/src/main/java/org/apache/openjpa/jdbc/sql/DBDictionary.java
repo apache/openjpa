@@ -1383,7 +1383,6 @@ public class DBDictionary
     	if (val instanceof Object[]) {
     		Object[] valArray = (Object[])val;
             for (Object object : valArray) {
-                System.out.println("object " + object.getClass().getName());
                 setUnknown(stmt, idx, col, object);
             }
     	}
