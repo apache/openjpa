@@ -1826,7 +1826,12 @@ public class EntityManagerImpl
             if ("null".equals(value)) {
                 return null;
             } else {
-                return Strings.parse((String) value, targetType);
+                String val = (String) value;
+                int parenIndex = val.indexOf('(');
+                if (!String.class.equals(targetType) && (parenIndex > 0)) {
+                    val = val.substring(0, parenIndex);
+                }
+                return Strings.parse(val, targetType);
             }
         }
         return value;
