@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -293,7 +294,7 @@ public class PreparedStatementManagerImpl
      * Provided the JDBC log category is logging warnings, this method will 
      * log any SQL warnings that result from the execution of a SQL statement. 
      */
-    protected void logSQLWarnings(PreparedStatement stmt) {
+    protected void logSQLWarnings(Statement stmt) {
         if (stmt != null && _log != null && _log.isTraceEnabled()) {
             try {
                 SQLWarning warn = stmt.getWarnings();
