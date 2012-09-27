@@ -31,6 +31,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestNativeQueries extends SingleEMFTestCase {
     private static final String TABLE_NAME = "entity_1";
+    private static final String TABLE_NAME_2 = "ENTITY2";
+    
     private static final String CONST_NAME = "testSimple";
     private static final int CONST_INT = 42;
     
@@ -147,6 +149,11 @@ public class TestNativeQueries extends SingleEMFTestCase {
         assertTrue(q.getHints().containsKey(hintKey));
         assertEquals("abc", q.getHints().get(hintKey));
         
+    }
+    
+    public void testNullResult(){
+        String sql = "SELECT max(pk) FROM " + TABLE_NAME_2+ "";
+        assertNull(em.createNativeQuery(sql, Long.class).getSingleResult());
     }
 
     public void assertSize(int num, List l) {

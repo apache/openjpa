@@ -199,7 +199,7 @@ public class ResultPacker {
      * Pack the given object into an instance of the query's result class.
      */
     public Object pack(Object result) {
-        if (_resultClass == result.getClass())
+        if (result == null || _resultClass == result.getClass())
             return result;
         // special cases for efficient basic types where we want to avoid
         // creating an array for call to general pack method below
