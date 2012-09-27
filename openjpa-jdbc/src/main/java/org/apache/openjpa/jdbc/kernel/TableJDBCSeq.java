@@ -474,6 +474,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      */
     private void insertSequence(ClassMapping mapping, Connection conn)
         throws SQLException {
+        
         if (_log.isTraceEnabled())
             _log.trace(_loc.get("insert-seq"));
 
@@ -895,12 +896,20 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 closeConnection(conn);
 
                 if (!sequenceSet) {
-                    // insert a new sequence column. 
-                    // Prefer connection2 / non-jta-data-source when inserting 
-                    // a sequence column regardless of Seq.type.
-                    conn = _conf.getDataSource2(store.getContext())
-                                .getConnection();
-                    insertSequence(mapping, conn);
+                    // insert a new sequence column. Prefer connection2 / non-jta-data-source when inserting a 
+                    // sequence column regardless of Seq.type.
+                    conn = _conf.getDataSource2(store.getContext()).getConnection();
+                    try {
+                        insertSequence(mapping, conn);
+                    } catch (SQLException e) {
+                        // it is possible another thread already got in and inserted this sequence. Try to keep going
+                        if (_log.isTraceEnabled()) {
+                            _log.trace(
+                                "Caught an exception while trying to insert sequence. Will try to reselect the " +
+                                "seqence. ", e);
+                        }
+                    }
+                    
                     conn.close();
 
                     // now we should be able to update using the connection per
