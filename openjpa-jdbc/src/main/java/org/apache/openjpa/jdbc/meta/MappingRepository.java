@@ -88,7 +88,6 @@ import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -1084,7 +1083,10 @@ public class MappingRepository extends MetaDataRepository {
             field.getAssociationType() == FieldMetaData.MANY_TO_ONE &&
             hasJoinTable(field) && 
             !isBidirectional(field))  {
-            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            List<Column> cols = field.getElementMapping().getValueInfo().getColumns();
+            if (cols != null && cols.size() > 0) {
+                field.getValueMapping().getValueInfo().setColumns(cols);
+            }
             return true;
         }
         return false;
@@ -1095,7 +1097,10 @@ public class MappingRepository extends MetaDataRepository {
             field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
             hasJoinTable(field) && 
             !isBidirectional(field)) {
-            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            List<Column> cols = field.getElementMapping().getValueInfo().getColumns();
+            if (cols != null && cols.size() > 0) {
+                field.getValueMapping().getValueInfo().setColumns(cols);
+            }
             return true;
         }
         return false;
@@ -1106,7 +1111,10 @@ public class MappingRepository extends MetaDataRepository {
             field.getAssociationType() == FieldMetaData.ONE_TO_ONE && 
             hasJoinTable(field) && 
             isBidirectional(field)) {
-            field.getValueMapping().getValueInfo().setColumns(field.getElementMapping().getValueInfo().getColumns());
+            List<Column> cols = field.getElementMapping().getValueInfo().getColumns();
+            if (cols != null && cols.size() > 0) {
+                field.getValueMapping().getValueInfo().setColumns(cols);
+            }
             return true;
         }
         return false;
