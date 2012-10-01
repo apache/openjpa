@@ -22,6 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -41,4 +42,11 @@ public class Parent {
     @JoinColumn(name = "CHILD_REF", table = "ParentSecondaryTable", referencedColumnName = "idChild")
     PChild child;
 
+    @OneToOne
+    @JoinColumn(name = "CHILDBI_REF", table = "ParentSecondaryTable", referencedColumnName = "idChild")
+    PChildBi childbi;
+
+    @ManyToOne
+    @JoinColumn(name = "CHILDREN_REF", table = "ParentSecondaryTable", referencedColumnName = "idChild")
+    PChild children;
 }

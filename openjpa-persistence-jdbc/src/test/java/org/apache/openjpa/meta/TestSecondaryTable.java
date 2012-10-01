@@ -23,7 +23,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestSecondaryTable extends SingleEMFTestCase {
     public void setUp() {
-        setUp(Parent.class, PChild.class
+        setUp(Parent.class, PChild.class, PChildBi.class
         // Hard code to 2.0 p.xml value. If the p.xml is 1.0, this value will be changed to false, and the test
         // won't fail.
             , "openjpa.Compatibility", "NonDefaultMappingAllowed=true");
@@ -36,6 +36,13 @@ public class TestSecondaryTable extends SingleEMFTestCase {
         FieldMapping fm = getMapping(Parent.class).getFieldMapping("child");
         assertNotNull(fm);
         assertEquals("CHILD_REF", fm.getColumns()[0].getIdentifier().getName());
-    }
 
+        fm = getMapping(Parent.class).getFieldMapping("childbi");
+        assertNotNull(fm);
+        assertEquals("CHILDBI_REF", fm.getColumns()[0].getIdentifier().getName());
+
+        fm = getMapping(Parent.class).getFieldMapping("children");
+        assertNotNull(fm);
+        assertEquals("CHILDREN_REF", fm.getColumns()[0].getIdentifier().getName());
+    }
 }
