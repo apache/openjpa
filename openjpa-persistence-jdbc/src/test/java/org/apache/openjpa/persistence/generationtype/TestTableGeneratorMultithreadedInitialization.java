@@ -24,18 +24,9 @@ import javax.persistence.EntityManagerFactory;
 import org.apache.openjpa.persistence.test.AbstractPersistenceTestCase;
 
 public class TestTableGeneratorMultithreadedInitialization extends AbstractPersistenceTestCase {
-    Object[] props = new Object[] { Dog.class
-    // , "openjpa.Log", "SQL=trace"
-        };
+    Object[] props = new Object[] { Dog.class, CLEAR_TABLES };
 
     public void setUp() throws Exception {
-        EntityManagerFactory emf = createNamedEMF(getPersistenceUnitName(), props);
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.createNativeQuery("DROP TABLE ID_Gen").executeUpdate();
-        em.createNativeQuery("DROP TABLE dog").executeUpdate();
-        em.getTransaction().commit();
-        emf.close();
     }
 
     public void test() throws Exception {
