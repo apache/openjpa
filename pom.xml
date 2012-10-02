@@ -105,8 +105,8 @@
     </issueManagement>
 
     <ciManagement>
-        <system>Hudson</system>
-        <url>https://hudson.apache.org/hudson/job/OpenJPA-trunk-deploy/</url>
+        <system>Jenkins</system>
+        <url>https://builds.apache.org/job/OpenJPA-trunk-deploy/</url>
     </ciManagement>
 
     <inceptionYear>2006</inceptionYear>
