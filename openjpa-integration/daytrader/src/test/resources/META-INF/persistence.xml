@@ -21,7 +21,6 @@
 
     <persistence-unit name="daytrader">
         <description>PU for Daytrader tests</description>
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.apache.openjpa.integration.daytrader.AccountDataBean</class>
         <class>org.apache.openjpa.integration.daytrader.AccountProfileDataBean</class>
         <class>org.apache.openjpa.integration.daytrader.HoldingDataBean</class>
@@ -34,15 +33,6 @@
             <property name="openjpa.BrokerImpl" value="non-finalizing" />
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/>
-            <!--
-            <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.OperationOrderUpdateManager(batchLimit=0)" /> 
-            <property name="openjpa.jdbc.DBDictionary" value="derby"/>
-            <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
-            <property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-            <property name="openjpa.ConnectionURL" value="jdbc:derby:tradedb;create=true"/>
-            <property name="openjpa.ConnectionProperties" value="DriverClassName=org.apache.derby.jdbc.EmbeddedDriver,Url=jdbc:derby:tradedb;create=true,MaxActive=50,MaxWait=10000,Username=,Password="/>
-             <property name="openjpa.jdbc.MappingDefaults" value="ForeignKeyDeleteAction=restrict,JoinForeignKeyDeleteAction=restrict"/>
-            -->
         </properties>
     </persistence-unit>
 </persistence>

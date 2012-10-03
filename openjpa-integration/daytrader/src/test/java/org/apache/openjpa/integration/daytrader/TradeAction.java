@@ -38,8 +38,8 @@ import org.apache.openjpa.lib.log.Log;
  */
 public class TradeAction extends TradeJPADirect {
 
-    public TradeAction(Log log, EntityManagerFactory emf) {
-        super(log, emf);
+    public TradeAction(Log log, EntityManagerFactory emf, boolean poolEm) {
+        super(log, emf, poolEm);
     }
 
     /**

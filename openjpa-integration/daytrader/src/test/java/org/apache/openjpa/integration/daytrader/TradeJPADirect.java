@@ -68,12 +68,34 @@ public class TradeJPADirect {
     private static boolean initialized = false;
 
     protected static Log log = null;
+    boolean _poolEm = true;
+    
+    EntityManager _em;
+    
+    public EntityManager getEm(EntityManagerFactory emf) {
+        if (_poolEm) {
+            if (_em == null)
+                _em = emf.createEntityManager();
+            return _em;
+        }
+        return emf.createEntityManager();
+    }
+    
+    public void putEm(EntityManager em){
+        if(_poolEm)
+            em.clear();
+        else{
+            if(em.isOpen())
+                em.close();
+        }
+    }
     
 
     // constructor for OpenJPA junit tests
-    public TradeJPADirect(Log log, EntityManagerFactory emf) {
+    public TradeJPADirect(Log log, EntityManagerFactory emf, boolean poolEm) {
         this.log = log;
         this.emf = emf;
+        _poolEm = poolEm;
         if (initialized == false)
             init();
     }
@@ -81,14 +103,8 @@ public class TradeJPADirect {
     public static synchronized void init() {
         if (initialized)
             return;
-        //if (Log.isTraceEnabled())
-        //    Log.trace("TradeJPADirect:init -- *** initializing");
 
         TradeConfig.setPublishQuotePriceChange(false);
-
-        //if (Log.isTraceEnabled())
-        //    Log.trace("TradeJPADirect:init -- +++ initialized");
-
         initialized = true;
     }
 
@@ -110,7 +126,7 @@ public class TradeJPADirect {
         /*
          * Creating entiManager
          */
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         try {
             if (log.isTraceEnabled())
@@ -162,7 +178,7 @@ public class TradeJPADirect {
             log.error("TradeJPADirect:getMarketSummary", e);
             throw new RuntimeException("TradeJPADirect:getMarketSummary -- error ", e);
         } finally {
-            entityManager.close();
+            putEm(entityManager);
         }
 
         return marketSummaryData;
@@ -174,7 +190,7 @@ public class TradeJPADirect {
         /*
          * creating entitymanager
          */
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         try {
             if (log.isTraceEnabled())
@@ -214,7 +230,7 @@ public class TradeJPADirect {
             throw new RuntimeException(e);
         } finally {
             if (entityManager != null) {
-                entityManager.close();
+                putEm(entityManager);
                 entityManager = null;
             }
         }
@@ -226,7 +242,7 @@ public class TradeJPADirect {
 
     public OrderDataBean sell(String userID, Integer holdingID,
                               int orderProcessingMode) {
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         OrderDataBean order = null;
         BigDecimal total;
@@ -289,8 +305,7 @@ public class TradeJPADirect {
             throw new RuntimeException("TradeJPADirect:sell(" + userID + "," + holdingID + ")", e);
         } finally {
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
         }
 
@@ -308,7 +323,7 @@ public class TradeJPADirect {
 
     public OrderDataBean completeOrder(Integer orderID, boolean twoPhase)
     throws Exception {
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         OrderDataBean order = null;
 
         if (log.isTraceEnabled())
@@ -391,8 +406,7 @@ public class TradeJPADirect {
                 entityManager.getTransaction().rollback();
         } finally {
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
         }
 
@@ -400,7 +414,7 @@ public class TradeJPADirect {
     }
 
     public void cancelOrder(Integer orderID, boolean twoPhase) {
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:cancelOrder - orderId=" + orderID + " twoPhase=" + twoPhase);
@@ -417,7 +431,7 @@ public class TradeJPADirect {
         catch (Exception e) {
             entityManager.getTransaction().rollback();
         } finally {
-            entityManager.close();
+            putEm(entityManager);
         }
     }
 
@@ -429,11 +443,11 @@ public class TradeJPADirect {
     public Collection<OrderDataBean> getOrders(String userID) {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getOrders - userID=" + userID);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         AccountProfileDataBean profile = entityManager.find(
                                                            AccountProfileDataBean.class, userID);
         AccountDataBean account = profile.getAccount();
-        entityManager.close();
+        putEm(entityManager);
         return account.getOrders();
     }
 
@@ -441,7 +455,7 @@ public class TradeJPADirect {
 
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getClosedOrders - userID=" + userID);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         try {
 
@@ -480,8 +494,7 @@ public class TradeJPADirect {
                 }
                 catch (Exception e) {
                     entityManager.getTransaction().rollback();
-                    entityManager.close();
-                    entityManager = null;
+                    putEm(entityManager);
                 }
             }
             else if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
@@ -513,27 +526,24 @@ public class TradeJPADirect {
                 updateStatus.executeUpdate();
             }
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
             return results;
         } catch (Exception e) {
             log.error("TradeJPADirect.getClosedOrders", e);
-            entityManager.close();
-            entityManager = null;
+            putEm(entityManager);
             throw new RuntimeException("TradeJPADirect.getClosedOrders - error", e);
 
         } finally {
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
         }
     }
 
     public QuoteDataBean createQuote(String symbol, String companyName,
                                      BigDecimal price) {
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         QuoteDataBean quote = null;
         try {
             quote = new QuoteDataBean(symbol, companyName, 0, price, price, price, price, 0);
@@ -554,8 +564,7 @@ public class TradeJPADirect {
             throw new RuntimeException(e);
         } finally {
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
         }
 
@@ -564,13 +573,12 @@ public class TradeJPADirect {
     public QuoteDataBean getQuote(String symbol) {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getQuote - symbol=" + symbol);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         QuoteDataBean qdb = entityManager.find(QuoteDataBean.class, symbol);
 
         if (entityManager != null) {
-            entityManager.close();
-            entityManager = null;
+            putEm(entityManager);
         }
         return qdb;
     }
@@ -578,13 +586,12 @@ public class TradeJPADirect {
     public Collection<QuoteDataBean> getAllQuotes() {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getAllQuotes");
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         Query query = entityManager.createNamedQuery("quoteejb.allQuotes");
 
         if (entityManager != null) {
-            entityManager.close();
-            entityManager = null;
+            putEm(entityManager);
 
         }
         return query.getResultList();
@@ -603,7 +610,7 @@ public class TradeJPADirect {
          * DB2Dialect and MySQL5Dialect do not work with annotated query
          * "quoteejb.quoteForUpdate" defined in QuoteDatabean
          */
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         QuoteDataBean quote = null;
         if (TradeConfig.jpaLayer == TradeConfig.HIBERNATE) {
             quote = entityManager.find(QuoteDataBean.class, symbol);
@@ -641,8 +648,7 @@ public class TradeJPADirect {
             entityManager.getTransaction().rollback();
         } finally {
             if (entityManager != null) {
-                entityManager.close();
-                entityManager = null;
+                putEm(entityManager);
             }
         }
 
@@ -654,7 +660,7 @@ public class TradeJPADirect {
     public Collection<HoldingDataBean> getHoldings(String userID) {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getHoldings - userID=" + userID);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         /*
          * managed transaction
          */
@@ -673,8 +679,7 @@ public class TradeJPADirect {
             ((HoldingDataBean) itr.next()).getQuote();
         }
 
-        entityManager.close();
-        entityManager = null;
+        putEm(entityManager);
         return holdings;
     }
 
@@ -682,9 +687,9 @@ public class TradeJPADirect {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getHolding - holdingID=" + holdingID);
         HoldingDataBean holding;
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
         holding = entityManager.find(HoldingDataBean.class, holdingID);
-        entityManager.close();
+        putEm(entityManager);
         return holding;
     }
 
@@ -692,7 +697,7 @@ public class TradeJPADirect {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getAccountData - userID=" + userID);
 
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         AccountProfileDataBean profile = entityManager.find(AccountProfileDataBean.class, userID);
         /*
@@ -703,8 +708,7 @@ public class TradeJPADirect {
 
         // Added to populate transient field for account
         account.setProfileID(profile.getUserID());
-        entityManager.close();
-        entityManager = null;
+        putEm(entityManager);
 
         return account;
     }
@@ -712,17 +716,16 @@ public class TradeJPADirect {
     public AccountProfileDataBean getAccountProfileData(String userID) {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:getProfileData - userID=" + userID);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         AccountProfileDataBean apb = entityManager.find(AccountProfileDataBean.class, userID);
-        entityManager.close();
-        entityManager = null;
+        putEm(entityManager);
         return apb;
     }
 
     public AccountProfileDataBean updateAccountProfile(AccountProfileDataBean profileData) {
 
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:updateAccountProfileData - profileData=" + profileData);
@@ -758,7 +761,7 @@ public class TradeJPADirect {
         catch (Exception e) {
             entityManager.getTransaction().rollback();
         } finally {
-            entityManager.close();
+            putEm(entityManager);
         }
 
         return temp;
@@ -767,7 +770,7 @@ public class TradeJPADirect {
     public AccountDataBean login(String userID, String password)
     throws Exception {
 
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         AccountProfileDataBean profile = entityManager.find(AccountProfileDataBean.class, userID);
 
@@ -789,14 +792,14 @@ public class TradeJPADirect {
         entityManager.getTransaction().commit();
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:login(" + userID + "," + password + ") success" + account);
-        entityManager.close();
+        putEm(entityManager);
         return account;
     }
 
     public void logout(String userID) {
         if (log.isTraceEnabled())
             log.trace("TradeJPADirect:logout - userID=" + userID);
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         AccountProfileDataBean profile = entityManager.find(AccountProfileDataBean.class, userID);
         AccountDataBean account = profile.getAccount();
@@ -812,7 +815,7 @@ public class TradeJPADirect {
         catch (Exception e) {
             entityManager.getTransaction().rollback();
         } finally {
-            entityManager.close();
+            putEm(entityManager);
         }
 
         if (log.isTraceEnabled())
@@ -824,7 +827,7 @@ public class TradeJPADirect {
                                     BigDecimal openBalance) {
         AccountDataBean account = null;
         AccountProfileDataBean profile = null;
-        EntityManager entityManager = emf.createEntityManager();
+        EntityManager entityManager = getEm(emf);
 
         if (log.isTraceEnabled()) {
             //Log.trace("TradeJPADirect:register", userID, password, fullname, address, email, creditcard, openBalance);
@@ -857,7 +860,7 @@ public class TradeJPADirect {
                 log.error("Failed to create account and profile for userId=" + userID, e);
                 entityManager.getTransaction().rollback();
             } finally {
-                entityManager.close();
+                putEm(entityManager);
             }
 
         }
