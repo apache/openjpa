@@ -2148,9 +2148,15 @@ public class DBDictionary
                 iter.hasNext(); ) {
                 Map.Entry e = (Map.Entry) iter.next();
                 Column col = (Column) e.getKey();
-                String val = (String) e.getValue();
-                sql.append(", ").append(col.getName())
-                    .append(" = ").append(val);
+                Object val = e.getValue();
+                sql.append(", ").append(col.getName()).append(" = ");
+                // Version update value for Numeric version is encoded in a String
+                // to make SQL such as version = version+1 while Time stamp version is parameterized
+                if (val instanceof String) {
+                    sql.append((String)val);
+                } else {
+                    sql.appendValue(val);
+                }
             }
         }
     }
