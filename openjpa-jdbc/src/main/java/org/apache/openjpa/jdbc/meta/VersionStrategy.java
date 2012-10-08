@@ -27,6 +27,7 @@ import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
+import org.apache.openjpa.jdbc.schema.Column;
 
 /**
  * Handles optimistic lock versioning for a class.
@@ -78,7 +79,7 @@ public interface VersionStrategy
     public int compareVersion(Object v1, Object v2);
 
     /**
-     * @return a Map<Column,String> specifying how to update each version
+     * @return a Map<Column,Object> specifying how to update each version
      * column during a bulk update.
      *
      * @since 1.0.0
