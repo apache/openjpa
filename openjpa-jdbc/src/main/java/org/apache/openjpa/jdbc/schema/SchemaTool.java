@@ -43,8 +43,6 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurations;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
-import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
 import org.apache.openjpa.lib.jdbc.DelegatingDataSource;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.MetaDataSerializer;
@@ -90,12 +88,12 @@ public class SchemaTool {
         ACTION_DELETE_TABLE_CONTENTS,
     };
 
-    private static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
+    protected static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
 
-    private final JDBCConfiguration _conf;
-    private final DataSource _ds;
-    private final Log _log;
-    private final DBDictionary _dict;
+    protected final JDBCConfiguration _conf;
+    protected final DataSource _ds;
+    protected final Log _log;
+    protected final DBDictionary _dict;
     private final String _action;
     private boolean _ignoreErrs = false;
     private boolean _openjpaTables = false;
@@ -108,8 +106,8 @@ public class SchemaTool {
     private PrintWriter _writer = null;
     private SchemaGroup _group = null;
     private SchemaGroup _db = null;
-    private boolean _fullDB = false;
-    private String _sqlTerminator = ";";
+    protected boolean _fullDB = false;
+    protected String _sqlTerminator = ";";
     
     /**
      * Default constructor. Tools constructed this way will not have an
@@ -359,27 +357,27 @@ public class SchemaTool {
 
     /**
      * Adds any components present in the schema repository but absent from
-     * the database. Package-private for testing.
+     * the database.
      */
-    void add()
+    protected void add()
         throws SQLException {
         add(getDBSchemaGroup(false), assertSchemaGroup());
     }
 
     /**
      * Drops all schema components in the schema repository that also exist
-     * in the database. Package-private for testing.
+     * in the database.
      */
-    void drop()
+    protected void drop()
         throws SQLException {
         drop(getDBSchemaGroup(false), assertSchemaGroup());
     }
 
     /**
      * Drops database components that are not mentioned in the schema
-     * repository. Package-private for testing.
+     * repository.
      */
-    void retain()
+    protected void retain()
         throws SQLException {
         retain(getDBSchemaGroup(true), assertSchemaGroup(),
             getDropTables(), getDropSequences());
@@ -388,9 +386,8 @@ public class SchemaTool {
     /**
      * Adds any components present in the schema repository but absent from
      * the database, and drops unused database components.
-     * Package-private for testing.
      */
-    void refresh()
+    protected void refresh()
         throws SQLException {
         SchemaGroup local = assertSchemaGroup();
         SchemaGroup db = getDBSchemaGroup(true);
@@ -401,9 +398,8 @@ public class SchemaTool {
     /**
      * Re-execute all SQL used for the creation of the current database;
      * this action is usually used when creating SQL scripts.
-     * Package-private for testing.
      */
-    void createDB()
+    protected void createDB()
         throws SQLException {
         SchemaGroup group = new SchemaGroup();
         group.addSchema();
@@ -413,9 +409,8 @@ public class SchemaTool {
     /**
      * Re-execute all SQL used for the creation of the current database;
      * this action is usually used when creating SQL scripts.
-     * Package-private for testing.
      */
-    void build()
+    protected void build()
         throws SQLException {
         SchemaGroup group = new SchemaGroup();
         group.addSchema();
@@ -423,9 +418,9 @@ public class SchemaTool {
     }
 
     /**
-     * Drop the current database. Package-private for testing.
+     * Drop the current database.
      */
-    void dropDB()
+    protected void dropDB()
         throws SQLException {
         retain(getDBSchemaGroup(true), new SchemaGroup(), true, true);
     }
@@ -433,7 +428,7 @@ public class SchemaTool {
     /**
      * Issue DELETE statement against all known tables.
      */
-    private void deleteTableContents() 
+    protected void deleteTableContents() 
         throws SQLException {
         SchemaGroup group = getSchemaGroup();
         Schema[] schemas = group.getSchemas();
@@ -462,7 +457,7 @@ public class SchemaTool {
      * Adds all database components in the repository schema that are not
      * present in the given database schema to the database.
      */
-    private void add(SchemaGroup db, SchemaGroup repos)
+    protected void add(SchemaGroup db, SchemaGroup repos)
         throws SQLException {
         // add sequences
         Schema[] schemas = repos.getSchemas();
@@ -643,7 +638,7 @@ public class SchemaTool {
      * Drops all database components that are in the given database schema
      * but not in the repository schema.
      */
-    private void retain(SchemaGroup db, SchemaGroup repos, boolean tables,
+    protected void retain(SchemaGroup db, SchemaGroup repos, boolean tables,
         boolean sequences)
         throws SQLException {
         Schema[] schemas = db.getSchemas();
@@ -769,7 +764,7 @@ public class SchemaTool {
     /**
      * Drops all database components in the given repository schema.
      */
-    private void drop(SchemaGroup db, SchemaGroup repos)
+    protected void drop(SchemaGroup db, SchemaGroup repos)
         throws SQLException {
         // drop sequences
         Schema[] schemas = repos.getSchemas();
@@ -902,7 +897,7 @@ public class SchemaTool {
     /**
      * Return true if the table is droppable.
      */
-    private boolean isDroppable(Table table) {
+    protected boolean isDroppable(Table table) {
         return _openjpaTables
             || (!DBIdentifier.toUpper(table.getIdentifier()).getName().startsWith("OPENJPA_")
             && !DBIdentifier.toUpper(table.getIdentifier()).getName().startsWith("JDO_")); // legacy
@@ -911,7 +906,7 @@ public class SchemaTool {
     /**
      * Return true if the sequence is droppable.
      */
-    private boolean isDroppable(Sequence seq) {
+    protected boolean isDroppable(Sequence seq) {
         return _openjpaTables
             || (!DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("OPENJPA_")
             && !DBIdentifier.toUpper(seq.getIdentifier()).getName().startsWith("JDO_")); // legacy
@@ -920,7 +915,7 @@ public class SchemaTool {
     /**
      * Find an index in the given table that matches the given one.
      */
-    private Index findIndex(Table dbTable, Index idx) {
+    protected Index findIndex(Table dbTable, Index idx) {
         Index[] idxs = dbTable.getIndexes();
         for (int i = 0; i < idxs.length; i++)
             if (idx.columnsMatch(idxs[i].getColumns()))
@@ -931,7 +926,7 @@ public class SchemaTool {
     /**
      * Find a foreign key in the given table that matches the given one.
      */
-    private ForeignKey findForeignKey(Table dbTable, ForeignKey fk) {
+    protected ForeignKey findForeignKey(Table dbTable, ForeignKey fk) {
         if (fk.getConstantColumns().length > 0
             || fk.getConstantPrimaryKeyColumns().length > 0)
             return null;
@@ -947,7 +942,7 @@ public class SchemaTool {
      * Remove the given collection of tables from the database schema. Orders
      * the removals according to foreign key constraints on the tables.
      */
-    private void dropTables(Collection<Table> tables, SchemaGroup change)
+    protected void dropTables(Collection<Table> tables, SchemaGroup change)
         throws SQLException {
         if (tables.isEmpty())
             return;
@@ -1133,7 +1128,7 @@ public class SchemaTool {
      * @param full if false, only the tables named in the set schema
      * repository will be generated
      */
-    private SchemaGroup getDBSchemaGroup(boolean full)
+    protected SchemaGroup getDBSchemaGroup(boolean full)
         throws SQLException {
         if (_db == null || (full && !_fullDB)) {
             SchemaGenerator gen = new SchemaGenerator(_conf);
@@ -1171,7 +1166,7 @@ public class SchemaTool {
         return _db;
     }
 
-    private SchemaGroup assertSchemaGroup() {
+    protected SchemaGroup assertSchemaGroup() {
         SchemaGroup local = getSchemaGroup();
         if (local == null)
             throw new InvalidStateException(_loc.get("tool-norepos"));
@@ -1189,7 +1184,7 @@ public class SchemaTool {
      * @return true if there was SQL to execute and the calls were
      * successful, false otherwise
      */
-    private boolean executeSQL(String[] sql)
+    protected boolean executeSQL(String[] sql)
         throws SQLException {
         // if no sql, probably b/c dictionary doesn't support operation
         if (sql.length == 0)
@@ -1265,7 +1260,7 @@ public class SchemaTool {
      * Handle the given exception, logging it and optionally ignoring it,
      * depending on the flags this SchemaTool was created with.
      */
-    private void handleException(SQLException sql)
+    protected void handleException(SQLException sql)
         throws SQLException {
         if (!_ignoreErrs)
             throw sql;
