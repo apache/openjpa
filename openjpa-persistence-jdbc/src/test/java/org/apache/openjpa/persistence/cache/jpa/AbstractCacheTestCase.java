@@ -66,9 +66,7 @@ public abstract class AbstractCacheTestCase extends AbstractPersistenceTestCase 
 
     public OpenJPAEntityManagerFactorySPI createEntityManagerFactory(String puName,
         Map<String, Object> additionalProperties) {
-        Map<String, Object> propertiesMap = getPropertiesMap("openjpa.DataCache", "true",
-            "openjpa.QueryCache", "true",
-            "openjpa.RemoteCommitProvider", "sjvm", persistentTypes, 
+        Map<String, Object> propertiesMap = getPropertiesMap( persistentTypes, 
             "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
         if (additionalProperties != null) {
             Set<String> keys = additionalProperties.keySet();

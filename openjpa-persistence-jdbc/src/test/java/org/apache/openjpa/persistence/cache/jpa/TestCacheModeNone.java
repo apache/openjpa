@@ -27,9 +27,12 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
+/*
+ * When shared-cache-mode is NONE and dataCache is not set, caching will be off.
+ */
 public class TestCacheModeNone extends AbstractCacheModeTestCase {
 
-    private static Cache cache = null;
+    protected static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
     
@@ -40,6 +43,7 @@ public class TestCacheModeNone extends AbstractCacheModeTestCase {
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
         if (emf == null) {
             emf = createEntityManagerFactory("cache-mode-none",null);
+            assertEquals("false", emf.getConfiguration().getDataCache());
             assertNotNull(emf);
             cache = emf.getCache();
             assertNotNull(cache);

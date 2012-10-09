@@ -134,6 +134,16 @@ a distributed environment, as caches in different JVMs or created from different
                 Data Cache Configuration
             </title>
             <para>
+There are two ways to enable the basic single-factory cache. One is using
+<link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
+property, the other is using JPA standard shared-cache-mode element or the
+javax.persistence.sharedCache.mode property.
+            </para>
+            <section id="ref_guide_data_cache">
+            <title>
+                openjpa.DataCache Configuration
+            </title>
+            <para>
 To enable the basic single-factory cache set the
 <link linkend="openjpa.DataCache"><literal>openjpa.DataCache</literal></link>
 property to <literal>true</literal>:
@@ -352,11 +362,70 @@ an UPDATE or DELETE statement. The default for the value is <literal>true</liter
                 <para> 
 <programlisting>&lt;property name="openjpa.DataCache" value="true(EvictOnBulkUpdate=false)"/&gt;</programlisting>
                 </para>
-            </example>             
+            </example>   
+</section>      
+<section id="ref_guide_shared_cache_mode_integration">
+            <title>
+                Integration with JPA standard shared cache mode
+            </title>
+            <para>
+                JPA 2.0 specification introduced the standard data cache configuration through the shared-cache-mode element or javax.persistence.
+sharedCache.mode property. 
+            </para>
+            <para>
+                When only the shared cache mode is configured to turn on the caching, the default data cache setting will be used. For example the 
+                cache size will be set to default 1000.
+            </para>
+            <para>
+                When the shared cache mode and openjpa.DataCache are both configured, the JPA standard shared cache mode 
+                configuration takes the precedence. 
+            </para>
+            <para>
+                If the shared cache mode is to turn on the caching, the cache setting configured through openjpa.DataCache 
+                , like cacheSize and SoftReferenceSize, will be used to initialize or manage the cache. The Types and ExcludeTypes
+                 property in openjpa.DataCache will be ingnored since the shared cache mode in conjunction with the javax.persistence.Cacheable 
+                 annotation already defines what will be cached.
+            </para>
+            <example id="shared-cache-mode-none">
+                <para> 
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true"/&gt;
+&lt;property name="javax.persistence.sharedCache.mode" value="NONE"/&gt;
+</programlisting>
+                </para>
+                <para>
+                    When the shared cache mode is set to NONE, the data cache will be disabled no matter how openjpa.DataCache is configured.
+                </para>
+            </example>
+            
+            <example id="shared-cache-mode-all">
+                <para> 
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
+&lt;property name="javax.persistence.sharedCache.mode" value="ALL"/&gt;
+</programlisting>
+                </para>                
+                <para>
+                    When the shared cache mode is set to ALL, all entities will be cached no matter how openjpa.DataCache is configured.
+                </para>
+            </example>
+            
+            <example id="shared-cache-mode-enable-selective">
+                <para> 
+<programlisting>
+&lt;property name="openjpa.DataCache" value="true(ExcludedTypes=foo.bar.Person;foo.bar.Employee)"/&gt;
+&lt;property name="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/&gt;
+</programlisting>
+                </para>                
+                <para>
+                    When the shared cache mode set to ENABLE_SELECTIVE, the entities with Cacheable(true) anotation will be cached. 
+                    ExcludedTypes will be ignored.
+                </para>
+            </example>            
+</section>            
 <section id="ref_guide_cache_distribution">
    <title>Distributing instances across cache partitions</title>
             <para>
-            
 OpenJPA also supports a partitioned cache configuration where the cached
 instances can be distributed across partitions by an application-defined
 policy. Each partition behaves as a data cache by itself, identified by its name and can

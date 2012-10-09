@@ -143,7 +143,7 @@ public class DataCacheStoreManager
                         continue;
 
                     mods = getModifications(modMap, cache);
-                    data = newPCData(sm);
+                    data = newPCData(sm, cache);
                     data.store(sm);
                     mods.additions.add(new PCDataHolder(data, sm));
                     CacheStatistics stats = cache.getStatistics();
@@ -178,7 +178,7 @@ public class DataCacheStoreManager
                     // dirty, but maybe it got dropped from the cache in the
                     // interim
                     if (data == null) {
-                        data = newPCData(sm);
+                        data = newPCData(sm, cache);
                         data.store(sm);
                         mods.newUpdates.add(new PCDataHolder(data, sm));
                     } else {
@@ -420,7 +420,7 @@ public class DataCacheStoreManager
             // initial load of the data.
             boolean isNew = data == null;
             if (isNew) {
-                data = newPCData(sm);
+                data = newPCData(sm, cache);
             }
             data.store(sm);
             if (isNew) { 
@@ -626,7 +626,7 @@ public class DataCacheStoreManager
 
                 isNew = data == null;
                 if (isNew)
-                    data = newPCData(sm);
+                    data = newPCData(sm, cache);
                 if (fields == null)
                     data.store(sm);
                 else
@@ -780,15 +780,15 @@ public class DataCacheStoreManager
         _ctx.getConfiguration().getRemoteCommitEventManager()
             .fireLocalStaleNotification(oid);
     }
-
+   
     /**
      * Create a new cacheable instance for the given state manager.
      */
-    private DataCachePCData newPCData(OpenJPAStateManager sm) {
+    private DataCachePCData newPCData(OpenJPAStateManager sm, DataCache cache) {
         ClassMetaData meta = sm.getMetaData();
         if (_gen != null)
             return (DataCachePCData) _gen.generatePCData(sm.getObjectId(), meta);
-        return new DataCachePCDataImpl(sm.fetchObjectId(), meta, _mgr.selectCache(sm).getName());
+        return new DataCachePCDataImpl(sm.fetchObjectId(), meta, cache.getName());
     }
 
     /**

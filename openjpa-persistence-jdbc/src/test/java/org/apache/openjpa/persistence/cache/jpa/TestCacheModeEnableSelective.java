@@ -35,7 +35,7 @@ import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 public class TestCacheModeEnableSelective extends AbstractCacheModeTestCase {
 
-    private static Cache cache = null;
+    protected static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
 
@@ -49,6 +49,7 @@ public class TestCacheModeEnableSelective extends AbstractCacheModeTestCase {
         if (emf == null) {
             emf = createEntityManagerFactory("cache-mode-enable", null);
             assertNotNull(emf);
+            assertEquals("true", emf.getConfiguration().getDataCache());
             cache = emf.getCache();
             assertNotNull(cache);
         }

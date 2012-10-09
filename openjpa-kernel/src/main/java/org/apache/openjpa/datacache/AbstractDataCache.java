@@ -523,20 +523,32 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setTypes(Set<String> types) {
         _includedTypes = types;
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", 
+            		DataCacheMode.ENABLE_SELECTIVE.toString()}));
     }
 
     public void setTypes(String types) {
         _includedTypes =
             StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", 
+            		DataCacheMode.ENABLE_SELECTIVE.toString()}));
     }
 
     public void setExcludedTypes(Set<String> types) {
         _excludedTypes = types;
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", 
+            		DataCacheMode.DISABLE_SELECTIVE.toString()}));
     }
 
     public void setExcludedTypes(String types) {
         _excludedTypes =
             StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+        if (log.isWarnEnabled())
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", 
+            		DataCacheMode.DISABLE_SELECTIVE.toString()}));
     }
 
     public DataCache selectCache(OpenJPAStateManager sm) {

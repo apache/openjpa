@@ -699,11 +699,28 @@ public class PersistenceProductDerivation
             // those.
             if (conf instanceof OpenJPAConfiguration) {
                 OpenJPAConfiguration oconf = (OpenJPAConfiguration) conf;
-                // If the datacache is enabled, make sure we have a RemoteCommitProvider
-                String dc = oconf.getDataCache();
+                String dataCache = oconf.getDataCache();
+                String sharedDataCacheMode = oconf.getDataCacheMode();
+                
+                if (DataCacheMode.NONE.toString().equals(sharedDataCacheMode) 
+                        && dataCache != null && !"false".equals(dataCache)) {
+                    Log log = conf.getConfigurationLog();
+                    if (log.isWarnEnabled()) {
+                        log.warn(_loc.get("shared-cache-mode-take-precedence", dataCache));
+                    }
+                }
+                
+                if ((dataCache == null || "false".equals(dataCache)) 
+                        && !DataCacheMode.NONE.toString().equals(sharedDataCacheMode) 
+                        && !DataCacheMode.UNSPECIFIED.toString().equals(sharedDataCacheMode)){
+                    oconf.setDataCache("true");
+                }
+                
+                // If the datacache is enabled, make sure we have a RemoteCommitProvider                
                 String rcp = oconf.getRemoteCommitProvider();
+                dataCache = oconf.getDataCache();
                 // If the datacache is set and is something other than false
-                if (dc != null && !"false".equals(dc)) {
+                if (dataCache != null && !"false".equals(dataCache)) {
                     // If RCP is null or empty, set it to sjvm.
                     if (rcp == null || "".equals(rcp)) {
                         oconf.setRemoteCommitProvider("sjvm");
