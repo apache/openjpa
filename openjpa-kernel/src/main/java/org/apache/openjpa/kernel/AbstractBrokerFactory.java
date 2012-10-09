@@ -65,6 +65,7 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.GeneralException;
+import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UserException;
@@ -722,6 +723,9 @@ public abstract class AbstractBrokerFactory
         try {
             ManagedRuntime mr = broker.getManagedRuntime();
             TransactionManager tm = mr.getTransactionManager();
+            if (tm == null) {
+                throw new InternalException(_loc.get("null-transactionmanager", mr));
+            }
             trans = tm.getTransaction();
             if (trans != null
                 && (trans.getStatus() == Status.STATUS_NO_TRANSACTION
