@@ -1177,6 +1177,11 @@ public class PCEnhancer {
             if (_meta.hasAbstractPKField() == true) { 
                 addGetIDOwningClass();
             }
+            
+            if (_meta.isEmbeddedOnly() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+                _log.error(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
+            }
+            
             addNewObjectIdInstanceMethod(true);
             addNewObjectIdInstanceMethod(false);
         }
@@ -2609,13 +2614,12 @@ public class PCEnhancer {
         // new <oid class> ();
         code.anew().setType(oidType);
         code.dup();
-        if (_meta.isOpenJPAIdentity() || (obj && usesClsString ==
-                    Boolean.TRUE)) {
-            if(_meta.isEmbeddedOnly() || _meta.hasAbstractPKField() == true ) {
+        if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
+            if ((_meta.isEmbeddedOnly() && ! (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION)) 
+                || _meta.hasAbstractPKField() == true ) {
                 code.aload().setThis();
-                code.invokevirtual().setMethod(PRE + "GetIDOwningClass",
-                    Class.class, null);
-            }else {
+                code.invokevirtual().setMethod(PRE + "GetIDOwningClass", Class.class, null);
+            } else {
                 code.classconstant().setClass(getType(_meta));
             }
         }
