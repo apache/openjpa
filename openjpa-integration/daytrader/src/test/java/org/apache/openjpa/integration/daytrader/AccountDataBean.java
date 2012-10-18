@@ -87,10 +87,10 @@ public class AccountDataBean implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;              /* creationDate */
     
-    @Column(name = "BALANCE")
+    @Column(name = "BALANCE", precision=12, scale=2)
     private BigDecimal balance;             /* balance */
     
-    @Column(name = "OPENBALANCE")
+     @Column(name = "OPENBALANCE", precision=12, scale=2)
     private BigDecimal openBalance;         /* open balance */
     
     @OneToMany(mappedBy = "account", fetch=FetchType.LAZY)
