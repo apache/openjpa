@@ -3489,7 +3489,7 @@ public class DBDictionary
         buf.append(seqName);
         if (create && seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
-        if ((seq.getIncrement() > 1) || (seq.getAllocate() > 1))
+        if ((seq.getIncrement() >= 1) || (seq.getAllocate() >= 1))
             buf.append(" INCREMENT BY ").append(seq.getIncrement() * seq.getAllocate());
         return new String[]{ buf.toString() };
     }
