@@ -49,8 +49,7 @@ import org.apache.openjpa.util.OptimisticException;
  * @author Patrick Linskey
  * @nojavadoc
  */
-public class DataCacheStoreManager
-    extends DelegatingStoreManager {
+public class DataCacheStoreManager extends DelegatingStoreManager {
 
     // all the state managers changed in this transaction
     private Collection<OpenJPAStateManager> _inserts = null;
@@ -438,9 +437,12 @@ public class DataCacheStoreManager
         DataCache cache = _mgr.selectCache(sm);
 
         boolean found = false;
+        int loadedFieldsBefore = sm.getLoaded().cardinality();
         if (cache == null || sm.isEmbedded() || bypass(fetch, StoreManager.FORCE_LOAD_NONE)) {
             found = super.load(sm, fields, fetch, lockLevel, edata);
-            updateDataCache(found, sm, fetch);
+            int loadedFieldsAfter = sm.getLoaded().cardinality();
+            boolean changed = loadedFieldsAfter > loadedFieldsBefore;
+            updateDataCache(found, sm, fetch, changed);
             return found;
         }
 
@@ -458,10 +460,12 @@ public class DataCacheStoreManager
 
         // load from store manager; clone the set of still-unloaded fields
         // so that if the store manager decides to modify it it won't affect us
-        found = super.load(sm, (BitSet) fields.clone(), fetch, lockLevel, edata);
+        found = super.load(sm,(BitSet) fields.clone() , fetch, lockLevel, edata);
 
+        int loadedFieldsAfter = sm.getLoaded().cardinality();
+        boolean changed = loadedFieldsAfter > loadedFieldsBefore;
         // Get new instance of cache after DB load since it may have changed
-        updateDataCache(found, sm, fetch);
+        updateDataCache(found, sm, fetch, changed);
 
         return found;
     }
@@ -473,8 +477,10 @@ public class DataCacheStoreManager
      * @param found whether the entity was found by the store manager
      * @param sm the state manager
      * @param fetch fetch configuration
+     * @param loadedFieldsChanged
      */
-    private void updateDataCache(boolean found, OpenJPAStateManager sm, FetchConfiguration fetch) {
+    private void updateDataCache(boolean found, OpenJPAStateManager sm, FetchConfiguration fetch,
+        boolean loadedFieldsChanged) {
 
         if (!_ctx.getPopulateDataCache() || sm == null || fetch.getCacheStoreMode() == DataCacheStoreMode.BYPASS) {
             return;
@@ -486,10 +492,12 @@ public class DataCacheStoreManager
         }
 
         DataCachePCData data = cache.get(sm.getObjectId());
-        boolean alreadyCached = data != null;
-
-        if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached) ||
-             fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
+        
+        // If loadedFieldsChanged = true, we don't care that data was already stored as we should update it.
+        boolean alreadyCached = (data != null && !loadedFieldsChanged);
+        DataCacheStoreMode storeMode = fetch.getCacheStoreMode();
+        
+        if ((storeMode == DataCacheStoreMode.USE && !alreadyCached) || storeMode == DataCacheStoreMode.REFRESH) {
             // If not found in the DB and the item is in the cache, and not locking remove the item
             if (!found && data != null && !isLocking(fetch)) {
                 cache.remove(sm.getObjectId());
