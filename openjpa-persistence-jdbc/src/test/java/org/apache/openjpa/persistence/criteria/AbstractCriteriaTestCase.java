@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.AbstractDB2Dictionary;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
@@ -104,7 +105,7 @@ public abstract class AbstractCriteriaTestCase extends TestCase {
     void setDictionary() {
         JDBCConfiguration conf = (JDBCConfiguration) getEntityManagerFactory().getConfiguration();
         dict = conf.getDBDictionaryInstance();
-        if (dict instanceof DerbyDictionary || dict instanceof HSQLDictionary) {
+        if (dict instanceof AbstractDB2Dictionary || dict instanceof HSQLDictionary) {
             dict.requiresCastForComparisons = false;
             dict.requiresCastForMathFunctions = false;
         } else if (dict instanceof OracleDictionary) {
