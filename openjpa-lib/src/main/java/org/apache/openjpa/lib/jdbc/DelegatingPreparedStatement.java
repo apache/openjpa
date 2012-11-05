@@ -54,12 +54,15 @@ import org.apache.openjpa.lib.util.Closeable;
 public class DelegatingPreparedStatement
     implements PreparedStatement, Closeable {
     
-    private final PreparedStatement _stmnt;
-    private final DelegatingPreparedStatement _del;
-    private final Connection _conn;
+    private /*final*/ PreparedStatement _stmnt;
+    private /*final*/ DelegatingPreparedStatement _del;
+    private /*final*/ Connection _conn;
 
-    public DelegatingPreparedStatement(PreparedStatement stmnt,
-        Connection conn) {
+    public DelegatingPreparedStatement(PreparedStatement stmnt, Connection conn) {
+    	initialize(stmnt, conn);
+    }
+    
+    public void initialize(PreparedStatement stmnt, Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
         if (_stmnt instanceof DelegatingPreparedStatement)
