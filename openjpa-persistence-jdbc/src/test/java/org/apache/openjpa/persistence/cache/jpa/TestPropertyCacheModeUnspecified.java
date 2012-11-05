@@ -29,6 +29,9 @@ import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
+/*
+ * When sharedCache.mode is UNSPECIFIED and dataCache is not set, caching will be off.
+ */
 public class TestPropertyCacheModeUnspecified extends AbstractCacheModeTestCase {
     
     private static Cache cache = null;
@@ -63,15 +66,15 @@ public class TestPropertyCacheModeUnspecified extends AbstractCacheModeTestCase 
     }
     
     public void testCacheables() {
-        assertCacheables(cache, true);
+        assertCacheables(cache, false);
     }
 
     public void testUncacheables() {
-        assertUncacheables(cache, true);
+        assertUncacheables(cache, false);
     }
 
     public void testUnspecified() {
-        assertUnspecified(cache, true);
+        assertUnspecified(cache, false);
     }
 
     @Override
@@ -82,5 +85,10 @@ public class TestPropertyCacheModeUnspecified extends AbstractCacheModeTestCase 
     @Override
     protected Class<?>[] getExpectedNotInCache() {
         return expectedNotInCache;
+    }
+    
+    @Override
+    public boolean getCacheEnabled() {
+        return false;
     }
 }

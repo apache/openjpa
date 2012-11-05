@@ -206,28 +206,30 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
      * 
      */
     public void testRetrieveModeUse() {
-        assertNoSql(new Action() {
-            public void run() {
-                EntityManager em = getEntityManagerFactory().createEntityManager();
-                em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
-                for (Class<?> cls : getExpectedInCache()) {
-                    assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
-                    assertNotNull(em.find(cls, 1));
+        if (getCacheEnabled()) {
+            assertNoSql(new Action() {
+                public void run() {
+                    EntityManager em = getEntityManagerFactory().createEntityManager();
+                    em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
+                    for (Class<?> cls : getExpectedInCache()) {
+                        assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
+                        assertNotNull(em.find(cls, 1));
+                    }
+                    em.close();
                 }
-                em.close();
-            }
-        });
-        assertSqlInc(new Action() {
-            public void run() {
-                EntityManager em = getEntityManagerFactory().createEntityManager();
-                em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
-                for (Class<?> cls : getExpectedNotInCache()) {
-                    assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
-                    assertNotNull(em.find(cls, 1));
+            });
+            assertSqlInc(new Action() {
+                public void run() {
+                    EntityManager em = getEntityManagerFactory().createEntityManager();
+                    em.setProperty(RETRIEVE_MODE_PROP, CacheRetrieveMode.USE);
+                    for (Class<?> cls : getExpectedNotInCache()) {
+                        assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
+                        assertNotNull(em.find(cls, 1));
+                    }
+                    em.close();
                 }
-                em.close();
-            }
-        }, getExpectedNotInCache().length);
+            }, getExpectedNotInCache().length);
+        }
     }
 
     public void updateAndFind(Class<? extends CacheEntity> classToUpdate, int idToUpdate,
@@ -407,45 +409,50 @@ public abstract class AbstractCacheModeTestCase extends AbstractCacheTestCase {
     }
     
     public void testResultsFromQueryAreInCache() { 
-        // clear cache
-        getEntityManagerFactory().getStoreCache().evictAll();
-        getEntityManagerFactory().getQueryResultCache().evictAll();
+        if (getCacheEnabled()) {
+            // clear cache
+            getEntityManagerFactory().getStoreCache().evictAll();
+            getEntityManagerFactory().getQueryResultCache().evictAll();
 
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        String query; 
-        for(Class<?> cls : persistentTypes) {
-            query = "Select e from " + getAlias(cls) + " e";
-            List<?> res = em.createQuery(query).getResultList();
-            assertNotNull(String.format("Expected to find some results when running query %s",query), res);
-            assertTrue(String.format("Expected more than 0 results running query %s",query),res.size() != 0 ) ;
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            String query; 
+            for(Class<?> cls : persistentTypes) {
+                query = "Select e from " + getAlias(cls) + " e";
+                List<?> res = em.createQuery(query).getResultList();
+                assertNotNull(String.format("Expected to find some results when running query %s",query), res);
+                assertTrue(String.format("Expected more than 0 results running query %s",query),res.size() != 0 ) ;
+            }
+            for(Class<?> cls : getExpectedInCache()) { 
+                assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
+            }
+            
+            for(Class<?> cls : getExpectedNotInCache()) { 
+                assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
+            }
+            em.close();
         }
-        for(Class<?> cls : getExpectedInCache()) { 
-            assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
-        }
-        
-        for(Class<?> cls : getExpectedNotInCache()) { 
-            assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
-        }
-        em.close();
     }
     
     public void testResultsFromFindAreInCache() { 
-        // clear cache
-        getEntityManagerFactory().getStoreCache().evictAll();
-        getEntityManagerFactory().getQueryResultCache().evictAll();
+        if (getCacheEnabled()) {
+            // clear cache
+            getEntityManagerFactory().getStoreCache().evictAll();
+            getEntityManagerFactory().getQueryResultCache().evictAll();
 
-        EntityManager em = getEntityManagerFactory().createEntityManager();
-        for(Class<?> cls : persistentTypes) {
-            assertNotNull(String.format("Expected to find %s::%d from database or from cache", cls, 1),em.find(cls, 1));
+            EntityManager em = getEntityManagerFactory().createEntityManager();
+            for(Class<?> cls : persistentTypes) {
+                assertNotNull(String.format("Expected to find %s::%d from database or from cache", cls, 1),
+                		em.find(cls, 1));
+            }
+            for(Class<?> cls : getExpectedInCache()) { 
+                assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
+            }
+
+            for(Class<?> cls : getExpectedNotInCache()) { 
+                assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
+            }
+            em.close();
         }
-        for(Class<?> cls : getExpectedInCache()) { 
-            assertCached(getEntityManagerFactory().getCache(), cls, 1, true);
-        }
-        
-        for(Class<?> cls : getExpectedNotInCache()) { 
-            assertCached(getEntityManagerFactory().getCache(), cls, 1, false);
-        }
-        em.close();
     }
     
     private String getAlias(Class<?> cls) {

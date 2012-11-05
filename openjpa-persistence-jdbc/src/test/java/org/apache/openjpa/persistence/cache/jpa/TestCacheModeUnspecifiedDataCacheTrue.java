@@ -16,26 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.    
  */
+
 package org.apache.openjpa.persistence.cache.jpa;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Cache;
 
-import org.apache.openjpa.datacache.ConcurrentDataCache;
 import org.apache.openjpa.lib.jdbc.JDBCListener;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.test.FilteringJDBCListener;
 
 /*
- * When shared-cache-mode is set to ALL, all entities will be cached. 
- * If the DataCache is not configured, the default values will be used.
- * For example, CacheSize will be set to default value 1000.
+ * When shared-cache-mode is UNSPECIFIED and dataCache is true, caching will be on.
  */
-public class TestCacheModeAll extends AbstractCacheModeTestCase {
-
-    protected static Cache cache = null;
+public class TestCacheModeUnspecifiedDataCacheTrue extends AbstractCacheModeTestCase{
+    private static Cache cache = null;
     private static List<String> sql = new ArrayList<String>();
     private static JDBCListener listener;
     
@@ -44,14 +43,12 @@ public class TestCacheModeAll extends AbstractCacheModeTestCase {
 
     @Override
     public OpenJPAEntityManagerFactorySPI getEntityManagerFactory() {
-        if (emf == null) {
-            emf = createEntityManagerFactory("cache-mode-all",null);
+    	Map<String,Object> props = new HashMap<String,Object>();
+    	props.put("openjpa.DataCache", "true");
+    	props.put("openjpa.RemoteCommitProvider", "sjvm");
+    	if (emf == null) {
+            emf = createEntityManagerFactory("cache-mode-unspecified", props);
             assertNotNull(emf);
-            ConcurrentDataCache dataCache = (ConcurrentDataCache) emf.getConfiguration()
-                    .getDataCacheManagerInstance().getDataCache("default");
-            assertNotNull(dataCache);
-            assertEquals(1000, dataCache.getCacheSize());
-            assertEquals("true", emf.getConfiguration().getDataCache());
             cache = emf.getCache();
             assertNotNull(cache);
         }

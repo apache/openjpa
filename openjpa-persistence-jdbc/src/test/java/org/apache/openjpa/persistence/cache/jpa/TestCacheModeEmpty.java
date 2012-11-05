@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.cache.jpa;
 
+/*
+ * When both shared-cache-mode and dataCache are not set, caching will be off.
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +44,7 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
         if (emf == null) {
             emf = createEntityManagerFactory("cache-mode-empty", null);
             assertNotNull(emf);
+            assertEquals("false", emf.getConfiguration().getDataCache());
             cache = emf.getCache();
             assertNotNull(cache);
         }
@@ -59,15 +63,15 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
     }
     
     public void testCacheables() {
-        assertCacheables(cache, true);
+        assertCacheables(cache, false);
     }
 
     public void testUncacheables() {
-        assertUncacheables(cache, true);
+        assertUncacheables(cache, false);
     }
 
     public void testUnspecified() {
-        assertUnspecified(cache, true);
+        assertUnspecified(cache, false);
     }
 
     @Override
@@ -78,5 +82,10 @@ public class TestCacheModeEmpty extends AbstractCacheModeTestCase {
     @Override
     protected Class<?>[] getExpectedNotInCache() {
         return expectedNotInCache;
+    }
+    
+    @Override
+    public boolean getCacheEnabled() {
+        return false;
     }
 }

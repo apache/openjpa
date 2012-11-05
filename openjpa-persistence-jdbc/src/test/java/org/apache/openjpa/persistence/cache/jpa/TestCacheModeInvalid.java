@@ -32,9 +32,7 @@ public class TestCacheModeInvalid extends AbstractCacheTestCase {
     public void testInvalidElement() {
         boolean exceptionCaught = false;
         try {
-            Map<String, Object> propertiesMap = getPropertiesMap("openjpa.DataCache", "true",
-                "openjpa.QueryCache", "true",
-                "openjpa.RemoteCommitProvider", "sjvm", persistentTypes, 
+            Map<String, Object> propertiesMap = getPropertiesMap(persistentTypes, 
                 "openjpa.jdbc.JDBCListeners", new JDBCListener [] { getListener() });
             emf = (OpenJPAEntityManagerFactorySPI) OpenJPAPersistence.createEntityManagerFactory("cache-mode-invalid",
                 "META-INF/caching-persistence-invalid.xml", propertiesMap );
