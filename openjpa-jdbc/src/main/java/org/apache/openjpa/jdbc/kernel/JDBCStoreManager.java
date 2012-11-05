@@ -27,11 +27,9 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -110,7 +108,11 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
     
     // track the pending statements so we can cancel them
     private List<Statement> _stmnts = Collections.synchronizedList(new ArrayList<Statement>());
-
+    
+    // pool statements so that we can try to reuse rather than recreate
+    private List<CancelPreparedStatement> _cancelPreparedStatementsPool = new ArrayList<CancelPreparedStatement>();
+    private List<CancelStatement> _cancelStatementPool = new ArrayList<CancelStatement>();
+    
     public StoreContext getContext() {
         return _ctx;
     }
@@ -1630,30 +1632,53 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         }
 
         protected Statement createStatement(boolean wrap) throws SQLException {
-            return new CancelStatement(super.createStatement(false),
+            return getCancelStatement(super.createStatement(false),
                 RefCountConnection.this);
         }
 
         protected Statement createStatement(int rsType, int rsConcur,
             boolean wrap) throws SQLException {
-            return new CancelStatement(super.createStatement(rsType, rsConcur,
+            return getCancelStatement(super.createStatement(rsType, rsConcur,
                 false), RefCountConnection.this);
 
         }
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-            return new CancelPreparedStatement(super.prepareStatement(sql,
+            return getCancelPreparedStatement(super.prepareStatement(sql,
                 false), RefCountConnection.this);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap) throws SQLException {
-            return new CancelPreparedStatement(super.prepareStatement(sql,
+            return getCancelPreparedStatement(super.prepareStatement(sql,
                 rsType, rsConcur, false), RefCountConnection.this);
         }
     }
 
+    private PreparedStatement getCancelPreparedStatement(PreparedStatement stmnt, Connection conn) {
+        synchronized (_cancelPreparedStatementsPool) {
+            if (!_cancelPreparedStatementsPool.isEmpty()) {
+                CancelPreparedStatement res = _cancelPreparedStatementsPool.remove(0);
+                res.initialize(stmnt, conn);
+                return res;
+            }
+        }
+        return new CancelPreparedStatement(stmnt, conn);
+    }
+    
+    private Statement getCancelStatement(Statement stmnt, Connection conn) {
+        synchronized (_cancelStatementPool) {
+            if (!_cancelStatementPool.isEmpty()) {
+                CancelStatement res = _cancelStatementPool.remove(0);
+                res.initialize(stmnt, conn);
+                return res;
+            }
+        }
+
+        return new CancelStatement(stmnt, conn);
+    }
+    
     /**
      * Statement type that adds and removes itself from the set of active
      * statements so that it can be canceled.
@@ -1744,6 +1769,13 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             } finally {
                 afterExecuteStatement(this);
             }
+        }
+
+        public void close() throws SQLException {
+        	super.close();
+    		synchronized (_cancelStatementPool) {
+    			_cancelStatementPool.add(this);
+    		}
         }
     }
 
@@ -1865,6 +1897,13 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             } finally {
                 afterExecuteStatement(this);
             }
+        }
+
+        public void close() throws SQLException {
+        	super.close();
+    		synchronized (_cancelPreparedStatementsPool) {
+    			_cancelPreparedStatementsPool.add(this);
+    		}
         }
     }
 }

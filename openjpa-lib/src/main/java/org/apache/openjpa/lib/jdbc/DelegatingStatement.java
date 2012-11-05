@@ -36,11 +36,15 @@ import org.apache.openjpa.lib.util.Closeable;
  */
 public class DelegatingStatement implements Statement, Closeable {
 
-    private final Statement _stmnt;
-    private final DelegatingStatement _del;
-    private final Connection _conn;
+    private Statement _stmnt;
+    private DelegatingStatement _del;
+    private Connection _conn;
 
     public DelegatingStatement(Statement stmnt, Connection conn) {
+    	initialize(stmnt, conn);
+    }
+    
+    public void initialize(Statement stmnt, Connection conn) {
         _conn = conn;
         _stmnt = stmnt;
         if (stmnt instanceof DelegatingStatement)
