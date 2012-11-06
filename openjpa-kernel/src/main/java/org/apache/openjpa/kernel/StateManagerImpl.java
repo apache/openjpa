@@ -3278,7 +3278,7 @@ public class StateManagerImpl
 
         // no listeners?
         LifecycleEventManager mgr = _broker.getLifecycleEventManager();
-        if (mgr == null || !mgr.hasLoadListeners(getManagedInstance(), _meta))
+        if (mgr == null || !mgr.isActive(_meta) || !mgr.hasLoadListeners(getManagedInstance(), _meta))
             return;
 
         if (fetch == null)
