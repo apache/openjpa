@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -392,8 +393,9 @@ public class BrokerImpl
             beginInternal();
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeOperatingSet() {
-        _operating = MapBackedSet.decorate(new IdentityMap());
+        _operating = MapBackedSet.decorate(new IdentityHashMap<Object, Object>());
     }
     
     /**
