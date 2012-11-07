@@ -115,6 +115,9 @@ public class TestStatistics extends SingleEMFTestCase {
         write++;
         write++;
         write++;
+        
+        write++;
+        write++;
         assertion(cls, hit,  read, write, stats);
 
         em.clear();
@@ -151,6 +154,8 @@ public class TestStatistics extends SingleEMFTestCase {
         // Test lazy field -- should be a cache miss
         assertEquals(1, p.getLazyList().size());
         read++;
+        write++;
+        // +1 write for p which had its intermediate(fk) updated
         write++;
         assertion(cls, hit,  read, write, stats);
         em.clear();
