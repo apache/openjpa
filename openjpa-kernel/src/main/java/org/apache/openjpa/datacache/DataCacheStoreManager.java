@@ -482,7 +482,8 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
     private void updateDataCache(boolean found, OpenJPAStateManager sm, FetchConfiguration fetch,
         boolean loadedFieldsChanged) {
 
-        if (!_ctx.getPopulateDataCache() || sm == null || fetch.getCacheStoreMode() == DataCacheStoreMode.BYPASS) {
+        if (!_ctx.getPopulateDataCache() || sm == null || sm.isEmbedded()
+            || fetch.getCacheStoreMode() == DataCacheStoreMode.BYPASS) {
             return;
         }
 
