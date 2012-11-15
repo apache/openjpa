@@ -82,6 +82,7 @@ public class NativeJDBCSeq
     private DBIdentifier _schema = DBIdentifier.NULL;
 
     private boolean alterIncrementBy = false;
+    private boolean alreadyLoggedAlterSeqFailure = false;
 
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
@@ -218,7 +219,18 @@ public class NativeJDBCSeq
         try {
             if (!alterIncrementBy) {
                 DBDictionary dict = _conf.getDBDictionaryInstance();
-                udpateSql(conn, dict.getAlterSequenceSQL(_seq));
+                // If this fails, we will warn the user at most one time and set _allocated and _increment to 1 so
+                // as to not potentially insert records ahead of what the database thinks is the next sequence value.
+                if (updateSql(conn, dict.getAlterSequenceSQL(_seq)) == -1) {
+                    if (!alreadyLoggedAlterSeqFailure) {
+                        Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                        if (log.isWarnEnabled()) {
+                            log.warn(_loc.get("fallback-no-seq-cache", _seqName));
+                        }
+                    }
+                    alreadyLoggedAlterSeqFailure = true;
+                    _allocate = 1;
+                }
             }
             _nextValue = getSequence(conn);
             _maxValue = _nextValue + _allocate * _increment;
@@ -311,7 +323,7 @@ public class NativeJDBCSeq
         }
     }
 
-    private int udpateSql(Connection conn, String sql) throws SQLException {
+    private int updateSql(Connection conn, String sql) throws SQLException {
         DBDictionary dict = _conf.getDBDictionaryInstance();
         PreparedStatement stmnt = null;
         int rc = -1;
@@ -320,7 +332,8 @@ public class NativeJDBCSeq
             dict.setTimeouts(stmnt, _conf, false);
             rc = stmnt.executeUpdate();
         } catch (Exception e) {
-            // tolerate exception when attempting to alter increment
+            // tolerate exception when attempting to alter increment,
+            // however, caller should check rc and not cache sequence values if rc != -1.
         } finally {
             // clean up our resources
             if (stmnt != null) {
