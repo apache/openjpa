@@ -2243,7 +2243,7 @@ languages, such as JDOQL.  Defaults to <literal>"\\"</literal>
 <literal>RequiresSearchStringEscapeForLike</literal>:
 When true, the database requires an escape string for queries that use
 <literal>LIKE</literal>.  The escape string can be specified using
-<literal>searchStringEscape</literal>.  Defaults to <literal>true</literal>.
+<literal>searchStringEscape</literal>.  Defaults to <literal>false</literal>.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SelectWords">

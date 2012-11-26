@@ -247,7 +247,7 @@ public class DBDictionary
     public boolean requiresTargetForDelete = false;
     public boolean allowsAliasInBulkClause = true;
     public boolean supportsMultipleNontransactionalResultSets = true;
-    public boolean requiresSearchStringEscapeForLike = true;
+    public boolean requiresSearchStringEscapeForLike = false;
     public String searchStringEscape = "\\";
     public boolean requiresCastForMathFunctions = false;
     public boolean requiresCastForComparisons = false;

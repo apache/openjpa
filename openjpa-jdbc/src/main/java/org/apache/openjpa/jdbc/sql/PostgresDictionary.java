@@ -767,6 +767,7 @@ public class PostgresDictionary
         }
         // Old PostgreSQL requires double-escape for strings.
         if ((maj <= 8 || (maj == 9 && min == 0))) {
+            requiresSearchStringEscapeForLike = true;
             searchStringEscape = "\\\\";
         }
     }

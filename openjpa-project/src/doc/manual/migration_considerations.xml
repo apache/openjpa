@@ -524,6 +524,25 @@
                     the <literal>javax.persistence.Column</literal> annotation.
                 </para>
             </section>
+            <section id="jpa_2.3_RequiresSearchStringEscapeForLike">
+                <title>
+                    RequiresSearchStringEscapeForLike DBDictionary Property
+                </title>
+                <!-- See OPENJPA-2282 for details. -->
+                <para>
+                    In previous releases, the default value for the property RequiresSearchStringEscapeForLike is true and caused the 
+                    unexpected escape clause appended to the SQL statement.
+                    For example, user created a named query like this:
+                    <programlisting> SELECT o.computerName FROM CompUser o WHERE o.name LIKE ?</programlisting>
+                    At run time the following query is generated: 
+                    <programlisting> SELECT t0.computerName FROM CompUser t0 WHERE (t0.name LIKE ? ESCAPE '\')</programlisting>                     
+                    ESCAPE '\' shouldn't be appended to the query.
+                </para>
+                <para>
+                    From the 2.3.0 release, RequiresSearchStringEscapeForLike property is set to false by default. You can configure 
+                    RequiresSearchStringEscapeForLike property to be true if the old behavior is desired. 
+                </para>
+            </section>
         </section>
     </section>
 </appendix>

@@ -64,6 +64,7 @@ public class JDataStoreDictionary
             "SHORT", "INT", "LONG", "DOUBLE PRECISION", "BOOLEAN",
         }));
 
+        requiresSearchStringEscapeForLike = true;
         searchStringEscape = "";
     }
 

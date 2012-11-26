@@ -42,13 +42,16 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
                 new Address("24 Mink", "ANTIOCH", "USA", "94513"),
                 new Address("23 Ogbete", "CoalCamp", "NIGERIA", "00000"),
                 new Address("10 Wilshire", "Worcester", "CANADA", "80080"),
-                new Address("23 Bellflower", "Ogui", "NIGERIA", "02000") };
+                new Address("23 Bellflower", "Ogui", "NIGERIA", "02000"),
+                new Address("24 Bellflower", "Ogui", "NIGERIA", "02000")};
+
 
         CompUser user1 = createUser("Seetha", "MAC", add[0], 40, true);
         CompUser user2 = createUser("Shannon", "PC", add[1], 36, false);
         CompUser user3 = createUser("Ugo", "PC", add[2], 19, true);
         CompUser user4 = createUser("Jacob", "LINUX", add[3], 10, true);
         CompUser user5 = createUser("Famzy", "UNIX", add[4], 29, false);
+        CompUser user6 = createUser("tes\\ter", "Test", add[5], 10, true);
 
         em.persist(user1);
         userid1 = user1.getUserid();
@@ -60,6 +63,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         userid4 = user4.getUserid();
         em.persist(user5);
         userid5 = user5.getUserid();
+        em.persist(user6);
 
         endTx(em);
         endEm(em);
@@ -72,7 +76,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull("the list is null", result);
-        assertEquals("the size of the list is not 5", 5, result.size());
+        assertEquals("the size of the list is not 6", 6, result.size());
 
         endEm(em);
     }
@@ -113,7 +117,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull("the list is null", result);
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         assertTrue("seetha is not in the list", result.contains("Seetha"));
         assertTrue("jacob is not in the list", result.contains("Jacob"));
         assertTrue("famzy is not in the list", result.contains("Famzy"));
@@ -154,7 +158,15 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
 
         assertNotNull(result);
         assertEquals(1, result.size());
+        
+        query = "SELECT o.computerName FROM CompUser o WHERE o.name " +
+                "LIKE 'tes\\%'";
 
+        result = em.createQuery(query).getResultList();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        
         query = "SELECT o.name FROM CompUser o WHERE o.name LIKE '_J%'";
 
         result = em.createQuery(query).getResultList();
@@ -226,7 +238,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 5, result.size());
+        assertEquals("they are not equal", 6, result.size());
 
         endEm(em);
     }
@@ -245,7 +257,7 @@ public class TestEJBQLCondExpression extends AbstractTestCase {
         List result = em.createQuery(query).getResultList();
 
         assertNotNull("the list is null", result);
-        assertEquals("they are not equal", 5, result.size());
+        assertEquals("they are not equal", 6, result.size());
         assertTrue("Seetha is not list", result.contains("Seetha"));
         assertTrue("Shannon is not list", result.contains("Shannon"));
         assertTrue("jacob is not list", result.contains("Jacob"));

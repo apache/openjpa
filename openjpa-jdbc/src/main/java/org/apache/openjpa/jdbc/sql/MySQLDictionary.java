@@ -149,6 +149,7 @@ public class MySQLDictionary
             "INDEX", 
         }));
 
+        requiresSearchStringEscapeForLike = true;
         // MySQL requires double-escape for strings
         searchStringEscape = "\\\\";
 
