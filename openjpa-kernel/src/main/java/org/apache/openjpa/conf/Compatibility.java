@@ -71,6 +71,8 @@ public class Compatibility {
     private boolean _parseAnnotationsForQueryMode = true;  
     private boolean _resetFlushFlagForCascadePersist = false;//OPENJPA-2051
     private boolean _overrideContextClassloader = false; //OPENJPA-1993
+    private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
+   
 
     /**
      * Whether to require exact identity value types when creating object
@@ -636,6 +638,22 @@ public class Compatibility {
      */
     public void setOverrideContextClassloader(boolean overrideContextClassloader) {
         _overrideContextClassloader = overrideContextClassloader;
+    }
+    
+    /**
+     * Whether the metadata processor should filter classes dispatched by the PCRegistry listener system.
+     * 
+     */
+    public boolean  getFilterPCRegistryClasses() {
+        return _filterPCRegistryClasses;
+    }
+    
+    /**
+     * Whether the metadata processor should filter classes dispatched by the PCRegistry listener system.
+     * 
+     */
+    public void setFilterPCRegistryClasses(boolean bool) {
+        _filterPCRegistryClasses = bool;
     }
 }
 
