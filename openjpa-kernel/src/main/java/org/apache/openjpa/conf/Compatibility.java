@@ -75,6 +75,7 @@ public class Compatibility {
     private boolean _metaFactoriesAreStrict = false; 
     private boolean _resetFlushFlagForCascadePersist = true;//OPENJPA-2051
     private boolean _singletonLifecycleEventManager = false;
+    private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
     
     /**
      * Whether to require exact identity value types when creating object
@@ -712,5 +713,19 @@ public class Compatibility {
      */
     public void setSingletonLifecycleEventManager(boolean singleton) {
         _singletonLifecycleEventManager = singleton;
+    }
+    
+    /**
+     * Whether the metadata processor should filter classes dispatched by the PCRegistry listener system.
+     **/
+    public boolean  getFilterPCRegistryClasses() {
+        return _filterPCRegistryClasses; 
+    }
+     
+    /**
+     * Whether the metadata processor should filter classes dispatched by the PCRegistry listener system.
+     **/
+    public void setFilterPCRegistryClasses(boolean bool) {
+        _filterPCRegistryClasses = bool;
     }
 }

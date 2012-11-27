@@ -162,6 +162,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     // Entities.
     private boolean _logEnhancementLevel = true;
 
+    // A boolean used to decide whether to filter Class<?> objects submitted by the PCRegistry listener system
+    private boolean _filterRegisteredClasses = false;
+    
     /**
      * Default constructor. Configure via {@link Configurable}.
      */
@@ -1635,10 +1638,41 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         Collection<String> pcNames = getPersistentTypeNames(false, envLoader);
         Collection<Class<?>> failed = null;
         for (int i = 0; i < reg.length; i++) {
-            // don't process types that aren't listed by the user; may belong
-            // to a different persistence unit
-            if (pcNames != null && !pcNames.isEmpty() && !pcNames.contains(reg[i].getName()))
+            // Don't process types that aren't listed by the user; it may belong to a different persistence unit.
+            if (pcNames != null && !pcNames.isEmpty() && !pcNames.contains(reg[i].getName())) {
                 continue;
+            }
+            
+            // If the compatibility option "filterPCRegistryClasses" is enabled, then verify that the type is
+            // accessible to the envLoader/Thread Context ClassLoader
+            if (_filterRegisteredClasses) {
+                Log log = (_conf == null) ? null : _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                ClassLoader loadCL = (envLoader != null) ?
+                        envLoader :
+                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+                        
+                try {
+                    Class<?> classFromAppClassLoader = Class.forName(reg[i].getName(), true, loadCL);
+                    
+                    if (!reg[i].equals(classFromAppClassLoader)) {
+                        // This is a class that belongs to a ClassLoader not associated with the Application,
+                        // so it should be processed.
+                        if (log != null && log.isTraceEnabled()) {
+                            log.trace(
+                                "Metadata Repository will ignore Class " + reg[i].getName() + 
+                                ", since it originated from a ClassLoader not associated with the application.");
+                        }
+                        continue;
+                    }
+                } catch (ClassNotFoundException cnfe) {
+                    // Catch exception and log its occurrence, and permit MDR processing to continue to preserve
+                    // original behavior.
+                    if (log != null && log.isTraceEnabled()) {
+                        log.trace("The Class " + reg[i].getName() + " was identified as a persistent class " +
+                            "by configuration, but the Class could not be found.");
+                    }
+                }
+            }
 
             checkEnhancementLevel(reg[i]);
             try {
@@ -1878,6 +1912,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public void setConfiguration(Configuration conf) {
         _conf = (OpenJPAConfiguration) conf;
         _log = _conf.getLog(OpenJPAConfiguration.LOG_METADATA);
+        _filterRegisteredClasses = _conf.getCompatibilityInstance().getFilterPCRegistryClasses();
     }
 
     public void startConfiguration() {
