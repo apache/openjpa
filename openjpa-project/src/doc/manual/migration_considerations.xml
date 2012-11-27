@@ -497,6 +497,20 @@
                     to <literal>true</literal>.
                 </para>
             </section>
+            <section id="jpa_2.2_sharedCacheMode">
+                <title>
+                    shared-cache-mode Property
+                </title>
+                <!-- See OPENJPA-1532 for details. -->
+                <para>
+                     In the previous release, when the shared-cache-mode is enabled and the DataCache property is not set 
+                     or set to false, there will be no data caching.
+                </para>
+                <para>
+                     From 2.2.2 release, the caching will be turned on if the shared-cache-mode is enabled. Please see the 
+                     details described in section <xref linkend="ref_guide_shared_cache_mode_integration"/>.
+                </para>
+            </section>
         </section>
     </section>
     <section id="jpa_2.3">
