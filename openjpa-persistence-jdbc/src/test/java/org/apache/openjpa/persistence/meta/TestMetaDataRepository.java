@@ -66,8 +66,7 @@ public class TestMetaDataRepository extends AbstractPersistenceTestCase {
 
 			// assertTrue(aliases.size() == numEntities);
 
-			QueryMetaData query = mdr.getCachedQueryMetaData(
-					MdrTestEntity.class, "query");
+			QueryMetaData query = mdr.getCachedQueryMetaData("query");
 			assertNotNull(query);
 		} finally {
 			closeEMF(emf);

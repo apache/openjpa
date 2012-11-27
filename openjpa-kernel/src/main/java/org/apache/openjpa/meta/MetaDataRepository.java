@@ -115,7 +115,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private Map<Class<?>, Collection<Class<?>>> _impls =
         Collections.synchronizedMap(new HashMap<Class<?>, Collection<Class<?>>>());
     private Map<Class<?>, Class<?>> _ifaces = Collections.synchronizedMap(new HashMap<Class<?>, Class<?>>());
-    private Map<Object, QueryMetaData> _queries = new HashMap<Object, QueryMetaData>();
+    private Map<String, QueryMetaData> _queries = new HashMap<String, QueryMetaData>();
     private Map<String, SequenceMetaData> _seqs = new HashMap<String, SequenceMetaData>();
     private Map<String, List<Class<?>>> _aliases = Collections.synchronizedMap(new HashMap<String, List<Class<?>>>());
     private Map<Class<?>, NonPersistentMetaData> _pawares =
@@ -1970,14 +1970,13 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 return qm;
         }
         // check cache
-        Object key = getQueryKey(cls, name);
-        qm = (QueryMetaData) _queries.get(key);
+        qm = (QueryMetaData) _queries.get(name);
         if (qm != null)
             return qm;
 
         // get metadata for class, which will find queries in metadata file
         if (cls != null && getMetaData(cls, envLoader, false) != null) {
-            qm = _queries.get(key);
+            qm = _queries.get(name);
             if (qm != null)
                 return qm;
         }
@@ -1990,7 +1989,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
         // not in cache; load
         _factory.load(cls, MODE_QUERY, envLoader);
-        return _queries.get(key);
+        return _queries.get(name);
     }
 
     /**
@@ -2009,13 +2008,13 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return the cached query metadata for the given name.
      */
-    public QueryMetaData getCachedQueryMetaData(Class<?> cls, String name) {
+    public QueryMetaData getCachedQueryMetaData(String name) {
         if (_locking) {
             synchronized (this) {
-                return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+                return (QueryMetaData) _queries.get(name);
             }
         } else {
-            return (QueryMetaData) _queries.get(getQueryKey(cls, name));
+            return (QueryMetaData) _queries.get(name);
         }
     }
 
@@ -2026,12 +2025,12 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         if (_locking) {
             synchronized (this) {
                 QueryMetaData meta = newQueryMetaData(cls, name);
-                _queries.put(getQueryKey(meta), meta);
+                _queries.put(name, meta);
                 return meta;
             }
         }else{
             QueryMetaData meta = newQueryMetaData(cls, name);
-            _queries.put(getQueryKey(meta), meta);
+            _queries.put(name, meta);
             return meta;   
         }
     }
@@ -2054,10 +2053,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return false;
         if (_locking) {
             synchronized (this) {
-                return _queries.remove(getQueryKey(meta)) != null;
+                return _queries.remove(meta.getName()) != null;
             }
         } else {
-            return _queries.remove(getQueryKey(meta)) != null;
+            return _queries.remove(meta.getName()) != null;
         }
     }
 
@@ -2069,36 +2068,22 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             synchronized (this) {
                 if (name == null)
                     return false;
-                return _queries.remove(getQueryKey(cls, name)) != null;
+                return _queries.remove(name) != null;
             }
         } else {
             if (name == null)
                 return false;
-            return _queries.remove(getQueryKey(cls, name)) != null;
+            return _queries.remove(name) != null;
         }
     }
 
     /**
      * Searches all cached query metadata by name.
      */
-    public QueryMetaData searchQueryMetaDataByName(String name) {
-        for (Object key : _queries.keySet()) {
-            if (key instanceof QueryKey)
-                if (StringUtils.equals(((QueryKey) key).name, name))
-                    return (QueryMetaData) _queries.get(key);
-        }
-        return null;
+    public QueryMetaData searchQueryMetaDataByName(String name) {        
+        return (QueryMetaData) _queries.get(name);
     }
-
-    /**
-     * Return a unique key for a given QueryMetaData.
-     */
-    private static Object getQueryKey(QueryMetaData meta) {
-        if (meta == null)
-            return null;
-        return getQueryKey(meta.getDefiningType(), meta.getName());
-    }
-
+    
     /**
      * Return a unique key for a given class / name. The class argument can be null.
      */
