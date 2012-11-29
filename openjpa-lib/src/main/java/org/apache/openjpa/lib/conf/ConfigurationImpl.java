@@ -126,6 +126,9 @@ public class ConfigurationImpl
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
+    //Ant task needs to defer the resource loading 
+    //until the classpath setting is loaded properly
+    private boolean _deferResourceLoading = false; 
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -270,6 +273,14 @@ public class ConfigurationImpl
         if (newState >= _readOnlyState) {
         	_readOnlyState = newState;
         }
+    }
+
+    public boolean isDeferResourceLoading() {
+        return _deferResourceLoading;
+    }
+ 
+    public void setDeferResourceLoading(boolean deferResourceLoading) {
+        this._deferResourceLoading = deferResourceLoading;
     }
 
     public void instantiateAll() {
@@ -843,15 +854,17 @@ public class ConfigurationImpl
      * <code>properties</code> value with the name of a resource.
      */
     public void setProperties(String resourceName) throws IOException {
-        String anchor = null;
-        if (resourceName.indexOf("#") != -1)
-        {
-            anchor = resourceName.substring(resourceName.lastIndexOf("#") + 1);
-            resourceName = resourceName.substring(0,
-                resourceName.length() - anchor.length() - 1);
+
+        if (!_deferResourceLoading) {
+            String anchor = null;
+            if (resourceName.indexOf("#") != -1) {
+                anchor = resourceName.substring(resourceName.lastIndexOf("#") + 1);
+                resourceName = resourceName.substring(0, resourceName.length() - anchor.length() - 1);
+            }
+
+            ProductDerivations.load(resourceName, anchor, getClass().getClassLoader()).setInto(this);
         }
-        ProductDerivations.load(resourceName, anchor,
-            getClass().getClassLoader()).setInto(this);
+
         _auto = resourceName;
     }
 
@@ -863,6 +876,7 @@ public class ConfigurationImpl
     public void setPropertiesFile(File file) throws IOException {
         ProductDerivations.load(file, null, getClass().getClassLoader()).
             setInto(this);
+        setDeferResourceLoading(false);
         _auto = file.toString();
     }
 
