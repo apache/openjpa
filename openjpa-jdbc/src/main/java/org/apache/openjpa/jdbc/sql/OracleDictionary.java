@@ -1420,4 +1420,8 @@ public class OracleDictionary
             row.setBlob(col, getEmptyBlob());
         }
     }
+
+    public boolean isImplicitJoin() {
+        return joinSyntax == SYNTAX_DATABASE;
+    }
 }

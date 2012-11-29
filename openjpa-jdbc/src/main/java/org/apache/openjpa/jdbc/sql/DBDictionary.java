@@ -1855,6 +1855,10 @@ public class DBDictionary
         else if (!StringUtils.isEmpty(syntax))
             throw new IllegalArgumentException(syntax);
     }
+    
+    public boolean isImplicitJoin() {
+        return false;
+    }
 
     /**
      * Return a SQL string to act as a placeholder for the given column.

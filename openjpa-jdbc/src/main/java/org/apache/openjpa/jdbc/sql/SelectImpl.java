@@ -2784,7 +2784,11 @@ public class SelectImpl
                 || _sel._from != null) {
                 // don't make any joins, but update the path if a variable
                 // has been set
-                this.append(this.var);
+                if (this.var != null) {
+                    this.append(this.var);
+                } else if (this.path == null && this.correlatedVar != null && _sel._dict.isImplicitJoin()) {
+                    this.append(this.correlatedVar);
+                }
                 this.var = null;
                 _outer = false;
                 return this;
