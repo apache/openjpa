@@ -23,6 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,6 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
@@ -64,6 +64,9 @@ public class Configurations {
                 ConcurrentReferenceHashMap.HARD);
 
     private static final Object NULL_LOADER = "null-loader";
+    
+    public static final String CONFIG_RESOURCE_PATH = "configResourcePath";
+    public static final String CONFIG_RESOURCE_ANCHOR = "configResourceAnchor";
 
     /**
      * Return the class name from the given plugin string, or null if none.
@@ -320,19 +323,9 @@ public class Configurations {
         String props = opts.removeProperty("properties", "p", null);
         ConfigurationProvider provider;
         if (!StringUtils.isEmpty(props)) {
-            String path = props;
-            String anchor = null;
-            int idx = path.lastIndexOf('#');
-            if (idx != -1) {
-                if (idx < path.length() - 1)
-                    anchor = path.substring(idx + 1);
-                path = path.substring(0, idx);
-                if (path.length() == 0)
-                    throw new MissingResourceException(_loc.get("anchor-only",
-                        props).getMessage(), Configurations.class.getName(), 
-                        props);
-            }
-
+            Map<String, String> result = parseConfigResource(props);
+            String path = result.get(CONFIG_RESOURCE_PATH);
+            String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
             File file = new File(path);
             if ((AccessController.doPrivileged(J2DoPrivHelper
                 .isFileAction(file))).booleanValue())
@@ -357,6 +350,25 @@ public class Configurations {
                 provider.setInto(conf);
         }
         opts.setInto(conf);
+    }
+    
+    public static Map<String, String> parseConfigResource(String props) {
+        String path = props;
+        String anchor = null;
+        int idx = path.lastIndexOf('#');
+        if (idx != -1) {
+            if (idx < path.length() - 1)
+                anchor = path.substring(idx + 1);
+            path = path.substring(0, idx);
+            if (path.length() == 0)
+                throw new MissingResourceException(_loc.get("anchor-only",
+                    props).getMessage(), Configurations.class.getName(), 
+                    props);
+        }
+        Map <String, String> result = new HashMap<String, String>();
+        result.put(CONFIG_RESOURCE_PATH, path);
+        result.put(CONFIG_RESOURCE_ANCHOR, anchor);
+        return result;
     }
 
     /**

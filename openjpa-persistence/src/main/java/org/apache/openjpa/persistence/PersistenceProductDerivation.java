@@ -61,6 +61,7 @@ import org.apache.openjpa.lib.meta.XMLMetaDataParser;
 import org.apache.openjpa.lib.meta.XMLVersionParser;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -510,8 +511,11 @@ public class PersistenceProductDerivation
     private Boolean load(ConfigurationProviderImpl cp, String rsrc, 
         String name, Map m, ClassLoader loader, boolean explicit)
         throws IOException {
-        if (loader == null)
-            loader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader contextLoader = null;         
+        if (loader == null) {
+            contextLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            loader = contextLoader;
+        }
 
         List<URL> urls = getResourceURLs(rsrc, loader);
         if (urls == null || urls.size() == 0)
@@ -535,7 +539,19 @@ public class PersistenceProductDerivation
         }
         
         // Process jar-file references after confirming OpenJPA is the desired JPA provider.
+        if ( loader != contextLoader && loader instanceof MultiClassLoader) {
+            // combine the MultiClassLoader and set to the context 
+            // so that it could be used in the jar validation
+            MultiClassLoader mutliClassLoader = (MultiClassLoader) loader;
+            contextLoader = (contextLoader != null) ? contextLoader 
+                    : AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            mutliClassLoader.addClassLoader(contextLoader);
+            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(mutliClassLoader));
+        }
         pinfo.processJarFileNames();
+        if (contextLoader != null) 
+        	//restore the context loader
+            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(contextLoader));
         
         cp.addProperties(pinfo.toOpenJPAProperties());
         cp.setSource(pinfo.getPersistenceXmlFileUrl().toString());

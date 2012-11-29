@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -41,7 +42,6 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
-import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
@@ -244,8 +244,10 @@ public class PersistenceUnitInfoImpl
     }
     
     public void validateJarFileName(String name) {
+        ClassLoader contextClassLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
         MultiClassLoader loader = AccessController
             .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        loader.addClassLoader(contextClassLoader);
         loader.addClassLoader(getClass().getClassLoader());
         loader.addClassLoader(MultiClassLoader.THREAD_LOADER);
         URL url = AccessController.doPrivileged(
@@ -256,9 +258,27 @@ public class PersistenceUnitInfoImpl
         }
 
         // jar file is not a resource; check classpath
-        String[] cp = (AccessController.doPrivileged(
-            J2DoPrivHelper.getPropertyAction("java.class.path"))) 
-            .split(J2DoPrivHelper.getPathSeparator());
+        String classPath = null;        
+
+        //first check if the classpath is set from ant class loader
+        if (contextClassLoader instanceof MultiClassLoader) {
+            for (ClassLoader classLoader : ((MultiClassLoader) contextClassLoader).getClassLoaders()){
+                try {
+                    Method getClassPathMethod = classLoader.getClass().getMethod("getClasspath", new Class[]{});
+                    classPath = (String) getClassPathMethod.invoke(classLoader, new Object[]{});
+                    if (classPath != null) 
+                        break;
+                } catch (Exception e) {
+                    //do nothing
+                } 
+            }                
+        }                
+        
+        if (classPath == null) {
+            classPath = AccessController.doPrivileged(
+                    J2DoPrivHelper.getPropertyAction("java.class.path"));
+        }
+        String[] cp = classPath.split(J2DoPrivHelper.getPathSeparator());
         for (int i = 0; i < cp.length; i++) {
             if (cp[i].equals(name)
                 || cp[i].endsWith(File.separatorChar + name)) {
