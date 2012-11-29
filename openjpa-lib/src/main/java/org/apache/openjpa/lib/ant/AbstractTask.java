@@ -22,13 +22,17 @@ import java.io.File;
 import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -92,8 +96,10 @@ public abstract class AbstractTask extends MatchingTask {
      * The task configuration.
      */
     public Configuration getConfiguration() {
-        if (_conf == null)
-            _conf = newConfiguration();
+        if (_conf == null) {
+             _conf = newConfiguration();
+            _conf.setDeferResourceLoading(true);
+        }    
         return _conf;
     }
 
@@ -158,12 +164,19 @@ public abstract class AbstractTask extends MatchingTask {
         // if the user didn't supply a conf file, load the default
         if (_conf == null)
             _conf = newConfiguration();
-        if (_conf.getPropertiesResource() == null) {
-            ConfigurationProvider cp = ProductDerivations.loadDefaults
-                (AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));
-            if (cp != null)
-                cp.setInto(_conf);
+        ConfigurationProvider cp = null;
+        String propertiesResource = _conf.getPropertiesResource();
+        if ( propertiesResource == null) {            
+            cp = ProductDerivations.loadDefaults(getConfigPropertiesResourceLoader());           
+        } else if (_conf.isDeferResourceLoading() && !StringUtils.isEmpty(propertiesResource)) {
+            Map<String, String> result = Configurations.parseConfigResource(propertiesResource);
+            String path = result.get(Configurations.CONFIG_RESOURCE_PATH);
+            String anchor = result.get(Configurations.CONFIG_RESOURCE_ANCHOR);
+            cp = ProductDerivations.load(path, anchor, getConfigPropertiesResourceLoader());
+        }
+
+        if (cp != null){
+            cp.setInto(_conf);
         }
 
         String[] files = getFiles();
@@ -177,6 +190,15 @@ public abstract class AbstractTask extends MatchingTask {
             _conf.close();
             _conf = null;
         }
+    }
+
+    private MultiClassLoader getConfigPropertiesResourceLoader() {
+        MultiClassLoader loader = AccessController
+                .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
+        loader.addClassLoader(getClassLoader());
+        loader.addClassLoader(AccessController.doPrivileged(
+                J2DoPrivHelper.getClassLoaderAction(_conf.getClass())));        
+        return loader;
     }
 
     private String[] getFiles() {
