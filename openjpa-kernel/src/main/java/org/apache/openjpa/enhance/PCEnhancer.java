@@ -1263,7 +1263,6 @@ public class PCEnhancer {
         // if the type is abstract, throw a UserException
         if (_pc.isAbstract()) {
             throwException(code, USEREXCEP);
-            code.vreturn();
 
             code.calculateMaxStack();
             code.calculateMaxLocals();
@@ -1968,7 +1967,6 @@ public class PCEnhancer {
         // single field identity always throws exception
         if (_meta.isOpenJPAIdentity()) {
             throwException(code, INTERNEXCEP);
-            code.vreturn();
 
             code.calculateMaxStack();
             code.calculateMaxLocals();
@@ -2728,7 +2726,6 @@ public class PCEnhancer {
             code.invokespecial().setMethod(IllegalArgumentException.class,
                 "<init>", void.class, new Class[]{ String.class });
             code.athrow();
-            code.vreturn();
 
             code.calculateMaxStack();
             code.calculateMaxLocals();
