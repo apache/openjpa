@@ -1365,6 +1365,10 @@ public class OracleDictionary
         }
     }
 
+    public boolean isImplicitJoin() {
+        return joinSyntax == SYNTAX_DATABASE;
+    }
+
     /**
      * Oracle requires special handling of XML column.
      * Unless the value length is less or equal to 4000 bytes,
