@@ -1230,10 +1230,8 @@ public class XMLPersistenceMetaDataParser
             return;
 
         ValueMetaData vmd = fmd;
-        switch (_strategy) {
-            case ONE_MANY:
-            case MANY_MANY:
-                vmd = fmd.getElement();
+        if (_strategy == ONE_MANY || _strategy == MANY_MANY) {
+            vmd = fmd.getElement();
         }
         for (CascadeType cascade : cascades) {
             switch (cascade) {
