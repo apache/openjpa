@@ -41,6 +41,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -651,11 +652,11 @@ public class SourceAnnotationHandler
     }
 
     public TypeElement getPersistentSupertype(TypeElement cls) {
+    	if (cls == null) return null;
         TypeMirror sup = cls.getSuperclass();
-        if (sup == null || isRootObject(sup))
+        if (sup == null || sup.getKind() == TypeKind.NONE ||  isRootObject(sup))
             return null;
-        TypeElement supe =
-            (TypeElement) processingEnv.getTypeUtils().asElement(sup);
+        TypeElement supe = (TypeElement) processingEnv.getTypeUtils().asElement(sup);
         if (isAnnotatedAsEntity(supe)) 
             return supe;
         return getPersistentSupertype(supe);
