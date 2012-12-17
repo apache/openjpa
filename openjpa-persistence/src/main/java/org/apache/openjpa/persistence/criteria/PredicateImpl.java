@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -48,10 +49,10 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     public static final Predicate TRUE  = new Expressions.Equal(ONE,ONE);
     public static final Predicate FALSE = new Expressions.NotEqual(ONE,ONE);
     
-    protected final List<Predicate> _exps = new ArrayList<Predicate>();
+    protected final List<Predicate> _exps = Collections.synchronizedList(new ArrayList<Predicate>());
     private final BooleanOperator _op;
     private boolean _negated = false;
-
+    
     /**
      * An AND predicate with no arguments.
      */
