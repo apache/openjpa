@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.util.Arrays;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -31,6 +33,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -39,12 +42,7 @@ import org.apache.openjpa.persistence.meta.Members;
 import org.apache.openjpa.persistence.meta.Members.Member;
 
 /**
- * Represents a simple or compound attribute path from a 
- * bound type or collection, and is a "primitive" expression.
- * @param <X>  Type referenced by the path
- */
-/**
- * Path is an expression often representing a persistent attribute traversed from another (parent) path.
+ * Path is an expression representing a persistent attribute traversed from a parent path.
  * The type of the path is the type of the persistent attribute.
  * If the persistent attribute is bindable, then further path can be traversed from this path. 
  * 
@@ -70,8 +68,11 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
-     * Create a path from the given non-null parent representing the given non-null member. The given class denotes 
-     * the type expressed by this path.
+     * Create a path from the given parent representing the given member. 
+     * 
+     * @param parent the path from which this path needs to be constructed. Must not be null.
+     * @param member the persistent property that represents this path.
+     * @param cls denotes the type expressed by this path.
      */
     public PathImpl(PathImpl<?,Z> parent, Members.Member<? super Z, ?> member, Class<X> cls) {
         super(cls);
@@ -87,8 +88,9 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
 
     /** 
-     * Returns the bindable object that corresponds to the path expression.
+     * Gets the bindable object that corresponds to the path expression.
      *  
+     * @throws IllegalArgumentException if this path is not bindable 
      */
     public Bindable<X> getModel() { 
         if (_member instanceof Bindable<?> == false) {
@@ -98,28 +100,33 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
     }
     
     /**
-     *  Return the parent "node" in the path or null if no parent.
+     *  Gets the parent of this path or null if this path is the root.
      */
     public final Path<Z> getParentPath() {
         return _parent;
     }
     
     /**
-     * Gets the path that originates this traversal. Can be itself if this itself is the origin.
+     * Gets the path that originates this traversal. Can be itself if this path is the root.
      */
     public PathImpl<?,?> getInnermostParentPath() {
         return (_parent == null) ? this : _parent.getInnermostParentPath();
     }
 
+    /**
+     * Gets the field that may have been embedded inside the given field. 
+     * For example, a given primary key field which is using an embedded class as a complex primary key. 
+     * @param fmd a given field
+     * @return the embedded field or the given field itself
+     */
     protected FieldMetaData getEmbeddedFieldMetaData(FieldMetaData fmd) {
         Members.Member<?,?> member = getInnermostMember(_parent,_member);
-        ClassMetaData embeddedMeta = member.fmd.isElementCollection() ? 
-                member.fmd.getElement().getEmbeddedMetaData() :
-                member.fmd.getEmbeddedMetaData();
-        if (embeddedMeta != null)
-            return embeddedMeta.getField(fmd.getName());
-        else
-            return fmd;
+    	
+        ClassMetaData embeddedMeta = member.fmd.isElementCollection() 
+        		? member.fmd.getElement().getEmbeddedMetaData() 
+        		: member.fmd.getEmbeddedMetaData();
+        
+        return (embeddedMeta != null) ? embeddedMeta.getField(fmd.getName()) : fmd;
     }
     
     protected Members.Member<?,?> getInnermostMember(PathImpl<?,?> parent, Members.Member<?,?> member) {
@@ -276,6 +283,7 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
         return _member.getType();
     }
 
+    @SuppressWarnings("unchecked")
     public Member<? extends Z, X> getMember() {
         return (Member<? extends Z, X>) _member;
     }

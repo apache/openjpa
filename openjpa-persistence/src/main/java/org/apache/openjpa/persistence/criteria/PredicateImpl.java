@@ -53,6 +53,9 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     private final BooleanOperator _op;
     private boolean _negated = false;
     
+    static {
+    	System.err.println("WARNING: You are using a unofficial version of PredicateImpl.class");
+    }
     /**
      * An AND predicate with no arguments.
      */

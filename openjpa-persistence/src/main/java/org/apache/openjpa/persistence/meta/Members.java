@@ -20,7 +20,6 @@
 package org.apache.openjpa.persistence.meta;
 
 import java.util.Collection;
-import java.util.Set;
 
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -73,6 +72,7 @@ public class Members {
         /**
          *  Returns the managed type which declared this attribute.
          */
+        @SuppressWarnings("unchecked")
         public final ManagedType<X> getDeclaringType() {
             return (ManagedType<X>)owner.model.managedType(fmd.getDeclaringType());
         }
@@ -87,6 +87,7 @@ public class Members {
         /**
          *  Gets the Java type of this attribute.
          */
+        @SuppressWarnings("unchecked")
         public final Class<Y> getJavaType() {
             return (Class<Y>)fmd.getDeclaredType();
         }
@@ -101,9 +102,11 @@ public class Members {
         /**
          * Returns the type that represents the type of this attribute.
          */
+        @SuppressWarnings("unchecked")
         public final Type<Y> getType() {
-            return owner.model.getType(isCollection() ?
-                   fmd.getElement().getDeclaredType() : fmd.getDeclaredType());
+            return owner.model.getType(isCollection() 
+            	 ? fmd.getElement().getDeclaredType() 
+            	 : fmd.getDeclaredType());
         }
         
         /**
@@ -136,6 +139,10 @@ public class Members {
 
         public int compareTo(Member<X, Y> o) {
             return fmd.getName().compareTo(o.fmd.getName());
+        }
+        
+        public String toString() {
+        	return fmd.getFullName(true);
         }
     }
     
@@ -190,6 +197,7 @@ public class Members {
          * is returned. If the bindable type is SINGULAR_ATTRIBUTE or ENTITY_TYPE, the Java type 
          * of the represented entity or attribute is returned.
          */
+        @SuppressWarnings("unchecked")
         public final Class<T> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
@@ -243,6 +251,7 @@ public class Members {
          * 
          * For PLURAL_ATTRIBUTE, the Java element type is returned. 
          */
+        @SuppressWarnings("unchecked")
         public Class<E> getBindableJavaType() {
             return fmd.getElement().getDeclaredType();
         }
@@ -313,6 +322,7 @@ public class Members {
             super(owner, fmd);
         }
 
+        @SuppressWarnings("unchecked")
         public Class<K> getBindableJavaType() {
             return (Class<K>)fmd.getKey().getDeclaredType();
         }
@@ -333,6 +343,7 @@ public class Members {
             return CollectionType.MAP;
         }
         
+        @SuppressWarnings("unchecked")
         public Class<K> getKeyJavaType() {
             return fmd.getKey().getDeclaredType();
         }
