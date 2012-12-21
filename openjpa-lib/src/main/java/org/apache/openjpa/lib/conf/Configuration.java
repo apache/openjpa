@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.persistence.PersistenceProviderImpl;
 
 /**
  * Interface for generic configuration objects. Includes the ability
@@ -252,26 +253,22 @@ public interface Configuration
     public Object clone();
     
     /**
-     * Modifies a <em>dynamic</em> property of this receiver even when 
-     * {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
+     * Gets a class loader that can be additionally used to load custom plugin values.
+     * 
+     * @see Configurations#newInstance(String, ClassLoader)
+     * @return an additional classloader for loading custom plugins. Can be null.
+     * @since 2.3.0
      */
-//    public void modifyDynamic(String property, Object newValue);
-//    
-//    /**
-//     * Affirms if the given property can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public boolean isDynamic(String property);
-//    
-//    /**
-//     * Gets the values that can be modified <em>dynamically</em> i.e.
-//     * even after the receiver is {@link #setReadOnly(boolean) frozen}. 
-//     *
-//     * @since 1.0.0
-//     */
-//    public Value[] getDynamicValues();
+    ClassLoader getUserClassLoader();
+    
+    /**
+     * Sets an additional classloader to load custom plugin values.
+     * In OSGi environment, we internally set the bundle class loader as
+     * the user class loader.
+     * 
+     * @param loader a class loader to load custom plugin values
+     * @see PersistenceProviderImpl#createEntityManagerFactory(String, Map)
+     * @since 2.3.0
+     */
+    void setUserClassLoader(ClassLoader loader);
 }

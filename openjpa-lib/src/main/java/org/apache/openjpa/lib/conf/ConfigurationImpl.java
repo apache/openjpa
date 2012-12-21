@@ -106,8 +106,7 @@ public class ConfigurationImpl
 
     private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
-    private static final Localizer _loc = Localizer.forPackage
-        (ConfigurationImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(ConfigurationImpl.class);
 
     public ObjectValue logFactoryPlugin;
     public StringValue id;
@@ -126,9 +125,14 @@ public class ConfigurationImpl
     // cache descriptors
     private PropertyDescriptor[] _pds = null;
     private MethodDescriptor[] _mds = null;
+    
+    // An additional (and optional) classloader to load custom plugins.
+    private ClassLoader _userCL;
+
     //Ant task needs to defer the resource loading 
     //until the classpath setting is loaded properly
     private boolean _deferResourceLoading = false; 
+
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -1106,5 +1110,13 @@ public class ConfigurationImpl
         PluginListValue val = new PluginListValue(property);
         addValue(val);
         return val;
+    }
+    
+    public ClassLoader getUserClassLoader() {
+    	return _userCL;
+    }
+    
+    public void setUserClassLoader(ClassLoader cl) {
+    	_userCL = cl;
     }
 }

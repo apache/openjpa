@@ -90,6 +90,7 @@ public class PersistenceProviderImpl
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
             OpenJPAConfiguration conf = factory.getConfiguration();
+            conf.setUserClassLoader(BundleUtils.getBundleClassLoader());
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);            
             pd.checkPuNameCollisions(_log,name);
             

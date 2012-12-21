@@ -21,6 +21,7 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -187,6 +188,34 @@ public class Configurations {
     }
 
     /**
+     * Loads the given class name by the given loader.
+     * For efficiency, a cache per class loader is maintained of classes already loader. 
+     * @param clsName
+     * @param loader
+     * @return
+     */
+    static Class<?> loadClass(String clsName, ClassLoader loader) {
+        Class<?> cls = null; 
+        Object key = loader == null ? NULL_LOADER : loader;
+        Map<String,Class<?>> loaderCache = (Map<String,Class<?>>) _loaders.get(key);
+        if (loaderCache == null) { // We don't have a cache for this loader.
+            loaderCache = new ConcurrentHashMap<String,Class<?>>();
+            _loaders.put(key, loaderCache);
+        } else {  // We have a cache for this loader.
+            cls = (Class<?>) loaderCache.get(clsName);
+        }
+        if (cls == null) {
+            try {
+                cls = Strings.toClass(clsName, loader);
+                loaderCache.put(clsName, cls);
+            } catch (RuntimeException re) {
+            	
+            }
+        }
+        return cls;
+    }
+    
+    /**
      * Helper method used by members of this package to instantiate plugin
      * values.
      */
@@ -195,53 +224,30 @@ public class Configurations {
         if (StringUtils.isEmpty(clsName))
             return null;
 
-        Class cls = null; 
-
-        while (cls == null) {
-            // can't have a null reference in the map, so use symbolic
-            // constant as key
-            Object key = loader == null ? NULL_LOADER : loader;
-            Map loaderCache = (Map) _loaders.get(key);
-            if (loaderCache == null) { // We don't have a cache for this loader.
-                loaderCache = new ConcurrentHashMap();
-                _loaders.put(key, loaderCache);
-            } else {  // We have a cache for this loader.
-                cls = (Class) loaderCache.get(clsName);
-            }
-
-            if (cls == null) {
-                try {
-                    cls = Strings.toClass(clsName, findDerivedLoader(conf,
-                            loader));
-                    loaderCache.put(clsName, cls);
-                } catch (RuntimeException re) {
-                    if (loader != null)  // Try one more time with loader=null
-                        loader = null;
-                    else {
-                        if (val != null)
-                            re = getCreateException(clsName, val, re);
-                        if (fatal)
-                            throw re;
-                        Log log = (conf == null) ? null : conf
-                                .getConfigurationLog();
-                        if (log != null && log.isErrorEnabled())
-                            log.error(_loc
-                                    .get("plugin-creation-exception", val), re);
-                        return null;
-                    }
-                }
-            }
+        Class<?> cls = loadClass(clsName, findDerivedLoader(conf, loader));
+        if (cls == null) {
+        	cls = loadClass(clsName, findDerivedLoader(conf, null));
+        }
+        if (cls == null && conf.getUserClassLoader() != null) {
+        	cls = loadClass(clsName, conf.getUserClassLoader());
         }
 
+        if (cls == null) {
+            if (fatal)
+              throw getCreateException(clsName, val, new ClassNotFoundException(clsName));
+            Log log = (conf == null) ? null : conf.getConfigurationLog();
+	        if (log != null && log.isErrorEnabled())
+	            log.error(_loc.get("plugin-creation-exception", val));
+	        return null;
+       }
+
         try {
-            return AccessController.doPrivileged(
-                J2DoPrivHelper.newInstanceAction(cls));
+            return AccessController.doPrivileged(J2DoPrivHelper.newInstanceAction(cls));
         } catch (Exception e) {
             if (e instanceof PrivilegedActionException) {
                 e = ((PrivilegedActionException) e).getException();   
             }
-            RuntimeException re = new NestableRuntimeException(_loc.get
-                ("obj-create", cls).getMessage(), e);
+            RuntimeException re = new NestableRuntimeException(_loc.get("obj-create", cls).getMessage(), e);
             if (fatal)
                 throw re;
             Log log = (conf == null) ? null : conf.getConfigurationLog();
@@ -256,41 +262,41 @@ public class Configurations {
      * This allows application loaders that delegate appropriately for known
      * classes first crack at class names.
      */
-    private static ClassLoader findDerivedLoader(Configuration conf,
-        ClassLoader loader) {
+    private static ClassLoader findDerivedLoader(Configuration conf, ClassLoader loader) {
         // we always prefer the thread loader, because it's the only thing we
         // can access that isn't bound to the OpenJPA classloader, unless
         // the conf object is of a custom class
-        ClassLoader ctxLoader = AccessController.doPrivileged(
-            J2DoPrivHelper.getContextClassLoaderAction());
+        ClassLoader ctxLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
         if (loader == null) {
-            if (ctxLoader != null)
+            if (ctxLoader != null) {
                 return ctxLoader;
-            if (conf != null)
-                return AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
-            return Configurations.class.getClassLoader();
+            } else if (conf != null) {
+                return classLoaderOf(conf.getClass()); 
+            } else {
+            	return classLoaderOf(Configurations.class);
+            }
         }
 
-        for (ClassLoader parent = ctxLoader; parent != null; 
-            parent = AccessController.doPrivileged(
-                J2DoPrivHelper.getParentAction(parent))) {
+        for (ClassLoader parent = ctxLoader; parent != null; parent = parentClassLoaderOf(parent)) {
             if (parent == loader)
                 return ctxLoader;
         }
         if (conf != null) {
-            for (ClassLoader parent = (ClassLoader)
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
-                parent != null; 
-                parent = AccessController.doPrivileged(
-                    J2DoPrivHelper.getParentAction(parent))) {
+            for (ClassLoader parent = classLoaderOf(conf.getClass()); parent != null; 
+                    parent = parentClassLoaderOf(parent)) {
                 if (parent == loader)
-                    return AccessController.doPrivileged(
-                        J2DoPrivHelper.getClassLoaderAction(conf.getClass())); 
+                    return classLoaderOf(conf.getClass()); 
             }
         }
         return loader;
+    }
+    
+    static ClassLoader classLoaderOf(Class<?> cls) {
+    	return AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(cls)); 
+    }
+    
+    static ClassLoader parentClassLoaderOf(ClassLoader loader) {
+    	return AccessController.doPrivileged(J2DoPrivHelper.getParentAction(loader)); 
     }
 
     /**
@@ -386,8 +392,7 @@ public class Configurations {
     /**
      * Helper method to throw an informative description on instantiation error.
      */
-    private static RuntimeException getCreateException(String clsName,
-        Value val, Exception e) {
+    private static RuntimeException getCreateException(String clsName, Value val, Exception e) {
         // re-throw the exception with some better information
         final String msg;
         final Object[] params;
