@@ -414,7 +414,8 @@ public class DB2Dictionary
 
     /**
      * Get the update clause for the query based on the
-     * updateClause and isolationLevel hints
+     * isolationLevel hints if it is for update.
+     * It also handles the UR hint when it is not for update.
      */
     protected String getForUpdateClause(JDBCFetchConfiguration fetch,
         boolean isForUpdate, Select sel) {
@@ -467,6 +468,11 @@ public class DB2Dictionary
                 }
                 break;
             }
+        } else {
+        	if ( fetch != null && fetch.getIsolation() == Connection.TRANSACTION_READ_UNCOMMITTED ) {
+	            forUpdateString.append(" ").append(forReadOnlyClause)
+	            .append(" ").append(withURClause);
+	    	}
         }
    
         return forUpdateString.toString();
