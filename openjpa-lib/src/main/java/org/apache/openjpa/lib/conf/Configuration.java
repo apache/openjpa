@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Closeable;
-import org.apache.openjpa.persistence.PersistenceProviderImpl;
 
 /**
  * Interface for generic configuration objects. Includes the ability
@@ -267,7 +266,7 @@ public interface Configuration
      * the user class loader.
      * 
      * @param loader a class loader to load custom plugin values
-     * @see PersistenceProviderImpl#createEntityManagerFactory(String, Map)
+     * @see PersistenceProviderImpl.createEntityManagerFactory(String, Map)
      * @since 2.3.0
      */
     void setUserClassLoader(ClassLoader loader);
