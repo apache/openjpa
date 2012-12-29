@@ -724,7 +724,9 @@ public class ConfigurationImpl
                 }
             }
         }
-        return _supportedKeys;
+        //OJ2257: Return a copy of _supportedKeys as calls to this method (e.g. 
+        //BrokerImpl.getSupportedProperties()) may add to this set.
+        return new TreeSet<String>(_supportedKeys);
     }
     
     /**
