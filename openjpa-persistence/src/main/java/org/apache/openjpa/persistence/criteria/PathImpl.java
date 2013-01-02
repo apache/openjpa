@@ -33,7 +33,6 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.meta.ClassMetaData;
