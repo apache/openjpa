@@ -2646,8 +2646,7 @@ public class StateManagerImpl
             // clear non-pk fields
             FieldMetaData[] fmds = _meta.getFields();
             for (int i = 0; i < fmds.length; i++) {
-                if (!fmds[i].isPrimaryKey() && fmds[i].getManagement()
-                    == FieldMetaData.MANAGE_PERSISTENT)
+            	if (!fmds[i].isPrimaryKey() && fmds[i].getManagement() == FieldMetaData.MANAGE_PERSISTENT)
                     replaceField(_pc, ClearFieldManager.getInstance(), i);
             }
 
