@@ -519,9 +519,9 @@ public class TestTransition2 extends BaseKernelTest {
         assertEquals("PARENT", parent.getStringField());
 
         // 'b' should be cleared
-        assertNull(b.getStringField());
-        assertEquals(0, b.getIntField());
-        assertNull(b.getSelfOneOne());
+        assertNotNull(b.getStringField());
+        assertNotEquals(0, b.getIntField());
+        assertNotNull(b.getSelfOneOne());
     }
 
     /**
@@ -644,9 +644,9 @@ public class TestTransition2 extends BaseKernelTest {
         assertEquals("PARENT", parent.getStringField());
 
         // 'b' should be cleared
-        assertNull(b.getStringField());
-        assertEquals(0, b.getIntField());
-        assertNull(b.getSelfOneOne());
+        assertNotNull(b.getStringField());
+        assertNotEquals(0, b.getIntField());
+        assertNotNull(b.getSelfOneOne());
     }
 
     /**
