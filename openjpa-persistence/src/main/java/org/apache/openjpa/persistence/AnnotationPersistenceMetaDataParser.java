@@ -536,20 +536,20 @@ public class AnnotationPersistenceMetaDataParser
                         meta.setObjectIdType(((IdClass) anno).value(), true);
                     break;
                 case NATIVE_QUERIES:
-                    if (isQueryMode())
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
                         parseNamedNativeQueries(_cls,
                             ((NamedNativeQueries) anno).value());
                     break;
                 case NATIVE_QUERY:
-                    if (isQueryMode())
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
                         parseNamedNativeQueries(_cls, (NamedNativeQuery) anno);
                     break;
                 case QUERIES:
-                    if (isQueryMode())
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
                         parseNamedQueries(_cls, ((NamedQueries) anno).value());
                     break;
                 case QUERY:
-                    if (isQueryMode())
+                    if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY) == 0)
                         parseNamedQueries(_cls, (NamedQuery) anno);
                     break;
                 case SEQ_GENERATOR:
