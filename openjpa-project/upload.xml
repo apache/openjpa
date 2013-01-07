@@ -23,7 +23,7 @@
     </description>
     <target name="upload">
 
-        <property name="build.dir" value="/www/openjpa.apache.org/builds"/>
+        <property name="build.dir" value="/home/mikedd/public_html/nightly.builds"/>
         <property name="host" value="people.apache.org"/>
 
         <mkdir dir="target/site/tempDocs" />
