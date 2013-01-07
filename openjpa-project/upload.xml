@@ -19,11 +19,11 @@
 -->
 <project name="upload" default="upload" basedir=".">
     <description>
-        Ant build file used to upload binaries to openjpa.apache.org/builds/latest. 
+        Ant build file used to upload binaries to openjpa.apache.org/builds/latest.
     </description>
     <target name="upload">
 
-        <property name="build.dir" value="/www/openjpa.apache.org/builds"/>
+        <property name="build.dir" value="/home/mikedd/public_html/nightly.builds"/>
         <property name="host" value="people.apache.org"/>
 
         <mkdir dir="target/site/tempDocs" />
@@ -34,19 +34,19 @@
             <patternset>
                 <include name="**/javadoc/**" />
                 <include name="**/docbook/**" />
-            	<include name="**/schema/**"/>
+                <include name="**/schema/**"/>
             </patternset>
         </unzip>
-    	
+        
         <zip destfile="target/site/tempDocs/docs.zip">
             <fileset dir="target/site/tempDocs">
                 <include name="**/javadoc/**"/>
                 <include name="**/docbook/**"/>
-            	<include name="**/schema/**"/>
+                <include name="**/schema/**"/>
                 <exclude name="docs/**"/>
             </fileset>
         </zip>
-        <checksum> 
+        <checksum>
             <fileset dir="target/site/downloads/">
                 <include name="*.zip" />
             </fileset>
@@ -54,7 +54,7 @@
 
         <!-- update ${build.dir}/apache-openjpa-${project.version}/docs -->
         <scp todir="${nightly.user.name}@${host}:${build.dir}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" trust="true" sftp="true">
-            <fileset dir="target/site/tempDocs"> 
+            <fileset dir="target/site/tempDocs">
                 <include name="docs.zip"/>
             </fileset>
         </scp>
@@ -68,11 +68,11 @@
         <scp todir="${nightly.user.name}@${host}:${build.dir}/apache-openjpa-${project.version}/downloads" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" trust="true">
             <fileset dir="target/site/downloads" />
         </scp>
-        
+
         <!-- update ACLs in ${build.dir}/apache-openjpa-${project.version} -->
         <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="find ${build.dir}/apache-openjpa-${project.version} -user ${nightly.user.name} -type d | xargs chmod 775" trust="true" />
         <sshexec host="${host}" username="${nightly.user.name}" keyfile="${nightly.keyfile}" passphrase="${nightly.passphrase}" command="find ${build.dir}/apache-openjpa-${project.version} -user ${nightly.user.name} -type f | xargs chmod 664" trust="true" />
-        
+
         <delete>
             <fileset dir="target/site/tempDocs" />
         </delete>
