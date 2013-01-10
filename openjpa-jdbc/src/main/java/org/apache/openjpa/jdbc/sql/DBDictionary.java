@@ -432,10 +432,15 @@ public class DBDictionary
             if (log.isTraceEnabled()) {                    
                 log.trace(DBDictionaryFactory.toString(metaData));
 
-                if (isJDBC3)
-                    log.trace(_loc.get("connection-defaults", new Object[]{
-                        conn.getAutoCommit(), conn.getHoldability(),
-                        conn.getTransactionIsolation()}));
+                if (isJDBC3) {
+                    try {
+                        log.trace(_loc.get("connection-defaults", new Object[]{
+                            conn.getAutoCommit(), conn.getHoldability(),
+                            conn.getTransactionIsolation()}));
+                    } catch (Throwable t) {
+                        log.trace("Unable to trace connection settings", t);
+                    }
+                }
             }
         }
         connected = true;
