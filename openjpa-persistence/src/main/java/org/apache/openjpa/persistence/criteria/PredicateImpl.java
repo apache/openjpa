@@ -45,9 +45,8 @@ import org.apache.openjpa.kernel.exps.Literal;
  * @since 2.0.0
  */
 abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate {
-    private static final ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
-    public static final Predicate TRUE  = new Expressions.Equal(ONE,ONE);
-    public static final Predicate FALSE = new Expressions.NotEqual(ONE,ONE);
+    private static Predicate TRUE;
+    private static Predicate FALSE;
     
     protected final List<Predicate> _exps = Collections.synchronizedList(new ArrayList<Predicate>());
     private final BooleanOperator _op;
@@ -73,17 +72,20 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
      */
     protected PredicateImpl(BooleanOperator op, Predicate...restrictions) {
         this(op);
-        if (restrictions != null) {
-            for (Predicate p : restrictions)
-                add(p);
-        }
+        if (restrictions == null || restrictions.length == 0) return;
+        
+    	for (Predicate p : restrictions) {
+   			add(p);
+    	}
     }
 
     /**
      * Adds the given predicate expression.
      */
     public PredicateImpl add(Expression<Boolean> s) {
-        _exps.add((Predicate)s); // all boolean expressions are Predicate
+    	synchronized (_exps) {
+        	_exps.add((Predicate)s); // all boolean expressions are Predicate
+		}
         return this;
     }
 
@@ -127,6 +129,22 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
         return this;
     }
     
+    public static Predicate TRUE() {
+    	if (TRUE == null) {
+    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
+    		TRUE = new Expressions.Equal(ONE, ONE);
+    	}
+    	return TRUE;
+    }
+    
+    public static Predicate FALSE() {
+    	if (FALSE == null) {
+    	    ExpressionImpl<Integer> ONE  = new Expressions.Constant<Integer>(1);
+    		FALSE = new Expressions.NotEqual(ONE, ONE);
+    	}
+    	return FALSE;
+    }
+    
     @Override
     org.apache.openjpa.kernel.exps.Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         if (_exps.isEmpty()) {
@@ -138,7 +156,7 @@ abstract class PredicateImpl extends ExpressionImpl<Boolean> implements Predicat
     @Override
     org.apache.openjpa.kernel.exps.Expression toKernelExpression(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         if (_exps.isEmpty()) {
-            Predicate nil = _op == BooleanOperator.AND ? TRUE : FALSE;
+            Predicate nil = _op == BooleanOperator.AND ? TRUE() : FALSE();
             return ((PredicateImpl)nil).toKernelExpression(factory, q);
         }
         if (_exps.size() == 1) {

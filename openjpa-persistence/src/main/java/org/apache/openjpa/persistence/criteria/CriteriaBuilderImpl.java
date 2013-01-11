@@ -332,7 +332,7 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
         if (x instanceof PredicateImpl) {
             PredicateImpl predicate = (PredicateImpl)x; 
             if (predicate.isEmpty()) {
-                return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE : PredicateImpl.FALSE;
+                return predicate.getOperator() == BooleanOperator.AND ? PredicateImpl.TRUE() : PredicateImpl.FALSE();
             }
         }
         return new Expressions.Equal(x, true);
@@ -403,9 +403,9 @@ public class CriteriaBuilderImpl implements OpenJPACriteriaBuilder, ExpressionPa
 
     public <T> Expression<T> literal(T value) {
         if (Boolean.TRUE.equals(value))
-            return (Expression<T>)PredicateImpl.TRUE;
+            return (Expression<T>)PredicateImpl.TRUE();
         if (Boolean.FALSE.equals(value))
-            return (Expression<T>)PredicateImpl.FALSE;
+            return (Expression<T>)PredicateImpl.FALSE();
         return new Expressions.Constant<T>(value);
     }
 
