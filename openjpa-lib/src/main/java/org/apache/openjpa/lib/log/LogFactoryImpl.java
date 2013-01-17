@@ -302,24 +302,21 @@ public class LogFactoryImpl
 
         protected void log(short level, String message, Throwable t) {
             String msg = formatMessage(level, message, t);
-            synchronized (_out) {
-                _out.print(msg);
-            }
+            _out.println(msg);
         }
 
         /**
          * Convert <code>message</code> into a string ready to be written to
-         * the log. The string should include the terminating newline.
+         * the log. 
          *
          * @param t may be null
          */
-        protected String formatMessage(short level, String message,
-            Throwable t) {
+        protected String formatMessage(short level, String message, Throwable t) {
             // we write to a StringBuilder and then flush it all at
             // once as a single line, since some environments(e.g., JBoss)
             // override the System output stream to flush any calls
             // to write without regard to line breaks, making the
-            // output incomprehensibe.
+            // output incomprehensible.
             StringBuilder buf = new StringBuilder();
 
             buf.append(getOffset());
@@ -335,7 +332,6 @@ public class LogFactoryImpl
             buf.append(_channel);
             buf.append(" - ");
             buf.append(message);
-            buf.append(NEWLINE);
 
             if (t != null) {
                 StringWriter swriter = new StringWriter();
