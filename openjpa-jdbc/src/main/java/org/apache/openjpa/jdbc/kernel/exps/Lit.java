@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.kernel.exps;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.Literal;
 
 /**
@@ -98,7 +99,12 @@ public class Lit
         if (lstate.otherLength > 1)
             sql.appendValue(((Object[]) lstate.sqlValue)[index], 
                 lstate.getColumn(index));
-        else
-            sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
+        else {
+            Object useLiteral = ctx.fetch.getHint(QueryHints.HINT_USE_LITERAL_IN_SQL);
+            useLiteral = Filters.convert(useLiteral, Boolean.class);
+//            useLiteral = true;
+            boolean useParamToken = useLiteral != null ? !(((Boolean)useLiteral).booleanValue()) : true; 
+            sql.appendValue(lstate.sqlValue, lstate.getColumn(index), useParamToken);
+        }
     }
 }
