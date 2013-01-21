@@ -100,4 +100,10 @@ public interface QueryHints {
      */
     public static final String HINT_RECACHE_FINDER = 
         "openjpa.hint.RecacheFinder";
+
+    /**
+     * A boolean directive to generate literal directly into the SQL statement instead of using position parameter,
+     * if possible.
+     */
+    public static final String HINT_USE_LITERAL_IN_SQL = "openjpa.hint.UseLiteralInSQL";
 }
