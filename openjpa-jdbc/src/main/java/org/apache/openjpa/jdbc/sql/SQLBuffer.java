@@ -35,6 +35,8 @@ import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Sequence;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.kernel.Filters;
+
 import serp.util.Numbers;
 
 /**
@@ -229,28 +231,61 @@ public final class SQLBuffer
      * Append a parameter value for a specific column.
      */
     public SQLBuffer appendValue(Object o, Column col) {
+        return appendValue(o, col, true);
+    }
+
+    public SQLBuffer appendValue(Object o, Column col, boolean useParamToken) {
         if (o == null)
             _sql.append("NULL");
         else if (o instanceof Raw)
             _sql.append(o.toString());
         else {
-            _sql.append(PARAMETER_TOKEN);
+            Class type = Filters.wrap(o.getClass());
+//            System.out.println("======1> o="+o+", cls="+o.getClass());
+            if (useParamToken || !validParamLiteralType(type)) {
+                _sql.append(PARAMETER_TOKEN);
 
-            // initialize param and col lists; we hold off on col list until
-            // we get the first non-null col
-            if (_params == null)
-                _params = new ArrayList();
-            if (col != null && _cols == null) {
-                _cols = new ArrayList();
-                while (_cols.size() < _params.size())
-                    _cols.add(null);
+                // initialize param and col lists; we hold off on col list until
+                // we get the first non-null col
+                if (_params == null)
+                    _params = new ArrayList();
+                if (col != null && _cols == null) {
+                    _cols = new ArrayList();
+                    while (_cols.size() < _params.size())
+                        _cols.add(null);
+                }
+
+                _params.add(o);
+                if (_cols != null)
+                    _cols.add(col);
+            } else {
+                if (type == String.class) {
+                    _sql.append("'" + o.toString().replace("'", "''") + "'");
+                } else if ( type == Character.class ) {
+                    if (_dict.storeCharsAsNumbers) {
+                        _sql.append(Integer.toString(((Character)o).charValue()));
+                    } else {
+                        _sql.append("'" + o.toString().replace("'", "''") + "'");
+                    }
+                } else {
+                    _sql.append(o.toString());
+                }
+//                System.out.println("======3> _sql="+_sql.toString());
             }
-
-            _params.add(o);
-            if (_cols != null)
-                _cols.add(col);
         }
         return this;
+    }
+
+    private boolean validParamLiteralType(Class type) {
+        boolean ret = type == String.class
+                || type == Integer.class 
+                || type == Character.class 
+                || type == Boolean.class
+                || type == Short.class
+                || type == Long.class
+                || type == Byte.class;
+//        System.out.println("======2> type="+type+", ret="+ret);
+        return ret;
     }
 
     /**

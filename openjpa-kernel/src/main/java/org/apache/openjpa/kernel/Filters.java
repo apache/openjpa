@@ -253,6 +253,8 @@ public class Filters {
         if (!num) {
             if (type == String.class)
                 return o.toString();
+            else if (type == Boolean.class && o instanceof String)
+                return Boolean.valueOf(o.toString());
             else if (type == Character.class) {
                 String str = o.toString();
                 if (str != null && str.length() == 1)

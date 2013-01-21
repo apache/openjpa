@@ -28,4 +28,10 @@ public interface QueryHints {
      */
     public static final String HINT_RESULT_COUNT =
         "openjpa.hint.OptimizeResultCount";
+
+    /**
+     * A boolean directive to generate literal directly into the SQL statement instead of using position parameter,
+     * if possible.
+     */
+    public static final String HINT_USE_LITERAL_IN_SQL = "openjpa.hint.UseLiteralInSQL";
 }
