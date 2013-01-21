@@ -385,7 +385,56 @@ public abstract class AbstractExpressionBuilder {
             else
                 convertTypes(val1, val2);
         }
+//        convertLiteralToAvoidCast(val1, val2);
     }
+
+//    private static void convertLiteralToAvoidCast(Value val1, Value val2) {
+//        boolean l1 = val1 instanceof Literal;
+//        boolean l2 = val2 instanceof Literal;
+//        Class<?> c1 = val1.getType();
+//        Class<?> c2 = val2.getType();
+//        if (l1 ^ l2 && c1 != c2) {
+//            // if one side is a literal and types are different
+//            if (l1 && isNumeric(c1) && canDownTypeValue(((Literal)val1).getValue(), c1, c2)) {
+//                val1.setImplicitType(c2);
+//            } else if (l2 && isNumeric(c2) && canDownTypeValue(((Literal)val2).getValue(), c2, c1)) {
+//                val2.setImplicitType(c1);
+//            }
+//        }
+//    }
+//
+//    private static boolean canDownTypeValue(Object val, Class<?> fromType, Class<?> toType) {
+//        long testVal = ( fromType == Character.TYPE || fromType == TYPE_CHAR_OBJ ) 
+//            ? ((Character)val).charValue()
+//            : ((Number)val).longValue();
+//        long min;
+//        long max;
+//        switch (JavaTypes.getTypeCode(toType)) {
+//        case JavaTypes.BYTE:
+//            min = Byte.MIN_VALUE;
+//            max = Byte.MAX_VALUE;
+//            break;
+//        case JavaTypes.CHAR:
+//            min = Character.MIN_VALUE;
+//            max = Character.MAX_VALUE;
+//            break;
+//        case JavaTypes.SHORT:
+//            min = Short.MIN_VALUE;
+//            max = Short.MAX_VALUE;
+//            break;
+//        case JavaTypes.INT:
+//            min = Integer.MIN_VALUE;
+//            max = Integer.MAX_VALUE;
+//            break;
+//        case JavaTypes.LONG:
+//            min = Long.MIN_VALUE;
+//            max = Long.MAX_VALUE;
+//            break;
+//        default:
+//            return false;
+//        }
+//        return min <= testVal && testVal <= max;
+//    }
 
     /**
      * Perform conversions to make values compatible.
