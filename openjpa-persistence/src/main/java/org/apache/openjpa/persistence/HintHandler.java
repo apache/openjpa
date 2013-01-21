@@ -19,8 +19,6 @@
 package org.apache.openjpa.persistence;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -177,6 +175,9 @@ public class HintHandler  {
         } else if (QueryHints.HINT_IGNORE_PREPARED_QUERY.equals(key)) {
             plan.setHint(key, Filters.convert(value, Boolean.class));
             owner.ignorePreparedQuery();
+        } else if (QueryHints.HINT_USE_LITERAL_IN_SQL.equals(key)) {
+            Boolean convertedValue = (Boolean)Filters.convert(value, Boolean.class);
+            plan.setHint(key, convertedValue);
         } else { // default 
             plan.setHint(key, value);
         }
