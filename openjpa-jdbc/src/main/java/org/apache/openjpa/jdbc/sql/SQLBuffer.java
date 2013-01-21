@@ -297,7 +297,6 @@ public final class SQLBuffer
             _sql.append(o.toString());
         else {
             Class<?> type = Filters.wrap(o.getClass());
-//            System.out.println("======1> o="+o+", cls="+o.getClass());
             if (useParamToken || !validParamLiteralType(type)) {
                 _sql.append(PARAMETER_TOKEN);
 
@@ -341,7 +340,6 @@ public final class SQLBuffer
                 } else {
                     _sql.append(o.toString());
                 }
-//                System.out.println("======3> _sql="+_sql.toString());
             }
         }
         return this;
@@ -355,7 +353,6 @@ public final class SQLBuffer
                 || type == Short.class
                 || type == Long.class
                 || type == Byte.class;
-//        System.out.println("======2> type="+type+", ret="+ret);
         return ret;
     }
 
