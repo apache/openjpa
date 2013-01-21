@@ -22,6 +22,7 @@ import org.apache.openjpa.jdbc.sql.Raw;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.Filters;
+import org.apache.openjpa.kernel.QueryHints;
 import org.apache.openjpa.kernel.exps.Literal;
 
 /**
@@ -141,6 +142,9 @@ public class Lit
                 _rawVal = lstate.sqlValue;
             }
         }
-        sql.appendValue(lstate.sqlValue, lstate.getColumn(index));
+        Object useLiteral = ctx.fetch.getHint(QueryHints.HINT_USE_LITERAL_IN_SQL);
+//        useLiteral = true;
+        boolean useParamToken = useLiteral != null ? !(Boolean)useLiteral : true; 
+        sql.appendValue(lstate.sqlValue, lstate.getColumn(index), null, useParamToken);
     }
 }

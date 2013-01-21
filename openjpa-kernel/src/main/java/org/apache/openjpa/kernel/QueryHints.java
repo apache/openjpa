@@ -102,4 +102,10 @@ public interface QueryHints {
      * it binds to.
      */
     public static final String HINT_RELAX_BIND_PARAM_TYPE_CHECK = "openjpa.hint.RelaxParameterTypeChecking";
+
+    /**
+     * A boolean directive to generate literal directly into the SQL statement instead of using position parameter,
+     * if possible.
+     */
+    public static final String HINT_USE_LITERAL_IN_SQL = "openjpa.hint.UseLiteralInSQL";
 }
