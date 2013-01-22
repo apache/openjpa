@@ -58,12 +58,11 @@
         <property name="tck.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}.zip" />
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
-
+<!--
         <property name="tck_config.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_config.zip" />
         <available property="tck_config.available" file="${tck_config.zip}" />
         <fail unless="tck_config.available">The TCK config file specified in the "tck_config.zip" system property (${tck_config.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
-<!--
         <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_patches.zip" />
         <available property="tck_patches.available" file="${tck_patches.zip}" />
         <fail unless="tck_patches.available">The TCK patches file specified in the "tck_patches.zip" system property (${tck_patches.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
@@ -71,8 +70,8 @@
 
         <delete dir="${tck.dir}" />
         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
-        <unzip overwrite="true" src="${tck_config.zip}" dest="${tck.base}" />
 <!--
+        <unzip overwrite="true" src="${tck_config.zip}" dest="${tck.base}" />
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
 -->
         <copy overwrite="true"
@@ -118,9 +117,17 @@ openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
 openjpa.Log: ${openjpa.Log}
 openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
+# openjpa.jdbc.DBDictionary: (StoreCharsAsNumbers=true,NumericTypeName=DECIMAL)
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
         </echo>
+        
+        <path id="javart">
+            <fileset dir="${java.home}/lib">
+              <include name="**/*.jar" />
+            </fileset>
+        </path>
+        <pathconvert property="javart.property" refid="javart" />
 
         <!-- Append OpenJPA-specific configuration -->
         <property name="jpatck.config" value="${tck.dir}/bin/ts.jte" />
@@ -144,7 +151,7 @@ toplink.properties=${toplink.properties}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
 # This includes a few different possible locations; only one of them needs to
 # actually work for a given environment.
-sigTestClasspath=${JAVA_HOME}/lib/rt.jar${path.separator}${JAVA_HOME}/jre/lib/rt.jar${path.separator}${JAVA_HOME}/../Classes/classes.jar${path.separator}$${jpa.classes}
+sigTestClasspath=${javart.property}${path.separator}${cp.property}
 persistence.unit.properties.file.full.path=${provider.properties}
 database.user=${db.username}
 database.passwd=${db.password}
@@ -320,28 +327,28 @@ databaseName=${db.name}
         <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
-        	<and>
+            <and>
                 <isset property="jpatck.pkg.dir" />
-        		<not>
-        			<length string="${jpatck.pkg.dir}" trim="true" length="0" /> 
-        		</not>
+                <not>
+                    <length string="${jpatck.pkg.dir}" trim="true" length="0" /> 
+                </not>
             </and>
         <then>
             <for list="${jpatck.pkg.dir}" param="for.test" trim="true">
-                <sequential>        	
-        	        <if>
+                <sequential>            
+                    <if>
                         <contains string="@{for.test}" substring="pluggability"/>
                     <then>
                         <echo>Calling enable.ts.persistence.provider for pluggability test.</echo>
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="enable.ts.persistence.provider" />
                     </then>
                     </if>
-        	
+            
                     <echo>Calling TCK build.xml for pkg.dir=@{for.test}</echo>
                     <property name="dir" value="${tck.dir}/src/@{for.test}" />
                     <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
-        	
-        	        <if>
+            
+                    <if>
                         <contains string="@{for.test}" substring="pluggability"/>
                     <then>
                         <echo>Calling disable.ts.persistence.provider for pluggability test.</echo>
@@ -349,7 +356,7 @@ databaseName=${db.name}
                     </then>
                     </if>
                 </sequential>
-            </for>        	
+            </for>          
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>

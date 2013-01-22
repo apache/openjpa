@@ -48,7 +48,7 @@
     property to specify the parent directory of the tests you want to run.
     E.g.:
 
-        mvn integration-test -Ptck-profile -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/inheritance/mappedsc/descriptors
+        mvn integration-test -Ptck2-profile -Djpatck.pkg.dir=com/sun/ts/tests/ejb30/persistence/inheritance/mappedsc/descriptors
 
     You can also run using another database (e.g., oracle) using command
     line properties. For example:
@@ -57,7 +57,7 @@
 
     The TCK running process will do the following:
 
-    1. Fine the TCK zip file and extract it
+    1. Find the TCK zip file and extract it
     2. Create an openjpa-provier.properties file with the OpenJPA config
     3. Modify the TCK's main configuration file (ts.jte) to use OpenJPA
     4. Run the database initialization script
@@ -85,8 +85,7 @@
     <description>OpenJPA Integration Tests - JPA TCK</description>
 
     <properties>
-        <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
-        <tck2.level>20101205</tck2.level>
+        <tck2.level>20110815</tck2.level>
     </properties>
 
     <build>
@@ -186,7 +185,10 @@
                         <path id="cp">
                             <path refid="maven.compile.classpath" />
                         </path>
-
+                        
+                        <!-- create missing directory for maven compile classpath -->
+                        <mkdir dir="${basedir}/target/classes" />
+                        
                         <ant antfile="${basedir}/tck2-${tck2.level}.xml" inheritRefs="true">
                             <target name="run-tck" />
                         </ant>
