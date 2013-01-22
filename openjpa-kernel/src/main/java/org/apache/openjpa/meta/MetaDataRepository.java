@@ -2039,6 +2039,11 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return (QueryMetaData[]) _queries.values().toArray(new QueryMetaData[_queries.size()]);
         }
     }
+    
+
+    public QueryMetaData getCachedQueryMetaData(Class<?> cls, String name) {
+        return getCachedQueryMetaData(name);
+    }
 
     /**
      * Return the cached query metadata for the given name.
