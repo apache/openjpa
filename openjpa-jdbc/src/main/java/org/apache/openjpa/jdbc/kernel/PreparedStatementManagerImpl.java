@@ -294,6 +294,10 @@ public class PreparedStatementManagerImpl
      * Provided the JDBC log category is logging warnings, this method will 
      * log any SQL warnings that result from the execution of a SQL statement. 
      */
+    protected void logSQLWarnings(PreparedStatement stmt) {
+        logSQLWarnings((Statement)stmt);
+    }
+
     protected void logSQLWarnings(Statement stmt) {
         if (stmt != null && _log != null && _log.isTraceEnabled()) {
             try {
