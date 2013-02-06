@@ -185,12 +185,22 @@
                         <path id="cp">
                             <path refid="maven.compile.classpath" />
                         </path>
+                        <path id="cp.test">
+                            <pathelement location="${basedir}/../../target/classes"/>
+                            <path refid="maven.test.classpath" />
+                        </path>
+                        <pathconvert property="cp.test.classpath" refid="cp.test" />
                         
                         <!-- create missing directory for maven compile classpath -->
                         <mkdir dir="${basedir}/target/classes" />
                         
                         <ant antfile="${basedir}/tck2-${tck2.level}.xml" inheritRefs="true">
                             <target name="run-tck" />
+                            <property name="tck.db.name" value="${tck.db.name}" />
+                            <property name="connection.driver.name" value="${connection.driver.name}" />
+                            <property name="connection.url" value="${connection.url}" />
+                            <property name="connection.username" value="${connection.username}" />
+                            <property name="connection.password" value="${connection.password}" />
                         </ant>
                     </tasks>
                   </configuration>
@@ -440,6 +450,89 @@ databaseName=${db.name}
           </dependency>
         </dependencies>
       </profile>
+
+        <profile>
+            <!--
+                Example db2 profile. You can use this profile if you:
+                1) have the DB2 artifacts installed in a local repo and supply the URL:
+                    -Ddb2.maven.repo=http://my.local.repo
+                2) have a copy of the DB2 JCC driver and run the following commands :
+                    mvn install:install-file -Dfile=${path to db2jcc.jar} \
+                                             -DgroupId=com.ibm.db2 \
+                                             -DartifactId=jcc-driver \
+                                             -Dversion=9.5 \
+                                             -Dpackaging=jar
+
+                    mvn install:install-file -Dfile=${path to db2jcc_license.jar} \
+                                             -DgroupId=com.ibm.db2 \
+                                             -DartifactId=jcc-license \
+                                             -Dversion=9.5 \
+                                             -Dpackaging=jar
+
+                You must also set the following properties:
+                    -Dopenjpa.db2.url=jdbc:db2://<HOST>:<PORT>/<DBNAME>
+                    -Dopenjpa.db2.username=<db2_uid>
+                    -Dopenjpa.db2.password=<db2_pwd>
+
+                Optionally, you can override the default DB2 groupId,
+                artifactIds and version by also supplying the following
+                properties:
+                    -Ddb2.groupid=com.ibm.db2
+                    -Dids.driver.artifactid=jcc-driver
+                    -Dids.license.artifactid=jcc-license
+                    -Ddb2.version=9.5
+            -->
+            <id>test-db2-jcc</id>
+            <activation>
+                <property>
+                    <name>test-db2-jcc</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.driver.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${db2.groupid}</groupId>
+                    <artifactId>${db2.license.artifactid}</artifactId>
+                    <version>${db2.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <db2.maven.repo>http://not.a.real.repository</db2.maven.repo>
+                <db2.groupid>com.ibm.db2</db2.groupid>
+                <db2.driver.artifactid>jcc-driver</db2.driver.artifactid>
+                <db2.license.artifactid>jcc-license</db2.license.artifactid>
+                <db2.version>9.5</db2.version>
+                <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>
+                <connection.url>jdbc:db2://localhost:50000/tck</connection.url>
+                <connection.url>${openjpa.db2.url}</connection.url>
+                <connection.username>${openjpa.db2.username}</connection.username>
+                <connection.password>${openjpa.db2.password}</connection.password>
+                <jdbc.DBDictionary />
+                <tck.db.name>db2</tck.db.name>
+            </properties>
+            <repositories>
+                <repository>
+                    <id>db2.repository</id>
+                    <name>DB2 Repository</name>
+                    <url>${db2.maven.repo}</url>
+                    <layout>default</layout>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>ignore</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+
     </profiles>
 
     <dependencies>
