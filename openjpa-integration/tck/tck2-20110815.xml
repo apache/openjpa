@@ -116,7 +116,7 @@ openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
 openjpa.Log: ${openjpa.Log}
-openjpa.jdbc.DBDictionary: NumericTypeName=DECIMAL
+openjpa.jdbc.DBDictionary: NumericTypeName="DECIMAL(18,2)"
 # openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
 # openjpa.jdbc.DBDictionary: (StoreCharsAsNumbers=true,NumericTypeName=DECIMAL)
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
@@ -155,10 +155,14 @@ toplink.properties=${toplink.properties}
 # actually work for a given environment.
 sigTestClasspath=${javart.property}${path.separator}${cp.property}
 persistence.unit.properties.file.full.path=${provider.properties}
+javax.persistence.jdbc.driver: ${db.driver}
+javax.persistence.jdbc.url: ${db.url}
+javax.persistence.jdbc.user: ${db.username}
+javax.persistence.jdbc.password: ${db.password}
+database.driver=${db.driver}
+database.url=${db.url}
 database.user=${db.username}
 database.passwd=${db.password}
-database.url=${db.url}
-database.driver=${db.driver}
 databaseName=${db.name}
 jdbc.lib.classpath=${cp.test.classpath}
 # disable initdb.xml table creation
