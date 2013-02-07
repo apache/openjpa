@@ -62,41 +62,4 @@
         </antcall>
     </target>
 
-    <macrodef name="tsant">
-        <attribute name="dir" default="${tck.dir}/src" />
-        <attribute name="buildfile" />
-        <attribute name="target" />
-        <attribute name="tmo" default="7200000" />
-        <sequential>
-            <java classname="org.apache.tools.ant.launch.Launcher" fork="true" failonerror="false" dir="@{dir}" append="true" output="${tck.log}" timeout="@{tmo}" resultproperty="tsant.result">
-                <arg value="-e" />
-                <arg value="-v" />
-                <arg value="-emacs" />
-                <arg value="-buildfile" />
-                <arg value="@{buildfile}" />
-                <arg value="-listener" />
-                <arg value="com.sun.ant.TSBuildListener" />
-                <arg value="-logger" />
-                <arg value="com.sun.ant.TSLogger" />
-                <arg value="@{target}" />
-
-                <env key="TS_HOME" value="${tck.dir}" />
-                <sysproperty key="ts.home" value="${tck.dir}" />
-
-                <env key="ANT_HOME" value="${tck.dir}/tools/ant" />
-                <sysproperty key="ant.home" value="${tck.dir}/tools/ant" />
-
-                <classpath>
-                    <path refid="cp" />
-                    <fileset dir="${tck.dir}/tools/ant/lib">
-                        <include name="**/*.jar" />
-                    </fileset>
-                    <fileset dir="${tck.dir}/lib">
-                        <include name="**/*.jar" />
-                    </fileset>
-                </classpath>
-            </java>
-        </sequential>
-    </macrodef>
-
 </project>
