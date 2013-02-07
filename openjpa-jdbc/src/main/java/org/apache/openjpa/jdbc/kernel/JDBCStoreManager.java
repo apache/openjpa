@@ -729,11 +729,6 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
                 _conn.setReadOnly(false);
         } catch (SQLException e) {
         }
-        if (_log.isTraceEnabled()) {
-            for (OpenJPAStateManager sm: (Collection<OpenJPAStateManager>)sms) {
-                _log.trace("flush: "+sm.getPCState().getClass().getName() + " for oid="+sm.getObjectId());
-            }
-        }
         return _conf.getUpdateManagerInstance().flush(sms, this);
     }
 
