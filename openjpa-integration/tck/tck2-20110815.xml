@@ -344,6 +344,17 @@ create.cmp.tables=false
         <echo>Calling OpenJPA create.openjpa.sql.xml</echo>
         <ant antfile="${basedir}/sql/create.openjpa.sql.xml" inheritRefs="true" />
 
+        <!-- We are attempting to change TCK build.xml;s incorrect property name
+             for the pluggability test enablement...  -->
+        <replaceregexp file="${tck.dir}/bin/build.xml"
+                   match="persistence.properties.file"
+                   replace="persistence.unit.properties.file.full.path" 
+                   flags="g"/>
+        <replaceregexp file="${tck.dir}/bin/build.xml"
+                   match='replaceregexp file="(.*)/ts.jte"'
+                   replace='replaceregexp flags="g" file="\1/ts.jte"'
+                   />
+
         <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
