@@ -346,14 +346,14 @@ create.cmp.tables=false
 
         <!-- We are attempting to change TCK build.xml;s incorrect property name
              for the pluggability test enablement...  -->
-        <replaceregexp file="${tck.dir}/bin/build.xml"
-                   match="persistence.properties.file"
-                   replace="persistence.unit.properties.file.full.path" 
-                   flags="g"/>
-        <replaceregexp file="${tck.dir}/bin/build.xml"
-                   match='replaceregexp file="(.*)/ts.jte"'
-                   replace='replaceregexp flags="g" file="\1/ts.jte"'
-                   />
+        <replace file="${tck.dir}/bin/build.xml">
+            <replacefilter token="persistence.properties.file"
+            	           value="persistence.unit.properties.file.full.path"/>
+        </replace>
+        <replace file="${tck.dir}/bin/build.xml">
+        	<replacetoken><![CDATA[<replaceregexp file="${bin.dir}/ts.jte"]]></replacetoken>
+            <replacevalue><![CDATA[<replaceregexp flags="g" file="${bin.dir}/ts.jte"]]></replacevalue>
+        </replace>
 
         <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
