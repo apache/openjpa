@@ -103,7 +103,10 @@
 
     <profiles>
       <profile>
+        <!-- vvvvvvvvvvvvvvvvvvv -->
         <!-- JPA 2.0 TCK Profile -->
+        <!-- vvvvvvvvvvvvvvvvvvv -->
+        
         <id>tck2-profile</id>
         <build>
           <plugins>
@@ -220,10 +223,18 @@
             <version>${project.version}</version>
           </dependency>
         </dependencies>
+        
+        <!-- ^^^^^^^^^^^^^^^^^^^ -->
+        <!-- JPA 2.0 TCK Profile -->
+        <!-- ^^^^^^^^^^^^^^^^^^^ -->
       </profile>
+      
 
       <profile>
+        <!-- vvvvvvvvvvvvvvvvvvvv -->
         <!-- JPA 1.0b TCK Profile -->
+        <!-- vvvvvvvvvvvvvvvvvvvv -->
+        
         <id>tck-profile</id>
         <build>
           <plugins>
@@ -449,6 +460,10 @@ databaseName=${db.name}
             <version>${project.version}</version>
           </dependency>
         </dependencies>
+        
+        <!-- ^^^^^^^^^^^^^^^^^^^^ -->
+        <!-- JPA 1.0b TCK Profile -->
+        <!-- ^^^^^^^^^^^^^^^^^^^^ -->
       </profile>
 
         <profile>
