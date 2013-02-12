@@ -838,10 +838,16 @@ public class JDBCConfigurationImpl
 
             return setupConnectionFactory(ds, false);
         }
+        
+        if (log.isTraceEnabled())
+            log.trace("createConnectionFactory: connectionFactory not created yet, attempt JNDI lookup...");
 
         ds = (DataSource) super.getConnectionFactory(); // JNDI lookup
-        if (ds == null)
+        if (ds == null) {
+            if (log.isTraceEnabled())
+                log.trace("createConnectionFactory: JNDI lookup failed, attempt DataSource properties...");
             ds = DataSourceFactory.newDataSource(this, false);
+        }
 
         if (log.isTraceEnabled())
             log.trace("createConnectionFactory: DataSource="+ds);
