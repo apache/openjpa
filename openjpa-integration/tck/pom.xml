@@ -106,7 +106,7 @@
         <!-- vvvvvvvvvvvvvvvvvvv -->
         <!-- JPA 2.0 TCK Profile -->
         <!-- vvvvvvvvvvvvvvvvvvv -->
-        
+
         <id>tck2-profile</id>
         <build>
           <plugins>
