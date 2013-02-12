@@ -366,6 +366,8 @@
                 <connection.url>jdbc:derby:target/database/openjpa-derby-database;create=true</connection.url>
                 <connection.username />
                 <connection.password />
+                <!-- TCK specific properties -->
+                <tck.db.name>derby</tck.db.name>
             </properties>
         </profile>
 

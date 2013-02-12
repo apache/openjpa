@@ -23,7 +23,7 @@
     the TCK, config  and patches zip files located at:
 
         ${user.home}/.m2/privaterepos/jpatck-2.0_15-Aug-2011.zip
-        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Aug-2011_config.zip
+        ${user.home}/.m2/privaterepos/jpatck-2.0_15-Aug-2011_config.zip (may not exist)
 
     If you have that file in a different location, it can be specified with
     the "tck.zip" and "tck_patches.zip" system property.
@@ -58,12 +58,11 @@
         <property name="tck.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}.zip" />
         <available property="tck.available" file="${tck.zip}" />
         <fail unless="tck.available">The TCK file specified in the "tck.zip" system property (${tck.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
-
+<!--
         <property name="tck_config.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_config.zip" />
         <available property="tck_config.available" file="${tck_config.zip}" />
         <fail unless="tck_config.available">The TCK config file specified in the "tck_config.zip" system property (${tck_config.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
 
-<!--
         <property name="tck_patches.zip" value="${LOCAL_M2_REPO}/../privaterepos/${tck.level}_patches.zip" />
         <available property="tck_patches.available" file="${tck_patches.zip}" />
         <fail unless="tck_patches.available">The TCK patches file specified in the "tck_patches.zip" system property (${tck_patches.zip}) does not exist. This file must be downloaded separately in order to be able to run the JPA 2.0 TCK</fail>
@@ -71,8 +70,8 @@
 
         <delete dir="${tck.dir}" />
         <unzip overwrite="false" src="${tck.zip}" dest="${tck.base}" />
-        <unzip overwrite="true" src="${tck_config.zip}" dest="${tck.base}" />
 <!--
+        <unzip overwrite="true" src="${tck_config.zip}" dest="${tck.base}" />
         <unzip overwrite="true" src="${tck_patches.zip}" dest="${tck.base}" />
 -->
         <copy overwrite="true"
@@ -91,11 +90,11 @@
         Description:  This updates the TCK configuration for OpenJPA.
      -->
     <target name="setup">
-        <property name="db.name" value="derby" />
-        <property name="db.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-        <property name="db.url" value="jdbc:derby:derby-database;create=true" />
-        <property name="db.username" value="nousername" />
-        <property name="db.password" value="nopassword" />
+        <property name="db.name" value="${tck.db.name}" />
+        <property name="db.driver" value="${connection.driver.name}" />
+        <property name="db.url" value="${connection.url}" />
+        <property name="db.username" value="${connection.username}" />
+        <property name="db.password" value="${connection.password}" />
 
         <property name="openjpa.Log" value="DefaultLevel=TRACE" />
 
@@ -117,10 +116,20 @@ openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
 openjpa.Log: ${openjpa.Log}
-openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
+openjpa.jdbc.DBDictionary: NumericTypeName="DECIMAL(18,2)"
+# openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
+# openjpa.jdbc.DBDictionary: (StoreCharsAsNumbers=true,NumericTypeName=DECIMAL)
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
+openjpa.ConnectionFactoryProperties: PrintParameters=True
         </echo>
+
+        <path id="javart">
+            <fileset dir="${java.home}/lib">
+              <include name="**/*.jar" />
+            </fileset>
+        </path>
+        <pathconvert property="javart.property" refid="javart" />
 
         <!-- Append OpenJPA-specific configuration -->
         <property name="jpatck.config" value="${tck.dir}/bin/ts.jte" />
@@ -144,13 +153,20 @@ toplink.properties=${toplink.properties}
 # Need to specify java.* classes, both in Windows/UNIX locations as well as Mac.
 # This includes a few different possible locations; only one of them needs to
 # actually work for a given environment.
-sigTestClasspath=${JAVA_HOME}/lib/rt.jar${path.separator}${JAVA_HOME}/jre/lib/rt.jar${path.separator}${JAVA_HOME}/../Classes/classes.jar${path.separator}$${jpa.classes}
+sigTestClasspath=${javart.property}${path.separator}${cp.property}
 persistence.unit.properties.file.full.path=${provider.properties}
+javax.persistence.jdbc.driver: ${db.driver}
+javax.persistence.jdbc.url: ${db.url}
+javax.persistence.jdbc.user: ${db.username}
+javax.persistence.jdbc.password: ${db.password}
+database.driver=${db.driver}
+database.url=${db.url}
 database.user=${db.username}
 database.passwd=${db.password}
-database.url=${db.url}
-database.driver=${db.driver}
 databaseName=${db.name}
+jdbc.lib.classpath=${cp.test.classpath}
+# disable initdb.xml table creation
+create.cmp.tables=false
 
         </echo>
 
@@ -171,6 +187,7 @@ databaseName=${db.name}
             <fileset dir="../../openjpa/target">
                 <include name="*.jar" />
                 <exclude name="*-sources.jar" />
+                <exclude name="*-shaded.jar" />
                 <exclude name="original-*.jar" />
                 <exclude name="*-tests.jar" />
                 <exclude name="*-javadoc.jar" />
@@ -180,6 +197,10 @@ databaseName=${db.name}
         <property name="agent.properties" value="" />
         <echo>AGENT: ${agent}${agent.properties}</echo>
 
+        <!-- Use the following values to start Eclipse remote debug
+    	<property name="DEBUG" value="-Djava.compiler=NONE -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777" />
+        -->    	
+    	<property name="DEBUG" value="" />
         <!--
             Add in a javaagent argument (optional in JPA2 TCK.)
             Also, we need to specify the default MetaDataFactory
@@ -187,7 +208,7 @@ databaseName=${db.name}
             persistent classes to work (like the SignatureTest)
         -->
         <replace file="${jpatck.config}">
-            <replacefilter token="-Ddeliverable.class=${deliverable.class}" value="-Ddeliverable.class=${deliverable.class} -javaagent:${agent}${agent.properties} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
+            <replacefilter token="-Ddeliverable.class=${deliverable.class}" value="-Ddeliverable.class=${deliverable.class} -javaagent:${agent}${agent.properties} ${DEBUG} -Dopenjpa.MetaDataFactory=jpa(DefaultAccessType=PROPERTY)"/>
         </replace>
 
         <!-- Fix path for java.security.policy -->
@@ -288,7 +309,7 @@ databaseName=${db.name}
         Input: jpatck.pkg.dir System property defines a commna-spearated list of test cases to be run.
                If not set or set to empty string, all tck tests will be exercised.
         Note: Beaware if jpatck.pkg.dir includes pluggability test in the dir hierarchy, the pluggability
-              test will fail (5 failures) due to [enable|disable].ts.persistence.provider targets are 
+              test will fail (5 failures) due to [enable|disable].ts.persistence.provider targets are
               not invoked, which is required for the pluggability tests.
      -->
     <target name="run-tck">
@@ -317,31 +338,48 @@ databaseName=${db.name}
         <tsant dir="${tck.dir}/bin" buildfile="${tck.dir}/bin/initdb.xml" target="init.database" />
         <echo>TCK initdb.xml returned result=${tsant.result}</echo>
 
+        <!-- Database table set up -->
+        <!-- OpenJPA relies on SynchronizeMappings to create the database tables...
+             ... except in a couple of cases where we will pre-create the tables.   -->
+        <echo>Calling OpenJPA create.openjpa.sql.xml</echo>
+        <ant antfile="${basedir}/sql/create.openjpa.sql.xml" inheritRefs="true" />
+
+        <!-- We are attempting to change TCK build.xml;s incorrect property name
+             for the pluggability test enablement...  -->
+        <replace file="${tck.dir}/bin/build.xml">
+            <replacefilter token="persistence.properties.file"
+            	           value="persistence.unit.properties.file.full.path"/>
+        </replace>
+        <replace file="${tck.dir}/bin/build.xml">
+        	<replacetoken><![CDATA[<replaceregexp file="${bin.dir}/ts.jte"]]></replacetoken>
+            <replacevalue><![CDATA[<replaceregexp flags="g" file="${bin.dir}/ts.jte"]]></replacevalue>
+        </replace>
+
         <property name="jpatck.run.tmo" value="7200000" />
         <!-- now run the TCK -->
         <if>
-        	<and>
+            <and>
                 <isset property="jpatck.pkg.dir" />
-        		<not>
-        			<length string="${jpatck.pkg.dir}" trim="true" length="0" /> 
-        		</not>
+                <not>
+                    <length string="${jpatck.pkg.dir}" trim="true" length="0" />
+                </not>
             </and>
         <then>
             <for list="${jpatck.pkg.dir}" param="for.test" trim="true">
-                <sequential>        	
-        	        <if>
+                <sequential>
+                    <if>
                         <contains string="@{for.test}" substring="pluggability"/>
                     <then>
                         <echo>Calling enable.ts.persistence.provider for pluggability test.</echo>
                         <tsant buildfile="${tck.dir}/bin/build.xml" target="enable.ts.persistence.provider" />
                     </then>
                     </if>
-        	
+
                     <echo>Calling TCK build.xml for pkg.dir=@{for.test}</echo>
                     <property name="dir" value="${tck.dir}/src/@{for.test}" />
                     <tsant dir="${dir}" buildfile="${dir}/build.xml" target="runclient" tmo="${jpatck.run.tmo}" />
-        	
-        	        <if>
+
+                    <if>
                         <contains string="@{for.test}" substring="pluggability"/>
                     <then>
                         <echo>Calling disable.ts.persistence.provider for pluggability test.</echo>
@@ -349,7 +387,7 @@ databaseName=${db.name}
                     </then>
                     </if>
                 </sequential>
-            </for>        	
+            </for>
         </then>
         <else>
             <echo>Calling TCK build.xml for ALL tests</echo>
