@@ -116,9 +116,7 @@ openjpa.FetchBatchSize: -1
 openjpa.Compatibility: StrictIdentityValues=true
 openjpa.Sequence: time
 openjpa.Log: ${openjpa.Log}
-openjpa.jdbc.DBDictionary: NumericTypeName="DECIMAL(18,2)"
-# openjpa.jdbc.DBDictionary: StoreCharsAsNumbers=true
-# openjpa.jdbc.DBDictionary: (StoreCharsAsNumbers=true,NumericTypeName=DECIMAL)
+openjpa.jdbc.DBDictionary: (StoreCharsAsNumbers=true,NumericTypeName="DECIMAL(18,2)")
 openjpa.jdbc.SchemaFactory: native(ForeignKeys=true)
 openjpa.jdbc.SynchronizeMappings: buildSchema(ForeignKeys=true)
 openjpa.ConnectionFactoryProperties: PrintParameters=True
