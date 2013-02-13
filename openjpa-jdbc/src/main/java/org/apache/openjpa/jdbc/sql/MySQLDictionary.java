@@ -178,7 +178,7 @@ public class MySQLDictionary
     public String[] getCreateTableSQL(Table table) {
         String[] sql = super.getCreateTableSQL(table);
         if (!StringUtils.isEmpty(tableType))
-            sql[0] = sql[0] + " TYPE = " + tableType;
+            sql[0] = sql[0] + " ENGINE = " + tableType;
         return sql;
     }
 
