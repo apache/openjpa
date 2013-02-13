@@ -374,6 +374,8 @@
                 <connection.password />
                 <!-- Tests are much faster without shutting derby down at the end of each test. -->
                 <jdbc.DBDictionary>ShutdownOnClose=false</jdbc.DBDictionary>
+                <!-- TCK specific properties -->
+                <tck.db.name>derby</tck.db.name>
             </properties>
         </profile>
 
