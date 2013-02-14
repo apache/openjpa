@@ -1268,4 +1268,12 @@ public abstract class J2DoPrivHelper {
             }
         };
     }
+
+    public static final PrivilegedExceptionAction<URL> createURL(final String url) throws MalformedURLException {
+        return new PrivilegedExceptionAction<URL>() {
+            public URL run() throws MalformedURLException {
+                return new URL(url);
+            }
+        };
+    }
 }

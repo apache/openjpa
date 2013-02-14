@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.meta;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -759,14 +760,41 @@ public abstract class AbstractCFMetaDataFactory
                         throw (IOException) pae.getException();
                     }
                 } else {
-                    if (log.isTraceEnabled())
-                        log.trace(_loc.get("scanning-url", url));
-                    clss = cparser.parseTypeNames(new URLMetaDataIterator(url));
-                    List<String> newNames = Arrays.asList(clss);
-                    if (log.isTraceEnabled())
-                        log.trace(_loc.get("scan-found-names", newNames, url));
-                    names.addAll(newNames);
-                    mapPersistentTypeNames(url, clss);
+                    // Open an InputStream from the URL and sniff for a zip header.  If it is, then this is
+                    // a URL with a jar-formated InputStream, as per the JPA specification.  Otherwise, fall back
+                    // to URLMetaDataIterator.
+                    BufferedInputStream is = null; 
+                    
+                    try {
+                        is = new BufferedInputStream((InputStream) AccessController.
+                            doPrivileged(J2DoPrivHelper.openStreamAction(url)));
+                    } catch (PrivilegedActionException pae) {
+                        throw (IOException) pae.getException();
+                    }
+                    
+                    // Check for zip header magic 0x50 0x4b 0x03 0x04
+                    is.mark(0);
+                    boolean zipHeaderMatch = is.read() == 0x50 && is.read() == 0x4b && is.read() == 0x03 && 
+                        is.read() == 0x04;
+                    is.reset();
+                    
+                    if (zipHeaderMatch) {
+                        // The URL provides a Jar-formatted InputStream, consume it with ZipStreamMetaDataIterator
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-jar-at-url", url));
+                        scan(new ZipStreamMetaDataIterator(new ZipInputStream(is), newMetaDataFilter()),
+                            cparser, names, true, url);
+                    } else {
+                        // Fall back to URLMetaDataIterator
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scanning-url", url));
+                        clss = cparser.parseTypeNames(new URLMetaDataIterator(url));
+                        List<String> newNames = Arrays.asList(clss);
+                        if (log.isTraceEnabled())
+                            log.trace(_loc.get("scan-found-names", newNames, url));
+                        names.addAll(newNames);
+                        mapPersistentTypeNames(url, clss);
+                    }                    
                 }
             }
         }
@@ -809,6 +837,16 @@ public abstract class AbstractCFMetaDataFactory
                     if (log.isTraceEnabled())
                         log.trace(_loc.get("pu-root-url", puUrlString));
 
+                    URL puORMUrl = null;
+                    try {
+                        if (puUrlString != null) {
+                            String puORMUrlStr = puUrlString + (puUrlString.endsWith("/") ? "" : "/") + rsrc;
+                            puORMUrl = AccessController.doPrivileged(J2DoPrivHelper.createURL(puORMUrlStr));
+                        }
+                    } catch (PrivilegedActionException e) {
+                        throw new IOException("Error generating puORMUrlStr.", e.getCause());
+                    }
+
                     List<URL> urls = new ArrayList<URL>(3);
                     while (mitr.hasNext()) {
                         url = (URL) mitr.next();
@@ -817,8 +855,12 @@ public abstract class AbstractCFMetaDataFactory
                             log.trace(_loc.get("resource-url", urlString));
                         if (peMap != null) {
                         	//OPENJPA-2102: decode the URL to remove such things a spaces (' ') encoded as '%20'
-                            if (puUrlString != null && decode(urlString).indexOf(decode(puUrlString)) != -1) 
+                            if (puUrlString != null && decode(urlString).indexOf(decode(puUrlString)) != -1) {
                                 urls.add(url);
+                            } else if (puORMUrl != null && puORMUrl.equals(url)) {
+                                // Check URL equality to support encapsulating URL protocols
+                                urls.add(url);
+                            }
                             if (mappingFileNames != null && mappingFileNames.size() != 0) {
                                 for (String mappingFileName : mappingFileNames) {
                                     if (log.isTraceEnabled())
