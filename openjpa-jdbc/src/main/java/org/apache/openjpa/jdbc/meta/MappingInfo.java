@@ -1530,10 +1530,19 @@ public abstract class MappingInfo
         tmplate.setIdentifier(name);
         if (!constant) {
             Column tcol = foreign.getColumn(targetName, false); 
-            if (tcol == null)
-                throw new MetaDataException(_loc.get(prefix + "-bad-fktarget",
-                    new Object[]{ context, targetName, name, foreign }));
-
+            if (tcol == null) {
+            	String schemaCase = rel.getMappingRepository().getDBDictionary().schemaCase;
+            	if (DBDictionary.SCHEMA_CASE_LOWER.equals(schemaCase)) {
+                	tcol = foreign.getColumn(DBIdentifier.toLower(targetName, true), false);
+            	} else if (DBDictionary.SCHEMA_CASE_UPPER.equals(schemaCase)) {
+            		tcol = foreign.getColumn(DBIdentifier.toUpper(targetName, true), false);
+            	}
+            }
+        	if (tcol == null) {
+        		// give up
+        		throw new MetaDataException(_loc.get(prefix + "-bad-fktarget",
+    				new Object[]{ context, targetName, name, foreign }));
+        	}
             if (DBIdentifier.isNull(name))
                 tmplate.setIdentifier(tcol.getIdentifier());
             tmplate.setJavaType(tcol.getJavaType());
