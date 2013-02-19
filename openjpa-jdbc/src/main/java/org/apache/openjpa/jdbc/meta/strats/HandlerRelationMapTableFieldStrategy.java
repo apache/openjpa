@@ -317,7 +317,7 @@ public class HandlerRelationMapTableFieldStrategy
                     if (field.isUni1ToMFK()){
                         updateSetNull(sm, mkey, store, rm);
                     } else { 
-                        HandlerStrategies.where(key, itr.next(), store, delRow,  _kcols);
+                        HandlerStrategies.where(key, mkey, store, delRow,  _kcols);
                         rm.flushSecondaryRow(delRow);
                     }
                 }
