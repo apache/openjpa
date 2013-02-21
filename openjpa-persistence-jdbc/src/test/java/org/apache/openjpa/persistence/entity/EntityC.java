@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 
-@Entity
+@Entity(name="oaopeEntityC")
 public class EntityC {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -31,7 +31,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 
-@Entity
+@Entity(name="oaopeEntityB")
 public class EntityB {
     private static final long serialVersionUID = 0L;
     @Id

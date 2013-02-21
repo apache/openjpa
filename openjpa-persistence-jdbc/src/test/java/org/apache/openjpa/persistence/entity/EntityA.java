@@ -31,7 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 
-@Entity
+@Entity(name="oaopeEntityA")
 public class EntityA implements Serializable {
 
     private static final long serialVersionUID = 0L;
