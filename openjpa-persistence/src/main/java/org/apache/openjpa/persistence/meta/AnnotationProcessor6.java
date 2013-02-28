@@ -240,6 +240,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             SourceCode.Class modelClass = source.getTopLevelClass();
             Set<Element> members = handler.getPersistentMembers(e);
             TypeElement supCls = handler.getPersistentSupertype(e);
+            if (supCls != null) {
+            	String superName = factory.getMetaModelClassName(supCls.toString());
+            	source.getTopLevelClass().setSuper(superName);
+            }            
             while (supCls != null) {
             	members.addAll(handler.getPersistentMembers(supCls));
                 supCls = handler.getPersistentSupertype(supCls);
