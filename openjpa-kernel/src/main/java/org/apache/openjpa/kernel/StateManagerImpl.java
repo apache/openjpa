@@ -83,9 +83,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-public class StateManagerImpl
-    implements OpenJPAStateManager, Serializable {
-
+public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     public static final int LOAD_FGS = 0;
     public static final int LOAD_ALL = 1;
     public static final int LOAD_SERIALIZE = 2;
@@ -134,8 +132,8 @@ public class StateManagerImpl
     protected PCState _state = PCState.TRANSIENT;
 
     // the current and last loaded version indicators, and the lock object
-    private Object _version = null;
-    private Object _loadVersion = null;
+    protected Object _version = null;
+    protected Object _loadVersion = null;
     private Object _lock = null;
     private int _readLockLevel = -1;
     private int _writeLockLevel = -1;
