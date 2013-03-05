@@ -29,16 +29,17 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
  * @author Steve Kim
  */
 @SuppressWarnings("serial")
-public abstract class OpenJPAId
-    implements Comparable, Serializable {
+public abstract class OpenJPAId implements Comparable, Serializable {
+    
     public static final char TYPE_VALUE_SEP = '-';
     
     // cache the types' generated hash codes
     private static ConcurrentReferenceHashMap _typeCache =
         new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
 
-    protected Class type;
+    protected Class<?> type;
     protected boolean subs = true;
+    private int _hc = -1;
 
     // type hash is based on the least-derived non-object class so that
     // user-given ids with non-exact types match ids with exact types
@@ -106,22 +107,27 @@ public abstract class OpenJPAId
      * so that it doesn't have to be generated each time.
      */
     public int hashCode() {
-        if (_typeHash == 0) {
-            Integer typeHashInt = (Integer) _typeCache.get(type);
-            if (typeHashInt == null) {
-                Class base = type;
-                Class superclass = base.getSuperclass();
-                while (superclass != null && superclass != Object.class) {
-                    base = base.getSuperclass();
-                    superclass = base.getSuperclass();
+        if (_hc == -1) {
+            if (_typeHash == 0 && type != null) {
+                Integer typeHashInt = (Integer) _typeCache.get(type);
+                if (typeHashInt == null) {
+                    Class base = type;
+                    Class superclass = base.getSuperclass();
+                    while (superclass != null && superclass != Object.class) {
+                        base = base.getSuperclass();
+                        superclass = base.getSuperclass();
+                    }
+                    _typeHash = base.getName().hashCode();
+                    _typeCache.put(type, Integer.valueOf(_typeHash));
+                } else {
+                    _typeHash = typeHashInt.intValue();
                 }
-                _typeHash = base.getName().hashCode();
-                _typeCache.put(type, Integer.valueOf(_typeHash));
+                _hc = _typeHash ^ idHash();
             } else {
-                _typeHash = typeHashInt.intValue();
+                _hc = idHash();
             }
         }
-        return _typeHash ^ idHash();
+        return _hc;
     }
 
     public boolean equals(Object o) {
