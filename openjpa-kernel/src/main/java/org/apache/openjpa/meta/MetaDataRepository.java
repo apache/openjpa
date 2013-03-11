@@ -39,8 +39,8 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PCRegistry;
-import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
+import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.LifecycleEventManager;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -393,6 +393,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     }
 
     private ClassMetaData getMetaDataInternal(Class<?> cls, ClassLoader envLoader, boolean mustExist) {
+        ClassMetaData meta = getMetaDataInternal(cls, envLoader);
+        if (meta == null) {
             if (cls != null && DynamicPersistenceCapable.class.isAssignableFrom(cls))
                 cls = cls.getSuperclass();
 
@@ -400,20 +402,20 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             // to locate metadata
             if (cls != null && _implGen != null && _implGen.isImplType(cls))
                 cls = _implGen.toManagedInterface(cls);
+            meta = getMetaDataInternal(cls, envLoader);
+        }
+        if (meta == null && mustExist) {
+            if (cls != null && !ImplHelper.isManagedType(_conf, cls))
+                throw new MetaDataException(_loc.get("no-meta-notpc", cls)).setFatal(false);
 
-            ClassMetaData meta = getMetaDataInternal(cls, envLoader);
-            if (meta == null && mustExist) {
-                if (cls != null && !ImplHelper.isManagedType(_conf, cls))
-                    throw new MetaDataException(_loc.get("no-meta-notpc", cls)).setFatal(false);
+            Set<String> pcNames = getPersistentTypeNames(false, envLoader);
+            if (pcNames != null && pcNames.size() > 0)
+                throw new MetaDataException(_loc.get("no-meta-types", cls, pcNames));
 
-                Set<String> pcNames = getPersistentTypeNames(false, envLoader);
-                if (pcNames != null && pcNames.size() > 0)
-                    throw new MetaDataException(_loc.get("no-meta-types", cls, pcNames));
-
-                throw new MetaDataException(_loc.get("no-meta", cls));
-            }
-            resolve(meta);
-            return meta;
+            throw new MetaDataException(_loc.get("no-meta", cls));
+        }
+        resolve(meta);
+        return meta;
     }
 
     /**
@@ -1919,8 +1921,8 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
 
     public void endConfiguration() {
         initializeMetaDataFactory();
-        if (_implGen == null)
-            _implGen = new InterfaceImplGenerator(this);
+		if (_implGen == null)
+			_implGen = new InterfaceImplGenerator(this);
         if (_preload == true) {
             _oids = new HashMap<Class<?>, Class<?>>();
             _impls = new HashMap<Class<?>, Collection<Class<?>>>();
