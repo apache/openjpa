@@ -82,8 +82,7 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-public class StateManagerImpl
-    implements OpenJPAStateManager, Serializable {
+public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
     public static final int LOAD_FGS = 0;
     public static final int LOAD_ALL = 1;
@@ -108,8 +107,7 @@ public class StateManagerImpl
     private static final int FLAG_DETACHING = 2 << 16;
     private static final int FLAG_EMBED_DEREF = 2 << 17;
 
-    private static final Localizer _loc = Localizer.forPackage
-        (StateManagerImpl.class);
+    private static final Localizer _loc = Localizer.forPackage(StateManagerImpl.class);
 
     // information about the instance
     private transient PersistenceCapable _pc = null;
@@ -133,8 +131,8 @@ public class StateManagerImpl
     protected PCState _state = PCState.TRANSIENT;
 
     // the current and last loaded version indicators, and the lock object
-    private Object _version = null;
-    private Object _loadVersion = null;
+    protected Object _version = null;
+    protected Object _loadVersion = null;
     private Object _lock = null;
     private int _readLockLevel = -1;
     private int _writeLockLevel = -1;
