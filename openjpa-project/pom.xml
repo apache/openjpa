@@ -389,6 +389,61 @@
                 </property>
             </activation>
         </profile>
+
+        <!-- 
+          Transform manual and javadoc build artifacts in site/downloads/*binary*.zip in
+          preparation for Buildbot build process. The final zip content will be compatible
+          with latest release format, i.e. docs/bookdocs/**, docs/javadoc/**. 
+
+          To build the doc zip content, uses:
+          $ mvn clean process-resources package -DskipTests -Pdocbook-profile,javadoc-profile,buildbot-doc-profile
+          $ mvn -U clean install -DskipTests -Pdocbook-profile,javadoc-profile,buildbot-doc-profile
+          -->
+        <profile>
+            <id>buildbot-doc-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <configuration>
+                                    <tasks>
+                                        <delete failonerror="false">
+                                            <fileset dir="target/site/tempDocs" />
+                                        </delete>
+                                        <mkdir dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs/docbook" />
+                                        <mkdir dir="target/site/downloads" />
+                                        <unzip dest="target/site/tempDocs">
+                                            <fileset dir="../target/site/downloads">
+                                                <include name="*binary.zip" />
+                                            </fileset>
+                                            <patternset>
+                                                <include name="**/javadoc/**" />
+                                                <include name="**/manual/**" />
+                                            </patternset>
+                                        </unzip>
+                                        <move todir="target/site/tempDocs/apache-openjpa-${pom.version}/docs/docbook/manual">
+                                            <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs/manual" /> 
+                                        </move>
+  										<zip destfile="target/site/downloads/apache-openjpa-${pom.version}-binary.zip"
+       										basedir="target/site/tempDocs"
+       										update="false"
+  										/>
+                                        <delete dir="target/site/tempDocs"/>
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <!-- need to explicitly list dependencies for assembly to work -->
