@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -669,22 +670,23 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
         if (_where != null) {
             buffer.append(" WHERE ").append(_where.asValue(this));
         }
-        if (_orders != null) {
-            buffer.append(" ORDER BY ");
-            for (Order orderBy : getOrderList()) {
-                buffer.append(((CriteriaExpression)orderBy).asValue(this));
-            }
-        }
-        if (_groups != null) {
-            buffer.append(" GROUP BY ");
-            for (Expression<?> groupBy : getGroupList()) {
-                buffer.append(((CriteriaExpression)groupBy).asValue(this));
-            }
-        }
+        renderList(buffer, " ORDER BY ", getOrderList());
+        renderList(buffer, " GROUP BY ", getGroupList());
         if (_having != null) {
             buffer.append(" HAVING ");
             buffer.append(_having.asValue(this));
         }
+    }
+    
+    private void renderList(StringBuilder buffer, String clause, Collection<?> coll) {
+    	if (coll == null || coll.isEmpty())
+    		return;
+    	
+    	buffer.append(clause);
+    	for (Iterator<?> i = coll.iterator(); i.hasNext(); ) {
+    		buffer.append(((CriteriaExpression)i.next()).asValue(this));
+    		if (i.hasNext()) buffer.append(", ");
+    	}
     }
     
     private void renderJoins(StringBuilder buffer, Collection<Join<?,?>> joins) {
