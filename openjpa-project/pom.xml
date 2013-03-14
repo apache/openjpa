@@ -425,9 +425,11 @@
                                                 <include name="**/manual/**" />
                                             </patternset>
                                         </unzip>
+                                        <!--
                                         <move todir="target/site/tempDocs/apache-openjpa-${pom.version}/docs/docbook/manual">
                                             <fileset dir="target/site/tempDocs/apache-openjpa-${pom.version}/docs/manual" /> 
                                         </move>
+                                        -->
   										<zip destfile="target/site/downloads/apache-openjpa-${pom.version}-binary.zip"
        										basedir="target/site/tempDocs"
        										update="false"
@@ -443,7 +445,7 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile>        
     </profiles>
 
     <!-- need to explicitly list dependencies for assembly to work -->
