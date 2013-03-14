@@ -205,7 +205,6 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      */
     @Override
     public boolean process(Set<? extends TypeElement> annos, RoundEnvironment roundEnv) {
-        System.err.println("Activated " + this.getClass().getName());
         if (active && !roundEnv.processingOver()) {
             Set<? extends Element> elements = roundEnv.getRootElements();
             for (Element e : elements) {
@@ -226,28 +225,25 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     	if (!handler.isAnnotatedAsEntity(e)) {
             return false;
         }
-    	
+
         Elements eUtils = processingEnv.getElementUtils();
         String originalClass = eUtils.getBinaryName((TypeElement) e).toString();
         String originalSimpleClass = e.getSimpleName().toString();
         String metaClass = factory.getMetaModelClassName(originalClass);
-        
+
         SourceCode source = new SourceCode(metaClass);
         comment(source);
         annotate(source, originalClass);
+        TypeElement supCls = handler.getPersistentSupertype(e);
+        if (supCls != null) {
+            String superName = factory.getMetaModelClassName(supCls.toString());
+            source.getTopLevelClass().setSuper(superName);
+        }
         try {
             PrintWriter writer = createSourceFile(originalClass, metaClass, e);
             SourceCode.Class modelClass = source.getTopLevelClass();
-            Set<Element> members = handler.getPersistentMembers(e);
-            TypeElement supCls = handler.getPersistentSupertype(e);
-            if (supCls != null) {
-            	String superName = factory.getMetaModelClassName(supCls.toString());
-            	source.getTopLevelClass().setSuper(superName);
-            }            
-            while (supCls != null) {
-            	members.addAll(handler.getPersistentMembers(supCls));
-                supCls = handler.getPersistentSupertype(supCls);
-            }
+            Set<? extends Element> members = handler.getPersistentMembers(e);
+            
             for (Element m : members) {
                 boolean isPersistentCollection = m.getAnnotation(PersistentCollection.class) != null; 
                 
