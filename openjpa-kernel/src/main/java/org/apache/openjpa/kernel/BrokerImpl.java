@@ -107,8 +107,7 @@ import org.apache.openjpa.validation.ValidatingLifecycleEventManager;
  * @author Abe White
  */
 @SuppressWarnings("serial")
-public class BrokerImpl
-    implements Broker, FindCallbacks, Cloneable, Serializable {
+public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializable {
 
     /**
      * Incremental flush.
@@ -197,7 +196,8 @@ public class BrokerImpl
 
     // these are used for method-internal state only
     private transient Map<Object, StateManagerImpl> _loading = null;
-    private transient Set<Object> _operating = null;
+    private transient Set<Object> _operating = MapBackedSet.decorate(new IdentityHashMap<Object, Object>());;
+    private transient boolean _operatingDirty = false;
 
     private Set<Class<?>> _persistedClss = null;
     private Set<Class<?>> _updatedClss = null;
@@ -395,7 +395,10 @@ public class BrokerImpl
 
     @SuppressWarnings("unchecked")
     private void initializeOperatingSet() {
-        _operating = MapBackedSet.decorate(new IdentityHashMap<Object, Object>());
+        if(_operatingDirty) {
+            _operatingDirty = false;
+            _operating = MapBackedSet.decorate(new IdentityHashMap<Object, Object>());
+        }
     }
     
     /**
@@ -2585,7 +2588,7 @@ public class BrokerImpl
     private OpenJPAStateManager persistInternal(Object obj, Object id, boolean explicit, OpCallbacks call, 
         boolean fireEvent) {
         StateManagerImpl sm = getStateManagerImpl(obj, true);
-        if (!_operating.add(obj)) {
+        if (!operatingAdd(obj)) {
             return sm;
         }
 
@@ -2755,7 +2758,7 @@ public class BrokerImpl
      * Internal delete.
      */
     void delete(Object obj, StateManagerImpl sm, OpCallbacks call) {
-        if (!_operating.add(obj))
+        if (!operatingAdd(obj))
             return;
 
         int action = processArgument(OpCallbacks.OP_DELETE, obj, sm, call);
@@ -3012,7 +3015,7 @@ public class BrokerImpl
     void gatherCascadeRefresh(Object obj, OpCallbacks call) {
         if (obj == null)
             return;
-        if (!_operating.add(obj))
+        if (!operatingAdd(obj))
             return;
 
         StateManagerImpl sm = getStateManagerImpl(obj, false);
@@ -5236,5 +5239,10 @@ public class BrokerImpl
                }
        }
        return Arrays.toString(result.toArray(new String[result.size()]));
+    }
+    
+    private boolean operatingAdd(Object o){
+        _operatingDirty = true;
+        return _operating.add(o);
     }
 }
