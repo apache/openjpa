@@ -113,8 +113,12 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     private transient PersistenceCapable _pc = null;
     protected transient ClassMetaData _meta = null;
     protected BitSet _loaded = null;
+    
+    // Care needs to be taken when accessing these fields as they will can be null if no fields are
+    // dirty, or have been flushed.
     private BitSet _dirty = null;
     private BitSet _flush = null;
+    
     private BitSet _delayed = null;
     private int _flags = 0;
 
@@ -351,9 +355,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         FieldMetaData[] fmds = _meta.getFields();
         _loaded = new BitSet(fmds.length);
-        _flush = new BitSet(fmds.length);
-        _dirty = new BitSet(fmds.length);
-
+        
         // mark primary key and non-persistent fields as loaded
         for(int i : _meta.getPkAndNonPersistentManagedFmdIndexes()){
             _loaded.set(i);
@@ -488,14 +490,6 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
     public BitSet getLoaded() {
         return _loaded;
-    }
-
-    public BitSet getFlushed() {
-        return _flush;
-    }
-
-    public BitSet getDirty() {
-        return _dirty;
     }
 
     public BitSet getUnloaded(FetchConfiguration fetch) {
@@ -945,7 +939,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
         lock();
         try {
-            if (_saved == null || !_loaded.get(field) || !_dirty.get(field))
+            if (_saved == null || !_loaded.get(field) || !isFieldDirty(field))
                 return fetchField(field, false);
 
             // if the field is dirty but we never loaded it, we can't restore it
@@ -1059,8 +1053,11 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             boolean needPostUpdate = !(wasNew && !wasFlushed)
                     && (ImplHelper.getUpdateFields(this) != null);
 
-            // all dirty fields were flushed
-            _flush.or(_dirty);
+            // all dirty fields were flushed, we are referencing the _dirty BitSet directly here
+            // because we don't want to instantiate it if we don't have to.
+            if (_dirty != null) {
+                getFlushed().or(_dirty);
+            }
 
             // important to set flushed bit after calling _state.flush so
             // that the state can tell whether this is the first flush
@@ -1107,7 +1104,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     void commit() {
         // release locks before oid updated
         releaseLocks();
-
+ 
         // update version and oid information
         setVersion(_version);
         _flags &= ~FLAG_FLUSHED;
@@ -1770,7 +1767,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
             // note that the field is in need of flushing again, and tell the
             // broker too
-            _flush.clear(field);
+            clearFlushField(field);
             _broker.setDirty(this, newFlush && !clean);
 
             // save the field for rollback if needed
@@ -1778,9 +1775,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
             // dirty the field and mark loaded; load fetch group if needed
             int lockLevel = calculateLockLevel(active, true, null);
-            if (!_dirty.get(field)) {
+            if (!isFieldDirty(field)) {
                 setLoaded(field, true);
-                _dirty.set(field);
+                setFieldDirty(field);
 
                 // make sure the field's fetch group is loaded
                 if (loadFetchGroup && isPersistent()
@@ -2754,9 +2751,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _flags &= ~FLAG_FLUSHED;
         _flags &= ~FLAG_FLUSHED_DIRTY;
 
-        int fmds = _meta.getFields().length;
-        for (int i = 0; i < fmds; i++)
-            _flush.clear(i);
+        _flush = null;
     }
 
     /**
@@ -2785,14 +2780,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         FieldMetaData[] fmds = _meta.getFields();
         boolean update = !isNew() || isFlushed();
         for (int i = 0; i < fmds.length; i++) {
-            if (val && (!update
-                || fmds[i].getUpdateStrategy() != UpdateStrategies.IGNORE))
-                _dirty.set(i);
+            if (val && (!update || fmds[i].getUpdateStrategy() != UpdateStrategies.IGNORE))
+                setFieldDirty(i);
             else if (!val) {
                 // we never consider clean fields flushed; this also takes
                 // care of clearing the flushed fields on commit/rollback
-                _flush.clear(i);
-                _dirty.clear(i);
+                clearFlushField(i);
+                clearDirty(i);
             }
         }
 
@@ -2855,8 +2849,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             // record a saved field manager even if no field is currently loaded
             // as existence of a SaveFieldManager is critical for a dirty check
             if (_saved == null)
-            	_saved = new SaveFieldManager(this, getPersistenceCapable(), 
-            				_dirty);
+                _saved = new SaveFieldManager(this, getPersistenceCapable(), getDirty());
         }
     }
 
@@ -2879,7 +2872,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         // save the old field value anyway
         if (_saved == null) {
             if (_loaded.get(field))
-                _saved = new SaveFieldManager(this, null, _dirty);
+                _saved = new SaveFieldManager(this, null, getDirty());
             else
                 return;
         }
@@ -2960,7 +2953,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             for (FieldMetaData fmd : _meta.getProxyFields()) {
                 int index = fmd.getIndex();
                 // only reload if dirty
-                if (_loaded.get(index) && _dirty.get(index)) {
+                if (_loaded.get(index) && isFieldDirty(index)) {
                     provideField(_pc, _single, index);
                     if (_single.proxy(reset, replaceNull)) {
                         replaceField(_pc, _single, index);
@@ -3020,8 +3013,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             if (!logical)
                 assignObjectId(false, true);
             for (int i = 0, len = _meta.getFields().length; i < len; i++) {
-                if ((logical || !assignField(i, true)) && !_flush.get(i)
-                    && _dirty.get(i)) {
+                if ((logical || !assignField(i, true)) && !isFieldFlushed(i) && isFieldDirty(i)) {
                     provideField(_pc, _single, i);
                     if (_single.preFlush(logical, call))
                         replaceField(_pc, _single, i);
@@ -3472,4 +3464,53 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         _broker = ctx;
     }
 
+    public BitSet getFlushed() {
+        if (_flush == null) {
+            _flush = new BitSet(_meta.getFields().length);
+        }
+        return _flush;
+    }
+
+    private boolean isFieldFlushed(int index) {
+        if (_flush == null) {
+            return false;
+        }
+        return _flush.get(index);
+    }
+
+    /**
+     * Will clear the bit at the specified if the _flush BetSet has been created.
+     */
+    private void clearFlushField(int index) {
+        if (_flush != null) {
+            getFlushed().clear(index);
+        }
+    }
+
+    public BitSet getDirty() {
+        if (_dirty == null) {
+            _dirty = new BitSet(_meta.getFields().length);
+        }
+        return _dirty;
+    }
+
+    private boolean isFieldDirty(int index) {
+        if (_dirty == null) {
+            return false;
+        }
+        return _dirty.get(index);
+    }
+
+    private void setFieldDirty(int index) {
+        getDirty().set(index);
+    }
+
+    /**
+     * Will clear the bit at the specified index if the _dirty BetSet has been created.
+     */
+    private void clearDirty(int index) {
+        if (_dirty != null) {
+            getDirty().clear(index);
+        }
+    }
 }
