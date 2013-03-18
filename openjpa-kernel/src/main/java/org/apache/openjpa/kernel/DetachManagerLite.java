@@ -32,9 +32,11 @@ import org.apache.openjpa.util.Proxy;
  */
 public class DetachManagerLite {
     private final boolean _detachProxies;
+    private final TransferFieldManager _tsm;
 
-    public DetachManagerLite(OpenJPAConfiguration conf) {
+    public DetachManagerLite(OpenJPAConfiguration conf) {       
         _detachProxies = conf.getDetachStateInstance().getDetachProxyFields();
+        _tsm = new TransferFieldManager();
     }
 
     /**
@@ -44,7 +46,7 @@ public class DetachManagerLite {
      *            The StateManagers to be detached.
      */
     public void detachAll(Collection<StateManagerImpl> states) {
-        TransferFieldManager fm = new TransferFieldManager();
+        
         for (StateManagerImpl sm : states) {
             ClassMetaData cmd = sm.getMetaData();
             if (sm.isPersistent() && cmd.isDetachable()) {
@@ -54,7 +56,7 @@ public class DetachManagerLite {
                     BitSet loaded = sm.getLoaded();
                     for (FieldMetaData fmd : cmd.getProxyFields()) {
                         if (loaded.get(fmd.getIndex())) {
-                            detachProxyField(fmd, pc, sm, fm);
+                            detachProxyField(fmd, pc, sm, _tsm);
                         }
                     }
                     pc.pcReplaceStateManager(null);
