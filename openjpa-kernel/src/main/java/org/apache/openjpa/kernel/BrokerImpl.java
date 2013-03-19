@@ -196,8 +196,8 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
 
     // these are used for method-internal state only
     private transient Map<Object, StateManagerImpl> _loading = null;
-    private transient Set<Object> _operating = MapBackedSet.decorate(new IdentityHashMap<Object, Object>());;
-    private transient boolean _operatingDirty = false;
+    private transient Set<Object> _operating = null;
+    private transient boolean _operatingDirty = true;
 
     private Set<Class<?>> _persistedClss = null;
     private Set<Class<?>> _updatedClss = null;
@@ -342,7 +342,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         _log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
         if (!fromDeserialization)
             _cache = new ManagedCache(this);
+        // Force creation of a new operating set
+        _operatingDirty = true;
         initializeOperatingSet();
+        
         _connRetainMode = connMode;
         _managed = managed;
         if (managed)
@@ -4790,6 +4793,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         // re-initialize the lock if needed.
         setMultithreaded(_multithreaded);
 
+        // force recreation of set
+        _operatingDirty = true;
+        initializeOperatingSet();
+
         if (isActive() && _runtime instanceof LocalManagedRuntime)
             ((LocalManagedRuntime) _runtime).begin();
     }
@@ -5243,6 +5250,13 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     
     private boolean operatingAdd(Object o){
         _operatingDirty = true;
+        try {
         return _operating.add(o);
+        }catch(NullPointerException npe){
+            System.out.print(false);
+        }
+        
+        return false;
     }
+    
 }
