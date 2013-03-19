@@ -5250,13 +5250,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     
     private boolean operatingAdd(Object o){
         _operatingDirty = true;
-        try {
         return _operating.add(o);
-        }catch(NullPointerException npe){
-            System.out.print(false);
-        }
-        
-        return false;
     }
     
 }
