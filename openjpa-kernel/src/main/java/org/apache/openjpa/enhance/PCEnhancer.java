@@ -1861,7 +1861,6 @@ public class PCEnhancer {
         // public void pcReplaceStateManager (StateManager sm)
         BCMethod method = _pc.declareMethod(PRE + "ReplaceStateManager",
             void.class, new Class[]{ SMTYPE });
-        method.setSynchronized(true);
         method.getExceptions(true).addException(SecurityException.class);
         Code code = method.getCode(true);
 
