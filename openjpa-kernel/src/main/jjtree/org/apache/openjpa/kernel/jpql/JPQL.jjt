@@ -1195,7 +1195,7 @@ void functions_returning_strings() : { }
 
 void concat() #CONCAT : { }
 {
-	<CONCAT> "(" string_expression() <COMMA> string_expression() ")"
+	<CONCAT> "(" string_expression() <COMMA> string_expression() [ <COMMA> string_expression() ] ")"
 }
 
 
