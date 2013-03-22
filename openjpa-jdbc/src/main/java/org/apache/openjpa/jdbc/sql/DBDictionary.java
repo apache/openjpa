@@ -138,50 +138,53 @@ public class DBDictionary
     implements Configurable, ConnectionDecorator, JoinSyntaxes,
     LoggingConnectionDecorator.SQLWarningHandler, IdentifierConfiguration {
 
-    public static final String VENDOR_OTHER = "other";
+    public static final String VENDOR_OTHER      = "other";
     public static final String VENDOR_DATADIRECT = "datadirect";
 
-    public static final String SCHEMA_CASE_UPPER = IdentifierUtil.CASE_UPPER;
-    public static final String SCHEMA_CASE_LOWER = IdentifierUtil.CASE_LOWER;
-    public static final String SCHEMA_CASE_PRESERVE = IdentifierUtil.CASE_PRESERVE;
+    public static final String SCHEMA_CASE_UPPER     = IdentifierUtil.CASE_UPPER;
+    public static final String SCHEMA_CASE_LOWER     = IdentifierUtil.CASE_LOWER;
+    public static final String SCHEMA_CASE_PRESERVE  = IdentifierUtil.CASE_PRESERVE;
 
     public static final String CONS_NAME_BEFORE = "before";
-    public static final String CONS_NAME_MID = "mid";
-    public static final String CONS_NAME_AFTER = "after";
+    public static final String CONS_NAME_MID    = "mid";
+    public static final String CONS_NAME_AFTER  = "after";
     
     public int blobBufferSize = 50000;
     public int clobBufferSize = 50000;
 
-    protected static final int RANGE_POST_SELECT = 0;
-    protected static final int RANGE_PRE_DISTINCT = 1;
+    protected static final int RANGE_POST_SELECT   = 0;
+    protected static final int RANGE_PRE_DISTINCT  = 1;
     protected static final int RANGE_POST_DISTINCT = 2;
-    protected static final int RANGE_POST_LOCK = 3;
+    protected static final int RANGE_POST_LOCK     = 3;
 
-    protected static final int NANO = 1;
+    protected static final int NANO  = 1;
     protected static final int MICRO = NANO * 1000;
     protected static final int MILLI = MICRO * 1000;
     protected static final int CENTI = MILLI * 10;
-    protected static final int DECI = MILLI * 100;
-    protected static final int SEC = MILLI * 1000;
+    protected static final int DECI  = MILLI * 100;
+    protected static final int SEC   = MILLI * 1000;
 
-    protected static final int NAME_ANY = DBIdentifierUtil.ANY;
-    protected static final int NAME_TABLE = DBIdentifierUtil.TABLE;
+    protected static final int NAME_ANY      = DBIdentifierUtil.ANY;
+    protected static final int NAME_TABLE    = DBIdentifierUtil.TABLE;
     protected static final int NAME_SEQUENCE = DBIdentifierUtil.SEQUENCE;
     
     protected static final int UNLIMITED = -1;
     protected static final int NO_BATCH = 0;
 
-    private static final String ZERO_DATE_STR =
-        "'" + new java.sql.Date(0) + "'";
-    private static final String ZERO_TIME_STR = "'" + new Time(0) + "'";
-    private static final String ZERO_TIMESTAMP_STR =
-        "'" + new Timestamp(0) + "'";
+    private static final String ZERO_DATE_STR      = "'" + new java.sql.Date(0) + "'";
+    private static final String ZERO_TIME_STR      = "'" + new Time(0) + "'";
+    private static final String ZERO_TIMESTAMP_STR = "'" + new Timestamp(0) + "'";
 
-    private static final Localizer _loc = Localizer.forPackage
-        (DBDictionary.class);
+    private static final Localizer _loc = Localizer.forPackage(DBDictionary.class);
 
+    // Database version info preferably set from Connection metadata
+	private int major;
+	private int minor;
+	
     // schema data
     public String platform = "Generic";
+    public String databaseProductName = "";
+    public String databaseProductVersion = "";
     public String driverVendor = null;
     public boolean createPrimaryKeys = true;
     public String constraintNameMode = CONS_NAME_BEFORE;
@@ -412,11 +415,11 @@ public class DBDictionary
      * If a native query begins with any of the values found here then it will
      * be treated as a select statement.  
      */
-    protected final Set selectWordSet = new HashSet();
+    protected final Set<String> selectWordSet = new HashSet<String>();
 
     // when we store values that lose precision, track the types so that the
     // first time it happens we can warn the user
-    private Set _precisionWarnedTypes = null;
+    private Set<Class<?>> _precisionWarnedTypes = null;
 
     // batchLimit value:
     // -1 = unlimited
@@ -452,6 +455,11 @@ public class DBDictionary
             DatabaseMetaData metaData = null;
             try {
                 metaData = conn.getMetaData();
+                
+                databaseProductName    = nullSafe(metaData.getDatabaseProductName());
+                databaseProductVersion = nullSafe(metaData.getDatabaseProductVersion());
+                setMajorVersion(metaData.getDatabaseMajorVersion());
+                setMinorVersion(metaData.getDatabaseMinorVersion());
                 try {
                     // JDBC3-only method, so it might throw an
                     // AbstractMethodError
@@ -484,15 +492,14 @@ public class DBDictionary
             if (supportsDelimitedIdentifiers == null) // not explicitly set
                 configureNamingUtil(metaData);
 
-            // Auto-detect generated keys retrieval support
-            // unless user specified it.
+            // Auto-detect generated keys retrieval support unless user specified it.
             if (supportsGetGeneratedKeys == null) {
-                if (isJDBC3) {
-                    supportsGetGeneratedKeys =
-                        metaData.supportsGetGeneratedKeys();
-                } else {
-                    supportsGetGeneratedKeys = false;
-                }
+                supportsGetGeneratedKeys =  (isJDBC3) ? metaData.supportsGetGeneratedKeys() : false;
+            }
+            if (log.isInfoEnabled()) {
+            	log.info(_loc.get("dict-info", new Object[] {
+            		metaData.getDatabaseProductName(), getMajorVersion(), getMinorVersion(),
+            		metaData.getDriverName(), metaData.getDriverVersion()}));
             }
         }
         connected = true;
@@ -1539,7 +1546,7 @@ public class DBDictionary
         boolean warn;
         synchronized (this) {
             if (_precisionWarnedTypes == null)
-                _precisionWarnedTypes = new HashSet();
+                _precisionWarnedTypes = new HashSet<Class<?>>();
             warn = _precisionWarnedTypes.add(orig.getClass());
         }
 
@@ -1841,8 +1848,8 @@ public class DBDictionary
             String s;
             idx = typeName.length();
             int curIdx = -1;
-            for (Iterator i = typeModifierSet.iterator(); i.hasNext();) {
-                s = (String) i.next();
+            for (Iterator<String> i = typeModifierSet.iterator(); i.hasNext();) {
+                s = i.next();
                 if (typeName.toUpperCase().indexOf(s) != -1) {
                     curIdx = typeName.toUpperCase().indexOf(s);
                     if (curIdx != -1 && curIdx < idx) {
@@ -5597,4 +5604,66 @@ public class DBDictionary
     public String getIdentityColumnName() {
         return null;       
     }
+
+	protected boolean isUsingRange(long start, long end) {
+		return isUsingOffset(start) || isUsingLimit(end);
+	}
+
+	protected boolean isUsingOffset(long start) {
+		return start != 0;
+	}
+
+	protected boolean isUsingLimit(long end) {
+		return end != Long.MAX_VALUE;
+	}
+
+	protected boolean isUsingOrderBy(SQLBuffer sql) {
+		return sql != null && !sql.isEmpty();
+	}
+	
+	protected boolean versionEqualOrLaterThan(int maj, int min) {
+    	return (major > maj) || (major == maj && minor >= min);
+    }
+	
+	protected boolean versionEqualOrEarlierThan(int maj, int min) {
+    	return (major < maj) || (major == maj && minor <= min);
+    }
+    
+	protected boolean versionLaterThan(int maj) {
+    	return (major > maj);
+    }
+	
+	/**
+	 * Gets major version of the database server.
+	 */
+	public final int getMajorVersion() {
+		return major;
+	}
+	
+	/**
+	 * Sets major version of the database server.
+	 */
+	public void setMajorVersion(int maj) {
+		major = maj;
+	}
+	
+	/**
+	 * Gets minor version of the database server.
+	 */
+	public final int getMinorVersion() {
+		return major;
+	}
+	
+	/**
+	 * Sets minor version of the database server.
+	 */
+	public void setMinorVersion(int min) {
+		minor = min;
+	}
+	
+    String nullSafe(String s) {
+        return s == null ? "" : s;
+    }
+
+
 }

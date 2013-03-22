@@ -4047,7 +4047,29 @@ properties:
 get extended exception text.
                     </para>
                 </listitem>
+            
+            <listitem id="DB2Dictionary.SupportsRowNum">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            DB2
+                        </primary>
+                        <secondary>
+                            SupportsRowNum
+                        </secondary>
+                    </indexterm>
+<literal>SupportsRowNum</literal>: If true, OpenJPA will use <literal>ROWNUM</literal> facility
+for range based queries that set an offset and/or limit via <literal>setFirstResult()</literal>
+and <literal>setMaxResult()</literal> query methods. This property must be set to <literal>true</literal>
+alongwith <lietral>SupportsSelectStartIndex</lietral> and <lietral>SupportsSelectEndIndex</lietral>.
+By default, <literal>SupportsRowNum</literal> is set to <literal>false</literal>. 
+It is appropriate to set <literal>SupportsRowNum</literal> to <literal>true</literal> only when 
+DB2 version being used is 9.7 or later. 
+
+                    </para>
+                </listitem>
             </itemizedlist>
+            
         </section>        
         <section id="ref_guide_dbsetup_dbsupport_delim_id">
         	<title>

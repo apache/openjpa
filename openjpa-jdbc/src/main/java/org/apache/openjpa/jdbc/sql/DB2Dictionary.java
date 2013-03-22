@@ -89,13 +89,18 @@ public class DB2Dictionary
         = "SELECT SEQSCHEMA AS SEQUENCE_SCHEMA, SEQNAME AS SEQUENCE_NAME FROM SYSCAT.SEQUENCES";
     static final String SYSDUMMY = "SYSIBM.SYSDUMMY1";
 
-    protected String databaseProductName = "";
-    protected String databaseProductVersion = "";
-    protected int maj = 0;
-    protected int min = 0;
     
     private int defaultBatchLimit = 100;
     public boolean appendExtendedExceptionText = true;
+    
+    /**
+     * Affirms whether this dictionary uses {@code ROWNUM} feature.
+     * {@code ROWNUM} feature is used to construct {@code SQL SELECT} query 
+     * that uses an offset or limits the number of resultant rows.
+     * <br>
+     * By default, this flag is set to {@code false}.
+     */
+    public boolean supportsRowNum = false;
     
     public DB2Dictionary() {
         platform = "DB2";
@@ -279,14 +284,12 @@ public class DB2Dictionary
         else
             driverVendor = VENDOR_OTHER;
 
-        databaseProductName = nullSafe(metaData.getDatabaseProductName());
-        databaseProductVersion = nullSafe(metaData.getDatabaseProductVersion());
         
         // Determine the type of DB2 database
         // First check for AS/400
         getProductVersionMajorMinorForISeries();
 
-        if (maj > 0) {
+        if (versionLaterThan(0)) {
             if (isDB2ISeriesV5R3OrEarlier())
                 db2ServerType = db2ISeriesV5R3OrEarlier;
             else if (isDB2ISeriesV5R4OrLater())
@@ -295,8 +298,8 @@ public class DB2Dictionary
         
         if (db2ServerType == 0) {
             if (isJDBC3) {
-                maj = metaData.getDatabaseMajorVersion();
-                min = metaData.getDatabaseMinorVersion();
+                setMajorVersion(metaData.getDatabaseMajorVersion());
+                setMinorVersion(metaData.getDatabaseMinorVersion());
             }
             else
                 getProductVersionMajorMinor();
@@ -311,19 +314,17 @@ public class DB2Dictionary
         }
 
         // verify that database product is supported
-        if (db2ServerType == 0 || maj == 0)
+        if (db2ServerType == 0 || getMajorVersion() < 0)
             throw new UnsupportedException(_loc.get("db-not-supported",
                 new Object[] {databaseProductName, databaseProductVersion }));
-
-        if (maj >= 9 || (maj == 8 && min >= 2)) {
+        if (versionEqualOrLaterThan(9, 2)) {
             supportsLockingWithMultipleTables = true;
             supportsLockingWithInnerJoin = true;
             supportsLockingWithOuterJoin = true;
             forUpdateClause = "WITH RR USE AND KEEP UPDATE LOCKS";
             
-            if (maj >=9) { 
-                supportsXMLColumn = true;
-            }
+            supportsXMLColumn = versionEqualOrLaterThan(9, 0);
+            
         }
 
         // platform specific settings
@@ -346,7 +347,7 @@ public class DB2Dictionary
             }
             sequenceSchemaSQL = "SCHEMA = ?";
             sequenceNameSQL = "NAME = ?";
-            if (maj == 8) {
+            if (getMajorVersion() == 8) {
                 // DB2 Z/OS Version 8: no bigint support, hence map Java
                 // long to decimal
                 bigintTypeName = "DECIMAL(31,0)";
@@ -372,9 +373,11 @@ public class DB2Dictionary
             if (isDB2ISeriesV5R4OrEarlier()) {
             	supportsGetGeneratedKeys = false;
             }
+            
             break;
         }
     }
+    
 
     public boolean supportsIsolationForUpdate() {
         return true;
@@ -449,34 +452,34 @@ public class DB2Dictionary
     public boolean isDB2UDBV82OrLater() {
         return (databaseProductVersion.indexOf("SQL") != -1
              || databaseProductName.indexOf("DB2/") != -1)
-             && ((maj == 8 && min >= 2) || (maj >= 9));
+             && versionEqualOrLaterThan(8, 2);
     }
 
     public boolean isDB2ZOSV8xOrLater() {
        return (databaseProductVersion.indexOf("DSN") != -1
             || databaseProductName.indexOf("DB2/") == -1)
-            && maj >= 8;
+            && versionLaterThan(7);
     }
 
     public boolean isDB2ISeriesV5R3OrEarlier() {
-       return (databaseProductName.indexOf("AS") != -1
-           && ((maj == 5 && min <=3) || maj < 5));
+       return databaseProductName.indexOf("AS") != -1
+           && versionEqualOrEarlierThan(5, 3); 
     }
 
     public boolean isDB2ISeriesV5R4OrLater() {
        return databaseProductName.indexOf("AS") != -1
-           && (maj >=6 || (maj == 5 && min >=4));
+           && versionEqualOrLaterThan(5, 4);
     }
 
     public boolean isDB2ISeriesV5R4OrEarlier() {
-        return (databaseProductName.indexOf("AS") != -1
-            && ((maj == 5 && min <=4) || maj < 5));
+        return databaseProductName.indexOf("AS") != -1
+            && versionEqualOrEarlierThan(5, 4);
      }
 
     public boolean isDB2UDBV81OrEarlier() {
         return (databaseProductVersion.indexOf("SQL") != -1 
             || databaseProductName.indexOf("DB2/") != -1) 
-            && ((maj == 8 && min <= 1) || maj < 8);
+            && versionEqualOrEarlierThan(8,1);
     }
 
     /** Get the version Major/Minor for the ISeries
@@ -489,8 +492,8 @@ public class DB2Dictionary
         // new jcc    DBProdVersion              QSQ05040 or QSQ06010
         if (databaseProductName.indexOf("AS") != -1) {
             // default to V5R4
-            maj = 5;
-            min = 4;
+            setMajorVersion(5);
+            setMinorVersion(4);
             int index = databaseProductVersion.indexOf('V');
             if (index != -1) {
                 String s = databaseProductVersion.substring(index);
@@ -500,9 +503,9 @@ public class DB2Dictionary
                     , false);
                 if (stringtokenizer.countTokens() == 3) {
                     String s1 = stringtokenizer.nextToken();
-                    maj = Integer.parseInt(s1);
+                    setMajorVersion(Integer.parseInt(s1));
                     String s2 =  stringtokenizer.nextToken();
-                    min = Integer.parseInt(s2);
+                    setMinorVersion(Integer.parseInt(s2));
                 }
             } else {
                 index = databaseProductVersion.indexOf('0');
@@ -514,9 +517,9 @@ public class DB2Dictionary
                         , false);                    
                     if (stringtokenizer.countTokens() == 2) {
                         String s1 = stringtokenizer.nextToken();
-                        maj = Integer.parseInt(s1);
+                        setMajorVersion(Integer.parseInt(s1));
                         String s2 =  stringtokenizer.nextToken();
-                        min = Integer.parseInt(s2);
+                        setMinorVersion(Integer.parseInt(s2));
                     }
                 }
             }
@@ -538,15 +541,15 @@ public class DB2Dictionary
         // Linux                  DB2/LINUX      DB2/LINUX
         //                        09.01.0000     SQL0901
         if (databaseProductVersion.indexOf("09") != -1) {
-            maj = 9;
+            setMajorVersion(9);
             if (databaseProductVersion.indexOf("01") != -1) {
-                min = 1;
+                setMinorVersion(1);
             }
         } else if (databaseProductVersion.indexOf("08") != -1) {
-            maj = 8;
-            min = 2;
+        	setMajorVersion(8);
+        	setMinorVersion(2);
             if (databaseProductVersion.indexOf("01") != -1) {
-                min = 1;
+            	setMinorVersion(1);
             }
         }
     }
@@ -933,10 +936,6 @@ public class DB2Dictionary
         }
     }
     
-    String nullSafe(String s) {
-        return s == null ? "" : s;
-    }
-
     @Override
     public boolean isFatalException(int subtype, SQLException ex) {
         String errorState = ex.getSQLState();
@@ -1113,11 +1112,11 @@ public class DB2Dictionary
     }
 
     public int getDB2MajorVersion() {
-        return maj;
+        return getMajorVersion();
     }
 
     public int getDB2MinorVersion() {
-        return min;
+        return getMinorVersion();
     }
     
     public String getDefaultSchemaName()  {
@@ -1202,4 +1201,67 @@ public class DB2Dictionary
         }
         return null;
     }
+    
+    @Override
+    protected SQLBuffer toSelect(SQLBuffer select, JDBCFetchConfiguration fetch,
+        SQLBuffer tables, SQLBuffer where, SQLBuffer group,
+        SQLBuffer having, SQLBuffer order,
+        boolean distinct, boolean forUpdate, long start, long end,
+        Select sel) {
+    	if (!supportsRowNum) {
+    		return super.toSelect(select, fetch, tables, where, group, having, order,
+    		        distinct, forUpdate, start, end, sel);
+    	}
+        // if no range, use standard select
+        if (!isUsingRange(start, end)) {
+            return super.toSelect(select, fetch, tables, where, group, having,
+                order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
+        }
+        
+        // if no skip, ordering, or distinct can use rownum directly
+        SQLBuffer buf = new SQLBuffer(this);
+        if (!requiresSubselectForRange(start, end, distinct, order)) {
+            if (where != null && !where.isEmpty())
+                buf.append(where).append(" AND ");
+            buf.append("ROWNUM <= ").appendValue(end);
+            return super.toSelect(select, fetch, tables, buf, group, having,
+                order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
+        }
+
+        // if there is ordering, skip, or distinct we have to use subselects
+        SQLBuffer newsel = super.toSelect(select, fetch, tables, where,
+            group, having, order, distinct, forUpdate, 0, Long.MAX_VALUE,
+            sel);
+
+        // if no skip, can use single nested subselect
+        if (!isUsingOffset(start)) {
+            buf.append(getSelectOperation(fetch) + " * FROM (");
+            buf.append(newsel);
+            buf.append(") WHERE ROWNUM <= ").appendValue(end);
+            return buf;
+        }
+
+        // with a skip, we have to use a double-nested subselect to put
+        // where conditions on the rownum
+        buf.append(getSelectOperation(fetch))
+           .append(" * FROM (SELECT r.*, ROWNUM RNUM FROM (");
+        buf.append(newsel);
+        buf.append(") r");
+        if (isUsingLimit(end))
+            buf.append(" WHERE ROWNUM <= ").appendValue(end);
+        buf.append(") WHERE RNUM > ").appendValue(start);
+        return buf;
+    }
+    
+    /**
+     * Return true if the select with the given parameters needs a
+     * subselect to apply a range.
+     */
+    private boolean requiresSubselectForRange(long start, long end, boolean distinct, SQLBuffer order) {
+    	if (!isUsingRange(start, end))
+    		return false;
+        return isUsingOffset(start) || distinct || isUsingOrderBy(order);
+    }
+
+
 }

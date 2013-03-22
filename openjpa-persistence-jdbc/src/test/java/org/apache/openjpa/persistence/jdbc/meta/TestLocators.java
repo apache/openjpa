@@ -29,7 +29,7 @@ package org.apache.openjpa.persistence.jdbc.meta;
 
 import java.util.*;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.sql.OracleDictionary;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.Extent;
 
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
@@ -84,7 +84,7 @@ public class TestLocators
                 (OpenJPAEntityManager)currentEntityManager();
             JDBCConfiguration conf = (JDBCConfiguration)
                 ((OpenJPAEntityManagerSPI) pm).getConfiguration();
-            OracleDictionary dict = (OracleDictionary)
+            DBDictionary dict = (DBDictionary)
                 conf.getDBDictionaryInstance();
 
             int t = dict.maxEmbeddedBlobSize;
@@ -159,7 +159,7 @@ public class TestLocators
                 (OpenJPAEntityManager)currentEntityManager();
             JDBCConfiguration conf = (JDBCConfiguration)
                 ((OpenJPAEntityManagerSPI) pm).getConfiguration();
-            OracleDictionary dict = (OracleDictionary)
+            DBDictionary dict = (DBDictionary)
                 conf.getDBDictionaryInstance();
 
             int t = dict.maxEmbeddedClobSize;

@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -118,6 +120,50 @@ public class DerbyDictionary
             "WRITE", "XML", "XMLEXISTS", "XMLPARSE", "XMLQUERY", "XMLSERIALIZE", "YEAR",
         }));
     }
+    
+    @Override
+    public void connectedConfiguration(Connection conn) throws SQLException {
+    	super.connectedConfiguration(conn);
+    	if (versionEqualOrLaterThan(10, 5)) {
+    		supportsSelectStartIndex = true;
+    		supportsSelectEndIndex   = true;
+    	}
+    }
+
+    /**
+     * Appends a range to the given buffer.
+     * <br>
+     * A range query is never appended to a subselct clause.
+     * <br>
+     * If this dictionary supports {@link DBDictionary#supportsSelectStartIndex offset} 
+     * and {@link DBDictionary#supportsSelectEndIndex limit} on queries then the
+     * syntax is <pre>
+     * [ OFFSET {start} ROWS ]
+	 * [ FETCH NEXT {end-start} ROWS ONLY ]
+     * </pre>
+     * Otherwise, the offset is not used and the syntax is <pre>
+     * [ FETCH FIRST {end} ROWS ONLY ]
+     * </pre>
+     * @param buf the SQL buffer to be appended
+     * @param start starting offset. {@code 0} means offset is not used.
+     * @param end number of rows to be fetched. {@code Long.MAX_VALUE} means no limit.
+     * @param subselect flags if the buffer represents a SQL Subquery clause 
+     */
+    protected void appendSelectRange(SQLBuffer buf, long start, long end, boolean subselect) {
+        // do not generate FETCH FIRST clause for subselect
+    	if (subselect) 
+    		return;
+    	if (supportsSelectStartIndex && supportsSelectEndIndex) {
+	    	if (isUsingOffset(start))
+	    		buf.append(" OFFSET ").append(Long.toString(start)).append(" ROWS ");
+	    	if (isUsingLimit(end)) {
+	    		long rowCount = end - start;
+	    		buf.append(" FETCH NEXT ").append(Long.toString(rowCount)).append(" ROWS ONLY");
+	    	}
+    	} else if (isUsingLimit(end)) {
+             buf.append(" FETCH FIRST ").append(Long.toString(end)).append(" ROWS ONLY");
+    	}
+    }
 
     public void closeDataSource(DataSource dataSource) {
         super.closeDataSource(dataSource);
@@ -152,5 +198,5 @@ public class DerbyDictionary
         }
         return super.isFatalException(subtype, ex);
     }
-
+    
 }

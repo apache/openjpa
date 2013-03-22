@@ -364,7 +364,9 @@ public class SelectImpl
             _dict.setQueryTimeout(stmnt,
                     store.getFetchConfiguration().getQueryTimeout());
             rs = executeQuery(conn, stmnt, sql, false, store);
-            return getCount(rs);
+            int count =  getCount(rs);
+             
+            return applyRange(count);
         } finally {
             if (rs != null)
                 try { rs.close(); } catch (SQLException se) {}
@@ -373,6 +375,27 @@ public class SelectImpl
             if (conn != null)
                 try { conn.close(); } catch (SQLException se) {}
         }
+    }
+    
+    /**
+     * Applies range calculation on the actual number of rows selected
+     * by a {@code COUNT(*)} query. A range query may use either only
+     * the limit or both offset and limit based on database dictionary support
+     * and accordingly the number of rows in the result set needs to be 
+     * modified.
+     * @param count
+     * @return
+     */
+    int applyRange(int count) {
+    	DBDictionary dict = getDictionary();
+    	if (dict.supportsSelectStartIndex) {
+            if (getStartIndex() > 0) count -= getStartIndex();
+            if (getEndIndex() != Long.MAX_VALUE) {
+            	long size = getEndIndex() - getStartIndex();
+            	count = (int)Math.min(count,size);
+            }
+    	}
+    	return count;          
     }
 
     public Result execute(JDBCStore store, JDBCFetchConfiguration fetch)

@@ -225,9 +225,8 @@ public class TestDB2Dictionary extends MockObjectTestCase {
         DB2Dictionary dict = new DB2Dictionary();
         
         // skip all the meta data resolution code. 
-        dict.db2ServerType=DB2Dictionary.db2UDBV82OrLater;
-        dict.maj=9;
-        
+        dict.db2ServerType = DB2Dictionary.db2UDBV82OrLater;
+        dict.setMajorVersion(9);
         dict.setConfiguration(mockConfiguration);
         assertNotNull(dict);
         dict.connectedConfiguration(mockConnection);

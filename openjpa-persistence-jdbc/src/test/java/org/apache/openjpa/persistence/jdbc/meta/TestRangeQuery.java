@@ -65,12 +65,13 @@ public class TestRangeQuery extends
         q.setFirstResult(5).setMaxResults(15);
 
         List results = (List) q.getResultList();
-        assertEquals(5, results.size());
 
         for (int i = 0; i < results.size(); i++) {
             EagerOuterJoinPC pc = (EagerOuterJoinPC) results.get(i);
             assertEquals(String.valueOf(i + 5), pc.getName());
+            System.err.println("Row " + i + " " + pc.getName());
         }
+        assertEquals(5, results.size());
         q.closeAll();
         em.close();
     }

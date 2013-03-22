@@ -451,10 +451,11 @@ public class OracleDictionary
         }
 
         // if no range, use standard select
-        if (start == 0 && end == Long.MAX_VALUE)
+        if (!isUsingRange(start, end)) {
             return super.toSelect(select, fetch, tables, where, group, having,
                 order, distinct, forUpdate, 0, Long.MAX_VALUE, sel);
-
+        }
+        
         // if no skip, ordering, or distinct can use rownum directly
         SQLBuffer buf = new SQLBuffer(this);
         if (!requiresSubselectForRange(start, end, distinct, order)) {
@@ -471,7 +472,7 @@ public class OracleDictionary
             sel);
 
         // if no skip, can use single nested subselect
-        if (start == 0) {
+        if (!isUsingOffset(start)) {
             buf.append(getSelectOperation(fetch) + " * FROM (");
             buf.append(newsel);
             buf.append(") WHERE ROWNUM <= ").appendValue(end);
@@ -480,11 +481,11 @@ public class OracleDictionary
 
         // with a skip, we have to use a double-nested subselect to put
         // where conditions on the rownum
-        buf.append(getSelectOperation(fetch)
-            + " * FROM (SELECT r.*, ROWNUM RNUM FROM (");
+        buf.append(getSelectOperation(fetch))
+           .append(" * FROM (SELECT r.*, ROWNUM RNUM FROM (");
         buf.append(newsel);
         buf.append(") r");
-        if (end != Long.MAX_VALUE)
+        if (isUsingLimit(end))
             buf.append(" WHERE ROWNUM <= ").appendValue(end);
         buf.append(") WHERE RNUM > ").appendValue(start);
         return buf;
@@ -496,14 +497,14 @@ public class OracleDictionary
      */
     private boolean requiresSubselectForRange(long start, long end,
         boolean distinct, SQLBuffer order) {
-        if (start == 0 && end == Long.MAX_VALUE)
-            return false;
-        return start != 0 || distinct || (order != null && !order.isEmpty());
+    	if (!isUsingRange(start, end))
+    		return false;
+        return isUsingOffset(start) || distinct || isUsingOrderBy(order);
     }
 
     /**
      * Check to see if we have set the {@link #SELECT_HINT} in the
-     * fetch configuraiton, and if so, append the Orache hint after the
+     * fetch configuration, and if so, append the Oracle hint after the
      * "SELECT" part of the query.
      */
     public String getSelectOperation(JDBCFetchConfiguration fetch) {
