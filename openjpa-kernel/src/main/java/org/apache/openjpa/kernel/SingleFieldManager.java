@@ -501,14 +501,13 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         if (fmd.getDeclaredTypeCode() < JavaTypes.OBJECT)
             return false;
 
-        // perform pers-by-reach and dependent refs
-        boolean ret = preFlush(fmd, logical, call);
-
         // manage inverses
         InverseManager manager = _broker.getInverseManager();
         if (manager != null)
             manager.correctRelations(_sm, fmd, objval);
-        return ret;
+        
+        // perform pers-by-reach and dependent refs
+        return preFlush(fmd, logical, call);
     }
 
     /**
