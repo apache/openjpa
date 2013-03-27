@@ -534,8 +534,8 @@ public class PCEnhancer {
 
             // check if already enhanced
             ClassLoader loader = AccessController.doPrivileged(J2DoPrivHelper.getClassLoaderAction(type));
-            for (Class<?> iface : _managedType.getDeclaredInterfaceTypes()) {
-                if (iface.getName().equals(PCTYPE.getName())) {
+            for (String iface : _managedType.getDeclaredInterfaceNames()) {
+                if (iface.equals(PCTYPE.getName())) {
                     if (_log.isTraceEnabled()) {
                         _log.trace(_loc.get("pc-type", type, loader));
                     }
