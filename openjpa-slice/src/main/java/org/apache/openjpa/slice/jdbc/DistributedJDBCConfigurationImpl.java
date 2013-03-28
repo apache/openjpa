@@ -260,7 +260,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
 
     public QueryTargetPolicy getQueryTargetPolicyInstance() {
         if (queryTargetPolicyPlugin.get() == null) {
-            queryTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
+            queryTargetPolicyPlugin.instantiate(QueryTargetPolicy.class,
                     this, true);
         }
         return (QueryTargetPolicy) queryTargetPolicyPlugin.get();
