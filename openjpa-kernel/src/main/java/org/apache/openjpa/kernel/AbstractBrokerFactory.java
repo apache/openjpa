@@ -467,7 +467,13 @@ public abstract class AbstractBrokerFactory
         _transactional = new ConcurrentHashMap();
         _brokers = newBrokerSet();
 
+        // turn off logging while de-serializing BrokerFactory
+        String saveLogConfig = _conf.getLog();
+        _conf.setLog("none");
         makeReadOnly();
+        // re-enable any logging which was in effect
+        _conf.setLog(saveLogConfig);
+        
         return this;
     }
 
