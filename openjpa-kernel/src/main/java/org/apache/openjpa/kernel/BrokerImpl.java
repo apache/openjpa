@@ -1829,6 +1829,25 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             endOperation();
         }
     }
+    
+    /**
+     * Sets the given flag to the status.
+     * 
+     * @since 2.3.0
+     */
+    protected void setStatusFlag(int flag) {
+    	_flags |= flag;
+    }
+    
+    /**
+     * Clears the given flag from the status.
+     * 
+     * @since 2.3.0
+     */
+    protected void clearStatusFlag(int flag) {
+    	_flags &= ~flag;
+    }
+
 
     public void flush() {
         beginOperation(true);

@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
+import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerImpl;
 import org.apache.openjpa.kernel.ExpressionStoreQuery;
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -118,15 +119,14 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		 */
 		public ResultObjectProvider executeQuery(StoreQuery q,
 				final Object[] params, final Range range) {
-			List<Future<ResultObjectProvider>> futures = 
-				new ArrayList<Future<ResultObjectProvider>>();
+			List<Future<ResultObjectProvider>> futures = new ArrayList<Future<ResultObjectProvider>>();
             final List<Executor> usedExecutors = new ArrayList<Executor>();
-			final List<ResultObjectProvider> rops = 
-				new ArrayList<ResultObjectProvider>();
+			final List<ResultObjectProvider> rops = new ArrayList<ResultObjectProvider>();
 			List<SliceStoreManager> targets = findTargets();
 			QueryContext ctx = q.getContext();
 			boolean isReplicated = containsReplicated(ctx);
             ExecutorService threadPool = SliceThread.getPool();
+           
 			for (int i = 0; i < owner._queries.size(); i++) {
                 // if replicated, then execute only on single slice
 				if (isReplicated && !usedExecutors.isEmpty()) {
@@ -135,16 +135,12 @@ class DistributedStoreQuery extends JDBCStoreQuery {
                 StoreManager sm = owner.getDistributedStore().getSlice(i);
 				if (!targets.contains(sm))
 					continue;
-				StoreQuery query = owner._queries.get(i);
-				Executor executor = executors.get(i);
-				if (!targets.contains(sm))
-					continue;
-				usedExecutors.add(executor);
                 QueryExecutor call = new QueryExecutor();
-                call.executor = executor;
-                call.query = query;
+                call.executor = executors.get(i);
+                call.query = owner._queries.get(i);
                 call.params = params;
                 call.range = range;
+				usedExecutors.add(call.executor);
                 futures.add(threadPool.submit(call));
 			}
 			for (Future<ResultObjectProvider> future : futures) {
@@ -157,16 +153,14 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 				}
 			}
 			
-			ResultObjectProvider[] tmp = rops
-                    .toArray(new ResultObjectProvider[rops.size()]);
+			ResultObjectProvider[] tmp = rops.toArray(new ResultObjectProvider[rops.size()]);
 			ResultObjectProvider result = null;
 			boolean[] ascending = getAscending(q);
 			boolean isAscending = ascending.length > 0;
 			boolean isAggregate = ctx.isAggregate();
 			boolean hasRange = ctx.getEndRange() != Long.MAX_VALUE;
 			if (isAggregate) {
-				result = new UniqueResultObjectProvider(tmp, q,
-						getQueryExpressions());
+				result = new UniqueResultObjectProvider(tmp, q,	getQueryExpressions());
 			} else if (isAscending) {
                 result = new OrderingMergedResultObjectProvider(tmp, ascending,
                     usedExecutors.toArray(new Executor[usedExecutors.size()]),
@@ -175,8 +169,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 				result = new MergedResultObjectProvider(tmp);
 			}
 			if (hasRange) {
-                result = new RangeResultObjectProvider(result,
-                        ctx.getStartRange(), ctx.getEndRange());
+                result = new RangeResultObjectProvider(result, ctx.getStartRange(), ctx.getEndRange());
 			}
 			return result;
 		}
@@ -201,16 +194,18 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		}
 
 		public Number executeDelete(StoreQuery q, Object[] params) {
-			Iterator<StoreQuery> qs = owner._queries.iterator();
-			List<Future<Number>> futures = null;
+			List<Future<Number>> futures = new ArrayList<Future<Number>>();
 			int result = 0;
             ExecutorService threadPool = SliceThread.getPool();
-			for (Executor ex : executors) {
-				if (futures == null)
-                    futures = new ArrayList<Future<Number>>();
+			List<SliceStoreManager> targets = findTargets();
+			for (int i = 0; i < owner._queries.size(); i++) {
+                StoreManager sm = owner.getDistributedStore().getSlice(i);
+				if (!targets.contains(sm))
+					continue;
+				
 				DeleteExecutor call = new DeleteExecutor();
-				call.executor = ex;
-				call.query = qs.next();
+				call.executor = executors.get(i);
+				call.query = owner._queries.get(i);
 				call.params = params;
 				futures.add(threadPool.submit(call));
 			}
@@ -256,8 +251,7 @@ class DistributedStoreQuery extends JDBCStoreQuery {
 		}
 
 		List<SliceStoreManager> findTargets() {
-			FetchConfiguration fetch = owner.getContext()
-					.getFetchConfiguration();
+  		    FetchConfiguration fetch = owner.getContext().getFetchConfiguration();
 			return owner.getDistributedStore().getTargets(fetch);
 		}
 		

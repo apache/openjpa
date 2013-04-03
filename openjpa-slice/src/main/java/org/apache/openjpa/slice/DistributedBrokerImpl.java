@@ -152,6 +152,12 @@ public class DistributedBrokerImpl extends FinalizingBrokerImpl implements Distr
     @Override
     public void beginStore() {
     }
+    
+    @Override
+    protected void flush(int reason) {
+    	setStatusFlag(2 << 8);
+    	super.flush(reason);
+    }
 
     /**
      * Overrides to target specific slices for find() calls.

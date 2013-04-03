@@ -347,6 +347,11 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
 
 	private boolean pushQueryFetchPlan() {
 		boolean fcPushed = false;
+		if (_hintHandler != null) {
+			FetchConfiguration fc = _fetch == null ? null : ((FetchPlanImpl)_fetch).getDelegate();
+			_em.pushFetchPlan(fc);
+			return true;
+		}
 		if (_fetch != null && _hintHandler != null) {
 			switch (_fetch.getReadLockMode()) {
 			case PESSIMISTIC_READ:
@@ -528,6 +533,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
      * cache. 
      */
     private boolean preExecute(Map params) {
+    	
         PreparedQueryCache cache = _em.getPreparedQueryCache();
         if (cache == null) {
             return false;

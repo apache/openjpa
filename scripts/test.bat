@@ -18,7 +18,6 @@
 @rem
 
 @setlocal
-pushd openjpa-persistence-jdbc
-mvn test -Dtest=%1 %2 %3 %4
+mvn test -DfailIfNoTests=false -Dbuild.enhance=false -Dtest=%1 %2 %3 %4
 popd
 @endlocal

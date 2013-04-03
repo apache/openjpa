@@ -584,7 +584,12 @@ public class JDBCStoreQuery
                 }
             }
         } finally {
-            try { conn.close(); } catch (SQLException se) {}
+            try { 
+            	if (conn.getAutoCommit())
+            		conn.close(); 
+            } catch (SQLException se) {
+            	
+            }
         }
 
         localContext.remove();

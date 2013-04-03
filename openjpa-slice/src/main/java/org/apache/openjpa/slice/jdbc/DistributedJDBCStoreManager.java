@@ -293,6 +293,20 @@ class DistributedJDBCStoreManager extends JDBCStoreManager
         }
     }
     
+    @Override
+    public void commit() {
+    	for (SliceStoreManager slice : _slices) {
+    		slice.commit();
+    	}
+    }
+    
+    @Override
+    public void rollback() {
+    	for (SliceStoreManager slice : _slices) {
+    		slice.rollback();
+    	}
+    }
+    
     /**
      * Collect the current versions of the given StateManagers.
      */
