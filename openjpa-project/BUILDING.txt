@@ -19,7 +19,7 @@ website at http://openjpa.apache.org/building.html
    3. Extract the source archive if you have not already done so. 
       The source will create a new directory named:
       openjpa-<version>-source. Where <version> is the OpenJPA 
-      version, for example apache-openjpa-2.2.0-source.
+      version, for example apache-openjpa-2.2.2-source.
    4. Change to the OpenJPA source directory, which has already been created in
       the previous step.
    5. Build OpenJPA by running: mvn package or better mvn install. 
@@ -58,27 +58,27 @@ Apache Maven 2.2.1 (r801777; 2009-08-06 21:16:01+0200)
  ...
 
 $ svn --version
-svn, version 1.5.5 (r34862)
-   compiled Jan  5 2009, 12:30:39
+svn, version 1.6.11 (r934486)
+   compiled Apr 12 2012, 11:02:08
 
-$ svn co https://svn.apache.org/repos/asf/openjpa/trunk/
-A  trunk/openjpa-lib
-A  trunk/openjpa-lib/src
-A  trunk/openjpa-lib/src/test
-A  trunk/openjpa-lib/src/test/java
-A  trunk/openjpa-lib/src/test/java/org
-A  trunk/openjpa-lib/src/test/java/org/apache
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
-A  trunk/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
+$ svn co https://svn.apache.org/repos/asf/openjpa/branches/2.2.x
+A  2.2.x/openjpa-lib
+A  2.2.x/openjpa-lib/src
+A  2.2.x/openjpa-lib/src/test
+A  2.2.x/openjpa-lib/src/test/java
+A  2.2.x/openjpa-lib/src/test/java/org
+A  2.2.x/openjpa-lib/src/test/java/org/apache
+A  2.2.x/openjpa-lib/src/test/java/org/apache/openjpa
+A  2.2.x/openjpa-lib/src/test/java/org/apache/openjpa/lib
+A  2.2.x/openjpa-lib/src/test/java/org/apache/openjpa/lib/test
+A  2.2.x/openjpa-lib/src/test/java/org/apache/openjpa/lib/test/AbstractTestCase.java
 
  ...
 
-A  trunk/openjpa-persistence/pom.xml
+A  2.2.x/openjpa-persistence/pom.xml
 Checked out revision 1065345.
 
-$ cd trunk/
+$ cd 2.2.x/
 
 $ mvn clean install -DskipTests -DfailIfNoTests=false 
 
@@ -158,5 +158,5 @@ $ mvn clean install -DskipTests -DfailIfNoTests=false
 
 $ ls openjpa-project/target/site/downloads/
 
-apache-openjpa-2.2.0-SNAPSHOT-binary.zip
-apache-openjpa-2.2.0-SNAPSHOT-source.zip
+apache-openjpa-2.2.2-SNAPSHOT-binary.zip
+apache-openjpa-2.2.2-SNAPSHOT-source.zip

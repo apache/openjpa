@@ -1,4 +1,4 @@
-Apache OpenJPA 2.2.1
+Apache OpenJPA 2.2.2
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ Content
 Overview
 --------
    The Apache OpenJPA community is proud to release a maintenance distribution of
-   OpenJPA 2.2.1. This distribution is based on the final JSR 317 Java 
+   OpenJPA 2.2.2. This distribution is based on the final JSR 317 Java 
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatible with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
@@ -54,7 +54,7 @@ License
 
 Notices
 -------
-   Copyright 2006,2012 The Apache Software Foundation.
+   Copyright 2006,2013 The Apache Software Foundation.
    Apache, the Apache feather logo and OpenJPA are trademarks of
    The Apache Software Foundation.
 
@@ -112,57 +112,46 @@ Getting Involved
           https://issues.apache.org/jira/browse/OPENJPA
 
 
-Included Changes in OpenJPA 2.2.1
+Included Changes in OpenJPA 2.2.2
 ---------------------------------
-
-Sub-task
-
-    [OPENJPA-2168] - Do not go through LifeCycleEventManager overhead if the Entity has declared to be excluded
 
 Bug
 
-    [OPENJPA-2067] - A 'length' of '-1' passed to PreparedStatement.setBinaryStream can cause an exception on some, but not all, JDBC drivers.
-    [OPENJPA-2072] - InvalidStateException deleting an instance with a timestamp in its primary key
-    [OPENJPA-2095] - Unhandled exception thrown from within an Externalizer method causes incorrect/incomplete SQL to be generated/executed.
-    [OPENJPA-2118] - Prepared SQL query does not handle collection-valued parameter where collection is empty
-    [OPENJPA-2123] - Minor performance improvements for Connection and ResultSet processing
-    [OPENJPA-2132] - Traversal of a OneToMany relationship returns an empty list when InheritanceType.JOINED or SINGLE_TABLE is used.
-    [OPENJPA-2133] - OpenJPA doesn't find custom mappings with an applicable class loader
-    [OPENJPA-2136] - NPE when using LiteAutoDetach
-    [OPENJPA-2142] - Merge of a new object does not handle Entity Id field
-    [OPENJPA-2145] - Missing ASM depending jar in binary zip
-    [OPENJPA-2146] - StateManager for Embeddable may throw Exception while initializing
-    [OPENJPA-2149] - Criteria.function adds wrong casts to parameters making it unsuable
-    [OPENJPA-2153] - NoSuchMethodException of DBCPDriverDataSource.newInstance()
-    [OPENJPA-2154] - test-dynamic-enhancer profile failed for module more than one level deep
-    [OPENJPA-2156] - Fix bug in org.apache.openjpa.persistence.util.SourceCode to correctly generate imports.
-    [OPENJPA-2158] - LiteAutoDetach + DetachProxyFields=false can lead to Broker concurrency exceptions
-    [OPENJPA-2161] - Make some members of StateManagerImpl protected to allow for greater extensability
-    [OPENJPA-2163] - Lifecycle event callback occurs more often than expect
-    [OPENJPA-2172] - openjpa-all jar is missing slf4j runtime dependency
-    [OPENJPA-2174] - Result set mapping was not looked up when retrieving column data from a NamedNativeQuery
-    [OPENJPA-2199] - Constraint violation exception when removing relationship using (orphanRemoval = true)
-    [OPENJPA-2227] - OpenJPA doesn't find custom SequenceGenerators
-    [OPENJPA-2230] - Event Listener detection didn't work with MappedSuperClasses or Entity heirarchies
-    [OPENJPA-2236] - Trace of connection info can cause class transform/enhancement to fail
-    [OPENJPA-2247] - JoinColumn annotation is ignored when mapping a unidirectional owned OneToOne that is in a SecondaryTable
-    [OPENJPA-2260] - Parenthesis-augmented parameters are improperly processed at EM level
-    [OPENJPA-2261] - Query SQL Cache issue with NULL parameters
+    [OPENJPA-2196] - Create Sequence Postgres 9.1
+    [OPENJPA-2233] - Failed to invoke pcGetIDOwningClass method on embeddable entity with ID annotation
+    [OPENJPA-2235] - "READ_UNCOMMITTED" setting for the fetch plan isolation level is ignored in DB2Dictionary
+    [OPENJPA-2240] - JVMVRFY012 when using openjpa together with hyperjaxb3
+    [OPENJPA-2244] - Nested classpath ignored in mapping tool ant task
+    [OPENJPA-2257] - Concurreny in org.apache.openjpa.persistence.EntityManagerImpl.getProperties leads to NullPointer and ConcurrentModificationException
+    [OPENJPA-2284] - NPE occurs when <cascade-persist/> is added to a <persistence-unit-defaults> in an orm.
+    [OPENJPA-2285] - L2 cache doesn't store FK(s) back into the cache when lazy loading data.
+    [OPENJPA-2288] - MetaDataRepository should be able to filter classes from other app ClassLoaders in JEE Env
+    [OPENJPA-2289] - Additional SQL alias generated for query with subquery causes incorrect # of rows returned - Oracle only
+    [OPENJPA-2298] - VerifyError/Stack underflow due to extra 'return' statements generated by PCEnhancer.
+    [OPENJPA-2304] - Thread deadlock in CriteriaBuilder
+    [OPENJPA-2320] - CriteriaBuilder predicate construction deadlocks in multi-core VM due to static initializer
+    [OPENJPA-2321] - Synchronizing logging output stream causes deadlock when used some JDK LogManger derivative
+    [OPENJPA-2326] - Updates in TCK execution configuration
+    [OPENJPA-2334] - OpenJPA must support processing puRoot & jar-file URLs as jar-formatted InputStreams
 
 Improvement
 
-    [OPENJPA-2134] - Do not close Connections when ConnectionRetainMode is set to "always"
-    [OPENJPA-2137] - Make some members of StateManagerImpl protected to allow for greater extensibility
-    [OPENJPA-2143] - Reduce lock contention on LifecycleEventManager
-    [OPENJPA-2151] - Improve the performance of StateManagerImpl.initialize
-    [OPENJPA-2152] - Don't process query hints when LockModeType == NONE
-    [OPENJPA-2159] - Add support for no rounding of Date
-    [OPENJPA-2162] - Avoid delimited identifier processing if it's not required by application
-    [OPENJPA-2164] - Don't setPCState if field requested is already loaded
-    [OPENJPA-2167] - Misc changes to improve flush() path performance
-    [OPENJPA-2189] - Update OpenBooks example to build, install, and execute in the WAS Liberty Profile
-    [OPENJPA-2208] - Add additional Java 2 Security doPriv function
+    [OPENJPA-2264] - Upcast PreparedStatementManagerImpl.logSQLWarnings to take a Statement rather than a PreparedStatement
+    [OPENJPA-2292] - Reduce object allocations
+    [OPENJPA-2293] - Reduce LifecycleEventManager
+    [OPENJPA-2324] - Option to express literal in query string directly into generate SQL
+    [OPENJPA-2332] - Update message when unable to resolve datasource configuration
+    [OPENJPA-2346] - Optimize MetaDataRepository.getMetaDataInternal
+    [OPENJPA-2347] - Make StateManagerImpl more extensible
+    [OPENJPA-2348] - Cache calculated hashCode in OpenJPAId
+    [OPENJPA-2353] - Reduce object allocations
+    [OPENJPA-2354] - Removed synchronized from enhancer added pcReplaceStateManager method
 
-Test
+New Feature
 
-    [OPENJPA-2169] - TestOracleXmlColumn test failed using Oracle 11.2 driver
+    [OPENJPA-2295] - speed up query metadata lookup
+
+Question
+
+    [OPENJPA-1532] - Should the <shared-cache-mode> element in a persistence unit definition automatically turn on the data cache?
+
