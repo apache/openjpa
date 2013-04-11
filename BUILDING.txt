@@ -3,7 +3,7 @@ Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
 These instructions describe how to build OpenJPA from source code using the
-Apache Maven 2 build too. They are written for use from the console, and are 
+Apache Maven 2 build tool. They are written for use from the console, and are 
 known to work on Linux and Mac OSX. They are also reported to work from Windows.
 
 The most up to date version of these instructions may be found on the OpenJPA 

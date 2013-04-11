@@ -1,4 +1,4 @@
-Apache OpenJPA 1.2.3-SNAPSHOT
+Apache OpenJPA 1.2.3
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
@@ -87,11 +87,69 @@ Getting Involved
         * Bugs and other issues can be posted on the project JIRA.
 
 
-Included Changes in OpenJPA 1.3.0-SNAPSHOT
+Included Changes in OpenJPA 1.2.3
 ------------------------------------------
 
-    * TBD *
+Bug
 
+    * [OPENJPA-677]  - Single Table Inheritance Strategy causes entity identity issues
+    * [OPENJPA-712]  - Not correctly parsing the "having" clause with aggregate functions (ie. max, min, etc)
+    * [OPENJPA-828]  - Externalizer fails with ClassCastException with runtime enhancement
+    * [OPENJPA-1001] - java.lang.IndexOutOfBoundsException when executing attached test case
+    * [OPENJPA-1091] - ReverseMappingTool fails for openjpa-examples/reversemapping sample
+    * [OPENJPA-1226] - Can not merge entity with nested embeddable
+    * [OPENJPA-1289] - Oracle driver throws exception due to incorrect mapping of XMLType column
+    * [OPENJPA-1350] - Race condition in the MetaDataRepository
+    * [OPENJPA-1376] - @SequenceGenerator allocationSize incorrect implementation
+    * [OPENJPA-1387] - Unique colums automatically defined as non-nullable
+    * [OPENJPA-1424] - Out of bounds exception using fetch plan
+    * [OPENJPA-1433] - Maven openjpa*-sources.jar publication
+    * [OPENJPA-1482] - NoSuchMethodError when calling setVersion on an enhanced property access Entity
+    * [OPENJPA-1483] - count (Distinct e) in JPQL gives wrong result when the id field is a compound primary key
+    * [OPENJPA-1500] - DataCache types and excludedTypes are case sensitive
+    * [OPENJPA-1550] - When batchLimit=-1 or >1 and an exception is caused, the params and failedObject are missing from the resultant exception.
+    * [OPENJPA-1569] - @Strategy triggers an InvalidStateException for fields which are declared as Java interfaces
+    * [OPENJPA-1583] - Update by query fails on entities using Timestamp as Version field
+    * [OPENJPA-1641] - SybaseDictionary should try both JDBC column names and Sybase specific column names
+    * [OPENJPA-1644] - Null field values after calling EntityManager.remove()
+    * [OPENJPA-1665] - Problems when using auto incrementing colums that start at zero
+    * [OPENJPA-1668] - User's ''DBDictionary.sequenceSQL' setting not being honored on zOS
+    * [OPENJPA-1678] - SQL Parameter values may contain sensitive information and should not be logged by default.
+    * [OPENJPA-1682] - TestSimpleXmlEntity.testId failed with invalid DB2 create table SQL statement
+    * [OPENJPA-1691] - Oracle XMLType column failed to insert/update when xml contains more than 4000 characters
+    * [OPENJPA-1704] - PCEnhancer incorrectly generates readExternal
+    * [OPENJPA-1814] - JPQL fails with Group By and Having aggregate_expression IN (subquery)
+    * [OPENJPA-1854] - A 'find' or 'query' may return multiple instances of Entities which contain Embeddables, where the Embeddables use String identities, if the id value has trailing spaces.
+    * [OPENJPA-1874] - Handle Oracle specific XML column type with @Lob annotation
+    * [OPENJPA-1905] - jar-file validation should be deferred until after OpenJPA is confirmed to be the application's chosen provider
+    * [OPENJPA-1911] - InvalidStateException is thrown when merge an entity with derived identiy
+    * [OPENJPA-1957] - XML overriding column names for ArrayList attributes causes exception.
+    * [OPENJPA-1993] - Deadlock Potential with ORM XML Processing
+    * [OPENJPA-1996] - OpenJPA Samples fail on MacOS X
+    * [OPENJPA-2006] - Sequence generated ids may fail to get assigned when flushing a graph with bi-directional relationships
+    * [OPENJPA-2015] - ClassCastException when base entity class has InheritanceType.SINGLE_TABLE base with multiple entity subclasses
+    * [OPENJPA-2051] - Entities in a relationship are not properly cascaded after a EntityManager.flush is executed.
+    * [OPENJPA-2067] - A 'length' of '-1' passed to PreparedStatement.setBinaryStream can cause an exception on some, but not all, JDBC drivers.
+    * [OPENJPA-2072] - InvalidStateException deleting an instance with a timestamp in its primary key
+    * [OPENJPA-2095] - Unhandled exception thrown from within an Externalizer method causes incorrect/incomplete SQL to be generated/executed.
+    * [OPENJPA-2107] - ManagedCache conflict due adding an entity 2 times in the same query.
+    * [OPENJPA-2117] - XML overriding column names for 1xM attributes causes exception.
+    * [OPENJPA-2133] - OpenJPA doesn't find custom mappings with an applicable class loader
+    * [OPENJPA-2207] - Problems with numeric column name
+    * [OPENJPA-2236] - Trace of connection info can cause class transform/enhancement to fail
+
+Improvement
+
+    * [OPENJPA-758]  - OpenJPA doesn't find ValueHandlers with an applicable class loader
+    * [OPENJPA-1440] - Allow COUNT(*) instead of COUNT(t0.id) for simple queries as an option
+    * [OPENJPA-1557] - Logging configuration is difficult for running tests
+    * [OPENJPA-1673] - Update MetaDataRepository docs
+    * [OPENJPA-1699] - Streaming Lob support in DB2
+    * [OPENJPA-1712] - Upgrade builds to use Apache hosted Nexus repo
+    * [OPENJPA-1833] - Add build date/time, branch version/revision and copyright to docs
+    * [OPENJPA-1836] - Update nightly-upload build script to use key/passphrase
+    * [OPENJPA-2042] - Diagnostics for Application Managed EntityManagerFactory leaks.
+    * [OPENJPA-2324] - Option to express literal in query string directly into generate SQL
 
 Changes for previous releases
 -----------------------------

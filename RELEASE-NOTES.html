@@ -70,7 +70,7 @@ under the License.
 
 <BR><P>The license may also be found in LICENSE.txt which is included 
 in each release of OpenJPA.</P>
-<BR><P>The complete list of notices can be found in NOTICE.txt included in each assembly.</P>
+<P>The complete list of notices can be found in NOTICE.txt included in each assembly.</P>
 
 <h2><a name="Prerequisites"></a>Prerequisites</h2>
 <P> In normal usage, OpenJPA requires Java 5 or higher and a relational 
@@ -110,14 +110,126 @@ How do I Contribute?
          freenode.net. </li>
     <li> Bugs and other issues can be posted on the project JIRA. </li>
 </ul>
-
-<BR>
-<hr>
-<h2><a name="ReleaseNotes">Release Notes</h2>
-
-<hr>
-<h3><a name="123">OpenJPA 1.2.3</h3>
-<ul><li> TBD </li></ul>
+<h2><a name="JIRA"</a>JIRA Issues Fixed in this release</h2>
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-677'>OPENJPA-677</a>] -         Single Table Inheritance Strategy causes entity identity issues
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-712'>OPENJPA-712</a>] -         Not correctly parsing the &quot;having&quot; clause with aggregate functions (ie. max, min, etc)
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-828'>OPENJPA-828</a>] -         Externalizer fails with ClassCastException with runtime enhancement
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1001'>OPENJPA-1001</a>] -         java.lang.IndexOutOfBoundsException when executing attached test case
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1091'>OPENJPA-1091</a>] -         ReverseMappingTool fails for openjpa-examples/reversemapping sample
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1226'>OPENJPA-1226</a>] -         Can not merge entity with nested embeddable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1289'>OPENJPA-1289</a>] -         Oracle driver throws exception due to incorrect mapping of XMLType column
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1350'>OPENJPA-1350</a>] -         Race condition in the MetaDataRepository
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1376'>OPENJPA-1376</a>] -         @SequenceGenerator allocationSize incorrect implementation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1387'>OPENJPA-1387</a>] -         Unique colums automatically defined as non-nullable
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1424'>OPENJPA-1424</a>] -         Out of bounds exception using fetch plan
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1433'>OPENJPA-1433</a>] -         Maven openjpa*-sources.jar publication
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1482'>OPENJPA-1482</a>] -         NoSuchMethodError when calling setVersion on an enhanced property access Entity
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1483'>OPENJPA-1483</a>] -         count (Distinct e) in JPQL gives wrong result when the id field is a compound primary key
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1500'>OPENJPA-1500</a>] -         DataCache types and excludedTypes are case sensitive
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1550'>OPENJPA-1550</a>] -         When batchLimit=-1 or &gt;1 and an exception is caused, the params and failedObject are missing from the resultant exception.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1569'>OPENJPA-1569</a>] -         @Strategy triggers an InvalidStateException for fields which are declared as Java interfaces
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1583'>OPENJPA-1583</a>] -         Update by query fails on entities using Timestamp as Version field
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1641'>OPENJPA-1641</a>] -         SybaseDictionary should try both JDBC column names and Sybase specific column names
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1644'>OPENJPA-1644</a>] -         Null field values after calling EntityManager.remove()
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1665'>OPENJPA-1665</a>] -         Problems when using auto incrementing colums that start at zero 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1668'>OPENJPA-1668</a>] -         User&#39;s &#39;&#39;DBDictionary.sequenceSQL&#39; setting not being honored on zOS 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1678'>OPENJPA-1678</a>] -         SQL Parameter values may contain sensitive information and should not be logged by default.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1682'>OPENJPA-1682</a>] -         TestSimpleXmlEntity.testId failed with invalid DB2 create table SQL statement
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1691'>OPENJPA-1691</a>] -         Oracle XMLType column failed to insert/update when xml contains more than 4000 characters
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1704'>OPENJPA-1704</a>] -         PCEnhancer incorrectly generates readExternal 
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1814'>OPENJPA-1814</a>] -         JPQL fails with Group By and Having aggregate_expression IN (subquery)
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1854'>OPENJPA-1854</a>] -         A &#39;find&#39; or &#39;query&#39; may return multiple instances of Entities which contain Embeddables, where the Embeddables use String identities, if the id value has trailing spaces.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1874'>OPENJPA-1874</a>] -         Handle Oracle specific XML column type with @Lob annotation
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1905'>OPENJPA-1905</a>] -         jar-file validation should be deferred until after OpenJPA is confirmed to be the application&#39;s chosen provider
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1911'>OPENJPA-1911</a>] -         InvalidStateException is thrown when merge an entity with derived identiy
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1957'>OPENJPA-1957</a>] -         XML overriding column names for ArrayList attributes causes exception.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1993'>OPENJPA-1993</a>] -         Deadlock Potential with ORM XML Processing
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1996'>OPENJPA-1996</a>] -         OpenJPA Samples fail on MacOS X
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2006'>OPENJPA-2006</a>] -         Sequence generated ids may fail to get assigned when flushing a graph with bi-directional relationships
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2015'>OPENJPA-2015</a>] -         ClassCastException when base entity class has InheritanceType.SINGLE_TABLE base with multiple entity subclasses
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2051'>OPENJPA-2051</a>] -         Entities in a relationship are not properly cascaded after a EntityManager.flush is executed.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2067'>OPENJPA-2067</a>] -         A &#39;length&#39; of &#39;-1&#39; passed to PreparedStatement.setBinaryStream can cause an exception on some, but not all, JDBC drivers.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2072'>OPENJPA-2072</a>] -         InvalidStateException deleting an instance with a timestamp in its primary key
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2095'>OPENJPA-2095</a>] -         Unhandled exception thrown from within an Externalizer method causes incorrect/incomplete SQL to be generated/executed.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2107'>OPENJPA-2107</a>] -         ManagedCache conflict due adding an entity 2 times in the same query.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2117'>OPENJPA-2117</a>] -         XML overriding column names for 1xM attributes causes exception.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2133'>OPENJPA-2133</a>] -         OpenJPA doesn&#39;t find custom mappings with an applicable class loader
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2207'>OPENJPA-2207</a>] -         Problems with numeric column name
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2236'>OPENJPA-2236</a>] -         Trace of connection info can cause class transform/enhancement to fail
+</li>
+</ul>
+                
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-758'>OPENJPA-758</a>] -         OpenJPA doesn&#39;t find ValueHandlers with an applicable class loader
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1440'>OPENJPA-1440</a>] -         Allow COUNT(*) instead of COUNT(t0.id) for simple queries as an option
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1557'>OPENJPA-1557</a>] -         Logging configuration is difficult for running tests
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1673'>OPENJPA-1673</a>] -         Update MetaDataRepository docs
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1699'>OPENJPA-1699</a>] -         Streaming Lob support in DB2
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1712'>OPENJPA-1712</a>] -         Upgrade builds to use Apache hosted Nexus repo
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1833'>OPENJPA-1833</a>] -         Add build date/time, branch version/revision and copyright to docs
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-1836'>OPENJPA-1836</a>] -         Update nightly-upload build script to use key/passphrase
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2042'>OPENJPA-2042</a>] -         Diagnostics for Application Managed EntityManagerFactory leaks.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2324'>OPENJPA-2324</a>] -         Option to express literal in query string directly into generate SQL
+</li>
+</ul>
 
 <h2><a name="Previous"></a>Previous Releases</h2>
 Release notes for earlier releases of OpenJPA may be found in SVN at the following locations. 
