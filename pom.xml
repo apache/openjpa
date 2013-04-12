@@ -34,7 +34,7 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.3</version>
 
     <description>Apache OpenJPA implementation of JSR-220 JPA 1.0</description>
 
@@ -128,9 +128,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/1.2.x</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/1.2.x</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/branches/1.2.x</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/1.2.3</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/1.2.3</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/tags/1.2.3</url>
     </scm>
 
     <modules>
