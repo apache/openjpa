@@ -30,6 +30,8 @@
         <class>openbook.domain.Customer</class>
         <class>openbook.domain.Author</class>
         
+        <validation-mode>NONE</validation-mode> 
+        
         <properties>
         <!-- Use these for MySQL
             <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>

@@ -31,6 +31,8 @@
         <class>openbook.domain.Customer</class>
         <class>openbook.domain.Author</class>
         
+        <validation-mode>NONE</validation-mode> 
+        
         <properties>            
             <property name="openjpa.DataCache"                value="true"/>        
             <property name="openjpa.RemoteCommitProvider"     value="sjvm"/>

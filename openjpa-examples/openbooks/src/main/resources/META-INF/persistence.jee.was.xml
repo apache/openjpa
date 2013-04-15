@@ -21,26 +21,28 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
     <persistence-unit name="OpenBooks">
-    	<jta-data-source>jdbc/OpenBooks</jta-data-source>
-    	<non-jta-data-source>jdbc/NonTxOpenBooks</non-jta-data-source>
+        <jta-data-source>jdbc/OpenBooks</jta-data-source>
+        <non-jta-data-source>jdbc/NonTxOpenBooks</non-jta-data-source>
 
-    	<class>openbook.domain.Book</class>
-    	<class>openbook.domain.Inventory</class>
-    	<class>openbook.domain.PurchaseOrder</class>
-    	<class>openbook.domain.LineItem</class>
-    	<class>openbook.domain.Customer</class>
-    	<class>openbook.domain.Author</class>
-    	
-    	<properties>    		
-    		<property name="openjpa.DataCache"                value="true"/> 		
-    		<property name="openjpa.RemoteCommitProvider"     value="sjvm"/>
-    		<property name="openjpa.DynamicEnhancementAgent"  value="false"/>
-    		<property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+        <class>openbook.domain.Book</class>
+        <class>openbook.domain.Inventory</class>
+        <class>openbook.domain.PurchaseOrder</class>
+        <class>openbook.domain.LineItem</class>
+        <class>openbook.domain.Customer</class>
+        <class>openbook.domain.Author</class>
 
-    		<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
-    		<property name="openjpa.jdbc.QuerySQLCache"       value="true(EnableStatistics=true)"/>
-    		
-    	</properties>
+        <validation-mode>NONE</validation-mode> 
+        
+        <properties>            
+            <property name="openjpa.DataCache"                value="true"/>        
+            <property name="openjpa.RemoteCommitProvider"     value="sjvm"/>
+            <property name="openjpa.DynamicEnhancementAgent"  value="false"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+            <property name="openjpa.jdbc.QuerySQLCache"       value="true(EnableStatistics=true)"/>
+            
+        </properties>
     </persistence-unit>
     
 </persistence>
