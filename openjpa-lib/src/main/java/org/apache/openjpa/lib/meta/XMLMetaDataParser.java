@@ -65,7 +65,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
         (XMLMetaDataParser.class);
     private static boolean _schemaBug;
     
-    private static final String OPENJPA_NAMESPACE = "http://www.apache.org/openjpa/ns/orm";
+    private static final String OPENJPA_NAMESPACE = "http://openjpa.apache.org/ns/orm";
     protected int _extendedNamespace = 0;
     protected int _openjpaNamespace = 0;
 
