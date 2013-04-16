@@ -222,6 +222,13 @@
             <artifactId>openjpa-all</artifactId>
             <version>${project.version}</version>
           </dependency>
+          <!-- The slf4j dependency is for bval 0.3-incubating -->
+          <!-- This can be removed if we move to bval 0.5, where the slf4j dependency is removed -->
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4jVersion}</version>
+          </dependency>
         </dependencies>
         
         <!-- ^^^^^^^^^^^^^^^^^^^ -->
