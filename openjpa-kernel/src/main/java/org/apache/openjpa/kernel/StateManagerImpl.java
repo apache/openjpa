@@ -3145,11 +3145,13 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
         FetchConfiguration fetch = _broker.getFetchConfiguration();
         FieldMetaData fmd = _meta.getField(field);
         BitSet fields = null;
+        boolean unloadedDFGFieldMarked = false;
 
         // if this is a dfg field or we need to load our dfg, do so
-        if (fgs && (_flags & FLAG_LOADED) == 0)
+        if (fgs && (_flags & FLAG_LOADED) == 0){
             fields = getUnloadedInternal(fetch, LOAD_FGS, null);
-        
+            unloadedDFGFieldMarked = true;
+        }
         // check for load fetch group
         String lfg = fmd.getLoadFetchGroup();
         boolean lfgAdded = false;
@@ -3172,7 +3174,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             }
         } else if (fmd.isInDefaultFetchGroup() && fields == null) {
             // no load group but dfg: add dfg fields if we haven't already
-            fields = getUnloadedInternal(fetch, LOAD_FGS, null);
+            if (!unloadedDFGFieldMarked)
+                fields = getUnloadedInternal(fetch, LOAD_FGS, null);
         } else if (!_loaded.get(fmd.getIndex())) {
             // no load group or dfg: load individual field
             if (fields == null)
