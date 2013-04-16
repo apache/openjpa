@@ -117,6 +117,7 @@ Included Changes in OpenJPA 2.2.2
 
 Bug
 
+    [OPENJPA-2172] - openjpa-all jar is missing slf4j runtime dependency
     [OPENJPA-2196] - Create Sequence Postgres 9.1
     [OPENJPA-2233] - Failed to invoke pcGetIDOwningClass method on embeddable entity with ID annotation
     [OPENJPA-2235] - "READ_UNCOMMITTED" setting for the fetch plan isolation level is ignored in DB2Dictionary
@@ -146,6 +147,8 @@ Improvement
     [OPENJPA-2348] - Cache calculated hashCode in OpenJPAId
     [OPENJPA-2353] - Reduce object allocations
     [OPENJPA-2354] - Removed synchronized from enhancer added pcReplaceStateManager method
+    [OPENJPA-2368] - Move www.apache.org/openjpa/ns/orm to openjpa.apache.org/ns/orm
+    
 
 New Feature
 

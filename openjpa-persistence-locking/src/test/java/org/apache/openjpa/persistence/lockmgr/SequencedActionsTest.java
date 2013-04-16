@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
@@ -171,14 +172,22 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
     }
 
     protected Log getDumpStackLog() {
-        return emf.getConfiguration().getLog("DumpStack");
+        if (emf != null) {
+            return emf.getConfiguration().getLog("DumpStack");
+        } else {
+            return null;
+        }
     }
 
     protected void logStack(Throwable t) {
         StringWriter str = new StringWriter();
         PrintWriter print = new PrintWriter(str);
         t.printStackTrace(print);
-        getDumpStackLog().trace(str.toString());
+        if (getDumpStackLog() != null) {
+            getDumpStackLog().trace(str.toString());
+        } else {
+            System.err.println(str.toString());
+        }
     }
 
     private void notifyParent() {
@@ -216,6 +225,9 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         // OpenJPA entity manager API
         Detach,            // ();
 
+        // OpenJPA entity manager factory API
+        ClearCache,        // ()
+
         // Transaction API
         StartTx,           // ()
         CommitTx,          // ()
@@ -247,6 +259,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
         SaveVersion,       // ([int id])
         TestVersion,       // (int id, int increment)
         TestLockMode,      // (int id, LockModeType lockMode)
+        TestInCache,       // ([int id[, boolean expectedInCache]])
 
         Test,              // Open-ended testing actions
     };
@@ -530,6 +543,13 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     log.trace("Employee (after)  :" + detEmployee);
                     break;
 
+                case ClearCache:
+                    Cache cache = em.getEntityManagerFactory().getCache();
+                    if (cache != null) {
+                        cache.evictAll();
+                    }      
+                    break;
+
                 case StartTx:
                     em.getTransaction().begin();
                     break;
@@ -577,7 +597,7 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     }
                     if (waitTime < MinThreadWaitInMs / 2)
                         waitTime = MinThreadWaitInMs / 2;
-                    log.trace(">> Started wait for " + waitTime + " ms");
+                    log.trace(">> Started thread " + waitThreadid + " wait for " + waitTime + " ms");
                     if( waitThreadid != 0) {
                         thisThread.wait(waitTime);
                     } else {
@@ -773,6 +793,26 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     }
                     break;
 
+                case TestInCache:
+                    id = 1;
+                    boolean expectedInCache = false;
+                    if (args.length > 1) {
+                        id = (Integer)args[1];
+                    }
+                    if (args.length > 2) {
+                        expectedInCache = (Boolean)args[2];
+                    }
+                    Cache testCache = em.getEntityManagerFactory().getCache();
+                    if (testCache != null) {
+                        boolean inCache = testCache.contains(LockEmployee.class, id);                        
+                        log.trace("cache.contains(Employee("+id+")) = " + inCache);
+                        assertTrue(curAct + ":TestInCache Expecting=" + expectedInCache
+                                + ", Testing=" + inCache + "]", inCache == expectedInCache);
+                    } else {
+                        log.info(curAct+":TestInCache - No Cache found.");
+                    }
+                    break;
+
                 case WaitAllChildren:
                     // wait for threads to die or timeout
                     log.trace("checking if thread is alive for " +
@@ -833,7 +873,11 @@ public abstract class SequencedActionsTest extends SQLListenerTestCase {
                     break;
 
                 case Sleep:
-                    Thread.sleep((Integer) args[1]);
+                    int sleepMS = 5000;
+                    if (args.length > 1) {
+                        sleepMS = (Integer) args[1];
+                    }
+                    Thread.sleep(sleepMS);
                     break;
                 case DetachSerialize:
                     id = 1;
