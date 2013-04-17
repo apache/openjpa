@@ -48,6 +48,7 @@ import javax.tools.JavaFileObject;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
+import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.util.SourceCode;
 
 
@@ -164,9 +165,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
      *  
      */
     private TypeCategory toMetaModelTypeCategory(TypeMirror mirror, 
-        String name) {
-        if (mirror.getKind() == TypeKind.ARRAY)
+        String name, boolean persistentCollection) {   
+        if (mirror.getKind() == TypeKind.ARRAY && persistentCollection ) {
             return TypeCategory.LIST;
+        }
         if (CLASSNAMES_COLLECTION.contains(name))
             return TypeCategory.COLLECTION;
         if (CLASSNAMES_LIST.contains(name))
@@ -240,10 +242,13 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             Set<? extends Element> members = handler.getPersistentMembers(e);
             
             for (Element m : members) {
+                boolean isPersistentCollection = m.getAnnotation(PersistentCollection.class) != null; 
+                
                 TypeMirror decl  = handler.getDeclaredType(m);
                 String fieldName = handler.getPersistentMemberName(m);
-                String fieldType = handler.getDeclaredTypeName(decl);
-                TypeCategory typeCategory = toMetaModelTypeCategory(decl, fieldType);
+                String fieldType = handler.getDeclaredTypeName(decl, true, isPersistentCollection);  
+                TypeCategory typeCategory =
+                    toMetaModelTypeCategory(decl, fieldType, isPersistentCollection);
                 String metaModelType = typeCategory.getMetaModelType();
                 SourceCode.Field modelField = null;
                 switch (typeCategory) {
