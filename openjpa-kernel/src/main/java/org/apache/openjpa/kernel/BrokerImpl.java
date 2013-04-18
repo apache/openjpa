@@ -4503,7 +4503,11 @@ public class BrokerImpl
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
-        return find(oid, null, EXCLUDE_ALL, null, 0) != null;
+        
+        
+        return meta.getVersionField() != null 
+             ? pc.pcGetVersion() != null && find(oid, null, EXCLUDE_ALL, null, 0) != null
+             : find(oid, null, EXCLUDE_ALL, null, 0) != null;
     }
 
     public OpenJPAStateManager getStateManager(Object obj) {
