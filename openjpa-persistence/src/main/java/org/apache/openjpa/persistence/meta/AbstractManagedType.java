@@ -39,6 +39,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
 
+import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -157,7 +158,13 @@ public abstract class AbstractManagedType<X> extends Types.BaseType<X>
                 attrs.add(new Members.SingularAttributeImpl(this, f));
                 break;
             case JavaTypes.ARRAY:
-                attrs.add(new Members.ListAttributeImpl(this, f));
+                Compatibility compat = meta.getRepository().getConfiguration().getCompatibilityInstance();
+                if(compat.getUseListAttributeForArrays() || f.isPersistentCollection()) {
+                    attrs.add(new Members.ListAttributeImpl(this, f));
+                }
+                else { 
+                    attrs.add(new Members.SingularAttributeImpl(this, f));
+                }
                 break;
             case JavaTypes.COLLECTION:
                 switch (MetamodelImpl.categorizeCollection(f.getDeclaredType())) {

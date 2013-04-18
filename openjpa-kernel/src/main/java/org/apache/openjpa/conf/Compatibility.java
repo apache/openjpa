@@ -72,7 +72,7 @@ public class Compatibility {
     private boolean _resetFlushFlagForCascadePersist = false;//OPENJPA-2051
     private boolean _overrideContextClassloader = false; //OPENJPA-1993
     private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
-   
+    private boolean _useListAttributeForArrays = true;
 
     /**
      * Whether to require exact identity value types when creating object
@@ -654,6 +654,32 @@ public class Compatibility {
      */
     public void setFilterPCRegistryClasses(boolean bool) {
         _filterPCRegistryClasses = bool;
+    }
+
+    /**
+     * This property can be used to allow OpenJPA to use ListAttributes for all types of Arrays, not just those with the
+     * 
+     * @PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
+     *                       OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true.
+     * @since 2.1.2
+     * @return true if OpenJPA will use ListAttributes for <b>all</b> arrays, false if OpenJPA will use ListAttributes
+     *         for <b>only</b> arrays which use the @PersistentCollection annotation.
+     */
+    public boolean getUseListAttributeForArrays() {
+        return _useListAttributeForArrays;
+    }
+
+    /**
+     * This property can be used to allow OpenJPA to use ListAttributes for all types of Arrays, not just those with the
+     * 
+     * @PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
+     *                       OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true.
+     * @since 2.1.2
+     * @param useListAttribute
+     *            whether OpenJPA will use ListAttributes for all arrays.
+     */   
+    public void setUseListAttributeForArrays(boolean useListAttribute ) { 
+        _useListAttributeForArrays = useListAttribute;
     }
 }
 

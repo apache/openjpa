@@ -353,6 +353,32 @@
                     has no effect in 2.1.x and later releases and any occurrence of it should be removed.
                 </para>
             </section>            
+            <section id="jpa_2.2_metamodelArrays">
+                <title>
+                    MetaModel attributes for Arrays  
+                </title>
+                <!-- See OPENJPA-2025 for details. -->
+                <para>
+                    OpenJPA's MetaModel implementation generates a ListAttribute for every array. This behavior is correct if the array 
+                    is annotated as a PersistentCollection, but not correct for un-annotated arrays (e.g. byte[], char[]). This behavior has been corrected 
+                    so that arrays which are not stored as PersistentCollections will use a SingularAttribute instead of a ListAttribute.  This correction
+                    is only enabled via a compatibility property (described below). 
+                </para>
+                <para>
+                    If youre application uses the MetaModel API and your entities contain arrays of any of the following types: byte[], Byte[], char[], Character[] and
+                    do not use the @PersistentCollection annotation with those fields you will need to do the following:
+                    <itemizedlist>
+                        <listitem>
+                            <para> Regenerate the canonical metamodel classes</para>
+                        </listitem>
+                        <listitem>
+                            <para> Set the Compatibility property <literal>UseListAttributeForArrays</literal> to <literal>false</literal>in persistence.xml 
+                                <programlisting> &lt;property name="openjpa.Compatibility" value="UseListAttributeForArrays=false"/&gt;</programlisting>
+                            </para>
+                        </listitem>
+                    </itemizedlist>    
+                </para>
+            </section>
         </section>
     </section>
 	<section id="jpa_2.1">

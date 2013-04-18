@@ -1634,6 +1634,8 @@ public class AnnotationPersistenceMetaDataParser
             throw new MetaDataException(_loc.get("bad-meta-anno", fmd,
                 "PersistentCollection"));
 
+        fmd.setPersistentCollection(true); 
+        
         if (!StringUtils.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
