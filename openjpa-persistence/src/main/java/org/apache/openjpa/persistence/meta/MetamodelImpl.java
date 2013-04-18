@@ -21,8 +21,7 @@ package org.apache.openjpa.persistence.meta;
 import static javax.persistence.metamodel.Type.PersistenceType.BASIC;
 import static javax.persistence.metamodel.Type.PersistenceType.EMBEDDABLE;
 import static javax.persistence.metamodel.Type.PersistenceType.ENTITY;
-import static 
- javax.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLASS;
+import static javax.persistence.metamodel.Type.PersistenceType.MAPPED_SUPERCLASS;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -41,7 +40,6 @@ import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.MappedSuperclassType;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.Type;
 import javax.persistence.metamodel.StaticMetamodel;
 import javax.persistence.metamodel.PluralAttribute.CollectionType;
@@ -290,52 +288,47 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * Populate the static fields of the canonical type.
      */
     public <X> void populate(AbstractManagedType<X> type) {
-		Class<X> cls = type.getJavaType();
-		Class<?> mcls = repos.getMetaModel(cls, true);
-		if (mcls == null)
-		    return;
+        Class<X> cls = type.getJavaType();
+        Class<?> mcls = repos.getMetaModel(cls, true);
+        if (mcls == null){
+            return;
+        }
         StaticMetamodel anno = mcls.getAnnotation(StaticMetamodel.class);
-		if (anno == null)
+        if (anno == null)
             throw new IllegalArgumentException(_loc.get("meta-class-no-anno", 
-               mcls.getName(), cls.getName(), StaticMetamodel.class.getName()).getMessage());
-		
+                    mcls.getName(), cls.getName(), StaticMetamodel.class.getName()).getMessage());
+
         if (cls != anno.value()) {
             throw new IllegalStateException(_loc.get("meta-class-mismatch",
-            mcls.getName(), cls.getName(), anno.value()).getMessage());
+                    mcls.getName(), cls.getName(), anno.value()).getMessage());
         }
         
+        ParameterizedType mfType = null;
+        Attribute<? super X, ?> f = null;
         Field[] mfields = AccessController.doPrivileged(J2DoPrivHelper.getDeclaredFieldsAction(mcls));
     	for (Field mf : mfields) {
             try {
-                ParameterizedType mfType = getParameterziedType(mf);
-    	        Attribute<? super X, ?> f = type.getAttribute(mf.getName());
-    	        Class<?> fClass = f.getJavaType();
-    	       java.lang.reflect.Type[] args = mfType.getActualTypeArguments();
-    	       if (args.length < 2)
-    	           throw new IllegalStateException(
-    	               _loc.get("meta-field-no-para", mf).getMessage());
-    	       java.lang.reflect.Type ftype = args[1];
-    	       if (fClass.isPrimitive() 
-    	        || Collection.class.isAssignableFrom(fClass) 
-    	        || Map.class.isAssignableFrom(fClass)) {
-    	        ;
-    	    } else if (ftype != args[1]) {
-    	        throw new RuntimeException(_loc.get("meta-field-mismatch", 
-    	            new Object[]{mf.getName(), mcls.getName(), 
-    	                toTypeName(mfType), toTypeName(ftype)}).getMessage());
-    	    }
-            mf.set(null, f);
-	} catch (Exception e) {
-	    e.printStackTrace();
-		throw new RuntimeException(mf.toString());
-	}
+                mfType = getParameterizedType(mf); // metamodel type
+                if (mfType == null) {
+                    continue;
+                }
+
+                f = type.getAttribute(mf.getName()); // persistent type
+
+                // populate the static field with persistent type information
+                mf.set(null, f);
+            } catch (Exception e) {
+                throw new RuntimeException(_loc.get("meta-field-mismatch",
+                        new Object[] { mf.getName(), mcls.getName(), toTypeName(mfType), f.getJavaType().toString() })
+                        .getMessage(), e);
+            }
         }
     }
     
     /**
      * Gets the parameterized type of the given field after validating. 
      */
-    ParameterizedType getParameterziedType(Field mf) {
+    ParameterizedType getParameterizedType(Field mf) {
         java.lang.reflect.Type t = mf.getGenericType();
         if (t instanceof ParameterizedType == false) {
             throw new IllegalStateException(_loc.get("meta-field-not-param", 
@@ -347,7 +340,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
             throw new IllegalStateException(_loc.get("meta-field-less-param", 
             mf.getDeclaringClass(), mf.getName(), toTypeName(t)).getMessage());
         }
-        
+
         return mfType;
     }
     
@@ -387,7 +380,6 @@ public class MetamodelImpl implements Metamodel, Resolver {
     }
     
     <X,Y> void validate(Field mField, Member<X, Y> member) {
-        Class<?> fType = member.getJavaType();
         if (!ParameterizedType.class.isInstance(mField.getGenericType())) {
             throw new IllegalArgumentException(_loc.get("meta-bad-field", 
                 mField).getMessage());
@@ -398,9 +390,6 @@ public class MetamodelImpl implements Metamodel, Resolver {
         if (member.getDeclaringType().getJavaType() != owner)
             throw new IllegalArgumentException(_loc.get("meta-bad-field-owner", 
                     mField, owner).getMessage());
-        java.lang.reflect.Type elementType = args[1];
-        if (fType.isPrimitive())
-            return;
     }
 
     public Class classForName(String name, String[] imports) {
