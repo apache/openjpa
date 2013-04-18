@@ -622,7 +622,7 @@ public class SourceCode {
 		    String pkg = name.getPackageName();
 		    if (pkg.length() == 0 || pkg.equals(getPackage().name))
 		        return;
-		    out.println("import "+ name.getFullName() + SEMICOLON);
+		    out.println("import "+ name.fullName + SEMICOLON);
 		}
 		
 		public boolean equals(Object other) {
@@ -774,6 +774,11 @@ public class SourceCode {
 	    		arrayMarker = arrayMarker + "[]"; 
 	    		name = getComponentName(name);
 	    	}
+            int start = name.indexOf("<");
+            int stop = name.lastIndexOf(">");
+            if (start != -1 && stop != -1) {
+                name = name.substring(0, start) + name.substring(stop + 1); 
+            }
 	        this.fullName = name;
 	        int dot = fullName.lastIndexOf(DOT);
 	        simpleName = (dot == -1) ? fullName : fullName.substring(dot+1);
@@ -817,7 +822,7 @@ public class SourceCode {
 	     * Compares by fully-qualified name.
 	     */
 	    public int compareTo(ClassName other) {
-	        return fullName.compareTo(other.fullName);
+	        return getFullName().compareTo(other.getFullName());
 	    }
 	    
 	    public boolean isValidTypeName(String s) {
