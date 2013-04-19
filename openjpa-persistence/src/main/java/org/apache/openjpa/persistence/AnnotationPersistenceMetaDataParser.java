@@ -599,8 +599,13 @@ public class AnnotationPersistenceMetaDataParser
                         warnFlushMode(meta);
                     break;
                 case ID_CLASS:
-                    if (isMetaDataMode())
+                    if (isMetaDataMode()) {
+                    	Class<?> idClass = ((IdClass)anno).value();
+                    	if (!Serializable.class.isAssignableFrom(idClass)) {
+                    		_log.warn(_loc.get("id-class-not-serializable", idClass, _cls).toString());
+                    	}
                         meta.setObjectIdType(((IdClass) anno).value(), true);
+                    }
                     break;
                 case NATIVE_QUERIES:
                     if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)

@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -1265,6 +1266,9 @@ public class XMLPersistenceMetaDataParser
             idCls = classForName(cls);
         } catch (Throwable t) {
             throw getException(_loc.get("invalid-id-class", meta, cls), t);
+        }
+        if (!Serializable.class.isAssignableFrom(idCls)) {
+        	_conf.getConfigurationLog().warn(_loc.get("id-class-not-serializable", idCls, _cls));
         }
         meta.setObjectIdType(idCls, true);
         return true;
