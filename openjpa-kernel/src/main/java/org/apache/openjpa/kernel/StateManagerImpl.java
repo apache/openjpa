@@ -3467,6 +3467,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     public void setBroker(BrokerImpl ctx) {
         _broker = ctx;
     }
+
     public BitSet getFlushed() {
         if (_flush == null) {
             _flush = new BitSet(_meta.getFields().length);
@@ -3516,4 +3517,9 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             getDirty().clear(index);
         }
     }
+
+    public String toString() {
+    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId(); 
+    }
+
 }
