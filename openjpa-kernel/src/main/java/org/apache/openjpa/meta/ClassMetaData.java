@@ -179,7 +179,7 @@ public class ClassMetaData
     private List<Class<?>> _interfaces = null;
     private final Map<Class<?>,Map<String,String>> _ifaceMap = 
     	new HashMap<Class<?>,Map<String,String>>();
-    private int _identity = ID_UNKNOWN;
+    private Integer _identity = null;
     private int _idStrategy = ValueStrategies.NONE;
     private int _accessType = AccessCode.UNKNOWN;
     
@@ -436,21 +436,25 @@ public class ClassMetaData
      * primary key fields, and {@link #ID_APPLICATION} otherwise.
      */
     public int getIdentityType() {
-        if (_identity == ID_UNKNOWN) {
-            ClassMetaData sup = getPCSuperclassMetaData();
-            if (sup != null && sup.getIdentityType() != ID_UNKNOWN)
-                _identity = sup.getIdentityType();
-            else if (getPrimaryKeyFields().length > 0)
-                _identity = ID_APPLICATION;
-            else if (isMapped())
-                _identity = ID_DATASTORE;
-            else
-                _identity = _repos.getMetaDataFactory().getDefaults().
-                    getDefaultIdentityType();
-        }
+    	if (_identity != null) {
+    		return _identity;
+    	} else {
+    		ClassMetaData sup = getPCSuperclassMetaData();
+	        if (sup != null && sup.getIdentityType() != ID_UNKNOWN) 
+	            _identity = sup.getIdentityType();
+	        else if (getPrimaryKeyFields().length > 0) 
+	            _identity = ID_APPLICATION;
+	        else if (isMapped()) 
+	            _identity = ID_DATASTORE;
+	        else if (isAbstract())
+	        	_identity = ID_UNKNOWN;
+	        else
+	            _identity = _repos.getMetaDataFactory().getDefaults().
+	            	 getDefaultIdentityType();
+    	}
         return _identity;
     }
-
+  
     /**
      * The type of identity being used. This will be one of:
      * <ul>
@@ -2507,8 +2511,9 @@ public class ClassMetaData
         _embeddable = meta._embeddable;
         _interface = (meta.isManagedInterface()) ? Boolean.TRUE : Boolean.FALSE;
         setIntercepting(meta.isIntercepting());
+        _abstract = meta.isAbstract();
         _impl = meta.getInterfaceImpl();
-        _identity = meta.getIdentityType();
+        _identity = meta._identity == null ? null : meta.getIdentityType();
         _idStrategy = meta.getIdentityStrategy();
         _seqName = meta.getIdentitySequenceName();
         _seqMeta = null;

@@ -28,16 +28,22 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 /**
  * Test case and domain classes were originally part of the reported issue
  * <A href="https://issues.apache.org/jira/browse/OPENJPA-873">OPENJPA-873</A>
- *  
+ * <p>
+ * Added a new test where mapped super class does not decalre an identity.
+ * Originally reported 
+ * <A href="https://issues.apache.org/jira/browse/OPENJPA-2325">OPENJPA-2325</A>
+ * 
  * @author pioneer_ip@yahoo.com
  * @author Fay Wang
- *
+ * @author Pinaki Poddar
  */
 public class TestMappedSuperClass extends SingleEMFTestCase {
 
     public void setUp() {
         setUp(CashBaseEntity.class, 
-              SituationDA.class, ValuableItemDA.class, CLEAR_TABLES);
+              SituationDA.class, ValuableItemDA.class, 
+              MappedSuperWithoutId.class, DerivedEntityFromMappedSuperWithoutId.class,
+              CLEAR_TABLES);
     }
 
     public void testMappedSuperClass() {
@@ -72,5 +78,36 @@ public class TestMappedSuperClass extends SingleEMFTestCase {
         } finally {
             em.close();
         }
+    }
+    
+    /**
+     * Tests that new entity can be merged when the entity is derived from a mapped
+     * super class that does not declare an identity field.
+     */
+    public void testMergeNewInstanceDerivedFromMappedSuperClassWithoutIdentityField() {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        final long id = System.currentTimeMillis();
+		DerivedEntityFromMappedSuperWithoutId pc = new DerivedEntityFromMappedSuperWithoutId();
+		pc.setId(id);
+		pc.setName("abc");
+		em.persist(pc);
+		em.getTransaction().commit();
+		em.close();
+    	
+		DerivedEntityFromMappedSuperWithoutId newpc = new DerivedEntityFromMappedSuperWithoutId();
+		em = emf.createEntityManager();
+        em.getTransaction().begin();
+		newpc.setId(id);
+		newpc.setName("xyz");
+		em.merge(newpc);
+		em.getTransaction().commit();
+		em.close();
+		
+		em = emf.createEntityManager();
+		DerivedEntityFromMappedSuperWithoutId found = em.find(DerivedEntityFromMappedSuperWithoutId.class, id);
+		assertNotNull(found);
+		assertEquals("xyz", found.getName());
+		
     }
 }
