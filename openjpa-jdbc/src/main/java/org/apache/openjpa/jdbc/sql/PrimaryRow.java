@@ -459,4 +459,18 @@ public class PrimaryRow
                 _callbacks.length);
         }
     }
+    
+    public String toString() {
+    	StringBuilder buf = new StringBuilder();
+    	buf.append("PrimaryRow[");
+    	switch (getAction()) {
+	    	case ACTION_UPDATE: buf.append("UPDATE"); break;
+	    	case ACTION_INSERT: buf.append("INSERT"); break;
+	    	case ACTION_DELETE: buf.append("DELETE"); break;
+	    	default: buf.append("UNKNOWN");
+    	}
+    	buf.append(" ").append(getTable().getName()).append("]: ");
+    	buf.append(_pk);
+    	return buf.toString();
+    }
 }
