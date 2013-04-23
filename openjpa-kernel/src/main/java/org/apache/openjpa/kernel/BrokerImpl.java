@@ -4615,14 +4615,15 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         if (detached != null)
             return detached.booleanValue();
 
+        if(!find){
+            return false;
+        }
         // last resort: instance is detached if it has a store record
         ClassMetaData meta = _repo.getMetaData(ImplHelper.getManagedInstance(pc).getClass(), _loader, true);
         Object oid = ApplicationIds.create(pc, meta);
         if (oid == null)
             return false;
-        if(!find){
-            return false;
-        }
+        
         return find(oid, null, EXCLUDE_ALL, null, 0) != null;
     }
 
