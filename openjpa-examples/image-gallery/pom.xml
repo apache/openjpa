@@ -94,9 +94,9 @@
           <executions>
             <execution>
               <id>enhancer</id>
-              <phase>process-classes</phase>
+              <phase>process-test-classes</phase>
               <goals>
-                <goal>enhance</goal>
+                <goal>test-enhance</goal>
               </goals>
             </execution>
           </executions>
