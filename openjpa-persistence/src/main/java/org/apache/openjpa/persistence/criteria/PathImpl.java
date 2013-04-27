@@ -238,6 +238,9 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  Gets a new path that represents the given single-valued attribute from this path.
      */
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> attr) {
+    	if (getType() != attr.getDeclaringType()) {
+    		attr = (SingularAttribute)((ManagedType)getType()).getAttribute(attr.getName());
+    	}
         return new PathImpl<X,Y>(this, (Members.SingularAttributeImpl<? super X, Y>)attr, attr.getJavaType());
     }
     
@@ -245,6 +248,9 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  Gets a new path that represents the given multi-valued attribute from this path.
      */
     public <E, C extends java.util.Collection<E>> Expression<C>  get(PluralAttribute<X, C, E> coll) {
+    	if (getType() != coll.getDeclaringType()) {
+    		coll = (PluralAttribute)((ManagedType)getType()).getAttribute(coll.getName());
+    	}
         return new PathImpl<X,C>(this, (Members.PluralAttributeImpl<? super X, C, E>)coll, coll.getJavaType());
     }
 
@@ -252,6 +258,9 @@ class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X> {
      *  Gets a new path that represents the given map-valued attribute from this path.
      */
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map) {
+    	if (getType() != map.getDeclaringType()) {
+    		map = (MapAttribute)((ManagedType)getType()).getAttribute(map.getName());
+    	}
         return new PathImpl<X,M>(this, (Members.MapAttributeImpl<? super X,K,V>)map, (Class<M>)map.getJavaType());
     }
     
