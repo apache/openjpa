@@ -197,8 +197,8 @@ public class OpenJPAPersistenceUtil {
         BitSet loadSet = sm.getLoaded();
                 
         // Simple load state check for the field
-        if (!loadSet.get(fmd.getIndex()))
-            return false;
+        if (loadSet.get(fmd.getIndex()))
+            return true;
 
         Object field = sm.fetchField(fmd.getIndex(), false);
 
