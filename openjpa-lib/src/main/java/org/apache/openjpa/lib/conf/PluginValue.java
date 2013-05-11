@@ -20,6 +20,7 @@ package org.apache.openjpa.lib.conf;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 
@@ -106,7 +107,7 @@ public class PluginValue extends ObjectValue {
         
         // ensure plugin value is compatible with plugin type
         if (obj != null && !type.isAssignableFrom(obj.getClass())) {
-            Log log = (conf == null) ? null : conf.getConfigurationLog();
+            Log log = (conf == null || type.equals(LogFactory.class)) ? null : conf.getConfigurationLog();
             String msg = getIncompatiblePluginMessage(obj, type);
             if (log != null && log.isErrorEnabled()) {
             	log.error(msg);
