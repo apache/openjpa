@@ -217,7 +217,6 @@ public class ConfigurationImpl
     }
 
     public void setLog(String log) {
-        assertNotReadOnly();
         logFactoryPlugin.setString(log);
     }
 
