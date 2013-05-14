@@ -18,9 +18,15 @@
  */
 package org.apache.openjpa.persistence.criteria;
 
+import static javax.persistence.metamodel.Type.PersistenceType.EMBEDDABLE;
+import static javax.persistence.metamodel.Type.PersistenceType.ENTITY;
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
@@ -36,6 +42,7 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EmbeddableType;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SetAttribute;
 
@@ -93,6 +100,43 @@ public class TestMetaModelTypesafeCriteria extends CriteriaTest {
         student_ = mm.entity(Student.class);
         transactionHistory_ = mm.entity(TransactionHistory.class);
         videoStore_ = mm.entity(VideoStore.class);
+    }
+
+    public void testEntityEmbeddableTest() {
+        Metamodel mm = em.getMetamodel();
+
+        assertEquals(mm.managedType(Account.class).getPersistenceType(), ENTITY);
+        assertEquals(mm.managedType(Address.class).getPersistenceType(), EMBEDDABLE);
+
+        assertNotNull(mm.entity(Account.class));
+        assertNotNull(mm.embeddable(Address.class));
+
+        try {
+            mm.entity(Address.class);
+            fail("Expecting IllegalArgumentException");
+        } catch (IllegalArgumentException iaex) {
+        }
+        try {
+            mm.embeddable(Account.class);
+            fail("Expecting IllegalArgumentException");
+        } catch (IllegalArgumentException iaex) {
+        }
+
+        int numEntity = 0;
+        int numEmbeddables = 0;
+        for (Class<?> clz : getDomainClasses()) {
+            if (clz.getAnnotation(Embeddable.class) != null) {
+                ++numEmbeddables;
+            } else if (clz.getAnnotation(Entity.class) != null) {
+                ++numEntity;
+            }
+        }
+        Set<EmbeddableType<?>> embs = mm.getEmbeddables();
+        assertEquals(embs.size(), numEmbeddables);
+        Set<EntityType<?>> ents = mm.getEntities();
+        assertEquals(ents.size(), numEntity);
+        Set<ManagedType<?>> metaTypes = mm.getManagedTypes();
+        assertEquals(metaTypes.size(), numEntity + numEmbeddables);
     }
 
     public void testStringEqualExpression() {

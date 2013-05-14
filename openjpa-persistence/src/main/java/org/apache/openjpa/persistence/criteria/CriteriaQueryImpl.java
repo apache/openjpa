@@ -343,7 +343,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
 
     
     public <X> Root<X> from(Class<X> cls) {
-        EntityType<X> entity = _model.entity(cls);
+        EntityType<X> entity = _model.entityImpl(cls);
         if (entity == null)
             throw new IllegalArgumentException(_loc.get("root-non-entity", cls).getMessage());
         return from(entity);

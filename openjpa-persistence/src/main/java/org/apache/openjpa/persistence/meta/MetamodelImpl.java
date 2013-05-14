@@ -68,6 +68,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
     private final MetaDataRepository repos;
     private Map<Class<?>, Type<?>> _basics = new HashMap<Class<?>, Type<?>>();
     private Map<Class<?>, EntityType<?>> _entities = new HashMap<Class<?>, EntityType<?>>();
+    private Set<EntityType<?>> _entitiesOnlySet = null;
     private Map<Class<?>, EmbeddableType<?>> _embeddables = new HashMap<Class<?>, EmbeddableType<?>>();
     private Map<Class<?>, MappedSuperclassType<?>> _mappedsupers = new HashMap<Class<?>, MappedSuperclassType<?>>();
     private Map<Class<?>, Types.PseudoEntity<?>> _pseudos = new HashMap<Class<?>, Types.PseudoEntity<?>>();
@@ -86,15 +87,15 @@ public class MetamodelImpl implements Metamodel, Resolver {
             PersistenceType type = getPersistenceType(meta);
             switch (type) {
             case ENTITY:
-                find(cls, _entities, ENTITY);
+                find(cls, _entities, ENTITY, false);
                 if (meta.isEmbeddable())
-                    find(cls, _embeddables, EMBEDDABLE);
+                    find(cls, _embeddables, EMBEDDABLE, false);
                 break;
             case EMBEDDABLE:
-                find(cls, _embeddables, EMBEDDABLE);
+                find(cls, _embeddables, EMBEDDABLE, false);
                 break;
             case MAPPED_SUPERCLASS:
-                find(cls, _mappedsupers, MAPPED_SUPERCLASS);
+                find(cls, _mappedsupers, MAPPED_SUPERCLASS, false);
                 break;
             default:
             }
@@ -113,7 +114,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @throws IllegalArgumentException if not an embeddable class
      */
     public <X> EmbeddableType<X> embeddable(Class<X> clazz) {
-        return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE);
+        return (EmbeddableType<X>)find(clazz, _embeddables, EMBEDDABLE, false);
     }
 
     /**
@@ -123,7 +124,27 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @throws IllegalArgumentException if not an entity
      */
     public <X> EntityType<X> entity(Class<X> clazz) {
-        return (EntityType<X>) find(clazz, _entities, ENTITY);
+        return (EntityType<X>) find(clazz, _entities, ENTITY, false);
+    }
+
+    public <X> EntityType<X> entityImpl(Class<X> clazz) {
+        return (EntityType<X>) find(clazz, _entities, ENTITY, true);
+    }
+
+    /*
+     * Return the most up-to-date entity only set in the current meta model.
+     */
+    private Collection<EntityType<?>> getEntityValuesOnly() {
+        if (_entitiesOnlySet == null) {
+            _entitiesOnlySet = new HashSet<EntityType<?>>();
+            for (Class<?> cls : _entities.keySet()) {
+                // if key indicates it is a embeddable, do not add to the _entitiesOnlySet.
+                if (!_embeddables.containsKey(cls)) {
+                    _entitiesOnlySet.add(_entities.get(cls));
+                }
+            }
+        }
+        return _entitiesOnlySet;
     }
 
     /**
@@ -139,7 +160,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * @return the metamodel entity types
      */
     public Set<EntityType<?>> getEntities() {
-        return unmodifiableSet(_entities.values());
+        return unmodifiableSet(getEntityValuesOnly());
     }
 
     /**
@@ -148,7 +169,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
      */
     public Set<ManagedType<?>> getManagedTypes() {
         Set<ManagedType<?>> result = new HashSet<ManagedType<?>>();
-        result.addAll(_entities.values());
+        result.addAll(getEntityValuesOnly());
         result.addAll(_embeddables.values());
         result.addAll(_mappedsupers.values());
         return result;
@@ -162,10 +183,10 @@ public class MetamodelImpl implements Metamodel, Resolver {
      *  @throws IllegalArgumentException if not a managed class
      */
     public <X> ManagedType<X> managedType(Class<X> clazz) {
-        if (_entities.containsKey(clazz))
-            return (EntityType<X>) _entities.get(clazz);
         if (_embeddables.containsKey(clazz))
             return (EmbeddableType<X>) _embeddables.get(clazz);
+        if (_entities.containsKey(clazz))
+            return (EntityType<X>) _entities.get(clazz);
         if (_mappedsupers.containsKey(clazz))
             return (MappedSuperclassType<X>) _mappedsupers.get(clazz);
         throw new IllegalArgumentException(_loc.get("type-not-managed", clazz)
@@ -216,9 +237,12 @@ public class MetamodelImpl implements Metamodel, Resolver {
      * The managed type may become instantiated as a side-effect.
      */
     private <V extends ManagedType<?>> V find(Class<?> cls, Map<Class<?>,V> container,  
-            PersistenceType expected) {
-        if (container.containsKey(cls))
-            return container.get(cls);
+            PersistenceType expected, boolean implFind) {
+        if (container.containsKey(cls)) {
+            if (implFind || expected != ENTITY || !_embeddables.containsKey(cls)) {
+                return container.get(cls);
+            }
+        }
         ClassMetaData meta = repos.getMetaData(cls, null, false);
         if (meta != null) {
             instantiate(cls, meta, container, expected);
@@ -252,6 +276,7 @@ public class MetamodelImpl implements Metamodel, Resolver {
         case ENTITY:
         	Types.Entity<X> entity = new Types.Entity<X>(meta, this);
             _entities.put(cls, entity);
+            _entitiesOnlySet = null;
             populate(entity);
             break;
         case MAPPED_SUPERCLASS:
