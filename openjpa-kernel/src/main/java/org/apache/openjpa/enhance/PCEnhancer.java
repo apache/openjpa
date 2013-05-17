@@ -4041,7 +4041,10 @@ public class PCEnhancer {
         Code code = meth.getCode(true);
 
         // super.readExternal (in);
-        Class sup = _meta.getDescribedType().getSuperclass();
+        // not sure if this works: this is depending on the order of the enhancement!
+        // if the subclass gets enhanced first, then the superclass misses
+        // the Externalizable at this point!
+        Class<?> sup = _meta.getDescribedType().getSuperclass();
         if (!parentDetachable && Externalizable.class.isAssignableFrom(sup)) {
             loadManagedInstance(code, false);
             code.aload().setParam(0);
@@ -4074,12 +4077,44 @@ public class PCEnhancer {
                 void.class, new Class[]{ StateManager.class });
         }
 
+        addReadExternalFields();
+
+        // readExternalFields(in.readObject ());
+        loadManagedInstance(code, false);
+        code.aload().setParam(0);
+        code.invokevirtual().setMethod("readExternalFields",
+            void.class, inargs);
+
+        code.vreturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+    }
+
+    private void addReadExternalFields() throws NoSuchMethodException {
+        Class<?>[] inargs = new Class[]{ ObjectInput.class };
+        BCMethod meth = _pc.declareMethod("readExternalFields", void.class, inargs);
+        meth.setAccessFlags(Constants.ACCESS_PROTECTED);
+        Exceptions exceps = meth.getExceptions(true);
+        exceps.addException(IOException.class);
+        exceps.addException(ClassNotFoundException.class);
+        Code code = meth.getCode(true);
+
+        Class<?> sup = _meta.getPCSuperclass();
+        if (sup != null) {
+            //add a call to super.readExternalFields()
+            loadManagedInstance(code, false);
+            code.aload().setParam(0);
+            code.invokespecial().setMethod(sup, "readExternalFields", void.class, inargs);
+        }
+
         // read managed fields
-        FieldMetaData[] fmds = _meta.getFields();
-        for (int i = 0; i < fmds.length; i++)
-            if (!fmds[i].isTransient())
+        FieldMetaData[] fmds = _meta.getDeclaredFields();
+        for (int i = 0; i < fmds.length; i++) {
+            if (!fmds[i].isTransient()) {
                 readExternal(code, fmds[i].getName(),
                     fmds[i].getDeclaredType(), fmds[i]);
+            }
+        }
 
         code.vreturn();
         code.calculateMaxStack();
@@ -4231,12 +4266,44 @@ public class PCEnhancer {
         if (go2 != null)
             go2.setTarget(code.nop());
 
-        // write managed fields
-        FieldMetaData[] fmds = _meta.getFields();
-        for (int i = 0; i < fmds.length; i++)
-            if (!fmds[i].isTransient())
+        addWriteExternalFields();
+
+        loadManagedInstance(code, false);
+        code.aload().setParam(0);
+        code.invokevirtual().setMethod("writeExternalFields",
+            void.class, outargs);
+
+        // return
+        code.vreturn();
+        code.calculateMaxStack();
+        code.calculateMaxLocals();
+    }
+
+
+    private void addWriteExternalFields()
+        throws NoSuchMethodException {
+        Class<?>[] outargs = new Class[]{ ObjectOutput.class };
+        BCMethod meth = _pc.declareMethod("writeExternalFields", void.class, outargs);
+        meth.setAccessFlags(Constants.ACCESS_PROTECTED);
+        Exceptions exceps = meth.getExceptions(true);
+        exceps.addException(IOException.class);
+        Code code = meth.getCode(true);
+
+        Class<?> sup = _meta.getPCSuperclass();
+        if (sup != null) {
+            // add a call to super.readExternalFields()
+            loadManagedInstance(code, false);
+            code.aload().setParam(0);
+            code.invokespecial().setMethod(sup, "writeExternalFields", void.class, outargs);
+        }
+
+        FieldMetaData[] fmds = _meta.getDeclaredFields();
+        for (int i = 0; i < fmds.length; i++) {
+            if (!fmds[i].isTransient()) {
                 writeExternal(code, fmds[i].getName(),
                     fmds[i].getDeclaredType(), fmds[i]);
+            }
+        }
 
         // return
         code.vreturn();
