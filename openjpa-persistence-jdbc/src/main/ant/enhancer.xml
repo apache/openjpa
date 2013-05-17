@@ -78,6 +78,8 @@
             <exclude name="**/detach/serializable/*.class" />
             <exclude name="**/xml/*.class" />
             <exclude name="**/Unenhanced*.class" />
+            <exclude name="org/apache/openjpa/enhance/EnhancedSuperClass.class"/>
+            <exclude name="org/apache/openjpa/enhance/EnhancedSubClass.class"/>
             <exclude name="**/AbstractUnenhanced*.class" />
             <exclude name="**/unenhanced/*.class" />
 			<exclude name="**/persistence/property/AccessModsEntity.class"/>
@@ -107,6 +109,16 @@
             <classpath refid="cp" />
             <fileset dir="${project.build.testOutputDirectory}">
 				<include name="**/persistence/property/AccessModsEntity.class"/>
+            </fileset>
+            <config log="${openjpa.Log}" />
+        </openjpac>
+        <!-- Enhance with DetachedStateField=true option -->
+        <openjpac>
+            <config propertiesFile="${project.build.testOutputDirectory}/org/apache/openjpa/enhance/persistence1.xml" />
+            <classpath refid="cp" />
+            <fileset dir="${project.build.testOutputDirectory}">
+                <include name="org/apache/openjpa/enhance/EnhancedSuperClass.class"/>
+                <include name="org/apache/openjpa/enhance/EnhancedSubClass.class"/>
             </fileset>
             <config log="${openjpa.Log}" />
         </openjpac>
