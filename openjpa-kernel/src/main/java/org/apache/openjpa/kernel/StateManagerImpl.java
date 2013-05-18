@@ -3402,4 +3402,8 @@ public class StateManagerImpl
     public void setPc(PersistenceCapable pc) {
         _pc = pc;
     }
+
+    public String toString() {
+    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId(); 
+    }
 }
