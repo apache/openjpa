@@ -490,7 +490,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(), delimit()));
+            setTargetIdentifier(col, join.referencedColumnName());
         return col;
     }
 
@@ -1713,12 +1713,31 @@ public class AnnotationPersistenceMappingParser
             col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit()));
         if (!StringUtils.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition())); 
-        if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(), delimit()));
+        String refColumnName = join.referencedColumnName();
+        if (!StringUtils.isEmpty(refColumnName)) {
+        	setTargetIdentifier(col, refColumnName);
+        }
         col.setNotNull(!join.nullable());
         col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable());
         return col;
+    }
+    
+    /**
+     * Sets reference column name of the given column taking into account
+     * that the given reference name that begins with a single quote represents
+     * special meaning of a constant join column and hence not to be delimited.  
+     * @param col
+     * @param refColumnName
+     * @see <a href="http://issues.apache.org/jira/browse/OPENJPA-1979">OPENJPA-1979</a>
+     */
+    private static final char SINGLE_QUOTE = '\'';
+    protected void setTargetIdentifier(Column col, String refColumnName) {
+    	if (refColumnName.charAt(0) == SINGLE_QUOTE) {
+    		col.setTargetIdentifier(DBIdentifier.newConstant(refColumnName));
+    	} else {
+    		col.setTargetIdentifier(DBIdentifier.newColumn(refColumnName, delimit()));
+    	}
     }
 
     /**
@@ -1796,14 +1815,14 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(XJoinColumn join, boolean delimit) {
+    private Column newColumn(XJoinColumn join, boolean delimit) {
         Column col = new Column();
         if (!StringUtils.isEmpty(join.name()))
             col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit));
         if (!StringUtils.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(), delimit));
+            setTargetIdentifier(col, join.referencedColumnName());
         if (!StringUtils.isEmpty(join.referencedAttributeName()))
             col.setTargetField(join.referencedAttributeName());
         col.setNotNull(!join.nullable());
@@ -1968,14 +1987,14 @@ public class AnnotationPersistenceMappingParser
     /**
      * Create a new schema column with information from the given annotation.
      */
-    private static Column newColumn(ElementJoinColumn join, boolean delimit) {
+    private Column newColumn(ElementJoinColumn join, boolean delimit) {
         Column col = new Column();
         if (!StringUtils.isEmpty(join.name()))
             col.setIdentifier(DBIdentifier.newColumn(join.name(), delimit));
         if (!StringUtils.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition()));
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(), delimit));
+            setTargetIdentifier(col, join.referencedColumnName());
         if (!StringUtils.isEmpty(join.referencedAttributeName()))
             col.setTargetField(join.referencedAttributeName());
         col.setNotNull(!join.nullable());
@@ -2063,7 +2082,7 @@ public class AnnotationPersistenceMappingParser
         if (!StringUtils.isEmpty(join.columnDefinition()))
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(join.columnDefinition())); 
         if (!StringUtils.isEmpty(join.referencedColumnName()))
-            col.setTargetIdentifier(DBIdentifier.newColumn(join.referencedColumnName(), delimit())); 
+            setTargetIdentifier(col, join.referencedColumnName()); 
         col.setNotNull(!join.nullable());
         col.setFlag(Column.FLAG_UNINSERTABLE, !join.insertable());
         col.setFlag(Column.FLAG_UNUPDATABLE, !join.updatable ());

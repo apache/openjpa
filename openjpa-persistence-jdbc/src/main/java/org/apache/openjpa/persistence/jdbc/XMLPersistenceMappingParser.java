@@ -1004,8 +1004,9 @@ public class XMLPersistenceMappingParser
         if (val != null)
             col.setIdentifier(DBIdentifier.newColumn(val, delimit()));
         val = attrs.getValue("referenced-column-name");
-        if (val != null)
-            col.setTargetIdentifier(DBIdentifier.newColumn(val, delimit()));
+        if (val != null) {
+            setTargetIdentifier(col, val);
+        }
         val = attrs.getValue("column-definition");
         if (val != null)
             col.setTypeIdentifier(DBIdentifier.newColumnDefinition(val));
@@ -1041,6 +1042,23 @@ public class XMLPersistenceMappingParser
         return col;
     }
 
+    /**
+     * Sets reference column name of the given column taking into account
+     * that the given reference name that begins with a single quote represents
+     * special meaning of a constant join column and hence not to be delimited.  
+     * @param col
+     * @param refColumnName
+     * @see <a href="http://issues.apache.org/jira/browse/OPENJPA-1979">OPENJPA-1979</a>
+     */
+    private static final char SINGLE_QUOTE = '\'';
+    protected void setTargetIdentifier(Column col, String refColumnName) {
+    	if (refColumnName.charAt(0) == SINGLE_QUOTE) {
+    		col.setTargetIdentifier(DBIdentifier.newConstant(refColumnName));
+    	} else {
+    		col.setTargetIdentifier(DBIdentifier.newColumn(refColumnName, delimit()));
+    	}
+    }
+    
     /**
      * Parse collectionTable.
      */
