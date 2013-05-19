@@ -3513,4 +3513,8 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
             getDirty().clear(index);
         }
     }
+
+    public String toString() {
+    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId(); 
+    }
 }

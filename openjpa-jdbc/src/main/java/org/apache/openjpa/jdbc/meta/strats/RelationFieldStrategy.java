@@ -57,6 +57,7 @@ import org.apache.openjpa.jdbc.sql.SelectExecutor;
 import org.apache.openjpa.jdbc.sql.Union;
 import org.apache.openjpa.kernel.LockManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -268,13 +269,26 @@ public class RelationFieldStrategy
         throws SQLException {
         if (field.getMappedBy() != null)
             return;
-
+        Row row = null;
         OpenJPAStateManager rel = RelationStrategies.getStateManager
             (sm.fetchObjectField(field.getIndex()), store.getContext());
-        if (field.getJoinDirection() == field.JOIN_INVERSE)
+        // Checks if the field being inserted is a MapsId field and 
+        // the related object is using auto-assigned identity
+        // If the above conditions are satisfied and the related instance has
+        // already been inserted in the RowManger, then returns without further
+        // processing
+        if (sm instanceof StateManagerImpl) {
+	        List<FieldMetaData> mappedByIdFields = ((StateManagerImpl)sm).getMappedByIdFields();
+	        if (rel != null && ((ClassMapping)rel.getMetaData()).getTable().getAutoAssignedColumns().length > 0
+	        &&  mappedByIdFields!= null && mappedByIdFields.contains(field)) {
+	        	row = rm.getRow(((ClassMapping)rel.getMetaData()).getTable(), Row.ACTION_INSERT, rel, false); 
+	        	if (row != null) return;
+	        }
+        }
+        if (field.getJoinDirection() == FieldMapping.JOIN_INVERSE)
             updateInverse(sm, rel, store, rm);
         else {
-            Row row = field.getRow(sm, store, rm, Row.ACTION_INSERT);
+            if (row == null) row =  field.getRow(sm, store, rm, Row.ACTION_INSERT);
             if (row != null && !field.isBiMTo1JT()) {
                 field.setForeignKey(row, rel);
                 // this is for bi-directional maps, the key and value of the 
