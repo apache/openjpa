@@ -3474,4 +3474,7 @@ public class StateManagerImpl
         _broker = ctx;
     }
 
+    public String toString() {
+    	return "SM[" + _meta.getDescribedType().getSimpleName() + "]:" + getObjectId(); 
+    }
 }
