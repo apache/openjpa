@@ -897,6 +897,7 @@ public class RowImpl
                 idx++;
             }
         }
+        setFlushed(true);
     }
 
     /**
