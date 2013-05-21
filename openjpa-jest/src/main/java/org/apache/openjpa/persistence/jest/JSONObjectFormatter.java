@@ -38,6 +38,8 @@ import java.util.Set;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Metamodel;
 
+import org.apache.openjpa.json.JSON;
+import org.apache.openjpa.json.JSONObject;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.meta.FieldMetaData;
