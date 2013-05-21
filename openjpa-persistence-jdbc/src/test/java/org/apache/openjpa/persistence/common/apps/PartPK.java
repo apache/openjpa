@@ -26,11 +26,11 @@ import javax.persistence.Embeddable;
 public class PartPK implements Serializable {
     /*Textile Id*/
 
-    @Column(name="ID_TXE", length=4)
+    @Column(name="ID_TXE")
     private Integer textileId;
 
     /*Part Number*/
-    @Column(name="NU_PT", length=4)
+    @Column(name="NU_PT")
     private Integer partNumber;
 
     public PartPK() {
