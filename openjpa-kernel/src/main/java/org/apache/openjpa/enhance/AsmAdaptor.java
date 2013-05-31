@@ -59,13 +59,18 @@ public final class AsmAdaptor {
     static {
         // try the "real" asm first, then the others
         tryClass("org.objectweb.asm.");
+        tryClass("org.apache.xbean.asm4.");
         tryClass("org.apache.xbean.asm.");
         tryClass("org.springframework.asm.");
 
         // get needed stuff
         try {
             COMPUTE_FRAMES = cwClass.getField("COMPUTE_FRAMES").getInt(null);
-            classReaderAccept = crClass.getMethod("accept", cwClass.getInterfaces()[0], int.class);
+            if (cwClass.getInterfaces().length > 0) { // ASM 3
+                classReaderAccept = crClass.getMethod("accept", cwClass.getInterfaces()[0], int.class);
+            } else { // ASM 4
+                classReaderAccept = crClass.getMethod("accept", cwClass.getSuperclass(), int.class);
+            }
             classReaderConstructor = crClass.getConstructor(InputStream.class);
             classWriterConstructor = cwClass.getConstructor(int.class);
             classWritertoByteArray = cwClass.getMethod("toByteArray");
