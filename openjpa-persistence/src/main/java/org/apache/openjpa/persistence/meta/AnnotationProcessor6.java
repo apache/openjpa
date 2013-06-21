@@ -100,6 +100,7 @@ import org.apache.openjpa.persistence.util.SourceCode;
                     "openjpa.header",
                     "openjpa.metamodel"
                   })
+@SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
