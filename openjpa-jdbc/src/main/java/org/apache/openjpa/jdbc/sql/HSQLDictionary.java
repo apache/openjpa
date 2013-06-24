@@ -50,6 +50,7 @@ public class HSQLDictionary extends DBDictionary {
     public boolean cacheTables = false;
 
     private int dbMajorVersion;
+    private int dbMinorVersion;
 
     private SQLBuffer _oneBuffer = new SQLBuffer(this).append("1");
 
@@ -114,6 +115,9 @@ public class HSQLDictionary extends DBDictionary {
             // but doesn't support it for columns references ("schema.table.column")
             useSchemaName = false;
         }
+        if (dbMajorVersion > 1 && dbMinorVersion > 0) {
+            nextSequenceQuery += " LIMIT 1";
+        }
     }
 
     /**
@@ -126,11 +130,13 @@ public class HSQLDictionary extends DBDictionary {
 
         if (isJDBC3) {
             dbMajorVersion = metaData.getDatabaseMajorVersion();
+            dbMinorVersion = metaData.getDatabaseMinorVersion();
         } else {
             // String is like "2.0.0"
             String productVersion = metaData.getDatabaseProductVersion();
             String[] version = productVersion.split("\\.") ;
             dbMajorVersion = Integer.parseInt(version[0]) ;
+            dbMinorVersion = Integer.parseInt(version[1]);
         }
     }
 
