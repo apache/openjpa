@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,7 +28,6 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
-import org.hsqldb.Trace;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -51,6 +51,7 @@ public class HSQLDictionary extends DBDictionary {
 
     private int dbMajorVersion;
     private int dbMinorVersion;
+    private int violation_of_unique_index_or_constraint;
 
     private SQLBuffer _oneBuffer = new SQLBuffer(this).append("1");
 
@@ -117,6 +118,25 @@ public class HSQLDictionary extends DBDictionary {
         }
         if (dbMajorVersion > 1 && dbMinorVersion > 0) {
             nextSequenceQuery += " LIMIT 1";
+        }
+        String packageName;
+        String fieldName;
+        if (dbMajorVersion > 1) {
+            // default value for "X_23505"
+            violation_of_unique_index_or_constraint = 104;
+            packageName = "org.hsqldb.error.ErrorCode";
+            fieldName = "X_23505";
+        } else {
+            // default value for "VIOLATION_OF_UNIQUE_INDEX"
+            violation_of_unique_index_or_constraint = 9; 
+            packageName = "org.hsqldb.Trace";
+            fieldName = "VIOLATION_OF_UNIQUE_INDEX";
+        }
+        try {
+            Class<?> cls = Class.forName(packageName);
+            Field fld = cls.getField(fieldName);
+            violation_of_unique_index_or_constraint = fld.getInt(null);
+        } catch (Exception e) {
         }
     }
 
@@ -381,7 +401,7 @@ public class HSQLDictionary extends DBDictionary {
         Object failed) {
         OpenJPAException ke = super.newStoreException(msg, causes, failed);
         if (ke instanceof ReferentialIntegrityException
-            && causes[0].getErrorCode() == -Trace.VIOLATION_OF_UNIQUE_INDEX) {
+            && causes[0].getErrorCode() == -violation_of_unique_index_or_constraint) {
             ((ReferentialIntegrityException) ke).setIntegrityViolation
                 (ReferentialIntegrityException.IV_UNIQUE);
         }
