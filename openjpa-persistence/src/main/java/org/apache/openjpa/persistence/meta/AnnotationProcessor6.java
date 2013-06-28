@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.persistence.PersistenceMetaDataFactory;
@@ -98,7 +100,8 @@ import org.apache.openjpa.persistence.util.SourceCode;
                     "openjpa.source",
                     "openjpa.naming",
                     "openjpa.header",
-                    "openjpa.metamodel"
+                    "openjpa.metamodel",
+                    "openjpa.Compatibility"
                   })
 @SupportedSourceVersion(RELEASE_6)
 
@@ -109,8 +112,11 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private CompileTimeLogger logger;
     private String header;
     private boolean active;
+    private Map<String, String> compatibilityMap = new HashMap<String, String>();
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
 
+    private boolean compat_useListAttributeForArrays = true;
+    
     /**
      * Category of members as per JPA 2.0 type system.
      * 
@@ -191,11 +197,17 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         if (!active)
             return;
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, _loc.get("mmg-tool-banner").toString());
-        logger = new CompileTimeLogger(processingEnv, getOptionValue("openjpa.log"));
+        logger = new CompileTimeLogger(processingEnv, getOptionValue("openjpa.log"));      
         setSourceVersion();
         setNamingPolicy();
         setHeader();
         handler = new SourceAnnotationHandler(processingEnv, logger);
+        
+        // Process Compatibility Options
+        compatibilityMap = processCompatibilityOptions(getOptionValue("openjpa.Compatibility"));
+        if (compatibilityMap.keySet().contains("UseListAttributeForArrays")) {
+            compat_useListAttributeForArrays = Boolean.parseBoolean(compatibilityMap.get("UseListAttributeForArrays"));
+        }
     }
     
     /**
@@ -243,7 +255,10 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             Set<? extends Element> members = handler.getPersistentMembers(e);
             
             for (Element m : members) {
-                boolean isPersistentCollection = m.getAnnotation(PersistentCollection.class) != null; 
+                boolean isPersistentCollection = 
+                        (compat_useListAttributeForArrays == true) 
+                            ? true 
+                            : m.getAnnotation(PersistentCollection.class) != null; 
                 
                 TypeMirror decl  = handler.getDeclaredType(m);
                 String fieldName = handler.getPersistentMemberName(m);
@@ -381,5 +396,88 @@ public class AnnotationProcessor6 extends AbstractProcessor {
                 return options.get(key);
         }
         return null;
+    }
+    
+    private static Map<String, String> processCompatibilityOptions(String compatArgs) {
+        HashMap<String, String> compatOptionsMap = new HashMap<String, String>();
+        
+        if (StringUtils.isEmpty(compatArgs)) {
+            return compatOptionsMap;
+        }
+        
+        int start = 0, pos = 0, limit = compatArgs.length();
+        Integer subConfigBoundaryDepth = null;
+        char[] optionsCharArr = compatArgs.toCharArray();
+        
+        for (pos = 0; pos < limit; pos++) {
+            // Special processing needed for augmented parameters bounded in () markers
+            if (optionsCharArr[pos] == '(') {
+                if (subConfigBoundaryDepth == null) {
+                    subConfigBoundaryDepth = new Integer(1);
+                } else {
+                    subConfigBoundaryDepth = new Integer(subConfigBoundaryDepth.intValue() + 1);
+                    continue;
+                }
+            }
+            
+            if (optionsCharArr[pos] == ')') {
+                if (subConfigBoundaryDepth != null) {
+                    int level = subConfigBoundaryDepth.intValue() - 1;
+                    
+                    if (level == 0) {
+                        subConfigBoundaryDepth = null;
+                    } else {
+                        subConfigBoundaryDepth = new Integer(level);
+                    }
+                }             
+
+                continue;
+            }
+            
+            // ',' symbols not in augmented parameter boundaries are compatiblity option terminator tokens.
+            if (optionsCharArr[pos] == ',' && subConfigBoundaryDepth == null) {
+                if (pos == start) {
+                    // Ignore empty option entries
+                    start = pos + 1;
+                    continue;
+                }
+                
+                String compatOptionEntry = compatArgs.substring(start, pos);
+                start = pos + 1;
+                
+                int nameValueMarkerIndex = compatOptionEntry.indexOf('=');
+                if (nameValueMarkerIndex == -1 || (nameValueMarkerIndex+1) == limit) {
+                    String name = (compatOptionEntry.endsWith("=") 
+                            ? compatOptionEntry.substring(0,  compatOptionEntry.length() - 1)
+                            : compatOptionEntry);
+                    compatOptionsMap.put(name, "true");
+                } else {
+                    String name = compatOptionEntry.substring(0, nameValueMarkerIndex);
+                    String value = compatOptionEntry.substring(nameValueMarkerIndex + 1);
+                    compatOptionsMap.put(name, value);
+                }
+            }
+        }
+        
+        // Ran to the end of the string, process the remainder of the text
+        if (start < limit) {
+            String compatOptionEntry = compatArgs.substring(start, pos);
+            start = pos + 1;
+            
+            int nameValueMarkerIndex = subConfigBoundaryDepth == null ? compatOptionEntry.indexOf('=') : -1;
+            if (nameValueMarkerIndex == -1 || (nameValueMarkerIndex+1) == limit) {
+                String name = (compatOptionEntry.endsWith("=") 
+                        ? compatOptionEntry.substring(0,  compatOptionEntry.length() - 1)
+                        : compatOptionEntry);
+                compatOptionsMap.put(name.trim(), "true");
+            } else {
+                String name = compatOptionEntry.substring(0, nameValueMarkerIndex);
+                String value = compatOptionEntry.substring(nameValueMarkerIndex + 1);
+                compatOptionsMap.put(name.trim(), (value == null) ? "" : value.trim());
+            }
+        }
+        
+        
+        return compatOptionsMap;
     }
 }
