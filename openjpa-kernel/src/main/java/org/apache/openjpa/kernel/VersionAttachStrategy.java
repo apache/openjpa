@@ -77,7 +77,11 @@ class VersionAttachStrategy
             meta.getRepository().getConfiguration());
 
         boolean embedded = ownerMeta != null && ownerMeta.isEmbeddedPC();
-        boolean isNew = !broker.isDetached(pc);
+        
+        // OJ-2405: If toAttach has a StateManagerImpl, then it is important to check if it
+        // is being managed by different broker.  If it is, then it should not be
+        // considered "new".
+        boolean isNew = !broker.isDetached(pc) && !isManagedByAnotherPCtx(pc, broker);
         Object version = null;
         StateManagerImpl sm;
 
@@ -406,6 +410,20 @@ class VersionAttachStrategy
             if (pks[i].getValueStrategy() != ValueStrategies.NONE)
                 return true;
         }
+        return false;
+    }
+    
+    private static boolean isManagedByAnotherPCtx(PersistenceCapable pc, BrokerImpl broker) {        
+        StateManager sm = pc.pcGetStateManager();
+        if (sm != null && sm instanceof StateManagerImpl) {
+            StateManagerImpl smi = (StateManagerImpl) sm;
+            Broker associatedBroker = smi.getBroker(); 
+            
+            if (broker != associatedBroker) {
+                return true;
+            }
+        }
+        
         return false;
     }
 }
