@@ -28,7 +28,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestEntityAsIdentityFields extends SingleEMFTestCase {    
     public void setUp() {
-        setUp(
+        setUp( CLEAR_TABLES,
                 Account.class, AccountGroup.class, Person.class);
     }
     
