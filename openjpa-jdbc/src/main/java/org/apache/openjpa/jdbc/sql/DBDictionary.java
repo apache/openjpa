@@ -5665,5 +5665,8 @@ public class DBDictionary
         return s == null ? "" : s;
     }
 
+	public int applyRange(Select select, int count) {
+		return count;
+	}
 
 }

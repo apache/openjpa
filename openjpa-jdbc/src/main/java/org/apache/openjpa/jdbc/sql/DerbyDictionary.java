@@ -199,4 +199,28 @@ public class DerbyDictionary
         return super.isFatalException(subtype, ex);
     }
     
+	/**
+	 * Applies range calculation on the actual number of rows selected by a
+	 * {@code COUNT(*)} query. A range query may use either only the limit or
+	 * both offset and limit based on database dictionary support and
+	 * accordingly the number of rows in the result set needs to be modified.
+	 * 
+	 * @param select
+	 * @param count
+	 * @return
+	 */
+
+	public int applyRange(Select select, int count) {
+		long start = select.getStartIndex();
+		long end = select.getEndIndex();
+		if (supportsSelectStartIndex) {
+			if (start > 0)
+				count -= start;
+			if (end != Long.MAX_VALUE) {
+				long size = end - start;
+				count = (int) Math.min(count, size);
+			}
+		}
+		return count;
+	}
 }
