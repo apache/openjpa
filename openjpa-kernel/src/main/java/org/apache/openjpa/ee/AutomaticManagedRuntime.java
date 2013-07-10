@@ -74,16 +74,16 @@ public class AutomaticManagedRuntime extends AbstractManagedRuntime
             + "getTransactionManagerImpl", // borland
     };
 
-    private static final ManagedRuntime REGISTRY;
-    private static final WLSManagedRuntime WLS;
-    private static final SunOneManagedRuntime SUNONE;
-    private static final WASManagedRuntime WAS;
-    private static final WASRegistryManagedRuntime WAS_REG;
+    private final ManagedRuntime REGISTRY;
+    private final WLSManagedRuntime WLS;
+    private final SunOneManagedRuntime SUNONE;
+    private final WASManagedRuntime WAS;
+    private final WASRegistryManagedRuntime WAS_REG;
 
     private static Localizer _loc = Localizer.forPackage
         (AutomaticManagedRuntime.class);
 
-    static {
+    public AutomaticManagedRuntime() {
         ManagedRuntime mr = null;
 
         mr = null;

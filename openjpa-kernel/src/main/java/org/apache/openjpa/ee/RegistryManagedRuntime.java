@@ -101,7 +101,7 @@ public class RegistryManagedRuntime
      *  
      *  @author  Marc Prud'hommeaux
      */
-    public static class TransactionManagerRegistryFacade
+    public class TransactionManagerRegistryFacade
         implements TransactionManager, Transaction {
         private final TransactionSynchronizationRegistry _registry;
 
