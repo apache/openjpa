@@ -25,6 +25,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.persistence.jdbc.query.domain.TimeKeeper;
@@ -47,9 +48,11 @@ public class TestHintedQuery extends SQLListenerTestCase {
         em.getTransaction().commit();
 
         String jpql = "SELECT tk FROM TimeKeeper tk";
+        String mariadbHint = "SQL_NO_CACHE";
         String mysqlHint = "SQL_NO_CACHE";
         String oracleHint = "/*+ first_rows(100) */";
         Query query = em.createQuery(jpql);
+        query.setHint(MariaDBDictionary.SELECT_HINT, mariadbHint);
         query.setHint(MySQLDictionary.SELECT_HINT, mysqlHint);
         query.setHint(OracleDictionary.SELECT_HINT, oracleHint);
         List keepers = query.getResultList();
@@ -59,6 +62,10 @@ public class TestHintedQuery extends SQLListenerTestCase {
         // Other dictionaries should ignore them.
         DBDictionary dict = ((JDBCConfiguration) emf.getConfiguration())
             .getDBDictionaryInstance();
+        if (dict instanceof MariaDBDictionary) {
+            assertContainsSQL("SELECT " + mariadbHint + " ");
+            return;
+        }
         if (dict instanceof MySQLDictionary) {
             assertContainsSQL("SELECT " + mysqlHint + " ");
             return;
@@ -67,6 +74,7 @@ public class TestHintedQuery extends SQLListenerTestCase {
             assertContainsSQL("SELECT " + oracleHint + " ");
             return;
         }
+        assertNotSQL(".*" + mariadbHint + ".*");
         assertNotSQL(".*" + mysqlHint + ".*");
         assertNotSQL(".*" + oracleHint + ".*");
     }

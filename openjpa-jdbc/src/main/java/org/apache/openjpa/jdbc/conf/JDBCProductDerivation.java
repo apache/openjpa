@@ -30,6 +30,7 @@ import org.apache.openjpa.conf.BrokerFactoryValue;
 import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.jdbc.kernel.JDBCBrokerFactory;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
@@ -74,6 +75,7 @@ public class JDBCProductDerivation extends AbstractProductDerivation
         _hints.add(PREFIX + ".ResultSetType");
         _hints.add(PREFIX + ".SubclassFetchMode");
         
+        _hints.add(MariaDBDictionary.SELECT_HINT);
         _hints.add(MySQLDictionary.SELECT_HINT);
         _hints.add(OracleDictionary.SELECT_HINT);
         

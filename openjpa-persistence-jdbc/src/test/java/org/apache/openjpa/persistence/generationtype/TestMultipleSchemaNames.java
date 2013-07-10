@@ -28,6 +28,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.H2Dictionary;
 import org.apache.openjpa.jdbc.sql.HSQLDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.jdbc.sql.PostgresDictionary;
@@ -46,6 +47,7 @@ public class TestMultipleSchemaNames extends SingleEMFTestCase {
         // Need to skip tests on some databases.
         // See createSchemas() comment at the bottom
         setUnsupportedDatabases(
+                MariaDBDictionary.class,
                 MySQLDictionary.class,
                 OracleDictionary.class,
                 SQLServerDictionary.class, 

@@ -23,6 +23,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -41,7 +42,7 @@ public class TestBlobColumnType extends SingleEMFTestCase {
         // need to do this without BlobColumnEntity.class since it contains a column definition which might
         // not work with all databases. 
         super.setUp((Object) null);
-        if (!(getDBDictionary() instanceof MySQLDictionary)) {
+        if (!(getDBDictionary() instanceof MySQLDictionary || getDBDictionary() instanceof MariaDBDictionary)) {
             // normal teardown will take care of the EMF.
             return;
         }

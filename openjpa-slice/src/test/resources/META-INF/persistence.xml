@@ -156,6 +156,29 @@
       </properties>
    </persistence-unit>
    
+   <persistence-unit name="mariadb">
+      <properties>
+         <property name="openjpa.BrokerFactory" value="slice"/>
+         <property name="openjpa.ConnectionDriverName" value="org.mariadb.jdbc.Driver"/>
+
+         <property name="openjpa.slice.Names" value="One,Two"/>
+         <property name="openjpa.slice.DistributionPolicy" value="org.apache.openjpa.slice.policy.UserDistributionPolicy"/>
+         
+         <property name="openjpa.ConnectionUserName"        value="root"/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.slice.One.ConnectionDriverName" value="org.mariadb.jdbc.Driver"/>
+         <property name="openjpa.slice.One.ConnectionURL" value="jdbc:mysql://localhost/slice1"/>
+         <property name="openjpa.slice.Two.ConnectionDriverName" value="org.mariadb.jdbc.Driver"/>
+         <property name="openjpa.slice.Two.ConnectionURL" value="jdbc:mysql://localhost/slice2"/>
+         
+         <property name="openjpa.Multithreaded" value="false"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
+         <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+            <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+      </properties>
+   </persistence-unit>
+   
    <persistence-unit name="replication">
    	  <class>org.apache.openjpa.slice.ReplicatedParent</class>
    	  <class>org.apache.openjpa.slice.ReplicatedChild</class>
@@ -231,6 +254,27 @@
       </properties>
    </persistence-unit>
    
+   <persistence-unit name="car.mariadb">
+      <properties>
+         <property name="openjpa.BrokerFactory" value="slice"/>
+         <property name="openjpa.ConnectionDriverName" value="org.mariadb.jdbc.Driver"/>
+
+         <property name="openjpa.slice.Names" value="BMW,Honda,Ford"/>
+         
+         <property name="openjpa.ConnectionUserName"        value="root"/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.slice.BMW.ConnectionURL" value="jdbc:mysql://localhost/bmw"/>
+         <property name="openjpa.slice.Honda.ConnectionURL" value="jdbc:mysql://localhost/ford"/>
+         <property name="openjpa.slice.Ford.ConnectionURL" value="jdbc:mysql://localhost/honda"/>
+         
+         <property name="openjpa.Multithreaded" value="false"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=native)"/>
+         <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+      </properties>
+   </persistence-unit>
+   
    <persistence-unit name="perf.mysql.slice">
    		<class>org.apache.openjpa.slice.Person</class>
    		<class>org.apache.openjpa.slice.Address</class>
@@ -270,6 +314,53 @@
          <property name="openjpa.ConnectionProperties" value="DriverClassName=com.mysql.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxActive=4"/>
          
          <property name="openjpa.jdbc.DBDictionary"        value="mysql"/>
+         <property name="openjpa.Multithreaded" value="false"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
+         <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+      </properties>
+   </persistence-unit>
+   
+   <persistence-unit name="perf.mariadb.slice">
+        <class>org.apache.openjpa.slice.Person</class>
+        <class>org.apache.openjpa.slice.Address</class>
+        <class>org.apache.openjpa.slice.Country</class>
+        
+      <properties>
+         <property name="openjpa.BrokerFactory" value="slice"/>
+         <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
+
+         <property name="openjpa.slice.Names" value="S1,S2,S3,S4"/>
+         
+         <property name="openjpa.ConnectionUserName"        value="root"/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.slice.S1.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S1,MaxActive=4"/>
+         <property name="openjpa.slice.S2.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S2,MaxActive=4"/>
+         <property name="openjpa.slice.S3.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S3,MaxActive=4"/>
+         <property name="openjpa.slice.S4.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S4,MaxActive=4"/>
+         
+         <property name="openjpa.jdbc.DBDictionary"        value="mariadb"/>
+         <property name="openjpa.Multithreaded" value="false"/>
+         <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
+         <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>
+         <property name="openjpa.RuntimeUnenhancedClasses" value="unsupported"/>
+         <property name="openjpa.DynamicEnhancementAgent"   value="false"/>
+      </properties>
+   </persistence-unit>
+   <persistence-unit name="perf.mariadb.mono">
+        <class>org.apache.openjpa.slice.Person</class>
+        <class>org.apache.openjpa.slice.Address</class>
+        <class>org.apache.openjpa.slice.Country</class>
+        
+      <properties>
+         <property name="openjpa.ConnectionDriverName" value="org.apache.commons.dbcp.BasicDataSource"/>
+         
+         <property name="openjpa.ConnectionUserName"        value="root"/>
+         <property name="openjpa.ConnectionPassword"        value=""/>
+         <property name="openjpa.ConnectionProperties" value="DriverClassName=org.mariadb.jdbc.Driver,Url=jdbc:mysql://localhost/S,MaxActive=4"/>
+         
+         <property name="openjpa.jdbc.DBDictionary"        value="mariadb"/>
          <property name="openjpa.Multithreaded" value="false"/>
          <property name="openjpa.jdbc.SynchronizeMappings" value="refresh"/>
          <property name="openjpa.jdbc.MappingDefaults" value="DefaultMissingInfo=true"/>

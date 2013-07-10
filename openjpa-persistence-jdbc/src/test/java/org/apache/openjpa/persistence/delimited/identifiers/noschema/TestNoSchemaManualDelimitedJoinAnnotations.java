@@ -24,6 +24,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
@@ -42,6 +43,7 @@ public class TestNoSchemaManualDelimitedJoinAnnotations extends SQLListenerTestC
     @Override
     public void setUp() throws Exception {
         
+        setUnsupportedDatabases(MariaDBDictionary.class);
         setUnsupportedDatabases(MySQLDictionary.class);
         if (isTestsDisabled())
             return;

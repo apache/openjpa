@@ -118,6 +118,35 @@
                 <dbcp.minIdle>0</dbcp.minIdle>
             </properties>
         </profile>
+        
+        <!-- Profile for testing with MariaDB DB -->
+        <profile>
+            <id>test-mariadb</id>
+            <activation>
+                <property>
+                    <name>test-mariadb</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>mariadb</groupId>
+                    <artifactId>mariadb-connector-java</artifactId>
+                    <version>${mariadb.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <connection.driver.name>org.mariadb.jdbc.Driver</connection.driver.name>
+                <!--<connection.url>jdbc:mysql://localhost/OPENJPA</connection.url>-->
+                <connection.url>${openjpa.mariadb.url}</connection.url>
+                <connection.username>${openjpa.mariadb.username}</connection.username>
+                <connection.password>${openjpa.mariadb.password}</connection.password>
+                <jdbc.DBDictionary />
+                <!-- DBCP overrides for MariaDB testing -->
+                <dbcp.maxIdle>0</dbcp.maxIdle>
+                <dbcp.minIdle>0</dbcp.minIdle>
+            </properties>
+        </profile>
 
         <!-- Profile for testing with PostgreSQL DB -->
         <profile>

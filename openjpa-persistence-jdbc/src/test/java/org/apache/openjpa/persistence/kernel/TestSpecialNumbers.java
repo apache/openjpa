@@ -122,6 +122,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POSTGRESQL,
                 AbstractTestCase.Platform.DB2,
+                AbstractTestCase.Platform.MARIADB,
                 AbstractTestCase.Platform.MYSQL,
                 AbstractTestCase.Platform.DERBY), 494, e,
                 "Some datastores cannot store Float.MAX_VALUE");
@@ -142,7 +143,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
                 AbstractTestCase.Platform.DERBY), 494, e,
                 "Some databases cannot store Float.MIN_VALUE");
         } catch (AssertionFailedError e) {
-            bug(EnumSet.of(AbstractTestCase.Platform.MYSQL,
+            bug(EnumSet.of(AbstractTestCase.Platform.MARIADB, AbstractTestCase.Platform.MYSQL,
                 AbstractTestCase.Platform.SQLSERVER), 494, e,
                 "Some databases cannot store Float.MIN_VALUE");
         }
@@ -167,6 +168,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.POSTGRESQL,
+                AbstractTestCase.Platform.MARIADB,
                 AbstractTestCase.Platform.MYSQL,
                 AbstractTestCase.Platform.DB2,
                 AbstractTestCase.Platform.ORACLE,
@@ -186,6 +188,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
                 AbstractTestCase.Platform.POSTGRESQL,
+                AbstractTestCase.Platform.MARIADB,
                 AbstractTestCase.Platform.MYSQL,
                 AbstractTestCase.Platform.DB2,
                 AbstractTestCase.Platform.ORACLE,
@@ -204,6 +207,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
                 new Double(Double.MAX_VALUE));
         } catch (Exception e) {
             bug(EnumSet.of(AbstractTestCase.Platform.POINTBASE,
+                AbstractTestCase.Platform.MARIADB,
                 AbstractTestCase.Platform.MYSQL,
                 AbstractTestCase.Platform.ORACLE,
                 AbstractTestCase.Platform.POSTGRESQL,
@@ -231,7 +235,7 @@ public class TestSpecialNumbers extends BaseKernelTest {
                 AbstractTestCase.Platform.DERBY), 494, e,
                 "Some databases cannot store Double.MIN_VALUE");
         } catch (AssertionFailedError e) {
-            bug(AbstractTestCase.Platform.MYSQL, 494, e,
+            bug(EnumSet.of(AbstractTestCase.Platform.MARIADB, AbstractTestCase.Platform.MYSQL), 494, e,
                 "Some databases cannot store Double.MIN_VALUE");
         }
     }

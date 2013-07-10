@@ -74,7 +74,7 @@ public class DBDictionaryFactory {
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
         String dclass = dictionaryClassForString(getProtocol(url), conf);
-        if (dclass == null)
+        if (dclass == null || (dclass != null && dclass.contains("MySQL")))
             dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
             return null;
@@ -90,11 +90,13 @@ public class DBDictionaryFactory {
         try {
             conn = ds.getConnection();
             DatabaseMetaData meta = conn.getMetaData();
-            String dclass = dictionaryClassForString(meta
-                .getDatabaseProductName(), conf);
+            String dclass = dictionaryClassForString(meta.getDatabaseProductName(), conf);            
             if (dclass == null)
-                dclass = dictionaryClassForString(getProtocol(meta.getURL()),
-                    conf);
+                dclass = dictionaryClassForString(getProtocol(meta.getURL()), conf);
+            if (dclass != null && dclass.contains("MySQL")) {
+                // MariaDB returns "MySQL" for product name, need to verify by looking at product version.
+                dclass = dictionaryClassForString(meta.getDatabaseProductVersion(), conf);
+            }
             if (dclass == null)
                 dclass = DBDictionary.class.getName();
             return newDBDictionary(conf, dclass, props, conn);
@@ -225,6 +227,8 @@ public class DBDictionaryFactory {
             return dbdictionaryPlugin.unalias("sqlserver");
         if (prod.indexOf("jsqlconnect") != -1)
             return dbdictionaryPlugin.unalias("sqlserver");
+        if (prod.indexOf("mariadb") != -1)
+            return dbdictionaryPlugin.unalias("mariadb");
         if (prod.indexOf("mysql") != -1)
             return dbdictionaryPlugin.unalias("mysql");
         if (prod.indexOf("postgres") != -1)

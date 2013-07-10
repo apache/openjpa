@@ -195,7 +195,7 @@ public class TestSpecialNumbers2 extends BaseKernelTest {
                 AbstractTestCase.Platform.DERBY), 494, e,
                 "Some databases cannot store Double.MIN_VALUE");
         } catch (AssertionFailedError e) {
-            bug(AbstractTestCase.Platform.MYSQL, 494, e,
+            bug(EnumSet.of(AbstractTestCase.Platform.MARIADB, AbstractTestCase.Platform.MYSQL), 494, e,
                     "Some databases cannot store Double.MIN_VALUE");
         }
     }

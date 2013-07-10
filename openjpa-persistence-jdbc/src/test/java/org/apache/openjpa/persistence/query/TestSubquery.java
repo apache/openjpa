@@ -26,6 +26,7 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.query.Customer.CreditRating;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
@@ -255,7 +256,7 @@ public class TestSubquery
         // this at the bottom of the UPDATE documentation(http://dev.mysql.com/doc/refman/5.0/en/update.html): 
         // Currently, you cannot update a table and select from the same table in a subquery.
         
-        if (dict instanceof MySQLDictionary)
+        if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary)
             return;
         
         em.getTransaction().begin();

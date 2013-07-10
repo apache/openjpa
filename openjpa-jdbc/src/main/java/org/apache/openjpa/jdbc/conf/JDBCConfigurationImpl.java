@@ -212,6 +212,7 @@ public class JDBCConfigurationImpl
             "informix", "org.apache.openjpa.jdbc.sql.InformixDictionary",
             "ingres", "org.apache.openjpa.jdbc.sql.IngresDictionary",
             "jdatastore", "org.apache.openjpa.jdbc.sql.JDataStoreDictionary",
+            "mariadb", "org.apache.openjpa.jdbc.sql.MariaDBDictionary",
             "mysql", "org.apache.openjpa.jdbc.sql.MySQLDictionary",
             "oracle", "org.apache.openjpa.jdbc.sql.OracleDictionary",
             "pointbase", "org.apache.openjpa.jdbc.sql.PointbaseDictionary",

@@ -106,6 +106,7 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
         EMPRESS,
         HYPERSONIC,
         POSTGRESQL,
+        MARIADB,
         MYSQL,
         SQLSERVER,
         DB2,

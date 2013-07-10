@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.jdbc.SQLSniffer;
@@ -78,7 +79,7 @@ public class TestNamedUniqueConstraint extends SQLListenerTestCase {
     }
 
     private String getUniqueConstraint(String unique) {
-        if (dict instanceof MySQLDictionary) {
+        if (dict instanceof MySQLDictionary || dict instanceof MariaDBDictionary) {
             //CREATE TABLE N_UNIQUE_A (aid INTEGER NOT NULL, f1 INTEGER NOT NULL, f2 INTEGER NOT NULL, 
             //f3 INTEGER NOT NULL, f4 INTEGER NOT NULL, f5 INTEGER, f6 INTEGER, PRIMARY KEY (aid), 
             //UNIQUE U_N_UNQU__F1 (f1), 

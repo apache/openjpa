@@ -124,7 +124,7 @@ public abstract class GroupingTestCase
             "from AllFieldTypes o"
             + " group by o.intField order by sum(o.shortField) asc");
         prepareQuery(q);
-        // this might fail in MySQL
+        // this might fail in MySQL/MariaDB
         List res = q.getResultList();
         assertEquals(2, res.size());
         Iterator itr = res.iterator();

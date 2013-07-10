@@ -29,6 +29,7 @@ import org.apache.openjpa.conf.OpenJPAProductDerivation;
 import org.apache.openjpa.conf.Specification;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreManager;
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.lib.conf.AbstractProductDerivation;
@@ -127,6 +128,7 @@ public class JDBCPersistenceProductDerivation
         _hints.add("openjpa.FetchPlan.ResultSetType");
         _hints.add("openjpa.FetchPlan.SubclassFetchMode");
         
+        _hints.add(MariaDBDictionary.SELECT_HINT);
         _hints.add(MySQLDictionary.SELECT_HINT);
         _hints.add(OracleDictionary.SELECT_HINT);
         

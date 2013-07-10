@@ -56,7 +56,8 @@ public class TestLazySchemaFactory
         // kodo uses
         JDBCConfiguration conf = (JDBCConfiguration) getConfiguration();
         _fks = conf.getDBDictionaryInstance().supportsForeignKeys
-            && getCurrentPlatform() != AbstractTestCase.Platform.MYSQL;
+            && getCurrentPlatform() != AbstractTestCase.Platform.MYSQL
+            && getCurrentPlatform() != AbstractTestCase.Platform.MARIADB;
 
         LazySchemaFactory factory = new LazySchemaFactory();
         factory.setConfiguration(conf);

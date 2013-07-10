@@ -21,6 +21,7 @@ package org.apache.openjpa.conf;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.sql.MariaDBDictionary;
 import org.apache.openjpa.jdbc.sql.MySQLDictionary;
 import org.apache.openjpa.jdbc.sql.OracleDictionary;
 import org.apache.openjpa.kernel.QueryHints;
@@ -51,6 +52,7 @@ public class TestQueryHints extends SingleEMFTestCase {
     public void testSupportedHintsContainProductDerivationHints() {
         assertSupportedHint(OracleDictionary.SELECT_HINT, true);
         assertSupportedHint(MySQLDictionary.SELECT_HINT, true);
+        assertSupportedHint(MariaDBDictionary.SELECT_HINT, true);
     }
     
     public void testSupportedHintsContainFetchPlanHints() {

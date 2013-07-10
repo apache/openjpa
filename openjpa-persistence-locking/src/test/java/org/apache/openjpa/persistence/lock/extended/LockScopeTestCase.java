@@ -121,8 +121,8 @@ public abstract class LockScopeTestCase extends SQLListenerTestCase {
     }
 
     protected enum DBType {
-        access, db2, derby, empress, foxpro, h2, hsql, informix, ingres, jdatastore, mysql, oracle, pointbase, postgres,
-        sqlserver, sybase
+        access, db2, derby, empress, foxpro, h2, hsql, informix, ingres, jdatastore, mariadb, mysql, oracle, pointbase,
+        postgres, sqlserver, sybase
     };
 
     protected DBType getDBType(EntityManager em) {
