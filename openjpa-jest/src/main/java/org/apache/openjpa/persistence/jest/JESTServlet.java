@@ -83,7 +83,9 @@ public class JESTServlet extends HttpServlet  {
             throw new ServletException(_loc.get("no-persistence-unit-param").toString());
         }
         boolean standalone = "true".equalsIgnoreCase(config.getInitParameter(INIT_PARA_STANDALONE));
+        // START - ALLOW PRINT STATEMENTS
         System.err.println("Standalone Deployment Mode " + standalone);
+        // STOP - ALLOW PRINT STATEMENTS
         if (standalone) {
             createPersistenceUnit();
         }
@@ -114,7 +116,8 @@ public class JESTServlet extends HttpServlet  {
     }
     
     protected void createPersistenceUnit() throws ServletException {
-        try {
+        // START - ALLOW PRINT STATEMENTS
+        try {            
             System.err.println("Creating Standalone Persistent Unit  " + _unit);
             _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit));
             System.err.println("Created Standalone Persistent Unit  " + _unit + ":" + _emf);
@@ -123,6 +126,7 @@ public class JESTServlet extends HttpServlet  {
             e.printStackTrace();
             throw new ServletException(_loc.get("no-persistence-unit-standalone", _unit).toString(), e);
         } 
+        // STOP - ALLOW PRINT STATEMENTS
     }
     
     protected boolean findPersistenceUnit() {

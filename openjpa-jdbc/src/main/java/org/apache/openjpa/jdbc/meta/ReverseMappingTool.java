@@ -1832,8 +1832,11 @@ public class ReverseMappingTool
                 }
             }
         });
-        if (!ret)
+        if (!ret) {
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("revtool-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
+        }
     }
 
     /**

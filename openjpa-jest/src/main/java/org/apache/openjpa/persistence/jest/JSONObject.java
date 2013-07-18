@@ -235,7 +235,8 @@ public class JSONObject implements JSON {
         o.set("friend", f);
         o.set("friends", a);
         o.set("map", map);
-        
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(o);
+        // STOP - ALLOW PRINT STATEMENTS
     }
 }

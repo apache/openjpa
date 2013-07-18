@@ -722,8 +722,11 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                 }
             }
         });
-        if (!ret)
+        if (!ret) {
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("seq-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
+        }
     }
 
     /**
@@ -759,9 +762,11 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
             Connection conn = conf.getDataSource2(null).getConnection();
             try {
                 long cur = seq.getSequence(null, conn);
-                if (ACTION_GET.equals(action))
+                if (ACTION_GET.equals(action)) {
+                    // START - ALLOW PRINT STATEMENTS
                     System.out.println(cur);
-                else {
+                    // STOP - ALLOW PRINT STATEMENTS
+                } else {
                     long set;
                     if (args.length > 0)
                         set = Long.parseLong(args[0]);
@@ -775,7 +780,9 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
                             conn);
                         set = stat.seq;
                     }
+                    // START - ALLOW PRINT STATEMENTS
                     System.err.println(set);
+                    // STOP - ALLOW PRINT STATEMENTS
                 }
             }
             catch (NumberFormatException nfe) {

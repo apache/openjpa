@@ -180,8 +180,11 @@ public class ClassTableJDBCSeq
                 }
             }
         });
-        if (!ret)
+        if (!ret) {
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("clstable-seq-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
+        }
     }
 
     /**
@@ -232,9 +235,11 @@ public class ClassTableJDBCSeq
             Connection conn = conf.getDataSource2(null).getConnection();
             try {
                 long cur = seq.getSequence(mapping, conn);
-                if (ACTION_GET.equals(action))
+                if (ACTION_GET.equals(action)) {
+                    // START - ALLOW PRINT STATEMENTS
                     System.out.println(mapping + ": " + cur);
-                else {
+                    // STOP - ALLOW PRINT STATEMENTS
+                }else {
                     long set;
                     if (args.length > 1)
                         set = Long.parseLong(args[1]);
@@ -248,7 +253,9 @@ public class ClassTableJDBCSeq
                             conn);
                         set = stat.seq;
                     }
+                    // START - ALLOW PRINT STATEMENTS
                     System.err.println(mapping + ": " + set);
+                    // STOP - ALLOW PRINT STATEMENTS
                 }
             } catch (NumberFormatException nfe) {
                 return false;

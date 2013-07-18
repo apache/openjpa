@@ -266,7 +266,9 @@ public class SQLFormatter {
     public static void main(String [] args) {
         SQLFormatter formatter = new SQLFormatter();
         for (int i = 0; i < args.length; i++) {
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(formatter.prettyPrint(args[i]));
+            // STOP - ALLOW PRINT STATEMENTS
         }
     }
 }

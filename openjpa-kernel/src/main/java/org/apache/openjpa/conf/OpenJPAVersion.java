@@ -97,8 +97,10 @@ public class OpenJPAVersion {
         VERSION_ID = "openjpa-" + VERSION_NUMBER + "-r" + REVISION_NUMBER;
     }
 
-    public static void main(String [] args) {
+    public static void main(String[] args) {
+        // START - ALLOW PRINT STATEMENTS
         System.out.println(new OpenJPAVersion().toString());
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     public String toString() {

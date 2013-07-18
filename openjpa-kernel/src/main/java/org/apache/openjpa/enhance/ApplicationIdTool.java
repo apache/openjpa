@@ -1294,8 +1294,10 @@ public class ApplicationIdTool {
                 }
             }
         });
+        // START - ALLOW PRINT STATEMENTS
         if (!ret)
             System.err.println(_loc.get("appid-usage"));
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**

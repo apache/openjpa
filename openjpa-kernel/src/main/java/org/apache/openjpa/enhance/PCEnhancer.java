@@ -4780,8 +4780,11 @@ public class PCEnhancer {
     public static void main(String[] args) {
         Options opts = new Options();
         args = opts.setFromCmdLine(args);
-        if (!run(args, opts))
+        if (!run(args, opts)) {
+            // START - ALLOW PRINT STATEMENTS
             System.err.println(_loc.get("enhance-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
+        }
     }
 
     /**

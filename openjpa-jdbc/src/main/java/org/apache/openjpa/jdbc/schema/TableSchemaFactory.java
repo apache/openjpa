@@ -470,8 +470,11 @@ public class TableSchemaFactory
                 }
             }
         });
-        if (!ret)
+        if (!ret) {
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("sch-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
+        }
     }
 
     /**
