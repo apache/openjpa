@@ -19,6 +19,7 @@
 package org.apache.openjpa.kernel;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,11 +38,11 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.CallbackException;
 import org.apache.openjpa.util.Exceptions;
+import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;
 import org.apache.openjpa.util.ProxyManager;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.ImplHelper;
 
 /**
  * Handles attaching instances.
@@ -59,7 +60,7 @@ public class AttachManager {
     private final boolean _copyNew;
     private final boolean _failFast;
     private final IdentityMap _attached = new IdentityMap();
-    private final Collection _visitedNodes = new ArrayList();
+    private final Collection<StateManagerImpl> _visitedNodes = new ArrayList();
 
     // reusable strategies
     private AttachStrategy _version = null;
@@ -253,17 +254,18 @@ public class AttachManager {
     }
 
     private Object handleCascade(Object toAttach, OpenJPAStateManager owner) {
-        FieldMetaData[] fields = _broker.getStateManager(toAttach).getMetaData()
-            .getDefinedFields();
-        for (int i = 0; i < fields.length; i++) {
-            FieldMetaData fd = (FieldMetaData) fields[i];
-            if (fd.getElement().getCascadeAttach() == fd.CASCADE_IMMEDIATE) {
-                FieldMetaData[] inverseFieldMappings = fd.getInverseMetaDatas();
+        StateManagerImpl sm = _broker.getStateManagerImpl(toAttach, true);
+        BitSet loaded = sm.getLoaded();
+        FieldMetaData[] fmds = sm.getMetaData().getDefinedFields();
+        for (FieldMetaData fmd : fmds) {
+            if (fmd.getElement().getCascadeAttach() == ValueMetaData.CASCADE_IMMEDIATE) {
+                FieldMetaData[] inverseFieldMappings = fmd.getInverseMetaDatas();
                 if (inverseFieldMappings.length != 0) {
-                    OpenJPAStateManager sm = _broker.getStateManager(toAttach);
                     _visitedNodes.add(sm);
-                    getStrategy(toAttach).attachField(this, toAttach,
-                        _broker.getStateManagerImpl(toAttach, true), fd, true);
+                    // Only try to attach this field is it is loaded
+                    if (loaded.get(fmd.getIndex())) {
+                        getStrategy(toAttach).attachField(this, toAttach, sm, fmd, true);
+                    }
                 }
             }
         }
