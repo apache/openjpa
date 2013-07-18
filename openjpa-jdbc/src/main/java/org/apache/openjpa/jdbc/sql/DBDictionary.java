@@ -3483,8 +3483,10 @@ public class DBDictionary
 
         StringBuilder buf = new StringBuilder();
         buf.append(create ? "CREATE" : "ALTER").append(" SEQUENCE ");
-        String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
-                "long-seq-name");
+        
+        String seqName = checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()), 
+            maxTableNameLength, "long-seq-name");
+
         buf.append(seqName);
         if (create && seq.getInitialValue() != 0)
             buf.append(" START WITH ").append(seq.getInitialValue());
