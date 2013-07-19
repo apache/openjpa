@@ -34,7 +34,6 @@
 		<property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
 	</module>
 
-	<module name="SuppressionFilter">
-		<property name="file" value="openjpa-project/suppressions.xml" />
-	</module>
+	<!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
+	<module name="SuppressionFilter"/>
 </module>

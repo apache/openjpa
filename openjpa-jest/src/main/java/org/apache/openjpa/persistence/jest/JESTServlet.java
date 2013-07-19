@@ -130,6 +130,7 @@ public class JESTServlet extends HttpServlet  {
     }
     
     protected boolean findPersistenceUnit() {
+        // START - ALLOW PRINT STATEMENTS
         if (_emf == null) {
             System.err.println("Discovering auxiliary Persistent Unit  " + _unit);
             BrokerFactory bf = AbstractBrokerFactory.getPooledFactoryForKey(_unit);
@@ -138,6 +139,7 @@ public class JESTServlet extends HttpServlet  {
             }
             System.err.println("Discovered auxiliary Persistent Unit  " + _unit + ":" + _emf);
         }
+        // STOP - ALLOW PRINT STATEMENTS
         return _emf != null;
     }
     
@@ -168,7 +170,9 @@ public class JESTServlet extends HttpServlet  {
     }
     
     public void log(String s) {
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(s);
+        // STOP - ALLOW PRINT STATEMENTS
         super.log(s);
     }
 }

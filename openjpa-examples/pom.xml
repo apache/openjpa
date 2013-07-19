@@ -40,7 +40,9 @@
 
     <properties>
         <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
-        <checkstyle.config.location>${project.basedir}/../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <!-- Not sure if using \ here will cause problems with running on *nix. Windows has a bug when using / -->
+        <checkstyle.config.location>${project.basedir}\..\..\openjpa-project\checkstyle.xml</checkstyle.config.location>
+        <checkstyle.suppressions.location>${project.basedir}\..\..\openjpa-project\suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <modules>

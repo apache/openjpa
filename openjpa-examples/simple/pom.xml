@@ -38,10 +38,6 @@
     <name>OpenJPA Examples - Simple</name>
     <description>Apache OpenJPA Examples - Simple</description>
 
-    <properties>
-        <checkstyle.config.location>${project.basedir}/../../openjpa-project/checkstyle.xml</checkstyle.config.location>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
