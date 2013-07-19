@@ -31,7 +31,7 @@
 	</module>
 	<module name="SuppressionCommentFilter">
 		<property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS" />
-		<property name="onCommentFormat" value="// END - ALLOW PRINT STATEMENTS" />
+		<property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
 	</module>
 
 	<module name="SuppressionFilter">
