@@ -74,7 +74,7 @@ public class DBDictionaryFactory {
     public static DBDictionary calculateDBDictionary(JDBCConfiguration conf,
         String url, String driver, String props) {
         String dclass = dictionaryClassForString(getProtocol(url), conf);
-        if (dclass == null || (dclass != null && dclass.contains("MySQL")))
+        if (dclass == null)
             dclass = dictionaryClassForString(driver, conf);
         if (dclass == null)
             return null;

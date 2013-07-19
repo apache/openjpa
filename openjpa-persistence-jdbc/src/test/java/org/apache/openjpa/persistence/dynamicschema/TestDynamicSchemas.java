@@ -121,7 +121,7 @@ public class TestDynamicSchemas extends SingleEMFTestCase {
         OpenJPAEntityManagerFactorySPI mysqlEMF = 
             createEMF(EntityVeryLongNames.class, EntityReservedWords.class,
                 "openjpa.ConnectionURL", 
-                "jdbc:mysql://host1:1,host2:2/database?p1=v1&p2=v2",
+                "jdbc:mariadb://host1:1,host2:2/database?p1=v1&p2=v2",
                 "openjpa.jdbc.SynchronizeMappings", "export", 
                 "openjpa.jdbc.SchemaFactory", "dynamic", RETAIN_DATA);
         validateTableName( mysqlEMF );
