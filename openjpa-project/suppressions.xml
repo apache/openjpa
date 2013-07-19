@@ -10,6 +10,6 @@
 	<suppress checks="RegexpSinglelineJava" files=".*openjpa-examples.*server.*java" />
 	<suppress checks="RegexpSinglelineJava" files=".*openjpa-examples.*util.*java" />
 	<suppress checks="RegexpSinglelineJava" files="Test.*java" />
-	<suppress checks="RegexpSinglelineJava" files=".*src\\test.*java" />
+	<suppress checks="RegexpSinglelineJava" files=".*src/test/.*java" />
 	<suppress checks="RegexpSinglelineJava" files="Main.java" /> 
 </suppressions>
