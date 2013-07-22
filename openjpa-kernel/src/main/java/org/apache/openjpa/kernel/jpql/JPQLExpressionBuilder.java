@@ -1297,11 +1297,22 @@ public class JPQLExpressionBuilder
                 return factory.trim(val1, trimChar, trimWhere);
 
             case JJTCONCAT:
-                val1 = getValue(left(node));
-                val2 = getValue(right(node));
+                if (node.children.length < 2)
+                	throw parseException(EX_USER, "less-child-count",
+                        new Object[]{ Integer.valueOf(2), node,
+                            Arrays.asList(node.children) }, null);
+
+                val1 = getValue(firstChild(node));
+                val2 = getValue(secondChild(node));
                 setImplicitType(val1, TYPE_STRING);
                 setImplicitType(val2, TYPE_STRING);
-                return factory.concat(val1, val2);
+                Value concat = factory.concat(val1, val2);
+                for (int i = 2; i < node.children.length; i++) {
+                	val2 = getValue(node.children[i]);
+                    setImplicitType(val2, TYPE_STRING);
+                	concat = factory.concat(concat, val2);
+                }
+                return concat;
 
             case JJTSUBSTRING:
                 // Literals are forced to be Integers because PostgreSQL rejects Longs in SUBSTRING parameters.
