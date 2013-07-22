@@ -87,7 +87,7 @@
                             <goal>checkstyle</goal>
                         </goals>
                         <configuration>
-                            <excludes>**/*_.java,**/Java*.java</excludes>
+                            <excludes>**/*_.java,**/*.java</excludes>
                         </configuration>
                     </execution>
                 </executions>
