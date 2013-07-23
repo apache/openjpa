@@ -23,8 +23,9 @@ package org.apache.openjpa.jdbc.kernel.exps;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class Avg
-    extends UnaryOp {
+    extends NullableAggregateUnaryOp { // OPENJPA-1794
 
     /**
      * Constructor. Provide the value to operate on.
@@ -41,4 +42,3 @@ class Avg
         return true;
     }
 }
-
