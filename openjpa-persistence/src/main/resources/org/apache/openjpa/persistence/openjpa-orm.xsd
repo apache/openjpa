@@ -18,15 +18,15 @@
  under the License.   
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	targetNamespace="http://openjpa.apache.org/ns/orm" 
-	xmlns:openjpa-orm="http://openjpa.apache.org/ns/orm"
-	xmlns:extendable-orm="http://openjpa.apache.org/ns/orm/extendable" 
+	targetNamespace="http://www.apache.org/openjpa/ns/orm" 
+	xmlns:openjpa-orm="http://www.apache.org/openjpa/ns/orm"
+	xmlns:extendable-orm="http://www.apache.org/openjpa/ns/orm/extendable" 
 	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm"
 	elementFormDefault="qualified"
 	attributeFormDefault="unqualified"
 	version="1.0">
 	
-	<xsd:import namespace="http://openjpa.apache.org/ns/orm/extendable"/>
+	<xsd:import namespace="http://www.apache.org/openjpa/ns/orm/extendable"/>
 	<xsd:import namespace="http://java.sun.com/xml/ns/persistence/orm"/>
 	
 	<!-- **************************************************** -->
