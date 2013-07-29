@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -3488,9 +3487,19 @@ public class DBDictionary
 
         StringBuilder buf = new StringBuilder();
         buf.append(create ? "CREATE" : "ALTER").append(" SEQUENCE ");
-        
-        String seqName = checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()), 
+        //new:
+//        String seqName = checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()), 
+  //          maxTableNameLength, "long-seq-name");
+        //old:
+//        String seqName = checkNameLength(getFullName(seq), maxTableNameLength, 
+  //      "long-seq-name");        
+        //new new:
+        //Strip off the schema and verify the sequence name is within the legal length, NOT
+        //the schema name + sequence name.
+        checkNameLength(toDBName(seq.getFullIdentifier().getUnqualifiedName()), 
             maxTableNameLength, "long-seq-name");
+        //Now use the full sequence name (schema + sequence name).
+        String seqName = getFullName(seq);
 
         buf.append(seqName);
         if (create && seq.getInitialValue() != 0)
