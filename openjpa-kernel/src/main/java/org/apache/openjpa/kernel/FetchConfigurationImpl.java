@@ -224,7 +224,7 @@ public class FetchConfigurationImpl
         setLockTimeout(fetch.getLockTimeout());
         setQueryTimeout(fetch.getQueryTimeout());
         setLockScope(fetch.getLockScope());
-        clearFetchGroups();
+        clearFetchGroups(false);
         addFetchGroups(fetch.getFetchGroups());
         clearFields();
         copyHints(fetch);
@@ -394,12 +394,23 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration clearFetchGroups() {
+        return clearFetchGroups(true);
+    }
+    
+    private FetchConfiguration clearFetchGroups(boolean restoresDefault) {
         lock();
         try {
             if (_state.fetchGroups != null) {
                 _state.fetchGroups.clear();
-                _state.fetchGroupContainsAll = false;
+            } else {
+                _state.fetchGroups = new HashSet<String>();
+            }
+            
+            _state.fetchGroupContainsAll = false;
+            
+            if (restoresDefault) {
                 _state.fetchGroupContainsDefault = true;
+                _state.fetchGroups.add(FetchGroup.NAME_DEFAULT); // OPENJPA-2413
             }
         } finally {
             unlock();

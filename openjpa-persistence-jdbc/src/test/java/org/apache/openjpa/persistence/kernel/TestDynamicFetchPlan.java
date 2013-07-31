@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.kernel;
 
+import java.util.Collection;
+
+import org.apache.openjpa.meta.FetchGroup;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.kernel.common.apps.FetchA;
@@ -60,7 +63,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
 		fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
 		fp.addField(FetchB.class, "text");
@@ -78,7 +81,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
 		fp.addField(FetchA.class, "text");
@@ -96,7 +99,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class, "b");
 		fp.addField(FetchBase.class, "text");
@@ -114,7 +117,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");
 		fp.addField(FetchB.class.getName() + ".text");
@@ -132,7 +135,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");
 		fp.addField(FetchA.class.getName() + ".text");
@@ -150,7 +153,7 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		OpenJPAEntityManager em = emf.createEntityManager();
 		FetchPlan fp = em.getFetchPlan();
         fp.setExtendedPathLookup(true);
-		fp.clearFetchGroups();
+		fp.clearFetchGroups().removeFetchGroup(FetchGroup.NAME_DEFAULT);
 		fp.clearFields();
 		fp.addField(FetchA.class.getName() + ".b");
 		fp.addField(FetchBase.class.getName() + ".text");
@@ -162,5 +165,28 @@ public class TestDynamicFetchPlan extends SingleEMFTestCase {
 		assertNotNull(b);
 		assertEquals("a1", a.getText());
 		assertEquals("b1", b.getText());
+	}
+	
+	// OPENJPA-2413: FetchPlan.clearFetchGroups() does not retain "default" in list of active Fetch Groups.
+	public void testClearFetchPlan() {
+	    OpenJPAEntityManager em = emf.createEntityManager();
+	    FetchPlan fp = em.getFetchPlan();
+
+	    // Make sure "default" is present in the list of active FetchGroups
+	    Collection<String> fetchGroups = fp.getFetchGroups();
+	    assertNotNull(fetchGroups);
+	    assertTrue(fetchGroups.contains(FetchGroup.NAME_DEFAULT));
+
+	    // Clear all active FetchGroups, only "default" should remain.
+	    fp.clearFetchGroups();
+	    Collection<String> fetchGroupsAfterClear = fp.getFetchGroups();
+	    assertNotNull(fetchGroupsAfterClear);
+	    assertTrue(fetchGroupsAfterClear.contains(FetchGroup.NAME_DEFAULT));    
+
+	    // Should still be able to remove the "default" FetchGroup
+	    fp.removeFetchGroup(FetchGroup.NAME_DEFAULT);
+	    Collection<String> fetchGroupsAfterRemove = fp.getFetchGroups();
+	    assertNotNull(fetchGroupsAfterClear);
+	    assertTrue(fetchGroupsAfterClear.isEmpty());    
 	}
 }
