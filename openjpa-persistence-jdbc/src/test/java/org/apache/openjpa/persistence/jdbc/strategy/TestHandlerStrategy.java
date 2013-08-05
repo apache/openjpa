@@ -17,6 +17,7 @@ package org.apache.openjpa.persistence.jdbc.strategy;
 
 import javax.persistence.EntityManager;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.persistence.jdbc.strategy.MappedEntity.Key;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
@@ -34,6 +35,10 @@ public class TestHandlerStrategy extends SingleEMFTestCase {
      * @see JIRA ticket OPENJPA-2328 for more explanation
      */
     public void testIssue_OPENJPA2328() {
+        // Not all databases support GenerationType.IDENTITY column(s)
+        if (!((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().supportsAutoAssign) {
+            return;
+        }
         EntityManager em = emf.createEntityManager();
         MapperEntity ae = new MapperEntity();
         for (Key key : Key.values()) {
