@@ -39,10 +39,6 @@
     <name>OpenJPA Examples - OpenBooks</name>
     <description>Apache OpenJPA Examples - OpenBooks</description>
 
-    <properties>
-        <checkstyle.config.location>${project.basedir}/../../openjpa-project/checkstyle.xml</checkstyle.config.location>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.openjpa</groupId>
@@ -91,7 +87,7 @@
                             <goal>checkstyle</goal>
                         </goals>
                         <configuration>
-                            <excludes>**/*_.java,**/Java*.java</excludes>
+                            <excludes>**/*_.java,**/*.java</excludes>
                         </configuration>
                     </execution>
                 </executions>

@@ -365,7 +365,6 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      */
     public boolean isReservedWord(IdentifierRule rule, String name) {
         if (rule == null) {
-            System.out.println("NAmingConfig: " + _config.getClass().getName());
             throw new IllegalArgumentException("Naming rule is null!");
         }
         if (rule.getReservedWords() == null) {

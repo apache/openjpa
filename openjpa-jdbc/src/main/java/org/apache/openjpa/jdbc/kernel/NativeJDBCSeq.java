@@ -406,7 +406,9 @@ public class NativeJDBCSeq
             }
         });
         if (!ret)
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("native-seq-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**
@@ -441,7 +443,9 @@ public class NativeJDBCSeq
             Connection conn = conf.getDataSource2(null).getConnection();
             try {
                 long cur = seq.getSequence(conn);
+                // START - ALLOW PRINT STATEMENTS
                 System.out.println(cur);
+                // STOP - ALLOW PRINT STATEMENTS
             } finally {
                 try { conn.close(); } catch (SQLException se) {}
             }

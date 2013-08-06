@@ -48,6 +48,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>${project.basedir}/../openjpa-project/checkstyle.xml</checkstyle.config.location>
         <site.deploy.url>scp://people.apache.org/home/${user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
+        <checkstyle.suppressions.location>${project.basedir}/../openjpa-project/suppressions.xml</checkstyle.suppressions.location>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
@@ -776,12 +777,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>2.4</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.codehaus.plexus</groupId>
                             <artifactId>plexus-velocity</artifactId>
-                            <version>1.1.3</version>
+                            <version>1.1.5</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -907,7 +908,6 @@
                             <goal>checkstyle</goal>
                         </goals>
                         <configuration>
-                            <configLocation>${checkstyle.config.location}</configLocation>
                             <failsOnError>true</failsOnError>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>

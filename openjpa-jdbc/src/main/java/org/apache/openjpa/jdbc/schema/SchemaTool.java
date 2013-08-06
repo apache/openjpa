@@ -1382,7 +1382,9 @@ public class SchemaTool {
             }
         });
         if (!ret)
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("tool-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**

@@ -1663,8 +1663,10 @@ public class ProxyManagerImpl
                     });
             }
 
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(bc.getName());
             bc.write(new File(dir, bc.getClassName() + ".class"));
+            // STOP - ALLOW PRINT STATEMENTS
         }
     }
 }
