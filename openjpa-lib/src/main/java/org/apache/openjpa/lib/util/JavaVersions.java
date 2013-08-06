@@ -258,6 +258,8 @@ public class JavaVersions {
     }
 
     public static void main(String[] args) {
+        // START - ALLOW PRINT STATEMENTS
         System.out.println("Java version is: " + VERSION);
+        // STOP - ALLOW PRINT STATEMENTS
     }
 }

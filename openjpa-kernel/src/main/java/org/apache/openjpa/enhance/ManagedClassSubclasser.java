@@ -301,8 +301,10 @@ public class ManagedClassSubclasser {
             dir.mkdirs();
             dir = Files.getPackageFile(dir, bc.getPackageName(), true);
             File f = new File(dir, bc.getClassName() + ".class");
+            // START - ALLOW PRINT STATEMENTS
             System.err.println("Writing to " + f);
             bc.write(f);
+            // STOP - ALLOW PRINT STATEMENTS
         }
     }
 

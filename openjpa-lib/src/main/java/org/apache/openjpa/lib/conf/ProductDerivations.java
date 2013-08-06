@@ -91,14 +91,18 @@ public class ProductDerivations {
         }
 
         // if some derivations weren't instantiable, warn
+        // START - ALLOW PRINT STATEMENTS
         if (errors)
             System.err.println(_loc.get("bad-product-derivations",
                 ProductDerivations.class.getName()));
+        // STOP - ALLOW PRINT STATEMENTS
         for (int i = 0; i < _derivationErrors.length; i++) {
             if (_derivationErrors[i] == null)
                 continue;
+            // START - ALLOW PRINT STATEMENTS
             System.err.println(_derivationNames[i] + ":" +
                     _derivationErrors[i]);
+            // STOP - ALLOW PRINT STATEMENTS
             break;
         }
 
@@ -477,7 +481,9 @@ public class ProductDerivations {
      * Prints product derivation information.
      */
     public static void main(String[] args) {
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(derivationErrorsToString());
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**

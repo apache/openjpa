@@ -648,7 +648,9 @@ public class PersistenceProductDerivation
      */
     private static void log(String msg) {
         // at this point logging isn't configured yet
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(msg);
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     private void addPuNameCollision(String puName, String file1, String file2){
