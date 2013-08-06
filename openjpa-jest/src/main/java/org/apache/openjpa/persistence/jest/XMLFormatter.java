@@ -400,7 +400,9 @@ public class XMLFormatter implements ObjectFormatter<Document> {
                     
                 case JavaTypes.PC_UNTYPED:
                 case JavaTypes.OBJECT:
+                    // START - ALLOW PRINT STATEMENTS
                     System.err.println("Not handled " + fmd.getName() + " of type " + fmd.getDeclaredType());
+                    // STOP - ALLOW PRINT STATEMENTS
             }
             
             if (child != null) {

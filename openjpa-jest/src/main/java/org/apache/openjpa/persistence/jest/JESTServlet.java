@@ -83,7 +83,9 @@ public class JESTServlet extends HttpServlet  {
             throw new ServletException(_loc.get("no-persistence-unit-param").toString());
         }
         boolean standalone = "true".equalsIgnoreCase(config.getInitParameter(INIT_PARA_STANDALONE));
+        // START - ALLOW PRINT STATEMENTS
         System.err.println("Standalone Deployment Mode " + standalone);
+        // STOP - ALLOW PRINT STATEMENTS
         if (standalone) {
             createPersistenceUnit();
         }
@@ -114,6 +116,7 @@ public class JESTServlet extends HttpServlet  {
     }
     
     protected void createPersistenceUnit() throws ServletException {
+        // START - ALLOW PRINT STATEMENTS
         try {
             System.err.println("Creating Standalone Persistent Unit  " + _unit);
             _emf = OpenJPAPersistence.cast(Persistence.createEntityManagerFactory(_unit));
@@ -123,9 +126,11 @@ public class JESTServlet extends HttpServlet  {
             e.printStackTrace();
             throw new ServletException(_loc.get("no-persistence-unit-standalone", _unit).toString(), e);
         } 
+        // STOP - ALLOW PRINT STATEMENTS
     }
     
     protected boolean findPersistenceUnit() {
+        // START - ALLOW PRINT STATEMENTS
         if (_emf == null) {
             System.err.println("Discovering auxiliary Persistent Unit  " + _unit);
             BrokerFactory bf = AbstractBrokerFactory.getPooledFactoryForKey(_unit);
@@ -134,6 +139,7 @@ public class JESTServlet extends HttpServlet  {
             }
             System.err.println("Discovered auxiliary Persistent Unit  " + _unit + ":" + _emf);
         }
+        // STOP - ALLOW PRINT STATEMENTS
         return _emf != null;
     }
     
@@ -164,7 +170,9 @@ public class JESTServlet extends HttpServlet  {
     }
     
     public void log(String s) {
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(s);
+        // STOP - ALLOW PRINT STATEMENTS
         super.log(s);
     }
 }

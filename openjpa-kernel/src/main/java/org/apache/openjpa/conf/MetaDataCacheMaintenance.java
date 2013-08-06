@@ -102,8 +102,10 @@ public class MetaDataCacheMaintenance {
     }
 
     private static int usage() {
+        // START - ALLOW PRINT STATEMENTS
         System.err.println("Usage: java MetaDataCacheMaintenance " +
             "[-scanDevPath t|f] [-<openjpa.PropertyName> value] store | dump");
+        // STOP - ALLOW PRINT STATEMENTS
         return -1;
     }
 

@@ -1714,7 +1714,9 @@ public class ProxyManagerImpl
                     });
             }
 
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(bc.getName());
+            // STOP - ALLOW PRINT STATEMENTS
             AsmAdaptor.write(bc, new File(dir, bc.getClassName() + ".class"));
         }
     }
