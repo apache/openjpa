@@ -85,8 +85,10 @@ public class ProductDerivations {
         for (int i = 0; i < _derivationErrors.length; i++) {
             if (_derivationErrors[i] == null)
                 continue;
+            // START - ALLOW PRINT STATEMENTS
             System.err.println(_loc.get("bad-product-derivations",
                 ProductDerivations.class.getName()));
+            // STOP - ALLOW PRINT STATEMENTS
             break;
         }
 
@@ -451,7 +453,9 @@ public class ProductDerivations {
      * Prints product derivation information.
      */
     public static void main(String[] args) {
+        // START - ALLOW PRINT STATEMENTS
         System.err.println(derivationErrorsToString());
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**

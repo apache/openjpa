@@ -415,7 +415,9 @@ class DistributedStoreManager extends JDBCStoreManager {
     }
     
     void log(String s) {
+    	// START - ALLOW PRINT STATEMENTS
         System.out.println("["+Thread.currentThread().getName()+"] " + this + s);
+        // STOP - ALLOW PRINT STATEMENTS
     }
 
     private static class Flusher implements Callable<Collection> {

@@ -672,7 +672,9 @@ public class TableJDBCSeq
             }
         });
         if (!ret)
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("seq-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**
@@ -709,7 +711,9 @@ public class TableJDBCSeq
             try {
                 long cur = seq.getSequence(null, conn);
                 if (ACTION_GET.equals(action))
+                    // START - ALLOW PRINT STATEMENTS
                     System.out.println(cur);
+                    // STOP - ALLOW PRINT STATEMENTS
                 else {
                     long set;
                     if (args.length > 0)
@@ -724,7 +728,9 @@ public class TableJDBCSeq
                             conn);
                         set = stat.seq;
                     }
+                    // START - ALLOW PRINT STATEMENTS
                     System.err.println(set);
+                    // STOP - ALLOW PRINT STATEMENTS
                 }
             }
             catch (NumberFormatException nfe) {

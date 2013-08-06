@@ -931,7 +931,9 @@ public class MappingTool
             }
         });
         if (!ret)
+            // START - ALLOW PRINT STATEMENTS
             System.err.println(_loc.get("tool-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**

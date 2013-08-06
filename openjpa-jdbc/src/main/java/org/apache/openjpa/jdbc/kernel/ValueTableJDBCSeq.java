@@ -133,7 +133,9 @@ public class ValueTableJDBCSeq
             }
         });
         if (!ret)
+            // START - ALLOW PRINT STATEMENTS
             System.out.println(_loc.get("clstable-seq-usage"));
+            // STOP - ALLOW PRINT STATEMENTS
     }
 
     /**
@@ -173,7 +175,9 @@ public class ValueTableJDBCSeq
             try {
                 long cur = seq.getSequence(null, conn);
                 if (ACTION_GET.equals(action))
+                    // START - ALLOW PRINT STATEMENTS
                     System.out.println(seq.getPrimaryKeyValue() + ": " + cur);
+                    // STOP - ALLOW PRINT STATEMENTS
                 else {
                     long set;
                     if (args.length > 1)
@@ -188,7 +192,9 @@ public class ValueTableJDBCSeq
                             conn);
                         set = stat.seq;
                     }
+                    // START - ALLOW PRINT STATEMENTS
                     System.err.println(seq.getPrimaryKeyValue() + ": " + set);
+                    // STOP - ALLOW PRINT STATEMENTS
                 }
             }
             catch (NumberFormatException nfe) {

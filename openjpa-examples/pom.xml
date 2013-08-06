@@ -39,6 +39,7 @@
 
     <properties>
         <openjpa.Log>DefaultLevel=WARN</openjpa.Log>
+        <checkstyle.suppressions.location>${project.basedir}/../openjpa-project/suppressions.xml</checkstyle.suppressions.location>
     </properties>
 
     <dependencies>

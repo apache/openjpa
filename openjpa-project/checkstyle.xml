@@ -21,17 +21,23 @@
   "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
   "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 
-<!-- This is a temporary file.
-     As we get closer to enforcing the OpenJPA style to be like the 
-     default Sun Microsystems Definition default file, then
-     we can remove this file and remove the reference from the
-     pom.xml -->
+<!-- This is a temporary file. As we get closer to enforcing the OpenJPA 
+	style to be like the default Sun Microsystems Definition default file, then 
+	we can remove this file and remove the reference from the pom.xml -->
 
 <module name="Checker">
-    <module name="NewlineAtEndOfFile"/>
-    <module name="TreeWalker">
-        <module name="LineLength">
-        <property name="max" value="120"/>
-        </module>
-    </module>
+	<module name="TreeWalker">
+		<module name="FileContentsHolder" />
+		<module name="RegexpSinglelineJava">
+			<property name="format" value="System\.(out|err)\.print(ln)?\(" />
+			<property name="ignoreComments" value="true" />
+		</module>
+	</module>
+	<module name="SuppressionCommentFilter">
+		<property name="offCommentFormat" value="// START - ALLOW PRINT STATEMENTS" />
+		<property name="onCommentFormat" value="// STOP - ALLOW PRINT STATEMENTS" />
+	</module>
+
+	<!-- File location is specified in root pom.xml via ${checkstyle.suppressions.location} -->
+	<module name="SuppressionFilter"/>
 </module>
