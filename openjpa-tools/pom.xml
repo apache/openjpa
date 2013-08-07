@@ -38,7 +38,7 @@
     <name>OpenJPA tools</name>
 
     <properties>
-        <checkstyle.config.location>${project.basedir}/../../openjpa-project/checkstyle.xml</checkstyle.config.location>
+        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
     </properties>
 
     <modules>
