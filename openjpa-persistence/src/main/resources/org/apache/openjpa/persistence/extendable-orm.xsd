@@ -18,8 +18,8 @@
  under the License.   
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	targetNamespace="http://openjpa.apache.org/ns/orm/extendable"
-	xmlns:extendable-orm="http://openjpa.apache.org/ns/orm/extendable"
+	targetNamespace="http://www.apache.org/openjpa/ns/orm/extendable"
+	xmlns:extendable-orm="http://www.apache.org/openjpa/ns/orm/extendable"
 	xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
 	elementFormDefault="qualified"
 	attributeFormDefault="unqualified"
