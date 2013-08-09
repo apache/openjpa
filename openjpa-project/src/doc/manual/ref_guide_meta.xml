@@ -1007,8 +1007,8 @@ schemas as well as for the schema for JPA 2.0, as shown in the following example
         			OpenJPA Schema Extensions
         		</title>
 <programlisting>
-&lt;entity-mappings xmlns="http://openjpa.apache.org/ns/orm/extendable" 
-    xmlns:openjpa="http://openjpa.apache.org/ns/orm" 
+&lt;entity-mappings xmlns="http://www.apache.org/openjpa/ns/orm/extendable" 
+    xmlns:openjpa="http://www.apache.org/openjpa/ns/orm" 
     xmlns:orm="http://java.sun.com/xml/ns/persistence/orm" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     version="2.0"&gt;
