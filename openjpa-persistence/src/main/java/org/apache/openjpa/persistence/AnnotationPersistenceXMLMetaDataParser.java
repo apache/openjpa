@@ -51,10 +51,6 @@ public class AnnotationPersistenceXMLMetaDataParser {
     private final OpenJPAConfiguration _conf;
     private final Log _log;
     private MetaDataRepository _repos = null;
-
-    // the class we were invoked to parse
-    private Class _cls = null;
-    private FieldMetaData _fmd = null;
     
     // cache the JAXB Xml... classes if they are present so we do not
     // have a hard-wired dependency on JAXB here
@@ -146,42 +142,34 @@ public class AnnotationPersistenceXMLMetaDataParser {
      * Clear caches.
      */
     public void clear() {
-        _cls = null;
-        _fmd = null;
     }
 
     /**
-     * Parse persistence metadata for the given field metadata.
+     * Parse persistence metadata for the given field metadata. If the MetaData(/Mapping)Repository
+     * is using locking, that lock MUST be held prior to calling this method.
      */
-    public void parse(FieldMetaData fmd) {
-        _fmd = fmd;
-        _cls = fmd.getDeclaredType();
+    public synchronized void parse(FieldMetaData fmd) {
+        Class<?> cls = fmd.getDeclaredType();
         if (_log.isTraceEnabled())
-            _log.trace(_loc.get("parse-class", _cls.getName()));
-
-        try {
-            parseXMLClassAnnotations();
-        } finally {
-            _cls = null;
-            _fmd = null;
-        }
+            _log.trace(_loc.get("parse-class", cls.getName()));
+        parseXMLClassAnnotations(cls, fmd);
     }
 
     /**
      * Read annotations for the current type.
      */
-    private XMLMetaData parseXMLClassAnnotations() {
+    private XMLMetaData parseXMLClassAnnotations(Class<?> cls, FieldMetaData fmd) {
         // check immediately whether the class has JAXB XML annotations
-        if (_cls == null || xmlTypeClass == null
+        if (cls == null || xmlTypeClass == null
             || !(((Boolean) AccessController.doPrivileged(J2DoPriv5Helper
-                .isAnnotationPresentAction(_cls, xmlTypeClass))).booleanValue()
+                .isAnnotationPresentAction(cls, xmlTypeClass))).booleanValue()
                 && ((Boolean) AccessController
-                .doPrivileged(J2DoPriv5Helper.isAnnotationPresentAction(_cls,
+                .doPrivileged(J2DoPriv5Helper.isAnnotationPresentAction(cls,
                     xmlRootElementClass))).booleanValue()))
             return null;
 
         // find / create metadata
-        XMLMetaData meta = getXMLMetaData();
+        XMLMetaData meta = getXMLMetaData(cls, fmd);
         
         return meta;
     }
@@ -189,13 +177,13 @@ public class AnnotationPersistenceXMLMetaDataParser {
     /**
      * Find or create xml metadata for the current type. 
      */
-    private synchronized XMLMetaData getXMLMetaData() {
-        XMLMetaData meta = getRepository().getCachedXMLMetaData(_cls);
+    private XMLMetaData getXMLMetaData(Class<?> cls, FieldMetaData fmd) {
+        XMLMetaData meta = getRepository().getCachedXMLMetaData(cls);
         if (meta == null) {
             // if not in cache, create metadata
-            meta = getRepository().addXMLMetaData(_cls, _fmd.getName());
-            parseXmlRootElement(_cls, meta);
-            populateFromReflection(_cls, meta);
+            meta = getRepository().addXMLMetaData(cls, fmd.getName());
+            parseXmlRootElement(cls, meta);
+            populateFromReflection(cls, meta);
         }
         return meta;
     }
