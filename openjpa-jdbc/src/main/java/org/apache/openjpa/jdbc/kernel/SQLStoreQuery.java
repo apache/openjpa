@@ -365,6 +365,7 @@ public class SQLStoreQuery
             if (sql.indexOf("?") == -1)
                 return sql;
 
+            sql = sql.replaceAll("\\\\", "\\\\\\\\");
             paramOrder.clear();
             StreamTokenizer tok = new StreamTokenizer(new StringReader(sql));
             tok.resetSyntax();
@@ -396,6 +397,14 @@ public class SQLStoreQuery
                             buf.append(tok.sval);
                             buf.append('\'');
                         }
+//                        // StreamTokenizer can not differentiate the last quoted token as in ^.*'.*$ and ^.*',*'$
+//                        // need to check the last quote ends with "'" and process accordingly.
+//                        if(endsWithQuote) {
+//                            buf.append('\'');                        	
+//                        } else if (tok.nextToken() != StreamTokenizer.TT_EOF) {
+//                        	tok.pushBack();
+//                            buf.append('\'');                        	
+//                        }
                         break;
                     default:
                         buf.append((char) ttype);
