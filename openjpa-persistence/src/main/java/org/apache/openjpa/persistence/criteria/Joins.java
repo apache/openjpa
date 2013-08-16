@@ -197,17 +197,18 @@ abstract class Joins {
                         if (c.isRegistered(_parent)) { 
                             Value var = c.getRegisteredVariable(_parent);
                             path = factory.newPath(var);
-                        } else 
+                        } else {
                             path = factory.newPath(subQ);
+                        }
                         path.setMetaData(meta);
-                        path.get(_member.fmd, false);
+                        path.get(_member.fmd, allowNull);
                         path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
                     Value var = c.getRegisteredVariable(_parent);
                     path = factory.newPath(var);
                     path.setMetaData(meta);
-                    path.get(_member.fmd, false);
+                    path.get(_member.fmd, allowNull);
                 } else            
                     path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, c);
                 
@@ -409,14 +410,14 @@ abstract class Joins {
                             path = factory.newPath(subQ);
                         }
                         path.setMetaData(meta);
-                        path.get(_member.fmd, false);
+                        path.get(_member.fmd, allowNull);
                         path.setSchemaAlias(c.getAlias(_parent));
                     } 
                 } else if (c.isRegistered(_parent)) {
                     Value var = c.getRegisteredVariable(_parent);
                     path = factory.newPath(var);
                     path.setMetaData(meta);
-                    path.get(_member.fmd, false);
+                    path.get(_member.fmd, allowNull);
                 } else {           
                     path = (org.apache.openjpa.kernel.exps.Path)toValue(factory, c);
                 }
