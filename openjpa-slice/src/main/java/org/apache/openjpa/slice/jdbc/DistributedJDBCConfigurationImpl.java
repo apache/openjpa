@@ -284,7 +284,7 @@ public class DistributedJDBCConfigurationImpl extends JDBCConfigurationImpl
     
     public FinderTargetPolicy getFinderTargetPolicyInstance() {
         if (finderTargetPolicyPlugin.get() == null) {
-            finderTargetPolicyPlugin.instantiate(ReplicationPolicy.class,
+            finderTargetPolicyPlugin.instantiate(FinderTargetPolicy.class,
                     this, true);
         }
         return (FinderTargetPolicy) finderTargetPolicyPlugin.get();
