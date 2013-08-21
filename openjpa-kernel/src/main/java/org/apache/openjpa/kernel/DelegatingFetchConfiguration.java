@@ -587,4 +587,12 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
+    
+    public boolean isDefaultPUFetchGroupConfigurationOnly() {
+        try {
+            return _fetch.isDefaultPUFetchGroupConfigurationOnly();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
 }

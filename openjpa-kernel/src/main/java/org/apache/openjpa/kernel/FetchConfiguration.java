@@ -468,4 +468,10 @@ public interface FetchConfiguration
      * @since 0.4.1
      */
     public FetchConfiguration traverse(FieldMetaData fm);
+    
+    /**
+     * Affirm if the Fetch Plan currently matches the Persistence Unit's configured default.
+     * 
+     */
+    public boolean isDefaultPUFetchGroupConfigurationOnly();
 }
