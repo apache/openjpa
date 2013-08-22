@@ -21,6 +21,7 @@ package org.apache.openjpa.persistence.fetchgroups;
 
 import java.util.HashSet;
 
+import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.persistence.FetchPlan;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
@@ -34,6 +35,9 @@ public class TestFetchGroups extends SingleEMTestCase {
     
     private HashSet<FGEmployee> employeeSet = new HashSet<FGEmployee>();
     private HashSet<FGManager> managerSet = new HashSet<FGManager>();
+    
+    private static final String empDescriptionFieldStr =
+            "org.apache.openjpa.persistence.fetchgroups.FGEmployee.description";
     
     public void setUp() {
         super.setUp(CLEAR_TABLES, 
@@ -51,6 +55,12 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertNotNull(fp.getFetchGroups());
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
@@ -79,6 +89,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -90,6 +105,39 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(mgr.getLastName(), findMgr.getLastName());
         assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
     }
+    
+    /**
+     * Verify that adding a field to the fetch plan makes a normally JPA determined lazy loaded
+     * field to behave as an eagerly loaded field.
+     */
+    public void testDefaultFetchPlan003() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        FetchPlan fp = em.getFetchPlan();
+        assertNotNull(fp);
+        
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        FGManager mgr = managerSet.iterator().next();
+        assertNotNull(mgr);
+        
+        FGManager findMgr = em.find(FGManager.class, mgr.getId());
+        em.close();
+        
+        assertEquals(mgr.getId(), findMgr.getId());
+        assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+        assertEquals(mgr.getLastName(), findMgr.getLastName());
+        assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+    }
+    
     
     /**
      * Verify the use of the "openjpa.FetchGroups" property when used to add a fetch group
@@ -107,6 +155,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
@@ -141,6 +194,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("Default")); // Not the same as "default"
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -174,9 +232,15 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("Default")); // Not the same as "default"
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         fp.clearFetchGroups();
         assertNotNull(fp.getFetchGroups());
         assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
@@ -208,10 +272,17 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("Default")); // Not the same as "default"
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        
         // Remember, OPENJPA-2413 sets the list to be empty instead of containing "default"
         fp.clearFetchGroups();
         assertNotNull(fp.getFetchGroups());
         assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         
         // Reset to the PCtx default Fetch Plan
         fp.resetFetchGroups();
@@ -220,6 +291,7 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("Default")); // Not the same as "default"
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         
         // Verify that the PCtx default fetch plan was properly restored.  "default" should not be enabled
         // since it was not listed by openjpa.FetchGroups.
@@ -247,6 +319,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertNotNull(fp.getFetchGroups());
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
@@ -294,6 +371,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -325,6 +407,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -342,6 +426,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -358,6 +444,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -375,6 +463,7 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -391,6 +480,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -410,6 +501,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(0, fp.getFetchGroups().size());
         assertFalse(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -444,6 +537,12 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -463,6 +562,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -479,6 +580,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -496,6 +599,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -512,6 +617,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -529,6 +636,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -545,6 +654,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -564,6 +675,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(0, fp.getFetchGroups().size());
         assertFalse(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -596,6 +709,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -627,6 +745,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -644,6 +764,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -660,6 +782,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             // Second find, should rely on the finder cache to reuse generated SQL.
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
@@ -677,6 +801,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -695,6 +821,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(0, fp.getFetchGroups().size());
         assertFalse(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -730,6 +858,11 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
         
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         FGManager mgr = managerSet.iterator().next();
         assertNotNull(mgr);
         
@@ -737,6 +870,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -753,6 +888,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -769,6 +906,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -785,6 +924,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(2, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertTrue(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -801,6 +942,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(1, fp.getFetchGroups().size());
         assertTrue(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -819,6 +962,8 @@ public class TestFetchGroups extends SingleEMTestCase {
         assertEquals(0, fp.getFetchGroups().size());
         assertFalse(fp.getFetchGroups().contains("default"));
         assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
         {
             FGManager findMgr = em.find(FGManager.class, mgr.getId());
             em.clear();
@@ -831,6 +976,342 @@ public class TestFetchGroups extends SingleEMTestCase {
         
         em.close();
         emf2.close();
+    }
+    
+    /**
+     * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache,
+     * as it currently lacks the ability to distinguish fetch plan configuration in its key value.
+     * The PCtx's default fetch plan is the normal plan not modified by the "openjpa.FetchGroups"
+     * property.
+     * 
+     * In this variant, a find using the default fetch plan is first executed to prime the finder cache.
+     * Finds operating under a modified fetch plan should not utilize sql stored in the finder cache.
+     */
+    public void testFinderCache006() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        
+        FetchPlan fp = em.getFetchPlan();
+        assertNotNull(fp);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        FGManager mgr = managerSet.iterator().next();
+        assertNotNull(mgr);
+        
+        {
+            // First find, to prime the Finder Cache
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }
+        
+        {
+            // Second find, should rely on the finder cache to reuse generated SQL.
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }
+        
+        // Add a field to the fetch plan and verify expected behavior
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            // Second find, should rely on the finder cache to reuse generated SQL.
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Remove the field previously added, and verify expected behavior
+        fp.removeField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }   
+        
+        // Add a field to the fetch plan and verify expected behavior
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            // Second find, should rely on the finder cache to reuse generated SQL.
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Reset the fetch groups, and verify expected behavior (note the reset doesn't remove added fields!)
+        fp.resetFetchGroups();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Clear all fetch groups, and verify expected behavior (note the reset doesn't remove added fields!)
+        // Note, due to OPENJPA-2413 even though it behaves as if the "default" fetch group is enabled,
+        // it will not show up in the list of active fetch groups.
+        fp.clearFetchGroups();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Clear all fields, and verify expected behavior
+        fp.clearFields();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }
+        
+        em.close();
+    }
+    
+    /**
+     * Only SQL generated by the PCtx's default fetch plan should be used by the finder cache,
+     * as it currently lacks the ability to distinguish fetch plan configuration in its key value.
+     * The PCtx's default fetch plan is the normal plan not modified by the "openjpa.FetchGroups"
+     * property.
+     * 
+     * In this variant, a find using a modified fetch plan is first executed, which should not be added
+     * to the finder cache.  
+     */
+    public void testFinderCache007() {
+        OpenJPAEntityManager em = emf.createEntityManager();
+        
+        FetchPlan fp = em.getFetchPlan();
+        assertNotNull(fp);
+        
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        
+        FetchConfiguration fetchCfg = ((org.apache.openjpa.persistence.EntityManagerImpl) em)
+                .getBroker()
+                .getFetchConfiguration();
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        
+        FGManager mgr = managerSet.iterator().next();
+        assertNotNull(mgr);
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Remove the field, and verify expected behavior
+        fp.removeField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }   
+        
+        // Restore the field to the fetch plan and verify expected behavior
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            // Second find, should rely on the finder cache to reuse generated SQL.
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Remove the "DescFetchGroup" fetch group, and verify expected behavior
+        fp.removeField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        } 
+        
+        // Restore the field to the fetch plan and verify expected behavior
+        fp.addField(empDescriptionFieldStr);
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            // Second find, should rely on the finder cache to reuse generated SQL.
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Reset the fetch plan, and verify expected behavior (should not affect fields)
+        fp.resetFetchGroups();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(1, fp.getFetchGroups().size());
+        assertTrue(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFetchGroups().contains("DescFetchGroup"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Clear all fetch groups, and verify expected behavior (should not affect fields)
+        // Note, due to OPENJPA-2413 even though it behaves as if the "default" fetch group is enabled,
+        // it will not show up in the list of active fetch groups.
+        fp.clearFetchGroups();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fp.getFetchGroups().contains("default"));
+        assertTrue(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertEquals(mgr.getDescription(), findMgr.getDescription()); // Should not be lazy-loaded
+        }
+        
+        // Clear all fields, and verify expected behavior
+        fp.clearFields();
+        assertNotNull(fp.getFetchGroups());
+        assertEquals(0, fp.getFetchGroups().size());
+        assertFalse(fp.getFetchGroups().contains("default"));
+        assertFalse(fp.getFields().contains(empDescriptionFieldStr));
+        assertFalse(fetchCfg.isDefaultPUFetchGroupConfigurationOnly());
+        
+        {
+            FGManager findMgr = em.find(FGManager.class, mgr.getId());
+            em.clear();
+            
+            assertEquals(mgr.getId(), findMgr.getId());
+            assertEquals(mgr.getFirstName(), findMgr.getFirstName());
+            assertEquals(mgr.getLastName(), findMgr.getLastName());
+            assertNull(findMgr.getDescription()); // Should be lazy-loaded
+        }
+        
+        em.close();
     }
     
     private void createEmployeeData() {

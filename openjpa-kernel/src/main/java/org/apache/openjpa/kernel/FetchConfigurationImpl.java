@@ -483,6 +483,8 @@ public class FetchConfigurationImpl
             if (_state.fields == null)
                 _state.fields = new HashSet<String>();
             _state.fields.add(field);
+            
+            _state.fetchGroupIsPUDefault = false;
         } finally {
             unlock();
         }
@@ -507,8 +509,13 @@ public class FetchConfigurationImpl
     public FetchConfiguration removeField(String field) {
         lock();
         try {
-            if (_state.fields != null)
+            if (_state.fields != null) {
                 _state.fields.remove(field);
+                
+                if (_state.fields.size() == 0) {
+                    verifyDefaultPUFetchGroups();
+                }               
+            }
         } finally {
             unlock();
         }
