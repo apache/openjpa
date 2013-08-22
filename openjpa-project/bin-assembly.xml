@@ -18,7 +18,7 @@
  under the License.   
 -->
 <assembly>
-    <id>all</id>
+    <id>binaries</id>
     <formats>
         <format>zip</format>
     </formats>
@@ -45,75 +45,14 @@
                 <include>CHANGES.txt</include>
             </includes>
         </fileSet>
-        <!--
         <fileSet>
-            <directory>licenses</directory>
-            <outputDirectory>/lib</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>target/examples</directory>
-            <outputDirectory>/examples</outputDirectory>
-        </fileSet>
-        -->
-        <fileSet>
-            <directory>target/docbook</directory>
-            <outputDirectory>docs/docbook</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>../target/site/apidocs</directory>
-            <outputDirectory>docs/javadoc</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
-            <outputDirectory>docs/schema</outputDirectory>
-            <includes>
-                <include>extendable-orm.xsd</include>
-                <include>openjpa-orm.xsd</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-examples/image-gallery</directory>
-            <outputDirectory>examples/image-gallery</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.log</exclude>
-                <exclude>**/.*</exclude>
-                <exclude>**/.*/**</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-examples/openbooks</directory>
-            <outputDirectory>examples/openbooks</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.log</exclude>
-                <exclude>**/.*</exclude>
-                <exclude>**/.*/**</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-examples/opentrader</directory>
-            <outputDirectory>examples/opentrader</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.log</exclude>
-                <exclude>**/.*</exclude>
-                <exclude>**/.*/**</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>../openjpa-examples/simple/src/main/java</directory>
-            <outputDirectory>examples/simple</outputDirectory>
-            <excludes>
-                <exclude>**/target/**</exclude>
-                <exclude>**/*.log</exclude>
-                <exclude>**/.*</exclude>
-                <exclude>**/.*/**</exclude>
-            </excludes>
-        </fileSet>
+        	<directory>../openjpa-persistence/target/classes/org/apache/openjpa/persistence</directory>
+        	<outputDirectory>docs/schema</outputDirectory>
+        	<includes>
+        		<include>extendable-orm.xsd</include>
+        		<include>openjpa-orm.xsd</include>
+        	</includes>
+        </fileSet>        
     </fileSets>
     <dependencySets>
         <dependencySet>

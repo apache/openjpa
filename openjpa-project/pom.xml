@@ -144,23 +144,25 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
+                                <descriptor>source-assembly.xml</descriptor>
+                                <descriptor>bin-assembly.xml</descriptor>
                             </descriptors>
                             <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>sources</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <configuration>
-                            <descriptor>source-assembly.xml</descriptor>
-                            <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
-                            <workDirectory>target/work</workDirectory>
-                        </configuration>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>sources</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>attached</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<descriptor>source-assembly.xml</descriptor>-->
+                            <!--<outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>-->
+                            <!--<workDirectory>target/work</workDirectory>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
                 </executions>
             </plugin>
 
