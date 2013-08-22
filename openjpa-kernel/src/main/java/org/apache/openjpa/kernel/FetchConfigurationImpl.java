@@ -145,6 +145,7 @@ public class FetchConfigurationImpl
         public Map<String,Object> hints = null;
         public boolean fetchGroupContainsDefault = false;
         public boolean fetchGroupContainsAll = false;
+        public boolean fetchGroupIsPUDefault = false;
         public boolean extendedPathLookup = false;
         public DataCacheRetrieveMode cacheRetrieveMode = DataCacheRetrieveMode.USE;
         public DataCacheStoreMode cacheStoreMode = DataCacheStoreMode.USE;        
@@ -339,6 +340,10 @@ public class FetchConfigurationImpl
      }
      
     public FetchConfiguration addFetchGroup(String name) {
+        return addFetchGroup(name, true);
+    }
+     
+    public FetchConfiguration addFetchGroup(String name, boolean recomputeIsDefault) {
         if (StringUtils.isEmpty(name))
             throw new UserException(_loc.get("null-fg"));
 
@@ -347,11 +352,15 @@ public class FetchConfigurationImpl
             if (_state.fetchGroups == null)
                 _state.fetchGroups = new HashSet<String>();
             _state.fetchGroups.add(name);
+
             if (FetchGroup.NAME_ALL.equals(name))
                 _state.fetchGroupContainsAll = true;
             else if (FetchGroup.NAME_DEFAULT.equals(name))
                 _state.fetchGroupContainsDefault = true;
         } finally {
+            if (recomputeIsDefault) {
+                verifyDefaultPUFetchGroups();
+            }
             unlock();
         }
         return this;
@@ -361,11 +370,17 @@ public class FetchConfigurationImpl
         if (groups == null || groups.isEmpty())
             return this;
         for (String group : groups)
-            addFetchGroup(group);
+            addFetchGroup(group, false);
+        
+        verifyDefaultPUFetchGroups();
         return this;
     }
-
+    
     public FetchConfiguration removeFetchGroup(String group) {
+        return removeFetchGroup(group, true);
+    }
+
+    public FetchConfiguration removeFetchGroup(String group, boolean recomputeIsDefault) {
         lock();
         try {
             if (_state.fetchGroups != null) {
@@ -376,6 +391,9 @@ public class FetchConfigurationImpl
                     _state.fetchGroupContainsDefault = false;
             }
         } finally {
+            if (recomputeIsDefault) {
+                verifyDefaultPUFetchGroups();
+            }
             unlock();
         }
         return this;
@@ -386,8 +404,9 @@ public class FetchConfigurationImpl
         try {
             if (_state.fetchGroups != null && groups != null)
                 for (String group : groups)
-                    removeFetchGroup(group);
+                    removeFetchGroup(group, false);
         } finally {
+            verifyDefaultPUFetchGroups();
             unlock();
         }
         return this;
@@ -402,6 +421,7 @@ public class FetchConfigurationImpl
                 _state.fetchGroupContainsDefault = true;
             }
         } finally {
+            verifyDefaultPUFetchGroups();
             unlock();
         }
         return this;
@@ -412,7 +432,41 @@ public class FetchConfigurationImpl
         if (_state.ctx != null)
             addFetchGroups(Arrays.asList(_state.ctx.getConfiguration().
                 getFetchGroupsList()));
+        
+        _state.fetchGroupIsPUDefault = true;
+        verifyDefaultPUFetchGroups();
+        
         return this;
+    }
+    
+    /**
+     * Determine if the current selection of FetchGroups is equivalent to the Configuration's default FetchGroups
+     */
+    private void verifyDefaultPUFetchGroups() {
+        _state.fetchGroupIsPUDefault = false;
+        
+        if (_state.fields != null && !_state.fields.isEmpty()) {
+            return;
+        }
+            
+        if (_state.fetchGroups != null && _state.ctx != null) {
+            List<String> defaultPUFetchGroups = Arrays.asList(_state.ctx.getConfiguration().getFetchGroupsList());
+            if (_state.fetchGroups.size() != defaultPUFetchGroups.size()) {
+                return;
+            }
+            
+            for (String fetchGroupName : defaultPUFetchGroups) {
+                if (!_state.fetchGroups.contains(fetchGroupName)) {
+                    return;
+                }
+            }
+            
+            _state.fetchGroupIsPUDefault = true;
+        }
+    }
+    
+    public boolean isDefaultPUFetchGroupConfigurationOnly() {
+        return _state.fetchGroupIsPUDefault;
     }
 
     public Set<String> getFields() {
@@ -433,6 +487,7 @@ public class FetchConfigurationImpl
             if (_state.fields == null)
                 _state.fields = new HashSet<String>();
             _state.fields.add(field);
+            _state.fetchGroupIsPUDefault = false;
         } finally {
             unlock();
         }
@@ -457,8 +512,13 @@ public class FetchConfigurationImpl
     public FetchConfiguration removeField(String field) {
         lock();
         try {
-            if (_state.fields != null)
+            if (_state.fields != null) {
                 _state.fields.remove(field);
+                
+                if (_state.fields.size() == 0) {
+                    verifyDefaultPUFetchGroups();
+                }
+            }
         } finally {
             unlock();
         }

@@ -500,6 +500,14 @@ public class DelegatingFetchConfiguration
         }
     }
     
+    public boolean isDefaultPUFetchGroupConfigurationOnly() {
+        try {
+            return _fetch.isDefaultPUFetchGroupConfigurationOnly();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }
+    }
+    
     public Object getHint(String name) {
         try {
             return _fetch.getHint(name);
