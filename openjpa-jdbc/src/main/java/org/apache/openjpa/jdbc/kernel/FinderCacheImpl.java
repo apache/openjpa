@@ -107,6 +107,12 @@ public class FinderCacheImpl
         if (fetch.getReadLockLevel() != 0) {
             return null;
         }
+        
+        // FinderCache only operates with Default Fetch Plans
+        if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+            return null;
+        }
+        
         boolean ignore = isHinted(fetch, QueryHints.HINT_IGNORE_FINDER);
         boolean invalidate = isHinted(fetch, QueryHints.HINT_INVALIDATE_FINDER);
         if (invalidate) {
@@ -144,6 +150,12 @@ public class FinderCacheImpl
             if (fetch.getReadLockLevel() != 0) {
                 return null;
             }
+            
+            // FinderCache only operates with Default Fetch Plans
+            if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+                return null;
+            }           
+            
             boolean recache = isHinted(fetch, QueryHints.HINT_RECACHE_FINDER);
             if (isExcluded(mapping)) {
                 return recache ? put(mapping, select) : null;

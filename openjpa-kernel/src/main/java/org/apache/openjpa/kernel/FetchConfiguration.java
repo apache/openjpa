@@ -414,6 +414,12 @@ public interface FetchConfiguration
 	 */
 	public boolean isHintSet(String key);
 
+	/**
+	 * Affirm if the Fetch Plan currently matches the Persistence Unit's configured default.
+	 * 
+	 */
+	public boolean isDefaultPUFetchGroupConfigurationOnly();
+	
     /**
      * Root classes for recursive operations. This set is not thread safe.
      */
