@@ -542,6 +542,7 @@ public class FetchConfigurationImpl
             if (_state.fields != null)
                 _state.fields.clear();
         } finally {
+            verifyDefaultPUFetchGroups();
             unlock();
         }
         return this;
