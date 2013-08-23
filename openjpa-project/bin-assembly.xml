@@ -18,7 +18,7 @@
  under the License.   
 -->
 <assembly>
-    <id>binaries</id>
+    <id>binary-nodocs</id>
     <formats>
         <format>zip</format>
     </formats>

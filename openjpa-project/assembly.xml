@@ -18,7 +18,7 @@
  under the License.   
 -->
 <assembly>
-    <id>all</id>
+    <id>binary</id>
     <formats>
         <format>zip</format>
     </formats>
