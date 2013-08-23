@@ -976,6 +976,7 @@ public class StateManagerImpl
             boolean wasNew = isNew();
             boolean wasFlushed = isFlushed();
             boolean wasDeleted = isDeleted();
+            boolean needPostUpdate = !(wasNew && !wasFlushed) && (ImplHelper.getUpdateFields(this) != null);
 
             // all dirty fields were flushed
             _flush.or(_dirty);
@@ -1003,7 +1004,7 @@ public class StateManagerImpl
                 fireLifecycleEvent(LifecycleEvent.AFTER_PERSIST_PERFORMED);
             else if (wasDeleted)
                 fireLifecycleEvent(LifecycleEvent.AFTER_DELETE_PERFORMED);
-            else 
+            else  if (needPostUpdate)
                 // updates and new-flushed with changes
                 fireLifecycleEvent(LifecycleEvent.AFTER_UPDATE_PERFORMED);
         } else if (reason == BrokerImpl.FLUSH_ROLLBACK) {
@@ -2828,7 +2829,8 @@ public class StateManagerImpl
             // BEFORE_PERSIST is handled during Broker.persist and Broker.attach
             if (isDeleted())
                 fireLifecycleEvent(LifecycleEvent.BEFORE_DELETE);
-            else if (!(isNew() && !isFlushed()))
+            else if (!(isNew() && !isFlushed()) &&
+            		(ImplHelper.getUpdateFields(this) != null))
                 fireLifecycleEvent(LifecycleEvent.BEFORE_UPDATE);
             _flags |= FLAG_PRE_FLUSHED;
         }

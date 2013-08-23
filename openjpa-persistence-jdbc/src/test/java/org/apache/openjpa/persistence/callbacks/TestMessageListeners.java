@@ -156,18 +156,16 @@ public class TestMessageListeners extends SingleEMFTestCase {
             em.getTransaction().commit();
 
             // Complete the 2nd @postPersist
-            //assertStatus(2, 2, 0, 0, 0, 0, 0);
-            // preUpdate and postUpdate are called in 1.2.x but not in 2.0
-            assertStatus(2, 2, 1, 1, 0, 0, 0);
+            assertStatus(2, 2, 0, 0, 0, 0, 0);
             
             // Make an update to trigger the pre/postUpdater callbacks
             em.getTransaction().begin();
             message = em.find(Message.class,message.getId());
             message.setMessage("Update field and trigger pre/postUpdate");
             em.getTransaction().commit();
-            
+
             // Complete the 2nd @postPersist
-            assertStatus(2, 2, 2, 2, 0, 0, 0);
+            assertStatus(2, 2, 1, 1, 0, 0, 0);
 
         } finally {
             if (em != null && em.getTransaction().isActive())
