@@ -469,7 +469,8 @@ public class DB2Dictionary
                 break;
             }
         } else {
-        	if ( fetch != null && fetch.getIsolation() == Connection.TRANSACTION_READ_UNCOMMITTED ) {
+        	if ( fetch != null && fetch.getIsolation() == Connection.TRANSACTION_READ_UNCOMMITTED 
+        			&& sel.getParent() == null) { // i.e. not a subquery
 	            forUpdateString.append(" ").append(forReadOnlyClause)
 	            .append(" ").append(withURClause);
 	    	}
