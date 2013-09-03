@@ -46,6 +46,7 @@ import org.apache.tools.ant.types.EnumeratedAttribute;
  * <li><code>package</code></li>
  * <li><code>directory</code></li>
  * <li><code>useSchemaName</code></li>
+ * <li><code>useSchemaElement</code></li>
  * <li><code>useForeignKeyName</code></li>
  * <li><code>nullableAsObject</code></li>
  * <li><code>blobAsObject</code></li>
@@ -102,6 +103,13 @@ public class ReverseMappingToolTask
      */
     public void setUseSchemaName(boolean useSchemaName) {
         flags.useSchemaName = useSchemaName;
+    }
+    
+    /**
+     * Set whether to use the schema name in generated files
+     */
+    public void setUseSchemaElement(boolean useSchemaElement) {
+    	flags.useSchemaElement = useSchemaElement;
     }
 
     /**

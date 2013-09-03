@@ -223,6 +223,7 @@ public class ClassMetaData
     private Boolean inverseManagedFields = null;
     private List<FieldMetaData> _mappedByIdFields;
     private boolean _mappedByIdFieldsSet = false;
+    private boolean _useSchemaElement = true;
 
     /**
      * Constructor. Supply described type and repository.
@@ -2822,5 +2823,19 @@ public class ClassMetaData
             _mappedByIdFieldsSet = true;
         }
         return _mappedByIdFields;
+    }
+
+    /**
+     * Set whether to include schema name in generated class files
+     */
+    public boolean getUseSchemaElement() {
+        return _useSchemaElement;
+    }
+
+    /**
+     * Get whether to include schema name in generated class files
+     */
+    public void setUseSchemaElement(boolean useSchemaElement) {
+        this._useSchemaElement = useSchemaElement;
     }
 }

@@ -282,7 +282,16 @@ public class AnnotationPersistenceMappingSerializer
             if (index < 0)
                 ab.add("name", table);
             else {
-                ab.add("schema", table.substring(0, index));
+                Map<String, ClassMetaData> classMetaData = getClassMetaData();
+                Object[] keySet = null; 
+                if(classMetaData != null)
+                {
+                    keySet = classMetaData.keySet().toArray();
+                }
+                if((keySet != null) && (keySet.length > 0) && classMetaData.get(keySet[0]).getUseSchemaElement())
+                {
+                    ab.add("schema", table.substring(0, index));
+                }
                 ab.add("name", table.substring(index + 1));
             }
         }

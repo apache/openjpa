@@ -241,7 +241,16 @@ public class XMLPersistenceMappingSerializer
             if (index < 0)
                 addAttribute("name", table);
             else {
-                addAttribute("schema", table.substring(0, index));
+                Map<String, ClassMetaData> classMetaData = getClassMetaData();
+                Object[] keySet = null; 
+                if(classMetaData != null)
+                {
+                    keySet = classMetaData.keySet().toArray();
+                }
+                if((keySet != null) && (keySet.length > 0) && classMetaData.get(keySet[0]).getUseSchemaElement())
+                {
+                    addAttribute("schema", table.substring(0, index));
+                }
                 addAttribute("name", table.substring(index + 1));
             }
         }

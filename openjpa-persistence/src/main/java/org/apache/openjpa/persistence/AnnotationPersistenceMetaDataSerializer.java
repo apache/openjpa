@@ -1545,4 +1545,11 @@ public class AnnotationPersistenceMetaDataSerializer
             return fmd1.compareTo(fmd2);
 		}
 	}
+	
+	/**
+	 * Returns the stored ClassMetaData
+	 */
+	public Map<String, ClassMetaData> getClassMetaData() {
+	    return _metas;
+	}
 }

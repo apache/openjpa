@@ -470,4 +470,11 @@
 			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
 		</properties>
 	</persistence-unit>
+
+	<persistence-unit name="rev-mapping-pu">
+		<properties>
+			<property name="openjpa.jdbc.Schemas" value="USCHEMA.USCHANTBL"/>
+		</properties>
+	</persistence-unit>
+
 </persistence>

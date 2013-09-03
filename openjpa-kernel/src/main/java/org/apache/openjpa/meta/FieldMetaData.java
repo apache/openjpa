@@ -187,6 +187,7 @@ public class FieldMetaData
     private Boolean _lobField = null;
     private Boolean _serializableField = null;
     private boolean _generated = false;
+    private boolean _useSchemaElement = true;
 
     // Members aren't serializable. Use a proxy that can provide a Member
     // to avoid writing the full Externalizable implementation.
@@ -2032,6 +2033,7 @@ public class FieldMetaData
         _isElementCollection = field._isElementCollection;
         _access = field._access;
         _orderDec = field._orderDec;
+        _useSchemaElement = field._useSchemaElement;
 
         // embedded fields can't be versions
         if (_owner.getEmbeddingMetaData() == null && _version == null)
@@ -2429,5 +2431,19 @@ public class FieldMetaData
     
     public void setDelayCapable(Boolean delayCapable) {
         _delayCapable = delayCapable;
+    }
+
+    /**
+     * Whether to include schema name in generated files
+     */
+    public boolean getUseSchemaElement() {
+        return _useSchemaElement;
+    }
+
+    /**
+     * Whether to include schema name in generated files
+     */
+    public void setUseSchemaElement(boolean _useSchemaElement) {
+        this._useSchemaElement = _useSchemaElement;
     }
 }
