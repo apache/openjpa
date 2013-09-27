@@ -95,7 +95,10 @@ public class DBDictionaryFactory {
                 dclass = dictionaryClassForString(getProtocol(meta.getURL()), conf);
             if (dclass != null && dclass.contains("MySQL")) {
                 // MariaDB returns "MySQL" for product name, need to verify by looking at product version.
-                dclass = dictionaryClassForString(meta.getDatabaseProductVersion(), conf);
+                final String checkMariaDB = dictionaryClassForString(meta.getDatabaseProductVersion(), conf);
+                if (checkMariaDB != null) {
+                    dclass = checkMariaDB;
+                }
             }
             if (dclass == null)
                 dclass = DBDictionary.class.getName();
