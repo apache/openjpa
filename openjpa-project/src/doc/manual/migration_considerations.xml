@@ -379,6 +379,25 @@
                     </itemizedlist>    
                 </para>
             </section>
+            <section id="ReturnNullOnEmptyAggregateResult">
+                <title>
+                    Return value of aggregate functions in SELECT clause 
+                </title>
+                <!-- See OPENJPA-1794 for details. -->
+                <para>
+                    The JPA specification states "If SUM, AVG, MAX, or MIN is used, and there are no values to which the aggregate function can be
+                    applied, the result of the aggregate function is NULL."  Prior to this update, OpenJPA incorrectly returned 0 for SUM, AVG, MIN, 
+                    and MAX when a state field being aggregated is numeric.  This behavior affects both JPQL and Criteria queries.  With this update,
+                    OpenJPA will return a null result value for these aggregate functions when a query returns no result.
+                </para>
+                <para>
+                    To enable the new behavior of this fix, you need to set the following persistence property in your persistence.xml or when
+                    creating an EntityManagerFactory.
+                    <programlisting>
+    &lt;property name="openjpa.Compatibility" value="ReturnNullOnAggregateResult=true"/&gt;
+                    </programlisting>
+                </para>
+            </section>            
         </section>
     </section>
 	<section id="jpa_2.1">

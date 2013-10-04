@@ -119,8 +119,13 @@ abstract class UnaryOp
         throws SQLException {
         Object value = res.getObject(this, JavaSQLTypes.JDBC_DEFAULT, null);
         Class<?> type = getType();
-        if (value == null && (type.isPrimitive() || Number.class.isAssignableFrom(type))) {
-            value = Filters.getDefaultForNull(Filters.wrap(type));
+        if (value == null) {
+            if (nullableValue(ctx, state)) {  // OPENJPA-1794
+                return null;
+            }
+            else if (type.isPrimitive() || Number.class.isAssignableFrom(type)) {
+                value = Filters.getDefaultForNull(Filters.wrap(type));
+            }
         }
         return Filters.convert(value, type);
     }
@@ -171,5 +176,10 @@ abstract class UnaryOp
         _val.acceptVisit(visitor);
         visitor.exit(this);
     }
-}
+    
+    // OPENJPA-1794
+    protected boolean nullableValue(ExpContext ctx, ExpState state) {
+        return false;
+    }
 
+}
