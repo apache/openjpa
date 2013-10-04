@@ -76,7 +76,6 @@ public class Compatibility {
     private boolean _resetFlushFlagForCascadePersist = true;//OPENJPA-2051
     private boolean _singletonLifecycleEventManager = false;
     private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
-    private boolean _useListAttributeForArrays = true;
     private boolean _returnNullOnEmptyAggregateResult = false;   // OPENJPA-1794
 
     /**
