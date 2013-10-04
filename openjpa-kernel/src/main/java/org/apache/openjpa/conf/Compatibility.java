@@ -74,6 +74,7 @@ public class Compatibility {
     private boolean _filterPCRegistryClasses = false; // OPENJPA-2288
     private boolean _useListAttributeForArrays = true;
     private boolean _returnNullOnEmptyAggregateResult = false;   // OPENJPA-1794
+    private boolean _cacheNonDefaultFetchPlanQueries = false; // OPENJPA-2414
 
     /**
      * Whether to require exact identity value types when creating object
@@ -715,6 +716,22 @@ public class Compatibility {
      */
     public void setReturnNullOnAggregateResult(boolean returnNullOnEmptyAggregateResult) {
         _returnNullOnEmptyAggregateResult = returnNullOnEmptyAggregateResult;
+    }
+    
+    /**
+     * Whether the SQL generated for queries executed with a modified fetch plan are cached.
+     * 
+     */
+    public boolean  getCacheNonDefaultFetchPlanQueries() {
+        return _cacheNonDefaultFetchPlanQueries;
+    }
+    
+    /**
+     * Whether the SQL generated for queries executed with a modified fetch plan are cached.
+     * 
+     */
+    public void setCacheNonDefaultFetchPlanQueries(boolean bool) {
+        _cacheNonDefaultFetchPlanQueries = bool;
     }
 }
 
