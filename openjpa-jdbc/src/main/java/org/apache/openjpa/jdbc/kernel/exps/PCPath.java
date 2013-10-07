@@ -576,7 +576,8 @@ public class PCPath
                         pstate.joins.setJoinContext(null);
                     }
                     
-                    rel = traverseField(pstate, key, forceOuter, false);
+                    rel = traverseField(pstate, key, forceOuter ||
+                              ctx.store.getDBDictionary().fullResultCollectionInOrderByRelation, false);
                 }
 
                 // mark if the next traversal should go through
