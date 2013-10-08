@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence.external;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -55,6 +58,30 @@ public class TestExternalValues extends SingleEMFTestCase {
         Assert.assertEquals("MEDIUM", aPrime.getS2());
         Assert.assertEquals(true, aPrime.getUseStreaming());
 
+        em.getTransaction().begin();
+
+        entity = new EntityA();
+        entity.setS1("LARGE");
+        entity.setS2("LARGE");
+        entity.setUseStreaming(false);
+        em.persist(entity);
+
+        em.getTransaction().commit();
+
+        q = em.createQuery("SELECT t0.id, t0.s1, t0._useStreaming, t0.s2 FROM EntityA t0 ORDER BY t0.s1 DESC");
+        List<Object[]> res = q.getResultList();
+
+        Iterator<Object[]> itr = res.iterator();
+        Object[] values = itr.next();
+        Assert.assertEquals("SMALL", values[1]);
+        Assert.assertEquals(Boolean.TRUE, values[2]);
+        Assert.assertEquals("MEDIUM", values[3]);
+
+        values = itr.next();
+        Assert.assertEquals("LARGE", values[1]);
+        Assert.assertEquals(Boolean.FALSE, values[2]);
+        Assert.assertEquals("LARGE", values[3]);
+        
         em.close();
     }
 

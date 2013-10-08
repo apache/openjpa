@@ -918,14 +918,18 @@ public class PCPath
         }
 
         Object ret;
-        if (_key)
+        if (_key) {
             // Map key is a java primitive type
-            //    example: Map<Integer, Employee> emps
-            ret = res.getObject(pstate.cols[0],
-                null, pstate.joins);
-        else
-            ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, 
-                pstate.joins);
+            // example: Map<Integer, Employee> emps
+            ret = res.getObject(pstate.cols[0], null, pstate.joins);
+        } else {
+            ret = pstate.field.loadProjection(ctx.store, ctx.fetch, res, pstate.joins);
+        }
+        
+        if (pstate.field.isExternalized()) {
+            ret = pstate.field.getFieldValue(ret, ctx.store.getContext());            
+        }
+        
         if (_cast != null)
             ret = Filters.convert(ret, _cast);
         return ret;
