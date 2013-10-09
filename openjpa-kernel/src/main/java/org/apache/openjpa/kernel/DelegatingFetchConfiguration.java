@@ -595,4 +595,12 @@ public class DelegatingFetchConfiguration
             throw translate(re);
         }
     }
+    
+    public boolean isFetchConfigurationSQLCacheAdmissible() {
+        try {
+            return _fetch.isFetchConfigurationSQLCacheAdmissible();
+        } catch (RuntimeException re) {
+            throw translate(re);
+        }  
+    }
 }

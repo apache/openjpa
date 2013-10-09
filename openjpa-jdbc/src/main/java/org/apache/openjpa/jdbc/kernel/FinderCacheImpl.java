@@ -108,8 +108,7 @@ public class FinderCacheImpl
             return null;
         }
         
-        // FinderCache only operates with Default Fetch Plans
-        if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+        if (!fetch.isFetchConfigurationSQLCacheAdmissible()) {
             return null;
         }
         
@@ -151,10 +150,9 @@ public class FinderCacheImpl
                 return null;
             }
             
-            // FinderCache only operates with Default Fetch Plans
-            if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+            if (!fetch.isFetchConfigurationSQLCacheAdmissible()) {
                 return null;
-            }           
+            }
             
             boolean recache = isHinted(fetch, QueryHints.HINT_RECACHE_FINDER);
             if (isExcluded(mapping)) {
