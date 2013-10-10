@@ -215,6 +215,7 @@ public class DBDictionary
     public String fixedSizeTypeNames = null;
     public String schemaCase = SCHEMA_CASE_UPPER;
     public boolean setStringRightTruncationOn = true;
+    public boolean fullResultCollectionInOrderByRelation = false;
 
     // sql
     public String validationSQL = null;
