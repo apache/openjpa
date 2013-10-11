@@ -152,6 +152,9 @@ public class OpenJPAPersistenceUtil {
                     return LoadState.NOT_LOADED;
                 }
             }
+            if (pcs != null && pcs.contains(sm)) {
+                return LoadState.LOADED;
+            }
             FieldMetaData[] fmds = sm.getMetaData().getFields();
             // Check load state of all persistent eager fetch attributes
             if (fmds != null && fmds.length > 0) {
