@@ -87,7 +87,7 @@ public class PCClassFileTransformer
      *
      * @param repos metadata repository to use internally
      * @param flags enhancer configuration
-     * @param loader temporary class loader for loading intermediate classes
+     * @param tmpLoader temporary class loader for loading intermediate classes
      * @param devscan whether to scan the dev classpath for persistent types
      * if none are configured
      */

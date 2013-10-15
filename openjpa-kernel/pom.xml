@@ -74,9 +74,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>3.2</version>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-asm4-shaded</artifactId>
+            <version>3.14</version>
         </dependency>
     </dependencies>
 
