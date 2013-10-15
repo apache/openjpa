@@ -43,7 +43,8 @@
     <version>2.3.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>1.6</java.version>
+        <java.class.version>1.6</java.class.version>
+        <java.testclass.version>1.6</java.testclass.version>
 
         <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
@@ -83,10 +84,10 @@
         <!-- other common versions -->
         <slf4jVersion>1.6.1</slf4jVersion>
         <!-- Compile Java source/target class level -->
-        <compile.class.source>${java.version}</compile.class.source>
-        <compile.class.target>${java.version}</compile.class.target>
-        <compile.testclass.source>${java.version}</compile.testclass.source>
-        <compile.testclass.target>${java.version}</compile.testclass.target>
+        <compile.class.source>${java.class.version}</compile.class.source>
+        <compile.class.target>${java.class.version}</compile.class.target>
+        <compile.testclass.source>${java.testclass.version}</compile.testclass.source>
+        <compile.testclass.target>${java.testclass.version}</compile.testclass.target>
     </properties>
 
     <licenses>
