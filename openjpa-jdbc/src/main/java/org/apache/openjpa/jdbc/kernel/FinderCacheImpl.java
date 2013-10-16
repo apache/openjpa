@@ -108,8 +108,7 @@ public class FinderCacheImpl
             return null;
         }
         
-        // FinderCache only operates with Default Fetch Plans
-        if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+        if (!fetch.isFetchConfigurationSQLCacheAdmissible()) {
             return null;
         }
         
@@ -151,8 +150,7 @@ public class FinderCacheImpl
                 return null;
             }
             
-            // FinderCache only operates with Default Fetch Plans
-            if (!fetch.isDefaultPUFetchGroupConfigurationOnly()) {
+            if (!fetch.isFetchConfigurationSQLCacheAdmissible()) {
                 return null;
             }           
             
