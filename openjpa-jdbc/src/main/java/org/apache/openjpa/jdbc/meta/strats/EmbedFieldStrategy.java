@@ -445,13 +445,25 @@ public class EmbedFieldStrategy
      */
     private boolean containsEmbeddedResult(FetchConfiguration fetch, Result res) {
         FieldMapping[] fields = field.getEmbeddedMapping().getFieldMappings();
+        boolean containsUnloadedEagerField = false;
+        
         for (int i = 0; i < fields.length; i++) {
-            boolean load = (fetch.requiresFetch(fields[i]) == FetchConfiguration.FETCH_LOAD);
-            if (load) {
-                // check the first eager fetch field
-                return checkResult(fields[i],res);
+            boolean inResultSet = checkResult(fields[i],res);                
+            if (inResultSet) {
+                // At least one of the embeddable's field is in the ResultSet.
+                return true;
+            }
+            
+            if (fetch.requiresFetch(fields[i]) == FetchConfiguration.FETCH_LOAD) {
+                containsUnloadedEagerField = true;
             }
         }
+        
+        // A field expected to be loaded eagerly was missing from the ResultSet.
+        if (containsUnloadedEagerField == true) {
+            return false;
+        }
+        
         // if all fields are lazy and in the default fetch group, populate the embeddable 
         // so its attributes can be loaded when accessed.
         return fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT);
