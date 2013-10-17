@@ -1075,9 +1075,14 @@ public class FieldMapping
         // version, it will have a NoneFieldMapping (since the version strategy
         // for the class takes care of it's mapping), and NoneFieldStrategies
         // do not have columns.
-        if (isVersion())
-            return getDeclaringMapping().getVersion().getColumns();
-        else
+        //
+        // rgc : 2 March 2011 : Still hacky. If the version field is in a mapped super class we need to look
+        // at the defining metadata to find the correct Version. Not sure why the version for the declaring metadata
+        // is different than the defining metadata.
+        if (isVersion()){
+            ClassMapping cm = (ClassMapping)((FieldMetaData)this).getDefiningMetaData();
+            return cm.getVersion().getColumns();
+        }else
             return _val.getColumns();
     }
 
