@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.Schemas;
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.jdbc.sql.Select;
@@ -343,6 +344,11 @@ public class Version
         return assertStrategy().load(sm, store, res);
     }
 
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
+        throws SQLException {
+        return assertStrategy().load(sm, store, res, joins);
+    }
+    
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
         assertStrategy().afterLoad(sm, store);
     }

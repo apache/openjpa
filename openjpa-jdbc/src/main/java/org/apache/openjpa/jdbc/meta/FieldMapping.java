@@ -1006,7 +1006,7 @@ public class FieldMapping
     	// OPENJPA-662: Version fields have NoneFieldStrategy -- hence they
     	// need special treatment
     	if (isVersion()) {
-    		return getDefiningMapping().getVersion().load(null, store, res);
+    		return getDefiningMapping().getVersion().load(null, store, res, joins);
     	}
         return assertStrategy().loadProjection(store, fetch, res, joins);
     }
