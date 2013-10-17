@@ -1423,9 +1423,21 @@ public class DBDictionary
     /**
      * Set a completely unknown parameter into a prepared statement.
      */
-    public void setUnknown(PreparedStatement stmnt, int idx, Object val,
-        Column col)
-        throws SQLException {
+    public void setUnknown(PreparedStatement stmt, int idx, Object val, Column col) throws SQLException {
+        if (val instanceof Object[]) {
+            Object[] valArray = (Object[])val;
+            for (Object object : valArray) {
+                setUnknown(stmt, idx, col, object);
+            }
+        } else {
+            setUnknown(stmt, idx, col, val);
+        }
+    }
+    
+    /**
+     * Set a completely unknown parameter into a prepared statement.
+     */
+    public void setUnknown(PreparedStatement stmnt, int idx, Column col, Object val) throws SQLException {
         Sized sized = null;
         Calendard cald = null;
         if (val instanceof Sized) {
