@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -54,6 +55,12 @@ public interface VersionStrategy
      * Load data.
      */
     public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
+        throws SQLException;
+    
+    /**
+     * Load data.
+     */
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException;
 
     /**

@@ -29,11 +29,13 @@ import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.VersionMappingInfo;
+import org.apache.openjpa.jdbc.meta.strats.AbstractVersionStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Row;
 import org.apache.openjpa.jdbc.sql.RowManager;
@@ -258,17 +260,22 @@ public abstract class ColumnVersionStrategy
         sel.select(vers.getColumns());
         return true;
     }
+    
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res) 
+        throws SQLException {
+        return this.load(sm, store, res, null);
+    }
 
-    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res)
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
         throws SQLException {
         // typically if one version column is in the result, they all are, so
         // optimize by checking for the first one before doing any real work
         Column[] cols = vers.getColumns();
-        if (!res.contains(cols[0])) {
+        if (!res.contains(cols[0], joins)) {
             return null;
         }
 
-        Object version = populateFromResult(res);
+        Object version = populateFromResult(res, joins);
         
         // OPENJPA-662 Allow a null StateManager because this method may just be
         // invoked to get the result of projection query
@@ -298,7 +305,7 @@ public abstract class ColumnVersionStrategy
                 return false;
 
             Object memVersion = sm.getVersion();
-            Object dbVersion  = populateFromResult(res);
+            Object dbVersion  = populateFromResult(res, null);
             boolean refresh   = compare(memVersion, dbVersion) < 0;
 
             if (updateVersion)
@@ -329,14 +336,14 @@ public abstract class ColumnVersionStrategy
      * @return a single Object or an array depending on whether using a single
      * or multiple columns being used for representation.
     */
-    Object populateFromResult(Result res) throws SQLException {
+    Object populateFromResult(Result res, Joins joins) throws SQLException {
         if (res == null)
  		return null;
     	
         Column[] cols = vers.getColumns();
         Object[] values = new Object[cols.length];
         for (int i = 0; i < cols.length; i++) {
-            values[i] = res.getObject(cols[i], -1, null);
+            values[i] = res.getObject(cols[i], null, joins);
         }
         return (cols.length == 1) ? values[0] : values;
     }
