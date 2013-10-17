@@ -18,12 +18,12 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.openjpa.meta.JavaTypes;
-import org.apache.openjpa.util.InternalException;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
+import org.apache.openjpa.meta.JavaTypes;
 
 /**
  * Uses a version number for optimistic versioning.
@@ -36,7 +36,8 @@ public class NumberVersionStrategy
     public static final String ALIAS = "version-number";
 
     private Number _initial = 1;
-
+    private Integer _javaType = null;
+    
     /**
      * Set the initial value for version column. Defaults to 1.
      */
@@ -56,7 +57,13 @@ public class NumberVersionStrategy
     }
 
     protected int getJavaType() {
-        return JavaTypes.INT;
+        if (_javaType == null && vers.getClassMapping().getVersionFieldMapping() != null) {
+            _javaType = Integer.valueOf(vers.getClassMapping().getVersionFieldMapping().getTypeCode());
+        } else {
+            return JavaTypes.INT;
+        }
+
+        return _javaType;
     }
     
     protected Object nextVersion(Object version) {
