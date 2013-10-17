@@ -19,13 +19,14 @@
 package org.apache.openjpa.jdbc.meta.strats;
 
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.Version;
 import org.apache.openjpa.jdbc.meta.VersionStrategy;
+import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -58,6 +59,11 @@ public abstract class AbstractVersionStrategy
     	return null;
     }
 
+    public Object load(OpenJPAStateManager sm, JDBCStore store, Result res, Joins joins)
+        throws SQLException {
+        return null;
+    }
+    
     public void afterLoad(OpenJPAStateManager sm, JDBCStore store) {
     }
 
