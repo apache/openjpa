@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -41,6 +42,16 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public abstract class AbstractOpenJpaMojo extends AbstractMojo 
 {
+    /**
+     * The working directory for putting persistence.xml and
+     * other stuff into if we need to.
+     *
+     *
+     * @parameter expression="${openjpa.workdir}"
+     *            default-value="${project.build.directory}/openjpa-work"
+     * @required
+     */
+    protected File workDir;
 
     /**
      * Location where <code>persistence-enabled</code> classes are located.
@@ -79,8 +90,9 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     /**
      * Used if a non-default file location for the persistence.xml should be used
      * If not specified, the default one in META-INF/persistence.xml will be used.
-     * Please note that this is not a resource location but a file path!
-     *  
+     * Since openjpa-2.3.0 this can also be a resource location. In prior releases
+     * it was only possible to specify a file location.
+     *
      * @parameter
      */
     private String persistenceXmlFile;
@@ -206,7 +218,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * Get the options for the various OpenJPA tools.
      * @return populated Options
      */
-    protected abstract Options getOptions();
+    protected abstract Options getOptions() throws MojoExecutionException;
     
     /**
      * <p>Determine if the mojo execution should get skipped.</p>
@@ -240,7 +252,7 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * This function will usually get called by {@link #getOptions()}
      * @return the Options filled with the initial values
      */
-    protected Options createOptions()
+    protected Options createOptions() throws MojoExecutionException
     {
         Options opts = new Options();
         if ( toolProperties != null )
@@ -250,8 +262,18 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
         
         if ( persistenceXmlFile != null )
         {
+            fixPersistenceXmlIfNeeded(Thread.currentThread().getContextClassLoader());
             opts.put( OPTION_PROPERTIES_FILE, persistenceXmlFile );
-            getLog().debug( "using special persistence XML file: " + persistenceXmlFile );
+            getLog().debug("using special persistence XML file: " + persistenceXmlFile);
+        }
+        else if (!new File(classes, "META-INF/persistence.xml").exists())
+        { // use default but try from classpath
+            persistenceXmlFile = "META-INF/persistence.xml";
+            if (!fixPersistenceXmlIfNeeded(Thread.currentThread().getContextClassLoader())) {
+                persistenceXmlFile = null;
+            } else {
+                opts.put( OPTION_PROPERTIES_FILE, persistenceXmlFile );
+            }
         }
 
         if ( connectionDriverName != null )
@@ -266,7 +288,71 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
 
         return opts;
     }
-    
+
+    /**
+     *
+     *
+     * @param loader
+     * @return
+     * @throws MojoExecutionException
+     */
+    private boolean fixPersistenceXmlIfNeeded(final ClassLoader loader) throws MojoExecutionException
+    {
+        return !new File(persistenceXmlFile).exists() &&
+                (findPersistenceXmlFromLoader(loader)
+                    || findPersistenceXmlInArtifacts(project.getCompileArtifacts())
+                    || findPersistenceXmlInArtifacts(project.getRuntimeArtifacts()));
+    }
+
+    private boolean findPersistenceXmlFromLoader(final ClassLoader loader) throws MojoExecutionException {
+        final URL url = loader.getResource(persistenceXmlFile);
+        if (url != null) // copy file to be sure to set persistenceXmlFile to a file
+        {
+            final File tmpPersistenceXml = new File(workDir,
+                    "persistence" + System.currentTimeMillis() + ".xml");
+            if (!tmpPersistenceXml.getParentFile().exists() && !tmpPersistenceXml.getParentFile().mkdirs())
+            {
+                throw new MojoExecutionException("Can't create "
+                        + tmpPersistenceXml.getParentFile().getAbsolutePath());
+            }
+
+            try
+            {
+                FileUtils.copyURLToFile(url, tmpPersistenceXml);
+            }
+            catch (final IOException e)
+            {
+                throw new MojoExecutionException(e.getMessage(), e);
+            }
+
+            persistenceXmlFile = tmpPersistenceXml.getAbsolutePath();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean findPersistenceXmlInArtifacts(final List<Artifact> artifacts) throws MojoExecutionException {
+        for (final Artifact artifact : artifacts) {
+            final File file = artifact.getFile();
+            if (file != null && file.exists())
+            {
+                try // find the persistence.xml using a fake classloader to not need to play with URLs
+                {
+                    if (findPersistenceXmlFromLoader(new URLClassLoader(new URL[] { file.toURI().toURL() },
+                                                                ClassLoader.getSystemClassLoader())))
+                    {
+                        return true;
+                    }
+                }
+                catch (final MalformedURLException e)
+                {
+                    // no-op
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * This will prepare the current ClassLoader and add all jars and local
      * classpaths (e.g. target/classes) needed by the OpenJPA task.
