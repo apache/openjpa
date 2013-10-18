@@ -100,7 +100,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      *
      * @return populated Options
      */
-    protected Options getOptions() {
+    protected Options getOptions() throws MojoExecutionException {
         // options
         Options opts = createOptions();
 

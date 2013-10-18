@@ -21,6 +21,7 @@ package org.apache.openjpa.tools.maven;
 
 import java.io.File;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.openjpa.lib.util.Options;
 
 /**
@@ -72,7 +73,7 @@ public class OpenJpaSchemaMojo extends AbstractOpenJpaMappingToolMojo {
     /**
      * @return Options filled with all necessary plugin parameters
      */
-    protected Options getOptions() {
+    protected Options getOptions() throws MojoExecutionException {
         // options
         Options opts = createOptions();
 
