@@ -438,11 +438,17 @@ public class SchemaTool {
             for (int j = 0; j < ts.length; j++)
                 tables.add(ts[j]);
         }
-        Table[] tableArray = (Table[]) tables.toArray(new Table[tables.size()]);
-        String[] sql = _conf.getDBDictionaryInstance()
-            .getDeleteTableContentsSQL(tableArray,_ds.getConnection());
-        if (!executeSQL(sql))
-            _log.warn(_loc.get("delete-table-contents"));
+        Table[] tableArray = tables.toArray(new Table[tables.size()]);
+        Connection conn = _ds.getConnection();
+        try {
+            String[] sql = _conf.getDBDictionaryInstance()
+                .getDeleteTableContentsSQL(tableArray, conn);
+            if (!executeSQL(sql)) {
+                _log.warn(_loc.get("delete-table-contents"));
+            }
+        } finally {
+            closeConnection(conn);
+        }
     }
 
     /**
@@ -1099,7 +1105,13 @@ public class SchemaTool {
      */
     public boolean dropForeignKey(ForeignKey fk)
         throws SQLException {
-        return executeSQL(_dict.getDropForeignKeySQL(fk,_ds.getConnection()));
+        Connection conn = _ds.getConnection();
+        try {
+            return executeSQL(_dict.getDropForeignKeySQL(fk,conn));
+        } finally {
+            closeConnection(conn);
+        }
+
     }
 
     /**
@@ -1240,11 +1252,14 @@ public class SchemaTool {
                 }
             }
             finally {
-                if (!wasAuto)
+                if (!wasAuto) {
                     conn.setAutoCommit(false);
+                }
+
                 try {
-                    conn.close();
+                    closeConnection(conn);
                 } catch (SQLException se) {
+                    //X TODO why catch silently?
                 }
             }
         } else {
@@ -1536,6 +1551,12 @@ public class SchemaTool {
             flags.writer.flush();
 
         return true;
+    }
+
+    private void closeConnection(Connection conn) throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+        }
     }
 
     /**
