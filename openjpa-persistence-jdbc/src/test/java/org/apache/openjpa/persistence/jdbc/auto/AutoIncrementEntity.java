@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc.auto;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,16 +28,17 @@ import javax.persistence.Version;
 @Entity
 public class AutoIncrementEntity {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    Integer id;
 
     @Version
     int version;
-    
+
     public String somethingElse;
-    
-    public int getId(){
+
+    public Integer getId() {
         return id;
     }
-    
+
 }

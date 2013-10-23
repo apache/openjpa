@@ -49,10 +49,24 @@ public class TestAutoIncrement extends SingleEMTestCase {
         AutoIncrementEntity e1 = em.find(AutoIncrementEntity.class, 0);
         assertNotNull(e1);
         AutoIncrementEntity e2 = new AutoIncrementEntity();
-        assertEquals(0, e2.getId());
+        assertEquals(null, e2.getId());
         em.persist(e2);
         em.getTransaction().commit();
-        assertNotEquals(0, e2.getId());
+        assertNotEquals(null, e2.getId());
+    }
+    
+    public void testMergeNewEntity() {
+        if (disabled) {
+            return;
+        }
+        AutoIncrementEntity e2 = new AutoIncrementEntity();
+        
+        em.getTransaction().begin();
+        AutoIncrementEntity e3 = em.merge(e2);
+        em.getTransaction().commit();
+        
+        assertNotNull(e3);
+        
     }
     
     /**

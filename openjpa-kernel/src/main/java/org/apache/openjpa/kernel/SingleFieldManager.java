@@ -30,12 +30,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.openjpa.conf.Compatibility;
+import javax.persistence.GenerationType;
+
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.meta.ValueStrategies;
 import org.apache.openjpa.util.ChangeTracker;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -557,15 +559,16 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
     /**
      * Helper method to perform pre flush actions on the current object.
      */
-    private boolean preFlush(FieldMetaData fmd, boolean logical, 
-        OpCallbacks call) {
+    private boolean preFlush(FieldMetaData fmd, boolean logical, OpCallbacks call) {
         // check for illegal nulls
         if (objval == null) {
-            if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION
-                || fmd.getDeclaredTypeCode() == JavaTypes.OID)
-                throw new InvalidStateException(_loc.get("null-value",
-                    fmd.getName(), _sm.getManagedInstance())).
-                    setFatal(true);
+            // If we have an AUTOASSIGN strategy that means that we have a field that is GenerationType.IDENTITY so
+            // skip checking to see if the value is null as it will get assigned later in flush processing. 
+            if (fmd.getValueStrategy() != ValueStrategies.AUTOASSIGN) {
+                if (fmd.getNullValue() == FieldMetaData.NULL_EXCEPTION || fmd.getDeclaredTypeCode() == JavaTypes.OID)
+                    throw new InvalidStateException(_loc.get("null-value", fmd.getName(), _sm.getManagedInstance()))
+                        .setFatal(true);
+            }
             return false;
         }
 
