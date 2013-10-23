@@ -30,8 +30,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.persistence.GenerationType;
-
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.FieldMetaData;
