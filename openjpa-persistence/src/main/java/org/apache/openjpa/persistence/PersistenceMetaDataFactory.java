@@ -521,7 +521,7 @@ public class PersistenceMetaDataFactory
                 J2DoPrivHelper.existsAction(file))).booleanValue())
                 return file;
         }
-        return new File("orm.xml");
+        return new File(dir, "orm.xml");
     }
 
     public void setConfiguration(Configuration conf) {
