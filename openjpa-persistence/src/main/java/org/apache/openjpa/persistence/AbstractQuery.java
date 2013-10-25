@@ -39,6 +39,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.persistence.criteria.BindableParameter;
 
 /**
  * An abstract implementation of the Query interface.
@@ -345,7 +346,10 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
     }
 
     public <T> OpenJPAQuery<X> setParameter(Parameter<T> p, T arg1) {
-        bindValue((Parameter<T>) p, arg1);
+        bindValue(p, arg1);
+        if (BindableParameter.class.isInstance(p)) {
+            BindableParameter.class.cast(p).setValue(arg1);
+        }
         return this;
     }
 
