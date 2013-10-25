@@ -41,7 +41,7 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        File f = new File("./orm.xml");
+        File f = new File("target/orm.xml");
 
         // Make sure to clean up orm.xml from a prior run
         if (f.exists()) {
