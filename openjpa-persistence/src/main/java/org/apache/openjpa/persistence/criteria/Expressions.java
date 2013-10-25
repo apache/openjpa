@@ -19,6 +19,8 @@
 
 package org.apache.openjpa.persistence.criteria;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -1446,17 +1448,47 @@ class Expressions {
                 Expressions.Equal e = (Expressions.Equal)_exps.get(0);
                 ExpressionImpl<?> e2 = e.e2;
                 ExpressionImpl<?> e1 = e.e1;
-                Value val2 = Expressions.toValue(e2, factory, q);
-                if (!(val2 instanceof Literal)) {
-                    Value val1 = Expressions.toValue(e1, factory, q);
-                    Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
-                    inExpr = factory.contains(val2, val1);
-                    return isNegated() ? factory.not(inExpr) : inExpr;
-                } else if (((Literal)val2).getParseType() == Literal.TYPE_COLLECTION) {
-                    Collection coll = (Collection)((Literal)val2).getValue();
+
+                Class<?> e1JavaType = e1.getJavaType();
+                Class<?> e2jt = e2.getJavaType();
+
+                // array
+                if (BindableParameter.class.isInstance(e2) && BindableParameter.class.cast(e2).value() != null &&
+                    ((e2jt.isArray() && e2jt.getComponentType().equals(e1JavaType))
+                    || (Class.class.isInstance(e2jt) ||
+                        (ParameterizedType.class.isInstance(e2jt)
+                            && ParameterizedType.class.cast(e2jt).getActualTypeArguments().length > 0
+                            && e1JavaType.equals(ParameterizedType.class.cast(e2jt).getActualTypeArguments()[0]))))) {
+                    final BindableParameter bp = BindableParameter.class.cast(e2);
+                    final Object value = bp.value();
+
                     _exps.clear();
-                    for (Object v : coll) {
-                        add(new Expressions.Equal(e1,v));
+                    if (value == null) {
+                        add(new Expressions.Equal(e1, null));
+                    } else if (value.getClass().isArray()) {
+                        final int len = Array.getLength(value);
+                        for (int i = 0; i < len; i++) {
+                            add(new Expressions.Equal(e1, Array.get(value, i)));
+                        }
+                    } else if (Collection.class.isInstance(value)) {
+                        for (final Object item : Collection.class.cast(value)) {
+                            add(new Expressions.Equal(e1, item));
+                        }
+                    }
+                } else {
+                    // normal case
+                    Value val2 = Expressions.toValue(e2, factory, q);
+                    if (!(val2 instanceof Literal)) {
+                        Value val1 = Expressions.toValue(e1, factory, q);
+                        Expressions.setImplicitTypes(val1, val2, e1.getJavaType(), q);
+                        inExpr = factory.contains(val2, val1);
+                        return isNegated() ? factory.not(inExpr) : inExpr;
+                    } else if (((Literal)val2).getParseType() == Literal.TYPE_COLLECTION) {
+                        Collection coll = (Collection)((Literal)val2).getValue();
+                        _exps.clear();
+                        for (Object v : coll) {
+                            add(new Expressions.Equal(e1,v));
+                        }
                     }
                 }
             } 

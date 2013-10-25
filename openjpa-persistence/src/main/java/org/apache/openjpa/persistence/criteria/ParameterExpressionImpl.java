@@ -39,16 +39,17 @@ import org.apache.openjpa.util.InternalException;
  * @param <T> the type of value held by this parameter.
  */
 class ParameterExpressionImpl<T> extends ExpressionImpl<T> 
-    implements ParameterExpression<T> {
+    implements ParameterExpression<T>, BindableParameter {
     private String _name;
     private int _index = 0; // index of the parameter as seen by the kernel, not position
-	
-	/**
-	 * Construct a Parameter of given expected value type and name.
-	 * 
-	 * @param cls expected value type
-	 * @param name name of the parameter which can be null.
-	 */
+    private Object value;
+
+    /**
+     * Construct a Parameter of given expected value type and name.
+     *
+     * @param cls expected value type
+     * @param name name of the parameter which can be null.
+     */
     public ParameterExpressionImpl(Class<T> cls, String name) {
         super(cls);
         if (name != null)
@@ -84,7 +85,17 @@ class ParameterExpressionImpl<T> extends ExpressionImpl<T>
 
         return buf.toString();
     }
-    
+
+    @Override
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
+    @Override
+    public Object value() {
+        return value;
+    }
+
     @Override
     public Value toValue(ExpressionFactory factory, CriteriaQueryImpl<?> q) {
         Class<?> clzz = getJavaType();
