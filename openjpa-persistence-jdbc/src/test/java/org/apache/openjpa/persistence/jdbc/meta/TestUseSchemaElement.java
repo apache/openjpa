@@ -41,6 +41,12 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
+        File f = new File("target/orm.xml");
+
+        // Make sure to clean up orm.xml from a prior run
+        if (f.exists()) {
+            assertTrue(f.delete());
+        }
         setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class);
     }
 
@@ -113,7 +119,7 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
         }
 
         // This tests the removal of the schema name from the orm.xml file
-        File orm = new File("./orm.xml");
+        File orm = new File("target/orm.xml");
         try {
             inFile = new Scanner(orm);
             while(inFile.hasNextLine())
