@@ -106,9 +106,6 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
                 }
             }
 
-            // Delete file to clean up workspace
-            assertTrue(uschantbl.delete());
-
         } catch (FileNotFoundException e) {
             fail("Uschantbl.java not generated in ./target by ReverseMappingTool");
         }
@@ -117,6 +114,9 @@ public class TestUseSchemaElement extends /*TestCase*/ SingleEMFTestCase {
                 inFile.close();
             }
         }
+
+        // Delete file to clean up workspace
+        assertTrue(uschantbl.delete());
 
         // This tests the removal of the schema name from the orm.xml file
         File orm = new File("target/orm.xml");
