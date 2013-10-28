@@ -19,6 +19,7 @@
 package org.apache.openjpa.jdbc.kernel.exps;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -213,10 +214,16 @@ class InExpression
     protected Collection getCollection(ExpContext ctx, ExpState state) {
         Object val = _const.getValue(ctx, state);
 
-        // wrap non-Collection parameters in a Collections so the query
-        // lanuage can permit varargs "in" clauses
-        if (!(val instanceof Collection))
+        if (val != null && val.getClass().isArray()) {
+            // arrays need to re-packaged into Collections to
+            // have a single way of handling all this
+            val = Arrays.asList((Object[]) val);
+        }
+        else if (!(val instanceof Collection)) {
+            // wrap non-Collection parameters in a Collections so the query
+            // lanuage can permit varargs "in" clauses
             val = Collections.singleton(val);
+        }
 
         return (Collection) val;
     }

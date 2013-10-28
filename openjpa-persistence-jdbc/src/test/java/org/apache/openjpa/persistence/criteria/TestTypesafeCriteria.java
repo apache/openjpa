@@ -302,9 +302,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testJoinedPathInProjection() {
-        String jpql1 = "SELECT p.vendor FROM Employee e JOIN e.contactInfo.phones p "
-                     + "WHERE e.contactInfo.address.zipCode = '95054'";
-
         String jpql = "SELECT p.vendor FROM Employee e JOIN e.contactInfo c JOIN c.phones p "
                     + "WHERE c.address.zipCode = '95054'";
 
@@ -319,9 +316,6 @@ public class TestTypesafeCriteria extends CriteriaTest {
     }
 
     public void testKeyExpression() {
-//        String jpql =
-//            "SELECT i.name, p FROM Item i JOIN i.photos p WHERE KEY(p) "
-//            + "LIKE '%egret%'";
         String jpql = "select i.name, VALUE(p) from Item i join i.photos p where KEY(p) like 'egret'";
 
         CriteriaQuery<Tuple> q = cb.createTupleQuery();
@@ -431,7 +425,7 @@ public class TestTypesafeCriteria extends CriteriaTest {
 
     public void testCaseExpression() {
         String jpql = "SELECT e.name, CASE " 
-        		+ "WHEN e.rating = 1 THEN e.salary * 1.1 "
+            + "WHEN e.rating = 1 THEN e.salary * 1.1 "
                 + "WHEN e.rating = 2 THEN e.salary * 1.2 "
                 + "ELSE e.salary * 1.01 END "
             + "FROM Employee e WHERE e.department.name = 'Engineering'";
