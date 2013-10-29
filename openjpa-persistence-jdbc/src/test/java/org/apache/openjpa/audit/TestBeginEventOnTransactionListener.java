@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.audit;
 
-import junit.framework.TestCase;
 import org.apache.openjpa.ee.ManagedRuntime;
 import org.apache.openjpa.kernel.Audited;
 import org.apache.openjpa.kernel.Broker;
@@ -28,7 +27,6 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.Collection;
 
 public class TestBeginEventOnTransactionListener extends SingleEMFTestCase {

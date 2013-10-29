@@ -22,7 +22,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.openjpa.datacache.AbstractQueryCache.EvictPolicy;
-import org.apache.openjpa.kernel.DelegatingStoreManager;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;

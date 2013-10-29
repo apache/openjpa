@@ -17,7 +17,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 
 /**

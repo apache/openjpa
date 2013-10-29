@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.util;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Utilities for calculating string distance.

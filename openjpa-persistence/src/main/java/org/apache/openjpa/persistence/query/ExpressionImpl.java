@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 

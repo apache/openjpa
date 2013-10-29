@@ -16,14 +16,7 @@
  */
 package org.apache.openjpa.integration.daytrader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import javax.persistence.EntityManagerFactory;
 
 import org.apache.openjpa.lib.log.Log;
 

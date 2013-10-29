@@ -19,9 +19,7 @@
 package org.apache.openjpa.jdbc.kernel;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

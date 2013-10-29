@@ -19,8 +19,6 @@
 
 package org.apache.openjpa.persistence.criteria;
 
-import java.util.Arrays;
-
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;

@@ -21,17 +21,10 @@ package org.apache.openjpa.persistence;
 import static org.apache.openjpa.kernel.QueryLanguages.LANG_PREPARED_SQL;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -39,11 +32,8 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
-import javax.persistence.Parameter;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.ParameterExpression;
 
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -52,7 +42,6 @@ import org.apache.openjpa.kernel.DelegatingQuery;
 import org.apache.openjpa.kernel.DelegatingResultList;
 import org.apache.openjpa.kernel.DistinctResultList;
 import org.apache.openjpa.kernel.FetchConfiguration;
-import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.PreparedQuery;
 import org.apache.openjpa.kernel.PreparedQueryCache;
 import org.apache.openjpa.kernel.QueryHints;

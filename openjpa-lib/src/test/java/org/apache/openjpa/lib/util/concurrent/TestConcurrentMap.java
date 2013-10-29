@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.io.IOException;
 
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.test.AbstractTestCase;

@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.datacache;
 
-import java.util.List;
-
 import org.apache.openjpa.event.RemoteCommitListener;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.CacheMap;

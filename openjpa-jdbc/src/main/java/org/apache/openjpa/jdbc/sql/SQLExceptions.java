@@ -22,8 +22,6 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.util.LockException;
 import org.apache.openjpa.util.OpenJPAException;

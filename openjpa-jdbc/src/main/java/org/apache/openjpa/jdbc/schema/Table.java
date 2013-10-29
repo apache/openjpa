@@ -26,13 +26,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.LinkedHashMap;
 
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
-import org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
 /**

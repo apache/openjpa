@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.schema.Column;
 
 /**

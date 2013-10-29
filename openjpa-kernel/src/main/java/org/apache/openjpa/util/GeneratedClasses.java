@@ -19,11 +19,8 @@
 package org.apache.openjpa.util;
 
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.lang.reflect.Constructor;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.Localizer;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 

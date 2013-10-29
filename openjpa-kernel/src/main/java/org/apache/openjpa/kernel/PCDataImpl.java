@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.util.BitSet;
-import java.util.Map;
 
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.meta.ClassMetaData;

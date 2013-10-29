@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.query;
 
-import java.util.Arrays;
-
 /**
  * Denotes a Value based expression such as Number, String or Date.
  * 

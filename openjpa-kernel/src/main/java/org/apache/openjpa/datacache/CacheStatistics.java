@@ -20,11 +20,8 @@ package org.apache.openjpa.datacache;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.openjpa.util.OpenJPAId;
 
 /**
  * Counts number of read/write requests and hit ratio for a cache in total and

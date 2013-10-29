@@ -23,10 +23,8 @@ import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
-import javax.persistence.SharedCacheMode;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 

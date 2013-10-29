@@ -21,7 +21,6 @@ package org.apache.openjpa.audit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 

@@ -18,18 +18,13 @@
  */
 package org.apache.openjpa.instrumentation;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.openjpa.datacache.CacheStatistics;
 import org.apache.openjpa.datacache.CacheStatisticsSPI;
 import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
-import org.apache.openjpa.datacache.DataCacheManagerImpl;
 import org.apache.openjpa.lib.instrumentation.AbstractInstrument;
 import org.apache.openjpa.lib.instrumentation.InstrumentationLevel;
 

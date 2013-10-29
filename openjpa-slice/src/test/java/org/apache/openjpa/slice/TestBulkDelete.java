@@ -21,13 +21,8 @@ package org.apache.openjpa.slice;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 
-import org.apache.openjpa.kernel.BrokerFactory;
-import org.apache.openjpa.persistence.JPAFacadeHelper;
-import org.apache.openjpa.slice.DistributedBrokerFactory;
 import org.apache.openjpa.slice.SlicePersistence;
 import org.apache.openjpa.slice.policy.UniformDistributionPolicy;
 

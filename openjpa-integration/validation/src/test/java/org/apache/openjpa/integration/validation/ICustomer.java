@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.integration.validation;
 
-import java.util.*;
-
 public interface ICustomer extends IPerson {
 
     public void setShippingAddress(IAddress shippingAddress);

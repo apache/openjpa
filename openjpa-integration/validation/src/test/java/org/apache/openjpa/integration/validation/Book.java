@@ -24,7 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 @Entity(name="Vbook")

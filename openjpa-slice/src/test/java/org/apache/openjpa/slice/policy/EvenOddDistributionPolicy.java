@@ -20,10 +20,6 @@ package org.apache.openjpa.slice.policy;
 
 import java.util.List;
 
-import org.apache.openjpa.slice.Car;
-import org.apache.openjpa.slice.DistributionPolicy;
-import org.apache.openjpa.slice.Manufacturer;
-
 import org.apache.openjpa.slice.*;
 
 public class EvenOddDistributionPolicy implements DistributionPolicy {

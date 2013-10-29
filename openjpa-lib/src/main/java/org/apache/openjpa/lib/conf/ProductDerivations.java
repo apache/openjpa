@@ -34,7 +34,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.Services;

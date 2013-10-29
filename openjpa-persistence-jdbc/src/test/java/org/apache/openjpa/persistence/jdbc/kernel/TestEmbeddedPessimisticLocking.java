@@ -21,7 +21,6 @@ package org.apache.openjpa.persistence.jdbc.kernel;
 
 import java.util.*;
 
-import org.apache.openjpa.jdbc.conf.*;
 import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 

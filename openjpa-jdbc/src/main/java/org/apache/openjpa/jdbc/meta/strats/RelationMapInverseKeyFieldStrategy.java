@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

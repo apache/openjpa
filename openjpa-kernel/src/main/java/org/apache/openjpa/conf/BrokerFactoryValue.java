@@ -20,7 +20,6 @@ package org.apache.openjpa.conf;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 
 import org.apache.openjpa.abstractstore.AbstractStoreBrokerFactory;
 import org.apache.openjpa.kernel.BrokerFactory;

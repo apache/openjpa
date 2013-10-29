@@ -20,10 +20,8 @@ package org.apache.openjpa.slice;
 
 import java.util.List;
 
-import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.UserException;
 
 /**

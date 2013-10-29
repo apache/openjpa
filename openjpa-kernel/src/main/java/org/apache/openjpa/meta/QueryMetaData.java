@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.kernel.Query;
-import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.OrderedMap;

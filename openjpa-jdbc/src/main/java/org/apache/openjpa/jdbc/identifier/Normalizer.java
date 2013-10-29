@@ -19,7 +19,6 @@
 package org.apache.openjpa.jdbc.identifier;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;

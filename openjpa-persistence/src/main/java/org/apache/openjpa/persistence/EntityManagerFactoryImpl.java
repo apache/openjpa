@@ -48,7 +48,6 @@ import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.query.OpenJPAQueryBuilder;
 import org.apache.openjpa.persistence.query.QueryBuilderImpl;
-import org.apache.openjpa.util.UserException;
 
 /**
  * Implementation of {@link EntityManagerFactory} that acts as a

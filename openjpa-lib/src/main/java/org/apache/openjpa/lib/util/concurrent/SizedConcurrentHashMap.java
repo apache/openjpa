@@ -19,9 +19,6 @@
 package org.apache.openjpa.lib.util.concurrent;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Set;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;

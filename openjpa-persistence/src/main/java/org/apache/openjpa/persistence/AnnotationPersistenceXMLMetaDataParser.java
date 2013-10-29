@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
-import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.XMLFieldMetaData;

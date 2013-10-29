@@ -45,7 +45,6 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
 import org.apache.commons.collections.iterators.IteratorChain;
-import org.apache.commons.collections.map.IdentityMap;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.collections.set.MapBackedSet;
 import org.apache.commons.lang.StringUtils;

@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.metamodel.Metamodel;
 
 /**
  * OpenJPA-specific extension to JPA 2.0 Criteria Query API.

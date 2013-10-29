@@ -20,7 +20,6 @@ package org.apache.openjpa.abstractstore;
 
 import java.security.AccessController;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AbstractBrokerFactory;

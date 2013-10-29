@@ -19,7 +19,6 @@
 package org.apache.openjpa.meta;
 
 import java.io.ObjectOutput;
-import java.lang.reflect.Modifier;
 import java.util.Calendar;
 import java.util.SortedMap;
 import java.util.SortedSet;

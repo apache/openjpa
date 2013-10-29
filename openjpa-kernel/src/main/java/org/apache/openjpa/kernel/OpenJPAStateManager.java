@@ -25,7 +25,6 @@ import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.Proxy;
 
 /**

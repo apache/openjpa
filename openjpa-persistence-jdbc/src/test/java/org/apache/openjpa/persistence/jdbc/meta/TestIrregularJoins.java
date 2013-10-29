@@ -33,8 +33,6 @@ import org.apache.openjpa.persistence.jdbc.common.apps.*;
 
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.jdbc.common.apps.NonPKJoinPC2;
-
 
 
 public class TestIrregularJoins

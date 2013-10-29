@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.schema;
 import java.sql.Types;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;

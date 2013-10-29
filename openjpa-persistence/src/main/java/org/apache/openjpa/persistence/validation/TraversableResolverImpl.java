@@ -23,7 +23,6 @@ import javax.validation.Path;
 import javax.validation.TraversableResolver;
 import javax.validation.Path.Node;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
 import org.apache.openjpa.persistence.OpenJPAPersistenceUtil;
 
 /**

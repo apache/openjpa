@@ -20,7 +20,6 @@ package org.apache.openjpa.lib.util;
 
 import java.lang.reflect.Field;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashSet;
 import java.util.Set;

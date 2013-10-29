@@ -31,7 +31,6 @@ import org.apache.openjpa.kernel.BrokerFactory;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
-import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;

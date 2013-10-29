@@ -23,7 +23,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;

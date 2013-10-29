@@ -14,7 +14,6 @@
 package jpa.tools.swing;
 
 import javax.persistence.metamodel.EntityType;
-import javax.swing.BorderFactory;
 import javax.swing.JTable;
 
 @SuppressWarnings("serial")
