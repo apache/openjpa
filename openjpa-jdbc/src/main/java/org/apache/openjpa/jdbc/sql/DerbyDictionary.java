@@ -19,12 +19,9 @@
 package org.apache.openjpa.jdbc.sql;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
 
 import javax.sql.DataSource;
 

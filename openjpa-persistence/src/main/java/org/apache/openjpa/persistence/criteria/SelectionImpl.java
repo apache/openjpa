@@ -23,7 +23,6 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Selection;
 
-import org.apache.openjpa.kernel.exps.ExpressionFactory;
 import org.apache.openjpa.persistence.util.ReservedWords;
 
 /**

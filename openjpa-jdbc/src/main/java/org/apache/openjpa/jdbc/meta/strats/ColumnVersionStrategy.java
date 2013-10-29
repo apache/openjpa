@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Comparator;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;

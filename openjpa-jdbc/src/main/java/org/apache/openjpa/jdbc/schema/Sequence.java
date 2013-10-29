@@ -20,10 +20,8 @@ package org.apache.openjpa.jdbc.schema;
 
 import java.io.File;
 
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.meta.SourceTracker;
 
 /**

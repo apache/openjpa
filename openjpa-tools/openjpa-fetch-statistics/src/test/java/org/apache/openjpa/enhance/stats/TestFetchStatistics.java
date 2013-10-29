@@ -19,15 +19,10 @@
 
 package org.apache.openjpa.enhance.stats;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
-import org.apache.openjpa.enhance.PCEnhancer;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

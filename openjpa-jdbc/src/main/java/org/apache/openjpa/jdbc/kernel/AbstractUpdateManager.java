@@ -43,7 +43,6 @@ import org.apache.openjpa.kernel.PCState;
 import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
-import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OptimisticException;

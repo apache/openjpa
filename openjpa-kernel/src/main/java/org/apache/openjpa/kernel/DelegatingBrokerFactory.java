@@ -19,7 +19,6 @@
 package org.apache.openjpa.kernel;
 
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;

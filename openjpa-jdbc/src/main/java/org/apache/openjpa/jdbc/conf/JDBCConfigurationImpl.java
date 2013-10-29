@@ -49,7 +49,6 @@ import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.conf.ProductDerivations;
 import org.apache.openjpa.lib.conf.StringListValue;
 import org.apache.openjpa.lib.conf.StringValue;
-import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.jdbc.ConnectionDecorator;
 import org.apache.openjpa.lib.jdbc.DecoratingDataSource;
 import org.apache.openjpa.lib.jdbc.JDBCListener;

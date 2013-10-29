@@ -20,7 +20,6 @@ package openbook.tools.parser;
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 Java.g 2010-05-15 01:06:38
 
 import org.antlr.runtime.*;
-import org.antlr.runtime.RecognitionException;
 
 public class JavaLexer extends Lexer {
     public static final int T__29=29;

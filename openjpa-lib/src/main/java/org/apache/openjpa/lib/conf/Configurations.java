@@ -21,7 +21,6 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;

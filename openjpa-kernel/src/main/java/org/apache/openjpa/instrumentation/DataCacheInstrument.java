@@ -21,9 +21,6 @@ package org.apache.openjpa.instrumentation;
 import java.util.Date;
 import java.util.Map;
 
-import org.apache.openjpa.datacache.CacheStatistics;
-import org.apache.openjpa.datacache.DataCacheManager;
-
 /**
  * Interface for providing instrumented data cache metrics and operations.
  */

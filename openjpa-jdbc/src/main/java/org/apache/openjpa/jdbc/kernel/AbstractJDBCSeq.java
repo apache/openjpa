@@ -21,11 +21,8 @@ package org.apache.openjpa.jdbc.kernel;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
-import org.apache.openjpa.jdbc.kernel.JDBCStoreManager.RefCountConnection;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.schema.SchemaGroup;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;

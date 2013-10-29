@@ -41,8 +41,6 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.GeneralException;
-import org.apache.openjpa.util.InternalException;
-import org.apache.openjpa.util.OpenJPAId;
 
 import serp.util.Strings;
 

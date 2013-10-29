@@ -27,7 +27,6 @@ import org.apache.openjpa.event.LifecycleEvent;
 import org.apache.openjpa.event.MethodLifecycleCallbacks;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
-import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.util.UserException;
 
 /**

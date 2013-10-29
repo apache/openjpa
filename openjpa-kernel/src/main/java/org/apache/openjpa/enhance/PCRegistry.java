@@ -20,8 +20,6 @@ package org.apache.openjpa.enhance;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.openjpa.lib.util.Localizer;

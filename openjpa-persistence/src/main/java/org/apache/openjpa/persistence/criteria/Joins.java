@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;

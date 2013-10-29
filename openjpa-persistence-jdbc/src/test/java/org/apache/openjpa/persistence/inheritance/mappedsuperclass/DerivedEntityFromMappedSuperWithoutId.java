@@ -20,7 +20,6 @@ package org.apache.openjpa.persistence.inheritance.mappedsuperclass;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
 /**

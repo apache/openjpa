@@ -18,10 +18,6 @@
  */
 package org.apache.openjpa.slice;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.FinalizingBrokerImpl;
 import org.apache.openjpa.kernel.OpCallbacks;
 import org.apache.openjpa.kernel.OpenJPAStateManager;

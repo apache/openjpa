@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.meta.JavaTypes;
 

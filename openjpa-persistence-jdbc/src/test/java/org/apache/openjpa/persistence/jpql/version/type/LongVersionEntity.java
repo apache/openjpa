@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.jpql.version.type;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 import javax.persistence.*;
 

@@ -30,8 +30,6 @@ import java.util.Set;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Order;

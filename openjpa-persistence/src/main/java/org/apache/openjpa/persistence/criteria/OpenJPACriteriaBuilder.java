@@ -19,7 +19,6 @@
 package org.apache.openjpa.persistence.criteria;
 
 import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;

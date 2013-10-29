@@ -21,12 +21,6 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import openbook.client.Demo.SupplyAction;
-import openbook.client.Demo.ViewConfigAction;
-import openbook.client.Demo.ViewDomainAction;
-import openbook.client.Demo.ViewQueryCacheAction;
-import openbook.client.Demo.ViewSourceAction;
-
 /**
  * Utility to load and cache images.
  * Maintains a list of <em>known</em> images.

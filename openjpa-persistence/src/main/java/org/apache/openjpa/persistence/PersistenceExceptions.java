@@ -33,7 +33,6 @@ import org.apache.openjpa.util.QueryException;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UserException;
-import org.apache.openjpa.util.WrappedException;
 
 /**
  * Converts from OpenJPA to persistence exception types.

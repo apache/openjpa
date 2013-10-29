@@ -24,7 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 /**

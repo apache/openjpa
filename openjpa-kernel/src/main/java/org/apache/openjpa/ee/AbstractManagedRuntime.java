@@ -17,7 +17,6 @@
 
 package org.apache.openjpa.ee;
 
-import javax.transaction.InvalidTransactionException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;

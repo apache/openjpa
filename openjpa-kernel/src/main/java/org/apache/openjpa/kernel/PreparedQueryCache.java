@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.kernel;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 

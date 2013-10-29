@@ -21,10 +21,6 @@ package org.apache.openjpa.persistence.jdbc.common.apps.mappingApp;
 import java.io.Serializable;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /** 
  * @author ppoddar

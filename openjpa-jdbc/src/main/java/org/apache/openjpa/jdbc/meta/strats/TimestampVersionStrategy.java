@@ -21,11 +21,9 @@ package org.apache.openjpa.jdbc.meta.strats;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Date;
 
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.schema.Column;
-import org.apache.openjpa.util.InternalException;
 
 /**
  * Uses a timestamp for optimistic versioning.

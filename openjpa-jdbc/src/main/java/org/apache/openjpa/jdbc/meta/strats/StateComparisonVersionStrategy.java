@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.BitSet;
 import java.util.Collection;
 
-import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
@@ -34,7 +33,6 @@ import org.apache.openjpa.jdbc.sql.RowImpl;
 import org.apache.openjpa.jdbc.sql.RowManager;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreManager;
-import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ArrayStateImage;
 import org.apache.openjpa.util.InternalException;

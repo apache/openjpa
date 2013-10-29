@@ -28,7 +28,6 @@ import javax.validation.ValidatorFactory;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.integration.validation.SimpleEntity;
-import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
 import org.apache.openjpa.persistence.OpenJPAPersistence;

@@ -20,7 +20,6 @@ package org.apache.openjpa.slice.jdbc;
 
 import java.util.Date;
 
-import org.apache.openjpa.jdbc.kernel.exps.Val;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.StoreQuery;
 import org.apache.openjpa.kernel.exps.QueryExpressions;

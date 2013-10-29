@@ -19,7 +19,6 @@
 package org.apache.openjpa.lib.rop;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.apache.openjpa.lib.util.Localizer;

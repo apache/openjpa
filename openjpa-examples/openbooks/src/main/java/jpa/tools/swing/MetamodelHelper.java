@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.CollectionAttribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.MapAttribute;
 import javax.persistence.metamodel.PluralAttribute;

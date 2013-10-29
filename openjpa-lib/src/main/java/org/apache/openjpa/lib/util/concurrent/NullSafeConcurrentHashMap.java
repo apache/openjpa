@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.AbstractCollection;
 import java.util.Random;
 import java.util.HashSet;
-import java.util.TreeSet;
 
 import org.apache.commons.collections.set.MapBackedSet;
 
