@@ -227,8 +227,6 @@ public abstract class AbstractBrokerFactory
         DelegatingStoreManager dsm = createDelegatingStoreManager();
 
         ((BrokerImpl) broker).initialize(this, dsm, managed, connRetainMode, fromDeserialization);
-        if (!fromDeserialization)
-            addListeners(broker);
 
         // if we're using remote events, register the event manager so
         // that it can broadcast commit notifications from the broker
