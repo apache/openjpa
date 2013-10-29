@@ -148,7 +148,8 @@ public class FetchConfigurationImpl
         public boolean fetchGroupIsPUDefault = false;
         public boolean extendedPathLookup = false;
         public DataCacheRetrieveMode cacheRetrieveMode = DataCacheRetrieveMode.USE;
-        public DataCacheStoreMode cacheStoreMode = DataCacheStoreMode.USE;        
+        public DataCacheStoreMode cacheStoreMode = DataCacheStoreMode.USE;
+        public boolean cacheNonDefaultFetchPlanQueries = false;      
     }
 
     private final ConfigurationState _state;
@@ -193,6 +194,8 @@ public class FetchConfigurationImpl
         
         addFetchGroups(Arrays.asList(fetchGroupList));
         setMaxFetchDepth(conf.getMaxFetchDepth());
+        
+        _state.cacheNonDefaultFetchPlanQueries = conf.getCompatibilityInstance().getCacheNonDefaultFetchPlanQueries();
     }
 
     /**
@@ -201,6 +204,7 @@ public class FetchConfigurationImpl
     public Object clone() {
         FetchConfigurationImpl clone = newInstance(null);
         clone._state.ctx = _state.ctx;
+        clone._state.cacheNonDefaultFetchPlanQueries = _state.cacheNonDefaultFetchPlanQueries;
         clone._parent = _parent;
         clone._fromField = _fromField;
         clone._fromType = _fromType;
@@ -346,7 +350,7 @@ public class FetchConfigurationImpl
         return addFetchGroup(name, true);
     }
      
-    public FetchConfiguration addFetchGroup(String name, boolean recomputeIsDefault) {
+    private FetchConfiguration addFetchGroup(String name, boolean recomputeIsDefault) {
         if (StringUtils.isEmpty(name))
             throw new UserException(_loc.get("null-fg"));
 
@@ -383,7 +387,7 @@ public class FetchConfigurationImpl
         return removeFetchGroup(group, true);
     }
 
-    public FetchConfiguration removeFetchGroup(String group, boolean recomputeIsDefault) {
+    private FetchConfiguration removeFetchGroup(String group, boolean recomputeIsDefault) {
         lock();
         try {
             if (_state.fetchGroups != null) {
@@ -482,6 +486,15 @@ public class FetchConfigurationImpl
     public boolean isDefaultPUFetchGroupConfigurationOnly() {
         return _state.fetchGroupIsPUDefault;
     }
+    
+    public boolean isFetchConfigurationSQLCacheAdmissible() {
+        if (_state == null || _state.cacheNonDefaultFetchPlanQueries) {
+            return false;
+        } else {
+            // Only pctx-default matching FetchConfiguration generated SQL is cache permissible
+            return _state.fetchGroupIsPUDefault;
+        }
+    }
 
     public Set<String> getFields() {
         if (_state.fields == null) return Collections.emptySet();
@@ -518,6 +531,7 @@ public class FetchConfigurationImpl
                 _state.fields = new HashSet<String>();
             _state.fields.addAll(fields);
         } finally {
+            verifyDefaultPUFetchGroups();
             unlock();
         }
         return this;
