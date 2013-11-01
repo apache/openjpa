@@ -63,6 +63,11 @@
     <persistence-unit name="null-none-mode">
     	<class>org.apache.openjpa.integration.validation.ConstraintNull</class>
         <validation-mode>NONE</validation-mode>
+        <properties>
+            <property name="openjpa.jdbc.SynchronizeMappings"
+                      value="buildSchema"/>
+        </properties>
+
     </persistence-unit>
 
     <persistence-unit name="null-callback-mode">
