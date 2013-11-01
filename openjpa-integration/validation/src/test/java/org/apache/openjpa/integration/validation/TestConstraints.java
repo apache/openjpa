@@ -181,10 +181,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testNullDeleteIgnored() Part 1 of 2 passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testNullDeleteIgnored() Part 1 of 2 failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
             closeEMF(emf);
@@ -212,10 +208,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             int count = q.executeUpdate();
             em.getTransaction().commit();
             getLog().trace("testNullDeleteIgnored() Part 2 of 2 passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testNullDeleteIgnored() Part 2 of 2 failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
             closeEMF(emf);
@@ -250,10 +242,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testNullConstraintIgnored() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testNullConstraintIgnored() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
             closeEMF(emf);
@@ -346,10 +334,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testNullNotNullConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testNullNotNullConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -441,10 +425,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testAssertTrueFalseConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testAssertTrueFalseConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -536,10 +516,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testDecimalMinMaxConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testDecimalMinMaxConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -631,10 +607,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testMinMaxConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testMinMaxConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -726,10 +698,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testDigitsConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testDigitsConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -916,10 +884,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testDatesConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testDatesConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -1011,10 +975,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(c);
             em.getTransaction().commit();
             getLog().trace("testPatternConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testPatternConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
@@ -1030,11 +990,11 @@ public class TestConstraints extends AbstractPersistenceTestCase {
         getLog().trace("testValidFailuresConstraint() started");
         
         // Part 1 - Create an invalid Address entity
-        try {
+        {
             OpenJPAEntityManagerFactorySPI emf = (OpenJPAEntityManagerFactorySPI)
-            OpenJPAPersistence.createEntityManagerFactory(
-                    "address-none-mode",
-                    "org/apache/openjpa/integration/validation/persistence.xml");
+                            OpenJPAPersistence.createEntityManagerFactory(
+                                    "address-none-mode",
+                                    "org/apache/openjpa/integration/validation/persistence.xml");
             assertNotNull(emf);
             // create EM
             OpenJPAEntityManager em = emf.createEntityManager();
@@ -1055,58 +1015,53 @@ public class TestConstraints extends AbstractPersistenceTestCase {
                 em.persist(a);
                 em.getTransaction().commit();
                 getLog().trace("testValidFailuresConstraint() Part 1 of 2 passed");
-            } catch (Exception e) {
-                // unexpected
-                getLog().trace("testValidFailuresConstraint() Part 1 of 2 failed");
-                fail("Caught unexpected exception = " + e);
             } finally {
                 closeEM(em);
                 closeEMF(emf);
             }
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testValidFailuresConstraint() Part 1 of 2 failed");
-            fail("Caught unexpected exception = " + e);
         }
 
+
         // Part 2 - Create a Person entity that uses the invalid address above
-        OpenJPAEntityManager em = emf.createEntityManager();
-        assertNotNull(em);
-        try {
-            // verify Validation Mode
-            OpenJPAConfiguration conf = em.getConfiguration();
-            assertNotNull(conf);
-            assertTrue("ValidationMode",
-                conf.getValidationMode().equalsIgnoreCase("AUTO"));
-            // create invalid Person instance
-            em.getTransaction().begin();
-            // create a valid Person, minus the address
-            Person p = new Person();
-            p.setFirstName("Java");
-            p.setLastName("Joe");
-            // use invalid Address, which should cause CVEs due to @Valid
-            //a = em.getReference(Address.class, a.getId());
-            assertNotNull(a);
-            p.setHomeAddress(a);
-            // persist, which should cause a CVE
-            em.persist(p);
-            em.getTransaction().commit();
-            getLog().trace("testValidFailuresConstraint() Part 2 of 2 failed");
-            fail("Expected a ConstraintViolationException");
-        } catch (ConstraintViolationException e) {
-            // expected
-            getLog().trace("Caught expected ConstraintViolationException = " + e);
-            Set<ConstraintViolation<?>> cves = e.getConstraintViolations();
-            assertNotNull(cves);
-            for (ConstraintViolation<?> cv: cves) {
-                getLog().trace("CVE Contains ConstraintViolation = " + cv.getMessage());
+        {
+            OpenJPAEntityManager em = emf.createEntityManager();
+            assertNotNull(em);
+            try {
+                // verify Validation Mode
+                OpenJPAConfiguration conf = em.getConfiguration();
+                assertNotNull(conf);
+                assertTrue("ValidationMode",
+                    conf.getValidationMode().equalsIgnoreCase("AUTO"));
+                // create invalid Person instance
+                em.getTransaction().begin();
+                // create a valid Person, minus the address
+                Person p = new Person();
+                p.setFirstName("Java");
+                p.setLastName("Joe");
+                // use invalid Address, which should cause CVEs due to @Valid
+                //a = em.getReference(Address.class, a.getId());
+                assertNotNull(a);
+                p.setHomeAddress(a);
+                // persist, which should cause a CVE
+                em.persist(p);
+                em.getTransaction().commit();
+                getLog().trace("testValidFailuresConstraint() Part 2 of 2 failed");
+                fail("Expected a ConstraintViolationException");
+            } catch (ConstraintViolationException e) {
+                // expected
+                getLog().trace("Caught expected ConstraintViolationException = " + e);
+                Set<ConstraintViolation<?>> cves = e.getConstraintViolations();
+                assertNotNull(cves);
+                for (ConstraintViolation<?> cv: cves) {
+                    getLog().trace("CVE Contains ConstraintViolation = " + cv.getMessage());
+                }
+                assertEquals("Wrong number of embedded ConstraintViolation failures",
+                    5, cves.size());
+                getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
+            } finally {
+                closeEM(em);
             }
-            assertEquals("Wrong number of embedded ConstraintViolation failures",
-                5, cves.size());
-            getLog().trace("testValidFailuresConstraint() Part 2 of 2 passed");
-        } finally {
-            closeEM(em);
-        }            
+        }
     }
     
     /**
@@ -1141,10 +1096,6 @@ public class TestConstraints extends AbstractPersistenceTestCase {
             em.persist(p);
             em.getTransaction().commit();
             getLog().trace("testValidPassConstraint() passed");
-        } catch (Exception e) {
-            // unexpected
-            getLog().trace("testValidPassConstraint() failed");
-            fail("Caught unexpected exception = " + e);
         } finally {
             closeEM(em);
         }
