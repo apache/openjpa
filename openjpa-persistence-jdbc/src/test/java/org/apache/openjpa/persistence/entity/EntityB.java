@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -46,6 +47,10 @@ public class EntityB {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderColumn
     private Set<EntityC> linacs;
+
+    @Column(name = "POSITION")
+    private int position;
+
 
     public EntityB() {
     }

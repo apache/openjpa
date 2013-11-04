@@ -29,7 +29,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="CR_CRSE")
-
 public class Course {
     @Id
     @GeneratedValue

@@ -21,10 +21,13 @@ package org.apache.openjpa.persistence;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.LoadState;
 
+import junit.framework.Assert;
 import org.apache.openjpa.persistence.entity.EntityA;
 import org.apache.openjpa.persistence.entity.EntityB;
 import org.apache.openjpa.persistence.entity.EntityC;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+
+import java.util.Iterator;
 
 /**
  *
@@ -54,5 +57,22 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         assertEquals(LoadState.LOADED, OpenJPAPersistenceUtil.isLoaded(b, "center"));
 
         em.close();
+    }
+
+    public void testOpenJPA2335() {
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+        EntityA a = new EntityA();
+        EntityB b1 = new EntityB(a);
+        EntityB b2 = new EntityB(a);
+        a.getBs().add(b1);
+        a.getBs().add(b2);
+
+        em.persist(a);
+
+        em.getTransaction().commit();
+        em.close();
+
     }
 }
