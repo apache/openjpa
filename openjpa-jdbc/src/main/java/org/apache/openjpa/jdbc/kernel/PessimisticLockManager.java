@@ -101,13 +101,12 @@ public class PessimisticLockManager
     protected void lockInternal(OpenJPAStateManager sm, int level, int timeout,
         Object sdata, boolean postVersionCheck) {
         // we can skip any already-locked instance regardless of level because
-        // we treat all locks the same (though super doesn't)
-        if (getLockLevel(sm) == LOCK_NONE) {
-            // only need to lock if not loaded from locking result
-            ConnectionInfo info = (ConnectionInfo) sdata;
-            if (info == null || info.result == null || !info.result.isLocking())
-                lockRow(sm, timeout, level);
-        }
+        // we treat all locks the same (though super doesn't).
+        
+        // only need to lock if not loaded from locking result
+        ConnectionInfo info = (ConnectionInfo) sdata;
+        if (info == null || info.result == null || !info.result.isLocking())
+            lockRow(sm, timeout, level);
         optimisticLockInternal(sm, level, timeout, sdata, postVersionCheck);
     }
 
@@ -128,7 +127,9 @@ public class PessimisticLockManager
         Object id = sm.getObjectId();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
 
-        List<SQLBuffer> sqls = getLockRows(dict, id, mapping, fetch, _store.getSQLFactory()); 
+        List<SQLBuffer> sqls = sm.getLock() == null
+            ?  getLockRows(dict, id, mapping, fetch, _store.getSQLFactory())
+            : new ArrayList<SQLBuffer>();
         if (ctx.getFetchConfiguration().getLockScope() == LockScopes.LOCKSCOPE_EXTENDED)
             lockJoinTables(sqls, dict, id, mapping, fetch, _store.getSQLFactory());
 
