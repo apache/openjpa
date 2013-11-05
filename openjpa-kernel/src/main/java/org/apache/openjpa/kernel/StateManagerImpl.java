@@ -1386,9 +1386,9 @@ public class StateManagerImpl
         if (fetch == null)
             fetch = _broker.getFetchConfiguration();
 
-        if (_readLockLevel == -1)
+        if (_readLockLevel == -1 || _readLockLevel < fetch.getReadLockLevel())
             _readLockLevel = fetch.getReadLockLevel();
-        if (_writeLockLevel == -1)
+        if (_writeLockLevel == -1 || _writeLockLevel < fetch.getWriteLockLevel())
             _writeLockLevel = fetch.getWriteLockLevel();
         return (forWrite) ? _writeLockLevel : _readLockLevel;
     }
