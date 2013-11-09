@@ -67,19 +67,18 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
 
         EntityB b1 = new EntityB(a);
         b1.setName("b1");
+        a.getBs().add(b1);
 
         EntityB b2 = new EntityB(a);
         b2.setName("b2");
+        a.getBs().add(b2);
 
         EntityB b3 = new EntityB(a);
         b3.setName("b3");
+        a.getBs().add(b3);
 
         EntityB b4 = new EntityB(a);
         b4.setName("b4");
-
-        a.getBs().add(b1);
-        a.getBs().add(b2);
-        a.getBs().add(b3);
         a.getBs().add(b4);
 
         em.persist(a);
@@ -94,6 +93,13 @@ public class TestOpenJPA2330 extends SingleEMFTestCase {
         Assert.assertNotNull(a2);
         Assert.assertNotNull(a2.getBs());
         Assert.assertEquals(4, a2.getBs().size());
+
+        Iterator<EntityB> it = a2.getBs().iterator();
+        for (int i = 1; i <= 4; i++) {
+            EntityB entityB = it.next();
+
+            Assert.assertEquals("b" + i, entityB.getName());
+        }
 
         em.getTransaction().commit();
         em.close();

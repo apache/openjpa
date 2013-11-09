@@ -48,10 +48,6 @@ public class EntityB {
     @OrderColumn
     private Set<EntityC> linacs;
 
-    @Column(name = "POSITION")
-    private int position;
-
-
     public EntityB() {
     }
 
