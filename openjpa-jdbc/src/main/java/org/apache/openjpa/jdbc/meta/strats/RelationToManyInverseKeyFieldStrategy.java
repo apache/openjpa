@@ -327,8 +327,7 @@ public abstract class RelationToManyInverseKeyFieldStrategy
             if (sm != null && sm.isDeleted())
                 sm = null;
             writeable = io.isAnyUpdatable(fk, sm == null);
-            orderWriteable = field.getOrderColumnIO().isUpdatable
-                (order, sm == null);
+            orderWriteable = field.getOrderColumnIO().isUpdatable(order, sm == null);
             action = Row.ACTION_UPDATE;
         }
         if (!writeable && !orderWriteable)
@@ -345,8 +344,11 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         // update the inverse pointer with our oid value
         if (writeable)
             row.setForeignKey(fk, io, sm);
-        if (orderWriteable)
+
+        if (orderWriteable) {
+            // set the OrderColumn value
             row.setInt(order, idx);
+        }
     }
 
     public Object toDataStoreValue(Object val, JDBCStore store) {

@@ -331,43 +331,50 @@ public class PrimaryRow
         boolean overrideDefault)
         throws SQLException {
         // make sure we're not setting two different values
-    	// unless the given column is an implicit relationship and value
-    	// changes from logical default to non-default
+        // unless the given column is an implicit relationship and value
+        // changes from logical default to non-default
         Object prev = getSet(col);
         if (prev != null) {
             if (prev == NULL)
                 prev = null;
             if (!rowValueEquals(prev, val)) {
-            	if (isDefaultValue(prev) || allowsUpdate(col, prev, val)) {
-            		super.setObject(col, val, metaType, overrideDefault);
-            	} else if (!isDefaultValue(prev)) {
-            		throw new InvalidStateException(_loc.get("diff-values",
-            				new Object[]{ col.getFullDBIdentifier().getName(),
-                            (prev == null) ? null : prev.getClass(), prev,
-                            (val == null) ? null : val.getClass(), val })).
-            				setFatal(true);
-            	} else {
-            	    // since not allow to update and the new value is 0 or null,
-            	    // just return.
-            	    return;
-            	}
+                if (isDefaultValue(prev) || allowsUpdate(col, prev, val)) {
+                    super.setObject(col, val, metaType, overrideDefault);
+                    return;
+                } else if (!isDefaultValue(val)) {
+                    throw new InvalidStateException(_loc.get("diff-values",
+                            new Object[]{ col.getFullDBIdentifier().getName(),
+                                    (prev == null) ? null : prev.getClass(), prev,
+                                    (val == null) ? null : val.getClass(), val })).
+                            setFatal(true);
+                } else {
+                    // since not allow to update and the new value is 0 or null,
+                    // just return.
+                    return;
+                }
             }
         }
         super.setObject(col, val, metaType, overrideDefault);
     }
     
     /**
-     * Allow the given column value to be updated only if old or current value
-     * is a default value or was not set and the column is not a primary key.
+     * Allow the given key column value to be updated if the old value is a default value
+     * or the new value is default.
+     * For primary keys we even disallow setting the current value to default
      */
     boolean allowsUpdate(Column col, Object old, Object cur) {
-    	return ((!col.isPrimaryKey() && col.isImplicitRelation()) ||
-    	   col.isUni1MFK()) && (isDefaultValue(old));
+        if (col.isPrimaryKey() && isDefaultValue(old) && !isDefaultValue(cur)) {
+            // for primary keys we disallow re-setting it to default
+            return false;
+        }
+
+        return !(col.isPrimaryKey() || col.isRelationId() || col.isImplicitRelation() || col.isUni1MFK())
+               || isDefaultValue(old) || isDefaultValue(cur);
     }
     
     boolean isDefaultValue(Object val) {
-    	return val == null || val == NULL
-    	    || (val instanceof Number && ((Number)val).longValue() == 0);
+        return val == null || val == NULL
+                || (val instanceof Number && ((Number)val).longValue() == 0);
     }
 
     /**

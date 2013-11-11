@@ -42,7 +42,7 @@ public class EntityA implements Serializable {
     private String name;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "center", orphanRemoval = true, cascade = CascadeType.ALL)
-    @OrderColumn
+    @OrderColumn(name="POSITION")
     private Set<EntityB> services = new LinkedHashSet<EntityB>();
 
     public EntityA() {
