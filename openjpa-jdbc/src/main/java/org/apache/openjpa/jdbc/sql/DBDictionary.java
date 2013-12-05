@@ -295,7 +295,31 @@ public class DBDictionary
     public int maxEmbeddedClobSize = -1;
     public int inClauseLimit = -1;
     public int datePrecision = MILLI;
+
+    /**
+     * @deprecated Use 'dateMillisecondBehavior' instead.
+     */
+    @Deprecated
     public boolean roundTimeToMillisec = true;
+
+    /*
+     * This defines how the milliseconds of a Date field are handled 
+     * when the Date is retrieved from the database, as follows:
+     * 
+     * ROUND: This is the default.  The 
+     * Date will be rounded to the nearest millisecond. 
+     * DROP: The milliseconds will be dropped, thus rounding is not 
+     * performed.  As an example, a date of '2010-01-01 12:00:00.687701' 
+     * stored in the database will become '2010-01-01 12:00:00.000' in 
+     * the Date field of the entity.
+     * RETAIN: The milliseconds will not be rounded and retained.  As an 
+     * example, a date of '2010-01-01 12:00:00.687701' stored in the
+     * database will become '2010-01-01 12:00:00.687' in the Date field 
+     * of the entity.
+     */
+    public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN };    
+    private DateMillisecondBehaviors dateMillisecondBehavior;
+    
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
     public String bigintTypeName = "BIGINT";
@@ -756,9 +780,18 @@ public class DBDictionary
         // get the fractional seconds component, rounding away anything beyond
         // milliseconds
         int fractional = 0;
-        if (roundTimeToMillisec) {
-            fractional = (int) Math.round(tstamp.getNanos() / (double) MILLI);
+        switch (getMillisecondBehavior()){
+            case DROP :
+                fractional = 0;
+                break;
+            case RETAIN :
+                fractional = (int) (tstamp.getNanos() / (double) MILLI);
+                break;
+            case ROUND :
+                fractional = (int) Math.round(tstamp.getNanos() / (double) MILLI);
+                break;
         }
+
 
         // get the millis component; some JDBC drivers round this to the
         // nearest second, while others do not
@@ -5560,5 +5593,31 @@ public class DBDictionary
     public String getIdentityColumnName() {
         return null;       
     }
+    
+    /**
+     * Default behavior is ROUND
+     */
+    public DateMillisecondBehaviors getMillisecondBehavior() {
+        // If the user hasn't configured this property, fall back 
+        // to looking at the old property in the mean time till 
+        // we can get rid of it.
+        if (dateMillisecondBehavior == null) {
+            if (roundTimeToMillisec) {
+                dateMillisecondBehavior = DateMillisecondBehaviors.ROUND;
+            } else {
+                dateMillisecondBehavior = DateMillisecondBehaviors.DROP;
+            }
+        }
+        return dateMillisecondBehavior;
+    }
 
+    public void setDateMillisecondBehavior(String str) {
+        if (str != null) {
+            // Tolerate different case
+            str = str.toUpperCase();
+            dateMillisecondBehavior = DateMillisecondBehaviors.valueOf(str);
+        } else {
+            dateMillisecondBehavior = null;
+        }
+    }
 }
