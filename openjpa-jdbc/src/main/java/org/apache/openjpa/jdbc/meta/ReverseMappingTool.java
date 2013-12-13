@@ -1887,8 +1887,8 @@ public class ReverseMappingTool
      * 
      * @see #main
      */
-    public static boolean run(JDBCConfiguration conf, String[] args, Options opts, Map<Class<?>, String> output) throws IOException,
-        SQLException {
+    public static boolean run(JDBCConfiguration conf, String[] args, Options opts, Map<Class<?>, String> output)
+        throws IOException, SQLException {
         // flags
         Flags flags = new Flags();
         flags.packageName = opts.removeProperty
