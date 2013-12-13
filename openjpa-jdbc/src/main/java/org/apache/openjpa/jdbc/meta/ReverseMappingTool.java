@@ -846,8 +846,7 @@ public class ReverseMappingTool
      *
      * @return a list of {@link File} instances that were written
      */
-    public List recordCode()
-        throws IOException {
+    public List recordCode() throws IOException {
         return recordCode(null);
     }
 
@@ -861,7 +860,7 @@ public class ReverseMappingTool
      * {@link String} that contains the generated code
      * @return a list of {@link File} instances that were written
      */
-    public List recordCode(Map output)
+    public List recordCode(Map<Class<?>, String> output)
         throws IOException {
         List written = new LinkedList();
 
@@ -1755,6 +1754,10 @@ public class ReverseMappingTool
         return tool;
     }
 
+    protected static ReverseMappingTool newInstance(JDBCConfiguration conf) {
+        return new ReverseMappingTool(conf);
+    }
+    
     ////////
     // Main
     ////////
@@ -1872,12 +1875,20 @@ public class ReverseMappingTool
 
     /**
      * Run the tool. Returns false if invalid options were given.
-     *
+     * 
      * @see #main
      */
-    public static boolean run(JDBCConfiguration conf, String[] args,
-        Options opts)
-        throws IOException, SQLException {
+    public static boolean run(JDBCConfiguration conf, String[] args, Options opts) throws IOException, SQLException {
+        return run(conf, args, opts, null);
+    }
+
+    /**
+     * Run the tool and write to the optionally provided map. Returns false if invalid options were given.
+     * 
+     * @see #main
+     */
+    public static boolean run(JDBCConfiguration conf, String[] args, Options opts, Map<Class<?>, String> output) throws IOException,
+        SQLException {
         // flags
         Flags flags = new Flags();
         flags.packageName = opts.removeProperty
@@ -1991,16 +2002,23 @@ public class ReverseMappingTool
             flags.customizer.setConfiguration(customProps);
         }
 
-        run(conf, args, flags, loader);
+        run(conf, args, flags, loader, output);
         return true;
     }
-
+    
     /**
      * Run the tool.
      */
-    public static void run(JDBCConfiguration conf, String[] args,
-        Flags flags, ClassLoader loader)
-        throws IOException, SQLException {
+    public static void run(JDBCConfiguration conf, String[] args, Flags flags, ClassLoader loader) throws IOException,
+        SQLException {
+        run(conf, args, flags, loader, null);
+    }
+
+    /**
+     * Run the tool and write to the optionally provided map
+     */
+    public static void run(JDBCConfiguration conf, String[] args, Flags flags, ClassLoader loader,
+        Map<Class<?>, String> output) throws IOException, SQLException {
         // parse the schema to reverse-map
         Log log = conf.getLog(OpenJPAConfiguration.LOG_TOOL);
         SchemaGroup schema;
@@ -2021,7 +2039,7 @@ public class ReverseMappingTool
         }
 
         // flags
-        ReverseMappingTool tool = new ReverseMappingTool(conf);
+        ReverseMappingTool tool = newInstance(conf);
         tool.setSchemaGroup(schema);
         tool.setPackageName(flags.packageName);
         tool.setDirectory(flags.directory);
@@ -2052,7 +2070,8 @@ public class ReverseMappingTool
             tool.buildAnnotations();
         }
         log.info(_loc.get("revtool-write-code"));
-        tool.recordCode();
+        tool.recordCode(output);
+        
         if (!LEVEL_NONE.equals(flags.metaDataLevel)) {
             log.info(_loc.get("revtool-write-metadata"));
             tool.recordMetaData(LEVEL_CLASS.equals(flags.metaDataLevel));
