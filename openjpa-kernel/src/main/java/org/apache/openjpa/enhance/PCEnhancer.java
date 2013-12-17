@@ -1181,7 +1181,7 @@ public class PCEnhancer {
             }
             
             if (_meta.isEmbeddedOnly() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
-                _log.error(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
+                _log.warn(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
             }
             
             addNewObjectIdInstanceMethod(true);
