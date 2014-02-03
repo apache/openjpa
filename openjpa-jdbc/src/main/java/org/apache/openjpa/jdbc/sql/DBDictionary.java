@@ -220,6 +220,7 @@ public class DBDictionary
     public boolean fullResultCollectionInOrderByRelation = false;
 
     // sql
+    public boolean disableAlterSeqenceIncrementBy=false;
     public String validationSQL = null;
     public String closePoolSQL = null;
     public String initializationSQL = null;
