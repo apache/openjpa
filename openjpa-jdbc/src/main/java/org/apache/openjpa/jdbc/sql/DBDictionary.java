@@ -219,6 +219,7 @@ public class DBDictionary
     public boolean setStringRightTruncationOn = true;
 
     // sql
+    public boolean disableAlterSeqenceIncrementBy=false;
     public String validationSQL = null;
     public String closePoolSQL = null;
     public String initializationSQL = null;

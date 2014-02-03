@@ -83,6 +83,7 @@ public class NativeJDBCSeq
 
     private boolean alterIncrementBy = false;
     private boolean alreadyLoggedAlterSeqFailure = false;
+    private boolean alreadyLoggedAlterSeqDisabled = false;
 
     /**
      * The sequence name. Defaults to <code>OPENJPA_SEQUENCE</code>.
@@ -219,17 +220,29 @@ public class NativeJDBCSeq
         try {
             if (!alterIncrementBy) {
                 DBDictionary dict = _conf.getDBDictionaryInstance();
-                // If this fails, we will warn the user at most one time and set _allocated and _increment to 1 so
-                // as to not potentially insert records ahead of what the database thinks is the next sequence value.
-                if (updateSql(conn, dict.getAlterSequenceSQL(_seq)) == -1) {
-                    if (!alreadyLoggedAlterSeqFailure) {
+                if (!dict.disableAlterSeqenceIncrementBy) {
+                    // If this fails, we will warn the user at most one time and set _allocated and _increment to 1 so
+                    // as to not potentially insert records ahead of what the database thinks is the next sequence
+                    // value.
+                    if (updateSql(conn, dict.getAlterSequenceSQL(_seq)) == -1) {
+                        if (!alreadyLoggedAlterSeqFailure) {
+                            Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
+                            if (log.isWarnEnabled()) {
+                                log.warn(_loc.get("fallback-no-seq-cache", _seqName));
+                            }
+                        }
+                        alreadyLoggedAlterSeqFailure = true;
+                        _allocate = 1;
+                    }
+                } else {
+                    if (!alreadyLoggedAlterSeqDisabled) {
                         Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
                         if (log.isWarnEnabled()) {
-                            log.warn(_loc.get("fallback-no-seq-cache", _seqName));
+                            log.warn(_loc.get("alter-seq-disabled", _seqName));
                         }
                     }
-                    alreadyLoggedAlterSeqFailure = true;
-                    _allocate = 1;
+
+                    alreadyLoggedAlterSeqDisabled = true; 
                 }
             }
             _nextValue = getSequence(conn);
