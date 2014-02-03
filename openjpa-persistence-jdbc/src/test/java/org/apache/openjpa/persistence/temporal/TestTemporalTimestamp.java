@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.temporal;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -31,8 +32,8 @@ import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
 public class TestTemporalTimestamp extends SQLListenerTestCase {
-    private OpenJPAEntityManager em;
-    
+    private OpenJPAEntityManager em;    
+    final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     
     public void setUp() {
         setSupportedDatabases(
@@ -42,8 +43,34 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
             return;
         }
         
-        setUp(CLEAR_TABLES, TemporalEntity.class, "openjpa.jdbc.DBDictionary", "RoundTimeToMillisec=false");
+        setUp(CLEAR_TABLES, TemporalEntity.class, "openjpa.jdbc.DBDictionary", 
+            "DateMillisecondBehavior=" + DBDictionary.DateMillisecondBehaviors.DROP,
+            "openjpa.Log", "SQL=TRACE,Tests=TRACE", "openjpa.ConnectionFactoryProperties"
+            ,"PrintParameters=true");
         assertNotNull(emf);
+//        noRound:
+  //      expected:<253402322399000> but was:<253402325999000>
+/*        Date got = new Date(253402322399000L);
+        Date exp = new Date(253402325999000L);        
+        System.out.println("NoRounding");
+        System.out.println("Got = " + sdf.format(got).toString());
+        System.out.println("Exp = " + sdf.format(exp).toString());
+*/
+        //testNoRoundingNoMillisecondLoss
+        //expected:<253402322399999> but was:<253402325999999>
+/*        got = new Date(253402322399999L);
+        exp = new Date(253402325999999L);        
+        System.out.println("testNoRoundingNoMillisecondLoss");
+        System.out.println("Got = " + sdf.format(got).toString());
+        System.out.println("Exp = " + sdf.format(exp).toString());
+        */
+        //expected:<253402322400000> but was:<253402326000000>
+/*        got = new Date(253402322400000L);
+        exp = new Date(253402326000000L);        
+        System.out.println("testRounding");
+        System.out.println("Got = " + sdf.format(got).toString());
+        System.out.println("Exp = " + sdf.format(exp).toString());
+  */      
         
         loadDB();
     }
@@ -62,6 +89,32 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
             assertEquals(testDate.getMinutes(), 59);
             assertEquals(testDate.getSeconds(), 59);
             assertEquals(testDate.getYear(), 8099);
+            assertTrue(sdf.format(testDate).toString().endsWith(".000"));
+        }
+        em.close();
+    }
+
+    public void testNoRoundingNoMillisecondLoss() {
+        JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
+        DBDictionary dict = conf.getDBDictionaryInstance();
+        dict.setDateMillisecondBehavior(DBDictionary.DateMillisecondBehaviors.RETAIN.toString());
+        
+        em = emf.createEntityManager();
+        final List<TemporalEntity> temporalEntityList = findAll(em);
+        assertNotNull(temporalEntityList);
+        assertNotEquals(temporalEntityList.size(), 0);
+        for (final TemporalEntity temporalEntity : temporalEntityList) {
+            Date testDate = temporalEntity.getTestDate();
+            assertEquals(testDate.getDay(), 5);
+            assertEquals(testDate.getMonth(), 11);
+            assertEquals(testDate.getDate(), 31);
+            assertEquals(testDate.getHours(), 23);
+            assertEquals(testDate.getMinutes(), 59);
+            assertEquals(testDate.getSeconds(), 59);
+            assertEquals(testDate.getYear(), 8099);
+            assertTrue(sdf.format(testDate).toString().endsWith(".999"));            
+            System.out.println("sdf.format(testDate).toString() = " +
+                sdf.format(testDate).toString());
         }
         em.close();
     }
@@ -70,7 +123,7 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
         JDBCConfiguration conf = (JDBCConfiguration) emf.getConfiguration();
         DBDictionary dict = conf.getDBDictionaryInstance();
         // set value back to default
-        dict.roundTimeToMillisec = true;
+        dict.setDateMillisecondBehavior(DBDictionary.DateMillisecondBehaviors.ROUND.toString());
         
         em = emf.createEntityManager();
         final List<TemporalEntity> temporalEntityList = findAll(em);
@@ -85,6 +138,8 @@ public class TestTemporalTimestamp extends SQLListenerTestCase {
             assertEquals(testDate.getMinutes(), 0);
             assertEquals(testDate.getSeconds(), 0);
             assertEquals(testDate.getYear(), 8100);
+//            assertEquals(testDate.getTime(), 253402326000000L);
+            assertTrue(sdf.format(testDate).toString().endsWith(".000"));
         }
         em.close();
     }
