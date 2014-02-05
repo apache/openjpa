@@ -398,14 +398,24 @@ public class CodeGenerator {
                 code.append("is");
             else
                 code.append("get");
-            code.append(capFieldName).parens();
+            if (fieldName.length() > 1 && Character.isLowerCase(fieldName.charAt(0))
+                && Character.isUpperCase(fieldName.charAt(1))) {
+                code.append(fieldName).parens();
+            } else {
+                code.append(capFieldName).parens();
+            }
             code.openBrace(2).endl();
             code.tab(2).append("return ").append(fieldName).
                 append(";").endl();
             code.closeBrace(2).afterSection();
 
             // setter
-            code.tab().append("public void set").append(capFieldName);
+            if (fieldName.length() > 1 && Character.isLowerCase(fieldName.charAt(0))
+                && Character.isUpperCase(fieldName.charAt(1))) {
+                code.tab().append("public void set").append(fieldName);
+            } else {
+                code.tab().append("public void set").append(capFieldName);
+            }
             code.openParen(true).append(fieldType).append(paramType).
                 append(" ").append(propertyName).closeParen();
             code.openBrace(2).endl();

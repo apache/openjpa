@@ -806,7 +806,7 @@ public class PCEnhancer {
      * Return the name of the setter method for the given field.
      */
     private static String getSetterName(FieldMetaData fmd) {
-        return "set" + StringUtils.capitalize(fmd.getName());
+        return fmd.getSetterName();
     }
 
     /**

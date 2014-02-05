@@ -2446,4 +2446,26 @@ public class FieldMetaData
     public void setUseSchemaElement(boolean _useSchemaElement) {
         this._useSchemaElement = _useSchemaElement;
     }
+
+    public String getSetterName() {
+        String setterName = "set" + StringUtils.capitalize(_name);
+        if (_name.length() > 1 && Character.isLowerCase(_name.charAt(0)) && Character.isUpperCase(_name.charAt(1))) {
+            // We have the special case where the first char is lower, and the
+            // following char is capital. We need to support using the
+            // setaStart() (correct) and setAStart() (incorrect -- old way)
+            Class<?> type = getDeclaringMetaData().getDescribedType();
+            setterName = "set" + _name;
+            try {
+                type.getDeclaredMethod(setterName, getType());
+                return setterName;
+            } catch (Exception e) {
+            }
+            setterName = "set" + StringUtils.capitalize(_name);
+            try {
+                type.getDeclaredMethod(setterName, getType());
+            } catch (Exception e) {
+            }
+        }
+        return setterName;
+    }
 }

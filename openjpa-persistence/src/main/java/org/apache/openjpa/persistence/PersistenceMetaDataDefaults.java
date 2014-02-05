@@ -609,12 +609,16 @@ public class PersistenceMetaDataDefaults
                     return false;
             }            
             try {
+                String setterName; 
+                if (member.getName().startsWith("is")) {
+                    setterName = "set" + member.getName().substring(2);
+                } else {
+                    setterName = "set" + member.getName().substring(3);
+                }
                 // check for setters for methods
-                Method setter = (Method) AccessController.doPrivileged(
-                    J2DoPrivHelper.getDeclaredMethodAction(
-                        meta.getDescribedType(), "set" +
-                        StringUtils.capitalize(name), new Class[] { 
-                            ((Method) member).getReturnType() }));
+                Method setter =
+                    (Method) AccessController.doPrivileged(J2DoPrivHelper.getDeclaredMethodAction(
+                        meta.getDescribedType(), setterName, new Class[] { ((Method) member).getReturnType() }));
                 if (setter == null && !isAnnotatedTransient(member)) {
                     logNoSetter(meta, name, null);
                     return false;

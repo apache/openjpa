@@ -123,6 +123,19 @@ public class Reflection {
                         || m.getReturnType() == Boolean.class)) {
                         setGetterMethod(cls, prop, m);
                         return m;
+                    } else {
+                        m = getDeclaredMethod(c, "get" + prop, null);
+                        if (m != null) {
+                            setGetterMethod(cls, prop, m);
+                            return m;
+                        } else {
+                            m = getDeclaredMethod(c, "is" + prop, null);
+                            if (m != null 
+                                    && (m.getReturnType() == boolean.class || m.getReturnType() == Boolean.class)) {
+                                setGetterMethod(cls, prop, m);
+                                return m;
+                            }
+                        }
                     }
                 }
             }
