@@ -1409,6 +1409,53 @@ before storing them in the database.
 Defaults to 1000000.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.DateMillisecondBehavior">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            JDBC
+                        </primary>
+                        <secondary>
+                            DateMillisecondBehavior
+                        </secondary>
+                    </indexterm>
+<literal>DateMillisecondBehavior</literal>:
+When retrieving a <literal>Date</literal> value from a database which stores the value in 
+a TIMESTAMP column, the values retrieved will be rounded to the nearest
+millisecond.  So a date of '2010-01-01 12:00:00.687701' stored in the
+database will become '2010-01-01 12:00:00.688' in the <literal>Date</literal> field of the
+entity.  The following date stored in the database as '9999-12-31 23:59:59.9999' 
+will become '10000-01-01 00:00:00.000'.  This rounding may not be desirable.  With this
+property, a user has options which will direct OpenJPA how to handle the milliseconds.  This 
+property can be set to one of the enums defined in 
+<literal>DBDictionary.DateMillisecondBehaviors</literal>.  The options defined in 
+<literal>DBDictionary.DateMillisecondBehaviors</literal> are as follows:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>DateMillisecondBehaviors.ROUND</literal>: This is the default.  The 
+<literal>Date</literal> will be rounded to the nearest millisecond, as described above.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>DateMillisecondBehaviors.DROP</literal>: The milliseconds will be dropped, thus
+rounding is not performed.  As an example, a date of '2010-01-01 12:00:00.687701' stored in the
+database will become '2010-01-01 12:00:00.000' in the <literal>Date</literal> field of the
+entity.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>DateMillisecondBehaviors.RETAIN</literal>: The milliseconds will not be rounded, but will
+be retained.  As an example, a date of '2010-01-01 12:00:00.687701' stored in the
+database will become '2010-01-01 12:00:00.687' in the <literal>Date</literal> field of the
+entity.  
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                    </para>
+                </listitem>                
                 <listitem id="DBDictionary.DateTypeName">
                     <para>
                     <indexterm>
