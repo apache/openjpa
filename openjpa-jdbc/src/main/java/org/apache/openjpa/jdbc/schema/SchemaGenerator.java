@@ -692,7 +692,7 @@ public class SchemaGenerator {
         DBIdentifier name = DBIdentifier.NULL;
         DBIdentifier colName = DBIdentifier.NULL;
         for (int i = 0; pks != null && i < pks.length; i++) {
-            schemaName = DBIdentifier.trimToNull(schemaName);
+            schemaName = DBIdentifier.trimToNull(pks[i].getSchemaIdentifier());
             schema = group.getSchema(schemaName);
             if (schema == null)
                 continue;
