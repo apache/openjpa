@@ -215,7 +215,7 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         Library1 lib = em.find(Library1.class, LIBRARY_NAME);
         assertNotNull(lib);
-        assertSQLFragnments(sql, "ORDER BY t1.LIBRARY_NAME ASC, t1.BOOK_NAME ASC");
+        assertSQLFragnments(sql, "ORDER BY", "t1.LIBRARY_NAME ASC, t1.BOOK_NAME ASC");
         em.close();
     }
     
