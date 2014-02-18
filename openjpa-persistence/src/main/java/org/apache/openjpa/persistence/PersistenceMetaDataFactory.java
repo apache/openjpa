@@ -448,11 +448,12 @@ public class PersistenceMetaDataFactory
                     buf = new StringBuilder();
                 else
                     buf.append(", ");
-                buf.append(fmd);
+                buf.append(meta.getDescribedTypeString() + "." + fmd);
             }
         }
-        if (buf != null)
+        if (buf != null) {
             throw new MetaDataException(_loc.get("no-pers-strat", buf));
+        }
     }
 
     public MetaDataDefaults getDefaults() {

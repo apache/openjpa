@@ -633,7 +633,7 @@ public class PersistenceMetaDataDefaults
 
         PersistenceStrategy strat = getPersistenceStrategy(null, member, ignoreTransient);
         if (strat == null) {
-            warn(meta, _loc.get("no-pers-strat", name));
+            warn(meta, _loc.get("no-pers-strat", meta.getDescribedTypeString() + "." + name));
             return false;
         } else if (strat == PersistenceStrategy.TRANSIENT) {
             return false;
