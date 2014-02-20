@@ -28,9 +28,13 @@ import org.apache.openjpa.lib.util.SizedMap;
 
 /**
  * An implementation of {@link SizedMap} that uses JDK1.5 concurrency primitives
- *
+ * 
  * @since 1.1.0
+ * @deprecated In Java 8, java.util.ConcurrentHashMap received an overhauled and this extension was not updated. This
+ *             class will fail to compile on Java 8. If it is compiled at a lower level and run on Java 8 it will not
+ *             work properly. For more information: https://issues.apache.org/jira/browse/OPENJPA-2441
  */
+@Deprecated
 public class SizedConcurrentHashMap
     extends NullSafeConcurrentHashMap
     implements SizedMap, ConcurrentMap, Serializable {

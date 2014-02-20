@@ -40,9 +40,10 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
-import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.util.Id;
@@ -480,11 +481,27 @@ public abstract class AbstractQueryCache
         
         private long[] astat = new long[ARRAY_SIZE];
         private long[] stat  = new long[ARRAY_SIZE];
-        private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-        private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+        private Map<T, long[]> stats;
+        private Map<T, long[]> astats;
         private Date start = new Date();
         private Date since = start;
-        
+
+        public Default() {
+            initializeMaps();
+        }
+
+        private void initializeMaps() {
+            ConcurrentReferenceHashMap statsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            statsMap.setMaxSize(FIXED_SIZE);
+            stats = statsMap;
+
+            ConcurrentReferenceHashMap aStatsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            aStatsMap.setMaxSize(FIXED_SIZE);
+            astats = aStatsMap;
+        }
+
         public Set<T> keys() {
             return stats.keySet();
         }
@@ -552,8 +569,7 @@ public abstract class AbstractQueryCache
         public synchronized void clear() {
            astat = new long[ARRAY_SIZE];
            stat  = new long[ARRAY_SIZE];
-           stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-           astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+           initializeMaps();
            start  = new Date();
            since  = start;
         }

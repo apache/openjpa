@@ -56,8 +56,8 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
-import org.apache.openjpa.lib.util.concurrent.NullSafeConcurrentHashMap;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import serp.bytecode.BCClass;
@@ -94,8 +94,8 @@ public class ProxyManagerImpl
         _stdMaps.put(SortedMap.class, TreeMap.class);
     }
 
-    private final Set _unproxyable = new HashSet();
-    private final Map _proxies = new NullSafeConcurrentHashMap();
+    private final Set<String> _unproxyable = new HashSet<String>();
+    private final Map<Class<?>, Proxy> _proxies = new ConcurrentHashMap<Class<?>, Proxy>();
     private boolean _trackChanges = true;
     private boolean _assertType = false;
     private boolean _delayedCollectionLoading = false;
@@ -453,31 +453,32 @@ public class ProxyManagerImpl
      * Return the cached factory proxy for the given bean type.
      */
     private ProxyBean getFactoryProxyBean(Object orig) {
-        final Class type = orig.getClass();
+        final Class<?> type = orig.getClass();
         if (isUnproxyable(type))
             return null;
 
         // we don't lock here; ok if two proxies get generated for same type
         ProxyBean proxy = (ProxyBean) _proxies.get(type);
-        if (proxy == null && !_proxies.containsKey(type)) {
-            ClassLoader l = GeneratedClasses.getMostDerivedLoader(type,
-                ProxyBean.class);
-            Class pcls = loadBuildTimeProxy(type, l);
+        if (proxy == null) {
+            ClassLoader l = GeneratedClasses.getMostDerivedLoader(type, ProxyBean.class);
+            Class<?> pcls = loadBuildTimeProxy(type, l);
             if (pcls == null) {
-                // TODO Move this to J2DOPrivHelper? 
-                BCClass bc = AccessController
-                    .doPrivileged(new PrivilegedAction<BCClass>() {
-                        public BCClass run() {
-                            return generateProxyBeanBytecode(type, true);
-                        }
-                    });
+                // TODO Move this to J2DOPrivHelper?
+                BCClass bc = AccessController.doPrivileged(new PrivilegedAction<BCClass>() {
+                    public BCClass run() {
+                        return generateProxyBeanBytecode(type, true);
+                    }
+                });
                 if (bc != null)
                     pcls = GeneratedClasses.loadBCClass(bc, l);
             }
             if (pcls != null)
-                proxy = (ProxyBean) instantiateProxy(pcls,
-                    findCopyConstructor(type), new Object[] {orig});
-            _proxies.put(type, proxy);
+                proxy = (ProxyBean) instantiateProxy(pcls, findCopyConstructor(type), new Object[] { orig });
+            if (proxy == null) {
+                _unproxyable.add(type.getName());
+            } else {
+                _proxies.put(type, proxy);
+            }
         }
         return proxy;
     }

@@ -31,12 +31,15 @@ import java.util.HashSet;
 import org.apache.commons.collections.set.MapBackedSet;
 
 /**
- * A subclass of {@link ConcurrentHashMap} that allows null keys and values.
- * In exchange, it weakens the contract of {@link #putIfAbsent} and the other
- * concurrent methods added in {@link #ConcurrentHashMap}.
- *
+ * A subclass of {@link ConcurrentHashMap} that allows null keys and values. In exchange, it weakens the contract of
+ * {@link #putIfAbsent} and the other concurrent methods added in {@link #ConcurrentHashMap}.
+ * 
  * @since 1.1.0
+ * @deprecated In Java 8, java.util.ConcurrentHashMap received an overhauled and this extension was not updated. This
+ *             class will fail to compile on Java 8. If it is compiled at a lower level and run on Java 8 it will not
+ *             work properly. For more information: https://issues.apache.org/jira/browse/OPENJPA-2441
  */
+@Deprecated
 public class NullSafeConcurrentHashMap extends ConcurrentHashMap {
 
     private enum Markers {

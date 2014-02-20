@@ -25,7 +25,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * Records query execution statistics.
@@ -153,11 +154,27 @@ public interface QueryStatistics<T> extends Serializable {
         
 		private long[] astat = new long[ARRAY_SIZE];
 		private long[] stat  = new long[ARRAY_SIZE];
-		private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-		private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+		private Map<T, long[]> stats;
+		private Map<T, long[]> astats;
 		private Date start = new Date();
 		private Date since = start;
 		
+		public Default() {
+            initializeMaps();
+        }
+
+        private void initializeMaps() {
+            ConcurrentReferenceHashMap statsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            statsMap.setMaxSize(FIXED_SIZE);
+            stats = statsMap;
+
+            ConcurrentReferenceHashMap aStatsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            aStatsMap.setMaxSize(FIXED_SIZE);
+            astats = aStatsMap;
+        }
+        
 		public Set<T> keys() {
 		    return stats.keySet();
 		}
@@ -216,8 +233,7 @@ public interface QueryStatistics<T> extends Serializable {
 	    public synchronized void clear() {
 	       astat = new long[ARRAY_SIZE];
 	       stat  = new long[ARRAY_SIZE];
-	       stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-	       astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
+	       initializeMaps();
 	       start  = new Date();
 	       since  = start;
 	    }
