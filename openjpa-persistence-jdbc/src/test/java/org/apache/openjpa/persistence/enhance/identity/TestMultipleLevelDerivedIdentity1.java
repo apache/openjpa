@@ -39,7 +39,16 @@ public class TestMultipleLevelDerivedIdentity1 extends SQLListenerTestCase {
 	private static String BOOK_NAME    = "foo";
 	private static int    NUM_PAGES    = 3;
 	private static int    NUM_LINES    = 20;
+
     public void setUp() throws Exception {
+        setSupportedDatabases(org.apache.openjpa.jdbc.sql.DerbyDictionary.class,
+            org.apache.openjpa.jdbc.sql.DB2Dictionary.class, 
+            org.apache.openjpa.jdbc.sql.OracleDictionary.class);
+        
+        if (isTestsDisabled()) {
+            return;
+        }
+        
         super.setUp(DROP_TABLES, Library1.class, Book1.class, Page1.class,
             BookId1.class, PageId1.class, Line1.class, LineId1.class,
             "openjpa.RuntimeUnenhancedClasses", "unsupported");
