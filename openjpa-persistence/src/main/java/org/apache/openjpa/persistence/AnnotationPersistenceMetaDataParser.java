@@ -1765,7 +1765,7 @@ public class AnnotationPersistenceMetaDataParser
             if (cascade == CascadeType.ALL || cascade == CascadeType.REMOVE)
                 vmd.setCascadeDelete(ValueMetaData.CASCADE_IMMEDIATE);
             if (cascade == CascadeType.ALL || cascade == CascadeType.PERSIST)
-                vmd.setCascadePersist(ValueMetaData.CASCADE_IMMEDIATE);
+                vmd.setCascadePersist(ValueMetaData.CASCADE_IMMEDIATE, false);
             if (cascade == CascadeType.ALL || cascade == CascadeType.MERGE)
                 vmd.setCascadeAttach(ValueMetaData.CASCADE_IMMEDIATE);
             if (cascade == CascadeType.ALL || cascade == CascadeType.DETACH)
