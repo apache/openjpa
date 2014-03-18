@@ -58,6 +58,8 @@ public class ValueMetaDataImpl
     private int _resMode = MODE_NONE;
     private String _mappedBy = null;
     private FieldMetaData _mappedByMeta = null;
+    
+    private boolean _checkPUDefaultCascadePersist = true;
 
     protected ValueMetaDataImpl(FieldMetaData owner) {
         _owner = owner;
@@ -233,6 +235,14 @@ public class ValueMetaDataImpl
     }
 
     public int getCascadePersist() {
+        if (_checkPUDefaultCascadePersist) {
+            Boolean dcpe = getRepository().getMetaDataFactory().getDefaults().isDefaultCascadePersistEnabled();
+            if (dcpe != null && dcpe.equals(Boolean.TRUE)) {
+                _persist = CASCADE_IMMEDIATE;
+            }
+            _checkPUDefaultCascadePersist = false;
+        }
+        
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return CASCADE_NONE;
         if (isDeclaredTypePC())
@@ -244,7 +254,12 @@ public class ValueMetaDataImpl
     }
 
     public void setCascadePersist(int persist) {
+        setCascadePersist(persist, true);
+    }
+    
+    public void setCascadePersist(int persist, boolean checkPUDefault) {
         _persist = persist;
+        _checkPUDefaultCascadePersist = checkPUDefault;
     }
 
     public int getCascadeAttach() {

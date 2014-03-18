@@ -2188,6 +2188,10 @@ public class FieldMetaData
     public void setCascadePersist(int persist) {
         _val.setCascadePersist(persist);
     }
+    
+    public void setCascadePersist(int cascade, boolean checkPUDefault) {
+        _val.setCascadePersist(cascade, checkPUDefault);
+    }
 
     public int getCascadeAttach() {
         return _val.getCascadeAttach();
