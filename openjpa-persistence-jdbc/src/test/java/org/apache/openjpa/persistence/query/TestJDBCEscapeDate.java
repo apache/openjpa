@@ -44,7 +44,7 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         setUp(Employee.class, DROP_TABLES);
     }
 
-    public void testJDBCEscape() {
+    public void populate(){
         EntityManager em = emf.createEntityManager();
         EntityTransaction tran = em.getTransaction();
         Employee e = new Employee();
@@ -55,9 +55,13 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         e.setHireTimestamp(new Date());
         em.persist(e);
         tran.begin();
-        em.flush();
         tran.commit();
-        em.clear();
+        em.close();        
+    }
+    
+    public void testJDBCEscape() {
+        populate();
+        EntityManager em = emf.createEntityManager();
 
         String[] jpql;
         DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
@@ -157,4 +161,21 @@ public class TestJDBCEscapeDate extends SingleEMFTestCase {
         Assert.assertEquals(1, updateCnt);
         em.close();
     }
+    
+    /*
+     * Added for OJ-2286.  The test executes the same query multiple times.  Prior
+     * to the JIRA fix, upon the second exception an exception would occur.  
+     */
+    public void testMultipleQueryExecutionWithDateLiteral() {
+        populate();
+        EntityManager em = emf.createEntityManager();
+        
+        Query q = em.createQuery("SELECT e FROM Employee e WHERE e.hireTimestamp > {ts '2001-01-01 00:00:00'}");        
+        Assert.assertEquals("First assertion", 1, q.getResultList().size());
+        // Prior to JIRA OJ-2286, an exception would occur here:
+        Assert.assertEquals("Second assertion", 1, q.getResultList().size());
+        // For good measure execute it a couple more times.  :)
+        Assert.assertEquals("Third assertion", 1, q.getResultList().size());
+        Assert.assertEquals("Fourth assertion", 1, q.getResultList().size());
+    }    
 }
