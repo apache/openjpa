@@ -256,7 +256,7 @@ class SingleFieldManager extends TransferFieldManager implements Serializable {
         switch (fmd.getDeclaredTypeCode()) {
             case JavaTypes.PC:
             case JavaTypes.PC_UNTYPED:
-                if (!_broker.isDetachedNew() && _broker.isDetached(objval))
+                if (!_broker.isDetachedNew() && _broker.isDetached(objval, _checkDbOnCascadePersist))
                     return; // allow but ignore
                 _broker.persist(objval, true, call);
                 break;

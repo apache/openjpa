@@ -21,12 +21,13 @@ package org.apache.openjpa.persistence.cascade;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
-import org.apache.openjpa.persistence.test.SingleEMFTestCase;
+import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestCascadePersist extends SingleEMFTestCase {
+public class TestCascadePersist extends SQLListenerTestCase {
     @Override
     public void setUp() throws Exception {
-        setUp(DROP_TABLES, CascadePersistEntity.class);
+        setUp(DROP_TABLES, CascadePersistEntity.class, "openjpa.Compatibility",
+            "CheckDatabaseForCascadePersistToDetachedEntity=false");
     }
 
     public void testCascadePersistToDetachedFailure() {
@@ -66,4 +67,29 @@ public class TestCascadePersist extends SingleEMFTestCase {
         // Since cpe1 is managed, it should be ignored by the cascaded persist operation.
         em.getTransaction().commit();
     }
+    
+    /*
+     * Prior to OPENJPA-1986, an extra SELECT was executed in this scenario.
+     */
+    public void testCascaseExtraneousSQL(){
+        long id = System.currentTimeMillis();
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        CascadePersistEntity cpe = new CascadePersistEntity(id);
+        CascadePersistEntity cpe2 = new CascadePersistEntity(id+1);
+        cpe.setOther(cpe2);
+
+        //Clear all SQL statements to make sure that during
+        //the persist we don't execute a select.
+        resetSQL();
+        em.persist(cpe);
+
+        em.getTransaction().commit();
+        em.close();        
+
+        //There should be no selects at this point, only
+        //inserts.
+        assertNotSQL("SELECT .*");
+    }    
 }
