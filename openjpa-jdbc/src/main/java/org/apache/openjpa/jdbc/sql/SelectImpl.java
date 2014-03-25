@@ -55,8 +55,8 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.StoreContext;
-import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.kernel.exps.Context;
+import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.ApplicationIds;
@@ -2319,7 +2319,7 @@ public class SelectImpl
         implements PathJoins {
 
         private SelectImpl _sel = null;
-        private Map<Column, Object> cachedColumnAlias_ = null;
+        private Map<CachedColumnAliasKey, Object> cachedColumnAlias_ = null;
 
         // position in selected columns list where we expect the next load
         private int _pos = 0;
@@ -2403,9 +2403,10 @@ public class SelectImpl
             if (pj != null && pj.path() != null) {
                 Object columnAlias = getColumnAlias((Column) obj, pj);
                 if (joins == null) {
-                    if (cachedColumnAlias_ == null)
-                        cachedColumnAlias_ = new HashMap<Column, Object>();
-                    cachedColumnAlias_.put((Column) obj, columnAlias);
+                    if (cachedColumnAlias_ == null) {
+                        cachedColumnAlias_ = new HashMap<CachedColumnAliasKey, Object>();
+                    }
+                    cachedColumnAlias_.put(new CachedColumnAliasKey((Column) obj, pj), columnAlias);
                 }
                 return columnAlias != null && _sel._selects.contains(columnAlias);
             }
@@ -2447,6 +2448,7 @@ public class SelectImpl
 
         protected int findObject(Object obj, Joins joins)
             throws SQLException {
+            Object orig = obj;
             if (_pos == _sel._selects.size())
                 _pos = 0;
 
@@ -2458,9 +2460,10 @@ public class SelectImpl
                 Column col = (Column) obj;
                 pk = (col.isPrimaryKey()) ? Boolean.TRUE : Boolean.FALSE;
                 if (joins == null && cachedColumnAlias_ != null) {
-                    obj = cachedColumnAlias_.get(col);
-                    if (obj == null)
+                    obj = cachedColumnAlias_.get(new CachedColumnAliasKey((Column) obj, pj));
+                    if (obj == null) {
                         obj = getColumnAlias(col, pj);
+                    }
                 } else {
                     obj = getColumnAlias(col, pj);
                 }
@@ -2639,6 +2642,47 @@ public class SelectImpl
 
         public void moveJoinsToParent() {
         }
+        
+        private static final class CachedColumnAliasKey {
+            private final Column col;
+            private final PathJoins pjs;
+
+            public CachedColumnAliasKey(Column c, PathJoins p) {
+                col = c;
+                pjs = p;
+            }
+
+            @Override
+            public int hashCode() {
+                final int prime = 31;
+                int result = 1;
+                result = prime * result + ((col == null) ? 0 : col.hashCode());
+                result = prime * result + ((pjs == null) ? 0 : pjs.hashCode());
+                return result;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj)
+                    return true;
+                if (obj == null)
+                    return false;
+                if (getClass() != obj.getClass())
+                    return false;
+                CachedColumnAliasKey other = (CachedColumnAliasKey) obj;
+                if (col == null) {
+                    if (other.col != null)
+                        return false;
+                } else if (!col.equals(other.col))
+                    return false;
+                if (pjs == null) {
+                    if (other.pjs != null)
+                        return false;
+                } else if (!pjs.equals(other.pjs))
+                    return false;
+                return true;
+            }
+        }
     }
 
     /**
@@ -2773,9 +2817,9 @@ public class SelectImpl
                 + String.valueOf(path);
         }
 
-        public void moveJoinsToParent() {
-        }
+    public void moveJoinsToParent() {
     }
+}
 
     /**
      * Joins implementation.
