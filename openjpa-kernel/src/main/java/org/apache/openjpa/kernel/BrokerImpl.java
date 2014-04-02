@@ -391,6 +391,11 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
         _printParameters =
             Boolean.parseBoolean(Configurations.parseProperties(_conf.getConnectionFactoryProperties()).getProperty(
                 PRINT_PARAMETERS_CONFIG_STR, "false"));
+
+        // do it before begin event otherwise transactional listeners can't use it, see @Auditable
+        if (!fromDeserialization)
+            _factory.addListeners(this);
+
         // synch with the global transaction in progress, if any
         if (_factory.syncWithManagedTransaction(this, false))
             beginInternal();

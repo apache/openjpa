@@ -450,4 +450,16 @@
         </properties>
     </persistence-unit>
 
+  <persistence-unit name="auditjta" transaction-type="JTA">
+    <class>org.apache.openjpa.audit.X</class>
+    <class>org.apache.openjpa.audit.AuditedEntry</class>
+
+    <properties>
+      <property name="openjpa.Auditor" value="org.apache.openjpa.audit.TestBeginEventOnTransactionListener$MockAuditor" />
+      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+      <property name="openjpa.DynamicEnhancementAgent" value="false" />
+      <property name="openjpa.ManagedRuntime" value="org.apache.openjpa.jta.JTAManagedRuntime"/>
+    </properties>
+  </persistence-unit> 
+
 </persistence>
