@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import org.apache.xbean.asm4.ClassReader;
-import org.apache.xbean.asm4.ClassWriter;
+import org.apache.xbean.asm5.ClassReader;
+import org.apache.xbean.asm5.ClassWriter;
 import serp.bytecode.BCClass;
 
 
