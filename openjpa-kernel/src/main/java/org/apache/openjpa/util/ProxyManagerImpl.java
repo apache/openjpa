@@ -58,7 +58,6 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
@@ -632,8 +631,7 @@ public class ProxyManagerImpl
         delegateConstructors(bc, type);
         addProxyMethods(bc, false);
         addProxyMapMethods(bc, type);
-        Class<? extends ProxyMaps> mapProxyClassType =
-            ConcurrentMap.class.isAssignableFrom(type) ? ProxyConcurrentMaps.class : ProxyMaps.class;
+        Class<? extends ProxyMaps> mapProxyClassType = ProxyConcurrentMaps.class;
         proxyRecognizedMethods(bc, type, mapProxyClassType, ProxyMap.class);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
@@ -1338,7 +1336,7 @@ public class ProxyManagerImpl
 
             // first check for overriding method 
             try {
-                match = helper.getMethod(meths[i].getName(), params); 
+                match = helper.getMethod(meths[i].getName(), params);
                 proxyOverrideMethod(bc, meths[i], match, params);
                 continue;
             } catch (NoSuchMethodException nsme) {
