@@ -107,6 +107,15 @@ public abstract class DelayedProxyCollectionsTestCase extends SQLListenerTestCas
         _ignoreInterfaces.add(DelayedProxy.class);
         _ignoreInterfaces.add(Proxy.class);
         _ignoreInterfaces.add(ProxyCollection.class);
+
+        // Additional Java 8 methods we can safely ignore for now...
+        _ignoreMethods.add(stringMethodName("spliterator", null));
+        _ignoreMethods.add(stringMethodName("stream", null));
+        _ignoreMethods.add(stringMethodName("parallelStream", null));
+        _ignoreMethods.add("removeIf:java.util.function.Predicate");
+        _ignoreMethods.add("forEach:java.util.function.Consumer");
+        _ignoreMethods.add("replaceAll:java.util.function.UnaryOperator");
+        _ignoreMethods.add("sort:java.util.Comparator");
     }
 
     public static String stringMethodName(Method m) {
