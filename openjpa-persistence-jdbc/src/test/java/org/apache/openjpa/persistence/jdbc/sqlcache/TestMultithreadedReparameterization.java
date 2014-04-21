@@ -37,7 +37,7 @@ import org.apache.openjpa.persistence.OpenJPAPersistence;
  * @author Pinaki Poddar
  *
  */
-public class TestMultithreadedReparametrization extends TestCase {
+public class TestMultithreadedReparameterization extends TestCase {
     private static String RESOURCE = "META-INF/persistence.xml"; 
     private static String UNIT_NAME = "PreparedQuery";
     protected static OpenJPAEntityManagerFactory emf;

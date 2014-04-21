@@ -49,7 +49,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
  * @author Pinaki Poddar
  *
  */
-public class TestInExpressionParamaterBinding extends SingleEMFTestCase {
+public class TestInExpressionParameterBinding extends SingleEMFTestCase {
     private static OpenJPAEntityManagerFactory _emf;
     private static List<Integer> ORIGINAL_ZIPS;
     private OpenJPAEntityManager _em;
@@ -61,6 +61,7 @@ public class TestInExpressionParamaterBinding extends SingleEMFTestCase {
             ORIGINAL_ZIPS = Arrays.asList(12345, 23456, 34567, 45678, 56789, 67890);
             createData();
         }
+        getPreparedQueryCache().clear();
         _em = _emf.createEntityManager();
     }
 
