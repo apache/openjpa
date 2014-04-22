@@ -53,7 +53,7 @@ public class TestMultithreadedReparameterization extends TestCase {
         }
     }
     
-    public void testReparametrizationUnderHeavyLoad() throws Exception {
+    public void testReparameterizationUnderHeavyLoad() throws Exception {
         long baseId = System.currentTimeMillis();
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
