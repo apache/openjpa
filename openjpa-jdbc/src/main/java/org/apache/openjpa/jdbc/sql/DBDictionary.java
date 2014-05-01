@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Array;
@@ -97,6 +96,7 @@ import org.apache.openjpa.jdbc.schema.ForeignKey.FKMapKey;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.Seq;
+import org.apache.openjpa.kernel.StateManagerImpl;
 import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -1282,24 +1282,13 @@ public class DBDictionary
     public void setTimestamp(PreparedStatement stmnt, int idx,
         Timestamp val, Calendar cal, Column col)
         throws SQLException {
-        // ensure that we do not insert dates at a greater precision than
-        // that at which they will be returned by a SELECT
-        int rounded = (int) Math.round(val.getNanos() /
-            (double) datePrecision);
-        int nanos = rounded * datePrecision;
-        if (nanos > 999999999) {
-            // rollover to next second
-            val.setTime(val.getTime() + 1000);
-            nanos = 0;
-        }
         
-        Timestamp valForStmnt = new Timestamp(val.getTime());
-        valForStmnt.setNanos(nanos);
-
+        val = StateManagerImpl.roundTimestamp(val, datePrecision);
+        
         if (cal == null)
-            stmnt.setTimestamp(idx, valForStmnt);
+            stmnt.setTimestamp(idx, val);
         else
-            stmnt.setTimestamp(idx, valForStmnt, cal);
+            stmnt.setTimestamp(idx, val, cal);
     }
 
     /**

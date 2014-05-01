@@ -25,6 +25,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -157,6 +158,8 @@ public class StateManagerImpl
     
     private transient ReentrantLock _instanceLock = null;
 
+    private int _datePrecision = -1;
+        
     /**
      * <p>set to <code>false</code> to prevent the postLoad method from
      * sending lifecycle callback events.</p>
@@ -724,13 +727,48 @@ public class StateManagerImpl
     public void setNextVersion(Object version) {
         assignVersionField(version);
     }
+    
+    public static Timestamp roundTimestamp(Timestamp val, int datePrecision) {
+        // ensure that we do not insert dates at a greater precision than
+        // that at which they will be returned by a SELECT
+        int rounded = (int) Math.round(val.getNanos() / (double) datePrecision);
+        long time = val.getTime();
+        int nanos = rounded * datePrecision;
+        if (nanos > 999999999) {
+            // rollover to next second
+            time = time + 1000;
+            nanos = 0;
+        }
 
+        val = new Timestamp(time);
+        val.setNanos(nanos);
+        return val;
+    }
+    
     private void assignVersionField(Object version) {
+
+        if (version instanceof Timestamp) {
+            if (_datePrecision == -1) {
+                try {
+                    OpenJPAConfiguration conf = _broker.getConfiguration();
+                    Class confCls = Class.forName("org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl");
+                    if (confCls.isAssignableFrom(conf.getClass())) {
+                        Object o = conf.getClass().getMethod("getDBDictionaryInstance").invoke(conf, (Object[]) null);
+                        _datePrecision = o.getClass().getField("datePrecision").getInt(o);
+                    } else {
+                        _datePrecision = 1000;
+                    }
+                } catch (Throwable e) {
+                    _datePrecision = 1000;
+                }
+            }
+
+            version = roundTimestamp((Timestamp) version, _datePrecision);
+        }
         _version = version;
         FieldMetaData vfield = _meta.getVersionField();
         if (vfield != null)
-            store(vfield.getIndex(), JavaTypes.convert(version,
-                vfield.getTypeCode()));
+            store(vfield.getIndex(), JavaTypes.convert(version, vfield.getTypeCode()));
     }
 
     public PCState getPCState() {
