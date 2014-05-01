@@ -1378,9 +1378,36 @@ This value is usually one million, meaning that the database is able
 to store time values with a precision of one millisecond.  Particular
 databases may have more or less precision.
 OpenJPA will round all time values to this degree of precision
-before storing them in the database.
-Defaults to 1000000.
-                    </para>
+before storing them in the database.  This property can be set to one 
+of the following precisions:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+<literal>DECI</literal>: 100000000
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>CENIT</literal>: 10000000
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>MILLI (default precision)</literal>: 1000000
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>MICRO</literal>: 1000
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+<literal>NANO (max precision)</literal>: 1
+                        </para>
+                    </listitem>
+                </itemizedlist>
                 </listitem>
                 <listitem id="DBDictionary.DateMillisecondBehavior">
                     <para>
