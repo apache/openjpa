@@ -1180,7 +1180,7 @@ public class PCEnhancer {
                 addGetIDOwningClass();
             }
             
-            if (_meta.isEmbeddedOnly() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
+            if (_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION) {
                 _log.error(_loc.get("ID-field-in-embeddable-unsupported", _meta.toString()));
             }
             
@@ -2753,8 +2753,9 @@ public class PCEnhancer {
         code.anew().setType(oidType);
         code.dup();
         if (_meta.isOpenJPAIdentity() || (obj && usesClsString == Boolean.TRUE)) {
-            if ((_meta.isEmbeddedOnly() && ! (_meta.getIdentityType() == ClassMetaData.ID_APPLICATION))
-                || _meta.hasAbstractPKField() == true ) {
+            if ((_meta.isEmbeddedOnly() 
+                && !(_meta.isEmbeddable() && _meta.getIdentityType() == ClassMetaData.ID_APPLICATION))
+                || _meta.hasAbstractPKField() == true) {
                 code.aload().setThis();
                 code.invokevirtual().setMethod(PRE + "GetIDOwningClass", Class.class, null);
             } else {
