@@ -59,6 +59,8 @@ import org.apache.openjpa.util.Proxy;
 public abstract class RelationToManyInverseKeyFieldStrategy
     extends StoreCollectionFieldStrategy {
 
+    private static final long serialVersionUID = 2317326318332436956L;
+
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyInverseKeyFieldStrategy.class);
 

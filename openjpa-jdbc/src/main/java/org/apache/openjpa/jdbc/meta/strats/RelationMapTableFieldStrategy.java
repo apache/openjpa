@@ -50,6 +50,8 @@ public class RelationMapTableFieldStrategy
     extends RelationToManyTableFieldStrategy
     implements LRSMapFieldStrategy {
 
+    private static final long serialVersionUID = 4748058273897641783L;
+    
     private static final Localizer _loc = Localizer.forPackage
         (RelationMapTableFieldStrategy.class);
 

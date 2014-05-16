@@ -51,6 +51,8 @@ public class RelationMapInverseKeyFieldStrategy
     extends RelationToManyInverseKeyFieldStrategy
     implements LRSMapFieldStrategy {
 
+    private static final long serialVersionUID = 4283482067478701120L;
+    
     private static final Localizer _loc = Localizer.forPackage
         (RelationMapInverseKeyFieldStrategy.class);
 

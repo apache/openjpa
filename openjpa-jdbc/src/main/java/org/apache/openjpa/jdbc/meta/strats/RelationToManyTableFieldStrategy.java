@@ -54,6 +54,8 @@ import org.apache.openjpa.util.Proxy;
 public abstract class RelationToManyTableFieldStrategy
     extends StoreCollectionFieldStrategy {
 
+    private static final long serialVersionUID = 4803388504919500210L;
+    
     private static final Localizer _loc = Localizer.forPackage
         (RelationToManyTableFieldStrategy.class);
 

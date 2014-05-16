@@ -46,6 +46,8 @@ public class RelationCollectionInverseKeyFieldStrategy
     extends RelationToManyInverseKeyFieldStrategy
     implements LRSCollectionFieldStrategy {
 
+    private static final long serialVersionUID = 5428995654524431931L;
+    
     private static final Localizer _loc = Localizer.forPackage
         (RelationCollectionInverseKeyFieldStrategy.class);
 

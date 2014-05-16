@@ -42,6 +42,8 @@ public class HandlerCollectionTableFieldStrategy
     extends StoreCollectionFieldStrategy
     implements LRSCollectionFieldStrategy {
 
+    private static final long serialVersionUID = -1046212544538389368L;
+
     private static final Localizer _loc = Localizer.forPackage
         (HandlerCollectionTableFieldStrategy.class);
 

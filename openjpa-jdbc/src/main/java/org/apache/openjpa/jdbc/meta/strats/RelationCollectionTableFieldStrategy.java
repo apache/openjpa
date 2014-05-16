@@ -46,6 +46,8 @@ public class RelationCollectionTableFieldStrategy
     extends RelationToManyTableFieldStrategy
     implements LRSCollectionFieldStrategy {
 
+    private static final long serialVersionUID = 7503030490396256600L;
+    
     private static final Localizer _loc = Localizer.forPackage
         (RelationCollectionTableFieldStrategy.class);
 

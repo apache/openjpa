@@ -64,6 +64,8 @@ import org.apache.openjpa.util.DelayedProxy;
 public abstract class StoreCollectionFieldStrategy
     extends ContainerFieldStrategy {
 
+    private static final long serialVersionUID = -5099166423704842402L;
+
     /**
      * Return the foreign key used to join to the owning field for the given
      * element mapping from {@link #getIndependentElementMappings} (or null).
