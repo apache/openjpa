@@ -85,6 +85,8 @@ import org.apache.openjpa.util.UserException;
  */
 public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
+    private static final long serialVersionUID = 9029632388378332364L;
+
     public static final int LOAD_FGS = 0;
     public static final int LOAD_ALL = 1;
     public static final int LOAD_SERIALIZE = 2;
