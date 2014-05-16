@@ -73,11 +73,12 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class FieldMetaData
     extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
     
+    private static final long serialVersionUID = -566180883009883198L;
+
     /**
      * Constant specifying that no null-value was given.
      */

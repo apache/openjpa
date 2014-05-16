@@ -31,6 +31,8 @@ import org.apache.openjpa.util.UserException;
 public class ValueMetaDataImpl
     implements ValueMetaData {
 
+    private static final long serialVersionUID = 6766697443293395831L;
+
     private static final Localizer _loc = Localizer.forPackage
         (ValueMetaDataImpl.class);
 

@@ -46,10 +46,12 @@ import org.apache.openjpa.util.MetaDataException;
  * @author Abe White
  * @since 0.4.0
  */
-@SuppressWarnings("serial")
+//@SuppressWarnings("serial")
 public class ValueMappingImpl
     extends ValueMetaDataImpl
     implements ValueMapping {
+
+    private static final long serialVersionUID = 6440545965133775709L;
 
     private static final Localizer _loc = Localizer.forPackage
         (ValueMappingImpl.class);
