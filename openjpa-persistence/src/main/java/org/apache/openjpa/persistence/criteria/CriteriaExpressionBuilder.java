@@ -98,9 +98,9 @@ class CriteriaExpressionBuilder {
                         metas.add(meta);
                 }
             }
-            for (Fetch<?,?> fetch : root.getFetches()) {
-                metas.add(metamodel.getRepository().getCachedMetaData(fetch.getAttribute().getJavaType()));
-            }
+//            for (Fetch<?,?> fetch : root.getFetches()) {
+//                metas.add(metamodel.getRepository().getCachedMetaData(fetch.getAttribute().getJavaType()));
+//            }
         }
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
