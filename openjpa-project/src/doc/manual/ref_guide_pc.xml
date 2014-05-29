@@ -729,7 +729,7 @@ entity identity fields should be of the same type as the related entity's
 identity. If an embedded identity object is used, you must annotate the 
 relation field with both the <literal>@ManyToOne</literal> or
 <literal>@OneToOne</literal> relation annotation and the 
-<literal>@MappedById</literal> annotation.
+<literal>@MapsId</literal> annotation.
 
             </para>
             
@@ -805,7 +805,7 @@ public class LineItem {
     @EmbeddedId LineItemId id;
 
     @ManyToOne
-    @MappedById("orderId") // The value element of the MappedById annotation 
+    @MapsId("orderId")     // The value element of the MapsId annotation 
                            // must be used to specify the name of the primary
                            // key attribute to which the relationship  
                            // corresponds. If the primary key referenced by  
@@ -831,7 +831,7 @@ In the example above, the <classname>LineItem</classname> uses an embedded id to
 represent its primary key. The primary key attribute corresponding to the 
 relationship in the <classname>LineItemId</classname> must be of the same 
 type as the primary key of the <classname>Order</classname>. The 
-<literal>MappedById</literal> annotation must be applied to the relationship 
+<literal>MapsId</literal> annotation must be applied to the relationship 
 field <literal>LineItem.order</literal>.
             </para>
             
