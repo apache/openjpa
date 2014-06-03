@@ -46,6 +46,7 @@ public class TestMultithreadedReparameterization extends TestCase {
         super.setUp();
         if (emf == null) {
             Properties config = new Properties();
+            config.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true,SchemaAction='drop,add')");
             config.put("openjpa.Log", "SQL=WARN");
             config.put("openjpa.jdbc.QuerySQLCache", "true(EnableStatistics=true)");
             config.put("openjpa.ConnectionFactoryProperties", "PrintParameters=true");
