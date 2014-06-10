@@ -95,8 +95,13 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     private Map<Selection<?>,Value> _rootVariables = new HashMap<Selection<?>, Value>();
     
     // SubqueryContext
-    private Stack<Context> _contexts = null;
-    
+    private ThreadLocal<Stack<Context>> _contexts = new  ThreadLocal<Stack<Context>>(){
+        @Override
+        protected Stack<Context> initialValue() {
+            return new Stack<Context>();
+        }
+    };
+
     public CriteriaQueryImpl(MetamodelImpl model, Class<T> resultClass) {
         this._model = model;
         this._resultClass = resultClass;
@@ -135,7 +140,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Gets the stack of contexts used by this query.
      */
     Stack<Context> getContexts() {
-        return _contexts;
+        return _contexts.get();
     }
     
     /**
@@ -412,10 +417,13 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * receiver with the help of the given {@link ExpressionFactory}.
      */
     QueryExpressions getQueryExpressions(ExpressionFactory factory) {
-        _contexts = new Stack<Context>();
         Context context = new Context(null, null, null);
-        _contexts.push(context);
-        return new CriteriaExpressionBuilder().getQueryExpressions(factory, this);
+        _contexts.get().push(context);
+        try {
+            return new CriteriaExpressionBuilder().getQueryExpressions(factory, this);
+        }finally{
+            _contexts.remove();
+        }
     }    
     
     public void assertRoot() {
@@ -432,7 +440,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     // SubqueryContext
     //
     void setContexts(Stack<Context> contexts) {
-        _contexts = contexts;
+        _contexts.set(contexts);
     }
     
     /**
@@ -461,7 +469,8 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
      * Gets the current context.
      */
     Context ctx() {
-        return _contexts == null || _contexts.isEmpty() ? null :  _contexts.peek();
+        Stack<Context> ctxt = _contexts.get();
+        return ctxt == null || ctxt.isEmpty() ? null :  ctxt.peek();
     }
     
     //
