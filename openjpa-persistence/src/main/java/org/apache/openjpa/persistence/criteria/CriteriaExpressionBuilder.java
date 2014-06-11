@@ -98,10 +98,9 @@ class CriteriaExpressionBuilder {
                         metas.add(meta);
                 }
             }
-            for (Fetch<?,?> fetch : root.getFetches()) {
-                metas.add(metamodel.getRepository().getCachedMetaData(fetch.getAttribute().getJavaType()));
-            }
         }
+        // TODO -- need to handle subqueries
+        
         exps.accessPath = metas.toArray(new ClassMetaData[metas.size()]);
     }
 
