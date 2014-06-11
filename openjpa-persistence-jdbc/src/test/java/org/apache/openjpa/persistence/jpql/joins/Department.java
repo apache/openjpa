@@ -36,68 +36,70 @@ import javax.persistence.Version;
 @Table(name="FETCHDEPT")
 public class Department implements Serializable {
 
-        private static final long serialVersionUID = -5537435298484817651L;
+    private static final long serialVersionUID = -5537435298484817651L;
 
-        @Id
-        private int deptno;
-        @Version
-        private int version;
-        private String name;
-        @OneToMany(cascade=CascadeType.ALL)
-        private List<Employee> employees;
-        @OneToMany(cascade=CascadeType.ALL)
-        private List<Employee> employee2s;
+    @Id
+    private int deptno;
+    @Version
+    private int version;
+    private String name;
+    @OneToMany(mappedBy="dept", cascade=CascadeType.ALL)
+    private List<Employee> employees;
+    @OneToMany(mappedBy="dept", cascade=CascadeType.ALL)
+    private List<Employee> employee2s;
 
-        public Department() {
-                super();
-        }
+    public Department() {
+        super();
+    }
 
-        public Department(int deptno, String name) {
-                super();
-                this.deptno = deptno;
-                this.name = name;
-        }
-        public int getDeptno() {
-                return this.deptno;
-        }
+    public Department(int deptno, String name) {
+        super();
+        this.deptno = deptno;
+        this.name = name;
+    }
 
-        public void setDeptno(int deptno) {
-                this.deptno = deptno;
-        }
+    public int getDeptno() {
+        return this.deptno;
+    }
 
-        public int getVersion() {
-                return this.version;
-        }
+    public void setDeptno(int deptno) {
+        this.deptno = deptno;
+    }
 
-        public void setVersion(int version) {
-                this.version = version;
-        }
+    public int getVersion() {
+        return this.version;
+    }
 
-        public String getName() {
-                return this.name;
-        }
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
-        public void setName(String name) {
-                this.name = name;
-        }
+    public String getName() {
+        return this.name;
+    }
 
-        public List<Employee> getEmployees() {
-                return this.employees;
-        }
-        public void setEmployees(List<Employee> employees) {
-                this.employees = employees;
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        public List<Employee> getEmployee2s() {
-                return this.employee2s;
-        }
-        public void setEmployee2s(List<Employee> employees) {
-                this.employee2s = employees;
-        }
+    public List<Employee> getEmployees() {
+        return this.employees;
+    }
 
-        public String toString() {
-                return "[Department:depno=" + deptno + ", version=" + version + ", name=" + name +
-                                ", employees=" + employees + ", employee2s=" + employee2s+ ']';
-        }
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
+    }
 
+    public List<Employee> getEmployee2s() {
+        return this.employee2s;
+    }
+
+    public void setEmployee2s(List<Employee> employees) {
+        this.employee2s = employees;
+    }
+
+    public String toString() {
+        return "[Department:depno=" + deptno + ", version=" + version + ", name=" + name +
+                        ", employees=" + employees + ", employee2s=" + employee2s+ ']';
+    }
 }

@@ -112,7 +112,7 @@ public class QueryCacheStoreQuery
      * READ_SERIALIZABLE -- to do so, we'd just return false when in
      * a transaction.
      */
-    private List<Object> checkCache(QueryKey qk) {
+    private List<Object> checkCache(QueryKey qk, FetchConfiguration loadFc) {
         if (qk == null)
             return null;
         FetchConfiguration fetch = getContext().getFetchConfiguration();
@@ -122,9 +122,7 @@ public class QueryCacheStoreQuery
             return null;
 
         // get the cached data
-        QueryResult res = _cache.get(qk);
-
-        
+        QueryResult res = _cache.get(qk);       
         if (res == null) {
             return null;
         }
@@ -165,7 +163,7 @@ public class QueryCacheStoreQuery
                 return null;
             }
         }
-        return new CachedList(res, projs != 0, _sctx);
+        return new CachedList(res, projs != 0, _sctx, loadFc);
     }
 
     /**
@@ -183,7 +181,7 @@ public class QueryCacheStoreQuery
     /**
      * Copy a projection element for caching / returning.
      */
-    private static Object copyProjection(Object obj, StoreContext ctx) {
+    private static Object copyProjection(Object obj, StoreContext ctx, FetchConfiguration fc) {
         if (obj == null)
             return null;
         switch (JavaTypes.getTypeCode(obj.getClass())) {
@@ -206,7 +204,7 @@ public class QueryCacheStoreQuery
                 return ((Locale) obj).clone();
             default:
                 if (obj instanceof CachedObjectId)
-                    return fromObjectId(((CachedObjectId) obj).oid, ctx);
+                    return fromObjectId(((CachedObjectId) obj).oid, ctx, fc);
                 Object oid = ctx.getObjectId(obj);
                 if (oid != null)
                     return new CachedObjectId(oid);
@@ -217,11 +215,11 @@ public class QueryCacheStoreQuery
     /**
      * Return the result object based on its cached oid.
      */
-    private static Object fromObjectId(Object oid, StoreContext sctx) {
+    private static Object fromObjectId(Object oid, StoreContext sctx, FetchConfiguration fc) {
         if (oid == null)
             return null;
 
-        Object obj = sctx.find(oid, null, null, null, 0);
+        Object obj = sctx.find(oid, fc, null, null, 0);
         if (obj == null)
             throw new ObjectNotFoundException(oid);
         return obj;
@@ -332,19 +330,34 @@ public class QueryCacheStoreQuery
             _fc = fc;
         }
 
-        public ResultObjectProvider executeQuery(StoreQuery q, Object[] params,
-            Range range) {
+        public ResultObjectProvider executeQuery(StoreQuery q, Object[] params, Range range) {
             QueryCacheStoreQuery cq = (QueryCacheStoreQuery) q;
             Object parsed = cq.getDelegate().getCompilation();
-            QueryKey key = QueryKey.newInstance(cq.getContext(),
-                _ex.isPacking(q), params, _candidate, _subs, range.start, 
-                range.end, parsed);
-            List<Object> cached = cq.checkCache(key);
-            if (cached != null)
-                return new ListResultObjectProvider(cached);
+            QueryKey key =
+                QueryKey.newInstance(cq.getContext(), _ex.isPacking(q), params, _candidate, _subs, range.start,
+                    range.end, parsed);
 
-            ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(),
-                params, range);
+            // Create a new FetchConfiguration that will be used to ensure that any JOIN FETCHed fields are loaded
+            StoreContext store = q.getContext().getStoreContext();
+            FetchConfiguration cacheFc = store.pushFetchConfiguration();
+            for (QueryExpressions qe : _ex.getQueryExpressions()) {
+                for (String fetchFields : qe.fetchPaths) {
+                    cacheFc.addField(fetchFields);
+                }
+                for (String fetchFields : qe.fetchInnerPaths) {
+                    cacheFc.addField(fetchFields);
+                }
+            }
+            try {
+                List<Object> cached = cq.checkCache(key, cacheFc);
+                if (cached != null) {
+                    return new ListResultObjectProvider(cached);
+                }
+            } finally {
+                store.popFetchConfiguration();
+            }
+
+            ResultObjectProvider rop = _ex.executeQuery(cq.getDelegate(), params, range);
             if (_fc.getQueryCacheEnabled())
                 return cq.wrapResult(rop, key);
             else
@@ -491,7 +504,7 @@ public class QueryCacheStoreQuery
     }
 
     /**
-     * Result list implementation for a cached query result. Package-protected
+     * Result list implementation for a cached query result. Public
      * for testing.
      */
     public static class CachedList extends AbstractList<Object>
@@ -500,23 +513,25 @@ public class QueryCacheStoreQuery
         private final QueryResult _res;
         private final boolean _proj;
         private final StoreContext _sctx;
-
-        public CachedList(QueryResult res, boolean proj, StoreContext ctx) {
+        private final FetchConfiguration _fc;
+        
+        public CachedList(QueryResult res, boolean proj, StoreContext ctx, FetchConfiguration fc) {
             _res = res;
             _proj = proj;
             _sctx = ctx;
+            _fc = fc;
         }
 
         public Object get(int idx) {
             if (!_proj)
-                return fromObjectId(_res.get(idx), _sctx);
+                return fromObjectId(_res.get(idx), _sctx, _fc);
 
             Object[] cached = (Object[]) _res.get(idx);
             if (cached == null)
                 return null;
             Object[] uncached = new Object[cached.length];
             for (int i = 0; i < cached.length; i++)
-                uncached[i] = copyProjection(cached[i], _sctx);
+                uncached[i] = copyProjection(cached[i], _sctx, _fc);
             return uncached;
         }
 
@@ -601,7 +616,7 @@ public class QueryCacheStoreQuery
                                 Object[] arr = (Object[]) obj;
                                 Object[] cp = new Object[arr.length];
                                 for (int i = 0; i < arr.length; i++)
-                                    cp[i] = copyProjection(arr[i], _sctx);
+                                    cp[i] = copyProjection(arr[i], _sctx, null);
                                 cached = cp;
                             }
                             if (cached != null)

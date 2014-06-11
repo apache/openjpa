@@ -27,52 +27,65 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table(name="FETCHEMPL")
+@Table(name = "FETCHEMPL")
 public class Employee implements Serializable {
 
-        private static final long serialVersionUID = -5155314943010802723L;
+    private static final long serialVersionUID = -5155314943010802723L;
 
-        @Id
-        private int empno;
-        private String name;
-        @Version
-        private int version;
+    @Id
+    private int empno;
+    private String name;
+    @Version
+    private int version;
 
-        public Employee() {
-                super();
-        }
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    private Department dept;
 
-        public Employee(int empno, String name) {
-                super();
-                this.empno = empno;
-                this.name = name;
-        }
+    public Employee() {
+        super();
+    }
 
-        public int getEmpno() {
-                return this.empno;
-        }
+    public Employee(int empno, String name, Department dept) {
+        super();
+        this.empno = empno;
+        this.name = name;
+        this.dept = dept;
+    }
 
-        public void setEmpno(int empno) {
-                this.empno = empno;
-        }
+    public int getEmpno() {
+        return this.empno;
+    }
 
-        public int getVersion() {
-                return this.version;
-        }
+    public void setEmpno(int empno) {
+        this.empno = empno;
+    }
 
-        public void setVersion(int version) {
-                this.version = version;
-        }
+    public int getVersion() {
+        return this.version;
+    }
 
-        public String getName() {
-                return this.name;
-        }
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
-        public void setName(String name) {
-                this.name = name;
-        }
+    public String getName() {
+        return this.name;
+    }
 
-        public String toString() {
-                return "[Employee:id=" + empno + ", version=" + version + ", name=" + name + ']';
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Department getDept() {
+        return dept;
+    }
+
+    public void setDept(Department dept) {
+        this.dept = dept;
+    }
+
+    public String toString() {
+        return "[Employee:id=" + empno + ", version=" + version + ", name="
+                + name + ']';
+    }
 }
