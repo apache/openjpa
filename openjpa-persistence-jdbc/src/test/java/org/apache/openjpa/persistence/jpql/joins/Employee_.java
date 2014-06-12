@@ -25,8 +25,9 @@ import javax.persistence.metamodel.SingularAttribute;
 @javax.persistence.metamodel.StaticMetamodel
 (value=org.apache.openjpa.persistence.jpql.joins.Employee.class)
 @javax.annotation.Generated
-(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Sat May 17 17:25:28 CDT 2014")
+(value="org.apache.openjpa.persistence.meta.AnnotationProcessor6",date="Tue Jun 03 09:14:37 CDT 2014")
 public class Employee_ {
+    public static volatile SingularAttribute<Employee,Department> dept;
     public static volatile SingularAttribute<Employee,Integer> empno;
     public static volatile SingularAttribute<Employee,String> name;
     public static volatile SingularAttribute<Employee,Integer> version;
