@@ -45,18 +45,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.lib.meta.ClassArgParser;
-import org.apache.openjpa.lib.meta.ClasspathMetaDataIterator;
-import org.apache.openjpa.lib.meta.FileMetaDataIterator;
-import org.apache.openjpa.lib.meta.JarFileURLMetaDataIterator;
-import org.apache.openjpa.lib.meta.MetaDataFilter;
-import org.apache.openjpa.lib.meta.MetaDataIterator;
-import org.apache.openjpa.lib.meta.MetaDataParser;
-import org.apache.openjpa.lib.meta.MetaDataSerializer;
-import org.apache.openjpa.lib.meta.ResourceMetaDataIterator;
-import org.apache.openjpa.lib.meta.URLMetaDataIterator;
-import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
-import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
+import org.apache.openjpa.lib.meta.*;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -759,6 +748,15 @@ public abstract class AbstractCFMetaDataFactory
                     } catch (PrivilegedActionException pae) {
                         throw (IOException) pae.getException();
                     }
+                } else if ("bundle".equals(url.getProtocol())) {
+
+                    if (log.isTraceEnabled()) {
+                        log.trace(_loc.get("scanning-osgi-bundle", url));
+                    }
+
+                    MetaDataIterator mdi = new OSGiBundleMetaDataIterator(url, newMetaDataFilter());
+                    scan(mdi, cparser, names, true, url);
+
                 } else {
                     // Open an InputStream from the URL and sniff for a zip header.  If it is, then this is
                     // a URL with a jar-formated InputStream, as per the JPA specification.  Otherwise, fall back
