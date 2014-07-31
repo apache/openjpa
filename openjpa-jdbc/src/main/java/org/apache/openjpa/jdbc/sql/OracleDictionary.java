@@ -363,10 +363,12 @@ public class OracleDictionary
         for (Iterator itr = aliases.iterator(); itr.hasNext(); i++) {
             alias = itr.next();
             String asString = null;
-            if (alias instanceof SQLBuffer)
+            if (alias instanceof SQLBuffer) {
                 asString = ((SQLBuffer) alias).getSQL();
-            else
+                selectSQL.appendParamOnly((SQLBuffer) alias);
+            } else {
                 asString = alias.toString();
+            }
             selectSQL.append(asString);
             if (asString.indexOf(" AS ") == -1)
                 selectSQL.append(" AS c").append(String.valueOf(i));

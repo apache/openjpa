@@ -103,16 +103,23 @@ public final class SQLBuffer
      * Append all SQL and parameters of the given buffer.
      */
     public SQLBuffer append(SQLBuffer buf) {
-        append(buf, _sql.length(), (_params == null) ? 0 : _params.size(),
-            true);
+        append(buf, _sql.length(), (_params == null) ? 0 : _params.size(), true, false);
         return this;
     }
 
     /**
-     * Append all SQL and parameters of the given buffer at the given positions.
+     * Append parameters only if the given buffer at the given positions.
+    */
+    public SQLBuffer appendParamOnly(SQLBuffer buf) {
+        append(buf, _sql.length(), (_params == null) ? 0 : _params.size(), true, true);
+        return this;
+    }
+
+    /**
+     * Append parameters and/or SQL of the given buffer at the given positions.
      */
     private void append(SQLBuffer buf, int sqlIndex, int paramIndex,
-        boolean subsels) {
+        boolean subsels, boolean paramOnly) {
         if (subsels) {
             // only allow appending of buffers with subselects, not insertion
             if (_subsels != null && !_subsels.isEmpty()
@@ -129,10 +136,12 @@ public final class SQLBuffer
             }
         }
 
-        if (sqlIndex == _sql.length())
-            _sql.append(buf._sql.toString());
-        else
-            _sql.insert(sqlIndex, buf._sql.toString());
+        if (!paramOnly) {
+            if (sqlIndex == _sql.length())
+                _sql.append(buf._sql.toString());
+            else
+                _sql.insert(sqlIndex, buf._sql.toString());
+        }
 
         if (buf._params != null) {
             if (_params == null)
@@ -547,7 +556,7 @@ public final class SQLBuffer
             else
                 buf = sub.select.toSelect(false, sub.fetch);
             buf.resolveSubselects();
-            append(buf, sub.sqlIndex, sub.paramIndex, false);
+            append(buf, sub.sqlIndex, sub.paramIndex, false, false);
         }
         _subsels.clear();
     }
