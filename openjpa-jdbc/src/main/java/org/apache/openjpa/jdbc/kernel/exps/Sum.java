@@ -25,8 +25,9 @@ import org.apache.openjpa.kernel.Filters;
  *
  * @author Abe White
  */
+@SuppressWarnings("serial")
 class Sum
-    extends UnaryOp {
+    extends NullableAggregateUnaryOp { // OPENJPA-1794
 
     /**
      * Constructor. Provide the value to operate on.

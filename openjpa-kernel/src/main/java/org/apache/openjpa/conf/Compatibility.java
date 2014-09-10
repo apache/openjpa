@@ -70,6 +70,7 @@ public class Compatibility {
     private boolean _parseAnnotationsForQueryMode = true;
     private boolean _resetFlushFlagForCascadePersist = false;//OPENJPA-2051
     private boolean _overrideContextClassloader = false; //OPENJPA-1993
+    private boolean _returnNullOnEmptyAggregateResult = false;   // OPENJPA-1794
     
     /**
      * Whether to require exact identity value types when creating object
@@ -625,5 +626,39 @@ public class Compatibility {
      */
     public void setOverrideContextClassloader(boolean overrideContextClassloader) {
         _overrideContextClassloader = overrideContextClassloader;
+    }
+
+    /**
+     * This property is used to specify whether the aggregate query functions 
+     * SUM, AVG, MAX, and MIN return null if there is no query result.  This will occur
+     * if no rows are returned for the specified query predicate. The default is 
+     * false, meaning that 0 will be returned for functions operating on numeric
+     * data.
+     * 
+     * In compliance with the JPA specification, the default value is true.
+     * 
+     * @return true if the result of an aggregate with an empty query result returns null.
+     * @since 
+     * 
+     */
+    public boolean getReturnNullOnEmptyAggregateResult() {
+        return _returnNullOnEmptyAggregateResult;
+    }
+
+    /**
+     * This property is used to specify whether the aggregate query functions 
+     * SUM, AVG, MAX, and MIN return null if there is no query result.  This will occur
+     * if no rows are returned for the specified query predicate. The default is 
+     * false, meaning that 0 will be returned for functions operating on numeric
+     * data.
+     * 
+     * In compliance with the JPA specification, the default value is true.
+     * 
+     * @since 
+     * @param returnNullOnAggregate whether OpenJPA will return null for aggregate
+     * expressions when the query result is empty.
+     */
+    public void setReturnNullOnAggregateResult(boolean returnNullOnEmptyAggregateResult) {
+        _returnNullOnEmptyAggregateResult = returnNullOnEmptyAggregateResult;
     }
 }
