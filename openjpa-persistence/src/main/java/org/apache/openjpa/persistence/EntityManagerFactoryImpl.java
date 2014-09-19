@@ -43,6 +43,7 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -342,8 +343,10 @@ public class EntityManagerFactoryImpl
 
     public MetamodelImpl getMetamodel() {
         if (_metaModel == null) {
-            _metaModel = new MetamodelImpl(getConfiguration()
-                .getMetaDataRepositoryInstance());
+            MetaDataRepository mdr = getConfiguration().getMetaDataRepositoryInstance();
+            mdr.setValidate(MetaDataRepository.VALIDATE_RUNTIME, true);
+            mdr.setResolve(MetaDataRepository.MODE_MAPPING_INIT, true);
+            _metaModel = new MetamodelImpl(mdr);
         }
         return _metaModel;
     }
