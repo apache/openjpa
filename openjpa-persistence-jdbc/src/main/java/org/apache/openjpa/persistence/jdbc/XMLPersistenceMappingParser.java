@@ -209,8 +209,10 @@ public class XMLPersistenceMappingParser
         throws SAXException {
         MappingTag tag = _elems.get(name);
         if (tag == null) {
-            if ("schema".equals(name))
-                _schema = currentText();
+            if ("schema".equals(name)) {
+                _schema = currentText();                
+                getRepository().getMetaDataFactory().getDefaults().setDefaultSchema(_schema);                
+            }
             return;
         }
 

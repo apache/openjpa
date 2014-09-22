@@ -169,4 +169,8 @@ public class NoneMetaDataFactory
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         return false;
     }
+
+    public String getDefaultSchema(){return null;}
+    
+    public void setDefaultSchema(String schema){}
 }

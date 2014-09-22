@@ -127,4 +127,16 @@ public interface MetaDataDefaults
      */
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
     
+
+    /**
+     * Returns the default schema.
+     * @since 2.2.3
+     */
+    public String getDefaultSchema();
+    
+    /**
+     * Sets the default schema.
+     * @since 2.2.3
+     */
+    public void setDefaultSchema(String schema);
 }

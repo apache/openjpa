@@ -133,6 +133,7 @@ public class PersistenceMetaDataDefaults
     protected SetterFilter setterFilter = new SetterFilter();
     private Boolean _isAbstractMappingUniDirectional = null;
     private Boolean _isNonDefaultMappingAllowed = null;
+    private String _defaultSchema;
     
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -948,5 +949,15 @@ public class PersistenceMetaDataDefaults
     public void setNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         _isNonDefaultMappingAllowed = conf.getCompatibilityInstance().
             isNonDefaultMappingAllowed();
+    }
+
+    @Override
+    public String getDefaultSchema() {
+        return _defaultSchema;
+    }
+
+    @Override
+    public void setDefaultSchema(String schema) {
+        _defaultSchema=schema;        
     }
 }
