@@ -324,6 +324,13 @@ public class SequenceMetaData
      * Set/Get the schema name
      */
     public void setSchema(String schema) {
+        // If the schema name is empty, check to see if a system 
+        // level default exists and if so use it.
+        if (schema == null || "".equals(schema)){
+            String tmp = getRepository().getMetaDataFactory().getDefaults().getDefaultSchema();
+            schema = (tmp != null ? tmp : ""); 
+        }
+        
         this._schema = schema;
     }
 

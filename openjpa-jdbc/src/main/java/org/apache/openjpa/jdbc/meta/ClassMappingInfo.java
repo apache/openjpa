@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.meta.strats.FullClassStrategy;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -306,6 +307,13 @@ public class ClassMappingInfo
      */
     public Table getTable(final ClassMapping cls, DBIdentifier tableName, 
     		boolean adapt) {
+        // If the schemaName is NULL type then check for a system default schema name
+        // and if available use it.
+        if (_schemaName != null && _schemaName.getType() == DBIdentifierType.NULL){            
+            String name = cls.getMappingRepository().getMetaDataFactory().getDefaults().getDefaultSchema();
+            _schemaName = (name != null ? DBIdentifier.newSchema(name) : _schemaName);
+        }        
+        
         Table t = createTable(cls, new TableDefaults() {
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique

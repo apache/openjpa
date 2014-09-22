@@ -134,4 +134,8 @@ public interface MetaDataDefaults
     public Boolean isDefaultCascadePersistEnabled();
     
     public void setDefaultCascadePersistEnabled(Boolean bool);
+    
+    public String getDefaultSchema();
+    
+    public void setDefaultSchema(String schema);
 }

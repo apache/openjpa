@@ -135,6 +135,8 @@ public class PersistenceMetaDataDefaults
     private Boolean _isNonDefaultMappingAllowed = null;
     
     private Boolean _isCascadePersistPersistenceUnitDefaultEnabled = null;
+
+    private String _defaultSchema;
     
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -954,5 +956,15 @@ public class PersistenceMetaDataDefaults
     
     public void setDefaultCascadePersistEnabled(Boolean bool) {
         _isCascadePersistPersistenceUnitDefaultEnabled = bool;
+    }
+
+    @Override
+    public String getDefaultSchema() {
+        return _defaultSchema;
+    }
+
+    @Override
+    public void setDefaultSchema(String schema) {
+        _defaultSchema=schema;        
     }
 }

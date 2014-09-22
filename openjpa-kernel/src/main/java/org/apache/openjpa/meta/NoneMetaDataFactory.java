@@ -177,4 +177,8 @@ public class NoneMetaDataFactory
     public void setDefaultCascadePersistEnabled(Boolean bool) {
         
     }
+    
+    public String getDefaultSchema(){return null;}
+    
+    public void setDefaultSchema(String schema){}    
 }
