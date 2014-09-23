@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -35,6 +35,7 @@ import java.util.Locale;
 
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
+import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.Joinable;
 import org.apache.openjpa.jdbc.meta.RelationId;
@@ -43,6 +44,8 @@ import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.meta.ClassMetaData;
+import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 
@@ -284,20 +287,52 @@ public class RowImpl
             else
                 val = join.getJoinValue(to, toCols[i], (JDBCStore) to.
                     getContext().getStoreManager().getInnermostDelegate());
-                
+
             if (set && val == null) {
                 if (canSet(io, i, true))
                     setNull(fromCols[i]);
             } else if (set && val instanceof Raw)
                 setRaw(fromCols[i], val.toString());
-            else if (set)
+            else if (set) {
                 setObject(fromCols[i], val, toCols[i].getJavaType(), false);
-            else if (val == null)
+                setJoinRefColumn(to, fromCols, toCols[i], val);
+            } else if (val == null)
                 whereNull(fromCols[i]);
             else if (val instanceof Raw)
                 whereRaw(fromCols[i], val.toString());
             else
                 whereObject(fromCols[i], val, toCols[i].getJavaType());
+        }
+    }
+
+    private void setJoinRefColumn(OpenJPAStateManager inverseSm, Column ownerCols[], Column inverseCol,
+                                   Object val) {
+        OpenJPAStateManager ownerSm = getPrimaryKey();
+        if (ownerSm != null) {
+            ClassMetaData ownerMeta = ownerSm.getMetaData();
+            // loop through all the fields in the owner entity
+            for (FieldMetaData ownerFM : ownerMeta.getFields()) {
+                // look for any single column in this field references the
+                // same column as the foreign key target column
+                Column cols[] = ((FieldMapping) ownerFM).getColumns();
+                if (cols.length == 1            // only support attribute of non-compound foreign key
+                        && cols != ownerCols    // not @Id field
+                        && cols[0].getIdentifier().equals(ownerCols[0].getIdentifier())) {
+                    // copy the foreign key value to the current field.
+                    FieldMetaData inverseFM = inverseSm.getMetaData().getField(
+                                    inverseCol.getIdentifier().getName());
+                    if (inverseFM != null) {
+                        int inverseValIndex = inverseFM.getIndex();
+                        Class<?> inverseType = inverseSm.getMetaData().getField(inverseValIndex).getType();
+                        int ownerIndex = ownerFM.getIndex();
+                        Class<?> ownerType = ownerSm.getMetaData().getField(ownerIndex).getType();
+                        if (inverseType == ownerType) {
+                            Object inverseVal = inverseSm.fetch(inverseValIndex);
+                            ownerSm.storeField(ownerIndex, inverseVal);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -682,11 +717,11 @@ public class RowImpl
         // never set auto increment columns and honor column defaults
         if (_action == ACTION_INSERT) {
             if (col.isAutoAssigned()) {
-            	// OPENJPA-349: validate because this can be the only column
-            	setValid(true);
+                // OPENJPA-349: validate because this can be the only column
+                setValid(true);
                 return;
             }
-            if (!overrideDefault && val == null 
+            if (!overrideDefault && val == null
                 && col.getDefaultString() != null)
                 return;
         }
@@ -959,19 +994,19 @@ public class RowImpl
         if (isValid())
             row.setValid(true);
     }
-    
+
     public Object[] getVals() {
         return _vals;
     }
-    
+
     public int[] getTypes() {
         return _types;
     }
-    
+
     public boolean isFlushed() {
         return _isFlushed;
     }
-    
+
     public void setFlushed(boolean isFlushed) {
         _isFlushed = isFlushed;
     }
