@@ -177,7 +177,7 @@ public class IdentifierRule {
         // Assert identifier begins with a letter
         char[] chars = identifier.toCharArray();
         if (isMustBeginWithLetter()) {
-            if (!CharUtils.isAsciiAlpha(chars[0])) {
+            if (!Character.isJavaIdentifierStart(chars[0])) {
                 return true;
             }
         }
@@ -185,7 +185,7 @@ public class IdentifierRule {
         // Iterate through chars, asserting delimiting rules 
         for (char ch : chars) {
             if (isOnlyLettersDigitsUnderscores()) {
-                if (!CharUtils.isAsciiAlphanumeric(ch) && !(ch == UNDERSCORE)) {
+                if (!Character.isJavaIdentifierPart(ch) && !(ch == UNDERSCORE)) {
                     return true;
                 }
             }
