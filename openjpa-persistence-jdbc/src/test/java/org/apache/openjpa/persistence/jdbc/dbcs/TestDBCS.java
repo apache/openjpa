@@ -34,19 +34,20 @@ public class TestDBCS extends SQLListenerTestCase {
         setUp(MyDBCSEntity.class);
     }
 
-    // Test test is disabled as most won't have their environemnt configured to support UTF-8 chars
-    public void _test() {
-        EntityManager em = emf.createEntityManager();
-        String qStr = "SELECT m FROM MyDBCSEntity m WHERE m.閉塞フラグ = '0' ORDER BY m.業務id";
-
-        Query query = em.createQuery(qStr);
-        resetSQL();
-        query.getResultList();
-
-        //Prior to OPENJPA-2535 the identifies with DBCS characters would be quoted.
-        //Verify the identifies don't contain quotes.
-        assertContainsSQL(".業務id");
-        assertContainsSQL(".閉塞フラグ");
+    
+    public void test() {
+        // Test test is disabled as most won't have their environment configured to support UTF-8 chars
+//        EntityManager em = emf.createEntityManager();
+//        String qStr = "SELECT m FROM MyDBCSEntity m WHERE m.閉塞フラグ = '0' ORDER BY m.業務id";
+//
+//        Query query = em.createQuery(qStr);
+//        resetSQL();
+//        query.getResultList();
+//
+//        //Prior to OPENJPA-2535 the identifies with DBCS characters would be quoted.
+//        //Verify the identifies don't contain quotes.
+//        assertContainsSQL(".業務id");
+//        assertContainsSQL(".閉塞フラグ");
     }
 }
 
