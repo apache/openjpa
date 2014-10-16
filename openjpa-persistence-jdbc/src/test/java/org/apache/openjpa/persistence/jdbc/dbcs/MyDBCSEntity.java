@@ -21,29 +21,29 @@ package org.apache.openjpa.persistence.jdbc.dbcs;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 public class MyDBCSEntity implements Serializable {
     private static final long serialVersionUID = 1259199954797560098L;
 
-    @Id
-    private String 業務id;
-    private String 閉塞フラグ;
-
-    public String get業務id() {
-        return this.業務id;
-    }
-
-    public void set業務id(String 業務id) {
-        this.業務id = 業務id;
-    }
-
-    public String get閉塞フラグ() {
-        return this.閉塞フラグ;
-    }
-
-    public void set閉塞フラグ(String 閉塞フラグ) {
-        this.閉塞フラグ = 閉塞フラグ;
-    }
+//    @Id
+//    private String 業務id;
+//    private String 閉塞フラグ;
+//
+//    public String get業務id() {
+//        return this.業務id;
+//    }
+//
+//    public void set業務id(String 業務id) {
+//        this.業務id = 業務id;
+//    }
+//
+//    public String get閉塞フラグ() {
+//        return this.閉塞フラグ;
+//    }
+//
+//    public void set閉塞フラグ(String 閉塞フラグ) {
+//        this.閉塞フラグ = 閉塞フラグ;
+//    }
 }
+
