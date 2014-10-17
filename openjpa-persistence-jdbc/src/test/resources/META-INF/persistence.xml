@@ -497,7 +497,13 @@
                 value="buildSchema(ForeignKeys=true)"/>
                 
     </properties>
-        
-    </persistence-unit>      
+</persistence-unit>
+
+	<persistence-unit name="TableNameInXml-PU" transaction-type="RESOURCE_LOCAL">
+		<mapping-file>META-INF/table-orm.xml</mapping-file>
+		<properties>
+			<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+		</properties>
+	</persistence-unit>      
 
 </persistence>
