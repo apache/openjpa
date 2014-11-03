@@ -236,23 +236,48 @@ public class ValueMetaDataImpl
         _delete = delete;
     }
 
-    public int getCascadePersist() {
-        if (_checkPUDefaultCascadePersist) {
-            Boolean dcpe = getRepository().getMetaDataFactory().getDefaults().isDefaultCascadePersistEnabled();
-            if (dcpe != null && dcpe.equals(Boolean.TRUE)) {
-                _persist = CASCADE_IMMEDIATE;
-            }
-            _checkPUDefaultCascadePersist = false;
-        }
-        
+    public int getCascadePersist() {    
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return CASCADE_NONE;
-        if (isDeclaredTypePC())
-            return _persist;
+        if (isDeclaredTypePC()) {
+            return checkPUDefaultCascadePersist();
+        }
         if (!isTypePC())
             return CASCADE_NONE;
         // if only externalized type is pc, can't cascade immediate
-        return (_persist == CASCADE_IMMEDIATE) ? CASCADE_AUTO : _persist;
+        return (_persist == CASCADE_IMMEDIATE) ? CASCADE_AUTO : checkPUDefaultCascadePersist();
+    }
+    
+    /**
+     * Check if the persistence unit default <cascade-persist> has been enabled.  If so, then change
+     * CASCADE_NONE to CASCADE_IMMEDIATE.
+     * @return
+     */
+    private int checkPUDefaultCascadePersist() {
+        if (_checkPUDefaultCascadePersist) {
+            // Apply default <cascade-persist> only to entity relationships
+            boolean applyDefaultCascadePersist = false;
+            
+            switch (_owner.getAssociationType()) {
+            case FieldMetaData.ONE_TO_ONE:
+            case FieldMetaData.ONE_TO_MANY:
+            case FieldMetaData.MANY_TO_MANY:
+            case FieldMetaData.MANY_TO_ONE:
+                applyDefaultCascadePersist = true;
+            default:
+            }
+            
+            if (applyDefaultCascadePersist) {
+                Boolean dcpe = getRepository().getMetaDataFactory().getDefaults().isDefaultCascadePersistEnabled();
+                if (dcpe != null && dcpe.equals(Boolean.TRUE) && _persist == CASCADE_NONE) {
+                    _persist = CASCADE_IMMEDIATE;
+                }
+            }        
+            
+            _checkPUDefaultCascadePersist = false;
+        }
+        
+        return _persist;
     }
 
     public void setCascadePersist(int persist) {
