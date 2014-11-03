@@ -63,6 +63,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
+import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.UpdateStrategies;
 
@@ -1329,6 +1330,8 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         if (!isMetaDataMode())
             return false;
+        
+        boolean puDefault = false;
 
         Set<CascadeType> cascades = null;
         if (currentElement() instanceof FieldMetaData) {
@@ -1339,10 +1342,17 @@ public class XMLPersistenceMetaDataParser
             if (_pkgCascades == null)
                 _pkgCascades = EnumSet.noneOf(CascadeType.class);
             cascades = _pkgCascades;
+            puDefault = true;
         }
         boolean all = ELEM_CASCADE_ALL == tag;
-        if (all || ELEM_CASCADE_PER == tag)
+        if (all || ELEM_CASCADE_PER == tag) {
             cascades.add(PERSIST);
+            if (puDefault) {
+                MetaDataDefaults mdd = _repos.getMetaDataFactory().getDefaults();
+                mdd.setDefaultCascadePersistEnabled(true);
+            }
+        }
+            
         if (all || ELEM_CASCADE_REM == tag)
             cascades.add(REMOVE);
         if (all || ELEM_CASCADE_MER == tag)
@@ -1371,7 +1381,7 @@ public class XMLPersistenceMetaDataParser
         for (CascadeType cascade : cascades) {
             switch (cascade) {
                 case PERSIST:
-                    vmd.setCascadePersist(ValueMetaData.CASCADE_IMMEDIATE);
+                    vmd.setCascadePersist(ValueMetaData.CASCADE_IMMEDIATE, false);
                     break;
                 case MERGE:
                     vmd.setCascadeAttach(ValueMetaData.CASCADE_IMMEDIATE);

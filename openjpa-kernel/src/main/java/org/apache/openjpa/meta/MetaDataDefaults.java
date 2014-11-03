@@ -127,6 +127,13 @@ public interface MetaDataDefaults
      */
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf);
     
+    /**
+     * Whether cascade-persist was declared in the persistence unit defaults.
+     * @return
+     */
+    public Boolean isDefaultCascadePersistEnabled();
+    
+    public void setDefaultCascadePersistEnabled(Boolean bool);
 
     /**
      * Returns the default schema.

@@ -134,6 +134,7 @@ public class PersistenceMetaDataDefaults
     private Boolean _isAbstractMappingUniDirectional = null;
     private Boolean _isNonDefaultMappingAllowed = null;
     private String _defaultSchema;
+    private Boolean _isCascadePersistPersistenceUnitDefaultEnabled = null;
     
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -949,6 +950,14 @@ public class PersistenceMetaDataDefaults
     public void setNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         _isNonDefaultMappingAllowed = conf.getCompatibilityInstance().
             isNonDefaultMappingAllowed();
+    }
+    
+    public Boolean isDefaultCascadePersistEnabled() {
+        return _isCascadePersistPersistenceUnitDefaultEnabled;
+    }
+    
+    public void setDefaultCascadePersistEnabled(Boolean bool) {
+        _isCascadePersistPersistenceUnitDefaultEnabled = bool;
     }
 
     @Override

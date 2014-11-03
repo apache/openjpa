@@ -30,6 +30,8 @@ import org.apache.openjpa.util.UserException;
  */
 public class ValueMetaDataImpl
     implements ValueMetaData {
+    
+    private static final long serialVersionUID = 6766697443293395831L;
 
     private static final Localizer _loc = Localizer.forPackage
         (ValueMetaDataImpl.class);
@@ -58,6 +60,7 @@ public class ValueMetaDataImpl
     private int _resMode = MODE_NONE;
     private String _mappedBy = null;
     private FieldMetaData _mappedByMeta = null;
+    private boolean _checkPUDefaultCascadePersist = true;
 
     protected ValueMetaDataImpl(FieldMetaData owner) {
         _owner = owner;
@@ -236,15 +239,52 @@ public class ValueMetaDataImpl
         if (_owner.getManagement() != FieldMetaData.MANAGE_PERSISTENT)
             return CASCADE_NONE;
         if (isDeclaredTypePC())
-            return _persist;
+            return checkPUDefaultCascadePersist();
         if (!isTypePC())
             return CASCADE_NONE;
         // if only externalized type is pc, can't cascade immediate
-        return (_persist == CASCADE_IMMEDIATE) ? CASCADE_AUTO : _persist;
+        return (_persist == CASCADE_IMMEDIATE) ? CASCADE_AUTO : checkPUDefaultCascadePersist();
+    }
+
+    /**
+     * Check if the persistence unit default <cascade-persist> has been enabled.  If so, then change
+     * CASCADE_NONE to CASCADE_IMMEDIATE.
+     * @return
+     */
+    private int checkPUDefaultCascadePersist() {
+        if (_checkPUDefaultCascadePersist) {
+            // Apply default <cascade-persist> only to entity relationships
+            boolean applyDefaultCascadePersist = false;
+            
+            switch (_owner.getAssociationType()) {
+            case FieldMetaData.ONE_TO_ONE:
+            case FieldMetaData.ONE_TO_MANY:
+            case FieldMetaData.MANY_TO_MANY:
+            case FieldMetaData.MANY_TO_ONE:
+                applyDefaultCascadePersist = true;
+            default:
+            }
+            
+            if (applyDefaultCascadePersist) {
+                Boolean dcpe = getRepository().getMetaDataFactory().getDefaults().isDefaultCascadePersistEnabled();
+                if (dcpe != null && dcpe.equals(Boolean.TRUE) && _persist == CASCADE_NONE) {
+                    _persist = CASCADE_IMMEDIATE;
+                }
+            }        
+            
+            _checkPUDefaultCascadePersist = false;
+        }
+        
+        return _persist;
     }
 
     public void setCascadePersist(int persist) {
+        setCascadePersist(persist, true);
+    }
+    
+    public void setCascadePersist(int persist, boolean checkPUDefault) {
         _persist = persist;
+        _checkPUDefaultCascadePersist = checkPUDefault;
     }
 
     public int getCascadeAttach() {

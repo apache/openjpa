@@ -169,6 +169,14 @@ public class NoneMetaDataFactory
     public boolean isNonDefaultMappingAllowed(OpenJPAConfiguration conf) {
         return false;
     }
+    
+    public Boolean isDefaultCascadePersistEnabled() {
+        return false;
+    }
+    
+    public void setDefaultCascadePersistEnabled(Boolean bool) {
+        
+    }
 
     public String getDefaultSchema(){return null;}
     

@@ -78,6 +78,8 @@ public class FieldMetaData
     extends Extensions
     implements ValueMetaData, MetaDataContext, MetaDataModes, Commentable {
     
+    private static final long serialVersionUID = -566180883009883198L;
+    
     /**
      * Constant specifying that no null-value was given.
      */
@@ -2189,6 +2191,10 @@ public class FieldMetaData
 
     public void setCascadePersist(int persist) {
         _val.setCascadePersist(persist);
+    }
+    
+    public void setCascadePersist(int cascade, boolean checkPUDefault) {
+        _val.setCascadePersist(cascade, checkPUDefault);
     }
 
     public int getCascadeAttach() {

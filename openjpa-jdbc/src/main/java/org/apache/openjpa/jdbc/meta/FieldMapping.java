@@ -63,6 +63,8 @@ import org.apache.openjpa.util.ObjectId;
 public class FieldMapping
     extends FieldMetaData
     implements ValueMapping, FieldStrategy {
+    
+    private static final long serialVersionUID = 142185362294762433L;
 
     private static final Localizer _loc = Localizer.forPackage
         (FieldMapping.class);
