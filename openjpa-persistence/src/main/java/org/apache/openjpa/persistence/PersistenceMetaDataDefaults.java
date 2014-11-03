@@ -133,6 +133,7 @@ public class PersistenceMetaDataDefaults
     protected SetterFilter setterFilter = new SetterFilter();
     private Boolean _isAbstractMappingUniDirectional = null;
     private Boolean _isNonDefaultMappingAllowed = null;
+    private Boolean _isCascadePersistPersistenceUnitDefaultEnabled = null;
     
     public PersistenceMetaDataDefaults() {
         setCallbackMode(CALLBACK_RETHROW | CALLBACK_ROLLBACK |
@@ -945,4 +946,13 @@ public class PersistenceMetaDataDefaults
         _isNonDefaultMappingAllowed = conf.getCompatibilityInstance().
             isNonDefaultMappingAllowed();
     }
+       
+    public Boolean isDefaultCascadePersistEnabled() {
+        return _isCascadePersistPersistenceUnitDefaultEnabled;
+    }
+    
+    public void setDefaultCascadePersistEnabled(Boolean bool) {
+        _isCascadePersistPersistenceUnitDefaultEnabled = bool;
+    }
+
 }
