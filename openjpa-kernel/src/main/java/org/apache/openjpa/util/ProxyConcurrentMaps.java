@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class ProxyConcurrentMaps extends ProxyMaps {
 	/**
-     * Call before invoking {@link Map#remove} on super.
+     * Call before invoking {@link Map#remove(key, value)} on super.
      */
     public static boolean beforeRemove(ProxyMap map, Object key, Object value) {
         dirty(map, false);
@@ -34,7 +34,7 @@ public class ProxyConcurrentMaps extends ProxyMaps {
     }
     
     /**
-     * Call after invoking {@link Map#remove} on super.
+     * Call after invoking {@link Map#remove(key, value)} on super.
      *
      * @param ret the return value from the super's method
      * @param before the return value from {@link #beforeRemove}

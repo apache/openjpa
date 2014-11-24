@@ -57,7 +57,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import serp.bytecode.BCClass;
@@ -614,8 +613,7 @@ public class ProxyManagerImpl
         delegateConstructors(bc, type);
         addProxyMethods(bc, false);
         addProxyMapMethods(bc, type);
-        Class<? extends ProxyMaps> mapProxyClassType =
-            ConcurrentMap.class.isAssignableFrom(type) ? ProxyConcurrentMaps.class : ProxyMaps.class;
+        Class<? extends ProxyMaps> mapProxyClassType = ProxyConcurrentMaps.class;
         proxyRecognizedMethods(bc, type, mapProxyClassType, ProxyMap.class);
         proxySetters(bc, type);
         addWriteReplaceMethod(bc, runtime);
