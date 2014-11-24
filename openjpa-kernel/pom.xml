@@ -74,9 +74,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>3.2</version>
+            <version>5.0.3</version>
         </dependency>
     </dependencies>
 
