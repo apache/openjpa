@@ -25,7 +25,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.concurrent.SizedConcurrentHashMap;
+import org.apache.openjpa.lib.util.ReferenceMap;
+import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
 /**
  * Records query execution statistics.
@@ -46,60 +47,60 @@ public interface QueryStatistics<T> extends Serializable {
      *  Gets all the identifier keys for the cached queries.
      */
     public Set<T> keys();
-	
-	/**
-	 * Record that the given query has been executed. 
-	 */
-	void recordExecution(T query);
+    
+    /**
+     * Record that the given query has been executed. 
+     */
+    void recordExecution(T query);
 
     /**
      * Record that the given query has been evicted. 
      */
     void recordEviction(T query);
 
-	/**
-	 * Gets number of total query execution since last reset.
-	 */
-	public long getExecutionCount();
+    /**
+     * Gets number of total query execution since last reset.
+     */
+    public long getExecutionCount();
 
-	/**
-	 * Gets number of total query execution since start.
-	 */
-	public long getTotalExecutionCount();
+    /**
+     * Gets number of total query execution since start.
+     */
+    public long getTotalExecutionCount();
 
-	/**
-	 * Gets number of executions for the given query since last reset.
-	 */
-	public long getExecutionCount(T query);
+    /**
+     * Gets number of executions for the given query since last reset.
+     */
+    public long getExecutionCount(T query);
 
-	/**
-	 * Gets number of executions for the given query since start.
-	 */
-	public long getTotalExecutionCount(T query);
+    /**
+     * Gets number of executions for the given query since start.
+     */
+    public long getTotalExecutionCount(T query);
 
-	/**
+    /**
      * Gets number of total query execution that are cached since last reset.
-	 */
-	public long getHitCount();
+     */
+    public long getHitCount();
 
-	/**
-	 * Gets number of total query execution that are cached since start.
-	 */
-	public long getTotalHitCount();
+    /**
+     * Gets number of total query execution that are cached since start.
+     */
+    public long getTotalHitCount();
 
-	/**
-	 * Gets number of executions for the given query that are cached since 
-	 * last reset.
-	 */
-	public long getHitCount(T query);
+    /**
+     * Gets number of executions for the given query that are cached since 
+     * last reset.
+     */
+    public long getHitCount(T query);
 
-	/**
-	 * Gets number of executions for the given query that are cached since 
-	 * start.
-	 */
-	public long getTotalHitCount(T query);
+    /**
+     * Gets number of executions for the given query that are cached since 
+     * start.
+     */
+    public long getTotalHitCount(T query);
 
-	 /**
+     /**
      * Gets number of total query evictions since last reset.
      */
     public long getEvictionCount();
@@ -109,145 +110,160 @@ public interface QueryStatistics<T> extends Serializable {
      */
     public long getTotalEvictionCount();
 
-	/**
-	 * Gets the time of last reset.
-	 */
-	public Date since();
+    /**
+     * Gets the time of last reset.
+     */
+    public Date since();
 
-	/**
-	 * Gets the time of start.
-	 */
-	public Date start();
+    /**
+     * Gets the time of start.
+     */
+    public Date start();
 
-	/**
-	 * Clears all  statistics accumulated since last reset.
-	 */
-	public void reset();
-	
-	/**
-	 * Clears all statistics accumulated since start.
-	 */
-	public void clear();
-	
-	/**
-	 * Dumps on the given output stream.
-	 */
-	public void dump(PrintStream out);
-	
-	/**
-	 * A default implementation.
-	 * 
-	 * Maintains statistics for only a fixed number of queries.
-	 * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
-	 * 
-	 */
-	public static class Default<T> implements QueryStatistics<T> {
-	    private static final int FIXED_SIZE = 1000;
-	    private static final float LOAD_FACTOR = 0.75f;
-	    private static final int CONCURRENCY = 16;
-	    
-		private static final int ARRAY_SIZE = 3;
+    /**
+     * Clears all  statistics accumulated since last reset.
+     */
+    public void reset();
+    
+    /**
+     * Clears all statistics accumulated since start.
+     */
+    public void clear();
+    
+    /**
+     * Dumps on the given output stream.
+     */
+    public void dump(PrintStream out);
+    
+    /**
+     * A default implementation.
+     * 
+     * Maintains statistics for only a fixed number of queries.
+     * Statistical counts are approximate and not exact (to keep thread synchorization overhead low).
+     * 
+     */
+    public static class Default<T> implements QueryStatistics<T> {
+        private static final int FIXED_SIZE = 1000;
+        private static final float LOAD_FACTOR = 0.75f;
+        private static final int CONCURRENCY = 16;
+        
+        private static final int ARRAY_SIZE = 3;
         private static final int READ  = 0;
         private static final int HIT   = 1;
         private static final int EVICT = 2;
         
-		private long[] astat = new long[ARRAY_SIZE];
-		private long[] stat  = new long[ARRAY_SIZE];
-		private Map<T, long[]> stats  = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-		private Map<T, long[]> astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-		private Date start = new Date();
-		private Date since = start;
-		
-		public Set<T> keys() {
-		    return stats.keySet();
-		}
+        private long[] astat = new long[ARRAY_SIZE];
+        private long[] stat  = new long[ARRAY_SIZE];
+        private Map<T, long[]> stats;
+        private Map<T, long[]> astats;
+        private Date start = new Date();
+        private Date since = start;
+        
+        public Default() {
+            initializeMaps();
+        }
+        
+        private void initializeMaps() {
+            ConcurrentReferenceHashMap statsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            statsMap.setMaxSize(FIXED_SIZE);
+            stats = statsMap;
+            
+            ConcurrentReferenceHashMap aStatsMap =
+                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+            aStatsMap.setMaxSize(FIXED_SIZE);
+            astats = aStatsMap;
+        }
+        
+        public Set<T> keys() {
+            return stats.keySet();
+        }
 
-		public long getExecutionCount() {
-			return stat[READ];
-		}
+        public long getExecutionCount() {
+            return stat[READ];
+        }
 
-		public long getTotalExecutionCount() {
-			return astat[READ];
-		}
+        public long getTotalExecutionCount() {
+            return astat[READ];
+        }
 
-		public long getExecutionCount(T query) {
-			return getCount(stats, query, READ);
-		}
+        public long getExecutionCount(T query) {
+            return getCount(stats, query, READ);
+        }
 
-		public long getTotalExecutionCount(T query) {
-			return getCount(astats, query, READ);
-		}
+        public long getTotalExecutionCount(T query) {
+            return getCount(astats, query, READ);
+        }
 
-		public long getHitCount() {
-			return stat[HIT];
-		}
+        public long getHitCount() {
+            return stat[HIT];
+        }
 
-		public long getTotalHitCount() {
-			return astat[HIT];
-		}
+        public long getTotalHitCount() {
+            return astat[HIT];
+        }
 
-		public long getHitCount(T query) {
-			return getCount(stats, query, HIT);
-		}
+        public long getHitCount(T query) {
+            return getCount(stats, query, HIT);
+        }
 
-		public long getTotalHitCount(T query) {
-			return getCount(astats, query, HIT);
-		}
+        public long getTotalHitCount(T query) {
+            return getCount(astats, query, HIT);
+        }
 
-		private long getCount(Map<T, long[]> target, T query, int i) {
-			long[] row = target.get(query);
-			return (row == null) ? 0 : row[i];
-		}
+        private long getCount(Map<T, long[]> target, T query, int i) {
+            long[] row = target.get(query);
+            return (row == null) ? 0 : row[i];
+        }
 
-		public Date since() {
-			return since;
-		}
+        public Date since() {
+            return since;
+        }
 
-		public Date start() {
-			return start;
-		}
+        public Date start() {
+            return start;
+        }
 
-		public synchronized void reset() {
-			stat = new long[ARRAY_SIZE];
-			stats.clear();
-			since = new Date();
-		}
-		
-	    public synchronized void clear() {
-	       astat = new long[ARRAY_SIZE];
-	       stat  = new long[ARRAY_SIZE];
-	       stats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-	       astats = new SizedConcurrentHashMap(FIXED_SIZE, LOAD_FACTOR, CONCURRENCY);
-	       start  = new Date();
-	       since  = start;
-	    }
+        public synchronized void reset() {
+            stat = new long[ARRAY_SIZE];
+            stats.clear();
+            since = new Date();
+        }
+        
+        public synchronized void clear() {
+           astat = new long[ARRAY_SIZE];
+           stat  = new long[ARRAY_SIZE];
+           initializeMaps();
+           start  = new Date();
+           since  = start;
+        }
 
 
-		private void addSample(T query, int index) {
-			stat[index]++;
-			astat[index]++;
-			addSample(stats, query, index);
-			addSample(astats, query, index);
-		}
-		
-		private void addSample(Map<T, long[]> target, T query, int i) {
-			long[] row = target.get(query);
-			if (row == null) {
-				row = new long[ARRAY_SIZE];
-			}
-			row[i]++;
-			target.put(query, row);
-		}
-		
-		public void recordExecution(T query) {
-		    if (query == null)
-		        return;
-		    boolean cached = astats.containsKey(query);
-			addSample(query, READ);
-			if (cached)
-				addSample(query, HIT);
-		}
-		
+        private void addSample(T query, int index) {
+            stat[index]++;
+            astat[index]++;
+            addSample(stats, query, index);
+            addSample(astats, query, index);
+        }
+        
+        private void addSample(Map<T, long[]> target, T query, int i) {
+            long[] row = target.get(query);
+            if (row == null) {
+                row = new long[ARRAY_SIZE];
+            }
+            row[i]++;
+            target.put(query, row);
+        }
+        
+        public void recordExecution(T query) {
+            if (query == null)
+                return;
+            boolean cached = astats.containsKey(query);
+            addSample(query, READ);
+            if (cached)
+                addSample(query, HIT);
+        }
+        
         public void recordEviction(T query) {
             if (query == null) {
                 return;
@@ -255,41 +271,41 @@ public interface QueryStatistics<T> extends Serializable {
             addSample(query, EVICT);
         }
 
-		public void dump(PrintStream out) {
+        public void dump(PrintStream out) {
             String header = "Query Statistics starting from " + start;
-			out.print(header);
-			if (since == start) {
-				out.println();
+            out.print(header);
+            if (since == start) {
+                out.println();
                 out.println("Total Query Execution: " + toString(astat)); 
-				out.println("\tTotal \t\tQuery");
-			} else {
-				out.println(" last reset on " + since);
+                out.println("\tTotal \t\tQuery");
+            } else {
+                out.println(" last reset on " + since);
                 out.println("Total Query Execution since start " + 
                         toString(astat)  + " since reset " + toString(stat));
                 out.println("\tSince Start \tSince Reset \t\tQuery");
-			}
-			int i = 0;
-			for (T key : stats.keySet()) {
-				i++;
-				long[] arow = astats.get(key);
-				if (since == start) {
+            }
+            int i = 0;
+            for (T key : stats.keySet()) {
+                i++;
+                long[] arow = astats.get(key);
+                if (since == start) {
                     out.println(i + ". \t" + toString(arow) + " \t" + key);
-				} else {
-					long[] row  = stats.get(key);
+                } else {
+                    long[] row  = stats.get(key);
                     out.println(i + ". \t" + toString(arow) + " \t"  + toString(row) + " \t\t" + key);
-				}
-			}
-		}
-		
-		long pct(long per, long cent) {
-			if (cent <= 0)
-				return 0;
-			return (100*per)/cent;
-		}
-		
-		String toString(long[] row) {
+                }
+            }
+        }
+        
+        long pct(long per, long cent) {
+            if (cent <= 0)
+                return 0;
+            return (100*per)/cent;
+        }
+        
+        String toString(long[] row) {
             return row[READ] + ":" + row[HIT] + "(" + pct(row[HIT], row[READ]) + "%)";
-		}
+        }
 
         public long getEvictionCount() {
             return stat[EVICT];
@@ -298,16 +314,16 @@ public interface QueryStatistics<T> extends Serializable {
         public long getTotalEvictionCount() {
             return astat[EVICT];
         }
-	}
-	
-	/**
-	 * A do-nothing implementation.
-	 * 
-	 * @author Pinaki Poddar
-	 *
-	 * @param <T>
-	 */
-	public static class None<T> implements QueryStatistics<T> {
+    }
+    
+    /**
+     * A do-nothing implementation.
+     * 
+     * @author Pinaki Poddar
+     *
+     * @param <T>
+     */
+    public static class None<T> implements QueryStatistics<T> {
         private Date start = new Date();
         private Date since = start;
 
@@ -379,6 +395,6 @@ public interface QueryStatistics<T> extends Serializable {
 
         public void recordEviction(T query) {
         }
-	}
+    }
 }
 

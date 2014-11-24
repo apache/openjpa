@@ -797,9 +797,35 @@ public class TestProxyManager
         NonproxyableBean orig = new NonproxyableBean(1);
         populate(orig);
         assertNull(_mgr.copyCustom(orig));
+        assertNull(_mgr.copyCustom(orig));
         assertNull(_mgr.newCustomProxy(orig,true));
     }
 
+    public void testIsUnproxyable() {
+        CustomBean validBean = new CustomBean();
+        populate(validBean);
+        assertNotNull(_mgr.copyCustom(validBean));
+        assertNotNull(_mgr.newCustomProxy(validBean, true));
+        assertFalse(_mgr.isUnproxyable(CustomBean.class));
+        
+        NonproxyableBean bean1 = new NonproxyableBean(1);
+        populate(bean1);
+        
+        NonproxyableBean2 bean2 = new NonproxyableBean2();
+        populate(bean2);
+         
+        assertFalse(_mgr.isUnproxyable(NonproxyableBean.class));
+        assertNull(_mgr.copyCustom(bean1));
+        assertTrue(_mgr.isUnproxyable(NonproxyableBean.class));
+        assertNull(_mgr.newCustomProxy(bean1, true));
+        assertTrue(_mgr.isUnproxyable(NonproxyableBean.class));
+        
+        assertFalse(_mgr.isUnproxyable(NonproxyableBean2.class));
+        assertNull(_mgr.newCustomProxy(bean2, true));
+        assertTrue(_mgr.isUnproxyable(NonproxyableBean2.class));
+        assertNull(_mgr.copyCustom(bean2));
+        assertTrue(_mgr.isUnproxyable(NonproxyableBean2.class));
+    }
 
     /**
      * Assert that the given beans are exactly the same.
@@ -1030,6 +1056,13 @@ public class TestProxyManager
         }
     }
 
+    /**
+     * Used to non-proxyable custom bean handling.
+     */
+    public class NonproxyableBean2 extends CustomBean {
+        // class is not static
+    }
+    
     /**
      * Used to test custom calendar handling.
      */
