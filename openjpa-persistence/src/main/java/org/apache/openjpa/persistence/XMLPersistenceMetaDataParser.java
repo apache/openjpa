@@ -1950,7 +1950,7 @@ public class XMLPersistenceMetaDataParser
         if (log.isTraceEnabled())
             log.trace(_loc.get("parse-native-query", name));
 
-        QueryMetaData meta = getRepository().getCachedQueryMetaData(null, name);
+        QueryMetaData meta = getRepository().getCachedQueryMetaData(name);
         if (meta != null && isDuplicateQuery(meta) ) {
             log.warn(_loc.get("override-query", name, currentLocation()));
         }
