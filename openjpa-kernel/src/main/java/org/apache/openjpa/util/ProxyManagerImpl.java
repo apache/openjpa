@@ -1313,6 +1313,9 @@ public class ProxyManagerImpl
         Method match;
         Method after;
         for (int i = 0; i < meths.length; i++) {
+            // Java 8 methods with a return type of KeySetView do not need to be proxied
+            if (meths[i].getReturnType().getName().contains("KeySetView")) continue;
+            
             params = toHelperParameters(meths[i].getParameterTypes(), 
                 proxyType);
 

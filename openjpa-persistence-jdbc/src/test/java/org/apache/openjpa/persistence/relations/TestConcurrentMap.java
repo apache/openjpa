@@ -44,5 +44,8 @@ public class TestConcurrentMap extends SingleEMTestCase {
         right.getLeftEntityMap().put(left.getStrData(), left);
         
         em.getTransaction().commit();
+        
+        assertEquals(1, right.getLeftEntityMap().size());
+        assertEquals(1, right.getLeftEntityMap().get(left.getStrData()).getId());
     }
 }

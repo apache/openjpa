@@ -78,7 +78,8 @@ public class ProxyMaps
      */
     public static boolean beforeGet(ProxyMap map, Object key) {
         assertAllowedType(key, map.getKeyType());
-        return map.containsKey(key);
+        // Java 8 solution/workaround due to containsKey() calling get!=null, which could cause infinite loop
+        return map.keySet().contains(key);
     }
 
     /**
