@@ -57,6 +57,8 @@ import org.apache.openjpa.kernel.exps.Parameter;
 public final class SQLBuffer
     implements Serializable, Cloneable {
 
+    private static final long serialVersionUID = -4504860827991701296L;
+
     private static final String PARAMETER_TOKEN = "?";
 
     private final DBDictionary _dict;
