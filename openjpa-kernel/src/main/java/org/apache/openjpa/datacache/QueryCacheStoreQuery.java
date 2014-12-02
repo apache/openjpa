@@ -62,6 +62,8 @@ import org.apache.openjpa.util.ObjectNotFoundException;
  */
 public class QueryCacheStoreQuery
     implements StoreQuery {
+    
+    private static final long serialVersionUID = -2732065409115707946L;
 
     private final StoreQuery _query;
     private final QueryCache _cache;
@@ -510,10 +512,19 @@ public class QueryCacheStoreQuery
     public static class CachedList extends AbstractList<Object>
         implements Serializable {
 
+        private static final long serialVersionUID = 4462687033124939390L;
+        
         private final QueryResult _res;
         private final boolean _proj;
         private final StoreContext _sctx;
         private final FetchConfiguration _fc;
+        
+        public CachedList(QueryResult res, boolean proj, StoreContext ctx) {
+            _res = res;
+            _proj = proj;
+            _sctx = ctx;
+            _fc = null;
+        }
         
         public CachedList(QueryResult res, boolean proj, StoreContext ctx, FetchConfiguration fc) {
             _res = res;
