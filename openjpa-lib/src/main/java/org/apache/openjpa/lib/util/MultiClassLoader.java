@@ -68,6 +68,12 @@ public class MultiClassLoader extends ClassLoader {
         addClassLoaders(other);
     }
 
+    public MultiClassLoader(ClassLoader... loaders) {
+        for (ClassLoader loader : loaders) {
+            addClassLoader(loader);
+        }
+    }
+
     /**
      * Returns true if the list contains the given class loader or marker.
      */

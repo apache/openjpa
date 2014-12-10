@@ -44,6 +44,7 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.meta.AbstractCFMetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -180,14 +181,14 @@ public class PersistenceProviderImpl
                 cp.addProperty("openjpa." + BrokerValue.KEY, getDefaultBrokerAlias());
             }
 
-            // OPENJPA-1491 If running under OSGi, use the Bundle's ClassLoader instead of the application one
-            BrokerFactory factory;
-            if (BundleUtils.runningUnderOSGi()) {
-                factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
-            } else {
-                factory = getBrokerFactory(cp, poolValue, pui.getClassLoader());
-            }
 
+            ClassLoader loader = pui.getClassLoader();
+            if (BundleUtils.runningUnderOSGi()) {
+                // OPENJPA-1491 : If running under OSGi, use the Bundle's ClassLoader instead of the application one
+                // OPENJPA-2542 : Also try to load from app loader in the case of a user implemented interface/config 
+                loader = new MultiClassLoader(BundleUtils.getBundleClassLoader(), loader);
+            }
+            BrokerFactory factory = getBrokerFactory(cp, poolValue, loader);
             OpenJPAConfiguration conf = factory.getConfiguration();
             setPersistenceEnvironmentInfo(conf, pui);
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
