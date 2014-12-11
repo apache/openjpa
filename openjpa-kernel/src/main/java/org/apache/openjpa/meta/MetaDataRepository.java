@@ -1999,17 +1999,16 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     private QueryMetaData getQueryMetaDataInternal(Class<?> cls, String name, ClassLoader envLoader) {
         if (name == null)
             return null;
-        QueryMetaData qm = null;
-        if (cls == null) {
-            qm = searchQueryMetaDataByName(name);
-            if (qm != null)
-                return qm;
-        }
+
         // check cache
-        qm = (QueryMetaData) _queries.get(name);
+        QueryMetaData qm = (QueryMetaData) _queries.get(name);
         if (qm != null)
             return qm;
 
+        // see if factory can figure out a scope for this query
+        if (cls == null)
+            cls = _factory.getQueryScope(name, envLoader);
+        
         // get metadata for class, which will find queries in metadata file
         if (cls != null && getMetaData(cls, envLoader, false) != null) {
             qm = _queries.get(name);
@@ -2018,13 +2017,9 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
         if ((_sourceMode & MODE_QUERY) == 0)
             return null;
-
-        // see if factory can figure out a scope for this query
-        if (cls == null)
-            cls = _factory.getQueryScope(name, envLoader);
-
+        
         // not in cache; load
-        _factory.load(cls, MODE_QUERY, envLoader);
+        _factory.load(cls, MODE_QUERY , envLoader);
         return _queries.get(name);
     }
 
