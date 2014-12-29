@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -26,23 +27,28 @@ import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.BrokerFactory;
+import org.apache.openjpa.kernel.BrokerImpl.StateManagerId;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
+import org.apache.openjpa.util.ApplicationIds;
 import org.apache.openjpa.util.BigDecimalId;
 import org.apache.openjpa.util.BigIntegerId;
 import org.apache.openjpa.util.ByteId;
 import org.apache.openjpa.util.CharId;
 import org.apache.openjpa.util.DoubleId;
 import org.apache.openjpa.util.FloatId;
+import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.Id;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.IntId;
 import org.apache.openjpa.util.LongId;
 import org.apache.openjpa.util.ObjectId;
+import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.OpenJPAId;
 import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
@@ -221,64 +227,62 @@ public class JPAFacadeHelper {
         if (oid instanceof OpenJPAId) {
             return oid;
         }
+
         Class<?> cls = meta.getDescribedType();
-        Class<?> oidType = meta.getObjectIdType();
         FieldMetaData[] pks = meta.getPrimaryKeyFields();
 
-        Object expected = oidType;
-        Object actual = oid.getClass();
-
-        // embedded id and derived id
-        if (pks.length > 0 && (pks[0].isEmbedded() || pks[0].isTypePC())) {
-            if (pks[0].getDeclaredType().equals(oid.getClass())) {
-                return new ObjectId(cls, oid);
-            }
-            expected = pks[0].getDeclaredType();
-        }
-        if (oidType != null && oidType.equals(oid.getClass())) {
-            // Check for compound id class
-            return new ObjectId(cls, oid);
-        }
-        if (meta.getIdentityType() == ClassMetaData.ID_DATASTORE) {
-            // no id field
-            try {
+        Object expected = meta.getObjectIdType();
+        try {
+            switch (meta.getIdentityType()) {
+            case ClassMetaData.ID_DATASTORE:
+                if (oid instanceof String && ((String) oid).startsWith(StateManagerId.STRING_PREFIX))
+                    return new StateManagerId((String) oid);
                 return new Id(cls, ((Number) oid).longValue());
-            } catch (ClassCastException cce) {
-                // swallow, the proper exception will be thrown below
-                expected = Number.class;
+            case ClassMetaData.ID_APPLICATION:
+                if (ImplHelper.isAssignable(meta.getObjectIdType(), oid.getClass())) {
+                    if (!meta.isOpenJPAIdentity() && meta.isObjectIdTypeShared())
+                        return new ObjectId(cls, oid);
+                    return oid;
+                }
+
+                if (meta.getIdClass() == null) {
+                    expected = pks[0].getDeclaredType();
+                } else {
+                    expected = meta.getIdClass();
+                }
+                // stringified app id?
+                if (oid instanceof String
+                    && !meta.getRepository().getConfiguration().getCompatibilityInstance().getStrictIdentityValues()
+                    && !Modifier.isAbstract(cls.getModifiers()))
+                    return PCRegistry.newObjectId(cls, (String) oid);
+
+                Object[] arr = (oid instanceof Object[]) ? (Object[]) oid : new Object[] { oid };
+                Object rtrn = ApplicationIds.fromPKValues(arr, meta);
+                if (rtrn != null && meta.getObjectIdType() != null) {
+                    if (rtrn instanceof ObjectId) {
+                        // embedded id and composite id with a derived id that
+                        // uses an embedded id
+                        if (pks.length > 0 && (pks[0].isEmbedded() || pks[0].isTypePC())) {
+                            Class idClass = meta.getIdClass();
+                            if (pks[0].getDeclaredType().equals(oid.getClass()) || idClass != null
+                                && idClass.equals(oid.getClass())) {
+                                return rtrn;
+                            }
+                        }
+                    } else {
+                        if (!(rtrn instanceof StringId) || rtrn instanceof StringId && oid instanceof String) {
+                            return rtrn;
+                        }
+                    }
+                }
+            default:
+                throw new UserException(_loc.get("invalid-oid", new Object[] { expected, oid.getClass() }));
             }
+        } catch (RuntimeException re) {
+            if (expected == null)
+                throw new UserException(_loc.get("invalid-oid", new Object[] { Number.class, oid.getClass() }));
+            throw new UserException(_loc.get("invalid-oid", new Object[] { expected, oid.getClass() }));
         }
-        if (pks.length > 0) {
-            Class<?> pkType = pks[0].getDeclaredType();
-            try {
-                // Check for basic types, cast provided object to expected type. Catch CCE for invalid input
-                if (pkType.equals(Byte.class) || pkType.equals(byte.class))
-                    return new ByteId(cls, (Byte) oid);
-                if (pkType.equals(Character.class) || pkType.equals(char.class))
-                    return new CharId(cls, (Character) oid);
-                if (pkType.equals(Double.class) || pkType.equals(double.class))
-                    return new DoubleId(cls, (Double) oid);
-                if (pkType.equals(Float.class) || pkType.equals(float.class))
-                    return new FloatId(cls, (Float) oid);
-                if (pkType.equals(Integer.class) || pkType.equals(int.class))
-                    return new IntId(cls, (Integer) oid);
-                if (pkType.equals(Long.class) || pkType.equals(long.class))
-                    return new LongId(cls, (Long) oid);
-                if (pkType.equals(Short.class) || pkType.equals(short.class))
-                    return new ShortId(cls, (Short) oid);
-                if (pkType.equals(String.class))
-                    return new StringId(cls, (String) oid);
-                if (pkType.equals(BigDecimal.class))
-                    return new BigDecimalId(cls, (BigDecimal) oid);
-                if (pkType.equals(BigInteger.class))
-                    return new BigIntegerId(cls, (BigInteger) oid);
-            } catch (ClassCastException cce) {
-                // swallow, the proper exception will be thrown below
-                expected = pkType;
-            }
-        }
-        // At this point we don't have a basic ID field, we don't have an embedded or composite id. fail.
-        throw new UserException(_loc.get("invalid-oid", new Object[] { expected, actual }));
     }
 
     /**
