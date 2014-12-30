@@ -169,6 +169,7 @@ public class ClassMetaData
     ////////////////////////////////////////////////////////////////////
 
     private Class<?> _objectId = null;
+    private Class<?> _idClass = null;
     private Boolean _objectIdShared = null;
     private Boolean _openjpaId = null;
     private Boolean _extent = null;
@@ -578,6 +579,7 @@ public class ClassMetaData
             setIdentityType(ID_APPLICATION);
             if (!OpenJPAId.class.isAssignableFrom(cls)) {
                 _objectId = cls;
+                _idClass = cls;
                 _objectIdShared = (shared) ? Boolean.TRUE : Boolean.FALSE;
             }
         }
@@ -2510,6 +2512,7 @@ public class ClassMetaData
         // lazy data
         _super = meta.getPCSuperclass();
         _objectId = meta.getObjectIdType();
+        _idClass = meta.getIdClass();
         _extent = (meta.getRequiresExtent()) ? Boolean.TRUE : Boolean.FALSE;
         _embedded = (meta.isEmbeddedOnly()) ? Boolean.TRUE : Boolean.FALSE;
         _embeddable = meta._embeddable;
@@ -2822,5 +2825,12 @@ public class ClassMetaData
             _mappedByIdFieldsSet = true;
         }
         return _mappedByIdFields;
+    }
+
+    /**
+     * The class specified with the @IdClass annotation if used
+     */
+    public Class<?> getIdClass() {
+        return _idClass;
     }
 }
