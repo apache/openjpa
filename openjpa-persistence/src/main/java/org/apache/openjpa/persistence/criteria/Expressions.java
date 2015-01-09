@@ -1450,15 +1450,16 @@ class Expressions {
                 ExpressionImpl<?> e1 = e.e1;
 
                 Class<?> e1JavaType = e1.getJavaType();
-                Class<?> e2jt = e2.getJavaType();
+                Class<?> e2JavaType = e2.getJavaType();
 
-                // array
+                // array and Collection
                 if (BindableParameter.class.isInstance(e2) && BindableParameter.class.cast(e2).value() != null &&
-                    ((e2jt.isArray() && e2jt.getComponentType().equals(e1JavaType))
-                    || (Class.class.isInstance(e2jt) ||
-                        (ParameterizedType.class.isInstance(e2jt)
-                            && ParameterizedType.class.cast(e2jt).getActualTypeArguments().length > 0
-                            && e1JavaType.equals(ParameterizedType.class.cast(e2jt).getActualTypeArguments()[0]))))) {
+                    ((e2JavaType.isArray() && e2JavaType.getComponentType().equals(e1JavaType))
+                    || (Class.class.isInstance(e2JavaType) ||
+                        (ParameterizedType.class.isInstance(e2JavaType)
+                            && ParameterizedType.class.cast(e2JavaType).getActualTypeArguments().length > 0
+                            && e1JavaType.equals(ParameterizedType.class.cast(e2JavaType).getActualTypeArguments()[0]))
+                       ))) {
                     final BindableParameter bp = BindableParameter.class.cast(e2);
                     final Object value = bp.value();
 
