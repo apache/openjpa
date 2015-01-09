@@ -160,3 +160,11 @@ $ ls openjpa-project/target/site/downloads/
 
 apache-openjpa-2.2.0-SNAPSHOT-binary.zip
 apache-openjpa-2.2.0-SNAPSHOT-source.zip
+
+
+To speed up the local build time you might want to exclude the tests which
+check locking timeouts as they take a really long time (mostly waiting for
+timeout expiration).
+
+This can be achieved by building the project with
+$ mvn clean install -Dsurefire.excludes.locking=**/*
