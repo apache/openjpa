@@ -34,6 +34,7 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.SQLFactory;
 import org.apache.openjpa.jdbc.sql.Select;
+import org.apache.openjpa.kernel.LockLevels;
 import org.apache.openjpa.kernel.LockScopes;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -127,7 +128,12 @@ public class PessimisticLockManager
         Object id = sm.getObjectId();
         ClassMapping mapping = (ClassMapping) sm.getMetaData();
 
-        List<SQLBuffer> sqls = sm.getLock() == null
+        //Code changed for OPENJPA-2449, code updated for OPENJPA-2547.  OPENJPA-2547 added
+        //one check to determine if the lock is a value of LockLevels.LOCK_NONE.  The first 
+        //time a thread attempts to get a lock the lock will be null.  If the thread can't 
+        //get the lock because another thread holds it, the lock will be non-null and have 
+        //a value of LockLevels.LOCK_NONE.
+        List<SQLBuffer> sqls = (sm.getLock() == null || sm.getLock().equals(LockLevels.LOCK_NONE))
             ?  getLockRows(dict, id, mapping, fetch, _store.getSQLFactory())
             : new ArrayList<SQLBuffer>();
         if (ctx.getFetchConfiguration().getLockScope() == LockScopes.LOCKSCOPE_EXTENDED)
