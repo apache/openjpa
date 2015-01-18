@@ -3568,8 +3568,9 @@ openjpa.ConnectionDriverName</literal></link>
 <classname>org.apache.openjpa.jdbc.sql.DBDictionary</classname></ulink> to use
 for database interaction. OpenJPA typically auto-configures the dictionary based
 on the JDBC URL, but you may have to set this property explicitly if you are
-using an unrecognized driver, or to plug in your own dictionary for a database
-OpenJPA does not support out-of-the-box. See
+using an unrecognized driver, to plug in your own dictionary for a database
+OpenJPA does not support out-of-the-box, or if you like to change the default
+configuration of an existing dictionary. See
 <xref linkend="ref_guide_dbsetup_dbsupport"/> for details.
             </para>
         </section>

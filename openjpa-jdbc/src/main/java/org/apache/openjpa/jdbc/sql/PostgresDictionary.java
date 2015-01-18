@@ -187,6 +187,7 @@ public class PostgresDictionary
             "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
             "MONEY",
         }));
+        booleanRepresentation = BooleanRepresentation.BooleanRepresentations.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;
         supportsQueryTimeout = false;
@@ -301,15 +302,6 @@ public class PostgresDictionary
         } catch (SQLException sqle) {
             return super.getBigDecimal(rs, column).longValue();
         }
-    }
-
-    @Override
-    public void setBoolean(PreparedStatement stmnt, int idx, boolean val,
-        Column col)
-        throws SQLException {
-        // postgres actually requires that a boolean be set: it cannot
-        // handle a numeric argument.
-        stmnt.setBoolean(idx, val);
     }
 
     /**
