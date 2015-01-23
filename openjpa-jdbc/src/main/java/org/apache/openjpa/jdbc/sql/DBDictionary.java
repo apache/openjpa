@@ -329,10 +329,10 @@ public class DBDictionary
 
     /**
      * Defines how {@code Boolean} and {@code boolean} values get represented
-     * in OpenJPA. Default to {@link org.apache.openjpa.jdbc.sql.BooleanRepresentation.BooleanRepresentations#INT_10}
+     * in OpenJPA. Default to {@code INT_10}.
      * for backward compatibility.
      */
-    protected BooleanRepresentation booleanRepresentation = BooleanRepresentation.BooleanRepresentations.INT_10;
+    protected BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.INT_10;
 
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
@@ -5683,12 +5683,12 @@ public class DBDictionary
         BooleanRepresentation evaluatedBooleanRepresentation = null;
         if (booleanRepresentationKey != null && booleanRepresentationKey.length() > 0) {
             ClassLoader cl = conf.getUserClassLoader();
-            evaluatedBooleanRepresentation = BooleanRepresentation.Factory.valueOf(booleanRepresentationKey, cl);
+            evaluatedBooleanRepresentation = BooleanRepresentationFactory.valueOf(booleanRepresentationKey, cl);
         }
 
         booleanRepresentation = evaluatedBooleanRepresentation != null
                                     ? evaluatedBooleanRepresentation
-                                    : BooleanRepresentation.BooleanRepresentations.INT_10;
+                                    : BooleanRepresentationFactory.INT_10;
     }
 
     protected boolean isUsingRange(long start, long end) {

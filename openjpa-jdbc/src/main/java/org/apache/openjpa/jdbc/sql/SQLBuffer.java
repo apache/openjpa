@@ -369,7 +369,7 @@ public final class SQLBuffer
                 } else if (type == Boolean.class) {
                     Boolean b = (Boolean) o;
                     // We store B(b)ooleans as ints. Convert 
-                    _sql.append((b.booleanValue() ? "1" : "0"));
+                    _sql.append(_dict.getBooleanRepresentation().getRepresentation(b.booleanValue()));
                 } else {
                     _sql.append(o.toString());
                 }

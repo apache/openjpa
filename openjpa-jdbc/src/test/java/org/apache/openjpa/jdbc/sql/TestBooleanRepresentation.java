@@ -24,7 +24,6 @@ import java.lang.reflect.Proxy;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -60,7 +59,7 @@ public class TestBooleanRepresentation  extends TestCase {
                                                 final T yesRepresentation, final T noRepresentation)
         throws Exception {
         ClassLoader cl = TestBooleanRepresentation.class.getClassLoader();
-        BooleanRepresentation booleanRepresentation = BooleanRepresentation.Factory.valueOf(representationKey, cl);
+        BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.valueOf(representationKey, cl);
         Assert.assertNotNull(booleanRepresentation);
 
         DummyPreparedStatement<T> dummyPreparedStatement = new DummyPreparedStatement<T>(expectedType);
@@ -145,15 +144,20 @@ public class TestBooleanRepresentation  extends TestCase {
         }
     }
 
-    public static class DummyTestBooleanRepresentation implements BooleanRepresentation {
+    public static class DummyTestBooleanRepresentation implements BooleanRepresentation<String> {
         @Override
         public void setBoolean(PreparedStatement stmnt, int columnIndex, boolean val) throws SQLException {
-            stmnt.setString(columnIndex, val ? "somehowtrue" : "somehowfalse");
+            stmnt.setString(columnIndex, getRepresentation(val));
         }
 
         @Override
         public boolean getBoolean(ResultSet rs, int columnIndex) throws SQLException {
             return "somehowtrue".equals(rs.getString(columnIndex));
+        }
+
+        @Override
+        public String getRepresentation(boolean bool) {
+            return bool ? "somehowtrue" : "somehowfalse";
         }
     }
 }

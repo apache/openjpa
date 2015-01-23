@@ -187,7 +187,7 @@ public class PostgresDictionary
             "SET", "FLOAT4", "FLOAT8", "ABSTIME", "RELTIME", "TINTERVAL",
             "MONEY",
         }));
-        booleanRepresentation = BooleanRepresentation.BooleanRepresentations.BOOLEAN;
+        booleanRepresentation = BooleanRepresentationFactory.BOOLEAN;
 
         supportsLockingWithDistinctClause = false;
         supportsQueryTimeout = false;
