@@ -5689,6 +5689,9 @@ public class DBDictionary
         booleanRepresentation = evaluatedBooleanRepresentation != null
                                     ? evaluatedBooleanRepresentation
                                     : BooleanRepresentationFactory.INT_10;
+        if (log.isInfoEnabled()) {
+            log.info(_loc.get("using-booleanRepresentation", booleanRepresentation));
+        }
     }
 
     protected boolean isUsingRange(long start, long end) {

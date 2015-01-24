@@ -101,6 +101,7 @@ public class BooleanRepresentationFactory {
 
     }
 
+
     public static BooleanRepresentation valueOf(String booleanRepresentationKey, ClassLoader cl) {
         // 1st step, try to lookup the BooleanRepresentation from the default ones
         BooleanRepresentation booleanRepresentation = BUILTIN_BOOLEAN_REPRESENTATIONS.get(booleanRepresentationKey);
@@ -121,7 +122,6 @@ public class BooleanRepresentationFactory {
             }
             catch (Exception e) {
                 // nothing to do
-                //X TODO probably log some error?
             }
         }
 
@@ -132,9 +132,6 @@ public class BooleanRepresentationFactory {
                             Arrays.toString(BUILTIN_BOOLEAN_REPRESENTATIONS.keySet().toArray(new String[]{}))}
             ));
 
-        }
-        else {
-            //X TODO add logging about which one got picked up finally
         }
 
         return booleanRepresentation;
@@ -192,6 +189,11 @@ public class BooleanRepresentationFactory {
         public Boolean getRepresentation(boolean bool) {
             return bool;
         }
+
+        @Override
+        public String toString() {
+            return "BooleanBooleanRepresentation";
+        }
     }
 
     public static class Int10BooleanRepresentation implements BooleanRepresentation<Integer> {
@@ -208,6 +210,11 @@ public class BooleanRepresentationFactory {
         @Override
         public Integer getRepresentation(boolean bool) {
             return bool ? 1 : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "Int10BooleanRepresentation";
         }
     }
 
