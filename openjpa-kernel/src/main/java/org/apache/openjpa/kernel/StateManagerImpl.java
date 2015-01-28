@@ -39,6 +39,7 @@ import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.openjpa.conf.DetachOptions.FetchGroups;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.FieldManager;
@@ -3157,7 +3158,7 @@ public class StateManagerImpl
                 fetch.addFetchGroup(lfg);
                 lfgAdded = true;
             }
-        } else if (fmd.isInDefaultFetchGroup() && fields == null) {
+        } else if (fetch.hasFetchGroup(FetchGroup.NAME_DEFAULT) && fmd.isInDefaultFetchGroup() && fields == null) {
             // no load group but dfg: add dfg fields if we haven't already
             fields = getUnloadedInternal(fetch, LOAD_FGS, null);
         } else if (!_loaded.get(fmd.getIndex())) {
