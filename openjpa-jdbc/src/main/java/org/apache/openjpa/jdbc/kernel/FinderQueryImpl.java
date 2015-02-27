@@ -72,7 +72,17 @@ public class FinderQueryImpl
             return null;
         SQLBuffer buffer = impl.getSQL();
         Column[] pkCols = mapping.getPrimaryKeyColumns();
-        boolean canCache = pkCols.length == buffer.getParameters().size();
+
+        //OPENJPA-2557: Typically the number of pkCols (length) should match the number (size) of 
+        //parameters.  However, there are a few cases (e.g. when extra parameters are needed for
+        //discriminator data) where the pkCols length may be different than the parameters.   
+        //If we find the number of pkCols is equal to the number of parameters, we need to do
+        //one last check to verify that the buffers columns match the pkCols exactly.
+        boolean canCache = (pkCols.length == buffer.getParameters().size());
+        for(int i=0; i < pkCols.length  && canCache; i++){
+            canCache = canCache && buffer.getColumns().contains(pkCols[i]);            
+        }
+        
         return (canCache)
             ? new FinderQueryImpl(mapping, impl, buffer) : null;
     }
