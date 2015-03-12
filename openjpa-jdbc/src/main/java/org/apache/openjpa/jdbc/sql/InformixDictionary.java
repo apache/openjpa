@@ -85,6 +85,8 @@ public class InformixDictionary
     private final Collection _seenConnections = new ReferenceHashSet
         (ReferenceHashSet.WEAK);
 
+    public boolean disableRetainUpdateLocksSQL=false;
+
     private static final Localizer _loc = Localizer.forPackage
         (InformixDictionary.class);
 
@@ -329,8 +331,11 @@ public class InformixDictionary
                     sql = sql + " " + lockWaitSeconds;
                 execute(sql, conn, true);
             }
-            String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
-            execute(sql, conn, false);
+            
+            if (!disableRetainUpdateLocksSQL){
+                String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
+                execute(sql, conn, false);
+            }
         }
 
         // the datadirect driver requires that we issue a rollback before using
