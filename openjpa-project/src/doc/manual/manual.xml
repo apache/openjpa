@@ -62,9 +62,9 @@
 ]>
 <book id="manual">
     <bookinfo>
-        <title>Apache OpenJPA 2.3 User's Guide</title>
+        <title>Apache OpenJPA 2.4 User's Guide</title>
         <copyright>
-            <year>2006-2012</year>
+            <year>2006-2015</year>
             <holder>The Apache Software Foundation</holder>
         </copyright>
         <releaseinfo>Built from OpenJPA version <?eval ${openjpa.version}?> revision <?eval ${buildNumber}?>.</releaseinfo>
