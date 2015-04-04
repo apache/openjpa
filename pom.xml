@@ -27,7 +27,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>7</version>
+      <version>13</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -859,7 +859,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>2.9.1</version>
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
@@ -868,19 +868,18 @@
                             <id>attach-javadoc</id>
                             <phase>package</phase>
                             <goals>
-                                <goal>jar</goal>
+                                <goal>aggregate-jar</goal>
                             </goals>
                         </execution>
                         <execution>
                             <phase>process-classes</phase>
                             <goals>
-                                <goal>javadoc</goal>
+                                <goal>aggregate</goal>
                             </goals>
                             <configuration>
                                 <additionalparam>
                                     ${javadoc.additionalparam}
                                 </additionalparam>
-                                <aggregate>true</aggregate>
                                 <subpackages>org.apache.openjpa</subpackages>
                                 <verbose>false</verbose>
                                 <maxmemory>512m</maxmemory>
