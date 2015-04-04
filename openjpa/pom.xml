@@ -60,6 +60,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>shade-all</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -82,7 +83,9 @@
                                     <include>org.apache.openjpa:openjpa-persistence-jdbc</include>
                                     <include>org.apache.openjpa:openjpa-xmlstore</include>
                                     <include>org.apache.openjpa:openjpa-slice</include>
+<!-- JEST is a REST Servlet based approach and thus gets packaged separately
                                     <include>org.apache.openjpa:openjpa-jest</include>
+-->
                                 </includes>
                             </artifactSet>
                             <!-- OpenJPA unique META-INF setup -->
