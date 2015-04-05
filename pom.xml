@@ -27,7 +27,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>13</version>
+      <version>16</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -891,11 +891,6 @@
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.3.1</version>
                 </plugin>
                 <!-- Newer versions of plugin will cause PDF build failures -->
                 <plugin>
