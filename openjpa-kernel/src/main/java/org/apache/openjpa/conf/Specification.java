@@ -153,7 +153,6 @@ public class Specification {
     
     /**
      * Return the compatibility object associated with this Specification instance.
-     * @return
      */
     public Compatibility getCompatibility() {
         return _compatibility;

@@ -56,7 +56,6 @@ public interface JPAServletContext {
     
     /**
      * Get the requested URI. 
-     * @return
      */
     public String getRequestURI();
     

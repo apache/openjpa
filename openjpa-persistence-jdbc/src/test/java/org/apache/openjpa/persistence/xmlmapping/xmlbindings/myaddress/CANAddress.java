@@ -58,7 +58,6 @@ public class CANAddress
     /**
      * Gets the value of the province property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     
@@ -82,7 +81,6 @@ public class CANAddress
     /**
      * Gets the value of the postalCode property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     

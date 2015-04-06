@@ -34,8 +34,6 @@ public class FileScanner {
     
     /**
      * Scans the given  
-     * @param root
-     * @return
      */
     public List<File> scan(File dir) {
         List<File> bag = new ArrayList<File>();

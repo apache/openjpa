@@ -78,7 +78,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
 
     /**
      * Returns whether case is ignored during equality operations.
-     * @return
      */
     public boolean getIgnoreCase() {
         return _ignoreCase;
@@ -169,7 +168,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * @param name
      * @param id
      * @param delim
-     * @return
      */
     public static DBIdentifier[] split(String name, DBIdentifierType id, String delim) {
         
@@ -193,7 +191,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * returns a string based identifier.
      * @param resultId
      * @param names
-     * @return
      */
     public static String join(DBIdentifier...names) {
         if (names == null || names.length == 0) {
@@ -210,7 +207,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * type and heuristics to determine the types and placement of the resulting
      * components.
      * @param name
-     * @return
      */
     public static DBIdentifier[] split(DBIdentifierType resultType, String name) {
         
@@ -298,7 +294,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns true if the identifier is null or the name is null or empty.
      * @param name
-     * @return
      */
     public static boolean isEmpty(DBIdentifier name) {
         if (isNull(name)) {
@@ -311,7 +306,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns true if the identifier is null.
      * @param name
-     * @return
      */
     public static boolean isNull(DBIdentifier name) {
         return (name == null || name.getType() == DBIdentifierType.NULL);
@@ -349,7 +343,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a copy of an identifier with name trimmed to null.
      * @param name
-     * @return
      */
     public static DBIdentifier trimToNull(DBIdentifier name) {
         if (DBIdentifier.isNull(name)) {
@@ -382,7 +375,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
 
     /**
      * Returns true if this object is NULL or has a null name component.
-     * @return
      */
     public boolean isNull() {
         return (_type == DBIdentifierType.NULL || getName() == null);
@@ -410,7 +402,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * provided type
      * @param columnNames
      * @param id
-     * @return
      */
     public static DBIdentifier[] toArray(String[] columnNames, DBIdentifierType id) {
         return toArray(columnNames, id, false);
@@ -421,7 +412,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * provided type, optionally delimiting the names.
      * @param columnNames
      * @param id
-     * @return
      */
     public static DBIdentifier[] toArray(String[] names, DBIdentifierType id, boolean delimit) {
         if (names == null) {
@@ -437,7 +427,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a string array of names based upon the provided set of identifiers.
      * @param sNames
-     * @return
      */
     public static String[] toStringArray(DBIdentifier[] sNames) {
         if (sNames == null) {
@@ -645,7 +634,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Static equality method for comparing two identifiers.
      * @param name1
      * @param name2
-     * @return
      */
     public static boolean equal(DBIdentifier name1, DBIdentifier name2) {
         boolean name1Null = DBIdentifier.isNull(name1);
@@ -669,7 +657,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Returns a new DBIdentifier truncated to length
      * @param name
      * @param length
-     * @return
      */
     public static DBIdentifier truncate(DBIdentifier name, int length) {
         DBIdentifier sName = name.clone();
@@ -686,7 +673,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Returns a new DBIdentifier with the given string appended.
      * @param name
      * @param length
-     * @return
      */
     public static DBIdentifier append(DBIdentifier name, String str) {
         DBIdentifier sName = name.clone();
@@ -701,7 +687,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * delimiting rules and appropriate separators.
      * @param name
      * @param length
-     * @return
      */
     public static DBIdentifier combine(DBIdentifier name, String str) {
         DBIdentifier sName = name.clone();
@@ -714,7 +699,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new DBIdentifier converted to lower case - if not delimited.
      * @param name
-     * @return
      */
     public static DBIdentifier toLower(DBIdentifier name) {
         return toLower(name, false);
@@ -724,7 +708,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Returns a new DBIdentifier converted to lower case.  If delimited,
      * force to lower case using force option.
      * @param name
-     * @return
      */
     public static DBIdentifier toLower(DBIdentifier name, boolean force) {
         if (DBIdentifier.isNull(name)) {
@@ -745,7 +728,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new DBIdentifier converted to upper case - if not delimited.
      * @param name
-     * @return
      */
     public static DBIdentifier toUpper(DBIdentifier name) {
         return toUpper(name, false);
@@ -755,7 +737,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      * Returns a new DBIdentifier converted to upper case.  If delimited,
      * force to upper case using force option.
      * @param name
-     * @return
      */
     public static DBIdentifier toUpper(DBIdentifier name, boolean force) {
         if (DBIdentifier.isNull(name)) {
@@ -776,7 +757,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new DBIdentifier with the specified leading string removed.
      * @param name
-     * @return
      */
     public static DBIdentifier removeLeading(DBIdentifier name, String leadingStr) {
         DBIdentifier sName = name.clone();
@@ -795,7 +775,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new DBIdentifier with Hungarian notation removed.
      * @param name
-     * @return
      */
     public static DBIdentifier removeHungarianNotation(DBIdentifier name) {
         DBIdentifier hName = name.clone();
@@ -811,7 +790,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Equality operator which ignores case.
      * @param name
-     * @return
      */
    public boolean equalsIgnoreCase(DBIdentifier name) {
        return equals(name, true);
@@ -866,7 +844,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new identifier with delimiters removed.
      * @param name
-     * @return
      */
     public static DBIdentifier removeDelimiters(DBIdentifier name) {
         if (DBIdentifier.isNull(name)) {
@@ -885,7 +862,6 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
     /**
      * Returns a new delimiter with leading and trailing spaces removed.
      * @param name
-     * @return
      */
     public static DBIdentifier trim(DBIdentifier name) {
         if (DBIdentifier.isNull(name)) {

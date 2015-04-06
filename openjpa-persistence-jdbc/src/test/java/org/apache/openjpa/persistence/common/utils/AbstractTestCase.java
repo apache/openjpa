@@ -210,7 +210,6 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
      * Creates a EMF and adds it to a Map for cleanup in tearDown()
      * 
      * @param map
-     * @return
      */
     protected OpenJPAEntityManagerFactory getEmf(Map map) {
         if (map == null)
@@ -259,7 +258,6 @@ public abstract class AbstractTestCase extends AbstractCachedEMFTestCase {
     /**
      * Creates a EMF and adds it to a Map for cleanup in tearDown()
      * 
-     * @return
      */
     protected OpenJPAEntityManagerFactory getEmf() {
         Map m = new HashMap();

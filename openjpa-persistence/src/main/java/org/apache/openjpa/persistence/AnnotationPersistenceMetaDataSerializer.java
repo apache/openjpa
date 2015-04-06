@@ -454,7 +454,6 @@ public class AnnotationPersistenceMetaDataSerializer
 
     /**
      * Creates a new annotation builder for the specified annotation type.
-     * @return
      */
     protected AnnotationBuilder newAnnotationBuilder(
         Class<? extends Annotation> annType) {

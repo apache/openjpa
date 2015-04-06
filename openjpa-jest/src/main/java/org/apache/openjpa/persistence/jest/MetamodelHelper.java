@@ -68,7 +68,6 @@ public class MetamodelHelper {
     /**
      * Gets the attributes of the given type in defined order.
      * @param type
-     * @return
      */
     public static List<Attribute<?,?>> getAttributesInOrder(ManagedType<?> type) {
         List<Attribute<?,?>> list = new ArrayList<Attribute<?,?>>(type.getAttributes());
@@ -108,7 +107,6 @@ public class MetamodelHelper {
      * Gets a ordinal value of enumerated persistent attribute category.
      *  
      * @param attr
-     * @return
      */
     public static AttributeCategory getAttributeCategory(Attribute<?,?> attr) {
         if (isId(attr))
@@ -145,7 +143,6 @@ public class MetamodelHelper {
      * Gets name of the attribute type. For collection and map type attribute, the name is
      * appended with generic type argument names.
      * @param attr
-     * @return
      */
     public static String getAttributeTypeName(Attribute<?, ?> attr) {
         StringBuilder name = new StringBuilder(attr.getJavaType().getSimpleName());

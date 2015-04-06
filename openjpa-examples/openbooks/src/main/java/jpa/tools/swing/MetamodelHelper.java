@@ -59,7 +59,6 @@ public class MetamodelHelper {
     /**
      * Gets the displayed name of a given entity type.
      * @param type
-     * @return
      */
     public static String getDisplayName(EntityType<?> type) {
         return type.getName();
@@ -201,7 +200,6 @@ public class MetamodelHelper {
      * Gets the value of the given persistent attribute for the given instance.
      * @param attr
      * @param instance
-     * @return
      */
     public static Object getValue(Attribute<?,?> attr, Object instance) {
         Member member = attr.getJavaMember();

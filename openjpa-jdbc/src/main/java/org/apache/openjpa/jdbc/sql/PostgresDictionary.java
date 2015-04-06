@@ -547,7 +547,6 @@ public class PostgresDictionary
      * db.  This logic assumes that any sequence suffixed with _SEQ is an
      * owned sequence (identical to the behavior of prior versions of OpenJPA).
      * @param strName
-     * @return
      */
     private boolean isOwnedSequence(String strName) {
         // filter out generated sequences used for bigserial cols, which are
@@ -786,7 +785,6 @@ public class PostgresDictionary
      * @param column
      * @param map
      * 
-     * @return
      * @exception SQLException
      */
     public Object getObject(ResultSet rs, int column, Map map)

@@ -182,7 +182,6 @@ public abstract class AbstractQueryCacheInstrument extends AbstractInstrument
 
     /**
      * Returns all query keys currently tracked in the cache.
-     * @return
      */
     public Set<String> queryKeys() {
         QueryStatistics<QueryKey> stats = getStatistics();

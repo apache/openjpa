@@ -63,7 +63,6 @@ public class PostPersistEntity {
     /**
      * Gets value of the named field by reflection to ensure that the field is
      * not loaded as a side-effect to access it.
-     * @return
      */
     Object getByReflection(String f) {
         try {

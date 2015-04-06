@@ -91,7 +91,6 @@ public class Randomizer {
      * @param <T>
      * @param list
      * @param n
-     * @return
      */
     public static <T> List<T> selectRandom(List<T> list, int n) {
         if (list == null || list.isEmpty())

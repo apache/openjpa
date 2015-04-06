@@ -263,7 +263,6 @@ public class TestFetchPlan extends BaseKernelTest {
      *
      * @param dir a starting directory
      * @param depth depth to recurse. must be positive.
-     * @return
      */
     PCDirectory[] getParents(PCDirectory dir, int depth) {
         PCDirectory[] result = new PCDirectory[depth];

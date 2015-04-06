@@ -45,7 +45,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
      * Creates a qualified identifier based upon an array of DBIdentifiers.  Identifiers
      * must be specified in order.
      * @param names
-     * @return
      */
     public static QualifiedDBIdentifier newPath(DBIdentifier...names) {
         return new QualifiedDBIdentifier(names);
@@ -99,7 +98,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Splits a qualified path into separate identifiers.
      * @param sName
-     * @return
      */
     public static DBIdentifier[] splitPath(DBIdentifier sName) {
         if (sName instanceof QualifiedDBIdentifier && sName.getType() != DBIdentifierType.SCHEMA) {
@@ -126,7 +124,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Creates a qualified path from an identifier.
      * @param sName
-     * @return
      */
     public static QualifiedDBIdentifier getPath(DBIdentifier sName) {
         if (sName instanceof QualifiedDBIdentifier) {
@@ -144,7 +141,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
 
     /**
      * Gets the schema component of the path.
-     * @return
      */
     public DBIdentifier getSchemaName() {
         return _schemaName;
@@ -169,7 +165,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
 
     /**
      * Returns true if this object is not qualified by a schema component.
-     * @return
      */
     public boolean isUnqualifiedObject() {
         return DBIdentifier.isNull(getSchemaName());
@@ -178,7 +173,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Returns true if this object is not qualified by a table or schema 
      * component.
-     * @return
      */
     public boolean isUnqualifiedColumn() {
         return DBIdentifier.isNull(getObjectTableName()) && DBIdentifier.isNull(getSchemaName());
@@ -211,7 +205,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
      * Compares two qualified identifiers for equality.
      * @param path1
      * @param path2
-     * @return
      */
     public static boolean pathEqual(QualifiedDBIdentifier path1, QualifiedDBIdentifier path2) {
         if (path1 == null && path2 == null) {
@@ -255,7 +248,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
     /**
      * Returns the base name of this qualified name.  For example, if the 
      * qualified name is a schema qualified table, the table name is returned.
-     * @return
      */
     public String getBaseName() {
         return super.getName();
@@ -263,7 +255,6 @@ public class QualifiedDBIdentifier extends DBIdentifier implements Identifier, C
 
     /**
      * Returns this object as a DBIdentifier.
-     * @return
      */
     public DBIdentifier getIdentifier() {
         return this;

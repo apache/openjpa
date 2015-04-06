@@ -29,7 +29,6 @@ public interface JMXInstrument extends Instrument {
     
     /**
      * Returns the JMX object name for the instrument
-     * @return
      */
     public ObjectName getObjectName();
 

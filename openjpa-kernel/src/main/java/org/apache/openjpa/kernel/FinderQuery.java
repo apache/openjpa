@@ -39,7 +39,6 @@ public interface FinderQuery<K,V,R>  {
     /**
      * Gets the value to which this receiver delegates its execution.
      * 
-     * @return
      */
     public V getDelegate();
     

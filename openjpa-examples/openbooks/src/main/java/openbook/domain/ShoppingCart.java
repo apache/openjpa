@@ -62,7 +62,6 @@ public class ShoppingCart implements Serializable {
     /**
      * Gets the books with their corresponding quantity in this cart.
      * 
-     * @return
      */
     public Map<Book, Integer> getItems() {
         return items;

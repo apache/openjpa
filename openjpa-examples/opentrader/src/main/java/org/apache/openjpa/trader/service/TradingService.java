@@ -84,7 +84,6 @@ public interface TradingService {
      * Logs in a trader of given name.
      * 
      * @param trader
-     * @return
      */
     Trader login(String trader);
     
@@ -94,7 +93,6 @@ public interface TradingService {
      * @param stock
      * @param volume
      * @param price
-     * @return
      */
     Ask ask(Trader trader, Stock stock, int volume, double price);
     
@@ -105,7 +103,6 @@ public interface TradingService {
      * @param stock
      * @param volume
      * @param price
-     * @return
      */
     Bid bid(Trader trader, Stock stock, int volume, double price);
     
@@ -137,7 +134,6 @@ public interface TradingService {
      * Gets the trades executed between the given time periods.
      * @param from
      * @param to
-     * @return
      */
     List<Trade> getTrades(Timestamp from, Timestamp to);
     
@@ -145,27 +141,23 @@ public interface TradingService {
      * Gets the trades executed by the given trader between the given time periods.
      * @param from
      * @param to
-     * @return
      */
     List<Trade> getTrades(Trader trader, Boolean boughtOrsold, Timestamp from, Timestamp to);
     
     /**
      * Gets the current value of the stock given its symbol.
      * @param symbol
-     * @return
      */
     Stock getStock(String symbol);
     
     /**
      * Gets the statements logged since the last call.
-     * @return
      */
     List<LogStatement> getLog();
     
     /**
      * Get a descriptive URI-like string for this service.
      * 
-     * @return
      */
     String getServiceURI();
 }

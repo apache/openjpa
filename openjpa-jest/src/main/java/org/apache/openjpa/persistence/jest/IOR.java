@@ -36,7 +36,6 @@ public class IOR {
      * The simple Java type name and the persistent identity separated by a {@link Constants#DASH dash}.
      *  
      * @param sm a managed instance.
-     * @return
      */
     public static String toString(OpenJPAStateManager sm) {
         if (sm == null) return NULL_VALUE;

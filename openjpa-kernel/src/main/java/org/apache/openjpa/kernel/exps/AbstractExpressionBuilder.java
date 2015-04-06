@@ -610,7 +610,6 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Returns the variable associated with the schema alias (id).
      * @param id
-     * @return
      */
     protected abstract Value getVariable(String id);
 }

@@ -601,7 +601,6 @@ public class ConfigurationImpl
      * @param storeDefaults
      *            whether or not to retrieve a property if its value is the
      *            default value.
-     * @return
      */
     public Map toProperties(boolean storeDefaults) {
         // clone properties before making any modifications; we need to keep

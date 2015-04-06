@@ -90,7 +90,6 @@ public class QueryExpressions
 
     /**
      * Returns the current JPQL query context.
-     * @return
      */
     public Context ctx() {
         return _contexts.peek();

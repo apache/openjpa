@@ -78,7 +78,6 @@ public class Context implements Serializable {
 
     /**
      * Returns next table alias to be created.
-     * @return
      */
     public int nextAlias() {
         Context p = this;
@@ -111,7 +110,6 @@ public class Context implements Serializable {
 
     /**
      * Returns the select associated with this context.
-     * @return
      */
     public Object getSelect() {
         return select;
@@ -131,7 +129,6 @@ public class Context implements Serializable {
 
     /**
      * Returns the subquery context.
-     * @return
      */
     public List<Context> getSubselContexts() {
         return subsels;
@@ -139,7 +136,6 @@ public class Context implements Serializable {
 
     /**
      * Returns the subquery in this context.
-     * @return
      */
     public Subquery getSubquery() {
         return subquery;
@@ -182,7 +178,6 @@ public class Context implements Serializable {
     /**
      * Given an alias and return its associated variable.
      * @param alias
-     * @return
      */
     public Value getVariable(String alias) {
         Value variable = alias == null ? null 
@@ -194,7 +189,6 @@ public class Context implements Serializable {
      * Given an alias find the context of its associated
      * variable where it is defined.
      * @param alias
-     * @return
      */
     public Context findContext(String alias) {
         Value var = getVariable(alias);
@@ -221,7 +215,6 @@ public class Context implements Serializable {
     /**
      * Given an alias find the variable in JPQL contexts.
      * @param alias
-     * @return
      */
     public Value findVariable(String alias) {
         Value var = getVariable(alias);

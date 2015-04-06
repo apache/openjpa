@@ -190,14 +190,8 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
     
     /**
      * Find books that match title and price range.
-     * @param title
-     * @param minPrice
-     * @param maxPrice
-     * @param author
-     * @return
      */
-    
-    public List<Book> select(String title, Double minPrice, Double maxPrice, String author, 
+    public List<Book> select(String title, Double minPrice, Double maxPrice, String author,
             QueryDecorator...decorators) {
         CriteriaQuery<Book> q = buildQuery(title, minPrice, maxPrice, author);
         EntityManager em = begin();
@@ -233,7 +227,6 @@ class OpenBookServiceImpl extends PersistenceService implements OpenBookService 
      * 
      * @return a typed query
      */
-
     private CriteriaQuery<Book> buildQuery(String title, Double minPrice, Double maxPrice, String author) {
         // builder generates the Criteria Query as well as all the expressions
         CriteriaBuilder cb = getUnit().getCriteriaBuilder();

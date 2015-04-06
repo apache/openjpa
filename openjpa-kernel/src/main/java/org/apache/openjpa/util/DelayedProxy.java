@@ -72,13 +72,11 @@ public interface DelayedProxy {
     /**
      * Returns the expected field index even if this collection
      * was detached.
-     * @return
      */
     int getDelayedField();
     
     /**
      * Returns whether the proxy is detached.
-     * @return
      */
     boolean isDetached();
 }

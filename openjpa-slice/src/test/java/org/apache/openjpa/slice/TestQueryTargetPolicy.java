@@ -110,7 +110,6 @@ public class TestQueryTargetPolicy extends SliceTestCase {
     /**
      * Gets the slice names on which the given query is targeted. 
      * @param q
-     * @return
      */
     public static String[] getTargetSlices(Query q) {
         Object targets = q.unwrap(org.apache.openjpa.kernel.Query.class)

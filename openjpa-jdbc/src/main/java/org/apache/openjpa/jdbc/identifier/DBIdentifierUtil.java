@@ -76,7 +76,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param table
      * @param maxLen
      * @param checkForUniqueness
-     * @return
      */
     public DBIdentifier getValidColumnIdentifier(DBIdentifier name, Table table, int maxLen, 
         boolean checkForUniqueness);
@@ -88,7 +87,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param table
      * @param maxLen
      * @param checkForUniqueness
-     * @return
      */
     public DBIdentifier getValidIndexIdentifier(DBIdentifier name, Table table, int maxLen);
 
@@ -99,7 +97,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param table
      * @param maxLen
      * @param checkForUniqueness
-     * @return
      */
     public DBIdentifier getValidSequenceIdentifier(DBIdentifier name, Schema schema, int maxLen);
     
@@ -109,7 +106,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param name
      * @param schema
      * @param maxLen
-     * @return
      */
     public DBIdentifier getValidTableIdentifier(DBIdentifier name, Schema schema, int maxLen);
 
@@ -119,7 +115,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param name
      * @param table
      * @param maxLen
-     * @return
      */
     public DBIdentifier getValidUniqueIdentifier(DBIdentifier name, Table table, int maxLen);
 
@@ -130,14 +125,12 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * @param table
      * @param toTable
      * @param maxLen
-     * @return
      */
     public DBIdentifier getValidForeignKeyIdentifier(DBIdentifier name, Table table, Table toTable, int maxLen);
 
     /**
      * Converts the specified identifier to a format required by the database.
      * @param name
-     * @return
      */
     public String toDBName(DBIdentifier name);
 
@@ -146,14 +139,12 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * optionally delimiting the name.
      * @param name
      * @param delimit
-     * @return
      */
     public String toDBName(DBIdentifier name, boolean delimit);
 
     /**
      * Converts the specified string to a format required by the database.
      * @param name
-     * @return
      */
     public String toDBName(String name);
 
@@ -161,7 +152,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Converts the specified string to a format required by the database,
      * optionally delimiting the name.
      * @param name
-     * @return
      */
     public String toDBName(String name, boolean delimit);
 
@@ -169,14 +159,12 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Converts the name returned by the database to an identifier of the
      * specified type.
      * @param name
-     * @return
      */
     public DBIdentifier fromDBName(String name, DBIdentifierType id);
 
     /**
      * Appends multiple columns names together into comma delimited string.
      * @param columns
-     * @return
      */
     public String appendColumns(Column[] columns);
 
@@ -184,7 +172,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Converts the name of the specified delimiter to the appropriate
      * case as defined by the configuration.
      * @param columns
-     * @return
      */
     public DBIdentifier convertSchemaCase(DBIdentifier schema);
 
@@ -192,7 +179,6 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Appends multiple names together using the appropriate name delimiter.
      * @param resultId
      * @param names
-     * @return
      */
     public DBIdentifier append(DBIdentifierType resultId, DBIdentifier...names);
 
@@ -200,14 +186,12 @@ public interface DBIdentifierUtil extends IdentifierUtil {
      * Returns a generated key sequence identifier for the column.
      * @param col
      * @param maxLen
-     * @return
      */
     public DBIdentifier getGeneratedKeySequenceName(Column col, int maxLen);
 
     /**
      * Converts a provided alias to a format specified in the configuration.
      * @param alias
-     * @return
      */
     public String convertAlias(String alias);
 }

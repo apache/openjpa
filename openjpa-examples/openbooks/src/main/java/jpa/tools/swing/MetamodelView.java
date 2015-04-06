@@ -126,7 +126,6 @@ public class MetamodelView extends JPanel implements Maze {
      * Gets the position of the attribute in the entity view relative to this panel. 
      * @param a
      * @param attr
-     * @return
      */
     Point getConnectLocation(EntityTypeView<?> a, Attribute<?,?> attr) {
         Point p1 = a.getLocation();

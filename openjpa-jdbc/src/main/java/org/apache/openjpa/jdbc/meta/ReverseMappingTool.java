@@ -2209,7 +2209,6 @@ public class ReverseMappingTool
         /**
          * Add the list of imports for any inner app id classes
          *
-         * @return
          */
         public Set getImportPackages() {
             Set pkgs = super.getImportPackages();

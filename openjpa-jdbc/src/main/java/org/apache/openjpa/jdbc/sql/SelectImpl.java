@@ -3376,7 +3376,6 @@ interface PathJoins
 
     /**
      * The select owner of this join
-     * @return
      */
     public Select getSelect();
     

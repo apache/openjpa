@@ -39,7 +39,6 @@ public class TradeScenario {
      *     login, home, account, update, home, portfolio, sell, buy, home, portfolio, sell, buy, home, account, logout
      *     
      * @param userID
-     * @return
      */
     public boolean performUserTasks(String userID) {
         StringBuilder sb = new StringBuilder(16384);

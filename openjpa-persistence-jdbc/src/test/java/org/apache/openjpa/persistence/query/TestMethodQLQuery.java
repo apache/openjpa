@@ -94,7 +94,6 @@ public class TestMethodQLQuery
     
     /**
      * Returns the list whose element is the Map of input parameters.
-     * @return
      */
     public static ResultObjectProvider echo(StoreContext ctx,
         ClassMetaData meta, boolean subs, Map params, FetchConfiguration conf) {

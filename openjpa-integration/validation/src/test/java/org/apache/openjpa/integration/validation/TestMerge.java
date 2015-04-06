@@ -218,7 +218,6 @@ public class TestMerge extends AbstractPersistenceTestCase {
     /**
      * Internal convenience method for getting the OpenJPA logger
      * 
-     * @return
      */
     private Log getLog() {
         return emf.getConfiguration().getLog("Tests");

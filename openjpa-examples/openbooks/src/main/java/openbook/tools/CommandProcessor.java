@@ -323,8 +323,6 @@ public class CommandProcessor {
         
         /**
          * Affirms if the given name any of the aliases.
-         * @param alias
-         * @return
          */
         public boolean match(String name) {
             for (String alias : aliases) {

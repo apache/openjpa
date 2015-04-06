@@ -243,7 +243,6 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Safely close the given EM
      * 
      * @param em
-     * @return
      */
     protected boolean closeEM(EntityManager em) {
         if (em == null || !em.isOpen()) {

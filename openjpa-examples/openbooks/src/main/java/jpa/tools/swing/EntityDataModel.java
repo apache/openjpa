@@ -195,9 +195,6 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
 
     /**
      * Gets the value by reflection.
-     * @param o
-     * @param p
-     * @return
      */
     Object getValueByReflection(int rowIndex, Object o, int columnIndex, Method m) {
         if (o == null) {

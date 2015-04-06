@@ -69,7 +69,6 @@ public class JMXProvider
 
     /**
      * Returns the mbean server
-     * @return
      */
     public Set<MBeanServer> getMBeanServer() {
         if (_mbs == null) {

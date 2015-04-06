@@ -729,7 +729,6 @@ public interface Select
     /**
      * Return the flag to indicate whether this Select has
      * internally generated subselect
-     * @return
      */
     public boolean getHasSubselect();
    

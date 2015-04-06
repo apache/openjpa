@@ -129,7 +129,6 @@ public interface MetaDataDefaults
     
     /**
      * Whether cascade-persist was declared in the persistence unit defaults.
-     * @return
      */
     public Boolean isDefaultCascadePersistEnabled();
     

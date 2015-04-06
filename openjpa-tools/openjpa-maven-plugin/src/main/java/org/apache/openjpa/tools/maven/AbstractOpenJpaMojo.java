@@ -293,7 +293,6 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      *
      *
      * @param loader
-     * @return
      * @throws MojoExecutionException
      */
     private boolean fixPersistenceXmlIfNeeded(final ClassLoader loader) throws MojoExecutionException

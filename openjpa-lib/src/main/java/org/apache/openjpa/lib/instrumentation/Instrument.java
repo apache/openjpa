@@ -82,7 +82,6 @@ public interface Instrument {
 
     /**
      * Returns true if the instrument is started.
-     * @return
      */
     public boolean isStarted();
 

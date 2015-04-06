@@ -275,7 +275,6 @@ public class JESTContext implements JPAServletContext {
     /**
      * Is this path a context root?
      * @param path
-     * @return
      */
     boolean isContextRoot(String path) {
         return (path == null || CONTEXT_ROOT.equals(path));

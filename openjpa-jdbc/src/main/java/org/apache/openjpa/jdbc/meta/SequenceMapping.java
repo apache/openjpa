@@ -269,7 +269,6 @@ public class SequenceMapping
 
     /**
      * @deprecated
-     * @return
      */
     public String getUniqueConstraintName() {
         return getUniqueConstraintIdentifier().getName();

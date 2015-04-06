@@ -58,7 +58,6 @@ public class GBRAddress
     /**
      * Gets the value of the county property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     
@@ -82,7 +81,6 @@ public class GBRAddress
     /**
      * Gets the value of the postcode property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     

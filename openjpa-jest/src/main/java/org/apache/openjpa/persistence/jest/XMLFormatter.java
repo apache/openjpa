@@ -453,7 +453,6 @@ public class XMLFormatter implements ObjectFormatter<Document> {
      * to be included in CDATA section of a XML document.
      * 
      * @param value the field value to be converted. Can not be null 
-     * @return
      */
     private String streamToString(Object value) {
         Reader reader = null;

@@ -94,7 +94,6 @@ public interface Joins {
 
     /**
      * Return correlated variable name
-     * @return
      */
     public String getCorrelatedVariable();
 

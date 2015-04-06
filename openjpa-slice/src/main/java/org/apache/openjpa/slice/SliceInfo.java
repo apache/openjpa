@@ -83,7 +83,6 @@ public class SliceInfo implements Serializable {
 
     /**
      * Affirms if this receiver designates replicated instances.
-     * @return
      */
 	public boolean isReplicated() {
 		return _isReplicated;

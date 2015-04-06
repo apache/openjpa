@@ -44,7 +44,6 @@ public class Normalizer {
     /**
      * Normalizes a multi-part name
      * @param name
-     * @return
      */
     public static String normalizeMulti(String name) {
         if (StringUtils.isEmpty(name)) {
@@ -57,7 +56,6 @@ public class Normalizer {
     /**
      * Normalizes a single part name
      * @param name
-     * @return
      */
     public static String normalizeString(String name) {
         if (StringUtils.isEmpty(name)) {
@@ -73,7 +71,6 @@ public class Normalizer {
     /**
      * Returns true if the name is delimited with default delimiters
      * @param name
-     * @return
      */
     public static boolean isDelimited(String name) {
         if (StringUtils.isEmpty(name)) {
@@ -87,7 +84,6 @@ public class Normalizer {
      * for equality
      * @param name1
      * @param name2
-     * @return
      */
     public static boolean fullNamesEqual(String name1, String name2) {
         if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
@@ -120,7 +116,6 @@ public class Normalizer {
      * comparison.
      * @param name1
      * @param name2
-     * @return
      */
     public static boolean namesEqual(String name1, String name2) {
         if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
@@ -141,7 +136,6 @@ public class Normalizer {
     /**
      * Normalizes a name, if not delimited, converts to uppercase.
      * @param name
-     * @return
      */
     public static String normalizeUpper(String name) {
         String nName = normalizeString(name);
@@ -156,7 +150,6 @@ public class Normalizer {
     /**
      * Splits a name into normalized components
      * @param name
-     * @return
      */
     public static String[] splitName(String name) {
         return normalizer.splitName(defaultRule, name);
@@ -167,7 +160,6 @@ public class Normalizer {
      * Splits a name into normalized components using the specified
      * name delimiter (ex. schema:table, delim = : --> { schema, table }
      * @param name
-     * @return
      */
     public static String[] splitName(String name, String delim) {
         return normalizer.splitName(defaultRule, name, delim);
@@ -176,7 +168,6 @@ public class Normalizer {
     /**
      * Joins multiple names using default identifier rules.
      * @param names
-     * @return
      */
     public static String joinNames(String[] names) {
         return normalizer.joinNames(defaultRule, names);
@@ -185,7 +176,6 @@ public class Normalizer {
     /**
      * Joins multiple names using the specified delimiter.
      * @param names
-     * @return
      */
     public static String joinNames(String[] names, String delimiter) {
         return normalizer.joinNames(defaultRule, names, delimiter);
@@ -194,7 +184,6 @@ public class Normalizer {
     /**
      * Joins two names using the default identifier rules.
      * @param names
-     * @return
      */
     public static String joinNames(String name1, String name2) {
         return joinNames(new String[] { name1, name2});
@@ -206,7 +195,6 @@ public class Normalizer {
      * delimiters.
      * @param name
      * @param length
-     * @return
      */
     public static String truncate(String name, int length) {
         return normalizer.truncateName(defaultRule, name, length);
@@ -219,7 +207,6 @@ public class Normalizer {
      * @param config
      * @param rule
      * @param name
-     * @return
      */
     public static String convert(IdentifierConfiguration config, String rule, String name) {
         return normalizer.convert(config, rule, name);
@@ -229,7 +216,6 @@ public class Normalizer {
      * Combines two names using default identifier rules.
      * @param name1
      * @param name2
-     * @return
      */
     public static String combine(String name1, String name2) {
         return normalizer.combineNames(defaultRule, name1, name2);
@@ -239,7 +225,6 @@ public class Normalizer {
      * Combines multiple names using default identifier rules.
      * @param name1
      * @param name2
-     * @return
      */
     public static String combine(String...names) {
         return normalizer.combineNames(defaultRule, names);
@@ -250,7 +235,6 @@ public class Normalizer {
      * Appends one string to another using default identifier rules.
      * @param name1
      * @param name2
-     * @return
      */
     public static String append(String name1, String name2) {
         return normalizer.appendNames(defaultRule, name1, name2);
@@ -260,7 +244,6 @@ public class Normalizer {
      * Removes Hungarian notation from a string.
      * @param name1
      * @param name2
-     * @return
      */
     public static String removeHungarianNotation(String name) {
         return normalizer.removeHungarianNotation(defaultRule, name);
@@ -270,7 +253,6 @@ public class Normalizer {
      * Removes default delimiters from a string.
      * @param name1
      * @param name2
-     * @return
      */
     public static String removeDelimiters(String name) {
         return normalizer.removeDelimiters(defaultRule, name);
@@ -281,7 +263,6 @@ public class Normalizer {
      * delimited.
      * @param name1
      * @param name2
-     * @return
      */
     public static String delimit(String name, boolean force) {
         return normalizer.delimit(defaultRule, name, force);
@@ -291,7 +272,6 @@ public class Normalizer {
      * Determines whether a name can be split into multiple components.
      * @param name1
      * @param name2
-     * @return
      */
     public static boolean canSplit(String name) {
         return normalizer.canSplit(defaultRule, name);
@@ -302,7 +282,6 @@ public class Normalizer {
      * into account the specified delimiter.
      * @param name1
      * @param name2
-     * @return
      */
     public static boolean canSplit(String name, String delim) {
         return normalizer.canSplit(defaultRule, name, delim);

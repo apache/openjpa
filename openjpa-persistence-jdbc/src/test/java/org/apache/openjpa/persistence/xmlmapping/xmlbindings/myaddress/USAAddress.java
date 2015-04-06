@@ -57,7 +57,6 @@ public class USAAddress
     /**
      * Gets the value of the state property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     

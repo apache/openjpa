@@ -373,7 +373,6 @@ public class TestDataCacheBehavesIdentical extends AbstractTestCase {
      * @param useDataCache
      * @param lock
      * @param makeDirtyBeforeRefresh
-     * @return
      */
     String getExpectedMarker(boolean useDataCache, LockModeType lock, 
             boolean makeDirtyBeforeRefresh) {

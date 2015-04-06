@@ -93,7 +93,6 @@ public class SchemaGroup
     /**
      * @deprecated
      * @param name
-     * @return
      */
     public Schema addSchema(String name) {
         return addSchema(DBIdentifier.newSchema(name));

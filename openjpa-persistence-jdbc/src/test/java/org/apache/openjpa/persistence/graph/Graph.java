@@ -95,7 +95,6 @@ public interface Graph<E> extends Set<E> {
      * Gets all the relations originating from the given source.
      * @param <V>
      * @param source
-     * @return
      */
     public <V extends E> Set<Relation<V,E>> getRelationsFrom(V source);
     
@@ -103,7 +102,6 @@ public interface Graph<E> extends Set<E> {
      * Gets all the relations terminating on the given target.
      * @param <V>
      * @param target
-     * @return
      */
     public <V extends E> Set<Relation<E,V>> getRelationsTo(V target);
 }

@@ -2686,7 +2686,6 @@ public class ClassMetaData
      * method is used by the PCEnhancer to determine if special handling is
      * required.
      *
-     * @return
      */
     public boolean hasAbstractPKField() {
         if (_hasAbstractPKField != null) {
@@ -2722,7 +2721,6 @@ public class ClassMetaData
      * between the type represented by this ClassMetaData object and the
      * abstract pcType declaring PKFields.
      *
-     * @return
      */
     public boolean hasPKFieldsFromAbstractClass() {
         if (_hasPKFieldsFromAbstractClass != null) {

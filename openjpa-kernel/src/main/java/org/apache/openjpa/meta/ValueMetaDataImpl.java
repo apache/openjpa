@@ -249,7 +249,6 @@ public class ValueMetaDataImpl
     /**
      * Check if the persistence unit default <cascade-persist> has been enabled.  If so, then change
      * CASCADE_NONE to CASCADE_IMMEDIATE.
-     * @return
      */
     private int checkPUDefaultCascadePersist() {
         if (_checkPUDefaultCascadePersist) {

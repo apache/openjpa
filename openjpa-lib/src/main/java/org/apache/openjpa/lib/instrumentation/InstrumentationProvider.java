@@ -66,7 +66,6 @@ public interface InstrumentationProvider {
     /**
      * Returns the string-based list of instruments directly configured by
      * this provider via setInstrument.
-     * @return
      */
     public String getInstrument();
  

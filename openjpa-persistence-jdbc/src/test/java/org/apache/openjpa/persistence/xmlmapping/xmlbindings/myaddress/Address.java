@@ -65,7 +65,6 @@ public class Address {
     /**
      * Gets the value of the name property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     
@@ -126,7 +125,6 @@ public class Address {
     /**
      * Gets the value of the city property.
      * 
-     * @return
      *     possible object is
      *     {@link String }
      *     

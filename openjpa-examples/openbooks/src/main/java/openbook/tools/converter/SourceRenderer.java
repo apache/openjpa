@@ -137,7 +137,6 @@ public abstract class SourceRenderer {
      * 
      * @param srcDir the root source directory.
      * @param path the path to input file.
-     * @return
      */
     protected InputStream getInputStream(File srcDir, String path) {
         File file = new File(srcDir, path); 
@@ -156,7 +155,6 @@ public abstract class SourceRenderer {
     /**
      * Gets the output stream to write to.
      * @param file
-     * @return
      */
     private FileOutputStream createOutput(File file)  {
         try {

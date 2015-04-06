@@ -83,7 +83,6 @@ public class JSONObject implements JSON {
      * @param field
      * @param value
      * @param indent
-     * @return
      */
     private static StringBuilder encodeField(String field, Object value, int indent) {
         return new StringBuilder()
@@ -114,7 +113,6 @@ public class JSONObject implements JSON {
      * If the value is JSON, outputs the string rendition of value
      * Otherwise quoted value
      * @param o
-     * @return
      */
     private static StringBuilder quoteFieldValue(Object o, int indent) {
         if (o == null) return new StringBuilder(NULL_LITERAL);

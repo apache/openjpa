@@ -88,7 +88,6 @@ public interface QueryCacheInstrument {
     
     /**
      * Returns all the string-ified keys for query results in the cache.
-     * @return
      */
     public Set<String> queryKeys();
 

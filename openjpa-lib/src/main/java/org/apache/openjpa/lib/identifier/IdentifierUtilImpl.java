@@ -187,7 +187,6 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      * Join names using a single naming rule and specified delimiter
      * @param rule
      * @param names
-     * @return
      */
     public String joinNames(IdentifierConfiguration config, IdentifierRule rule, String[] names, String delimiter) {
         
@@ -250,7 +249,6 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      * Gets the first part of a name when single character delimiters are
      * in use.
      * @param pname
-     * @return
      */
     private String splitNameCharDelimiters(String name, String nameDelim) {
         StringBuilder sname = new StringBuilder("");
@@ -284,7 +282,6 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
 
     /**
      * Returns whether a name is double quoted
-     * @return
      */
     public static boolean isDoubleQuoted(String name) {
         if (name == null || name.length() < 3) {

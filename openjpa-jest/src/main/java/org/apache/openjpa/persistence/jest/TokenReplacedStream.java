@@ -105,7 +105,6 @@ public class TokenReplacedStream {
     /**
      * Gets the pattern if any in matched state
      * @param patterns
-     * @return
      */
     Pattern matched(Pattern...patterns) {
         if (patterns == null)

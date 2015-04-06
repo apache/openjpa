@@ -1464,7 +1464,6 @@ public class XMLPersistenceMetaDataParser
      *
      * @param field FieldMetaData current metadata for field
      * @param attrs XML Attributes defined on this field
-     * @return
      */
     private int getFieldAccess(FieldMetaData field, Attributes attrs) {
         if (attrs != null) {

@@ -66,7 +66,6 @@ public class Customer implements Serializable {
     
     /**
      * Create a {@link ShoppingCart} for this customer.
-     * @return
      */
     public ShoppingCart newCart() {
         return new ShoppingCart(this);

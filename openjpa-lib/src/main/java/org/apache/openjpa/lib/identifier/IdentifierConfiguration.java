@@ -65,7 +65,6 @@ public interface IdentifierConfiguration {
     
     /**
      * Returns all naming rules 
-     * @return
      */
     public <T> Map<T, IdentifierRule> getIdentifierRules();
     
@@ -92,7 +91,6 @@ public interface IdentifierConfiguration {
      * should take place.  Id configurations should create a key unique
      * to their configuration.  The typical key is:
      * leading delimiter (") + name separator(.) + trailing delimiter(")
-     * @return
      */
     public String getConversionKey();
 }

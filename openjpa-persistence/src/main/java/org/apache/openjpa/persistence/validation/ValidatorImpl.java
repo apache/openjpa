@@ -208,7 +208,6 @@ public class ValidatorImpl extends AbstractValidator {
      * Converts a comma separated list of validation groups into an array
      * of classes.
      * @param group
-     * @return
      */
     private Class<?>[] getValidationGroup(String vgName, String group) {
         Class<?>[] vgGrp = null;

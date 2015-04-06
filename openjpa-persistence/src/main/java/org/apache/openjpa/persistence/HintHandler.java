@@ -186,7 +186,6 @@ public class HintHandler  {
     /**
      * Affirms if the given key starts with any of the known prefix.
      * @param key
-     * @return
      */
     protected boolean isKnownPrefix(String key) {
         if (key == null)

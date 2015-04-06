@@ -55,7 +55,6 @@ public interface OpenBookService {
      * @param max maximum price
      * @param author name of author
      * @param decorators to modify the executable query such as its range.
-     * @return
      */
     public List<Book> select(String title, 
             Double min, Double max, 
@@ -71,7 +70,6 @@ public interface OpenBookService {
      * @param max maximum price
      * @param author name of author
      * @param decorators to modify the executable query such as its range.
-     * @return
      */
     public String getQuery(String title, 
             Double min, Double max, 
@@ -163,21 +161,18 @@ public interface OpenBookService {
     /**
      * Gets the underlying persistence unit.
      * 
-     * @return
      */
     public EntityManagerFactory getUnit();
     
     /**
      * Gets the name of the underlying persistence unit.
      * 
-     * @return
      */
     public String getUnitName();
     
     /**
      * Affirms if the transaction on this persistence unit is managed by a container.
      * 
-     * @return
      */
     public boolean isManaged();
     

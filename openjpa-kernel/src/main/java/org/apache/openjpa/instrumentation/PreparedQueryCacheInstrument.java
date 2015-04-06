@@ -82,7 +82,6 @@ public interface PreparedQueryCacheInstrument {
     
     /**
      * Returns all queries currently tracked in the cache.
-     * @return
      */
     public Set<String> queries();
 }
