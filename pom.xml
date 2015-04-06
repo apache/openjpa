@@ -292,6 +292,36 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${maven.javadoc.version}</version>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <additionalparam>
+                                ${javadoc.additionalparam}
+                            </additionalparam>
+                            <subpackages>org.apache.openjpa</subpackages>
+                            <verbose>false</verbose>
+                            <maxmemory>1024m</maxmemory>
+                            <links>
+                                <link>http://download.oracle.com/javase/6/docs/api/</link>
+                                <link>http://download.oracle.com/javaee/6/api/</link>
+                                <link>http://commons.apache.org/collections/api-release/</link>
+                            </links>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>aggregate-jar</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -734,14 +764,13 @@
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>2.1</version>
                 </plugin>
-                <!-- inherited from apache-7.pom, but need config updates -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>2.4.2</version>
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
-                        <goals>deploy javadoc:aggregate site site-deploy</goals>
+                        <goals>deploy</goals>
                         <arguments>-Papache-release,docbook-profile,test-derby,bval</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                     </configuration>
@@ -858,25 +887,6 @@
                     <version>${project.version}</version>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9.1</version>
-                    <configuration>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                                <additionalparam>
-                                    ${javadoc.additionalparam}
-                                </additionalparam>
-                                <subpackages>org.apache.openjpa</subpackages>
-                                <verbose>false</verbose>
-                                <maxmemory>512m</maxmemory>
-                                <links>
-                                    <link>http://download.oracle.com/javase/6/docs/api/</link>
-                                    <link>http://download.oracle.com/javaee/6/api/</link>
-                                    <link>http://commons.apache.org/collections/api-release/</link>
-                                </links>
-                            </configuration>
-                </plugin>
                 <!-- Newer versions of plugin will cause PDF build failures -->
                 <plugin>
                     <groupId>com.agilejava.docbkx</groupId>
@@ -1143,7 +1153,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>2.8</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
