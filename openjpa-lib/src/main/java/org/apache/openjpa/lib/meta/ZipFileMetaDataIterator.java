@@ -37,7 +37,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * Iterator over all metadata resources in a given zip file.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ZipFileMetaDataIterator
     implements MetaDataIterator, MetaDataFilter.Resource {

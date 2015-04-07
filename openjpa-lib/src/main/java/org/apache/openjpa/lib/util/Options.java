@@ -49,7 +49,6 @@ import serp.util.Strings;
  * properties of classes reachable from the class, through the command line.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class Options extends TypedProperties {

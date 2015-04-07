@@ -30,7 +30,6 @@ import org.apache.commons.collections.set.MapBackedSet;
  * Base class that provides utilities to change trackers.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class AbstractChangeTracker
     implements ChangeTracker {

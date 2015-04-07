@@ -31,7 +31,6 @@ import org.apache.openjpa.util.MetaDataException;
  * Class mapping for embedded objects.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class EmbeddedClassStrategy
     extends AbstractClassStrategy {

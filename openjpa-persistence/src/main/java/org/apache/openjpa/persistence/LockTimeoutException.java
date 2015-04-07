@@ -33,7 +33,6 @@ import org.apache.openjpa.util.StoreException;
  * Pessimistic lock timeout violation.
  *
  * @since 2.0.0
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class LockTimeoutException

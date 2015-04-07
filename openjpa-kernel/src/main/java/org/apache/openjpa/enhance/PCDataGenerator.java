@@ -54,7 +54,6 @@ import serp.bytecode.LookupSwitchInstruction;
  * startup time.
  *
  * @author Steve Kim
- * @nojavadoc
  * @since 0.3.2
  */
 public class PCDataGenerator

@@ -31,7 +31,6 @@ import serp.bytecode.lowlevel.ConstantPoolTable;
  * the parent ClassLoader.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class TemporaryClassLoader extends ClassLoader {
 

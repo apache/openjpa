@@ -36,7 +36,6 @@ import org.apache.openjpa.util.StoreException;
 /**
  * Handler for char array values.
  *
- * @nojavadoc
  */
 public class CharArrayStreamValueHandler
     extends AbstractValueHandler {

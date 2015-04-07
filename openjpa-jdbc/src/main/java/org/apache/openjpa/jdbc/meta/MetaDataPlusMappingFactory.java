@@ -36,7 +36,6 @@ import org.apache.openjpa.meta.SequenceMetaData;
  * metadata, one for mappings -- into a single {@link MetaDataFactory} facade.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MetaDataPlusMappingFactory
     extends DelegatingMetaDataFactory {

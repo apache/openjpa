@@ -33,7 +33,6 @@ import serp.util.Strings;
  * Iterator over directories in the classpath.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
 

@@ -49,7 +49,6 @@ import java.util.TreeSet;
  * are returned.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class Services {
 

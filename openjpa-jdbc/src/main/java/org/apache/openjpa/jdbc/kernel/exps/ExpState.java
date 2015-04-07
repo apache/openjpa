@@ -24,7 +24,6 @@ import org.apache.openjpa.jdbc.sql.Joins;
  * Expression tree state.
  * 
  * @author Abe White
- * @nojavadoc
  */
 public class ExpState {
 

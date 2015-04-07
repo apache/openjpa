@@ -56,7 +56,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * they were parsed from. Serializers are not thread safe.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class XMLMetaDataSerializer implements MetaDataSerializer {
 

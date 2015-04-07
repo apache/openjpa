@@ -75,7 +75,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Marc Prud'hommeaux
  * @author Patrick Linskey
- * @nojavadoc
  */
 public class JPQLExpressionBuilder
     extends AbstractExpressionBuilder
@@ -2378,8 +2377,7 @@ public class JPQLExpressionBuilder
 
     /**
      * Public for unit testing purposes.
-     * @nojavadoc
-     */
+         */
     @SuppressWarnings("serial")
     public static class ParsedJPQL
         implements Serializable {

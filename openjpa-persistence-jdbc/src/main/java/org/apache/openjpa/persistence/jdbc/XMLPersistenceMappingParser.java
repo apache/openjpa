@@ -75,7 +75,6 @@ import static org.apache.openjpa.persistence.jdbc.MappingTag.*;
  * Custom SAX parser used by the system to parse persistence mapping files.
  *
  * @author Steve Kim
- * @nojavadoc
  */
 public class XMLPersistenceMappingParser
     extends XMLPersistenceMetaDataParser {

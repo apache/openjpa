@@ -28,7 +28,6 @@ import java.util.Map;
  * maximum size.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class LRUMap extends org.apache.commons.collections.map.LRUMap
     implements SizedMap {

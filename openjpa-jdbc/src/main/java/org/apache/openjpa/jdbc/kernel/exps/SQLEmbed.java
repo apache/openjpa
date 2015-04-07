@@ -32,7 +32,6 @@ import org.apache.openjpa.util.UserException;
  *  Example:<br />
  * <code>"price &lt; sql(\"(SELECT AVG (PRICE) FROM PRODUCT_TABLE)\")"</code>
  *
- * @nojavadoc
  */
 public class SQLEmbed
     implements JDBCFilterListener {

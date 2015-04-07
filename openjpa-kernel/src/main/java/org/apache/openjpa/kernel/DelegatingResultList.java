@@ -33,7 +33,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  *
  * @since 0.4.0
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class DelegatingResultList<T>
     implements ResultList<T> {

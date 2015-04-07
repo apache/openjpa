@@ -25,7 +25,6 @@ import org.apache.openjpa.lib.util.Localizer;
 
 /**
  * @author Stephen Kim
- * @nojavadoc
  */
 public class Location {
 

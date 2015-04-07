@@ -24,7 +24,6 @@ import java.io.Serializable;
  * Installs mapping strategies.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public abstract class StrategyInstaller 

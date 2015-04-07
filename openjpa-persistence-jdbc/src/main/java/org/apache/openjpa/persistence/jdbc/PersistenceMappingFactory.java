@@ -32,7 +32,6 @@ import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class PersistenceMappingFactory
     extends PersistenceMetaDataFactory {

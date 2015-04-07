@@ -32,7 +32,6 @@ import org.apache.openjpa.util.UserException;
  *  Examples:<br />
  * <code>"address.street.ext:wildcardMatch (\"?ain*reet\")"</code>
  *
- * @nojavadoc
  * @deprecated Use <code>matches()</code> instead.
  */
 public class JDBCWildcardMatch

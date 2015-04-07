@@ -52,7 +52,6 @@ import org.apache.openjpa.util.InternalException;
  * <code>parallel</code> mode batch selects for each page it reads.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class PagingResultObjectProvider
     extends SelectResultObjectProvider {

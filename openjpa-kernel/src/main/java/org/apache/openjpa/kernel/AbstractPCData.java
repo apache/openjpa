@@ -41,7 +41,6 @@ import org.apache.openjpa.util.Proxy;
  *
  * @author Patrick Linskey
  * @author Abe White
- * @nojavadoc
  */
 public abstract class AbstractPCData
     implements PCData {

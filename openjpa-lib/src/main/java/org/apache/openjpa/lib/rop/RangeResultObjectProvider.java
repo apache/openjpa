@@ -27,7 +27,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * result object provider.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class RangeResultObjectProvider implements ResultObjectProvider {
 

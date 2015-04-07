@@ -36,7 +36,6 @@ import org.apache.openjpa.util.UserException;
  * "this.ext:getColumn (\"CLS\") == \"org.apache.openjpa.example.Person\""
  * </code>
  *
- * @nojavadoc
  */
 public class GetColumn
     implements JDBCFilterListener {

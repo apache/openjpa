@@ -24,7 +24,6 @@ package org.apache.openjpa.lib.graph;
  *
  * @author Steve Kim
  * @since 1.0.0
- * @nojavadoc
  */
 public interface GraphVisitor {
 

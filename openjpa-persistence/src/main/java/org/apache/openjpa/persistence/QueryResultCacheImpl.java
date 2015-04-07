@@ -31,7 +31,6 @@ import org.apache.openjpa.datacache.TypesChangedEvent;
  *
  * @author Abe White
  * @since 0.4.1
- * @nojavadoc
  */
 public class QueryResultCacheImpl
 	implements QueryResultCache {

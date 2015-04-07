@@ -29,7 +29,6 @@ import java.util.NoSuchElementException;
  * Metadata iterator that combines several iterators.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MetaDataIteratorChain implements MetaDataIterator {
 

@@ -22,7 +22,6 @@ package org.apache.openjpa.lib.util;
  * Base 16 encoder.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class Base16Encoder {
 

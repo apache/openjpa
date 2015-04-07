@@ -74,7 +74,6 @@ import serp.util.Strings;
  * Implementation of the {@link Query} interface.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class QueryImpl
@@ -1866,8 +1865,7 @@ public class QueryImpl
      * </ul>
      *
      * @author Marc Prud'hommeaux
-     * @nojavadoc
-     */
+         */
     private static class MergedExecutor
         implements StoreQuery.Executor {
 

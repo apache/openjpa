@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * other than the space within text blocks.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class XMLWriter extends FilterWriter {
 

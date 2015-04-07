@@ -35,7 +35,6 @@ import org.apache.openjpa.kernel.TimeSeededSeq;
  * other components for creation of sequences without manual alias setting.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class JDBCSeqValue
     extends SeqValue {

@@ -46,7 +46,6 @@ import org.apache.openjpa.meta.ValueStrategies;
  * Utility class for manipulating application object ids.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ApplicationIds {
 

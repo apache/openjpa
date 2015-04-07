@@ -47,7 +47,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  * @author Patrick Linskey
- * @nojavadoc
  */
 public class ResultPacker {
 

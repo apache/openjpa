@@ -31,7 +31,6 @@ import org.apache.openjpa.jdbc.sql.Select;
  * Discriminator strategy that delegates to superclass discriminator.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SuperclassDiscriminatorStrategy
     extends AbstractDiscriminatorStrategy {

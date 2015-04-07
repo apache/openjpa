@@ -30,7 +30,6 @@ import java.security.AccessController;
  * @author Abe White
  * @author Pinaki Poddar
  * 
- * @nojavadoc
  */
 public class JavaVersions {
 

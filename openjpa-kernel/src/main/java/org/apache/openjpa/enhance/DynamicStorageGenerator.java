@@ -42,7 +42,6 @@ import serp.bytecode.TableSwitchInstruction;
  * extended to decorate/modify the generated instances behavior.
  *
  * @author Steve Kim
- * @nojavadoc
  * @since 0.3.2.0
  */
 public class DynamicStorageGenerator {

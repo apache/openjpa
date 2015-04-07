@@ -26,7 +26,6 @@ import org.apache.openjpa.jdbc.meta.ClassMapping;
  * Expression tree context.
  * 
  * @author Abe White
- * @nojavadoc
  */
 public class ExpContext {
 

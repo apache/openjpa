@@ -24,7 +24,6 @@ import java.util.Collection;
 /**
  * A collection change tracker used by delay loaded collections.
  *
- * @nojavadoc
  */
 public class DelayedCollectionChangeTrackerImpl
     extends CollectionChangeTrackerImpl {

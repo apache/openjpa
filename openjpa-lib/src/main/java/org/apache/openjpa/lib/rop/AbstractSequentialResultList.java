@@ -32,7 +32,6 @@ import org.apache.commons.lang.ObjectUtils;
  * {@link Collection#size} method.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class AbstractSequentialResultList extends AbstractResultList {
 

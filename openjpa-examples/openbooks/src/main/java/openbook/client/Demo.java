@@ -119,8 +119,6 @@ public class Demo extends JFrame {
     
     /**
      * Runs the demo.
-     * @param args
-     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         SwingHelper.setLookAndFeel(14);

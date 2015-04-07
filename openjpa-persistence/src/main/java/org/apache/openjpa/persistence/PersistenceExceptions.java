@@ -39,7 +39,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class PersistenceExceptions
     extends Exceptions {

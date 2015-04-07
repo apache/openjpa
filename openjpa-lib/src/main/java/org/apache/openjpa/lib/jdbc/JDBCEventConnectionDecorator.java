@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
  * Manages the firing of {@link JDBCEvent}s.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class JDBCEventConnectionDecorator extends AbstractConcurrentEventManager

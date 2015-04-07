@@ -31,7 +31,6 @@ import org.apache.openjpa.util.StoreException;
  * Abstract provider implementation wrapped around a {@link Select}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class SelectResultObjectProvider
     implements ResultObjectProvider {

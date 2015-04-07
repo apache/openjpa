@@ -93,7 +93,6 @@ import org.apache.openjpa.util.UserException;
  *  Schema parsers are not threadsafe.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class XMLSchemaParser
     extends XMLMetaDataParser

@@ -25,7 +25,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
  * <code> "price &lt; ext:sqlVal (\"(SELECT AVG (PRICE) FROM PRODUCT_TABLE)\")"
  * </code>
  *
- * @nojavadoc
  * @deprecated Use {@link SQLEmbed} directly
  */
 public class SQLValue

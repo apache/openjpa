@@ -26,7 +26,6 @@ import java.sql.Statement;
  * the {@link Statement} SQL that caused the exception.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class ReportingSQLException extends SQLException {

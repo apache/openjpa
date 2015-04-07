@@ -45,7 +45,6 @@ import org.apache.openjpa.util.UserException;
  * A query that is executed by a user-defined method.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MethodStoreQuery
     extends AbstractStoreQuery {

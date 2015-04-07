@@ -27,7 +27,6 @@ import java.lang.ref.Reference;
  * Map in which the key, value, or both may be weak/soft references.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class ReferenceHashMap

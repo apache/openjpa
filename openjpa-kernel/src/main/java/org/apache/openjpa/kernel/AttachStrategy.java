@@ -41,7 +41,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Marc Prud'hommeaux
  * @author Steve Kim
- * @nojavadoc
  */
 abstract class AttachStrategy
     extends TransferFieldManager {

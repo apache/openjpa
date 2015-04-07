@@ -26,7 +26,6 @@ import org.apache.openjpa.util.UserException;
  * Default {@link ValueMetaData} implementation.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ValueMetaDataImpl
     implements ValueMetaData {

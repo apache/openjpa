@@ -32,7 +32,6 @@ import org.apache.openjpa.util.StoreException;
  * the appropriate OpenJPA type.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class SQLExceptions {
 

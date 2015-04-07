@@ -31,7 +31,6 @@ import org.apache.openjpa.util.UserException;
  *  Examples:<br />
  * <code>"address.street.ext:stringContains (\"main\")"</code>
  *
- * @nojavadoc
  * @deprecated Use <code>matches()</code> instead.
  */
 public class JDBCStringContains

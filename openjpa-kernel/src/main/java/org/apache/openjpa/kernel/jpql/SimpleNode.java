@@ -23,7 +23,6 @@ package org.apache.openjpa.kernel.jpql;
  * generated as part of the JavaCC process.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class SimpleNode
     extends JPQLExpressionBuilder.JPQLNode {

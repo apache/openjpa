@@ -55,7 +55,6 @@ import org.apache.openjpa.util.ClassResolver;
  * Implementation of the {@link PersistenceUnitInfo} interface used by OpenJPA 
  * when parsing persistence configuration information.
  *
- * @nojavadoc
  */
 public class PersistenceUnitInfoImpl
     implements PersistenceUnitInfo, SourceTracker {

@@ -41,7 +41,6 @@ import org.apache.openjpa.util.OptimisticException;
 /**
  * Handles attaching instances using version and primary key fields.
  *
- * @nojavadoc
  * @author Steve Kim
  */
 class VersionAttachStrategy

@@ -54,7 +54,6 @@ import org.apache.openjpa.util.UserException;
  * to setup prepared statement caching.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DataSourceFactory {
 

@@ -55,7 +55,6 @@ import serp.util.Strings;
  * are not added to the returned classes list.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ClassArgParser {
 

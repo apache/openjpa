@@ -88,7 +88,6 @@ import org.apache.openjpa.lib.util.StringDistance;
  *
  * @since 2.0.0
  * 
- * @nojavadoc
  */
 public class HintHandler  {
   protected final QueryImpl<?> owner;

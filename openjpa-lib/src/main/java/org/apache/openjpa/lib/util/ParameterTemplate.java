@@ -42,7 +42,6 @@ import java.util.Map;
  * the parameter key is used to lookup the corresponding System property.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ParameterTemplate {
 

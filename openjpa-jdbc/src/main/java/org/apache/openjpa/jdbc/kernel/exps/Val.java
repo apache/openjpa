@@ -30,7 +30,6 @@ import org.apache.openjpa.kernel.exps.Value;
  * constants, variables, and object fields.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface Val
     extends Value {

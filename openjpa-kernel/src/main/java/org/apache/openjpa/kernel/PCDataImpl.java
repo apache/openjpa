@@ -29,7 +29,6 @@ import org.apache.openjpa.meta.FieldMetaData;
  *
  * @author Patrick Linskey
  * @author Abe White
- * @nojavadoc
  */
 public class PCDataImpl
     extends AbstractPCData {

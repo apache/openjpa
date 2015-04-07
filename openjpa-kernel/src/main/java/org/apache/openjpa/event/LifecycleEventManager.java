@@ -44,7 +44,6 @@ import org.apache.openjpa.util.InvalidStateException;
  * @author Steve Kim
  * @author Abe White
  * @since 0.3.3
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class LifecycleEventManager

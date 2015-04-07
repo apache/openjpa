@@ -37,7 +37,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
  *
  * @author Abe White
  * @since 0.4.0, 1.1.0
- * @nojavadoc
  */
 public class ElementEmbedValueHandler
     extends EmbedValueHandler

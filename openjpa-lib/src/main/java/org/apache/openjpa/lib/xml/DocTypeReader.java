@@ -44,7 +44,6 @@ import java.io.StringWriter;
  * header and doc type have been read.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DocTypeReader extends Reader {
 

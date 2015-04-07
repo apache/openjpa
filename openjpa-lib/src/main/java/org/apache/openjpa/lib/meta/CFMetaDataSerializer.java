@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
  * Helps serialize metadata objects to package and class elements.
  *
  * @author Abe White
- * @nojavadoc
  * @see CFMetaDataParser
  */
 public abstract class CFMetaDataSerializer extends XMLMetaDataSerializer {

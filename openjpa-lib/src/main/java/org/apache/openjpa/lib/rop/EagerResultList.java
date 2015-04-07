@@ -24,7 +24,6 @@ import java.util.ArrayList;
  * Simple, non-lazy ResultList implementation
  *
  * @author Patrick Linskey
- * @nojavadoc
  */
 public class EagerResultList extends ListResultList implements ResultList {
 

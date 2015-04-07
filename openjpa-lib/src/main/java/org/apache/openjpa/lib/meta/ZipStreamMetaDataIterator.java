@@ -31,7 +31,6 @@ import java.util.zip.ZipInputStream;
  * Iterator over all metadata resources in a given zip input stream.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ZipStreamMetaDataIterator
     implements MetaDataIterator, MetaDataFilter.Resource {

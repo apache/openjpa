@@ -54,7 +54,6 @@ import org.apache.openjpa.util.UserException;
  * Handles detaching instances.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class DetachManager
     implements DetachState {

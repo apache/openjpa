@@ -25,7 +25,6 @@ import java.io.IOException;
  * of a {@link MetaDataIterator}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface MetaDataFilter {
 

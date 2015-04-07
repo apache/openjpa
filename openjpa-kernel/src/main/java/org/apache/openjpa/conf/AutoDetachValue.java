@@ -29,7 +29,6 @@ import org.apache.openjpa.lib.conf.StringListValue;
  * optimize translation of Strings to bit flags.
  *
  * @author Steve Kim
- * @nojavadoc
  */
 class AutoDetachValue
     extends StringListValue {

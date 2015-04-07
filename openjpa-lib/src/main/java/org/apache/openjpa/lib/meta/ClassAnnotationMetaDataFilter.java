@@ -31,7 +31,6 @@ import serp.bytecode.lowlevel.ConstantPoolTable;
  * java.sun.com/docs/books/vmspec/2nd-edition/ClassFileFormat-final-draft.pdf
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ClassAnnotationMetaDataFilter implements MetaDataFilter {
 

@@ -22,7 +22,6 @@ package org.apache.openjpa.kernel.exps;
  * A query parameter.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface Parameter
     extends Value, Constant {

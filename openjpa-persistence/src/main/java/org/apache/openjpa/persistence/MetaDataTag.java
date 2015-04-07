@@ -27,7 +27,6 @@ package org.apache.openjpa.persistence;
  * Set of metadata tags used in JPA.
  *
  * @author Abe White
- * @nojavadoc
  */
 public enum MetaDataTag {
     // sorted by XML order

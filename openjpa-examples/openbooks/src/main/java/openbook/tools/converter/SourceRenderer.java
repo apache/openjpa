@@ -154,7 +154,6 @@ public abstract class SourceRenderer {
     
     /**
      * Gets the output stream to write to.
-     * @param file
      */
     private FileOutputStream createOutput(File file)  {
         try {

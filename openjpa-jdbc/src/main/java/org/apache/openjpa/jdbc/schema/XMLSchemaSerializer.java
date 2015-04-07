@@ -41,7 +41,6 @@ import org.xml.sax.SAXException;
  *  Serializers are not thread safe.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class XMLSchemaSerializer
     extends XMLMetaDataSerializer

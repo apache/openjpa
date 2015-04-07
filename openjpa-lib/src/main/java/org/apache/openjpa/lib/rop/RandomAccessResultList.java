@@ -32,7 +32,6 @@ import java.util.Map;
  *
  * @author Marc Prud'hommeaux
  * @author Abe White
- * @nojavadoc
  */
 public class RandomAccessResultList extends AbstractNonSequentialResultList {
 

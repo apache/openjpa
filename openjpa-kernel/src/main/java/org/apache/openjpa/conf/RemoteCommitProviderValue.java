@@ -32,7 +32,6 @@ import org.apache.openjpa.lib.util.Options;
  * in the remote commit events distributed.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class RemoteCommitProviderValue
     extends PluginValue {

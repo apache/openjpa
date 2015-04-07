@@ -30,7 +30,6 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
  * Helper class to deal with schemas.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class Schemas {
 

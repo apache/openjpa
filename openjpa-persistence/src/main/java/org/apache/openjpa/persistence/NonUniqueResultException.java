@@ -34,7 +34,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class NonUniqueResultException
     extends javax.persistence.NonUniqueResultException

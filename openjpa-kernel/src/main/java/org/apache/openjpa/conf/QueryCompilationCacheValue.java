@@ -33,7 +33,6 @@ import org.apache.openjpa.util.CacheMap;
  *
  * @author Abe White
  * @since 0.9.6 (also existed in prior versions of Kodo)
- * @nojavadoc
  */
 public class QueryCompilationCacheValue
     extends PluginValue {

@@ -94,7 +94,6 @@ import org.xml.sax.SAXException;
  *
  * @author Steve Kim
  * @author Pinaki Poddar
- * @nojavadoc
  */
 public class XMLPersistenceMetaDataParser
     extends CFMetaDataParser

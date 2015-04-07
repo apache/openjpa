@@ -29,7 +29,6 @@ import org.apache.openjpa.meta.JavaTypes;
 /**
  * Handler for char array values.
  *
- * @nojavadoc
  */
 public class CharArrayValueHandler
     extends AbstractValueHandler {

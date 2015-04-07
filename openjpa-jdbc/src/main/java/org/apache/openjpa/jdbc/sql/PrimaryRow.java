@@ -35,7 +35,6 @@ import org.apache.openjpa.util.InvalidStateException;
  * Primary table row that tracks foreign keys and auto-inc columns.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class PrimaryRow
     extends RowImpl {

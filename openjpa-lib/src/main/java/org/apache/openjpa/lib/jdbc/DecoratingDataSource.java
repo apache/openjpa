@@ -31,7 +31,6 @@ import javax.sql.DataSource;
  * Delegating data source that maintains a list of {@link ConnectionDecorator}s.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DecoratingDataSource extends DelegatingDataSource {
     

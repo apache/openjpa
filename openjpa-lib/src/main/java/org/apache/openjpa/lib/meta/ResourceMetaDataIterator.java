@@ -37,7 +37,6 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  * Iterator over a given metadata resource.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ResourceMetaDataIterator implements MetaDataIterator {
 

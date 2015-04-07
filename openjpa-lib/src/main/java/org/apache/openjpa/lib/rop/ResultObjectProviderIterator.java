@@ -27,7 +27,6 @@ import org.apache.openjpa.lib.util.Closeable;
  * Iterator wrapped around a {@link ResultObjectProvider}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ResultObjectProviderIterator implements Iterator, Closeable {
 

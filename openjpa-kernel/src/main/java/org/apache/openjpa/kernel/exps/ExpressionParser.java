@@ -29,7 +29,6 @@ import org.apache.openjpa.meta.ClassMetaData;
  * language into {@link Expression}s. Parsers should be stateless.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public interface ExpressionParser
     extends Serializable {

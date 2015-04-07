@@ -88,9 +88,6 @@ public class Randomizer {
     
     /**
      * Selects n elements randomly from the given list.
-     * @param <T>
-     * @param list
-     * @param n
      */
     public static <T> List<T> selectRandom(List<T> list, int n) {
         if (list == null || list.isEmpty())

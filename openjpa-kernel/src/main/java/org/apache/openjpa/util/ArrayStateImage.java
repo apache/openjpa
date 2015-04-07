@@ -29,7 +29,6 @@ import org.apache.commons.lang.ObjectUtils;
  * for optimistic versioning.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ArrayStateImage {
 

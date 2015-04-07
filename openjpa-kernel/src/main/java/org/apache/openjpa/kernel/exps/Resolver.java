@@ -26,7 +26,6 @@ import org.apache.openjpa.kernel.QueryContext;
  * that appear in a query.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface Resolver {
 

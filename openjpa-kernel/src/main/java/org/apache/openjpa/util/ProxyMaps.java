@@ -30,7 +30,6 @@ import java.util.Set;
  * Utility methods used by map proxies.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ProxyMaps 
     extends Proxies {

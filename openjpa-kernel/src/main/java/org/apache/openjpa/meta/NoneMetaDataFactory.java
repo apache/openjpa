@@ -31,7 +31,6 @@ import org.apache.openjpa.lib.meta.ClassArgParser;
  * No-op metadata I/O to prevent attempts to load other classes.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class NoneMetaDataFactory
     implements MetaDataFactory, MetaDataDefaults {

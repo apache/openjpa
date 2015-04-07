@@ -24,7 +24,6 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
  * Exception type for parse errors.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class ParseException extends NestableRuntimeException {

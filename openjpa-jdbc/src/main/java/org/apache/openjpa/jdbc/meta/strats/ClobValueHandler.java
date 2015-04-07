@@ -28,7 +28,6 @@ import org.apache.openjpa.meta.JavaTypes;
 /**
  * Handler for clob values.
  *
- * @nojavadoc
  */
 public class ClobValueHandler
     extends AbstractValueHandler {

@@ -22,7 +22,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
  * Struct to hold the state of a query expressions instance.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class QueryExpressionsState {
 

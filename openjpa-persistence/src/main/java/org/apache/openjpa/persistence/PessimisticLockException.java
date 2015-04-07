@@ -34,7 +34,6 @@ import org.apache.openjpa.util.StoreException;
  * This exception is always fatal in contrast to {@linkplain LockTimeoutException}.
  *
  * @since 2.0.0
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class PessimisticLockException

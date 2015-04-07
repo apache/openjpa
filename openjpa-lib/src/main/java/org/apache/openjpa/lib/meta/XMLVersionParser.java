@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
  * schema location attributes from the root node.
  *
  * @author Jeremy Bauer
- * @nojavadoc
  */
 public class XMLVersionParser extends XMLMetaDataParser {
 

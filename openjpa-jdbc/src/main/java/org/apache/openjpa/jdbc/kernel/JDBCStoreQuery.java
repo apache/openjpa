@@ -81,7 +81,6 @@ import org.apache.openjpa.util.UserException;
  * JDBC query implementation.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class JDBCStoreQuery 
     extends ExpressionStoreQuery {

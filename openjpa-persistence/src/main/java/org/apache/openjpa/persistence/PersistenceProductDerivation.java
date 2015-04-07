@@ -79,7 +79,6 @@ import org.xml.sax.SAXException;
  * a named one).
  *
  * @author Abe White
- * @nojavadoc
  */
 public class PersistenceProductDerivation 
     extends AbstractProductDerivation

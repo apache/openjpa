@@ -33,7 +33,6 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author Gokhan Ergul
  * @since 1.0.0
- * @nojavadoc
  */
 public class AnnotationBuilder {
 

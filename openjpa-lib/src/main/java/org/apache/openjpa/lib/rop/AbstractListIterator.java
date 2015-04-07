@@ -26,7 +26,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * Abstract read-only list iterator.
  *
  * @author Abe White
- * @nojavadoc
  */
 abstract class AbstractListIterator<E> implements ListIterator<E> {
 

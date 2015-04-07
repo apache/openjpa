@@ -38,7 +38,6 @@ import org.apache.openjpa.util.InternalException;
  * Handler for embedded object id fields.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class ObjectIdValueHandler

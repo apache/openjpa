@@ -32,7 +32,6 @@ import serp.util.Strings;
  * for classes.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class CFMetaDataParser extends XMLMetaDataParser {
 

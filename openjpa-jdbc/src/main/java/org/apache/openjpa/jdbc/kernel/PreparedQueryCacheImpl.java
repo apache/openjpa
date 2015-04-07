@@ -48,7 +48,6 @@ import org.apache.openjpa.util.CacheMap;
  *
  * @since 2.0.0
  * 
- * @nojavadoc
  */
 public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	private static final String PATTERN_SEPARATOR = "\\;";

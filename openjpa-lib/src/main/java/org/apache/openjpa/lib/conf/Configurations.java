@@ -52,7 +52,6 @@ import serp.util.Strings;
  * Utility methods dealing with configuration.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class Configurations {
 

@@ -66,7 +66,6 @@ public class EntityTypeView<T> extends JPanel {
     
     /**
      * Gets the top left position of the attribute label relative to this entity view.
-     * @param attr
      */
     public Point getPosition(Attribute<?,?> attr) {
         for (Component c : getComponents()) {

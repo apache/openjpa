@@ -25,7 +25,6 @@ import org.apache.openjpa.meta.MetaDataModes;
  * information (if any), and fails if it does not work.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 @SuppressWarnings("serial")

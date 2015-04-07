@@ -28,7 +28,6 @@ import java.util.List;
  * Interface for metadata parsers.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface MetaDataParser {
 

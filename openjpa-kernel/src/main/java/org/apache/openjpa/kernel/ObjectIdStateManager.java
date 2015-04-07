@@ -42,7 +42,6 @@ import org.apache.openjpa.util.ImplHelper;
  * State manager used to access state of embedded object id primary key fields.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ObjectIdStateManager
     implements OpenJPAStateManager {

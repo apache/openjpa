@@ -101,7 +101,6 @@ import serp.util.Strings;
  * @since 1.0.0
  * @author Steve Kim
  * @author Gokhan Ergul
- * @nojavadoc
  */
 public class AnnotationPersistenceMetaDataSerializer
     implements PersistenceMetaDataFactory.Serializer {

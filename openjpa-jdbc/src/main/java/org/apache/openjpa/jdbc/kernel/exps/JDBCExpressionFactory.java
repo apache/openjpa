@@ -46,7 +46,6 @@ import org.apache.openjpa.util.UserException;
  * via SQL.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class JDBCExpressionFactory
     implements ExpressionFactory, Serializable {

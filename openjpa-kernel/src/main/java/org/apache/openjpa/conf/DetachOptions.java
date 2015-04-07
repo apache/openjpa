@@ -24,7 +24,6 @@ import org.apache.openjpa.kernel.DetachState;
  * Detach options.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class DetachOptions
     implements DetachState {

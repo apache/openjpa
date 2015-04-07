@@ -36,7 +36,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * transation for use in facades.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class DelegatingJDBCFetchConfiguration

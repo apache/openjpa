@@ -40,7 +40,6 @@ import serp.bytecode.lowlevel.ConstantPoolTable;
  * {@link PersistenceCapable} interface at runtime.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class PCClassFileTransformer
     implements ClassFileTransformer {

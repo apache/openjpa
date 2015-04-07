@@ -26,7 +26,6 @@ import org.apache.openjpa.lib.conf.PluginValue;
  * Plugin type used to represent the {@link EntityManagerFactory}. 
  *
  * @since 0.4.1
- * @nojavadoc
  */
 public class EntityManagerFactoryValue
     extends PluginValue {

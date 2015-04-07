@@ -40,7 +40,6 @@ import org.apache.openjpa.meta.XMLMetaData;
  *
  * @author Catalina Wei
  * @since 1.0.0
- * @nojavadoc
  */
 public class AnnotationPersistenceXMLMetaDataParser {
 

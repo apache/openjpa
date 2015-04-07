@@ -55,7 +55,6 @@ import org.apache.openjpa.persistence.query.QueryBuilderImpl;
  * facade to a {@link BrokerFactory}.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class EntityManagerFactoryImpl

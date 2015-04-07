@@ -97,7 +97,6 @@ import serp.util.Strings;
  *
  * @author Patrick Linskey
  * @author Abe White
- * @nojavadoc
  */
 public class EntityManagerImpl
     implements OpenJPAEntityManagerSPI, Externalizable,

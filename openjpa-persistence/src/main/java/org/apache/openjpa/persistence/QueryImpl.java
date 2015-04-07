@@ -67,7 +67,6 @@ import org.apache.openjpa.util.UserException;
  * 
  * @author Marc Prud'hommeaux
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {

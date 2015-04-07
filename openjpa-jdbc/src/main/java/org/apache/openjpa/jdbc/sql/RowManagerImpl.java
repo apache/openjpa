@@ -34,7 +34,6 @@ import org.apache.openjpa.util.InternalException;
  * Manages SQL rows during an insert/update/delete process.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class RowManagerImpl
     implements RowManager {

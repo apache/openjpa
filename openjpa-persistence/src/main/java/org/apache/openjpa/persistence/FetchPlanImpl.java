@@ -41,7 +41,6 @@ import org.apache.openjpa.kernel.QueryFlushModes;
  * @author Abe White
  * @author Pinaki Poddar
  * @since 0.4.1
- * @nojavadoc
  */
 public class FetchPlanImpl
 	implements FetchPlan {

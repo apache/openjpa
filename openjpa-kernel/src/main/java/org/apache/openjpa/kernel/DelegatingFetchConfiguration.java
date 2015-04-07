@@ -37,7 +37,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * translation for use in facades.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DelegatingFetchConfiguration
     implements FetchConfiguration {

@@ -25,7 +25,6 @@ import org.apache.openjpa.lib.meta.MetaDataSerializer;
  * fine-grained table level to allow you to split schemas among multiple files.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface SchemaSerializer
     extends MetaDataSerializer {

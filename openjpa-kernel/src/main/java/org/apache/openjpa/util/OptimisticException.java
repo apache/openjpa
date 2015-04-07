@@ -28,7 +28,6 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  *
  * @author Marc Prud'hommeaux
  * @since 0.2.5
- * @nojavadoc
  */
 public class OptimisticException
     extends StoreException {

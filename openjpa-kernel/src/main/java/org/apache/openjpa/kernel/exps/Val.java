@@ -30,7 +30,6 @@ import org.apache.openjpa.meta.ClassMetaData;
  * An in-memory representation of a {@link Value}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class Val
     implements Value {

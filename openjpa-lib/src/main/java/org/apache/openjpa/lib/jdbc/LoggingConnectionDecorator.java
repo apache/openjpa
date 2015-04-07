@@ -54,7 +54,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * {@link ReportingSQLException}s.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class LoggingConnectionDecorator implements ConnectionDecorator {
 

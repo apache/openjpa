@@ -27,7 +27,6 @@ import org.apache.openjpa.lib.meta.MetaDataParser;
  * multiple files into a single schema group.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface SchemaParser
     extends MetaDataParser {

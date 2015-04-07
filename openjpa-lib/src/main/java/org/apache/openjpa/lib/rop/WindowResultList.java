@@ -27,7 +27,6 @@ import java.util.List;
  * ResultList implementation that uses a forward-scrolling window of results.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class WindowResultList extends AbstractNonSequentialResultList {
 

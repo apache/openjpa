@@ -89,7 +89,6 @@ import org.apache.openjpa.util.UserException;
  * relational data store.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class JDBCStoreManager implements StoreManager, JDBCStore {
 

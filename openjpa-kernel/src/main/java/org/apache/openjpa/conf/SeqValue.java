@@ -28,7 +28,6 @@ import org.apache.openjpa.meta.SequenceMetaData;
  * and in class metadata with the same encapsulated configuration.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SeqValue
     extends PluginValue {

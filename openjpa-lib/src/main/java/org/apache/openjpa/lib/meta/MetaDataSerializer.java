@@ -27,7 +27,6 @@ import java.util.Map;
  * Interface for meta data serializers.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface MetaDataSerializer {
 

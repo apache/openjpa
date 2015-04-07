@@ -48,7 +48,6 @@ import serp.util.Strings;
  *
  * @author Steve Kim
  * @author Abe White
- * @nojavadoc
  */
 public class PersistenceMappingDefaults
     extends MappingDefaultsImpl {

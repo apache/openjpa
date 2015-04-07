@@ -43,7 +43,6 @@ import org.apache.openjpa.util.UnsupportedException;
  * Turns parsed queries into selects.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SelectConstructor
     implements Serializable {

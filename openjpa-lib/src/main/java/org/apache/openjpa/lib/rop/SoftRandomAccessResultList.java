@@ -27,7 +27,6 @@ import org.apache.commons.collections.ReferenceMap;
  * soft references to instantiated objects.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SoftRandomAccessResultList extends RandomAccessResultList {
 

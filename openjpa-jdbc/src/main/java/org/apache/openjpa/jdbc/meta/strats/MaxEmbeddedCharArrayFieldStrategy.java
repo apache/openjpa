@@ -43,7 +43,6 @@ import org.apache.openjpa.util.MetaDataException;
  * embedded CLOB size.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class MaxEmbeddedCharArrayFieldStrategy

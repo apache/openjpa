@@ -28,7 +28,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * Provies basic logging facilities to a DataSource.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class DataSourceLogs {
 

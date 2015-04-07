@@ -40,7 +40,6 @@ import org.apache.openjpa.util.ImplHelper;
  * Handler for unknown persistence-capable object fields that stores
  * stringified oids.
  *
- * @nojavadoc
  */
 public class UntypedPCValueHandler
     extends AbstractValueHandler

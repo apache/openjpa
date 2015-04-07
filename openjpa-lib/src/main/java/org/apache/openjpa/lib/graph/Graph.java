@@ -31,7 +31,6 @@ import java.util.Map;
  *
  * @author Abe White
  * @since 1.0.0
- * @nojavadoc
  */
 public class Graph {
 

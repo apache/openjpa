@@ -41,7 +41,6 @@ import serp.util.Strings;
  * package-level resources are named "package.&lt;suffix&gt;".
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ClassMetaDataIterator implements MetaDataIterator {
 

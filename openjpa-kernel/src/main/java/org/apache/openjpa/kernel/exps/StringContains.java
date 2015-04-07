@@ -28,7 +28,6 @@ import org.apache.openjpa.kernel.StoreContext;
  * </code>
  *
  * @deprecated Use <code>matches()</code> instead.
- * @nojavadoc
  */
 public class StringContains
     implements FilterListener {

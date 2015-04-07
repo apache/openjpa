@@ -29,7 +29,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class DelegatingQueryCache
     implements QueryCache {

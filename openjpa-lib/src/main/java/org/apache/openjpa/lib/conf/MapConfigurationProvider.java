@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * provided map.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MapConfigurationProvider implements ConfigurationProvider {
 

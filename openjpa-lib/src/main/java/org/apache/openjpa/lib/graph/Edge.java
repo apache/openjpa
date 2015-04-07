@@ -26,7 +26,6 @@ import java.util.List;
  *
  * @author Abe White
  * @since 1.0.0
- * @nojavadoc
  */
 public class Edge {
 

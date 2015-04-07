@@ -35,7 +35,6 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class TransactionRequiredException
     extends javax.persistence.TransactionRequiredException

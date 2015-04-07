@@ -33,7 +33,6 @@ import java.sql.Statement;
  * </ul>
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ConfiguringConnectionDecorator implements ConnectionDecorator {
 

@@ -34,7 +34,6 @@ import org.apache.openjpa.lib.conf.ProductDerivation;
  * and in {@link org.apache.openjpa.kernel.Bootstrap} with the same
  * encapsulated configuration.
  *
- * @nojavadoc
  */
 public class BrokerFactoryValue
     extends PluginValue {

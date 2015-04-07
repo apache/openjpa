@@ -22,7 +22,6 @@ package org.apache.openjpa.kernel.exps;
  * Interface for any literal value.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface Literal
     extends Value, Constant {

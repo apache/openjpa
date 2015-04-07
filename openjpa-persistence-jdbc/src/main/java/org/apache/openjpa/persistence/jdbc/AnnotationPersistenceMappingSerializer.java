@@ -88,7 +88,6 @@ import javax.persistence.ColumnResult;
  * @since 1.0.0
  * @author Steve Kim
  * @author Gokhan Ergul
- * @nojavadoc
  */
 public class AnnotationPersistenceMappingSerializer
     extends AnnotationPersistenceMetaDataSerializer {

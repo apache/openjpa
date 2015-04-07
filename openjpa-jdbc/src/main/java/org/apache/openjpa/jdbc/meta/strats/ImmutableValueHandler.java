@@ -31,7 +31,6 @@ import org.apache.openjpa.meta.JavaTypes;
 /**
  * Handler for simple type and string values.
  *
- * @nojavadoc
  */
 public class ImmutableValueHandler
     extends AbstractValueHandler {

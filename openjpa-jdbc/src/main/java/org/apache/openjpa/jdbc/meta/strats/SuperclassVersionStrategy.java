@@ -28,7 +28,6 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * Version strategy that delegates to the suerpclass version.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SuperclassVersionStrategy
     extends AbstractVersionStrategy {

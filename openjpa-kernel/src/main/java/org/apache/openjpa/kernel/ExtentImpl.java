@@ -42,7 +42,6 @@ import org.apache.openjpa.util.OpenJPAException;
  *
  * @author Abe White
  * @author Patrick Linskey
- * @nojavadoc
  */
 public class ExtentImpl<T>
     implements Extent<T> {

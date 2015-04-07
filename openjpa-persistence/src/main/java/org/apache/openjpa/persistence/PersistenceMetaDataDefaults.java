@@ -82,7 +82,6 @@ import org.apache.openjpa.enhance.Reflection;
  * @author Patrick Linskey
  * @author Abe White
  * @author Pinaki Poddar
- * @nojavadoc
  */
 public class PersistenceMetaDataDefaults
     extends AbstractMetaDataDefaults {

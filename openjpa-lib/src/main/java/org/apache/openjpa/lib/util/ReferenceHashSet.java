@@ -30,7 +30,6 @@ import org.apache.commons.collections.set.MapBackedSet;
  * A set whose values may be stored as weak or soft references.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ReferenceHashSet implements Set, Serializable {
 

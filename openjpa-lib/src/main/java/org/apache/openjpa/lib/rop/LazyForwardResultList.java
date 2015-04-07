@@ -29,7 +29,6 @@ import java.util.NoSuchElementException;
  * Lazy forward-only result list.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class LazyForwardResultList extends AbstractSequentialResultList
     implements ResultList {

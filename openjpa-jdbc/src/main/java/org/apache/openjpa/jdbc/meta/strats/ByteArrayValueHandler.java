@@ -29,7 +29,6 @@ import org.apache.openjpa.jdbc.sql.DBDictionary;
 /**
  * Handler for byte array values.
  *
- * @nojavadoc
  */
 public class ByteArrayValueHandler
     extends AbstractValueHandler {

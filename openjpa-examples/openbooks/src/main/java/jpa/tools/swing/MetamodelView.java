@@ -54,8 +54,6 @@ public class MetamodelView extends JPanel implements Maze {
      * Creates a panel where each {@link EntityTypeView} is placed in a FlowLayout.
      * Only the entities of the model are ordered based on their primary key 
      * dependencies, if any.
-     * 
-     * @param model
      */
     @SuppressWarnings("unchecked")
     public MetamodelView(Metamodel model) {
@@ -124,8 +122,6 @@ public class MetamodelView extends JPanel implements Maze {
     
     /**
      * Gets the position of the attribute in the entity view relative to this panel. 
-     * @param a
-     * @param attr
      */
     Point getConnectLocation(EntityTypeView<?> a, Attribute<?,?> attr) {
         Point p1 = a.getLocation();

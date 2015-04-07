@@ -45,7 +45,6 @@ import serp.util.Strings;
  * path traversal, and error messages.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public abstract class AbstractExpressionBuilder {
 

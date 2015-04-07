@@ -39,7 +39,6 @@ import org.apache.openjpa.meta.FieldMetaData;
  *
  * @author Abe White
  * @since 0.3.2
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class QueryExpressions

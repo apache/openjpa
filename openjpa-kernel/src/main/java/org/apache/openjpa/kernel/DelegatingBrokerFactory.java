@@ -35,7 +35,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  *
  * @since 0.4.0
  * @author Abe White
- * @nojavadoc
  */
 public class DelegatingBrokerFactory
     implements BrokerFactory {

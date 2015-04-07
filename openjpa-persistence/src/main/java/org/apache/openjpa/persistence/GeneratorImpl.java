@@ -28,7 +28,6 @@ import org.apache.openjpa.meta.ClassMetaData;
  *
  * @author Abe White
  * @since 0.4.1
- * @nojavadoc
  */
 public class GeneratorImpl
 	implements Generator {

@@ -33,7 +33,6 @@ import org.apache.openjpa.meta.MetaDataFactory;
  * combined metadata and mapping.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MappingFactoryValue
     extends PluginValue {

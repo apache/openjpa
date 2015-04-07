@@ -27,7 +27,6 @@ package org.apache.openjpa.persistence;
  * Set of field persistence strategies used in JPA.
  *
  * @author Abe White
- * @nojavadoc
  */
 public enum PersistenceStrategy {
     // order matters to match XML spec

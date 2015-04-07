@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.util.Localizer.Message;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class ArgumentException
     extends IllegalArgumentException

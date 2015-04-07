@@ -23,7 +23,6 @@ package org.apache.openjpa.meta;
  * types used as primary keys before the primary key field owner types.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MetaDataInheritanceComparator
     extends InheritanceComparator {

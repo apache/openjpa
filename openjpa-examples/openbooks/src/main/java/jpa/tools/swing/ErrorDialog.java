@@ -219,9 +219,6 @@ public class ErrorDialog extends JDialog {
         return false;
     }
     
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
         String m1 = "This is test error with very very very very very long line of error message that " 
             + " should not be in a single line. Another message string that shoul dbe split across word." +

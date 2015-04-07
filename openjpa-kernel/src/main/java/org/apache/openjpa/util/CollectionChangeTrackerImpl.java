@@ -25,7 +25,6 @@ import java.util.Collection;
  * Default {@link CollectionChangeTracker}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class CollectionChangeTrackerImpl
     extends AbstractChangeTracker

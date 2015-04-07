@@ -33,7 +33,6 @@ import serp.util.Strings;
  * a given configuration.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class MappingRepositoryValue
     extends PluginValue {

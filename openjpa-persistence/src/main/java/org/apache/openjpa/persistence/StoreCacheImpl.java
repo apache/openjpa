@@ -33,7 +33,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
  *
  * @author Abe White
  * @since 0.4.1
- * @nojavadoc
  */
 public class StoreCacheImpl 
 	implements StoreCache {

@@ -41,8 +41,7 @@ public class PropertyHelper {
      * @param name a part of the key
      * @param prefix if true, property key must begin with the given name. Otherwise, the key merely contains the
      * name to qualify. 
-     * @param
-     * 
+     *
      * @return key-value pairs that match.
      */
     public static Map<String,Object> filter(Map<String,Object> props, String name, boolean prefix, 

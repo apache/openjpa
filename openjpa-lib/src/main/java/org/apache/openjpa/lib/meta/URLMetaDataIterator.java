@@ -32,7 +32,6 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
  * Iterator over the metadata resource represented by a URL.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class URLMetaDataIterator implements MetaDataIterator {
 

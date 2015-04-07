@@ -53,7 +53,6 @@ import org.apache.openjpa.util.UserException;
  * A SQL query.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SQLStoreQuery
     extends AbstractStoreQuery {

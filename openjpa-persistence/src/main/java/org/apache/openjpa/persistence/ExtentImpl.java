@@ -28,7 +28,6 @@ import org.apache.openjpa.kernel.DelegatingExtent;
  *
  * @author Abe White
  * @since 0.4.1
- * @nojavadoc
  */
 public class ExtentImpl<T>
     implements Extent<T> {

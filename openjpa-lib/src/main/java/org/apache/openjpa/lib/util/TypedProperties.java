@@ -26,7 +26,6 @@ import java.util.Properties;
  * The internal representation of all data is kept in string form.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class TypedProperties extends Properties {
 

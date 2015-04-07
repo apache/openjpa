@@ -63,7 +63,6 @@ import serp.util.Strings;
  *
  * @since 0.4.0
  * @author Steve Kim
- * @nojavadoc
  */
 public class XMLPersistenceMappingSerializer
     extends XMLPersistenceMetaDataSerializer {

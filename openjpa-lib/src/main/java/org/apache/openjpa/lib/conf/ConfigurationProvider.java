@@ -26,7 +26,6 @@ import java.util.Map;
  * <code>equals</code> and <code>hashCode</code> methods so that equivalent
  * configurations compare equal.
  *
- * @nojavadoc
  * @since 0.4.0.0
  */
 public interface ConfigurationProvider {

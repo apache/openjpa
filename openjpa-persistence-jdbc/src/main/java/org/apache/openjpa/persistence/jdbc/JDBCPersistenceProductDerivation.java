@@ -42,7 +42,6 @@ import org.apache.openjpa.persistence.PersistenceProductDerivation;
  * Sets JDBC-specific JPA specification defaults.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class JDBCPersistenceProductDerivation 
     extends AbstractProductDerivation 

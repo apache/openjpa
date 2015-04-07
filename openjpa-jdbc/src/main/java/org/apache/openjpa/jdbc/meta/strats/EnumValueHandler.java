@@ -34,7 +34,6 @@ import org.apache.openjpa.util.MetaDataException;
 /**
  * Value handler for JDK1.5 enum field types.
  *
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class EnumValueHandler

@@ -33,7 +33,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * case it returns default values for all operations.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DelegatingDataCache
     implements DataCache {

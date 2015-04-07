@@ -50,7 +50,6 @@ import org.apache.openjpa.util.UserException;
  * JDBC extensions to OpenJPA's {@link FetchConfiguration}.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class JDBCFetchConfigurationImpl

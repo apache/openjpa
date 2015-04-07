@@ -34,7 +34,6 @@ import org.apache.openjpa.kernel.StateManagerImpl;
  * Utility methods used by collection proxies.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ProxyCollections 
     extends Proxies {

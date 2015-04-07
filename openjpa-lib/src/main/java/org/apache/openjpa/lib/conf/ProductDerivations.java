@@ -43,7 +43,6 @@ import org.apache.openjpa.lib.util.Services;
  *
  * @author Abe White
  * @author Pinaki Poddar
- * @nojavadoc
  */
 public class ProductDerivations {
 

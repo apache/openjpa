@@ -69,7 +69,6 @@ import org.apache.openjpa.util.InternalException;
  * Instead, use the return value of {@link #newJoins}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SelectImpl
     implements Select, PathJoins {

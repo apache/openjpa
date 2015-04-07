@@ -53,7 +53,6 @@ import org.apache.tools.ant.types.Path;
  * The default configuration for the system will be used if the
  * <code>&lt;config&rt;</code> subtask is excluded.
  *
- * @nojavadoc
  */
 public abstract class AbstractTask extends MatchingTask {
 

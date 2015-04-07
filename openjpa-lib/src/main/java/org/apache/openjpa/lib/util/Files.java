@@ -44,7 +44,6 @@ import serp.util.Strings;
  * Utility operations on files.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class Files {
 

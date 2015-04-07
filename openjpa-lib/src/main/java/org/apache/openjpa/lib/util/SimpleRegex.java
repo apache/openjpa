@@ -26,7 +26,6 @@ package org.apache.openjpa.lib.util;
  * boolean matches = re.matches("The quick fox jumped over the lazy dog");
  * </code>
  *
- * @nojavadoc
  */
 public class SimpleRegex {
 

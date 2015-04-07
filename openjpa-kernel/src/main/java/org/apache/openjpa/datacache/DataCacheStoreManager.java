@@ -47,7 +47,6 @@ import org.apache.openjpa.util.OptimisticException;
  * StoreManager proxy that delegates to a data cache when possible.
  *
  * @author Patrick Linskey
- * @nojavadoc
  */
 public class DataCacheStoreManager extends DelegatingStoreManager {
 

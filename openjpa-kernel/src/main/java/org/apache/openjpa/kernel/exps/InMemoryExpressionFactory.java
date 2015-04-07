@@ -44,7 +44,6 @@ import org.apache.openjpa.util.UserException;
  * in memory.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class InMemoryExpressionFactory
     implements ExpressionFactory {

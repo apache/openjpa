@@ -37,7 +37,6 @@ import org.xml.sax.SAXException;
  * JAXP configuration mechanisms.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class XMLFactory {
 

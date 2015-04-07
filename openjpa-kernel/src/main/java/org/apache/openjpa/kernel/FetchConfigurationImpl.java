@@ -56,7 +56,6 @@ import org.apache.openjpa.util.UserException;
  * @since 0.3.0
  * @author Abe White
  * @author Pinaki Poddar
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class FetchConfigurationImpl

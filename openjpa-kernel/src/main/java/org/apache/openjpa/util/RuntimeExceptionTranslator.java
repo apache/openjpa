@@ -24,7 +24,6 @@ import java.io.Serializable;
  * Interface used by many facade helpers to translate exceptions.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface RuntimeExceptionTranslator
     extends Serializable {

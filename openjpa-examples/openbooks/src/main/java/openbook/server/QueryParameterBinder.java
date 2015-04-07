@@ -26,8 +26,6 @@ public class QueryParameterBinder implements QueryDecorator {
     
     /**
      * Construct a parameter binder with the given parameters.
-     * 
-     * @param params
      */
     public QueryParameterBinder(Object...params) {
         this.params = params;

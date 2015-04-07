@@ -27,7 +27,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * Abstract base class for read-only result lists.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public abstract class AbstractResultList<E> implements ResultList<E> {

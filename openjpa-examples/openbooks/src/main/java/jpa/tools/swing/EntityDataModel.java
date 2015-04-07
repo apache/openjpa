@@ -78,10 +78,6 @@ public class EntityDataModel<T> extends AbstractTableModel implements TableModel
     /**
      * Attributes of the entity are reordered with basic attributes, followed by singular
      * association followed by the many-valued attributes.
-     *  
-     * @param cls
-     * @param data
-     * @param meta
      */
     public EntityDataModel(Class<T> cls, List<T> data, Metamodel meta, int styleBits) {
         super();

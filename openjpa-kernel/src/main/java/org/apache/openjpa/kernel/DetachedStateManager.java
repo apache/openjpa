@@ -44,7 +44,6 @@ import org.apache.openjpa.util.ImplHelper;
  * implement {@link OpenJPAStateManager} contract to allow for serialization.
  *
  * @author Steve Kim
- * @nojavadoc
  */
 public class DetachedStateManager
     extends AttachStrategy

@@ -36,7 +36,6 @@ import org.apache.openjpa.lib.util.JavaVersions;
  *
  * @author Marc Prud'hommeaux
  * @since 0.2.5
- * @nojavadoc
  */
 public class Exceptions {
 

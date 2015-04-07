@@ -28,7 +28,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * the owning ResultList has been closed.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class ResultListIterator extends AbstractListIterator {
 

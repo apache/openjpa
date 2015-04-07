@@ -28,7 +28,6 @@ import org.apache.openjpa.meta.JavaTypes;
 /**
  * Handler for blob values.
  *
- * @nojavadoc
  */
 public class BlobValueHandler
     extends AbstractValueHandler {

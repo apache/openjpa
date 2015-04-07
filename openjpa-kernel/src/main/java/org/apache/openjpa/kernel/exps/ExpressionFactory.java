@@ -27,7 +27,6 @@ import org.apache.openjpa.meta.ClassMetaData;
  * to form {@link Expression}s in its native query language.
  *
  * @author Abe White
- * @nojavadoc
  */
 public interface ExpressionFactory {
 

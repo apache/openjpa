@@ -30,7 +30,6 @@ import org.apache.openjpa.lib.util.SimpleRegex;
  * </code>
  *
  * @deprecated Use <code>matches()</code> instead.
- * @nojavadoc
  */
 public class WildcardMatch
     implements FilterListener {

@@ -32,7 +32,6 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
  * Secondary table row that tracks foreign keys to auto-inc columns.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SecondaryRow
     extends RowImpl {

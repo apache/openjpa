@@ -32,7 +32,6 @@ import org.apache.openjpa.util.UserException;
  * Parser for JPQL queries.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class JPQLParser
     implements ExpressionParser {

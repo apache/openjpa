@@ -28,7 +28,6 @@ import org.xml.sax.SAXParseException;
  * This handler is used by the validating parsers of the {@link XMLFactory}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ValidatingErrorHandler implements ErrorHandler {
 

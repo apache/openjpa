@@ -25,7 +25,6 @@ import java.util.Collection;
  * Utilities for calculating string distance.
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class StringDistance {
 

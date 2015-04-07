@@ -33,7 +33,6 @@ import org.apache.openjpa.util.ImplHelper;
 /**
  * Handles attaching instances with detached state.
  *
- * @nojavadoc
  * @author Marc Prud'hommeaux
  */
 class DetachedStateAttachStrategy

@@ -44,7 +44,6 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
  *
  * @author Abe White
  * @since 0.3.3
- * @nojavadoc
  */
 public class Serialization {
 

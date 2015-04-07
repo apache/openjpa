@@ -29,7 +29,6 @@ import org.apache.openjpa.lib.meta.ClassArgParser;
  * Base class for factory instances that use a delegate.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DelegatingMetaDataFactory
     implements MetaDataFactory {

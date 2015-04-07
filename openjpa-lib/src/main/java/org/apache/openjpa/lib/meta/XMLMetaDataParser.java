@@ -56,7 +56,6 @@ import org.apache.openjpa.lib.xml.XMLFactory;
  * Subclasses should handle the processing of the content.
  *
  * @author Abe White
- * @nojavadoc
  */
 public abstract class XMLMetaDataParser extends DefaultHandler
     implements LexicalHandler, MetaDataParser {

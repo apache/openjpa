@@ -27,7 +27,6 @@ import java.util.ListIterator;
  * A basic {@link ResultList} implementation that wraps a normal list.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ListResultList extends AbstractResultList {
 

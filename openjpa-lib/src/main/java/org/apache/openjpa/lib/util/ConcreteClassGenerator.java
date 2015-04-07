@@ -32,7 +32,6 @@ import serp.bytecode.Project;
  * @author Marc Prud'hommeaux
  * @author Pinaki Poddar
  * 
- * @nojavadoc
  * @since 1.3.0
  */
 public class ConcreteClassGenerator {

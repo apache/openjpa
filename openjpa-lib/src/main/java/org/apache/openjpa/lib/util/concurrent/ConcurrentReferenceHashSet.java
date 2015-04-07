@@ -33,7 +33,6 @@ import org.apache.commons.collections.set.MapBackedSet;
  * it uses a {@link ConcurrentReferenceHashMap}.
  *
  * @author Abe White
- * @nojavadoc
  */
 @SuppressWarnings("serial")
 public class ConcurrentReferenceHashSet<E> implements Set<E>, Serializable {

@@ -28,7 +28,6 @@ import org.apache.openjpa.util.MetaDataException;
  * Class mapping for embedded object id fields.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class ObjectIdClassStrategy
     extends AbstractClassStrategy {

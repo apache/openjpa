@@ -30,7 +30,6 @@ import java.util.List;
  * perform any caching.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class SimpleResultList extends AbstractNonSequentialResultList {
 

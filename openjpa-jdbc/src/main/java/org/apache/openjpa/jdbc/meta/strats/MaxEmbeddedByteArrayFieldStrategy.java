@@ -39,7 +39,6 @@ import org.apache.openjpa.util.MetaDataException;
  * BLOB size.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class MaxEmbeddedByteArrayFieldStrategy

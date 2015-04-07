@@ -27,7 +27,6 @@ import org.apache.openjpa.lib.conf.IntValue;
  * and in class metadata with the same encapsulated configuration.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class FetchModeValue
     extends IntValue {

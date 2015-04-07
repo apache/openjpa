@@ -33,7 +33,6 @@ import org.apache.openjpa.util.Exceptions;
  *
  * @author Abe White
  * @since 0.4.0
- * @nojavadoc
  */
 public class RollbackException
     extends javax.persistence.RollbackException

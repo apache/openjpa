@@ -28,7 +28,6 @@ import org.apache.openjpa.lib.rop.ResultObjectProvider;
  * values from results for comparison.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class OrderingMergedResultObjectProvider
     extends MergedResultObjectProvider {

@@ -27,7 +27,6 @@ import org.apache.openjpa.jdbc.meta.strats.NoneVersionStrategy;
  * Clears all mapping information from classes and installs none strategies.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class NoneStrategyInstaller

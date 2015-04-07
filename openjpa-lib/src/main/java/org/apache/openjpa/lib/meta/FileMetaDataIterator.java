@@ -41,7 +41,6 @@ import org.apache.openjpa.lib.util.Localizer;
  * Iterator over a file, or over all metadata resources below a given directory.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class FileMetaDataIterator implements MetaDataIterator {
 

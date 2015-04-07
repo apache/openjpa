@@ -30,7 +30,6 @@ import org.apache.openjpa.util.ProxyCalendar;
  * Object provider implementation wrapped around a {@link Select}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class InstanceResultObjectProvider
     extends SelectResultObjectProvider {

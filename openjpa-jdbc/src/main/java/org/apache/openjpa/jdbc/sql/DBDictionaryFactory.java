@@ -51,7 +51,6 @@ import org.apache.openjpa.util.UserException;
  * </ul>
  *
  * @author Marc Prud'hommeaux
- * @nojavadoc
  */
 public class DBDictionaryFactory {
 

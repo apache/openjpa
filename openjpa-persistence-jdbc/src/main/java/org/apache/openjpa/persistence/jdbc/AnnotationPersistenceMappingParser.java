@@ -105,7 +105,6 @@ import org.apache.openjpa.util.UserException;
  * @author Pinaki Poddar
  * @author Steve Kim
  * @author Abe White
- * @nojavadoc
  */
 public class AnnotationPersistenceMappingParser
     extends AnnotationPersistenceMetaDataParser {

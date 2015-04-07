@@ -31,7 +31,6 @@ import org.apache.openjpa.util.RuntimeExceptionTranslator;
  * in facades.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class DelegatingSeq
     implements Seq {

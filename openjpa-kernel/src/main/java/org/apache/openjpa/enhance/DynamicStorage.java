@@ -24,7 +24,6 @@ package org.apache.openjpa.enhance;
  * {@link DynamicStorageGenerator}'s field policy.
  *
  * @author Steve Kim
- * @nojavadoc
  * @since 0.3.2.0
  */
 public interface DynamicStorage {

@@ -24,7 +24,6 @@ import java.util.Map;
  * Default {@link MapChangeTracker}.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class MapChangeTrackerImpl
     extends AbstractChangeTracker

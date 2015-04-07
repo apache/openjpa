@@ -47,7 +47,6 @@ import serp.util.Strings;
  * Helper methods for dealing with query filters.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class Filters {
 

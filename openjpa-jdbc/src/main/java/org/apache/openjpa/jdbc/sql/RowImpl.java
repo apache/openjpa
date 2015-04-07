@@ -53,7 +53,6 @@ import org.apache.openjpa.util.InternalException;
  * Basic {@link Row} implementation.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class RowImpl
     implements Row, Cloneable {

@@ -38,7 +38,6 @@ import java.util.Set;
  *
  * @author Steve Kim
  * @since 1.0.0
- * @nojavadoc
  */
 public class BreadthFirstWalk {
 

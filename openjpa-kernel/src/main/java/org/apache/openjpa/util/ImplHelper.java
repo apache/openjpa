@@ -53,7 +53,6 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
  *
  * @since 0.3.0
  * @author Abe White
- * @nojavadoc
  */
 public class ImplHelper {
 

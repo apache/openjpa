@@ -56,7 +56,6 @@ import org.apache.openjpa.util.UserException;
  * Broker kernel.
  *
  * @since 1.0.0
- * @nojavadoc
  */
 public class JPAFacadeHelper {
 

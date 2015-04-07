@@ -27,7 +27,6 @@ package org.apache.openjpa.jdbc.kernel.exps;
  * &gt; 100\")"
  * </code>
  *
- * @nojavadoc
  * @deprecated Use {@link SQLEmbed} directly
  */
 public class SQLExpression

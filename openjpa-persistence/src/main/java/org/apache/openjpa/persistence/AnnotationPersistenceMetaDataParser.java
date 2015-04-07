@@ -176,7 +176,6 @@ import serp.util.Strings;
  *
  * @author Abe White
  * @author Steve Kim
- * @nojavadoc
  */
 public class AnnotationPersistenceMetaDataParser
     implements MetaDataModes {

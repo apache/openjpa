@@ -26,7 +26,6 @@ import org.apache.openjpa.util.MetaDataException;
  * fails, clears the mapping information and constructs new mappings.
  *
  * @author Abe White
- * @nojavadoc
  * @since 0.4.0
  */
 public class RefreshStrategyInstaller

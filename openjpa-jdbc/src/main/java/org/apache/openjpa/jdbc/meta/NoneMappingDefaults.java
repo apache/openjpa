@@ -32,7 +32,6 @@ import serp.util.Strings;
  * No-op mapping defaults.
  *
  * @author Abe White
- * @nojavadoc
  */
 public class NoneMappingDefaults
     implements MappingDefaults {
