@@ -324,19 +324,21 @@ public class InformixDictionary
 
         // if we haven't already done so, initialize the lock mode of the
         // connection
-        if (_seenConnections.add(conn)) {
-            if (lockModeEnabled) {
-                String sql = "SET LOCK MODE TO WAIT";
-                if (lockWaitSeconds > 0)
-                    sql = sql + " " + lockWaitSeconds;
-                execute(sql, conn, true);
+        synchronized(_seenConnections) {
+            if (_seenConnections.add(conn)) {
+                if (lockModeEnabled) {
+                    String sql = "SET LOCK MODE TO WAIT";
+                    if (lockWaitSeconds > 0)
+                        sql = sql + " " + lockWaitSeconds;
+                    execute(sql, conn, true);
+                }
+                
+                if (!disableRetainUpdateLocksSQL){
+                    String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
+                    execute(sql, conn, false);
+                }
             }
-            
-            if (!disableRetainUpdateLocksSQL){
-                String sql = "SET ENVIRONMENT RETAINUPDATELOCKS 'ALL'";
-                execute(sql, conn, false);
-            }
-        }
+        }       
 
         // the datadirect driver requires that we issue a rollback before using
         // each connection
