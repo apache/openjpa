@@ -31,6 +31,26 @@ public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
         emf = OpenJPAPersistence.
                 createEntityManagerFactory("TestPUDefaultCascadePersist", 
                     "org/apache/openjpa/persistence/cascade/pudefault/META-INF/persistence.xml");
+        
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM PUDEntityA01").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityA02").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityAE01").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityB").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityA01_PUDEntityB").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityA02_PUDEntityB").executeUpdate();
+            em.createQuery("DELETE FROM PUDEntityAE01_PUDEntityB").executeUpdate();
+            em.getTransaction().commit();
+        } catch (Throwable t) {
+            // Swallow
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            em.close();
+        }
 //        super.setUp(PUDEntityA01.class, PUDEntityB.class,
 //            "org/apache/openjpa/persistence/cascade/pudefault/META-INF/cascadepersistorm.xml",
 //            CLEAR_TABLES);
