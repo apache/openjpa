@@ -462,4 +462,19 @@
     </properties>
   </persistence-unit> 
 
+    <persistence-unit name="TestPUDefaultCascadePersist" transaction-type="RESOURCE_LOCAL">
+        <!--  <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider> -->
+        <mapping-file>META-INF/cascade-persist.xml</mapping-file>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.PUDEntityA01</class>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.PUDEntityAE01</class>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.PUDEntityA02</class>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.PUDEntityB</class>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.AnEmbeddable</class>
+        <class>org.apache.openjpa.persistence.cascade.pudefault.EmbeddableWithRelationships</class>
+        <properties>
+            <property name="openjpa.ConnectionFactoryProperties" value="MaxActive=110, MaxIdle=10, ValidationTimeout=50000, 
+                                                                     MaxCachedStatements=10, ValidationSQL='', MaxWait=10000, TestOnBorrow=true" />
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+        </properties>
+    </persistence-unit>
 </persistence>
