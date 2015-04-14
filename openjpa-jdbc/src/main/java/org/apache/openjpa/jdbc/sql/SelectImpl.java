@@ -2896,7 +2896,20 @@ public class SelectImpl
                 if (this.var != null) {
                     this.append(this.var);
                 } else if (this.path == null && this.correlatedVar != null && _sel._dict.isImplicitJoin()) {
-                    this.append(this.correlatedVar);
+                    String str = this.var;
+                    for(Object o : _sel._parent._aliases.keySet()){
+                        if (o instanceof Key) {
+                            Key k = (Key) o;
+                            if (this.correlatedVar.equals(k._path)) {
+                                str = this.correlatedVar;
+                                break;
+                            }
+                        }else if (o.equals(this.correlatedVar)){
+                            str = this.correlatedVar;
+                            break;
+                        }
+                    }
+                    this.append(str);
                 }
                 this.var = null;
                 _outer = false;
