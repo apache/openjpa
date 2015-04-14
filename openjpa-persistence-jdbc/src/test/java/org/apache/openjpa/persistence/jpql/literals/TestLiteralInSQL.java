@@ -21,6 +21,9 @@ package org.apache.openjpa.persistence.jpql.literals;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
+import org.apache.openjpa.jdbc.sql.PostgresDictionary;
 import org.apache.openjpa.persistence.simple.AllFieldTypes;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
@@ -33,6 +36,12 @@ public class TestLiteralInSQL extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
 
         em = emf.createEntityManager();
+        DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
+        //Disable on Postgres for now....
+        if (dict instanceof PostgresDictionary){
+            setTestsDisabled(true);
+            return;
+        }
 
         resetSQL();
         Query q = em.createQuery("SELECT f FROM AllFieldTypes f WHERE f.booleanField=true");
