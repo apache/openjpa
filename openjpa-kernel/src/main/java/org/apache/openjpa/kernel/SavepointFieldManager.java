@@ -194,10 +194,7 @@ class SavepointFieldManager
     }
 
     public Object fetchObjectField(int field) {
-        // return the copied field during save, or a null value during restore
-        Object val = _field;
-        _field = null;
-        return val;
+        return _field;
     }
 
     public void storeObjectField(int field, Object curVal) {

@@ -62,10 +62,7 @@ class TransferFieldManager
     }
 
     public Object fetchObjectField(int field) {
-        // don't hold onto strong ref to object
-        Object val = objval;
-        objval = null;
-        return val;
+        return objval;
     }
 
     public short fetchShortField(int field) {
