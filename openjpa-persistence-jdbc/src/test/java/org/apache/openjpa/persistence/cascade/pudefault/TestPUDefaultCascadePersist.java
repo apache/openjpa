@@ -19,46 +19,22 @@
 package org.apache.openjpa.persistence.cascade.pudefault;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
-import org.apache.openjpa.persistence.OpenJPAPersistence;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
-    private EntityManagerFactory emf = null;
     public void setUp() throws Exception {
-        super.setUp();
-        emf = OpenJPAPersistence.
-                createEntityManagerFactory("TestPUDefaultCascadePersist", 
-                    "org/apache/openjpa/persistence/cascade/pudefault/META-INF/persistence.xml");
-        
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.createQuery("DELETE FROM PUDEntityA01").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityA02").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityAE01").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityB").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityA01_PUDEntityB").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityA02_PUDEntityB").executeUpdate();
-            em.createQuery("DELETE FROM PUDEntityAE01_PUDEntityB").executeUpdate();
-            em.getTransaction().commit();
-        } catch (Throwable t) {
-            // Swallow
-        } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            em.close();
-        }
-//        super.setUp(PUDEntityA01.class, PUDEntityB.class,
-//            "org/apache/openjpa/persistence/cascade/pudefault/META-INF/cascadepersistorm.xml",
-//            CLEAR_TABLES);
+        super.setUp(PUDEntityA01.class, PUDEntityA02.class, PUDEntityAE01.class, PUDEntityB.class,
+            CLEAR_TABLES);
     }
+    
+    protected String getPersistenceUnitName() {
+        return "TestPUDefaultCascadePersist";
+    }
+    
     
     public void tearDown() throws Exception {
         super.tearDown();
-        emf.close();
     }
     
     public void testPUDefaultCascadePersistOverM2M() {
@@ -83,9 +59,10 @@ public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+            em.close();
         }
                
-        em.close();
+        
         em = emf.createEntityManager();
         
         try {
