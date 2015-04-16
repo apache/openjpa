@@ -189,7 +189,7 @@ public class AccessCode {
      * merge is valid.
      * 
      * @return the modified class access code.
-     * @exception if the given codes are not compatible
+     * @exception IllegalStateException if the given codes are not compatible
 	 */
 	public static int mergeFieldCode(int cCode, int fCode) {
 		if (isValidClassCode(cCode) && isValidFieldCode(fCode)) {

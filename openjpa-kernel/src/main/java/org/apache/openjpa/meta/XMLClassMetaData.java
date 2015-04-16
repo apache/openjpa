@@ -37,7 +37,7 @@ public class XMLClassMetaData implements XMLMetaData
      * Constructor.
      * 
      * @param type the class that contains XmlType annotation.
-     * @name  the persistent field name that maps to xml column
+     * @param name  the persistent field name that maps to xml column
      */
     public XMLClassMetaData(Class type, String name) {
         _type = type;

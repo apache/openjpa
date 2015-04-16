@@ -2404,7 +2404,6 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Return XML metadata for a given field metadata
      * 
-     * @param fmd
      * @return XML metadata
      */
     public XMLMetaData getXMLMetaData(Class<?> cls) {
@@ -2463,8 +2462,6 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Create a new xml class metadata
      * 
-     * @param type
-     * @param name
      * @return a XMLClassMetaData
      */
     protected XMLClassMetaData newXMLClassMetaData(Class<?> type) {
@@ -2474,9 +2471,6 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     /**
      * Create a new xml field meta, add it to the fieldMap in the given xml class metadata
      * 
-     * @param type
-     * @param name
-     * @param meta
      * @return a XMLFieldMetaData
      */
     public XMLFieldMetaData newXMLFieldMetaData(Class<?> type, String name) {

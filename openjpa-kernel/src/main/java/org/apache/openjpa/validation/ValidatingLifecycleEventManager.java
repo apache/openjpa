@@ -42,7 +42,6 @@ public class ValidatingLifecycleEventManager extends LifecycleEventManager
     /**
      * Constructor which accepts a reference to the validator to use.  If null,
      * no validation will occur.
-     * @param validator
      */
     public ValidatingLifecycleEventManager() {
         super();

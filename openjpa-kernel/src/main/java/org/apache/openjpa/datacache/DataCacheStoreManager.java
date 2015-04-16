@@ -476,7 +476,6 @@ public class DataCacheStoreManager extends DelegatingStoreManager {
      * @param found whether the entity was found by the store manager
      * @param sm the state manager
      * @param fetch fetch configuration
-     * @param loadedFieldsChanged
      */
     private void updateDataCache(boolean found, OpenJPAStateManager sm, FetchConfiguration fetch,
         boolean loadedFieldsChanged) {

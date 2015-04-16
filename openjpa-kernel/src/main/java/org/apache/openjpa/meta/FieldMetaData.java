@@ -1750,7 +1750,7 @@ public class FieldMetaData
 	}
 	
 	/**
-	 * @return true iff {@sourceType} can be converted by a widening primitive conversion
+	 * @return true if {@code sourceType} can be converted by a widening primitive conversion
 	 *  following Java Language Specification, 3rd Ed, s5.1.2 
 	 */
 	private boolean isConvertibleToByWideningPrimitive(Class<?> sourceType, Class<?> destType) {

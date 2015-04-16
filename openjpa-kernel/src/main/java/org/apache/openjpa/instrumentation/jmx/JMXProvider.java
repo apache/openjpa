@@ -54,7 +54,6 @@ public class JMXProvider
 
     /**
      * Register an MBean with the mbean server.
-     * @param mBean
      */
     protected void registerMBean(JMXInstrument mBean) {
         Set<MBeanServer> mbs = getMBeanServer(); 

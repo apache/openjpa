@@ -102,7 +102,6 @@ public class Context implements Serializable {
 
     /**
      * Register the select for this context.
-     * @param select
      */
     public void setSelect(Object select) {
         this.select = select;
@@ -117,7 +116,6 @@ public class Context implements Serializable {
 
     /**
      * Register the subquery context in this context.
-     * @param sub
      */
     public void addSubselContext(Context sub) {
         if (sub == null)
@@ -177,7 +175,6 @@ public class Context implements Serializable {
 
     /**
      * Given an alias and return its associated variable.
-     * @param alias
      */
     public Value getVariable(String alias) {
         Value variable = alias == null ? null 
@@ -188,7 +185,6 @@ public class Context implements Serializable {
     /**
      * Given an alias find the context of its associated
      * variable where it is defined.
-     * @param alias
      */
     public Context findContext(String alias) {
         Value var = getVariable(alias);
@@ -214,7 +210,6 @@ public class Context implements Serializable {
 
     /**
      * Given an alias find the variable in JPQL contexts.
-     * @param alias
      */
     public Value findVariable(String alias) {
         Value var = getVariable(alias);

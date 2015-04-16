@@ -101,7 +101,6 @@ public interface XMLMetaData extends Serializable {
 
     /**
      * Set namespace.
-     * @param namespace
      */
     public void setXmlnamespace(String namespace);
 

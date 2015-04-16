@@ -144,7 +144,6 @@ public class ProxyManagerImpl
      * is performed that requires them to be loaded.  This property only
      * applies to proxies that implement java.util.Collection (ie. not arrays
      * or maps).  Defaults to false.
-     * @return 
      */
     public boolean getDelayCollectionLoading() {
         return _delayedCollectionLoading;

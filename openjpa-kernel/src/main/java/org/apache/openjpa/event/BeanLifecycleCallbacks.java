@@ -45,7 +45,7 @@ public class BeanLifecycleCallbacks
     /**
      * Constructor. Make the callback on an instance of the given type.
      *
-     * @arg whether another argument is expected such as AfterDetach
+     * @param arg whether another argument is expected such as AfterDetach
      */
     public BeanLifecycleCallbacks(Class<?> cls, String method, boolean arg,
         Class<?> type) {

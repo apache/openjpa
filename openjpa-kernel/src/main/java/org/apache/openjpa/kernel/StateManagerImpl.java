@@ -1647,7 +1647,6 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
 
     /**
      * Loads a delayed access field.
-     * @param field
      */
     public void loadDelayedField(int field) {
         if (!isDelayed(field)) {

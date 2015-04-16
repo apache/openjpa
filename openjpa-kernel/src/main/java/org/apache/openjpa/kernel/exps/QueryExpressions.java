@@ -81,7 +81,6 @@ public class QueryExpressions
     
     /**
      * Set reference to the JPQL query contexts.
-     * @param contexts
      */
     public void setContexts(Stack<Context> contexts) {
         _contexts = contexts;

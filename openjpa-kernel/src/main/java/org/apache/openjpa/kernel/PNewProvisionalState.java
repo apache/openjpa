@@ -24,7 +24,7 @@ package org.apache.openjpa.kernel;
  * current	transaction.
  *
  * @author Steve Kim
- * @author: Abe White
+ * @author Abe White
  */
 @SuppressWarnings("serial")
 class PNewProvisionalState

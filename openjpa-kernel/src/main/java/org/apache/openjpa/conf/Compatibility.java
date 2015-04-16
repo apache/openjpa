@@ -619,11 +619,11 @@ public class Compatibility {
 
     /**
      * This property can be used to allow OpenJPA to use ListAttributes for all types of Arrays, not just those with the
-     * 
-     * @PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
-     *                       OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true. If
-     *                       you have generated your metamodel classes on later versions of OpenJPA (e.g. 2.2.0) you may
-     *                       want to have this set to false.
+     * &#064; PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
+     * OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true. If
+     * you have generated your metamodel classes on later versions of OpenJPA (e.g. 2.2.0) you may
+     * want to have this set to false.
+     *
      * @since 2.2.0
      * @return true if OpenJPA will use ListAttributes for <b>all</b> arrays, false if OpenJPA will use ListAttributes
      *         for <b>only</b> arrays which use the @PersistentCollection annotation.
@@ -634,11 +634,10 @@ public class Compatibility {
 
     /**
      * This property can be used to allow OpenJPA to use ListAttributes for all types of Arrays, not just those with the
-     * 
-     * @PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
-     *                       OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true. If
-     *                       you have generated your metamodel classes on later versions of OpenJPA (e.g. 2.2.0) you may
-     *                       want to have this set to false.
+     * &#064;PersistentCollection annotation. If the canonical metamodel classes were generated in an early version of
+     * OpenJPA (e.g. 2.0.0, 2.0.1, or 2.1.0) it is recommended to set this property to true. If
+     * you have generated your metamodel classes on later versions of OpenJPA (e.g. 2.2.0) you may
+     * want to have this set to false.
      * @since 2.2.0
      * @param useListAttribute
      *            whether OpenJPA will use ListAttributes for all arrays.

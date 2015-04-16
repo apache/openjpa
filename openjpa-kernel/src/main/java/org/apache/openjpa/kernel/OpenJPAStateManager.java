@@ -503,7 +503,6 @@ public interface OpenJPAStateManager
      * is a step beyond lazy loading.  Delayed load allows an instance of a field to be 
      * returned without actually loading it.
      * 
-     * @param field
      * @return true if the field is setup for delayed access
      */
     public boolean isDelayed(int field);
@@ -513,20 +512,17 @@ public interface OpenJPAStateManager
      * is a step beyond lazy loading.  Delayed load allows an instance of a field to be 
      * returned without actually loading it.
      * 
-     * @param field
      */
     public void setDelayed(int field, boolean delay);
     
     /**
      * If a field was marked delayed in a previous load operation this method can be
      * used to load the field.
-     * @param field
      */
     public void loadDelayedField(int field);
     
     /**
      * Fetch an object field by index.
-     * @param field
      */
     public Object fetchObjectField(int field);
 }

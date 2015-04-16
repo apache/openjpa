@@ -592,8 +592,6 @@ public abstract class AbstractExpressionBuilder {
 
     /**
      * Register the schema alias to the current JPQL query context.
-     * @param alias
-     * @param meta
      */
     protected abstract void addSchemaToContext(String alias,
         ClassMetaData meta);
@@ -601,14 +599,11 @@ public abstract class AbstractExpressionBuilder {
     /**
      * Register the variable associated with the schema alias (id) to
      * the current JPQL query context.
-     * @param id
-     * @param var
      */
     protected abstract void addVariableToContext(String id, Value var);
 
     /**
      * Returns the variable associated with the schema alias (id).
-     * @param id
      */
     protected abstract Value getVariable(String id);
 }

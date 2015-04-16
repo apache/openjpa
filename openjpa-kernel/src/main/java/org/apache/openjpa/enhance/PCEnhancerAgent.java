@@ -79,15 +79,12 @@ public class PCEnhancerAgent {
     public static synchronized boolean getLoadSuccessful() {
         return loadSuccessful;
     }
-    /**
-     * @return True if the dynamic agent was disabled via configuration. 
-     */
+
     public static void disableDynamicAgent(){
         disableDynamicAgent=true;
     }
     
     /**
-     * @param log
      * @return True if the agent is loaded successfully
      */
     public static synchronized boolean loadDynamicAgent(Log log) {

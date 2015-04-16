@@ -40,8 +40,6 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     
     /**
      * Initializes all providers defined for the specified configuration.
-     * @param conf
-     * @param providers
      */
     public void initialize(OpenJPAConfiguration conf, PluginListValue pluginVal) {
         InstrumentationProvider[] providers = 
@@ -52,8 +50,6 @@ public class InstrumentationManagerImpl implements InstrumentationManager {
     /**
      * Make a provider managed.  This will bind its instrumentation to 
      * InstrumentationLevel type events (factory create/close, broker create/close).
-     * @param provider
-     * @param config
      */
     public void manageProvider(InstrumentationProvider provider) {
         _providers.add(provider);

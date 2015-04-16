@@ -1070,7 +1070,6 @@ public class PCEnhancer {
     /**
      * This must be called after setting the value in the object.
      * 
-     * @param code
      * @param val the position in the local variable table where the
      * old value is stored
      * @param param the parameter position containing the new value, or

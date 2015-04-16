@@ -210,8 +210,6 @@ public class AuditManager extends InMemorySavepointManager
 	
 	/**
 	 * Gets an implementation.
-	 * @param instance
-	 * @return
 	 */
 	private StateManagerImpl getImpl(Object instance) {
 		if (instance instanceof PersistenceCapable) {
@@ -229,8 +227,6 @@ public class AuditManager extends InMemorySavepointManager
 	/**
 	 * Affirms if the given state manager is auditable for the given operation.
 	 * @param op an auditable operation
-	 * @param sm
-	 * @return
 	 */
 	protected boolean isAuditable(AuditableOperation op, StateManagerImpl sm) {
 		if (sm == null)

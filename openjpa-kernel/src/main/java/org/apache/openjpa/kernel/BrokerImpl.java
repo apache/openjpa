@@ -900,8 +900,6 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     /**
      * Set whether this Broker will generate verbose optimistic lock exceptions when batching
      * operations. Defaults to true.
-     * 
-     * @param b
      */
     public void setSuppressBatchOLELogging(boolean b) {
         _suppressBatchOLELogging = b;
@@ -4602,7 +4600,6 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
     /**
      * This method makes a best effort to determine if the provided object is detached.
      * 
-     * @param obj
      * @param find
      *            - If true, as a last resort this method will check whether or not the provided object exists in the
      *            DB. If it is in the DB, the provided object is detached.

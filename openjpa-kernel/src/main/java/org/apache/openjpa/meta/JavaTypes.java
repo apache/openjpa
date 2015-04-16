@@ -221,8 +221,7 @@ public class JavaTypes {
      * configuration's ClassResolver if the supplied loader cannot find the class.
      *
      * @param name Name of the class to load. 
-     * @param context 
-     * @param loader ClassLoader to use. If null, the configuration's ClassResolver will be used. 
+     * @param loader ClassLoader to use. If null, the configuration's ClassResolver will be used.
      * @param mustExist Whether the supplied loader <b>must</b> be able to load the class. If true no attempt to use a 
      *        different classloader will be made. If false the ClassResolver from the configuration will be used. 
      */

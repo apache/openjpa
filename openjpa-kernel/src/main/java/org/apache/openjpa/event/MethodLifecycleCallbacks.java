@@ -47,7 +47,7 @@ public class MethodLifecycleCallbacks
     /**
      * Constructor. Supply callback class and its callback method name.
      *
-     * @arg Whether we expect a further argument such as in AfterDetach
+     * @param arg Whether we expect a further argument such as in AfterDetach
      */
     public MethodLifecycleCallbacks(Class cls, String method, boolean arg) {
         Class[] args = arg ? new Class[]{ Object.class } : null;

@@ -57,8 +57,6 @@ public interface Path
      * Traverse into the gevin xpath name of the current object, and update
      * the current object to that xpath field.
      * 
-     * @param meta
-     * @param name
      */
     public void get(XMLMetaData meta, String name);
     
@@ -71,7 +69,6 @@ public interface Path
     /**
      * Set the schema alias (the identification variable)
      * this path is begin with.
-     * @param schemaAlias
      */
     public void setSchemaAlias(String schemaAlias);
         
