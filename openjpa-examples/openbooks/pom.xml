@@ -231,6 +231,17 @@
                 </plugins>
             </build>
         </profile>
+
+
+        <!--
+            Profile to openbooks to be built during a release (because it creates a build loop).
+            Activating this profile will simply disable the default profile
+         -->
+        <profile>
+            <id>apache-release</id>
+        </profile>
+
+
     </profiles>
 </project>
 
