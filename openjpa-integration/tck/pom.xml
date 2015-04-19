@@ -75,7 +75,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-integration</artifactId>
-        <version>2.4.0-SNAPSHOT</version>
+        <version>2.4.0</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -189,7 +189,7 @@
                             <path refid="maven.compile.classpath" />
                         </path>
                         <path id="cp.test">
-                            <pathelement location="${basedir}/../../target/classes"/>
+                            <pathelement location="${basedir}/../../target/classes" />
                             <path refid="maven.test.classpath" />
                         </path>
                         <pathconvert property="cp.test.classpath" refid="cp.test" />
