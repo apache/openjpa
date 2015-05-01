@@ -82,12 +82,13 @@ import serp.util.Strings;
  *
  * @author Abe White
  */
-@SuppressWarnings("serial")
 public class ClassMetaData
     extends Extensions
     implements Comparable<ClassMetaData>, SourceTracker, MetaDataContext, 
     MetaDataModes, Commentable, ValueListener {
 
+    private static final long serialVersionUID = -7092606998468579534L;
+    
     /**
      * Unknown identity type.
      */
