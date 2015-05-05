@@ -86,6 +86,7 @@ public class MappingTool
     public static final String ACTION_REFRESH = "refresh";
     public static final String ACTION_BUILD_SCHEMA = "buildSchema";
     public static final String ACTION_DROP = "drop";
+    public static final String ACTION_DROP_SCHEMA = "dropSchema";
     public static final String ACTION_VALIDATE = "validate";
     public static final String ACTION_EXPORT = "export";
     public static final String ACTION_IMPORT = "import";
@@ -95,6 +96,7 @@ public class MappingTool
         ACTION_REFRESH,
         ACTION_BUILD_SCHEMA,
         ACTION_DROP,
+        ACTION_DROP_SCHEMA,
         ACTION_VALIDATE,
         ACTION_EXPORT,
         ACTION_IMPORT,

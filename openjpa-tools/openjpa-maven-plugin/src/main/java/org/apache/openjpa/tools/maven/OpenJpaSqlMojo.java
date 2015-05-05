@@ -42,6 +42,7 @@ public class OpenJpaSqlMojo extends AbstractOpenJpaMappingToolMojo {
      * <li>add (see MappingTool#ACTION_ADD)</li>
      * <li>refresh (see MappingTool#ACTION_REFRESH)</li>
      * <li>drop (see MappingTool#ACTION_DROP)</li>
+     * <li>dropSchema (see MappingTool#ACTION_DROP_SCHEMA)</li>
      * <li>buildSchema (see MappingTool#ACTION_BUILD_SCHEMA)</li>
      * <li>import (see MappingTool#ACTION_IMPORT)</li>
      * <li>export (see MappingTool#ACTION_EXPORT)</li>

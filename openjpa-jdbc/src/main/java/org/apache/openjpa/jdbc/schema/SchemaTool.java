@@ -64,6 +64,7 @@ public class SchemaTool {
 
     public static final String ACTION_ADD = "add";
     public static final String ACTION_DROP = "drop";
+    public static final String ACTION_DROP_SCHEMA = "dropSchema";
     public static final String ACTION_RETAIN = "retain";
     public static final String ACTION_REFRESH = "refresh";
     public static final String ACTION_BUILD = "build";
@@ -77,6 +78,7 @@ public class SchemaTool {
     public static final String[] ACTIONS = new String[]{
         ACTION_ADD,
         ACTION_DROP,
+        ACTION_DROP_SCHEMA,
         ACTION_RETAIN,
         ACTION_REFRESH,
         ACTION_BUILD,
@@ -341,6 +343,8 @@ public class SchemaTool {
             add();
         else if (ACTION_DROP.equals(_action))
             drop();
+        else if (ACTION_DROP_SCHEMA.equals(_action))
+            dropSchema();
         else if (ACTION_RETAIN.equals(_action))
             retain();
         else if (ACTION_REFRESH.equals(_action))
@@ -371,6 +375,14 @@ public class SchemaTool {
     protected void drop()
         throws SQLException {
         drop(getDBSchemaGroup(false), assertSchemaGroup());
+    }
+
+    /**
+     * Drops all schema components in the schema repository.
+     */
+    protected void dropSchema()
+        throws SQLException {
+        drop(getDBSchemaGroup(false), assertSchemaGroup(), false);
     }
 
     /**
@@ -414,7 +426,7 @@ public class SchemaTool {
         throws SQLException {
         SchemaGroup group = new SchemaGroup();
         group.addSchema();
-        add(group, assertSchemaGroup());
+        buildSchema(group, assertSchemaGroup(), false);
     }
 
     /**
@@ -465,6 +477,11 @@ public class SchemaTool {
      */
     protected void add(SchemaGroup db, SchemaGroup repos)
         throws SQLException {
+
+        buildSchema(db, repos, true);
+    }
+
+    protected void buildSchema(SchemaGroup db, SchemaGroup repos, boolean considerDatabaseState) throws SQLException {
         // add sequences
         Schema[] schemas = repos.getSchemas();
         Schema schema;
@@ -473,7 +490,7 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 seqs = schemas[i].getSequences();
                 for (int j = 0; j < seqs.length; j++) {
-                    if (db.findSequence(schemas[i], seqs[j].getQualifiedPath()) !=
+                    if (considerDatabaseState && db.findSequence(schemas[i], seqs[j].getQualifiedPath()) !=
                             null)
                         continue;
 
@@ -490,7 +507,7 @@ public class SchemaTool {
 
         // order is important in this method; start with columns
         Table[] tabs;
-        Table dbTable;
+        Table dbTable = null;
         Column[] cols;
         Column col;
         DBIdentifier defaultSchemaName = DBIdentifier.newSchema(_dict.getDefaultSchemaName());
@@ -498,7 +515,9 @@ public class SchemaTool {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
                 cols = tabs[j].getColumns();
-                dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath(), defaultSchemaName);
+                if (considerDatabaseState) {
+                    dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath(), defaultSchemaName);
+                }
                 for (int k = 0; k < cols.length; k++) {
                     if (dbTable != null) {
                         DBIdentifier colName = cols[k].getIdentifier();
@@ -508,11 +527,11 @@ public class SchemaTool {
                                 dbTable.importColumn(cols[k]);
                             else
                                 _log.warn(_loc.get("add-col", cols[k],
-                                    tabs[j]));
+                                        tabs[j]));
                         } else if (!cols[k].equalsColumn(col)) {
                             _log.warn(_loc.get("bad-col", new Object[]{
-                                col, dbTable, col.getDescription(),
-                                cols[k].getDescription() }));
+                                    col, dbTable, col.getDescription(),
+                                    cols[k].getDescription() }));
                         }
                     }
                 }
@@ -526,16 +545,18 @@ public class SchemaTool {
                 tabs = schemas[i].getTables();
                 for (int j = 0; j < tabs.length; j++) {
                     pk = tabs[j].getPrimaryKey();
-                    dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
+                    if (considerDatabaseState) {
+                        dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
+                    }
                     if (pk != null && !pk.isLogical() && dbTable != null) {
                         if (dbTable.getPrimaryKey() == null
-                            && addPrimaryKey(pk))
+                                && addPrimaryKey(pk))
                             dbTable.importPrimaryKey(pk);
                         else if (dbTable.getPrimaryKey() == null)
                             _log.warn(_loc.get("add-pk", pk, tabs[j]));
                         else if (!pk.equalsPrimaryKey(dbTable.getPrimaryKey()))
                             _log.warn(_loc.get("bad-pk",
-                                dbTable.getPrimaryKey(), dbTable));
+                                    dbTable.getPrimaryKey(), dbTable));
                     }
                 }
             }
@@ -546,7 +567,7 @@ public class SchemaTool {
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
-                if (db.findTable(schemas[i], tabs[j].getQualifiedPath()) != null)
+                if (considerDatabaseState && db.findTable(schemas[i], tabs[j].getQualifiedPath()) != null)
                     continue;
 
                 if (createTable(tabs[j])) {
@@ -572,7 +593,9 @@ public class SchemaTool {
                     continue;
 
                 idxs = tabs[j].getIndexes();
-                dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
+                if (considerDatabaseState) {
+                    dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
+                }
                 for (int k = 0; k < idxs.length; k++) {
                     if (dbTable != null) {
                         idx = findIndex(dbTable, idxs[k]);
@@ -581,7 +604,7 @@ public class SchemaTool {
                                 dbTable.importIndex(idxs[k]);
                             else
                                 _log.warn(_loc.get("add-index", idxs[k],
-                                    tabs[j]));
+                                        tabs[j]));
                         } else if (!idxs[k].equalsIndex(idx))
                             _log.warn(_loc.get("bad-index", idx, dbTable));
                     }
@@ -594,14 +617,16 @@ public class SchemaTool {
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
-                // create unique constraints only on new tables 
+                // create unique constraints only on new tables
                 if (!newTables.contains(tabs[j]))
                     continue;
 
                 uniques = tabs[j].getUniques();
                 if (uniques == null || uniques.length == 0)
                     continue;
-                dbTable = db.findTable(tabs[j]);
+                if (considerDatabaseState) {
+                    dbTable = db.findTable(tabs[j]);
+                }
                 if (dbTable == null)
                     continue;
                 for (int k = 0; k < uniques.length; k++) {
@@ -609,7 +634,7 @@ public class SchemaTool {
                 }
             }
         }
-        
+
         // foreign keys
         ForeignKey[] fks;
         ForeignKey fk;
@@ -622,7 +647,9 @@ public class SchemaTool {
                     continue;
 
                 fks = tabs[j].getForeignKeys();
-                dbTable = db.findTable(schemas[i],tabs[j].getQualifiedPath());
+                if (considerDatabaseState) {
+                    dbTable = db.findTable(schemas[i], tabs[j].getQualifiedPath());
+                }
                 for (int k = 0; k < fks.length; k++) {
                     if (!fks[k].isLogical() && dbTable != null) {
                         fk = findForeignKey(dbTable, fks[k]);
@@ -631,7 +658,7 @@ public class SchemaTool {
                                 dbTable.importForeignKey(fks[k]);
                             else
                                 _log.warn(_loc.get("add-fk",
-                                    fks[k], tabs[j]));
+                                        fks[k], tabs[j]));
                         } else if (!fks[k].equalsForeignKey(fk))
                             _log.warn(_loc.get("bad-fk", fk, dbTable));
                     }
@@ -767,10 +794,16 @@ public class SchemaTool {
         dropTables(drops, db);
     }
 
+    protected void drop(SchemaGroup db, SchemaGroup repos)
+        throws SQLException {
+
+        drop(db, repos, true);
+    }
+
     /**
      * Drops all database components in the given repository schema.
      */
-    protected void drop(SchemaGroup db, SchemaGroup repos)
+    private void drop(SchemaGroup db, SchemaGroup repos, boolean considerDatabaseState)
         throws SQLException {
         // drop sequences
         Schema[] schemas = repos.getSchemas();
@@ -806,6 +839,12 @@ public class SchemaTool {
             for (int j = 0; j < tabs.length; j++) {
                 if (!isDroppable(tabs[j]))
                     continue;
+
+                if (!considerDatabaseState) {
+                    drops.add(tabs[j]);
+                    continue;
+                }
+
                 dbTable = db.findTable(tabs[j]);
                 if (dbTable == null)
                     continue;
@@ -872,28 +911,30 @@ public class SchemaTool {
         // drop the tables we calculated above
         dropTables(drops, db);
 
-        // columns
-        Column[] cols;
-        Column col;
-        for (int i = 0; i < schemas.length; i++) {
-            tabs = schemas[i].getTables();
-            for (int j = 0; j < tabs.length; j++) {
-                if (!isDroppable(tabs[j]))
-                    continue;
-                cols = tabs[j].getColumns();
-                dbTable = db.findTable(tabs[j]);
-                for (int k = 0; k < cols.length; k++) {
-                    col = null;
-                    if (dbTable != null)
-                        col = dbTable.getColumn(cols[k].getIdentifier());
-                    if (dbTable == null || col == null)
+        if (considerDatabaseState) {
+            // columns
+            Column[] cols;
+            Column col;
+            for (int i = 0; i < schemas.length; i++) {
+                tabs = schemas[i].getTables();
+                for (int j = 0; j < tabs.length; j++) {
+                    if (!isDroppable(tabs[j]))
                         continue;
-
-                    if (dropColumn(cols[k])) {
+                    cols = tabs[j].getColumns();
+                    dbTable = db.findTable(tabs[j]);
+                    for (int k = 0; k < cols.length; k++) {
+                        col = null;
                         if (dbTable != null)
-                            dbTable.removeColumn(col);
-                        else
-                            _log.warn(_loc.get("drop-col", cols[k], tabs[j]));
+                            col = dbTable.getColumn(cols[k].getIdentifier());
+                        if (dbTable == null || col == null)
+                            continue;
+
+                        if (dropColumn(cols[k])) {
+                            if (dbTable != null)
+                                dbTable.removeColumn(col);
+                            else
+                                _log.warn(_loc.get("drop-col", cols[k], tabs[j]));
+                        }
                     }
                 }
             }
