@@ -782,6 +782,7 @@
                         <goals>deploy</goals>
                         <arguments>-Papache-release,docbook-profile,test-derby,bval</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <tag>${project.version}</tag>
                     </configuration>
                 </plugin>
                 <plugin>
