@@ -1,0 +1,74 @@
+Releasing Apache OpenJPA
+=========================
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+
+
+== Summary
+
+These instructions describe how perform an official release of the Apache OpenJPA project.
+
+
+== Prerequisits
+
+
+* You need a valid Apache account and 
+* Maven installed on your box
+* Java 6 or 7
+* Do NOT Release with Java 8 yet!
+* TODO probably we require a ~/.m2/toolchains.xml set up correctly in the future 
+
+
+
+== Manual Release Preparation Steps
+
+* Make sure you have the latest version checked out and no local modifications
+ $> svn up
+ $> svn st
+ This should not show any dirty files
+
+* Run a full build
+ $> mvn clean install
+
+
+
+== Performing the Release
+
+We use maven to roll the release. Please make sure you understand how 
+the Apache Maven maven-release-plugin works:
+http://maven.apache.org/maven-release/maven-release-plugin/
+
+
+=== Running the release prepare steps
+
+$> mvn release:prepare 
+
+Depending on your location you probably get an error for the first time.
+This happens if you hit a svn mirror which is not updated quickly enough.
+Simply rerun this step after a few seconds. No worries, maven will continue
+exactly where it left off.
+
+=== Validating the tag
+
+You should now get a fresh tag in https://svn.apache.org/repos/asf/openjpa/tags/
+Please verify that the tag looks good and that all pom.xml files really got updated. 
+
+
+=== Running the release perform steps
+
+$> mvn release:perform
+
+This will finally do a clean checkout from the freshly generated tag and
+
+
+
+== Verifying the Maven Staging Repository
+
+Login in to https://repository.apache.org/
+Navigate to 'Staging Repositories' and verify the content of your release.
+Then 'close' the staging and copy the URL of the staging repository
+
+
+
+== Call a VOTE
+
+
