@@ -426,7 +426,7 @@ public class SchemaTool {
         throws SQLException {
         SchemaGroup group = new SchemaGroup();
         group.addSchema();
-        buildSchema(group, assertSchemaGroup(), false);
+        buildSchema(group, assertSchemaGroup(), true);
     }
 
     /**
