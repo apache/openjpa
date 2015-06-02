@@ -22,17 +22,18 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class TestEntity {
+public class SampleEntity
+{
 
   @Id
   private int xint1;
 
   private String string1;
 
-  public TestEntity() {
+  public SampleEntity() {
   }
 
-  public TestEntity(int int1, String string1) {
+  public SampleEntity(int int1, String string1) {
     this.xint1 = int1;
     this.string1 = string1;
   }

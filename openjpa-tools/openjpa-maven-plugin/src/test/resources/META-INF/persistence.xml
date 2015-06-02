@@ -23,7 +23,7 @@
 
     <!-- simply all annotated persistent entities will be part of this unit -->
     <persistence-unit name="TestUnit">
-        <class>org.apache.openjpa.tools.maven.testentity.TestEntity</class>
+        <class>org.apache.openjpa.tools.maven.testentity.SampleEntity</class>
 
         <properties>
             <property name="openjpa.jdbc.DBDictionary" value="hsql" />

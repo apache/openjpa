@@ -113,6 +113,9 @@ import org.apache.openjpa.persistence.spring.TestLibService;
 import org.apache.openjpa.persistence.xml.TestSimpleXmlEntity;
 import org.apache.openjpa.persistence.xml.TestXmlOverrideEntity;
 
+/**
+ * TODO: this should be refactored to a @RunWith or similar...
+ */
 public class DynamicEnhancementSuite extends TestCase {
     static {
         Persistence.createEntityManagerFactory("test", System.getProperties());
@@ -125,7 +128,7 @@ public class DynamicEnhancementSuite extends TestCase {
         // with the dynamic enhaner.
         String test = System.getProperty("dynamicTest");
         if (test != null) {
-            suite.addTestSuite(Class.forName(test));
+            suite.addTestSuite((Class<? extends TestCase>) Class.forName(test));
         } else {
 
             // Subclassing failing tests

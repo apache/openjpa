@@ -28,15 +28,23 @@ import javax.sql.DataSource;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.kernel.StoreContext;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class TestDB2Dictionary extends MockObjectTestCase {
-    final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
-    final Statement mockStatement = mock(Statement.class);
-    final Connection mockConnection = mock(Connection.class);
-    final ResultSet mockRS = mock(ResultSet.class);
-    final DataSource mockDS = mock(DataSource.class);
-    final DatabaseMetaData mockMetaData = mock(DatabaseMetaData.class);
+import static org.junit.Assert.*;
+
+
+public class TestDB2Dictionary {
+    @Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
+    
+    final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
+    final Statement mockStatement = context.mock(Statement.class);
+    final Connection mockConnection = context.mock(Connection.class);
+    final ResultSet mockRS = context.mock(ResultSet.class);
+    final DataSource mockDS = context.mock(DataSource.class);
+    final DatabaseMetaData mockMetaData = context.mock(DatabaseMetaData.class);
 
     final StoreContext sc = null;
     final String schema = "abcd";
@@ -44,11 +52,13 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     /*
      * When DS1 is non null we should get a connection and use it to obtain the schema name.
      */
+    @Test
     public void testGetDefaultSchemaNameDS1() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
@@ -89,11 +99,13 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     /*
      * When ds1 is null, fallback to ds2
      */
+    @Test
     public void testGetDefaultSchemaNameDS2() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
@@ -137,11 +149,13 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     /*
      * When ds1 is null, fallback to ds2
      */
+    @Test
     public void testGetDefaultSchemaNameNoDS() throws Exception {
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 // both datasources are null for this test.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
@@ -163,12 +177,14 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     /*
      * TestWhitespace trim
      */
+    @Test
     public void testGetDefaultSchemaNameTrimmed() throws Exception {
         final String schema2 = "abcd     ";
         // Expected method calls on the mock objects above. If any of these are
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail.
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 // Wiring, make sure the appropriate mocks are created.
                 oneOf(mockConfiguration).getDataSource(with(equal(sc)));
@@ -209,15 +225,17 @@ public class TestDB2Dictionary extends MockObjectTestCase {
     /*
      * Verifies that the ConnectedConfiguration method only uses the DBMetaData to determine the correct behavior.
      */
+    @Test
     public void testConnectedConfigurationOnlyUsesMetaData() throws Exception {
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 // No activity on the connection other than getting the metadata. 
                 allowing(mockConnection).getMetaData();
                 will(returnValue(mockMetaData));
 
                 // anything on the configuration or DBMetaData is fair game. 
-                allowing(mockMetaData); 
+                allowing(mockMetaData);
                 allowing(mockConfiguration);
             }
         });

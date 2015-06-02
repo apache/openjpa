@@ -24,18 +24,27 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifierUtilImpl;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.util.UserException;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
+import org.junit.Test;
 
-public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
+import static org.junit.Assert.*;
 
+public class TestDBDictionaryGeneratedSQL {
+
+    @Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
+
+    @Test
     public void testCreateTableLongNameException() {
-        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
-        
-        checking(new Expectations() {
+
+        context.checking(new Expectations()
+        {
             {
                 allowing(mockConfiguration).getIdentifierUtilInstance();
-                will(returnValue(idImpl)); 
+                will(returnValue(idImpl));
 
                 allowing(mockConfiguration);
             }
@@ -56,16 +65,18 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
             assertTrue(ue.getMessage().contains("Table name \"NameIsTooLong\""));
         }
     }
-    
-    
+
+
+    @Test
     public void testThrowsExceptionWithSchemaSet() {
-        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
-        
-        checking(new Expectations() {
+
+        context.checking(new Expectations()
+        {
             {
                 allowing(mockConfiguration).getIdentifierUtilInstance();
-                will(returnValue(idImpl)); 
+                will(returnValue(idImpl));
 
                 allowing(mockConfiguration);
             }
@@ -87,15 +98,17 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
             assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
         } 
     }
-    
+
+    @Test
     public void testSchemaNameIsNotConsidered() {
-        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
-        
-        checking(new Expectations() {
+
+        context.checking(new Expectations()
+        {
             {
                 allowing(mockConfiguration).getIdentifierUtilInstance();
-                will(returnValue(idImpl)); 
+                will(returnValue(idImpl));
 
                 allowing(mockConfiguration);
             }
@@ -114,15 +127,17 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
         assertTrue(sqls[0].contains("NameIsRight"));
         assertTrue(sqls[0].contains("IAmASchema"));
     }
-    
+
+    @Test
     public void testOverrideProperty() {
-        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
-        
-        checking(new Expectations() {
+
+        context.checking(new Expectations()
+        {
             {
                 allowing(mockConfiguration).getIdentifierUtilInstance();
-                will(returnValue(idImpl)); 
+                will(returnValue(idImpl));
 
                 allowing(mockConfiguration);
             }
@@ -145,15 +160,17 @@ public class TestDBDictionaryGeneratedSQL extends MockObjectTestCase {
             assertTrue(ue.getMessage().contains("Table name \"IAmASchema.NameIsTooLong\""));
         } 
     }
-    
+
+    @Test
     public void testOverridePropertyShortName() {
-        final JDBCConfiguration mockConfiguration = mock(JDBCConfiguration.class);
+        final JDBCConfiguration mockConfiguration = context.mock(JDBCConfiguration.class);
         final DBIdentifierUtilImpl idImpl = new DBIdentifierUtilImpl();
-        
-        checking(new Expectations() {
+
+        context.checking(new Expectations()
+        {
             {
                 allowing(mockConfiguration).getIdentifierUtilInstance();
-                will(returnValue(idImpl)); 
+                will(returnValue(idImpl));
 
                 allowing(mockConfiguration);
             }

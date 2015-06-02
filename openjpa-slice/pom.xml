@@ -133,6 +133,12 @@
                     <argLine>${test.jvm.arguments}</argLine>
                     <excludes>
                         <exclude>**/TestQueryMultiThreaded.java</exclude>
+
+                        <!-- exclude classes that include a $; inner classes
+                             are not test cases per OpenJPA standards -->
+                        <exclude>org/apache/openjpa/**/*$*.class</exclude>
+                        <exclude>org/apache/openjpa/**/*.*.class</exclude>
+
                     </excludes>
                     <systemProperties>
                         <property>

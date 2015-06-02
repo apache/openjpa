@@ -26,9 +26,17 @@ import java.sql.ResultSet;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfigurationImpl;
 import org.jmock.Expectations;
-import org.jmock.integration.junit3.MockObjectTestCase;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class TestMySQLDictionary extends MockObjectTestCase {
+public class TestMySQLDictionary {
+
+    @Rule
+    public JUnitRuleMockery context = new JUnitRuleMockery();
+
+    @Test
     public void testDBDictionaryGetBatchFetchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         assertEquals(Integer.MIN_VALUE, db.getBatchFetchSize(1));
@@ -46,17 +54,19 @@ public class TestMySQLDictionary extends MockObjectTestCase {
      *             If any of the expectations are not met or any unexpected
      *             method calls are made
      */
+    @Test
     public void testPreparedStatementGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
         
-        final PreparedStatement mockStatement = mock(PreparedStatement.class);
-        final Connection mockConnection = mock(Connection.class);
+        final PreparedStatement mockStatement = context.mock(PreparedStatement.class);
+        final Connection mockConnection = context.mock(Connection.class);
 
         // Expected method calls on the mock objects above. If any of these are 
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail. 
-        checking(new Expectations() {
+        context.checking(new Expectations()
+        {
             {
                 oneOf(mockConnection).prepareStatement(with(any(String.class)));
                 will(returnValue(mockStatement));
@@ -81,17 +91,18 @@ public class TestMySQLDictionary extends MockObjectTestCase {
      *             If any of the expectations are not met or any unexpected
      *             method calls are made
      */
+    @Test
     public void testPreparedCallGetFetchBatchSize() throws Exception {
         DBDictionary db = new MySQLDictionary();
         SQLBuffer sql = new SQLBuffer(db);
         
-        final CallableStatement mockStatement = mock(CallableStatement.class);
-        final Connection mockConnection = mock(Connection.class);
+        final CallableStatement mockStatement = context.mock(CallableStatement.class);
+        final Connection mockConnection = context.mock(Connection.class);
 
         // Expected method calls on the mock objects above. If any of these are 
         // do not occur, or if any other methods are invoked on the mock objects
         // an exception will be thrown and the test will fail. 
-        checking(new Expectations() {
+        context.checking(new Expectations() {
             {
                 oneOf(mockConnection).prepareCall(with(any(String.class)));
                 will(returnValue(mockStatement));

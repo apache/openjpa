@@ -24,6 +24,8 @@ import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.RollbackException;
 
+import org.junit.Ignore;
+
 /**
  * Tests that if any of the slices fail then none of the slices are committed.
  * 
@@ -139,6 +141,7 @@ public class TestTransaction extends SliceTestCase {
      * @author Pinaki Poddar
      *
      */
+    @Ignore
     public static class CarDistributorPolicy implements DistributionPolicy {
         public String distribute(Object pc, List<String> slices, Object context) {
             if (pc instanceof Manufacturer) {
