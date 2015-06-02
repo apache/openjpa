@@ -284,7 +284,7 @@
         <profile>
             <!--
                 Javadoc profile. Docs can be built by running:
-                    mvn process-resources -Dtest=false -Pjavadoc-profile
+                    mvn process-classes -Dtest=false -Pjavadoc-profile
             -->
             <id>javadoc-profile</id>
             <build>
