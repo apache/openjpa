@@ -90,7 +90,7 @@
         <compile.testclass.target>${java.testclass.version}</compile.testclass.target>
 
         <maven.javadoc.version>2.9.1</maven.javadoc.version>
-        <maven.surefire.version>2.5</maven.surefire.version>
+        <maven.surefire.version>2.17</maven.surefire.version>
     </properties>
 
     <licenses>
