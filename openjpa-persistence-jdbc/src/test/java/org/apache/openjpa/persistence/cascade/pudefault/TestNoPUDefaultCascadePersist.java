@@ -24,7 +24,8 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestNoPUDefaultCascadePersist extends SingleEMFTestCase {
     public void setUp() throws Exception {
-        super.setUp(PUDEntityA01.class, PUDEntityAE01.class, PUDEntityB.class, AnEmbeddable.class,
+        super.setUp(PUDEntityA01.class, PUDEntityA02.class, PUDEntityAE01.class, PUDEntityB.class,
+            AnEmbeddable.class, EmbeddableWithRelationships.class,
             CLEAR_TABLES);
     }
     

@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
     public void setUp() throws Exception {
         super.setUp(PUDEntityA01.class, PUDEntityA02.class, PUDEntityAE01.class, PUDEntityB.class,
+            AnEmbeddable.class, EmbeddableWithRelationships.class,
             CLEAR_TABLES);
     }
     
@@ -36,7 +37,7 @@ public class TestPUDefaultCascadePersist extends SingleEMFTestCase {
     public void tearDown() throws Exception {
         super.tearDown();
     }
-    
+
     public void testPUDefaultCascadePersistOverM2M() {
         EntityManager em = emf.createEntityManager();
         

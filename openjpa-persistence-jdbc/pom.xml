@@ -915,7 +915,7 @@
                     <excludes>
                         <!-- exclude classes that end with 'Test'; these
                              are not test cases per OpenJPA standards -->
-                        <exclude>org/apache/openjpa/**/*Testq.java</exclude>
+                        <exclude>org/apache/openjpa/**/*Test.java</exclude>
 
                         <!-- exclude classes that include a $; inner classes
                              are not test cases per OpenJPA standards -->
