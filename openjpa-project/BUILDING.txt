@@ -185,6 +185,5 @@ $ mvn site site:deploy -Pjavadoc-profile,docbook-profile
 Running unit tests in the Debugger
 ==================================
 TODO: finish!
--Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver \
-
+-Dopenjpa.ConnectionURL=jdbc:derby:target/database/openjpa-derby-database;create=true -Dopenjpa.ConnectionDriverName=org.apache.derby.jdbc.EmbeddedDriver
 
