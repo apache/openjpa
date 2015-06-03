@@ -156,7 +156,6 @@ public class FieldMappingInfo
                     getTableName(field, schema);
             }
             public DBIdentifier getIdentifier(Schema schema) {
-                // TODO Auto-generated method stub
                 return field.getMappingRepository().getMappingDefaults().
                     getTableIdentifier(field, schema);
             }

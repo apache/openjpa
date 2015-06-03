@@ -74,7 +74,6 @@ public class TestQueryConvertPositionalParameters extends SingleEMFTestCase {
             _em.getTransaction().rollback();
         }
         _em.close();
-        // TODO Auto-generated method stub
         super.tearDown();
     }
 

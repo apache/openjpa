@@ -174,7 +174,6 @@ public class TestParameterLogging extends AbstractPersistenceTestCase implements
             }
             @Override
             public void warn(Object message) {
-                // TODO Auto-generated method stub
                 super.warn(message.toString());
             }
             @Override

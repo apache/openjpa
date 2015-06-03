@@ -1,13 +1,4 @@
 /*
- * TestSchemaGenerator.java
- *
- * Created on October 6, 2006, 2:57 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
-/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -40,7 +31,6 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
 
     @Override
     protected String getPersistenceUnitName() {
-        // TODO Auto-generated method stub
         return "TestConv";
     }
 
@@ -50,7 +40,7 @@ public class TestSchemaGenerator extends org.apache.openjpa.persistence.jdbc.ker
     }
 
     public void testSchemaGen() throws Exception {
-        OpenJPAEntityManagerFactory pmf = (OpenJPAEntityManagerFactory) getEmf();
+        OpenJPAEntityManagerFactory pmf = getEmf();
         OpenJPAEntityManager pm = pmf.createEntityManager();
         JDBCConfiguration conf = (JDBCConfiguration) ((OpenJPAEntityManagerFactorySPI) pmf).getConfiguration();
 

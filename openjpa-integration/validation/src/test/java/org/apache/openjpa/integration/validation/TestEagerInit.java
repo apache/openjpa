@@ -40,7 +40,6 @@ public class TestEagerInit extends AbstractPersistenceTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        // TODO Auto-generated method stub
         super.tearDown();
         _emf.close();
     }

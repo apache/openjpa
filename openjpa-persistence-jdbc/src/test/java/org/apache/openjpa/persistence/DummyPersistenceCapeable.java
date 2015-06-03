@@ -55,131 +55,101 @@ public class DummyPersistenceCapeable implements PersistenceCapable {
     }
 
     public void pcCopyFields(Object fromObject, int[] fields) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcCopyKeyFieldsFromObjectId(FieldConsumer consumer, Object obj) {
-        // TODO Auto-generated method stub
-
     }
 
     public void pcCopyKeyFieldsToObjectId(FieldSupplier supplier, Object obj) {
-        // TODO Auto-generated method stub
-
     }
 
     public void pcCopyKeyFieldsToObjectId(Object obj) {
-        // TODO Auto-generated method stub
-
     }
 
     public void pcDirty(String fieldName) {
-        // TODO Auto-generated method stub
-
     }
 
     public Object pcFetchObjectId() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object pcGetDetachedState() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object pcGetGenericContext() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public StateManager pcGetStateManager() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object pcGetVersion() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean pcIsDeleted() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public Boolean pcIsDetached() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public boolean pcIsDirty() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean pcIsNew() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean pcIsPersistent() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public boolean pcIsTransactional() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public PersistenceCapable pcNewInstance(StateManager sm, Object obj, boolean clear) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object pcNewObjectIdInstance() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object pcNewObjectIdInstance(Object obj) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void pcProvideField(int fieldIndex) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcProvideFields(int[] fieldIndices) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcReplaceField(int fieldIndex) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcReplaceFields(int[] fieldIndex) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcReplaceStateManager(StateManager sm) {
-        // TODO Auto-generated method stub
 
     }
 
     public void pcSetDetachedState(Object state) {
-        // TODO Auto-generated method stub
 
     }
 
     public DummyPersistenceCapeable() {
-        // TODO Auto-generated constructor stub
     }
 }
