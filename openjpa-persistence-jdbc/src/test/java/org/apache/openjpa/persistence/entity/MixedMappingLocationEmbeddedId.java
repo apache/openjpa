@@ -34,10 +34,19 @@ public class MixedMappingLocationEmbeddedId implements Serializable {
     private String basic10;
     
     public MixedMappingLocationEmbeddedId() {
-        // TODO Auto-generated constructor stub
     }
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
