@@ -68,7 +68,7 @@ public class DistributedCacheTest
             fullProvider = Configurations.getPlugin(provider, props);
         if (props == null || props.length() == 0)
             throw new IllegalStateException
-                ("must specify -Dkodo.RemoteCommitProvider=?");
+                ("must specify -Dopenjpa.RemoteCommitProvider=?");
 
         return new String[]{
             // use this property to differentiate factory
