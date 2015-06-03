@@ -80,13 +80,7 @@ public class TestBuildSchema
     }
 
     private String fixNewline(String str) {
-        //FIXME 
-        /*
-        return serp.util.Strings.join
-            (serp.util.Strings.split
-                (str, "\r\n", -1), "\n");
-         */
-        return "";
+        return str.replaceAll("\r\n", "\n");
     }
     
 }
