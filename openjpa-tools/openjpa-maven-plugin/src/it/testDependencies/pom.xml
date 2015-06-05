@@ -43,11 +43,6 @@
             <artifactId>geronimo-validation_1.0_spec</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.2</version>
-        </dependency>
     </dependencies>
 
     <build>
