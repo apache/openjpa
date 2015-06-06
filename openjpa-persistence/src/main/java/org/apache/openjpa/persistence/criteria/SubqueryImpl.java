@@ -27,6 +27,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
+import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
@@ -94,7 +95,12 @@ class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T> {
     public AbstractQuery<?> getParent() {
         return _parent;
     }
-    
+
+    @Override
+    public CommonAbstractCriteria getContainingQuery() {
+        return getParent();
+    }
+
     /**
      * Gets the captive query to which this subquery delegates.
      */

@@ -28,6 +28,8 @@ import javax.persistence.*;
 import org.apache.openjpa.jdbc.meta.strats.*;
 import org.apache.openjpa.persistence.*;
 import org.apache.openjpa.persistence.jdbc.*;
+import org.apache.openjpa.persistence.jdbc.ForeignKey;
+import org.apache.openjpa.persistence.jdbc.Index;
 import org.apache.openjpa.persistence.jdbc.OrderColumn;
 
 

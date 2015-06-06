@@ -25,9 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
+import javax.persistence.*;
 import javax.persistence.spi.LoadState;
 
 import org.apache.commons.lang.StringUtils;
@@ -150,7 +148,7 @@ public class EntityManagerFactoryImpl
     }
 
     public OpenJPAEntityManagerSPI createEntityManager() {
-        return createEntityManager(null);
+        return createEntityManager((Map) null);
     }
 
     /**
@@ -242,7 +240,17 @@ public class EntityManagerFactoryImpl
         }
         return em;
     }
-    
+
+    @Override
+    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
     /**
      * Create a new entity manager around the given broker.
      */
@@ -352,6 +360,24 @@ public class EntityManagerFactoryImpl
 
     public PersistenceUnitUtil getPersistenceUnitUtil() {
         return this;
+    }
+
+    @Override
+    public void addNamedQuery(String name, Query query) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> cls) {
+        if (cls.isInstance(this)) {
+            return cls.cast(this);
+        }
+        throw new javax.persistence.PersistenceException(this + " is not a " + cls);
+    }
+
+    @Override
+    public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
+        throw new UnsupportedOperationException("JPA 2.1");
     }
 
     /**

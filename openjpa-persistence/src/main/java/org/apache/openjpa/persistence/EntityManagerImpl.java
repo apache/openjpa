@@ -36,18 +36,23 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.metamodel.Metamodel;
 
@@ -560,6 +565,12 @@ public class EntityManagerImpl
                 ("no-managed-trans"), null, null, false);
     }
 
+    @Override
+    public boolean isJoinedToTransaction() {
+        // throw new UnsupportedOperationException("JPA 2.1");
+        return false;
+    }
+
     public void begin() {
         _broker.begin();
     }
@@ -1064,6 +1075,26 @@ public class EntityManagerImpl
             QueryLanguages.LANG_SQL, query);
         kernelQuery.setResultMapping(null, mappingName);
         return newQueryImpl(kernelQuery, null);
+    }
+
+    @Override
+    public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings) {
+        throw new UnsupportedOperationException("JPA 2.1");
     }
 
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery, QueryMetaData qmd) {
@@ -1622,7 +1653,17 @@ public class EntityManagerImpl
         }
         return facadeQuery;
     }
-    
+
+    @Override
+    public Query createQuery(CriteriaUpdate updateQuery) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public Query createQuery(CriteriaDelete deleteQuery) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
     public OpenJPAQuery createDynamicQuery(
         org.apache.openjpa.persistence.query.QueryDefinition qdef) {
         String jpql = _emf.getDynamicQueryBuilder().toJPQL(qdef);
@@ -1777,6 +1818,26 @@ public class EntityManagerImpl
 
     public Metamodel getMetamodel() {
         return _emf.getMetamodel();
+    }
+
+    @Override
+    public <T> EntityGraph<T> createEntityGraph(Class<T> rootType) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public EntityGraph<?> createEntityGraph(String graphName) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public EntityGraph<?>   getEntityGraph(String graphName) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
+        throw new UnsupportedOperationException("JPA 2.1");
     }
 
     /**

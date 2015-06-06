@@ -129,7 +129,15 @@ public class StoreCacheImpl
     public void evictAll() {
         _cache.clear();
     }
-    
+
+    @Override
+    public <T> T unwrap(Class<T> cls) {
+        if (cls.isInstance(this)) {
+            return cls.cast(this);
+        }
+        throw new javax.persistence.PersistenceException(cls.getName() + " not supported");
+    }
+
     public CacheStatistics getStatistics() {
     	return (_cache == null) ? null : _cache.getStatistics();
     }

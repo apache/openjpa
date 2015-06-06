@@ -29,6 +29,7 @@ import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.PluralJoin;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.CollectionAttribute;
@@ -138,7 +139,22 @@ abstract class Joins {
         public Member<? extends Z, X> getMember() {
             return (Member<? extends Z, X>) _member;
         }
-        
+
+        @Override
+        public Join<Z, X> on(Expression<Boolean> restriction) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Join<Z, X> on(Predicate... restrictions) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Predicate getOn() {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
         /**
          * Return the metamodel attribute corresponding to the join.
          * @return metamodel attribute type corresponding to the join
@@ -495,7 +511,22 @@ abstract class Joins {
         public Collection(FromImpl<?,Z> parent, Members.CollectionAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
-        
+
+        @Override
+        public CollectionJoin<Z, E> on(Expression<Boolean> restriction) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public CollectionJoin<Z, E> on(Predicate... restrictions) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Predicate getOn() {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
         public CollectionAttribute<? super Z, E> getModel() {
             return (CollectionAttribute<? super Z, E>)_member;
         }
@@ -512,7 +543,22 @@ abstract class Joins {
         public Set(FromImpl<?,Z> parent, Members.SetAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
-        
+
+        @Override
+        public SetJoin<Z, E> on(Expression<Boolean> restriction) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public SetJoin<Z, E> on(Predicate... restrictions) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Predicate getOn() {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
         public SetAttribute<? super Z, E> getModel() {
             return (SetAttribute<? super Z, E>)_member;
         }
@@ -531,7 +577,22 @@ abstract class Joins {
         public List(FromImpl<?,Z> parent, Members.ListAttributeImpl<? super Z, E> member, JoinType jt) {
             super(parent, member, jt);
         }
-        
+
+        @Override
+        public ListJoin<Z, E> on(Expression<Boolean> restriction) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public ListJoin<Z, E> on(Predicate... restrictions) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Predicate getOn() {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
         public ListAttribute<? super Z, E> getModel() {
             return (ListAttribute<? super Z, E>)_member;
         }
@@ -556,7 +617,22 @@ abstract class Joins {
         public Map(FromImpl<?,Z> parent, Members.MapAttributeImpl<? super Z, K,V> member, JoinType jt) {
             super(parent, member, jt);
         }
-        
+
+        @Override
+        public MapJoin<Z, K, V> on(Expression<Boolean> restriction) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public MapJoin<Z, K, V> on(Predicate... restrictions) {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
+        @Override
+        public Predicate getOn() {
+            throw new UnsupportedOperationException("JPA 2.1");
+        }
+
         public MapAttribute<? super Z, K,V> getModel() {
             return (MapAttribute<? super Z, K,V>) _member;
         }
