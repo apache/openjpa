@@ -528,7 +528,7 @@ public class SchemaTool {
                             else
                                 _log.warn(_loc.get("add-col", cols[k],
                                         tabs[j]));
-                        } else if (!cols[k].equalsColumn(col)) {
+                        } else if (!cols[k].equalsColumn(_dict, col)) {
                             _log.warn(_loc.get("bad-col", new Object[]{
                                     col, dbTable, col.getDescription(),
                                     cols[k].getDescription() }));
@@ -767,7 +767,7 @@ public class SchemaTool {
                 if (reposTable != null) {
                     for (int k = 0; k < cols.length; k++) {
                         col = reposTable.getColumn(cols[k].getIdentifier());
-                        if (col == null || !cols[k].equalsColumn(col)) {
+                        if (col == null || !cols[k].equalsColumn(_dict, col)) {
                             if (tabs[j].getColumns().length == 1)
                                 drops.add(tabs[j]);
                             else if (dropColumn(cols[k]))

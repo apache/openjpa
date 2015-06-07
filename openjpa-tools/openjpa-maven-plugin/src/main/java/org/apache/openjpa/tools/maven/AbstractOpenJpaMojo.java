@@ -96,7 +96,17 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * @parameter
      */
     private String persistenceXmlFile;
-    
+
+    /**
+     * An optional PersistenceUnit name.
+     * If not specified then OpenJPA will run against 'all anchors'.
+     * Means it will use all persistenceunits of all persistence.xml files it finds.
+     *
+     * @parameter default-value="${openjpa.persistenceUnitName}"
+     */
+    private String persistenceUnitName;
+
+
     /**
      * <p>This setting can be used to override any openjpa.ConnectionDriverName set in the
      * persistence.xml. It can also be used if the persistence.xml contains no connection
@@ -259,13 +269,22 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
         {
           opts.putAll( toolProperties );
         }
-        
-        if ( persistenceXmlFile != null )
+
+        String persistenceXmlResource = "META-INF/persistence.xml";
+
+        if ( persistenceXmlFile != null && persistenceXmlFile.length() > 0)
         {
             fixPersistenceXmlIfNeeded(Thread.currentThread().getContextClassLoader());
             opts.put( OPTION_PROPERTIES_FILE, persistenceXmlFile );
             getLog().debug("using special persistence XML file: " + persistenceXmlFile);
+            persistenceXmlResource = persistenceXmlFile;
         }
+
+        if (persistenceUnitName != null && persistenceUnitName.length() > 0) {
+            opts.put(OPTION_PROPERTIES, persistenceXmlResource + "#" + persistenceUnitName);
+        }
+
+
         else if (!new File(classes, "META-INF/persistence.xml").exists())
         { // use default but try from classpath
             persistenceXmlFile = "META-INF/persistence.xml";

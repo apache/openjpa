@@ -33,6 +33,7 @@ import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
 import org.apache.openjpa.jdbc.meta.VersionStrategy;
+import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.meta.JavaTypes;
 
 /**
@@ -634,7 +635,7 @@ public class Column
      * Return true if this column is compatible with the given JDBC type
      * from {@link Types} and size.
      */
-    public boolean isCompatible(int type, String typeName, int size, 
+    public boolean isCompatible(int type, String typeName, int size,
         int decimals) {
         if (type == Types.OTHER || getType() == Types.OTHER)
             return true;
@@ -723,7 +724,7 @@ public class Column
                      default:
                          return false;
                 }
-                
+
             default:
                 return type == getType();
         }
@@ -753,7 +754,7 @@ public class Column
     /**
      * Tests compatibility.
      */
-    public boolean equalsColumn(Column col) {
+    public boolean equalsColumn(DBDictionary dict, Column col) {
         if (col == this)
             return true;
         if (col == null)
@@ -762,8 +763,14 @@ public class Column
         if (!getQualifiedPath().equals(col.getQualifiedPath()))
             return false;
         if (!isCompatible(col.getType(), col.getTypeIdentifier().getName(), col.getSize(),
-            col.getDecimalDigits()))
+            col.getDecimalDigits())) {
+            // do an additional lookup in case the java.sql.Types are different but
+            // they map to the same representation in the DB
+            if (dict.getTypeName(this).equals(dict.getTypeName(col))) {
+                return true;
+            }
             return false;
+        }
         if (getType() == Types.VARCHAR && getSize() > 0 && col.getSize() > 0
             && getSize() != col.getSize())
             return false;
