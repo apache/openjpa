@@ -18,10 +18,10 @@
  */
 package org.apache.openjpa.meta;
 
+import org.apache.openjpa.kernel.QueryLanguages;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.openjpa.kernel.QueryLanguages;
 
 
 
@@ -153,15 +153,8 @@ public class MultiQueryMetaData extends QueryMetaData {
         private final Mode mode;
         private final int position;
 
-        public Parameter(String name, Class<?> type, Mode mode) {
+        public Parameter(int position, String name, Class<?> type, Mode mode) {
             this.name = name;
-            this.type = type;
-            this.mode = mode;
-            this.position = -1;
-        }
-
-        public Parameter(int position, Class<?> type, Mode mode) {
-            this.name = null;
             this.type = type;
             this.mode = mode;
             this.position = position;

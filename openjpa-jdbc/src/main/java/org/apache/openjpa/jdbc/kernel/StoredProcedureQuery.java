@@ -37,7 +37,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,7 +105,7 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 }
             }
         }
-        return new StoredProcedureQueryExecutor(this, mappings, classes);
+        return new StoredProcedureQueryExecutor(this, mappings, classes, _meta);
     }
 
     public boolean supportsParameterDeclarations() {
@@ -128,9 +128,11 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
     public class StoredProcedureQueryExecutor  extends AbstractExecutor {
         private final List<Class<?>> _resultClasses;
         private final List<QueryResultMapping> _resultMappings;
+        private final Map<String, String> _parametersNameMapping = new HashMap<String, String>();
+        private final Map<String, String> _parametersNameMappingReverse = new HashMap<String, String>();
 
         public StoredProcedureQueryExecutor(StoredProcedureQuery q, List<QueryResultMapping> resultMapping,
-                                            List<Class<?>> classes) {
+                                            List<Class<?>> classes, MultiQueryMetaData _meta) {
             QueryContext ctx = q.getContext();
             _resultMappings = resultMapping;
             _resultClasses = classes;
@@ -139,6 +141,14 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
             _proc = getStoredProcedure(_store.getConnection(), _store.getDBDictionary(), procName);
             if (_proc == null) {
                 throw new RuntimeException("Can not find stored procedure " + procName);
+            }
+            for (final Column c : _proc.getColumns()) {
+                final String name = _meta.getParameters().get(c.getIndex()).getName();
+                if (name != null) {
+                    final String dbName = c.getIdentifier().getName();
+                    _parametersNameMapping.put(name, dbName);
+                    _parametersNameMappingReverse.put(dbName, name);
+                }
             }
         }
 
@@ -167,21 +177,26 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                 Connection conn = _store.getConnection();
                 CallableStatement stmnt = conn.prepareCall(_proc.getCallSQL());
 
-                final StoredProcedureQuery spq = StoredProcedureQuery.class.cast(q);
-                for (Column c : spq.getProcedure().getInColumns()) {
-                    dict.setUnknown(stmnt, c.getIndex() + 1, params[c.getIndex()], c);
-                }
-                for (Column c : spq.getProcedure().getInOutColumns()) {
-                    final int index = c.getIndex() + 1;
-                    stmnt.registerOutParameter(index, c.getType());
-                    dict.setUnknown(stmnt, index, params[index - 1], c);
-                }
-                for (Column c : spq.getProcedure().getOutColumns()) {
-                    stmnt.registerOutParameter(c.getIndex() + 1, c.getType());
+                Column[] columns = StoredProcedureQuery.class.cast(q).getProcedure().getColumns();
+                for (final MultiQueryMetaData.Parameter p : _meta.getParameters()) {
+                    final Column column = columns[p.getPosition()];
+                    switch (p.getMode()) {
+                        case IN:
+                            dict.setUnknown(stmnt, p.getPosition() + 1, params[p.getPosition()], column);
+                            break;
+                        case INOUT: // dont break to get the out part as well
+                            dict.setUnknown(stmnt, p.getPosition() + 1, params[p.getPosition()], column);
+                        case OUT:
+                        case CURSOR:
+                            final int index = p.getPosition() + 1;
+                            stmnt.registerOutParameter(index, column.getType());
+                    }
                 }
 
                 JDBCFetchConfiguration fetch = (JDBCFetchConfiguration)q.getContext().getFetchConfiguration();
-                ResultObjectProvider rop = new XROP(_resultMappings, _resultClasses, _store, fetch, stmnt);
+                ResultObjectProvider rop = new XROP(
+                        _resultMappings, _resultClasses, _parametersNameMapping,
+                        _store, fetch, stmnt);
                 rop.open();
                 return rop;
             } catch (Exception e) {
@@ -199,7 +214,7 @@ public class StoredProcedureQuery extends AbstractStoreQuery {
                     storedProcedureQuery.getProcedure().getInColumns(),
                     storedProcedureQuery.getProcedure().getInOutColumns())) {
                 for (Column c : columns) {
-                    array[i] = userParams.get(c.getIdentifier().getName());
+                    array[i] = userParams.get(_parametersNameMappingReverse.get(c.getIdentifier().getName()));
                     if (array[i++] == null) {
                         userParams.get(c.getIndex());
                     }

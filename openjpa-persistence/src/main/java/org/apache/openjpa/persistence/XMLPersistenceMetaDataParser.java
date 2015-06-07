@@ -758,6 +758,7 @@ public class XMLPersistenceMetaDataParser
             return false;
         }
         meta.registerParameter(new MultiQueryMetaData.Parameter(
+                meta.getParameterCount(),
                 attrs.getValue("name"), type,
                 MultiQueryMetaData.Parameter.Mode.valueOf(attrs.getValue("mode"))));
         return true;

@@ -58,12 +58,12 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         Procedures.inParamsString = null;
 
         EntityManager em = emf.createEntityManager();
-        exec(em, "CREATE PROCEDURE TESTINS(some_number INTEGER,some_string VARCHAR(255)) " +
+        exec(em, "CREATE PROCEDURE TESTINS(SOME_NUMBER INTEGER,SOME_STRING VARCHAR(255)) " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
                 "'" + Procedures.class.getName() + ".inParams'");
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.inParams");
-        procedure.setParameter("SOME_NUMBER", 2015);
-        procedure.setParameter("SOME_STRING", "openjpa");
+        procedure.setParameter("some_number", 2015);
+        procedure.setParameter("some_string", "openjpa");
         assertFalse(procedure.execute());
         assertEquals(2015, Procedures.inParamsInteger);
         assertEquals("openjpa", Procedures.inParamsString);
@@ -72,7 +72,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
         StoredProcedureQuery procedure2 = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.inParams");
-        procedure2.setParameter("SOME_NUMBER", 20152);
+        procedure2.setParameter("some_number", 20152);
         assertFalse(procedure2.execute());
         em.close();
         assertEquals(20152, Procedures.inParamsInteger);
@@ -81,11 +81,11 @@ public class TestStoredProcedure extends SingleEMFTestCase {
 
     public void testOut() {
         EntityManager em = emf.createEntityManager();
-        exec(em, "CREATE PROCEDURE XTWO(IN some_number INTEGER,OUT x2 INTEGER) " +
+        exec(em, "CREATE PROCEDURE XTWO(IN SOME_NUMBER INTEGER,OUT x2 INTEGER) " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
                 "'" + Procedures.class.getName() + ".x2'");
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.x2");
-        procedure.setParameter("SOME_NUMBER", 5);
+        procedure.setParameter("some_number", 5);
         assertFalse(procedure.execute());
         // assertEquals(10, procedure.getOutputParameterValue("result")); //  not impl by derby
         assertEquals(10, procedure.getOutputParameterValue(2));
@@ -98,7 +98,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
                 "'" + Procedures.class.getName() + ".inout'");
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.inout");
-        procedure.setParameter("P", 5);
+        procedure.setParameter("p", 5);
         assertFalse(procedure.execute());
         // assertEquals(10, procedure.getOutputParameterValue("p")); //  not impl by derby
         assertEquals(10, procedure.getOutputParameterValue(1));

@@ -29,12 +29,18 @@ import org.apache.openjpa.util.UserException;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
+import javax.persistence.Parameter;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureQuery;
+import javax.persistence.TemporalType;
 
 /**
  * Implements Store Procedure based query for JPA facade.
@@ -61,6 +67,7 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
     private final MultiQueryMetaData _meta;
     private QueryResultCallback _callback;
     private boolean _declaredParams; // mainly a flag for now (null or not)
+    private Iterator<MultiQueryMetaData.Parameter> cursorIterator;
 
     /**
      * Construct a query for executing a Stored Procedure.
@@ -133,6 +140,19 @@ public class StoredProcedureQueryImpl implements StoredProcedureQuery {
         execute();
         try {
             Object list = _callback.callback();
+            if (list == null) { // check if there is a cursor
+                if (cursorIterator == null) {
+                    cursorIterator = _meta.getParameters().iterator();
+                }
+                while (cursorIterator.hasNext()) {
+                    final MultiQueryMetaData.Parameter p = cursorIterator.next();
+                    if (p.getMode() == MultiQueryMetaData.Parameter.Mode.CURSOR) {
+                        list = p.getName() == null ?
+                                getOutputParameterValue(p.getPosition()) : getOutputParameterValue(p.getName());
+                        break;
+                    }
+                }
+            }
             RuntimeExceptionTranslator trans = PersistenceExceptions
                     .getRollbackTranslator(_delegate.getEntityManager());
             return new DelegatingResultList((ResultList) list, trans);

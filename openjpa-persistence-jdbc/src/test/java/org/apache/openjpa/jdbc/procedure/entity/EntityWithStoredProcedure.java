@@ -40,24 +40,22 @@ import static javax.persistence.ParameterMode.OUT;
                 name = "EntityWithStoredProcedure.inParams",
                 procedureName = "TESTINS",
                 parameters = {
-                        @StoredProcedureParameter(name = "SOME_NUMBER", type = Integer.class),
-                        @StoredProcedureParameter(name = "SOME_STRING", type = String.class)
+                        @StoredProcedureParameter(name = "some_number", type = Integer.class),
+                        @StoredProcedureParameter(name = "some_string", type = String.class)
                 }
         ),
         @NamedStoredProcedureQuery(
                 name = "EntityWithStoredProcedure.x2",
                 procedureName = "XTWO",
                 parameters = {
-                        @StoredProcedureParameter(name = "SOME_NUMBER", type = Integer.class),
-                        @StoredProcedureParameter(name = "RESULT", type = Integer.class, mode = OUT)
+                        @StoredProcedureParameter(name = "some_number", type = Integer.class),
+                        @StoredProcedureParameter(name = "result", type = Integer.class, mode = OUT)
                 }
         ),
         @NamedStoredProcedureQuery(
                 name = "EntityWithStoredProcedure.inout",
                 procedureName = "XINOUT",
-                parameters = {
-                        @StoredProcedureParameter(name = "P ", type = Integer.class, mode = INOUT)
-                }
+                parameters = @StoredProcedureParameter(name = "p", type = Integer.class, mode = INOUT)
         ),
         @NamedStoredProcedureQuery(
                 name = "EntityWithStoredProcedure.mapping",

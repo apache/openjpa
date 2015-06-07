@@ -2216,6 +2216,7 @@ public class AnnotationPersistenceMetaDataParser
             StoredProcedureParameter[] params = proc.parameters();
             for (StoredProcedureParameter param : params) {
                 MultiQueryMetaData.Parameter p = new MultiQueryMetaData.Parameter(
+                        meta.getParameterCount(),
                         param.name(), param.type(), toKernelParameterMode(param.mode()));
                 meta.registerParameter(p);
             }

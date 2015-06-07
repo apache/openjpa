@@ -29,6 +29,7 @@ import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Gets multiple Result Object Providers each with different mapping.
@@ -41,16 +42,18 @@ public class XROP implements BatchedResultObjectProvider {
     private final JDBCFetchConfiguration fetch;
     private final List<QueryResultMapping> _multi;
     private final List<Class<?>> _resultClasses;
+    private final Map<String, String> _nameMapping;
     private int index;
     private final JDBCStore store;
     // Result of first execution
     private boolean executionResult;
 
     public XROP(List<QueryResultMapping> mappings, List<Class<?>> classes,
-                JDBCStore store, JDBCFetchConfiguration fetch,
+                Map<String, String> _parametersNameMapping, JDBCStore store, JDBCFetchConfiguration fetch,
                 CallableStatement stmt) {
         _multi = mappings;
         _resultClasses = classes;
+        _nameMapping = _parametersNameMapping;
         this.stmt = stmt;
         this.fetch = fetch;
         this.store = store;
@@ -87,6 +90,10 @@ public class XROP implements BatchedResultObjectProvider {
         if (rs == null)
             return null;
 
+        return mapResultSet(rs);
+    }
+
+    private ResultObjectProvider mapResultSet(final ResultSet rs) throws SQLException {
         ResultSetResult res = new ResultSetResult(rs, store.getDBDictionary());
         res.setCloseConnection(false);
         res.setCloseStatement(false);
@@ -150,7 +157,7 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public Object getOut(String name) {
         try {
-            return stmt.getObject(name);
+            return mapIfNeeded(stmt.getObject(_nameMapping.get(name)));
         } catch (SQLException e) {
             return null;
         }
@@ -159,10 +166,17 @@ public class XROP implements BatchedResultObjectProvider {
     @Override
     public Object getOut(int position) {
         try {
-            return stmt.getObject(position);
+            return mapIfNeeded(stmt.getObject(position));
         } catch (SQLException e) {
             return null;
         }
+    }
+
+    private Object mapIfNeeded(final Object object) throws SQLException {
+        if (ResultSet.class.isInstance(object)) {
+            return mapResultSet(ResultSet.class.cast(object));
+        }
+        return object;
     }
 
     /**
