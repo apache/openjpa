@@ -39,6 +39,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.GenerationType;
 import javax.persistence.LockModeType;
 
+import static java.util.Arrays.asList;
 import static javax.persistence.CascadeType.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -65,6 +66,7 @@ import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataDefaults;
 import org.apache.openjpa.meta.MetaDataFactory;
+import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.UpdateStrategies;
 
 import static org.apache.openjpa.meta.MetaDataModes.*;
@@ -156,6 +158,11 @@ public class XMLPersistenceMetaDataParser
         _elems.put(ELEM_XML_MAP_META_COMPLETE, ELEM_XML_MAP_META_COMPLETE);
         _elems.put(ELEM_DELIM_IDS, ELEM_DELIM_IDS);
 
+        _elems.put("parameter", PARAMETER);
+        _elems.put("result-class", RESULT_CLASS);
+        _elems.put("result-set-mapping", RESULT_SET_MAPPING);
+        _elems.put("hint", HINT);
+
         _elems.put("entity-listeners", ENTITY_LISTENERS);
         _elems.put("pre-persist", PRE_PERSIST);
         _elems.put("post-persist", POST_PERSIST);
@@ -170,6 +177,7 @@ public class XMLPersistenceMetaDataParser
 
         _elems.put("named-query", QUERY);
         _elems.put("named-native-query", NATIVE_QUERY);
+        _elems.put("named-stored-procedure-query", STOREDPROCEDURE_QUERY);
         _elems.put("query-hint", QUERY_HINT);
         _elems.put("query", QUERY_STRING);
 
@@ -618,6 +626,21 @@ public class XMLPersistenceMetaDataParser
                 case NATIVE_QUERY:
                     ret = startNamedNativeQuery(attrs);
                     break;
+                case STOREDPROCEDURE_QUERY:
+                    ret = startStoredQuery(attrs);
+                    break;
+                case PARAMETER:
+                    ret = startStoredProcedureParameter(attrs);
+                    break;
+                case RESULT_CLASS:
+                    ret = startResultClass();
+                    break;
+                case RESULT_SET_MAPPING:
+                    ret = startResultSetMapping();
+                    break;
+                case HINT:
+                    ret = startStoredProcedureHint(attrs);
+                    break;
                 case QUERY_STRING:
                     ret = startQueryString(attrs);
                     break;
@@ -683,6 +706,15 @@ public class XMLPersistenceMetaDataParser
                 case NATIVE_QUERY:
                     endNamedNativeQuery();
                     break;
+                case STOREDPROCEDURE_QUERY:
+                    popElement();
+                    break;
+                case RESULT_CLASS:
+                    endResultClass();
+                    break;
+                case RESULT_SET_MAPPING:
+                    endResultSetMapping();
+                    break;
                 case QUERY_STRING:
                     endQueryString();
                     break;
@@ -696,6 +728,89 @@ public class XMLPersistenceMetaDataParser
             endEntityListener();
 
         _parents.pop();
+    }
+
+    protected void endResultClass()
+        throws SAXException {
+        MultiQueryMetaData meta = (MultiQueryMetaData) currentElement();
+        for (final String clazz : asList(currentText(), _cls.getPackage().getName() + "." + currentText())) {
+            try {
+                meta.addComponent(meta.getDefiningType().getClassLoader().loadClass(clazz));
+                break;
+            } catch (ClassNotFoundException e) {
+                // no-op
+            }
+        }
+    }
+
+    protected void endResultSetMapping()
+        throws SAXException {
+        MultiQueryMetaData meta = (MultiQueryMetaData) currentElement();
+        meta.addComponent(currentText());
+    }
+
+    private boolean startStoredProcedureParameter(Attributes attrs) {
+        MultiQueryMetaData meta = MultiQueryMetaData.class.cast(popElement());
+        Class<?> type;
+        try {
+            type = meta.getDefiningType().getClassLoader().loadClass(attrs.getValue("class"));
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        meta.registerParameter(new MultiQueryMetaData.Parameter(
+                attrs.getValue("name"), type,
+                MultiQueryMetaData.Parameter.Mode.valueOf(attrs.getValue("mode"))));
+        return true;
+    }
+
+    private boolean startStoredProcedureHint(Attributes attrs) {
+        MultiQueryMetaData meta = MultiQueryMetaData.class.cast(popElement());
+        meta.addHint(attrs.getValue("name"), attrs.getValue("value"));
+        return true;
+    }
+
+    private boolean startResultClass() {
+        return true;
+    }
+
+    private boolean startResultSetMapping() {
+        return true;
+    }
+
+    private boolean startStoredQuery(final Attributes attrs) {
+        String name = attrs.getValue("name");
+        Log log = getLog();
+        if (log.isTraceEnabled())
+            log.trace(_loc.get("parse-query", name));
+
+        QueryMetaData meta = getRepository().searchQueryMetaDataByName(name);
+        if (meta != null) {
+            Class<?> defType = meta.getDefiningType();
+            if ((defType != _cls) && log.isWarnEnabled()) {
+                log.warn(_loc.get("dup-query", name, currentLocation(),
+                        defType));
+            }
+            pushElement(meta);
+            return true;
+        }
+
+        final String procName = attrs.getValue("procedure-name");
+
+        meta = getRepository().addQueryMetaData(new MultiQueryMetaData(_cls, name, procName, false));
+        meta.setDefiningType(_cls);
+        meta.setQueryString(procName);
+        Locator locator = getLocation().getLocator();
+        if (locator != null) {
+            meta.setLineNumber(locator.getLineNumber());
+            meta.setColNumber(locator.getColumnNumber());
+        }
+        Object cur = currentElement();
+        Object scope = (cur instanceof ClassMetaData)
+                ? ((ClassMetaData) cur).getDescribedType() : null;
+        meta.setSource(getSourceFile(), scope, SourceTracker.SRC_XML, locator == null ? "" : locator.getSystemId());
+        meta.setSourceMode(MODE_QUERY);
+        pushElement(meta);
+        return true;
     }
 
     /**
