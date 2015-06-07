@@ -45,6 +45,7 @@ import org.apache.openjpa.kernel.exps.Path;
 import org.apache.openjpa.kernel.exps.QueryExpressions;
 import org.apache.openjpa.kernel.exps.Val;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.rop.BatchedResultObjectProvider;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.ListResultList;
 import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
@@ -1226,6 +1227,9 @@ public class QueryImpl
     protected Object toResult(StoreQuery q, StoreQuery.Executor ex, 
         ResultObjectProvider rop, StoreQuery.Range range)
         throws Exception {
+        if (rop instanceof BatchedResultObjectProvider) {
+            return new QueryResultCallback(this, q, ex, (BatchedResultObjectProvider) rop, range);
+        }
         // pack projections if necessary
         String[] aliases = ex.getProjectionAliases(q);
         if (!ex.isPacking(q)) {

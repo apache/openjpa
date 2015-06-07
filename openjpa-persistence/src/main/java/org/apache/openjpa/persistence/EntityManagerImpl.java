@@ -83,6 +83,8 @@ import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
+import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
@@ -119,7 +121,8 @@ public class EntityManagerImpl
     private Map<FetchConfiguration,FetchPlan> _plans = new IdentityHashMap<FetchConfiguration,FetchPlan>(1);
     protected RuntimeExceptionTranslator _ret = PersistenceExceptions.getRollbackTranslator(this);
     private boolean _convertPositionalParams = false;
-    
+    private boolean _isJoinedToTransaction;
+
     public EntityManagerImpl() {
         // for Externalizable
     }
@@ -559,6 +562,13 @@ public class EntityManagerImpl
     }
 
     public void joinTransaction() {
+        if (!_broker.syncWithManagedTransaction()) {
+            throw new TransactionRequiredException(_loc.get
+                    ("no-managed-trans"), null, null, false);
+        } else {
+            _isJoinedToTransaction = true;
+        }
+
         assertNotCloseInvoked();
         if (!_broker.syncWithManagedTransaction())
             throw new TransactionRequiredException(_loc.get
@@ -567,8 +577,7 @@ public class EntityManagerImpl
 
     @Override
     public boolean isJoinedToTransaction() {
-        // throw new UnsupportedOperationException("JPA 2.1");
-        return false;
+        return isActive() && _isJoinedToTransaction;
     }
 
     public void begin() {
@@ -1079,22 +1088,60 @@ public class EntityManagerImpl
 
     @Override
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        QueryMetaData meta = getQueryMetadata(name);
+        if (!MultiQueryMetaData.class.isInstance(meta)) {
+            throw new RuntimeException(name + " is not an identifier for a Stored Procedure Query");
+        }
+        return newProcedure(((MultiQueryMetaData)meta).getProcedureName(), (MultiQueryMetaData)meta);
     }
 
     @Override
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        return newProcedure(procedureName, null);
     }
 
     @Override
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        String tempName = "StoredProcedure-"+System.nanoTime();
+        MultiQueryMetaData meta = new MultiQueryMetaData(null, tempName, procedureName, true);
+        for (Class<?> res : resultClasses) {
+            meta.addComponent(res);
+        }
+        return newProcedure(procedureName, meta);
     }
 
     @Override
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        String tempName = "StoredProcedure-"+System.nanoTime();
+        MultiQueryMetaData meta = new MultiQueryMetaData(null, tempName, procedureName, true);
+        for (String mapping : resultSetMappings) {
+            meta.addComponent(mapping);
+        }
+        return newProcedure(procedureName, meta);
+    }
+
+    /**
+     * Creates a query to execute a Stored Procedure.
+     * <br>
+     * Construction of a {@link StoredProcedureQuery} object is a three step process
+     * <LI>
+     * <LI>a {@link org.apache.openjpa.kernel.Query kernel query} {@code kQ} is created for
+     * {@link QueryLanguages#LANG_SQL SQL} language with the string {@code S}
+     * <LI>a {@link QueryImpl facade query} {@code fQ} is created that delegates to the kernel query {@code kQ}
+     * <LI>a {@link StoredProcedureQueryImpl stored procedure query} is created that delegates to the facade query
+     * {@code fQ}.
+     * <br>
+     *
+     */
+    private StoredProcedureQuery newProcedure(String procedureName, MultiQueryMetaData meta) {
+        org.apache.openjpa.kernel.QueryImpl kernelQuery = (org.apache.openjpa.kernel.QueryImpl)
+                _broker.newQuery(QueryLanguages.LANG_STORED_PROC, procedureName);
+        kernelQuery.getStoreQuery().setQuery(meta);
+        if (meta != null) {
+            getConfiguration().getMetaDataRepositoryInstance().addQueryMetaData(meta);
+            kernelQuery.setResultMapping(null, meta.getResultSetMappingName());
+        }
+        return new StoredProcedureQueryImpl(procedureName, meta, new QueryImpl(this, _ret, kernelQuery, meta));
     }
 
     protected <T> QueryImpl<T> newQueryImpl(org.apache.openjpa.kernel.Query kernelQuery, QueryMetaData qmd) {
@@ -1941,5 +1988,14 @@ public class EntityManagerImpl
             properties = new HashMap<String, Object>(properties);
         }
         return properties;
+    }
+
+    private QueryMetaData getQueryMetadata(String name) {
+        MetaDataRepository repos = _broker.getConfiguration().getMetaDataRepositoryInstance();
+        QueryMetaData meta = repos.getQueryMetaData(null, name, _broker.getClassLoader(), true);
+        if (meta == null) {
+            throw new RuntimeException("No query named [" + name + "]");
+        }
+        return meta;
     }
 }

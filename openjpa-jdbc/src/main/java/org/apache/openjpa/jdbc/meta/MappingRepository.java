@@ -210,7 +210,7 @@ public class MappingRepository extends MetaDataRepository {
      * Return the query result mapping for the given name.
      */
     public QueryResultMapping getQueryResultMapping(Class<?> cls, String name, ClassLoader loader, boolean mustExist) {
-        QueryResultMapping res = null;
+        QueryResultMapping res;
         if (_locking) {
             synchronized (this) {
                 res = getQueryResultMappingInternal(cls, name, loader);
@@ -232,13 +232,13 @@ public class MappingRepository extends MetaDataRepository {
 
         // check cache
         Object key = getQueryResultKey(cls, name);
-        QueryResultMapping res = (QueryResultMapping) _results.get(key);
+        QueryResultMapping res = _results.get(key);
         if (res != null)
             return res;
 
         // get metadata for class, which will find results in metadata file
         if (cls != null && getMetaData(cls, envLoader, false) != null) {
-            res = (QueryResultMapping) _results.get(key);
+            res = _results.get(key);
             if (res != null)
                 return res;
         }
@@ -250,7 +250,7 @@ public class MappingRepository extends MetaDataRepository {
                     .getResultSetMappingScope(name, envLoader);
         // not in cache; load
         getMetaDataFactory().load(cls, MODE_META | MODE_MAPPING, envLoader);
-        return (QueryResultMapping) _results.get(key);
+        return _results.get(key);
     }
 
     /**

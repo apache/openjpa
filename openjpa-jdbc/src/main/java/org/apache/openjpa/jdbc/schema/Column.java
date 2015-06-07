@@ -62,6 +62,9 @@ public class Column
     private DBIdentifier _typeName = DBIdentifier.NULL;
     private int _javaType = JavaTypes.OBJECT;
     private int _size = 0;
+    private int _precision = -1;
+    private int _scale     = -1;
+    private int _radix     = 10;
     private int _decimals = 0;
     private String _defaultStr = null;
     private Object _default = null;
@@ -377,6 +380,29 @@ public class Column
         _decimals = digits;
     }
 
+    public int getPrecision() {
+        return _precision;
+    }
+
+    public void setPrecision(int p) {
+        _precision = p;
+    }
+
+    public int getScale() {
+        return _scale;
+    }
+
+    public void setScale(int s) {
+        _scale = s;
+    }
+    public int getRadix() {
+        return _radix;
+    }
+
+    public void setRadix(int r) {
+        _radix = r;
+    }
+
     /**
      * Return the default value set for the column, if any.
      */
@@ -489,6 +515,22 @@ public class Column
      */
     public boolean isNotNullExplicit() {
         return _notNull != null;
+    }
+
+    /**
+     * Sets nullability of this receiver by the given flag.
+     * @param flag one of the JDBC nullability flag namely
+     * <LI> {@link DatabaseMetaData#columnNullableUnknown} : not known if the column can be set to null value
+     * <LI> {@link DatabaseMetaData#columnNullable} : the column can be set to null value
+     * <LI> {@link DatabaseMetaData#columnNoNulls} : the column can not be set to null value
+     */
+    public void setNullability(short flag) {
+        switch (flag) {
+            case DatabaseMetaData.columnNullableUnknown : _notNull = null; break;
+            case DatabaseMetaData.columnNullable : _notNull = false; break;
+            case DatabaseMetaData.columnNoNulls : _notNull = true; break;
+
+        }
     }
 
     /**
@@ -610,7 +652,7 @@ public class Column
     /**
      * Set the column's 0-based index in the owning table.
      */
-    void setIndex(int index) {
+    public void setIndex(int index) {
         _index = index;
     }
 

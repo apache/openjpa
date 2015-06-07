@@ -34,6 +34,7 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.CollectionTable;
 import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.EntityResult;
@@ -619,6 +620,9 @@ public class AnnotationPersistenceMappingParser
                     DBIdentifier sColName = DBIdentifier.newColumn(field.column(), delimit());
                     entityResult.addMapping(field.name(), sColName.getName());
                 }
+            }
+            for (ConstructorResult constructorResult : anno.classes()) {
+                throw new UnsupportedOperationException("JPA 2.1, not yet impl");
             }
             for (ColumnResult column : anno.columns()) {
                 DBIdentifier sName = DBIdentifier.newColumn(column.name(), delimit());
@@ -1577,9 +1581,9 @@ public class AnnotationPersistenceMappingParser
             }
             if (xmlRootElementClass != null
                 && StringUtils.isEmpty(pcols[i].columnDefinition())
-                && (AccessController.doPrivileged(J2DoPrivHelper
+                && AccessController.doPrivileged(J2DoPrivHelper
                     .isAnnotationPresentAction(fm.getDeclaredType(),
-                        xmlRootElementClass))).booleanValue()) {
+                        xmlRootElementClass)).booleanValue()) {
                 DBDictionary dict = ((MappingRepository) getRepository())
                     .getDBDictionary();
                 if (dict.supportsXMLColumn)

@@ -83,6 +83,10 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
         return result;
     }
 
+    public boolean isProcedure() {
+        return QueryLanguages.LANG_STORED_PROC.equals(getLanguage());
+    }
+
     public boolean isNative() {
         return QueryLanguages.LANG_SQL.equals(getLanguage());
     }
@@ -131,8 +135,8 @@ public abstract class AbstractQuery<X> implements OpenJPAQuerySPI<X> {
             if (pos < 1) {
                 throw new IllegalArgumentException(_loc.get("illegal-index", pos).getMessage());
             }
-            Parameter<?> param = null;
-            if (isNative()) {
+            Parameter<?> param;
+            if (isNative() || isProcedure()) {
                 param = new ParameterImpl<Object>(pos, Object.class);
                 declareParameter(pos, param);
             } else {

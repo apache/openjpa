@@ -63,6 +63,8 @@ import static org.apache.openjpa.persistence.MetaDataTag.QUERIES;
 import static org.apache.openjpa.persistence.MetaDataTag.QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.READ_ONLY;
 import static org.apache.openjpa.persistence.MetaDataTag.SEQ_GENERATOR;
+import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERIES;
+import static org.apache.openjpa.persistence.MetaDataTag.STOREDPROCEDURE_QUERY;
 import static org.apache.openjpa.persistence.MetaDataTag.TYPE;
 import static org.apache.openjpa.persistence.MetaDataTag.VERSION;
 
@@ -120,9 +122,12 @@ import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.ParameterMode;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
@@ -132,6 +137,7 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.QueryHint;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Version;
 
 import org.apache.commons.lang.StringUtils;
@@ -156,6 +162,7 @@ import org.apache.openjpa.meta.LifecycleMetaData;
 import org.apache.openjpa.meta.MetaDataFactory;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.MultiQueryMetaData;
 import org.apache.openjpa.meta.Order;
 import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.meta.SequenceMetaData;
@@ -203,6 +210,8 @@ public class AnnotationPersistenceMetaDataParser
         _tags.put(MapsId.class, MAPPED_BY_ID);
         _tags.put(NamedNativeQueries.class, NATIVE_QUERIES);
         _tags.put(NamedNativeQuery.class, NATIVE_QUERY);
+        _tags.put(NamedStoredProcedureQueries.class, STOREDPROCEDURE_QUERIES);
+        _tags.put(NamedStoredProcedureQuery.class, STOREDPROCEDURE_QUERY);
         _tags.put(NamedQueries.class, QUERIES);
         _tags.put(NamedQuery.class, QUERY);
         _tags.put(OrderBy.class, ORDER_BY);
@@ -471,6 +480,14 @@ public class AnnotationPersistenceMetaDataParser
                     if (isQueryMode() && (pkgMode & MODE_QUERY) == 0)
                         parseNamedQueries(pkg, (NamedQuery) anno);
                     break;
+                case STOREDPROCEDURE_QUERIES:
+                    if (isQueryMode())
+                        parseNamedStoredProcedureQueries(pkg, ((NamedStoredProcedureQueries) anno).value());
+                    break;
+                case STOREDPROCEDURE_QUERY:
+                    if (isQueryMode())
+                        parseNamedStoredProcedureQueries(pkg, ((NamedStoredProcedureQuery) anno));
+                    break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode() &&
                         (pkgMode & MODE_MAPPING) == 0)
@@ -622,6 +639,14 @@ public class AnnotationPersistenceMetaDataParser
                 case QUERY:
                     if (isQueryMode() && (meta.getSourceMode() & MODE_QUERY)==0)
                         parseNamedQueries(_cls, (NamedQuery) anno);
+                    break;
+                case STOREDPROCEDURE_QUERIES:
+                    if (isQueryMode())
+                        parseNamedStoredProcedureQueries(_cls, ((NamedStoredProcedureQueries) anno).value());
+                    break;
+                case STOREDPROCEDURE_QUERY:
+                    if (isQueryMode())
+                        parseNamedStoredProcedureQueries(_cls, ((NamedStoredProcedureQuery) anno));
                     break;
                 case SEQ_GENERATOR:
                     if (isMappingOverrideMode())
@@ -1043,8 +1068,8 @@ public class AnnotationPersistenceMetaDataParser
      * If FetchGroup A includes FetchGroup B, then a bi-link is set between
      * A and B. Both A and B must be declared in the same Class.
      * <br>
-     * Call {@link #parseFetchAttribute(ClassMetaData,
-     * org.apache.openjpa.meta.FetchGroup, FetchAttribute)} only after the
+     * Call {@link #parseFetchAttribute(ClassMetaData, org.apache.openjpa.meta.FetchGroup, FetchAttributeImpl)}
+     * only after the
      * bi-links have been established, because a field f will not only add the
      * fetch group A which explicitly includes f to its custom fetch groups but
      * also will also add any fetch group B that includes A.
@@ -2127,6 +2152,76 @@ public class AnnotationPersistenceMetaDataParser
 
     protected String normalizeCatalogName(String catName) {
         return catName;
+    }
+
+
+    protected MultiQueryMetaData.Parameter.Mode toKernelParameterMode(ParameterMode mode) {
+        switch (mode) {
+            case IN : return MultiQueryMetaData.Parameter.Mode.IN;
+            case OUT: return MultiQueryMetaData.Parameter.Mode.OUT;
+            case INOUT: return MultiQueryMetaData.Parameter.Mode.INOUT;
+            case REF_CURSOR: return MultiQueryMetaData.Parameter.Mode.CURSOR;
+            default : return MultiQueryMetaData.Parameter.Mode.IN;
+        }
+    }
+
+    protected void addSourceInfo(AnnotatedElement el, QueryMetaData meta) {
+        meta.setSource(getSourceFile(), (el instanceof Class) ? el : null,
+                SourceTracker.SRC_ANNOTATIONS, getSourceFile() == null ? "" : getSourceFile().getPath());
+        if (isMetaDataMode())
+            meta.setSourceMode(MODE_META);
+        else if (isMappingMode())
+            meta.setSourceMode(MODE_MAPPING);
+        else
+            meta.setSourceMode(MODE_QUERY);
+    }
+
+    protected void addHints(QueryMetaData meta, QueryHint...hints) {
+        for (QueryHint hint : hints)
+            meta.addHint(hint.name(), hint.value());
+
+    }
+
+    private void parseNamedStoredProcedureQueries(AnnotatedElement el, NamedStoredProcedureQuery... procs) {
+        for (NamedStoredProcedureQuery proc : procs) {
+            if (StringUtils.isEmpty(proc.name()))
+                throw new MetaDataException(_loc.get("stored-proc-no-name", el));
+            if (StringUtils.isEmpty(proc.procedureName()))
+                throw new MetaDataException(_loc.get("stored-proc-no-dbname", el));
+
+            // Query metadata name
+            MultiQueryMetaData meta = new MultiQueryMetaData(_cls, proc.name(), proc.procedureName(), false);
+            QueryMetaData existing = getRepository().addQueryMetaData(meta);
+            if (existing != null && existing.getDefiningType() != meta.getDefiningType()) {
+                getLog().warn(_loc.get("dup-query", meta.getName(), el, existing.getDefiningType()));
+            }
+
+            // Important: The query string is the name of the database stored procedure
+            meta.setQueryString(proc.procedureName());
+
+            // For each mapping name/result class, add a component metadata
+            // The spec restricts that either ResultMappingName or ResultClasses be specified, but not both.
+            // This is relevant because the order of mapping must match the order in which the
+            // components are returned
+            Class<?>[] resultClasses = proc.resultClasses();
+            String[] resultSetMappings = proc.resultSetMappings();
+            if (resultClasses.length > 0 && resultSetMappings.length > 0)
+                throw new MetaDataException(_loc.get("stored-proc-both-mapping", el));
+            for (Class<?> res : resultClasses) {
+                meta.addComponent(res);
+            }
+            for (String mapping : resultSetMappings) {
+                meta.addComponent(mapping);
+            }
+            StoredProcedureParameter[] params = proc.parameters();
+            for (StoredProcedureParameter param : params) {
+                MultiQueryMetaData.Parameter p = new MultiQueryMetaData.Parameter(
+                        param.name(), param.type(), toKernelParameterMode(param.mode()));
+                meta.registerParameter(p);
+            }
+            addHints(meta, proc.hints());
+            addSourceInfo(el, meta);
+        }
     }
 }
 

@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
@@ -4700,6 +4701,47 @@ public class DBDictionary
      */
     protected String getGeneratedKeySequenceName(Column col) {
         return toDBName(namingUtil.getGeneratedKeySequenceName(col, maxAutoAssignNameLength));
+    }
+
+    protected Map<String, StoredProcedure> _procs = new TreeMap<String, StoredProcedure>();
+
+    /**
+     * Gets the metadata of the stored procedure by the given name either from the cached version or
+     * by enquiring the database.
+     * @param meta the database meta data
+     * @param catalog the catalog name or null
+     * @param schema the schema name or null
+     * @param procedure the procedure name
+     * @return metadata about the named procedure or null
+     * @throws SQLException when metadata query goes wrong
+     */
+    public StoredProcedure getStoredProcedure(DatabaseMetaData meta, DBIdentifier catalog, DBIdentifier schema,
+                                              String procedure) throws SQLException {
+        if (_procs.containsKey(procedure)) {
+            return _procs.get(procedure);
+        }
+        ResultSet rs = meta.getProcedureColumns(
+                getCatalogNameForMetadata(catalog),
+                getSchemaNameForMetadata(schema),
+                procedure,
+                null);
+        StoredProcedure sp = null;
+        if (rs.next()) {
+            sp = new StoredProcedure(rs);
+        } else {
+            ResultSet rsExist = meta.getProcedures(
+                    getCatalogNameForMetadata(catalog),
+                    getSchemaNameForMetadata(schema),
+                    procedure);
+            if (rsExist.next()) {
+                sp = new StoredProcedure((String) null);
+                sp.setCatalog(catalog);
+                sp.setSchema(schema);
+                sp.setName(procedure);
+            }
+        }
+        _procs.put(procedure, sp);
+        return sp;
     }
 
     ///////////////////////////////

@@ -910,6 +910,9 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
         if (QueryLanguages.LANG_PREPARED_SQL.equals(language)) {
             return new PreparedSQLStoreQuery(this);
         }
+        if (QueryLanguages.LANG_STORED_PROC.equals(language)) {
+            return new StoredProcedureQuery(this);
+        }
         return null;
     }
     

@@ -601,7 +601,7 @@ public class XMLPersistenceMetaDataParser
     @Override
     protected boolean startSystemElement(String name, Attributes attrs)
         throws SAXException {
-        Object tag = (Object) _elems.get(name);
+        Object tag = _elems.get(name);
         boolean ret = false;
         if (tag == null) {
             if (isMappingOverrideMode())

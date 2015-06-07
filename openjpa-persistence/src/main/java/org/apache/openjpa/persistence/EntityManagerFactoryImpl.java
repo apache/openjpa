@@ -42,6 +42,7 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.MetaDataRepository;
+import org.apache.openjpa.meta.QueryMetaData;
 import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.meta.MetamodelImpl;
@@ -364,7 +365,11 @@ public class EntityManagerFactoryImpl
 
     @Override
     public void addNamedQuery(String name, Query query) {
-        throw new UnsupportedOperationException("JPA 2.1");
+        org.apache.openjpa.kernel.Query kernelQuery = ((QueryImpl<?>)query).getDelegate();
+        MetaDataRepository metaDataRepositoryInstance = _factory.getConfiguration().getMetaDataRepositoryInstance();
+        QueryMetaData metaData = metaDataRepositoryInstance.newQueryMetaData(null, null);
+        metaData.setFrom(kernelQuery);
+        metaDataRepositoryInstance.addQueryMetaData(metaData);
     }
 
     @Override

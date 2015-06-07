@@ -223,9 +223,9 @@ public abstract class AbstractPersistenceTestCase extends TestCase {
      * Safely close the given factory.
      */
     protected boolean closeEMF(EntityManagerFactory emf) {
-        boolean brc = false;
+        boolean brc;
         if (emf == null || !emf.isOpen()) {
-            return brc;
+            return false;
         }
         try {
             closeAllOpenEMs(emf);

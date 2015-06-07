@@ -262,6 +262,7 @@ public class QueryResultMapping
         private Map<List<MetaDataContext>, ColumnMap> _mappings = null;
         private Map<List<MetaDataContext>, FetchInfo> _eager = null; 
         private FetchInfo _fetchInfo = null; // for top-level
+        private Collection<String> _constructorParams = null;
 
         /**
          * Supply candidate type on construction.
@@ -545,6 +546,13 @@ public class QueryResultMapping
                 }
                 info.excludes.clear(fm.getIndex());
             }
+        }
+
+        public void addConstructorParam(final String name) {
+            if (_constructorParams == null) {
+                _constructorParams = new ArrayList<String>();
+            }
+            _constructorParams.add(name);
         }
     }
 
