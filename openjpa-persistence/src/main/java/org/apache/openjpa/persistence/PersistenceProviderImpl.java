@@ -90,6 +90,7 @@ public class PersistenceProviderImpl
 
             BrokerFactory factory = getBrokerFactory(cp, poolValue, BundleUtils.getBundleClassLoader());
             OpenJPAConfiguration conf = factory.getConfiguration();
+            conf.setAppClassLoader(BundleUtils.getBundleClassLoader());
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);            
             pd.checkPuNameCollisions(_log,name);
             
@@ -188,6 +189,7 @@ public class PersistenceProviderImpl
             }
 
             OpenJPAConfiguration conf = factory.getConfiguration();
+            conf.setAppClassLoader(pui.getClassLoader());
             setPersistenceEnvironmentInfo(conf, pui);
             _log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
             // now we can log any transformer exceptions from above

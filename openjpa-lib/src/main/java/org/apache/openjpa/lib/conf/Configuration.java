@@ -252,11 +252,21 @@ public interface Configuration
     public Object clone();
     
     /**
-     * Modifies a <em>dynamic</em> property of this receiver even when 
-     * {@link #setReadOnly(boolean) frozen}. 
-     *
-     * @since 1.0.0
+     * Sets the ClassLoader that may be used to load application classes, resources, or open URLS.
      */
+    public void setAppClassLoader(ClassLoader cl);
+    
+    /**
+     * Gets the ClassLoader that may be used to load application classes, resources, or open URLS.
+     */
+    public ClassLoader getAppClassLoader();
+    
+//    /**
+//     * Modifies a <em>dynamic</em> property of this receiver even when 
+//     * {@link #setReadOnly(boolean) frozen}. 
+//     *
+//     * @since 1.0.0
+//     */
 //    public void modifyDynamic(String property, Object newValue);
 //    
 //    /**

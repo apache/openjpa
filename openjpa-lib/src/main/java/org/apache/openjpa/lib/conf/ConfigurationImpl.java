@@ -67,6 +67,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.StringDistance;
+
 import serp.util.Strings;
 
 /**
@@ -129,6 +130,8 @@ public class ConfigurationImpl
     //Ant task needs to defer the resource loading 
     //until the classpath setting is loaded properly
     private boolean _deferResourceLoading = false; 
+    
+    private ClassLoader _appCL = null;
 
     /**
      * Default constructor. Attempts to load default properties through
@@ -1108,5 +1111,19 @@ public class ConfigurationImpl
         PluginListValue val = new PluginListValue(property);
         addValue(val);
         return val;
+    }
+    
+    /**
+     * Sets the ClassLoader that may be used to load application classes, resources, or open URLS.
+     */
+    public void setAppClassLoader(ClassLoader cl) {
+        _appCL = cl;
+    }
+    
+    /**
+     * Gets the ClassLoader that may be used to load application classes, resources, or open URLS.
+     */
+    public ClassLoader getAppClassLoader() {
+        return _appCL;
     }
 }

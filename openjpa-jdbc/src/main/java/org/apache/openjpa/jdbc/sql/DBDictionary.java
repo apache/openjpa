@@ -324,6 +324,12 @@ public class DBDictionary
     public enum DateMillisecondBehaviors { DROP, ROUND, RETAIN };    
     private DateMillisecondBehaviors dateMillisecondBehavior;
     
+    /**
+     * Defines how {@code Boolean} and {@code boolean} values get represented
+     * in OpenJPA. Default to {@code INT_10} for backward compatibility.
+     */
+    protected BooleanRepresentation booleanRepresentation = BooleanRepresentationFactory.INT_10;
+    
     public int characterColumnSize = 255;
     public String arrayTypeName = "ARRAY";
     public String bigintTypeName = "BIGINT";
@@ -696,7 +702,7 @@ public class DBDictionary
      */
     public boolean getBoolean(ResultSet rs, int column)
         throws SQLException {
-        return rs.getBoolean(column);
+        return booleanRepresentation.getBoolean(rs, column);
     }
 
     /**
@@ -1050,7 +1056,7 @@ public class DBDictionary
     public void setBoolean(PreparedStatement stmnt, int idx, boolean val,
         Column col)
         throws SQLException {
-        stmnt.setInt(idx, (val) ? 1 : 0);
+        booleanRepresentation.setBoolean(stmnt, idx, val);
     }
 
     /**
@@ -2769,12 +2775,11 @@ public class DBDictionary
     /**
      * Append <code>elem</code> to <code>selectSQL</code>.
      * @param selectSQL The SQLBuffer to append to.
-     * @param alias A {@link SQLBuffer} or a {@link String} to append.
+     * @param elem A {@link SQLBuffer} or a {@link String} to append.
      *
      * @since 1.1.0
      */
-    protected void appendSelect(SQLBuffer selectSQL, Object elem, Select sel,
-        int idx) {
+    protected void appendSelect(SQLBuffer selectSQL, Object elem, Select sel, int idx) {
         if (elem instanceof SQLBuffer)
             selectSQL.append((SQLBuffer) elem);
         else
@@ -3147,7 +3152,7 @@ public class DBDictionary
      * getValidColumnName method of the DB dictionary should be invoked to make
      * it valid.
      * 
-     * @see getValidColumnName
+     * @see #getValidColumnName(org.apache.openjpa.jdbc.identifier.DBIdentifier, org.apache.openjpa.jdbc.schema.Table)
      */
     public final Set<String> getInvalidColumnWordSet() {
         return invalidColumnWordSet;
@@ -5389,10 +5394,9 @@ public class DBDictionary
      * Validate that the given name is not longer than given maximum length. Uses the unqualified name
      * from the supplied {@link DBIdentifier} by default..
      * 
-     * @param identifer The database identifier to check.
+     * @param identifier The database identifier to check.
      * @param length    Max length for this type of identifier
      * @param msgKey    message identifier for the exception.
-     * @param qualified If true the qualified name of the DBIdentifier will be used. 
      * 
      * @throws {@link UserException} with the given message key if the given name is indeed longer.
      * @return the same name.
@@ -5405,7 +5409,7 @@ public class DBDictionary
      * Validate that the given name is not longer than given maximum length. Conditionally uses the unqualified name
      * from the supplied {@link DBIdentifier}.
      * 
-     * @param identifer The database identifier to check.
+     * @param identifier The database identifier to check.
      * @param length    Max length for this type of identifier
      * @param msgKey    message identifier for the exception.
      * @param qualified If true the qualified name of the DBIdentifier will be used. 
@@ -5458,7 +5462,7 @@ public class DBDictionary
     }
 
     /**
-     * @param metadata the DatabaseMetaData to use to determine whether delimiters can be supported
+     * @param metaData the DatabaseMetaData to use to determine whether delimiters can be supported
      */
     private void setSupportsDelimitedIdentifiers(DatabaseMetaData metaData) {
         try {
@@ -5663,6 +5667,26 @@ public class DBDictionary
             dateMillisecondBehavior = DateMillisecondBehaviors.valueOf(str);
         } else {
             dateMillisecondBehavior = null;
+        }
+    }
+    
+    public BooleanRepresentation getBooleanRepresentation() {
+        return booleanRepresentation;
+    }
+    
+    public void setBooleanRepresentation(String booleanRepresentationKey) {
+        BooleanRepresentation evaluatedBooleanRepresentation = null;
+        if (booleanRepresentationKey != null && booleanRepresentationKey.length() > 0) {
+            ClassLoader cl = conf.getAppClassLoader();
+            evaluatedBooleanRepresentation = BooleanRepresentationFactory.valueOf(booleanRepresentationKey, cl);
+        }
+        
+        booleanRepresentation = evaluatedBooleanRepresentation != null
+                        ? evaluatedBooleanRepresentation
+                        : BooleanRepresentationFactory.INT_10;
+        
+        if (log.isInfoEnabled()) {
+            log.info(_loc.get("using-booleanRepresentation", booleanRepresentation));
         }
     }
 }
