@@ -633,9 +633,9 @@ public class QueryImpl
      * Find the cached compilation for the current query, creating one if it
      * does not exist.
      */
+    @SuppressWarnings("unchecked")
     protected Compilation compilationFromCache() {
-        Map compCache =
-            _broker.getConfiguration().getQueryCompilationCacheInstance();
+        Map compCache = _broker.getConfiguration().getQueryCompilationCacheInstance();
         if (compCache == null || !isParsedQuery()) {
             return newCompilation();
         } else {
@@ -649,17 +649,24 @@ public class QueryImpl
             Compilation comp = (Compilation) compCache.get(key);
 
             // parse declarations if needed
-            boolean cache = false;
             if (comp == null) {
                 comp = newCompilation();
                 // only cache those queries that can be compiled
-                cache = comp.storeData != null;
-            } else
-                _storeQuery.populateFromCompilation(comp.storeData);
+                if (comp.storeData != null) {
 
-            // cache parsed state if needed
-            if (cache)
-                compCache.put(key, comp);
+                    synchronized (compCache) {
+                        Compilation existingComp = (Compilation) compCache.get(key);
+                        if (existingComp == null) {
+                            compCache.put(key, comp);
+                        } else {
+                            comp = existingComp;
+                        }
+                    }
+                }
+            } else {
+                _storeQuery.populateFromCompilation(comp.storeData);
+            }
+
             return comp;
         }
     }
