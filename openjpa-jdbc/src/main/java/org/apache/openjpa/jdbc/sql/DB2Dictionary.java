@@ -27,6 +27,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+import java.io.ByteArrayInputStream;
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -905,4 +909,60 @@ public class DB2Dictionary
         throws SQLException {
         //NO-OP
     }    
+
+    /**
+     * Set the given value as a parameter to the statement.
+     */
+    public void setBytes(PreparedStatement stmnt, int idx, byte[] val,
+        Column col)
+        throws SQLException {
+        // for DB2, if the column was defined as CHAR for BIT DATA, then
+        // we want to use the setBytes in stead of the setBinaryStream
+        if (useSetBytesForBlobs 
+                || (col.getTypeName() != null && col.getTypeName().contains("BIT DATA"))) {
+            stmnt.setBytes(idx, val);
+        } else {
+            setBinaryStream(stmnt, idx, new ByteArrayInputStream(val), val.length, col);
+        }
+    }
+
+    /**
+     * Convert the specified column of the SQL ResultSet to the proper
+     * java type.
+     */
+    public byte[] getBytes(ResultSet rs, int column)
+        throws SQLException {
+        if (useGetBytesForBlobs) {
+            return rs.getBytes(column);
+        }
+        if (useGetObjectForBlobs) {
+            return (byte[]) rs.getObject(column);
+        }
+
+        // At this point we don't have any idea if the DB2 column was defined as
+        //     a blob or if it was defined as CHAR for BIT DATA.
+        // First try as a blob, if that doesn't work, then try as CHAR for BIT DATA
+        // If that doesn't work, then go ahead and throw the first exception
+        try {
+            Blob blob = getBlob(rs, column);
+            if (blob == null) {
+                return null;
+            }
+            
+            int length = (int) blob.length();
+            if (length == 0) {
+                return null;
+            }
+            
+            return blob.getBytes(1, length);
+        }
+        catch (SQLException e) {
+            try {
+                return rs.getBytes(column);
+            }
+            catch (SQLException e2) {
+                throw e;                
+            }
+        }
+    }
 }
