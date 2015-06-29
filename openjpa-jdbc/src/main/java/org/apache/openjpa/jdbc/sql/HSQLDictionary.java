@@ -97,6 +97,8 @@ public class HSQLDictionary extends DBDictionary {
         fixedSizeTypeNameSet.addAll(Arrays.asList(new String[]{
             "TEXT"
         }));
+        fixedSizeTypeNameSet.remove("NUMERIC");
+        fixedSizeTypeNameSet.remove("DECIMAL");
     }
 
     /**
