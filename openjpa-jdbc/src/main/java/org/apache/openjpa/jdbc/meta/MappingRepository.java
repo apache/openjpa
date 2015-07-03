@@ -840,6 +840,18 @@ public class MappingRepository extends MetaDataRepository {
             return new HandlerFieldStrategy();
         }
 
+        // check for an explicitly mapped strategy
+        Object explicitStrat = mappedStrategy(field, field.getType(), adapting);
+        if (explicitStrat != null) {
+            if (explicitStrat instanceof FieldStrategy)
+                return (FieldStrategy) explicitStrat;
+            if (explicitStrat != null) {
+                if (installHandlers)
+                    field.setHandler((ValueHandler) explicitStrat);
+                return new HandlerFieldStrategy();
+            }
+        }
+
         if (field.isSerialized()) {
             if (_dict.maxEmbeddedBlobSize != -1) {
                 handler = defaultHandler(field, adapting);
@@ -848,16 +860,6 @@ public class MappingRepository extends MetaDataRepository {
                         field.setHandler(handler);
                 }
                 return new MaxEmbeddedBlobFieldStrategy();
-            }
-        } else {
-            // check for mapped strategy
-            Object strat = mappedStrategy(field, field.getType(), adapting);
-            if (strat instanceof FieldStrategy)
-                return (FieldStrategy) strat;
-            if (strat != null) {
-                if (installHandlers)
-                    field.setHandler((ValueHandler) strat);
-                return new HandlerFieldStrategy();
             }
         }
 
