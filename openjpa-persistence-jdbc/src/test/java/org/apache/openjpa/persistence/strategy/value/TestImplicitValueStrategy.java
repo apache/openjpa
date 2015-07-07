@@ -18,24 +18,30 @@
  */
 package org.apache.openjpa.persistence.strategy.value;
 
+import java.security.Principal;
+
 import javax.persistence.EntityManager;
 
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 
-public class TestValueStrategy extends SQLListenerTestCase {
+public class TestImplicitValueStrategy extends SQLListenerTestCase {
     public void setUp(){
-        setUp(ValueStrategyEntity.class, DROP_TABLES,
-                "openjpa.RuntimeUnenhancedClasses", "supported");
+        setUp(ImplicitValueStrategyEntity.class, DROP_TABLES,
+                "openjpa.jdbc.MappingDefaults",
+                "ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict, " +
+                    "FieldStrategies='java.security.Principal=" +
+                    "org.apache.openjpa.persistence.strategy.value.PrincipalValueStrategyHandler'",
+                "openjpa.RuntimeUnenhancedClasses", "supported"
+                );
         assertNotNull(emf);
 
         create();
     }
-    
+
     public void testIt() {
         EntityManager em = emf.createEntityManager();
-        ValueStrategyEntity se = em.find(ValueStrategyEntity.class, "id1");
+        ImplicitValueStrategyEntity se = em.find(ImplicitValueStrategyEntity.class, "id1");
         assertNotNull(se);
-        assertEquals("name1", se.getName());
         assertNotNull(se.getUser());
         assertEquals("name1", se.getUser().getName());
 
@@ -46,10 +52,10 @@ public class TestValueStrategy extends SQLListenerTestCase {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        ValueStrategyEntity stratEnt = new ValueStrategyEntity();
+        ImplicitValueStrategyEntity stratEnt = new ImplicitValueStrategyEntity();
         stratEnt.setId("id1");
-        stratEnt.setName("name1");
-        stratEnt.setUser(new PrincipalValueStrategyHandler.TestPrincipal("name1"));
+        PrincipalValueStrategyHandler.TestPrincipal user = new PrincipalValueStrategyHandler.TestPrincipal("name1");
+        stratEnt.setUser(user);
 
         em.persist(stratEnt);
 
