@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -159,10 +160,10 @@ public class AnnotationPersistenceXMLMetaDataParser {
         // check immediately whether the class has JAXB XML annotations
         if (cls == null || xmlTypeClass == null
             || !((AccessController.doPrivileged(J2DoPrivHelper
-                .isAnnotationPresentAction(cls, xmlTypeClass))).booleanValue()
+                .isAnnotationPresentAction(cls, (Class<? extends Annotation>) xmlTypeClass))).booleanValue()
                 && (AccessController
                 .doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(cls,
-                    xmlRootElementClass))).booleanValue()))
+                        (Class<? extends Annotation>) xmlRootElementClass))).booleanValue()))
             return null;
 
         // find / create metadata
@@ -211,7 +212,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
 
         // handle inheritance at sub-element level
         if ((AccessController.doPrivileged(J2DoPrivHelper
-            .isAnnotationPresentAction(superclass, xmlTypeClass)))
+            .isAnnotationPresentAction(superclass, (Class<? extends Annotation>) xmlTypeClass)))
             .booleanValue())
             populateFromReflection(superclass, meta);
 
@@ -234,7 +235,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                         xmlname = member.getName();
                     if ((AccessController.doPrivileged(J2DoPrivHelper
                         .isAnnotationPresentAction(((Field) member).getType(),
-                            xmlTypeClass))).booleanValue()) {
+                                (Class<? extends Annotation>) xmlTypeClass))).booleanValue()) {
                         field = _repos.addXMLClassMetaData(((Field) member).getType());
                         parseXmlRootElement(((Field) member).getType(), field);
                         populateFromReflection(((Field) member).getType()
