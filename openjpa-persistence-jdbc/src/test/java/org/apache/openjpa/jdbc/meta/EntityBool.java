@@ -22,8 +22,10 @@ import javax.persistence.*;
 @Entity
 public class EntityBool {
     
-    @Id 
+    @Id
+    @GeneratedValue
     private int id;
+
     private boolean dummy;
     
     public boolean isDummy() {
@@ -36,10 +38,6 @@ public class EntityBool {
     
     public int getId() {
         return id;
-    }
-    
-    public void setId(int id) {
-        this.id = id;
     }
 }
 
