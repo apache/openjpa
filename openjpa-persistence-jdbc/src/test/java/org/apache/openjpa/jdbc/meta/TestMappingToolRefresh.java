@@ -43,7 +43,7 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
      */
     @Test
     public void testSchemaCreation() throws Exception {
-        Map<String, Object> emfProps = getPropertiesMap(EntityBool.class,
+        Map<String, Object> emfProps = getPropertiesMap(EntityBoolChar.class,
                 "openjpa.jdbc.SynchronizeMappings",
                 "buildSchema(ForeignKeys=true, SchemaAction='add,deleteTableContents')",
                 "openjpa.jdbc.DBDictionary",
@@ -57,7 +57,7 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
             OpenJPAEntityManagerSPI em = openjpaEmf.createEntityManager();
             assertNotNull(em);
             em.getTransaction().begin();
-            EntityBool val = new EntityBool();
+            EntityBoolChar val = new EntityBoolChar();
             val.setDummy(true);
             em.persist(val);
 
@@ -68,7 +68,7 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
             OpenJPAEntityManagerSPI em2 = openjpaEmf.createEntityManager();
             assertNotNull(em2);
 
-            EntityBool val2 = em2.find(EntityBool.class, id);
+            EntityBoolChar val2 = em2.find(EntityBoolChar.class, id);
             assertNotNull(val2);
             assertNotEquals(val, val2);
 
@@ -86,7 +86,7 @@ public class TestMappingToolRefresh extends AbstractPersistenceTestCase {
 
             String[] entityClassFiles = new String[1];
             URL entityClassUrl = this.getClass().getClassLoader().
-                    getResource(EntityBool.class.getName().replace(".", "/") + ".class");
+                    getResource(EntityBoolChar.class.getName().replace(".", "/") + ".class");
             entityClassFiles[0] = entityClassUrl.getFile();
 
             MappingTool.Flags flags = new MappingTool.Flags();
