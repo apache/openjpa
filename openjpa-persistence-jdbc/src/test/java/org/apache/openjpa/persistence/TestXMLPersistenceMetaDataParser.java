@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.openjpa.kernel.QueryHints;
+import org.apache.openjpa.meta.QueryMetaData;
+import org.apache.openjpa.persistence.meta.MetamodelImpl;
 import org.apache.openjpa.persistence.test.SQLListenerTestCase;
 import javax.persistence.*;
 
@@ -161,7 +164,14 @@ public class TestXMLPersistenceMetaDataParser extends SQLListenerTestCase {
         em.close();
         
     }
-    
+
+    public void testQueryHintOrmXml() {
+        QueryMetaData[] meta = ((MetamodelImpl) emf.getMetamodel()).getRepository().getQueryMetaDatas();
+        assertEquals(1, meta.length);
+        assertEquals("Country1.literal", meta[0].getName());
+        assertEquals(1, meta[0].getHintKeys().length);
+        assertEquals(QueryHints.HINT_USE_LITERAL_IN_SQL, meta[0].getHintKeys()[0]);
+    }
 
     private void printArrayList(ArrayList aList) {
         Iterator itr = aList.iterator();
