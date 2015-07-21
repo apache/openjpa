@@ -170,7 +170,7 @@ public class XMLPersistenceMetaDataParser
 
         _elems.put("named-query", QUERY);
         _elems.put("named-native-query", NATIVE_QUERY);
-        _elems.put("query-hint", QUERY_HINT);
+        _elems.put("hint", QUERY_HINT);
         _elems.put("query", QUERY_STRING);
 
         _elems.put("flush-mode", FLUSH_MODE);
