@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCDataGenerator;
@@ -50,7 +51,7 @@ public class DataCacheManagerImpl
     private DataCachePCDataGenerator _pcGenerator = null;
     private ClearableScheduler _scheduler = null;
     private CacheDistributionPolicy _policy = new DefaultCacheDistributionPolicy();
-    private Map<ClassMetaData,Boolean> _cacheable = new HashMap<ClassMetaData, Boolean>();
+    private Map<ClassMetaData, Boolean> _cacheable = null;
     
     // Properties that are configured via openjpa.DataCache but need to be used here. This is here to support the 1.2
     // way of doing things with openjpa.DataCache(Types=x;y;z,ExcludedTypes=a)
@@ -58,7 +59,8 @@ public class DataCacheManagerImpl
     private Set<String> _excludedTypes;
     
     public void initialize(OpenJPAConfiguration conf, ObjectValue dataCache, ObjectValue queryCache) {
-        _conf = conf;        
+        _conf = conf;
+        _cacheable = new ConcurrentHashMap<ClassMetaData, Boolean>();
         _queryCache = (QueryCache) queryCache.instantiate(QueryCache.class, conf);
         if (_queryCache != null)
             _queryCache.initialize(this);
