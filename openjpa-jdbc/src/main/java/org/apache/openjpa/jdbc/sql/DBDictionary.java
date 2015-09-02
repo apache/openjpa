@@ -238,6 +238,7 @@ public class DBDictionary
     public boolean supportsLockingWithInnerJoin = true;
     public boolean supportsLockingWithSelectRange = true;
     public boolean supportsQueryTimeout = true;
+    public boolean allowQueryTimeoutOnFindUpdate = false; //OPENJPA-2517
     public boolean simulateLocking = false;
     public boolean supportsSubselect = true;
     public boolean supportsCorrelatedSubselect = true;
