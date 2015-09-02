@@ -3045,6 +3045,27 @@ action on foreign keys.  Defaults to <literal>true</literal>.
 calls to <methodname> java.sql.Statement.setQueryTimeout</methodname>.
                     </para>
                 </listitem>
+                <listitem id="DBDictionary.AllowQueryTimeoutOnFindUpdate">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            JDBC
+                        </primary>
+                        <secondary>
+                            QueryTimeout
+                        </secondary>
+                        <tertiary>
+                            AllowQueryTimeoutOnFindUpdate
+                        </tertiary>
+                    </indexterm>
+<literal>AllowQueryTimeoutOnFindUpdate</literal>: The JPA Specification defines the 
+javax.persistence.query.timeout, in milliseconds, as a hint to the provider.  The hint
+is used for Query operations.  This property, when set to true, will allow the query timeout hint
+to apply to EntityManager operations.  For example, when a 'find' is executed and the resultant
+entity updated, the query timeout will apply to the SQL update operation.  This property defaults
+to false.</methodname>.
+                    </para>
+                </listitem>
                 <listitem id="DBDictionary.SupportsRestrictDeleteAction">
                     <para>
                     <indexterm>

@@ -205,8 +205,26 @@ public class DataSourceFactory {
             ConfiguringConnectionDecorator ccd =
                 new ConfiguringConnectionDecorator();
             ccd.setTransactionIsolation(conf.getTransactionIsolationConstant());
-            ccd.setQueryTimeout(conf.getQueryTimeout() == -1 
-                ? -1 : conf.getQueryTimeout());
+            
+            //OPENJPA-2517: Allow a javax.persistence.query.timeout to apply to all
+            //EM operations (not just Query operations).  Convert from milliseconds
+            //to seconds.  See DBDictionary.setQueryTimeout for similar conversions.  
+            //DBDictionary.setQueryTimeout will log warnings for invalid values, 
+            //therefore there is no need to do so again here.  Furthermore, there is no  
+            //need to check for -1 here, ConfigurationConnectionDecorator checks for it.
+            int timeout = conf.getQueryTimeout();
+            if (dict.allowQueryTimeoutOnFindUpdate){
+                if (timeout > 0 && timeout < 1000) {
+                    // round up to 1 sec
+                    timeout = 1; 
+                }
+                else if (timeout >= 1000){
+                    timeout = timeout/1000;
+                }
+            }
+            
+            ccd.setQueryTimeout(timeout);
+            
             Log log = conf.getLog(JDBCConfiguration.LOG_JDBC);
             if (factory2 || !conf.isConnectionFactoryModeManaged()) {
                 if (!dict.supportsMultipleNontransactionalResultSets)
