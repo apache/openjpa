@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -79,7 +80,6 @@ public class OracleDictionary
 
     private static final Localizer _loc = Localizer.forPackage
         (OracleDictionary.class);
-
     /**
      * If true, then simulate auto-assigned values in Oracle by
      * using a trigger that inserts a sequence value into the
@@ -104,22 +104,22 @@ public class OracleDictionary
      * configure statements that it detects are operating on unicode fields.
      */
     public boolean useSetFormOfUseForUnicode = true;
-    
+
     /**
      * This variable was used prior to 2.1.x to indicate that OpenJPA should attempt to use
-     * a Reader-based JDBC 4.0 method to set Clob or XML data.  It allowed XMLType and 
+     * a Reader-based JDBC 4.0 method to set Clob or XML data.  It allowed XMLType and
      * Clob values larger than 4000 bytes to be used.  For 2.1.x+, code was added to allow
-     * said functionality by default (see OPENJPA-1691).  For forward compatibility, this 
+     * said functionality by default (see OPENJPA-1691).  For forward compatibility, this
      * variable should not be removed.
      */
     @Deprecated
-    public boolean supportsSetClob = false;  
-    
+    public boolean supportsSetClob = false;
+
     /**
      * If a user sets the previous variable (supportsSetClob) to true, we should log a
      * warning indicating that the variable no longer has an effect due to the code changes
      * of OPENJPA-1691.  We only want to log the warning once per instance, thus this
-     * variable will be used to indicate if the warning should be printed or not.  
+     * variable will be used to indicate if the warning should be printed or not.
      */
     @Deprecated
     private boolean logSupportsSetClobWarning = true;
@@ -132,15 +132,24 @@ public class OracleDictionary
     // some oracle drivers have problems with select for update; warn the
     // first time locking is attempted
     private boolean _checkedUpdateBug = false;
+
     private boolean _warnedCharColumn = false;
     private boolean _warnedNcharColumn = false;
     private int _driverBehavior = -1;
-
     // cache lob methods
     private Method _putBytes = null;
+
     private Method _putString = null;
     private Method _putChars = null;
-    
+    // cache some native Oracle classes and methods
+    private Class oraclePreparedStatementClass = null;
+
+    private Field oraclePreparedStatementFormNvarcharField = null;
+    private Method oracleClob_empty_lob_Method = null;
+    private Method oracleBlob_empty_lob_Method = null;
+    private Method oracleClob_isEmptyLob_Method = null;
+
+
     // batch limit
     private int defaultBatchLimit = 100;
 
@@ -216,6 +225,39 @@ public class OracleDictionary
         super.setBatchLimit(defaultBatchLimit);
         selectWordSet.add("WITH");
         reportsSuccessNoInfoOnBatchUpdates = true;
+
+        try {
+            oraclePreparedStatementClass = Class.forName("oracle.jdbc.OraclePreparedStatement");
+            try {
+                oraclePreparedStatementFormNvarcharField = oraclePreparedStatementClass.getField("FORM_NCHAR");
+                oraclePreparedStatementFormNvarcharField.setAccessible(true);
+            }
+            catch (NoSuchFieldException e) {
+                log.warn("OraclePreparedStatement without FORM_NCHAR field found");
+            }
+        }
+        catch (ClassNotFoundException e) {
+            // all fine
+        }
+
+        oracleClob_empty_lob_Method = getMethodByReflection("oracle.sql.CLOB", "empty_lob");
+        oracleBlob_empty_lob_Method = getMethodByReflection("oracle.sql.BLOB", "empty_lob");
+        oracleClob_isEmptyLob_Method = getMethodByReflection("oracle.sql.CLOB", "isEmptyLob");
+
+    }
+
+    private Method getMethodByReflection(String className, String methodName, Class<?>... paramTypes) {
+        try {
+            return Class.forName(className,true,
+                    AccessController.doPrivileged(J2DoPrivHelper
+                            .getContextClassLoaderAction())).
+                    getMethod(methodName, paramTypes);
+        }
+        catch (Exception e) {
+            // all fine
+        }
+
+        return null;
     }
 
     @Override
@@ -538,9 +580,7 @@ public class OracleDictionary
                         invoke(inner,
                             new Object[]{
                                 Integer.valueOf(idx),
-                                Class.forName
-                                    ("oracle.jdbc.OraclePreparedStatement").
-                                    getField("FORM_NCHAR").get(null)
+                                oraclePreparedStatementFormNvarcharField.get(null)
                             });
                 } catch (Exception e) {
                     log.warn(e);
@@ -659,13 +699,11 @@ public class OracleDictionary
         Clob clob = getClob(rs, column);
         if (clob == null)
             return null;
-        if (clob.getClass().getName().equals("oracle.sql.CLOB")) {
+        if (oracleClob_isEmptyLob_Method != null && clob.getClass().getName().equals("oracle.sql.CLOB")) {
             try {
-                if (((Boolean) Class.forName("oracle.sql.CLOB").
-                    getMethod("isEmptyLob", new Class[0]).
-                    invoke(clob, new Object[0])).
-                    booleanValue())
+                if (((Boolean) oracleClob_isEmptyLob_Method.invoke(clob, new Object[0])).booleanValue()) {
                     return null;
+                }
             } catch (Exception e) {
                 // possibly different version of the driver
             }
@@ -1225,11 +1263,7 @@ public class OracleDictionary
         if (EMPTY_CLOB != null)
             return EMPTY_CLOB;
         try {
-            return EMPTY_CLOB = (Clob) Class.forName("oracle.sql.CLOB",true, 
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
-                getMethod("empty_lob", new Class[0]).
-                invoke(null, new Object[0]);
+            return EMPTY_CLOB = (Clob) oracleClob_empty_lob_Method.invoke(null, new Object[0]);
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
         }
@@ -1240,23 +1274,15 @@ public class OracleDictionary
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
         try {
-            return EMPTY_BLOB = (Blob) Class.forName("oracle.sql.BLOB",true, 
-                    AccessController.doPrivileged(J2DoPrivHelper
-                            .getContextClassLoaderAction())).
-                getMethod("empty_lob", new Class[0]).
-                invoke(null, new Object[0]);
+            return EMPTY_BLOB = (Blob) oracleBlob_empty_lob_Method.invoke(null, new Object[0]);
         } catch (Exception e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    private static boolean isOraclePreparedStatement(Statement stmnt) {
-        try {
-            return Class.forName("oracle.jdbc.OraclePreparedStatement").
-                isInstance(stmnt);
-        } catch (Exception e) {
-            return false;
-        }
+    private boolean isOraclePreparedStatement(Statement stmnt) {
+        return oraclePreparedStatementClass != null &&
+            oraclePreparedStatementClass.isInstance(stmnt);
     }
     
     /**
