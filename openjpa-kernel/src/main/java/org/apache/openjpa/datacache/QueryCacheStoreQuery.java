@@ -342,6 +342,13 @@ public class QueryCacheStoreQuery
             // Create a new FetchConfiguration that will be used to ensure that any JOIN FETCHed fields are loaded
             StoreContext store = q.getContext().getStoreContext();
             FetchConfiguration cacheFc = store.pushFetchConfiguration();
+
+            // OPENJPA-2586: If the FetchConfig for this executor contains fields,
+            // then add them to the new FetchConfig.
+            if (!_fc.getFields().isEmpty()) {
+              cacheFc.addFields(_fc.getFields());
+            }
+
             for (QueryExpressions qe : _ex.getQueryExpressions()) {
                 for (String fetchFields : qe.fetchPaths) {
                     cacheFc.addField(fetchFields);
