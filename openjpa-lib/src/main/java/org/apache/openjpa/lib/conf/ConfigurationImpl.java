@@ -104,7 +104,7 @@ import serp.util.Strings;
  */
 public class ConfigurationImpl
     implements Configuration, Externalizable, ValueListener {
-
+	private static final long serialVersionUID = 1368672071395708938L;
     private static final String SEP = J2DoPrivHelper.getLineSeparator();
 
     private static final Localizer _loc = Localizer.forPackage
