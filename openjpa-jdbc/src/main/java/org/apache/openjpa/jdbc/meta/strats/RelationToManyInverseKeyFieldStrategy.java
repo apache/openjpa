@@ -268,7 +268,15 @@ public abstract class RelationToManyInverseKeyFieldStrategy
         ValueMapping elem = field.getElementMapping();
         ColumnIO io = elem.getColumnIO();
         ForeignKey fk = elem.getForeignKey();
-        if (!elem.getUseClassCriteria() && io.isAnyUpdatable(fk, true)) { 
+
+        //OJ-2603: Don't null an FK which is also a PK in the referencing object.
+        boolean containsPK = false;
+        Column[] cols = fk.getColumns();
+        for (int i = 0; i < cols.length && !containsPK; i++){
+            containsPK= cols[i].isPrimaryKey();
+        }
+
+        if (!elem.getUseClassCriteria() && io.isAnyUpdatable(fk, true) && !containsPK) { 
             assertInversable();
             Row row = rm.getAllRows(fk.getTable(), Row.ACTION_UPDATE);
             row.setForeignKey(fk, io, null);
