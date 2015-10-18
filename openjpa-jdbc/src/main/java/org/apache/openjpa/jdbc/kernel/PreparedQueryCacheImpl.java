@@ -106,18 +106,25 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	}
 	
 	/**
-	 * Cache the given query keyed by its identifier. Does not cache if the 
-	 * identifier matches any exclusion pattern or has been marked as 
-	 * non-cachable. Also register the identifier as not cachable against 
-	 * the matched exclusion pattern.
+	 * Cache the given query keyed by its identifier. Does not cache if the
+	 * identifier matches any exclusion pattern or has been marked as
+	 * non-cachable. Also register the identifier as not cachable against the
+	 * matched exclusion pattern.
 	 */
 	public boolean cache(PreparedQuery q) {
 		lock(false);
 		try {
 			String id = q.getIdentifier();
+
+			// OPENJPA-2609: Make sure another thread didn't add the 'id'
+			// while holding the 'lock'.
+			if (_delegate.containsKey(id)) {
+				return false;
+			}
+
 			if (Boolean.FALSE.equals(isCachable(id))) {
 				if (_log != null && _log.isTraceEnabled())
-                    _log.trace(_loc.get("prepared-query-not-cachable", id));
+					_log.trace(_loc.get("prepared-query-not-cachable", id));
 				return false;
 			}
 			Exclusion exclusion = getMatchedExclusionPattern(id);
@@ -126,8 +133,8 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 				return false;
 			}
 			_delegate.put(id, q);
-            if (_log != null && _log.isTraceEnabled())
-                _log.trace(_loc.get("prepared-query-cached", id));
+			if (_log != null && _log.isTraceEnabled())
+				_log.trace(_loc.get("prepared-query-cached", id));
 			return true;
 		} finally {
 			unlock(false);
