@@ -220,6 +220,7 @@ public class JDBCConfigurationImpl
             "sqlserver", org.apache.openjpa.jdbc.sql.SQLServerDictionary.class.getName(),
             "sybase", org.apache.openjpa.jdbc.sql.SybaseDictionary.class.getName(),
             "maxdb", MaxDBDictionary.class.getName(),
+            "sqlanywhere", org.apache.openjpa.jdbc.sql.SQLAnywhereDictionary.class.getName(),
         };
         dbdictionaryPlugin.setAliases(aliases);
         dbdictionaryPlugin.setInstantiatingGetter("getDBDictionaryInstance");
