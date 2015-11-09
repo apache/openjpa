@@ -18,6 +18,9 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -25,7 +28,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
+import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
+import org.apache.openjpa.jdbc.sql.DerbyDictionary;
 import org.apache.openjpa.kernel.QueryLanguages;
+import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.persistence.test.SingleEMFTestCase;
 
 public class TestUnwrap extends SingleEMFTestCase {
@@ -88,6 +94,76 @@ public class TestUnwrap extends SingleEMFTestCase {
         }
         
         em.close();
+    }
+    
+    public void testConnectionUnwrap() throws Exception {
+        String dbDict = ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance().getClass().getName();
+        
+        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
+        try {
+            Connection c = (Connection) oem.getConnection();
+            assertNotNull(c);
+            assertTrue(DelegatingConnection.class.isAssignableFrom(c.getClass()));
+            
+            List<Class> acceptedConnectionClassTypes = new ArrayList<Class>();
+            if (DerbyDictionary.class.getName().equals(dbDict)) {
+                // Connection type can be network or embedded
+                String[] connectionTypes = { 
+                    "org.apache.derby.impl.jdbc.EmbedConnection40",
+                    "org.apache.derby.impl.jdbc.EmbedConnection30",
+                    "org.apache.derby.iapi.jdbc.BrokeredConnection40",
+                    "org.apache.derby.iapi.jdbc.BrokeredConnection30" };
+                for (String ct : connectionTypes) {
+                    try {
+                        Class cls = Class.forName(ct);
+                        acceptedConnectionClassTypes.add(cls);
+                    } catch (ClassNotFoundException cnfe) {
+                        // Swallow
+                    }
+                }
+            }
+            
+            if (!acceptedConnectionClassTypes.isEmpty()) {
+                boolean pass = false;
+                for (Class cls : acceptedConnectionClassTypes) {
+                    try {
+                        Connection castC = (Connection) c.unwrap(cls);
+                        assertNotNull(castC);
+                        assertEquals(cls, castC.getClass());
+                        pass = true;
+                        break;
+                    } catch (Throwable t) {
+                        // Swallow
+                    }
+                    
+                   assertTrue(pass); 
+                }
+            }
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void testNegativeConnectionUnwrap() {
+        EntityManager em = emf.createEntityManager();
+        OpenJPAEntityManager oem = em.unwrap(OpenJPAEntityManager.class);
+        
+        try {
+            Connection c = (Connection) oem.getConnection();
+            assertNotNull(c);
+            assertTrue(DelegatingConnection.class.isAssignableFrom(c.getClass()));
+            
+            // Make a completely bogus unwrap() attempt
+            try {
+                c.unwrap(TestUnwrap.class);
+                fail("Bogus unwrap should have thrown a SQLException.");
+            } catch (java.sql.SQLException se) {
+                // Expected
+            }
+        } finally {
+            em.close();
+        }
     }
     
     /**
