@@ -2694,19 +2694,20 @@ public class ClassMetaData
 
         // Default to false, set to true only if this type is abstract and
         // declares a PKField.
-        _hasAbstractPKField = Boolean.FALSE;
+        Boolean temp = Boolean.FALSE;
 
         if (isAbstract() == true) {
             FieldMetaData[] declaredFields = getDeclaredFields();
             if (declaredFields != null && declaredFields.length != 0) {
                 for (FieldMetaData fmd : declaredFields) {
                     if (fmd.isPrimaryKey()) {
-                        _hasAbstractPKField = Boolean.TRUE;
+                        temp = Boolean.TRUE;
                         break;
                     }
                 }
             }
         }
+        _hasAbstractPKField = temp;
 
         return _hasAbstractPKField.booleanValue();
     }
@@ -2728,7 +2729,7 @@ public class ClassMetaData
         }
 
         // Default to FALSE, until proven true.
-        _hasPKFieldsFromAbstractClass = Boolean.FALSE;
+        Boolean temp = Boolean.FALSE;
 
         FieldMetaData[] pkFields = getPrimaryKeyFields();
         for (FieldMetaData fmd : pkFields) {
@@ -2743,11 +2744,12 @@ public class ClassMetaData
                     }
                 }
                 if (cmd == fmdDMDA) {
-                    _hasPKFieldsFromAbstractClass = Boolean.TRUE;
+                    temp = Boolean.TRUE;
                     break;
                 }
             }
         }
+        _hasPKFieldsFromAbstractClass = temp;
 
         return _hasPKFieldsFromAbstractClass.booleanValue();
     }
@@ -2785,10 +2787,11 @@ public class ClassMetaData
                 }
             }
             int idsSize = ids.size();
-            _pkAndNonPersistentManagedFmdIndexes = new int[idsSize];
-            for(int i = 0; i<idsSize; i++){
-                _pkAndNonPersistentManagedFmdIndexes[i] = ids.get(i).intValue();
+            int[] temp = new int[idsSize];
+            for (int i = 0; i < idsSize; i++) {
+                temp[i] = ids.get(i).intValue();
             }
+            _pkAndNonPersistentManagedFmdIndexes = temp;
         }
         return _pkAndNonPersistentManagedFmdIndexes;
     }
