@@ -46,6 +46,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.PessimisticLockScope;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
@@ -972,9 +973,16 @@ public class EntityManagerImpl
 
     @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createQuery(String query, Class<T> resultClass) {
+        checkTuple(resultClass);
         return createQuery(query).setResultClass(resultClass);
     }
-    
+
+    private <T> void checkTuple(Class<T> resultClass) {
+        if (Tuple.class == resultClass) {
+            throw new PersistenceException("Tuple is not a valid type", null, null, true);
+        }
+    }
+
     public OpenJPAQuery createQuery(String query) {
         return createQuery(JPQLParser.LANG_JPQL, query);
     }
@@ -1014,6 +1022,7 @@ public class EntityManagerImpl
     
     @SuppressWarnings("unchecked")
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+        checkTuple(resultClass);
         return createNamedQuery(name).setResultClass(resultClass);
     }
 
@@ -1055,6 +1064,7 @@ public class EntityManagerImpl
     }
 
     public OpenJPAQuery createNativeQuery(String query, Class cls) {
+        checkTuple(cls);
         return createNativeQuery(query).setResultClass(cls);
     }
 
