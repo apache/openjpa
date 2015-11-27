@@ -128,12 +128,13 @@ public class Serialization {
 
         protected Class resolveClass(ObjectStreamClass desc) 
             throws IOException, ClassNotFoundException {
+            String name = BlacklistClassResolver.DEFAULT.check(desc.getName());
             MultiClassLoader loader = AccessController
                 .doPrivileged(J2DoPrivHelper.newMultiClassLoaderAction());
             addContextClassLoaders(loader);
             loader.addClassLoader(getClass().getClassLoader());
             loader.addClassLoader(MultiClassLoader.SYSTEM_LOADER);
-            return Class.forName(desc.getName(), true, loader);
+            return Class.forName(name, true, loader);
         }
 
         protected void addContextClassLoaders(MultiClassLoader loader) {

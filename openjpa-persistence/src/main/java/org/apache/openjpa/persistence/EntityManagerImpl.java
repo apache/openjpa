@@ -84,6 +84,7 @@ import org.apache.openjpa.persistence.criteria.CriteriaBuilderImpl;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaBuilder;
 import org.apache.openjpa.persistence.criteria.OpenJPACriteriaQuery;
 import org.apache.openjpa.persistence.validation.ValidationUtils;
+import org.apache.openjpa.util.BlacklistClassResolver;
 import org.apache.openjpa.util.ExceptionInfo;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.ImplHelper;
@@ -1543,7 +1544,7 @@ public class EntityManagerImpl
         protected Class<?> resolveClass(ObjectStreamClass classDesc)
             throws IOException, ClassNotFoundException {
 
-            String cname = classDesc.getName();
+            String cname = BlacklistClassResolver.DEFAULT.check(classDesc.getName());
             if (cname.startsWith("[")) {
                 // An array
                 Class<?> component;		// component class
