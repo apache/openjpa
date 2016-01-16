@@ -16,19 +16,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.openjpa.tools.maven;
+package foo;
 
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-/**
- * Processes Application model classes and enhances them by running OpenJPA
- * Enhancer tool.
- * 
- * @version $Id: OpenJpaEnhancerMojo.java 10954 2009-10-23 22:05:45Z struberg $
- * @since 1.0
- */
-@Mojo(name="enhance", defaultPhase=LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution=ResolutionScope.COMPILE)
-public class OpenJpaEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
+@Entity
+public class TestEntityC {
+
+    @Id
+    private int xint1;
+
+    private String string1;
+
+    public TestEntityC(int int1, String string1) {
+        this.xint1 = int1;
+        this.string1 = string1;
+    }
+
+    public int getInt1() {
+        return xint1;
+    }
+
+    public void setInt1(int int1) {
+        this.xint1 = int1;
+    }
+
+    public String getString1() {
+        return string1;
+    }
+
+    public void setString1(String string1) {
+        this.string1 = string1;
+    }
+
+    public String toString()  {
+        return xint1 + ":" + string1;
+    }
+
 }

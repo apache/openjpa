@@ -22,6 +22,10 @@ package org.apache.openjpa.tools.maven;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.openjpa.lib.util.Options;
 
 /**
@@ -29,11 +33,8 @@ import org.apache.openjpa.lib.util.Options;
  * 
  * @version $Id$
  * @since 1.0
- * @goal schema
- * @phase process-classes
- * @requiresDependencyResolution compile
- * 
  */
+@Mojo(name="schema", defaultPhase=LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution=ResolutionScope.COMPILE)
 public class OpenJpaSchemaMojo extends AbstractOpenJpaMappingToolMojo {
 
     /**
@@ -49,9 +50,8 @@ public class OpenJpaSchemaMojo extends AbstractOpenJpaMappingToolMojo {
      * <li>export (see MappingTool#ACTION_EXPORT)</li>
      * <li>validate (see MappingTool#ACTION_VALIDATE)</li>
      * </ul>
-     *
-     * @parameter default-value="add"
      */
+    @Parameter(defaultValue="add")
     protected String schemaAction;
     /**
      * used for passing the schemaAction parameter to the mapping tool
@@ -62,9 +62,8 @@ public class OpenJpaSchemaMojo extends AbstractOpenJpaMappingToolMojo {
      * Use this option to write the planned schema to an XML document
      * rather than modify the database. The document can then be manipulated and
      * committed to the database with the schema tool
-     *
-     * @parameter default-value="${project.build.directory}/schema.xml"
      */
+    @Parameter(defaultValue="${project.build.directory}/schema.xml")
     protected File schemaFile;
     /**
      * used for passing the schemaFile parameter to the mapping tool

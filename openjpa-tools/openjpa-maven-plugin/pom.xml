@@ -45,7 +45,6 @@
         <maven>2.0.6</maven>
     </prerequisites>
 
-
     <developers>
         <developer>
             <id>rahul</id>
@@ -66,6 +65,7 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
+
     <dependencies>
         <!-- dependencies needed for building maven plugins -->
         <dependency>
@@ -77,6 +77,12 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
             <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugin-tools</groupId>
+            <artifactId>maven-plugin-annotations</artifactId>
+            <version>3.4</version>
+            <scope>provided</scope> <!-- annotations are only needed to build the plugin -->
         </dependency>
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -153,6 +159,28 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.4</version>
+                <configuration>
+                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>mojo-descriptor</id>
+                        <goals>
+                            <goal>descriptor</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>help-goal</id>
+                        <goals>
+                            <goal>helpmojo</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
                 <configuration>
                     <debug>true</debug>
@@ -166,6 +194,7 @@
                     <goals>
                         <goal>install</goal>
                     </goals>
+                    <postBuildHookScript>verify</postBuildHookScript>
                 </configuration>
                 <executions>
                     <execution>

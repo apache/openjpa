@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -54,9 +55,8 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
     /**
      * Argument to specify the action to take on each class. The available actions are:
      * buildSchema, validate
-     *
-     * @parameter
      */
+    @Parameter
     protected String action;
     /**
      * used for passing the action parameter to the mapping tool

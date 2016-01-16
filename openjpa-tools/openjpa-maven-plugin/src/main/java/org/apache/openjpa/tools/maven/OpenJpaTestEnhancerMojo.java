@@ -21,47 +21,42 @@ package org.apache.openjpa.tools.maven;
 import java.io.File;
 import java.util.List;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
- * Processes Application model classes and enhances them by running Open JPA
+ * Processes Application model test classes and enhances them by running OpenJPA
  * Enhancer tool.
  * 
  * @version $Id: OpenJpaTestEnhancerMojo.java 9137 2009-02-28 21:55:03Z struberg $
  * @since 1.1
- * @goal test-enhance
- * @phase process-test-classes
- * @requiresDependencyResolution test
- * 
  */
+@Mojo(name="test-enhance", defaultPhase=LifecyclePhase.PROCESS_TEST_CLASSES,
+      requiresDependencyResolution=ResolutionScope.TEST)
 public class OpenJpaTestEnhancerMojo extends AbstractOpenJpaEnhancerMojo {
 
     /**
      * List of all class path elements that will be searched for the
      * <code>persistence-enabled</code> classes and resources expected by
      * PCEnhancer.
-     *
-     * @parameter default-value="${project.testClasspathElements}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue="${project.testClasspathElements}", required=true, readonly=true)
     protected List<String> testClasspathElements;
 
     /**
      * This is where compiled test classes go.
-     *
-     * @parameter default-value="${project.build.testOutputDirectory}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue="${project.build.testOutputDirectory}", required=true, readonly=true)
     private File testClasses;
 
     /**
      * Use this flag to skip test enhancement. It will automatically be
      * set if maven got invoked with the -Dmaven.test.skip=true option
      * because no compiled test clases are available in this case.
-     *
-     * @parameter default-value="${maven.test.skip}"
-     * @readonly
      */
+    @Parameter(defaultValue="${maven.test.skip}", readonly=true)
     private boolean skipTestEnhancement;
 
     /**

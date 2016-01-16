@@ -22,6 +22,10 @@ package org.apache.openjpa.tools.maven;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.openjpa.lib.util.Options;
 
 /**
@@ -29,10 +33,8 @@ import org.apache.openjpa.lib.util.Options;
  * 
  * @version $Id$
  * @since 1.0
- * @goal sql
- * @phase process-classes
- * @requiresDependencyResolution compile
  */
+@Mojo(name="sql", defaultPhase=LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution=ResolutionScope.COMPILE)
 public class OpenJpaSqlMojo extends AbstractOpenJpaMappingToolMojo {
 
     /**
@@ -51,9 +53,8 @@ public class OpenJpaSqlMojo extends AbstractOpenJpaMappingToolMojo {
      * Technically this is the same like the {@code schemaAction}, but we have to
      * split it for the plugin to allow different actions for generating the mapping
      * and generating the SQL files.
-     *
-     * @parameter default-value="build"
      */
+    @Parameter(defaultValue="build")
     protected String sqlAction;
     /**
      * internally the options is named 'schemaAction'!
@@ -65,23 +66,20 @@ public class OpenJpaSqlMojo extends AbstractOpenJpaMappingToolMojo {
      * script. Combine this with a schemaAction
      * of "build" to generate a script that recreates the schema for the
      * current mappings, even if the schema already exists.
-     *
-     * @parameter default-value="${project.build.directory}/database.sql"
      */
+    @Parameter(defaultValue="${project.build.directory}/database.sql")
     protected File sqlFile;
     /**
      * used for passing the sqlFile parameter to the mapping tool
      */
     protected static final String OPTION_SQL_FILE = "sqlFile";
 
-
     /**
      * Use this option to write the planned schema modifications to
      * the database. If this is set, the sqlFile setting (if any) will
      * be ignored.
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue="false")
     protected boolean modifyDatabase;
 
 

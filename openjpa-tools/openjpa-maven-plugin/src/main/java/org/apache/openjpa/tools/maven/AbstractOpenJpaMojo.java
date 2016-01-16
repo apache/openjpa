@@ -31,6 +31,7 @@ import java.util.Properties;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.openjpa.lib.util.Options;
 import org.codehaus.plexus.util.FileUtils;
@@ -45,46 +46,36 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     /**
      * The working directory for putting persistence.xml and
      * other stuff into if we need to.
-     *
-     *
-     * @parameter expression="${openjpa.workdir}"
-     *            default-value="${project.build.directory}/openjpa-work"
-     * @required
      */
+    @Parameter(property="openjpa.workdir", defaultValue="${project.build.directory}/openjpa-work", required=true)
     protected File workDir;
 
     /**
      * Location where <code>persistence-enabled</code> classes are located.
-     * 
-     * @parameter expression="${openjpa.classes}"
-     *            default-value="${project.build.outputDirectory}"
-     * @required
      */
+    @Parameter(property="openjpa.classes", defaultValue="${project.build.outputDirectory}", required=true)
     protected File classes;
     
     /**
      * Comma separated list of includes to scan searchDir to pass to the jobs.
      * This may be used to restrict the OpenJPA tasks to e.g. a single package which
      * contains all the entities.
-     *   
-     * @parameter default-value="**\/*.class"
      */
+    @Parameter(defaultValue="**/*.class")
     private String includes;
 
     /**
      * Comma separated list of excludes to scan searchDir to pass to the jobs.
      * This option may be used to stop OpenJPA tasks from scanning non-JPA classes
      * (which usually leads to warnings such as "Type xxx has no metadata")
-     * 
-     * @parameter default-value="";
      */
+    @Parameter(defaultValue="")
     private String excludes;
 
     /**
      * Additional properties passed to the OpenJPA tools.
-     * 
-     * @parameter
      */
+    @Parameter
     private Properties toolProperties;
 
     /**
@@ -92,18 +83,16 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * If not specified, the default one in META-INF/persistence.xml will be used.
      * Since openjpa-2.3.0 this can also be a resource location. In prior releases
      * it was only possible to specify a file location.
-     *
-     * @parameter
      */
+    @Parameter
     private String persistenceXmlFile;
 
     /**
      * An optional PersistenceUnit name.
      * If not specified then OpenJPA will run against 'all anchors'.
      * Means it will use all persistenceunits of all persistence.xml files it finds.
-     *
-     * @parameter default-value="${openjpa.persistenceUnitName}"
      */
+    @Parameter(defaultValue="${openjpa.persistenceUnitName}")
     private String persistenceUnitName;
 
 
@@ -118,9 +107,8 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * </pre>
      * 
      * This is most times used in conjunction with {@link #connectionProperties}.
-     * 
-     * @parameter
      */
+    @Parameter
     private String connectionDriverName;
 
     /** the string used for passing information about the connectionDriverName */
@@ -143,9 +131,8 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * </pre>
      *
      * This is most times used in conjunction with {@link #connectionDriverName}.
-     *
-     * @parameter
      */
+    @Parameter
     private String connectionProperties;
     
     /** the string used for passing information about the connectionProperties */
@@ -156,30 +143,21 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
      * List of all class path elements that will be searched for the
      * <code>persistence-enabled</code> classes and resources expected by
      * PCEnhancer.
-     * 
-     * @parameter default-value="${project.compileClasspathElements}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue="${project.compileClasspathElements}", required=true, readonly=true)
     protected List<String> compileClasspathElements;
     
     /**
      * Setting this parameter to <code>true</code> will force
      * the execution of this mojo, even if it would get skipped usually.
-     *  
-     * @parameter expression="${forceOpenJpaExecution}"
-     *            default-value=false
-     * @required
      */
+    @Parameter(property="forceOpenJpaExecution", defaultValue="false", required=true)
     private boolean forceMojoExecution; 
     
     /**
      * The Maven Project Object
-     *
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue="${project}", required=true, readonly=true)
     protected MavenProject project;
 
     /** the properties option is used for passing information about the persistence.xml file location */
@@ -194,8 +172,8 @@ public abstract class AbstractOpenJpaMojo extends AbstractMojo
     /**
      * When <code>true</code>, skip the execution.
      * @since 1.0
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue="false")
     private boolean skip;
 
     /**

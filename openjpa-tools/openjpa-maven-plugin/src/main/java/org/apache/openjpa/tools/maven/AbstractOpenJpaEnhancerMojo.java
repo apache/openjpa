@@ -21,6 +21,7 @@ package org.apache.openjpa.tools.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.util.FileUtils;
 
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -40,9 +41,8 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      * The JPA spec requires that all persistent classes define a no-arg constructor.
      * This flag tells the enhancer whether to add a protected no-arg constructor
      * to any persistent classes that don't already have one.
-     *
-     * @parameter default-value="true"
      */
+    @Parameter(defaultValue="true")
     protected boolean addDefaultConstructor;
     /**
      * used for passing the addDefaultConstructor parameter to the enhnacer tool
@@ -52,9 +52,8 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
     /**
      * Whether to throw an exception when it appears that a property access entity
      * is not obeying the restrictions placed on property access.
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue="false")
     protected boolean enforcePropertyRestrictions;
     /**
      * used for passing the enforcePropertyRestrictions parameter to the enhnacer tool
@@ -66,9 +65,8 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
      * If you enable this feature, then no depending artifacts from the classpath will be used!
      * Please note that you have to disable the tmpClassLoader for some cases in OpenJPA-1.2.1
      * due to an extended parsing strategy.
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue="false")
     protected boolean tmpClassLoader;
     /**
      * used for passing the tmpClassLoader parameter to the enhnacer tool
