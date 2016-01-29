@@ -20,15 +20,21 @@ package org.apache.openjpa.enhance;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
 import org.apache.xbean.asm5.ClassReader;
+import org.apache.xbean.asm5.ClassVisitor;
 import org.apache.xbean.asm5.ClassWriter;
+import org.apache.xbean.asm5.Opcodes;
 import serp.bytecode.BCClass;
+
+import static java.util.Arrays.asList;
 
 
 /**
@@ -36,6 +42,7 @@ import serp.bytecode.BCClass;
  * Serp.
  */
 public final class AsmAdaptor {
+    private static final boolean USE_ASM = System.getProperty("java.version").compareTo("1.6") > 0;
     private static final int Java7_MajorVersion = 51;
 
     @SuppressWarnings("deprecation")
@@ -95,6 +102,70 @@ public final class AsmAdaptor {
         return cw.toByteArray();
     }
 
+    public static boolean use()
+    {
+        return USE_ASM;
+    }
+
+    public static boolean isEnhanced(final byte[] b)
+    {
+        if (b == null)
+        {
+            return false;
+        }
+        final ClassReader cr = new ClassReader(b);
+        try
+        {
+            cr.accept(new ClassVisitor(Opcodes.ASM5)
+            {
+                @Override
+                public void visit(final int i, final int i1,
+                                  final String name, final String s,
+                                  final String parent, final String[] interfaces)
+                {
+                    boolean enhanced = interfaces != null && interfaces.length > 0 &&
+                        asList(interfaces).contains("org/apache/openjpa/enhance/PersistenceCapable");
+                    if (!enhanced && name != null && parent != null &&
+                        !"java/lang/Object".equals(parent) && !name.equals(parent)) {
+                        enhanced = isEnhanced(bytes(parent));
+                    }
+                    throw new EnhancedStatusException(enhanced);
+                }
+            }, 0);
+            return false;
+        } catch (final EnhancedStatusException e) {
+            return e.status;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    private static byte[] bytes(final String type)
+    {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        final InputStream stream = Thread.currentThread().getContextClassLoader()
+            .getResourceAsStream(type + ".class");
+        if (stream == null) {
+            return null;
+        }
+        try {
+            int c;
+            byte[] buffer = new byte[1024];
+            while ((c = stream.read(buffer)) >= 0) {
+                baos.write(buffer, 0, c);
+            }
+        } catch (IOException e) {
+            return null;
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                // no-op
+            }
+        }
+        return baos.toByteArray();
+    }
+
     private static class BCClassWriter extends ClassWriter {
         private final ClassLoader _loader;
 
@@ -126,6 +197,14 @@ public final class AsmAdaptor {
                 class1 = class1.getSuperclass();
             } while (!class1.isAssignableFrom(class2));
             return class1.getName().replace('.', '/');
+        }
+    }
+
+    private static class EnhancedStatusException extends RuntimeException {
+        private final boolean status;
+
+        private EnhancedStatusException(final boolean status) {
+            this.status = status;
         }
     }
 }
