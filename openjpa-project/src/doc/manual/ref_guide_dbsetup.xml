@@ -1573,6 +1573,25 @@ that the entities defined sequence is kept in synch with the sequence defined in
 database.  Defaults to false.
                 	</para>
                 </listitem>
+                <listitem id="DBDictionary.DisableSchemaFactoryColumnTypeErrors">
+                    <para>
+                    <indexterm>
+                        <primary>
+                            schema
+                        </primary>
+                        <secondary>
+                            DisableSchemaFactoryColumnTypeErrors
+                        </secondary>
+                    </indexterm>
+<literal>DisableSchemaFactoryColumnTypeErrors</literal>: When something other than the default 
+SchemaFactory is used, up-front mapping validation is performed against the database schema.  As
+part of the validation, OpenJPA will verify a persistence class column's type against the column type
+defined in the database schema.  If a mismatch is found, OpenJPA will throw an exception to flag the 
+mismatch types and will not allow processing to continue.  This can be limiting, especially if the 
+JDBC driver and/or database can properly handle the mismatch.  Set this property to true to disable 
+column type mismatch errors.  Defaults to false.
+                    </para>
+                </listitem>                
                 <listitem id="DBDictionary.DistinctCountColumnSeparator">
                     <para>
                     <indexterm>

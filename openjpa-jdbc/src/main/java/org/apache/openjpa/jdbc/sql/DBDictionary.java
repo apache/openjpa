@@ -219,6 +219,7 @@ public class DBDictionary
     public String schemaCase = SCHEMA_CASE_UPPER;
     public boolean setStringRightTruncationOn = true;
     public boolean fullResultCollectionInOrderByRelation = false;
+    public boolean disableSchemaFactoryColumnTypeErrors = false; //OPENJPA-2627
 
     // sql
     public boolean disableAlterSeqenceIncrementBy=false;
