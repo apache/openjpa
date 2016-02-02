@@ -771,7 +771,7 @@ public abstract class MappingInfo
             // can't adapt, else warn and change the existing column type
             Message msg = _loc.get(prefix + "-bad-col", context,
                 Schemas.getJDBCName(type), col.getDescription());
-            if (!adapt)
+            if (!adapt && !dict.disableSchemaFactoryColumnTypeErrors)
                 throw new MetaDataException(msg);
             Log log = repos.getLog();
             if (log.isWarnEnabled())
