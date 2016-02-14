@@ -3082,7 +3082,7 @@ javax.persistence.query.timeout, in milliseconds, as a hint to the provider.  Th
 is used for Query operations.  This property, when set to true, will allow the query timeout hint
 to apply to EntityManager operations.  For example, when a 'find' is executed and the resultant
 entity updated, the query timeout will apply to the SQL update operation.  This property defaults
-to false.</methodname>.
+to false.
                     </para>
                 </listitem>
                 <listitem id="DBDictionary.SupportsRestrictDeleteAction">
