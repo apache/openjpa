@@ -27,7 +27,7 @@
     <parent>
       <groupId>org.apache</groupId>
       <artifactId>apache</artifactId>
-      <version>16</version>
+      <version>17</version>
     </parent>
 
     <groupId>org.apache.openjpa</groupId>
@@ -797,7 +797,6 @@
                         <goals>deploy</goals>
                         <arguments>-Papache-release,docbook-profile,test-derby,bval</arguments>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <tag>${project.version}</tag>
                     </configuration>
                 </plugin>
                 <plugin>
