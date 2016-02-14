@@ -37,7 +37,6 @@ import serp.bytecode.BCClass;
 import serp.bytecode.Project;
 import serp.bytecode.lowlevel.ConstantPoolTable;
 
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 
 /**
  * Transformer that makes persistent classes implement the
