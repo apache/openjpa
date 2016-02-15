@@ -30,6 +30,16 @@ These instructions describe how perform an official release of the Apache OpenJP
 * Run a full build
  $> mvn clean install
 
+== Update the Release Notes
+Edit openjpa-project/RELEASE-NOTES.html and add a new section for the new release.
+Just remove all the bug content from the previous release.
+
+Make sure all the ticets for the upcoming release are set to resolved
+You can grab the content for the new release at
+https://issues.apache.org/jira/browse/OPENJPA/?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel
+Just copy over the html content for the generated ReleaseNotes.
+
+At last add a link to the RELEASE-NOTES.html of the previous release to the table on the bottom of the page.
 
 
 == Performing the Release
