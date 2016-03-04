@@ -1695,8 +1695,14 @@ public class QueryImpl
                 getClassLoader(_class, _broker.getClassLoader());
         try {
             return Strings.toClass(name, _loader);
-        } catch (RuntimeException re) {
-        } catch (NoClassDefFoundError ncdfe) {
+        } catch (IllegalArgumentException e) {
+            // because Strings.toClass catches Throwable (wtf?) and throws an IllegalArgumentExcpetion
+
+            try {
+                return Strings.toClass(name, null); // -> null forces TCCL..
+            } catch (IllegalArgumentException iae) {
+                // was just a try, lets ignore it
+            }
         }
         return null;
     }
