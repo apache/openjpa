@@ -1692,7 +1692,7 @@ public class QueryImpl
     private Class toClass(String name) {
         if (_loader == null)
             _loader = _broker.getConfiguration().getClassResolverInstance().
-                getClassLoader(_class, _broker.getClassLoader());
+                    getClassLoader(_class, _broker.getClassLoader());
         try {
             return Strings.toClass(name, _loader);
         } catch (RuntimeException re) {

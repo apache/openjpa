@@ -177,6 +177,7 @@ public class OpenJPAConfigurationImpl
     public PluginListValue instrumentationProviders;
     public BooleanValue postLoadOnMerge;
     public BooleanValue optimizeIdCopy;
+    public BooleanValue useTcclForSelectNew;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -604,6 +605,10 @@ public class OpenJPAConfigurationImpl
         aliases = new String[] { "default", AuditLogger.class.getName(), };
         auditorPlugin.setAliases(aliases);
         auditorPlugin.setInstantiatingGetter("getAuditorInstance");
+
+        useTcclForSelectNew = addBoolean("UseTCCLinSelectNew");
+        useTcclForSelectNew.setDefault("false");
+        useTcclForSelectNew.set(false);
         
         // initialize supported options that some runtimes may not support
         supportedOptions.add(OPTION_NONTRANS_READ);
@@ -622,6 +627,7 @@ public class OpenJPAConfigurationImpl
         supportedOptions.add(OPTION_VALUE_INCREMENT);
         supportedOptions.add(OPTION_DATASTORE_CONNECTION);
         supportedOptions.add(OPTION_POSTLOAD_ON_MERGE);
+        supportedOptions.add(OPTION_USE_TCCL_IN_SELECT_NEW);
 
         if (derivations)
             ProductDerivations.beforeConfigurationLoad(this);
@@ -1871,6 +1877,23 @@ public class OpenJPAConfigurationImpl
     public void setOptimizeIdCopy(Boolean optimizeId) {
         if (optimizeId != null) {
             setOptimizeIdCopy(optimizeId.booleanValue());
+        }
+    }
+
+    @Override
+    public boolean getUseTCCLinSelectNew() {
+        return useTcclForSelectNew.get();
+    }
+
+    @Override
+    public void setUseTCCLinSelectNew(boolean useTcclForSelectNew) {
+        this.useTcclForSelectNew.set(useTcclForSelectNew);
+    }
+
+    @Override
+    public void setUseTCCLinSelectNew(Boolean useTcclForSelectNew) {
+        if (useTcclForSelectNew != null) {
+            setUseTCCLinSelectNew(useTcclForSelectNew.booleanValue());
         }
     }
 }
