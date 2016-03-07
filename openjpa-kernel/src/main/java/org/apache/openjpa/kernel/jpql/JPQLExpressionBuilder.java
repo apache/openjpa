@@ -22,6 +22,7 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.security.AccessController;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import org.apache.openjpa.kernel.exps.Resolver;
 import org.apache.openjpa.kernel.exps.Subquery;
 import org.apache.openjpa.kernel.exps.Value;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
 import org.apache.openjpa.lib.util.Localizer.Message;
@@ -410,6 +412,22 @@ public class JPQLExpressionBuilder
                     String baseName = left(node).getChild(n-1).text;
                     constructor = resolver.classForName(baseName, null);
                 }
+
+                if (constructor == null && resolver.getConfiguration().getUseTCCLinSelectNew()) {
+                    try {
+                        if (System.getSecurityManager() == null) {
+                            constructor = AccessController.doPrivileged(
+                                    J2DoPrivHelper.getForNameAction(resultClassName, false,
+                                        AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction())));
+                        }
+                        else {
+                            constructor = Thread.currentThread().getContextClassLoader().loadClass(resultClassName);
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+
                 if (constructor == null)
                     throw parseException(EX_USER, "no-constructor",
                             new Object[]{ resultClassName }, null);

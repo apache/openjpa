@@ -1692,17 +1692,11 @@ public class QueryImpl
     private Class toClass(String name) {
         if (_loader == null)
             _loader = _broker.getConfiguration().getClassResolverInstance().
-                getClassLoader(_class, _broker.getClassLoader());
+                    getClassLoader(_class, _broker.getClassLoader());
         try {
             return Strings.toClass(name, _loader);
-        } catch (IllegalArgumentException e) {
-            // because Strings.toClass catches Throwable (wtf?) and throws an IllegalArgumentExcpetion
-
-            try {
-                return Strings.toClass(name, null); // -> null forces TCCL..
-            } catch (IllegalArgumentException iae) {
-                // was just a try, lets ignore it
-            }
+        } catch (RuntimeException re) {
+        } catch (NoClassDefFoundError ncdfe) {
         }
         return null;
     }
