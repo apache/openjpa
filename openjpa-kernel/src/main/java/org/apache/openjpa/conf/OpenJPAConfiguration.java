@@ -220,6 +220,13 @@ public interface OpenJPAConfiguration
         "openjpa.option.PostLoadOnMerge";
 
     /**
+     * Option to enable TCCL if the result class for select new is not found
+     * in the entities classloader
+     */
+    public static final String OPTION_USE_TCCL_IN_SELECT_NEW =
+            "openjpa.option.UseTCCLinSelectNew";
+
+    /**
      * Return the set of option strings supported by this runtime. This set
      * is mutable.
      */
@@ -1949,5 +1956,32 @@ public interface OpenJPAConfiguration
       * @since 2.2.0
       */
       public void setOptimizeIdCopy(Boolean optimizeIds);
+
+      /**
+       * Indicates if the {@link Thread#contextClassLoader} should be used
+       * as fallback if the result class for {@code select new} is not found
+       * by the classloader of the entity.
+       *
+       * @since 2.4.2
+       */
+      public boolean getUseTCCLinSelectNew();
+
+      /**
+       * Indicates if the {@link Thread#contextClassLoader} should be used
+       * as fallback if the result class for {@code select new} is not found
+       * by the classloader of the entity.
+       *
+       * @since 2.4.2
+       */
+      public void setUseTCCLinSelectNew(boolean useTcclForSelectNew);
+
+      /**
+       * Indicates if the {@link Thread#contextClassLoader} should be used
+       * as fallback if the result class for {@code select new} is not found
+       * by the classloader of the entity.
+       *
+       * @since 2.4.2
+       */
+      public void setUseTCCLinSelectNew(Boolean useTcclForSelectNew);
 }
 
