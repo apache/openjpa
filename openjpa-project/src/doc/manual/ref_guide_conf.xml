@@ -3408,6 +3408,53 @@ TransactionMode</literal>
 use. You can override this setting per-session.
             </para>
         </section>
+
+        <section id="openjpa.UseTCCLinSelectNew">
+            <title>
+                openjpa.UseTCCLinSelectNew
+            </title>
+            <indexterm zone="openjpa.UseTCCLinSelectNew">
+                <primary>
+                    UseTCCLinSelectNew
+                </primary>
+            </indexterm>
+            <indexterm zone="openjpa.UseTCCLinSelectNew">
+                <primary>
+                    classloading
+                </primary>
+                <secondary>
+                    UseTCCLinSelectNew
+                </secondary>
+            </indexterm>
+            <para>
+                <emphasis role="bold">Property name: </emphasis><literal>openjpa.UseTCCLinSelectNew</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Configuration API:</emphasis>
+                <ulink url="../javadoc/org/apache/openjpa/conf/OpenJPAConfiguration.html#getUseTCCLinSelectNew()">
+                <methodname>org.apache.openjpa.conf.OpenJPAConfiguration.getUseTCCLinSelectNew
+                </methodname></ulink>
+            </para>
+            <para>
+                <emphasis role="bold">Resource adaptor config-property: </emphasis><literal>UseTCCLinSelectNew</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Default: </emphasis><literal>false</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Since: </emphasis><literal>OpenJPA-2.4.2</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Possible values: </emphasis><literal>true</literal>,
+                <literal>false</literal>
+            </para>
+            <para>
+                <emphasis role="bold">Description:</emphasis> Whether to try to use the ThreadContextClassLoader
+                as fallback if the given class in a <literal>SELECT NEW</literal> statement could not be found
+                with the default ClassLoader. This is mostly useful in EAR and OSGi environments.
+                By default the ClassLoader of the entity is used.
+            </para>
+        </section>
         <section id="openjpa.WriteLockLevel">
             <title>
                 openjpa.WriteLockLevel
