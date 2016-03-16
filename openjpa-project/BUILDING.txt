@@ -181,6 +181,13 @@ Building and deploying the Site
 
 $ mvn site site:deploy -Pjavadoc-profile,docbook-profile
 
+To generate the docbook documentation you need to cd into the openjpa-project directory and run
+
+$ cd ./openjpa-project
+$ mvn clean install -Papache-release,docbook-profile
+
+The generated PDF is available under ./target/docbook/manual.pdf
+
 
 Running unit tests in the Debugger
 ==================================
