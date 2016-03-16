@@ -82,4 +82,47 @@ Then 'close' the staging and copy the URL of the staging repository
 
 == Call a VOTE
 
+Send the usual VOTE mail to the mailing List
 
+
+== After the VOTE succeeded
+
+Tally the VOTEs and send the result to the mailing list.
+Propagate the staging repository and wait until the results appear on maven.central
+
+
+== Upload the distribution binaries
+
+Checkout the distribution area from SVN
+https://dist.apache.org/repos/dist/release/openjpa
+
+Add a new directory for the new version and upload the binaries.
+You might use the following getrelease.sh script for it:
+
+-----
+#!/bin/sh
+mkdir $1
+cd $1
+
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/apache-openjpa/${1}/apache-openjpa-${1}-binary.zip
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/apache-openjpa/${1}/apache-openjpa-${1}-binary.zip.asc
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/apache-openjpa/${1}/apache-openjpa-${1}-binary.zip.md5
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/apache-openjpa/${1}/apache-openjpa-${1}-binary.zip.sha1
+
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/openjpa-parent/${1}/openjpa-parent-${1}-source-release.zip
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/openjpa-parent/${1}/openjpa-parent-${1}-source-release.zip.asc
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/openjpa-parent/${1}/openjpa-parent-${1}-source-release.zip.md5
+curl -O https://repository.apache.org/content/groups/public/org/apache/openjpa/openjpa-parent/${1}/openjpa-parent-${1}-source-release.zip.sha1
+
+cd ..
+-----
+
+You also need to remove any now obsolete previous version.
+E.g. when releasing our release 2.4.2 we should remove 2.4.1.
+Older still maintained versions remain on the dist area as long as the branch is still actively maintained.
+
+
+== Upload the site for the new version
+
+
+TODO
