@@ -355,13 +355,6 @@
                     <value>true</value>
                 </property>
             </activation>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>agilejava</id>
-                    <name>Agilejava repository (Docbook plugin)</name>
-                    <url>http://agilejava.com/maven</url>
-                </pluginRepository>
-            </pluginRepositories>
             <repositories>
                 <repository>
                     <id>jai.repository</id>
