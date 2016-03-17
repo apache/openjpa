@@ -125,4 +125,22 @@ Older still maintained versions remain on the dist area as long as the branch is
 == Upload the site for the new version
 
 
-TODO
+The site for OpenJPA is maintained with the [Apache CMS](http://www.apache.org/dev/cmsref.html).
+The sources of the site are hosted in Subversion
+
+-----
+svn co https://svn.apache.org/repos/asf/openjpa/site/trunk openjpa-site
+-----
+
+
+===  Update the download page
+
+Edit content/downloads.mdtext and add the new release.
+Or for a simple maintenance release just replace the previous version with the new information.
+The information on this side should match the content available in the dist area.
+
+Please also add proper changes to content/downloads-nightly.mdtext!
+
+
+=== Upload JavaDoc of the new version
+
