@@ -144,3 +144,4 @@ Please also add proper changes to content/downloads-nightly.mdtext!
 
 === Upload JavaDoc of the new version
 
+Edit content/documentation.mdtext
