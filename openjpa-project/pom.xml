@@ -86,6 +86,7 @@
 
         <!-- 
             Java imaging apis are needed to include images in a PDF.
+            //X THAT seems not to be true anymore with the new dockbkx plugin!
             JIMI or JAI may be used. Neither is available in a maven
             repository and should be downloaded and installed manually
             to your local repository.
@@ -333,6 +334,7 @@
                             <version>4.4</version>
                             <scope>runtime</scope>
                         </dependency>
+<!-- As far as I did test we do not need JAI for generating our docs.
                         <dependency>
                             <groupId>${jai.groupId}</groupId>
                             <artifactId>jai_core</artifactId>
@@ -345,6 +347,7 @@
                             <version>${jai.version}</version>
                             <scope>runtime</scope>
                         </dependency>
+-->
                         </dependencies>
                     </plugin>
                 </plugins>
@@ -355,23 +358,10 @@
                     <value>true</value>
                 </property>
             </activation>
-            <pluginRepositories>
-                <pluginRepository>
-                    <id>jai.repository</id>
-                    <name>JAI Repository (indirectly used by Docbook plugin)</name>
-                    <url>${jai.maven.repo}</url>
-                </pluginRepository>
-            </pluginRepositories>
-            <repositories>
-                <repository>
-                    <id>jai.repository</id>
-                    <name>JAI Repository (indirectly used by Docbook plugin)</name>
-                    <url>${jai.maven.repo}</url>
-                </repository>
-            </repositories>
+
         </profile>
-        <!-- 
-          Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}. 
+        <!--
+          Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}.
           This profile is designed to be run nightly by a continuous build server, but can
           also be run manually.
 
