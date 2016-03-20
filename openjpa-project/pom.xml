@@ -80,7 +80,7 @@
         </parent.site.docs>
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
-        <docbook.target>${project.basedir}/target/docbook</docbook.target>
+        <docbook.target>${project.build.directory}/docbook</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
 
@@ -256,7 +256,7 @@
                                         ${docbook.source}
                                     </sourceDirectory>
                                     <targetDirectory>
-                                        ${docbook.target}
+                                        ${docbook.target}/manual
                                     </targetDirectory>
                                     <includes>manual.xml</includes>
                                     <chunkedOutput>true</chunkedOutput>
