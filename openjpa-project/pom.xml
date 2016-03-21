@@ -287,6 +287,20 @@
                                             </fileset>
                                         </copy>
 
+                                        <!-- copy over separate files for single-page document -->
+                                        <mkdir dir="${docbook.target}/img" />
+                                        <copy todir="${docbook.target}/img">
+                                            <fileset dir="${docbook.source}/img">
+                                                <include name="*.png" />
+                                            </fileset>
+                                        </copy>
+                                        <mkdir dir="${docbook.target}/css" />
+                                        <copy todir="${docbook.target}/css">
+                                            <fileset dir="${docbook.source}/css">
+                                                <include name="*.*" />
+                                            </fileset>
+                                        </copy>
+
                                         <!-- copy to parent module for
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
