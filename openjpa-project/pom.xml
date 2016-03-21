@@ -256,7 +256,7 @@
                                         ${docbook.source}
                                     </sourceDirectory>
                                     <targetDirectory>
-                                        ${docbook.target}/manual
+                                        ${docbook.target}
                                     </targetDirectory>
                                     <includes>manual.xml</includes>
                                     <chunkedOutput>true</chunkedOutput>
@@ -266,34 +266,20 @@
                                     </htmlCustomization>
                                     <postProcess>
                                         <!-- rename manual to index -->
-                                        <move file="${docbook.target}/manual/manual.html" tofile="${docbook.target}/manual/index.html" />
+                                        <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
                                         <!-- Replace a 'base href' token to 'base target' in the index.html -->
                                         <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-                                        <replace file="${docbook.target}/manual/index.html" token="base href" value="base target" />
+                                        <replace file="${docbook.target}/index.html" token="base href" value="base target" />
                                         <!-- Copy main.html from original location to docbook target  -->
-                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/manual/main.html" />
+                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
                                         <!-- copy over images and styles -->
-                                        <mkdir dir="${docbook.target}/manual/img" />
-                                        <copy todir="${docbook.target}/manual/img">
-                                            <fileset dir="${docbook.source}/img">
-                                                <include name="*.*" />
-                                            </fileset>
-                                        </copy>
-
-                                        <mkdir dir="${docbook.target}/manual/css" />
-                                        <copy todir="${docbook.target}/manual/css">
-                                            <fileset dir="${docbook.source}/css">
-                                                <include name="*.*" />
-                                            </fileset>
-                                        </copy>
-
-                                        <!-- copy over separate files for single-page document -->
                                         <mkdir dir="${docbook.target}/img" />
                                         <copy todir="${docbook.target}/img">
                                             <fileset dir="${docbook.source}/img">
-                                                <include name="*.png" />
+                                                <include name="*.*" />
                                             </fileset>
                                         </copy>
+
                                         <mkdir dir="${docbook.target}/css" />
                                         <copy todir="${docbook.target}/css">
                                             <fileset dir="${docbook.source}/css">
@@ -305,7 +291,7 @@
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
                                         <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}/manual">
+                                            <fileset dir="${docbook.target}">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
