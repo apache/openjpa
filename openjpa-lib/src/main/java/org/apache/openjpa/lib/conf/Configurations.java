@@ -203,7 +203,9 @@ public class Configurations {
             Object key = loader == null ? NULL_LOADER : loader;
             Map loaderCache = (Map) _loaders.get(key);
             if (loaderCache == null) { // We don't have a cache for this loader.
-                loaderCache = new ConcurrentHashMap();
+                //OPENJPA-2636: Changed to HARD/WEAK to avoid Classloader leak:
+                loaderCache = new ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.HARD, 
+                    ConcurrentReferenceHashMap.WEAK);
                 _loaders.put(key, loaderCache);
             } else {  // We have a cache for this loader.
                 cls = (Class) loaderCache.get(clsName);
