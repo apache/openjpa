@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
                 <executions>
                     <execution>
                         <id>jjtree-javacc-jpql</id>

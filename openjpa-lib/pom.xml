@@ -120,7 +120,7 @@
                                 # Load the property file
                                 <property prefix="pcenhancer" file="pcenhancer.revision.file" />
                                 <delete file="pcenhancer.revision.file" />
-								
+
                                 <property name="subversion.revision" value="unknown" />
                                 <property name="pcenhancer.LastChangedRev" value="-1" />
                                 <echo>Revision: ${subversion.revision}</echo>
