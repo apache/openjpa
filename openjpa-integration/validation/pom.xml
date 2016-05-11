@@ -39,7 +39,7 @@
     <properties>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
     </properties>
-    
+
     <profiles>
         <!-- Default profile for testing with Apache BVAL provider -->
         <!-- See http://incubator.apache.org/projects/beanvalidation.html -->

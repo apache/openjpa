@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
