@@ -109,6 +109,7 @@ public class MappingTool
     private final String _action;
     private final boolean _meta;
     private final int _mode;
+    private final ClassLoader _loader;
     private final DBDictionary _dict;
 
     private MappingRepository _repos = null;
@@ -136,6 +137,13 @@ public class MappingTool
      * Constructor. Supply configuration and action.
      */
     public MappingTool(JDBCConfiguration conf, String action, boolean meta) {
+        this(conf, action, meta, null);
+    }
+
+    /**
+     * Constructor. Supply configuration and action.
+     */
+    public MappingTool(JDBCConfiguration conf, String action, boolean meta, ClassLoader loader) {
         _conf = conf;
         _log = conf.getLog(JDBCConfiguration.LOG_METADATA);
         _meta = meta;
@@ -154,6 +162,8 @@ public class MappingTool
         else
             _mode = MODE_MAPPING;
 
+        _loader = loader;
+        
         _dict = _conf.getDBDictionaryInstance();
     }
 
@@ -627,7 +637,7 @@ public class MappingTool
         for (int i = 0; i < fmds.length; i++) {
             smd = fmds[i].getValueSequenceMetaData();
             if (smd != null) {
-                seq = smd.getInstance(null);
+                seq = smd.getInstance(_loader);
                 if (seq instanceof JDBCSeq)
                     ((JDBCSeq) seq).addSchema(mapping, group);
             } else if (fmds[i].getEmbeddedMapping() != null)
@@ -936,7 +946,7 @@ public class MappingTool
             public boolean run(Options opts) throws IOException, SQLException {
                 JDBCConfiguration conf = new JDBCConfigurationImpl();
                 try {
-                    return MappingTool.run(conf, args, opts);
+                    return MappingTool.run(conf, args, opts, null);
                 } finally {
                     conf.close();
                 }
@@ -955,7 +965,7 @@ public class MappingTool
      * @see #main
      */
     public static boolean run(JDBCConfiguration conf, String[] args,
-        Options opts)
+        Options opts, ClassLoader loader)
         throws IOException, SQLException {
         // flags
         Flags flags = new Flags();
@@ -991,8 +1001,6 @@ public class MappingTool
             opts.setProperty("schemas", schemas);
 
         Configurations.populateConfiguration(conf, opts);
-        ClassLoader loader = conf.getClassResolverInstance().
-            getClassLoader(MappingTool.class, null);
         if (flags.meta && ACTION_ADD.equals(flags.action))
             flags.metaDataFile = Files.getFile(fileName, loader);
         else
@@ -1066,7 +1074,7 @@ public class MappingTool
 
         MappingTool tool;
         try {
-            tool = new MappingTool(conf, flags.action, flags.meta);
+            tool = new MappingTool(conf, flags.action, flags.meta, loader);
         } catch (IllegalArgumentException iae) {
             return false;
         }

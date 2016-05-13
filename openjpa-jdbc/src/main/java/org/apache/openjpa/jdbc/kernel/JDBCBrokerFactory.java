@@ -144,7 +144,7 @@ public class JDBCBrokerFactory
 
         String props = Configurations.getProperties(action);
         action = Configurations.getClassName(action);
-        MappingTool tool = new MappingTool(conf, action, false);
+        MappingTool tool = new MappingTool(conf, action, false, loader);
         Configurations.configureInstance(tool, conf, props,
             "SynchronizeMappings");
 

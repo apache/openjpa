@@ -104,7 +104,7 @@ public abstract class AbstractOpenJpaMappingToolMojo extends AbstractOpenJpaMojo
                     public boolean run(Options opts) throws IOException, SQLException {
                         JDBCConfiguration conf = new JDBCConfigurationImpl();
                         try {
-                            return MappingTool.run(conf, args, opts);
+                            return MappingTool.run(conf, args, opts, Thread.currentThread().getContextClassLoader());
                         } finally {
                             conf.close();
                         }
