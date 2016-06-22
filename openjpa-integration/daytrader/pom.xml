@@ -36,6 +36,7 @@
     <description>OpenJPA Integration Tests - Daytrader</description>
 
     <properties>
+        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <daytrader.version>2.2-SNAPSHOT</daytrader.version>
         <dbcp.maxActive>10</dbcp.maxActive>
         <dbcp.maxIdle>5</dbcp.maxIdle>

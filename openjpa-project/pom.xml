@@ -80,7 +80,7 @@
         </parent.site.docs>
 
         <docbook.source>${project.basedir}/src/doc/manual</docbook.source>
-        <docbook.target>${project.basedir}/target/docbook</docbook.target>
+        <docbook.target>${project.build.directory}/docbook</docbook.target>
         <docbook.version>1.67.2</docbook.version>
         <local.repository>${settings.localRepository}</local.repository>
 
@@ -144,6 +144,7 @@
                         <configuration>
                             <descriptors>
                                 <descriptor>assembly.xml</descriptor>
+                                <descriptor>source-assembly.xml</descriptor>
                             </descriptors>
                             <outputDirectory>${openjpa.assembly.outputDirectory}</outputDirectory>
                             <workDirectory>target/work</workDirectory>
@@ -274,22 +275,22 @@
                                     </htmlCustomization>
                                     <postProcess>
                                         <!-- rename manual to index -->
-                                        <move file="${docbook.target}/manual/manual.html" tofile="${docbook.target}/manual/index.html" />
+                                        <move file="${docbook.target}/manual.html" tofile="${docbook.target}/index.html" />
                                         <!-- Replace a 'base href' token to 'base target' in the index.html -->
                                         <!-- This base href was inserted by manual-xhtml-chunk.xsl parameter 'html.base' -->
-                                        <replace file="${docbook.target}/manual/index.html" token="base href" value="base target" />
+                                        <replace file="${docbook.target}/index.html" token="base href" value="base target" />
                                         <!-- Copy main.html from original location to docbook target  -->
-                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/manual/main.html" />
+                                        <copy file="${docbook.source}/main.html" tofile="${docbook.target}/main.html" />
                                         <!-- copy over images and styles -->
-                                        <mkdir dir="${docbook.target}/manual/img" />
-                                        <copy todir="${docbook.target}/manual/img">
+                                        <mkdir dir="${docbook.target}/img" />
+                                        <copy todir="${docbook.target}/img">
                                             <fileset dir="${docbook.source}/img">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
 
-                                        <mkdir dir="${docbook.target}/manual/css" />
-                                        <copy todir="${docbook.target}/manual/css">
+                                        <mkdir dir="${docbook.target}/css" />
+                                        <copy todir="${docbook.target}/css">
                                             <fileset dir="${docbook.source}/css">
                                                 <include name="*.*" />
                                             </fileset>
@@ -299,7 +300,7 @@
                                              expanded access in upload -->
                                         <mkdir dir="${parent.site.docs}" />
                                         <copy todir="${parent.site.docs}">
-                                            <fileset dir="${docbook.target}/manual">
+                                            <fileset dir="${docbook.target}">
                                                 <include name="*.*" />
                                             </fileset>
                                         </copy>
@@ -342,6 +343,7 @@
                             <version>4.4</version>
                             <scope>runtime</scope>
                         </dependency>
+                        <!--
                         <dependency>
                             <groupId>${jai.groupId}</groupId>
                             <artifactId>jai_core</artifactId>
@@ -354,6 +356,7 @@
                             <version>${jai.version}</version>
                             <scope>runtime</scope>
                         </dependency>
+                        -->
                         </dependencies>
                     </plugin>
                 </plugins>
@@ -364,6 +367,7 @@
                     <value>true</value>
                 </property>
             </activation>
+            <!--
             <pluginRepositories>
                 <pluginRepository>
                     <id>agilejava</id>
@@ -378,6 +382,7 @@
                     <url>${jai.maven.repo}</url>
                 </repository>
             </repositories>
+            -->
         </profile>
         <!-- 
           Upload distribution files, javadoc and manual to openjpa.apache.org/builds/${nightly.version}. 

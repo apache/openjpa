@@ -36,6 +36,7 @@
     <description>OpenJPA Integration Tests - SLF4JLogFactory</description>
 
     <properties>
+        <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <!-- use SLF4JLogFactory for logging -->
         <openjpa.Log>slf4j</openjpa.Log>
     </properties>
