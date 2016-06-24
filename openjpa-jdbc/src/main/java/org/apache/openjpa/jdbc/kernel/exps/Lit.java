@@ -116,10 +116,11 @@ public class Lit
     public void appendTo(Select sel, ExpContext ctx, ExpState state, 
         SQLBuffer sql, int index) {
         LitExpState lstate = (LitExpState) state;
-        if (lstate.otherLength > 1)
-            sql.appendValue(((Object[]) lstate.sqlValue)[index], 
-                lstate.getColumn(index));
-        else if (_isRaw) {
+        if (lstate.otherLength > 1) {
+            sql.appendValue(((Object[]) lstate.sqlValue)[index], lstate.getColumn(index));
+            // OPENJPA-2631:  Return so as not to go into sql.appendValue a second time below.
+            return;
+        } else if (_isRaw) {
             int parseType = getParseType();
             if (parseType == Literal.TYPE_ENUM) { 
                 StringBuilder value = new StringBuilder();
