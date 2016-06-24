@@ -253,6 +253,32 @@ public class ClassMapping
             sm = (OpenJPAStateManager) pc.pcGetStateManager();
             if (sm == null) {
             	ret = getValueFromUnmanagedInstance(obj, cols, true);
+
+                // OPENJPA-2631 start
+                // Check to see if we are dealing with a Embeddable pk. If the PK is an Embeddable, AND IFF the
+                // columns in the Embeddable are greater than 1, we are dealing with a composite primary
+                // key, and as such 'ret' will be an instance of the embeddable, NOT the individual PK values.
+                // Given this, we need to dig deeper and get the individual values of the embeddable key.
+            	// On the other hand, if the embeddable only contains one column, 'ret' will be the value of 
+            	// that column and as such no further digging is necessary.
+                FieldMapping[] fmsPK = this.getPrimaryKeyFieldMappings();
+                List<FieldMapping> fms = getFieldMappings(cols, true);
+
+                // Note that if we are dealing with an embeddable that is an EmbeddableId, the fms.size will 
+                // always be 1 (since an EmbeddableId is slightly opaque, we don't have an fms for each field).
+                // If on the other hand we are dealing with an embeddable that is an @IdClass, fms.size will be the 
+                // number columns in the @IdClass.  Furthermore, when dealing with @IdClass, 'ret' will already  
+                // properly contain the column values, therefore no further processing is needed.
+                if (fmsPK[0].isEmbedded() && cols.length > 1 && fms.size() == 1) {
+                    // OK, we know this PK is an embeddable. So get the individual field values.
+                    Object[] tmpRet = new Object[cols.length];
+                    for (int i = 0; i < cols.length; i++) {
+                        Joinable join = this.assertJoinable(cols[i]);
+                        tmpRet[i] = join.getJoinValue(ret, cols[i], store);
+                    }
+                    ret = tmpRet;
+                }
+                // OPENJPA-2631 end
             } else if (sm.isDetached()) {
             	obj = store.getContext().find(sm.getObjectId(), false, null);
             	sm = store.getContext().getStateManager(obj);
