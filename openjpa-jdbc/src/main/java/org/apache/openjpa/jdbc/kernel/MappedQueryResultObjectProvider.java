@@ -404,6 +404,20 @@ class MappedQueryResultObjectProvider
                 return _res.getLong((Column) obj, joins);
             return _res.getLong(obj);
         }
+        
+        /*
+         * OPENJPA-2651: Added to allow the column to be translated (from the
+         * actual column name to the name provided in an @SqlResultSetMapping/@FieldResult.
+         * 
+         * (non-Javadoc) 
+         * @see org.apache.openjpa.jdbc.sql.AbstractResult#getObject(org.apache.
+         * openjpa.jdbc.schema.Column, java.lang.Object, org.apache.openjpa.jdbc.sql.Joins)
+         */
+        public Object getObject(Column col, Object arg, Joins joins)
+            throws SQLException {
+            return getObjectInternal(translate(col, joins), col.getJavaType(),
+                arg, joins);
+        }
 
         protected Object getObjectInternal(Object obj, int metaTypeCode,
             Object arg, Joins joins)
