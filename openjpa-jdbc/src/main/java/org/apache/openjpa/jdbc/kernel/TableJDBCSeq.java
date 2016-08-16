@@ -641,7 +641,12 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
     public DBIdentifier resolveTableIdentifier(ClassMapping mapping, Table table) {
         DBIdentifier sName = mapping.getTable().getSchemaIdentifier();
         DBIdentifier tableName = DBIdentifier.NULL;
-        if (DBIdentifier.isNull(sName)) {
+        
+        //OPENJPA-2650: Don't use a schema name if the user has requested,
+        //via useSchemaName, to not use one.
+        if (!_conf.getDBDictionaryInstance().useSchemaName){
+            tableName = table.getIdentifier();
+        } else if (DBIdentifier.isNull(sName)) {
             tableName = table.getFullIdentifier();
         } else if (!DBIdentifier.isNull(table.getSchemaIdentifier())) {
             tableName = table.getFullIdentifier();
