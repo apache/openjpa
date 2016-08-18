@@ -59,6 +59,7 @@ public class ResultSetResult
     private final Statement _stmnt;
     private final ResultSet _rs;
     private final DBDictionary _dict;
+    private boolean _closeStatement = true;
     private boolean _closeConn = true;
     private int _row = -1;
     private int _size = -1;
@@ -178,13 +179,17 @@ public class ResultSetResult
         _closeConn = closeConn;
     }
 
+    public void setCloseStatement(boolean closeStatement) {
+        _closeStatement = closeStatement;
+    }
+
     public void close() {
         super.close();
         try {
             _rs.close();
         } catch (SQLException se) {
         }
-        if (_stmnt != null)
+        if (_stmnt != null && _closeStatement)
             try {
                 _stmnt.close();
             } catch (SQLException se) {

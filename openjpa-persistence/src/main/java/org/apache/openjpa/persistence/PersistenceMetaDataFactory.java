@@ -20,6 +20,7 @@ package org.apache.openjpa.persistence;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.security.AccessController;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.metamodel.StaticMetamodel;
@@ -371,8 +374,18 @@ public class PersistenceMetaDataFactory
                 hasNamedNativeQuery(queryName, ((NamedNativeQueries) cls.
                     getAnnotation(NamedNativeQueries.class)).value()))
                 return cls;
+            if (isAnnotated(cls, NamedStoredProcedureQuery.class)
+                    && hasNamedStoredProcedure(queryName, cls.getAnnotation(NamedStoredProcedureQuery.class)))
+                return cls;
+            if (isAnnotated(cls, NamedStoredProcedureQueries.class)
+                    && hasNamedStoredProcedure(queryName, cls.getAnnotation(NamedStoredProcedureQueries.class).value()))
+                return cls;
         }
         return null;
+    }
+
+    private boolean isAnnotated(Class<?> cls, Class<? extends Annotation> annotationClazz) {
+        return AccessController.doPrivileged(J2DoPrivHelper.isAnnotationPresentAction(cls, annotationClazz));
     }
 
     @Override
@@ -413,6 +426,14 @@ public class PersistenceMetaDataFactory
         SqlResultSetMapping... mappings) {
         for (SqlResultSetMapping m : mappings) {
             if (rsMapping.equals(m.name()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean hasNamedStoredProcedure(String query, NamedStoredProcedureQuery... queries) {
+        for (NamedStoredProcedureQuery q : queries) {
+            if (query.equals(q.name()))
                 return true;
         }
         return false;

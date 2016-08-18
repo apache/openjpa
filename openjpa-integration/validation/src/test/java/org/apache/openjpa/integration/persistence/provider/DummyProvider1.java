@@ -32,6 +32,16 @@ public class DummyProvider1 implements PersistenceProvider {
         return null;
     }
 
+    @Override
+    public void generateSchema(PersistenceUnitInfo info, Map map) {
+        // no-op
+    }
+
+    @Override
+    public boolean generateSchema(String persistenceUnitName, Map map) {
+        return false;
+    }
+
     public EntityManagerFactory createEntityManagerFactory(String s, Map map) {
         return null;
     }

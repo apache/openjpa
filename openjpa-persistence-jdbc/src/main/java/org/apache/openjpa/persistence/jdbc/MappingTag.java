@@ -114,5 +114,5 @@ enum MappingTag {
     X_MAPPING_OVERRIDES,
     X_SECONDARY_TABLE,
     X_SECONDARY_TABLES,
-    X_TABLE,
+    X_TABLE
 }

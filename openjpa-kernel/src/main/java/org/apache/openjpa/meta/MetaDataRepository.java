@@ -2002,7 +2002,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return null;
 
         // check cache
-        QueryMetaData qm = (QueryMetaData) _queries.get(name);
+        QueryMetaData qm = _queries.get(name);
         if (qm != null)
             return qm;
 
@@ -2030,10 +2030,10 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
     public QueryMetaData[] getQueryMetaDatas() {
         if (_locking) {
             synchronized (this) {
-                return (QueryMetaData[]) _queries.values().toArray(new QueryMetaData[_queries.size()]);
+                return _queries.values().toArray(new QueryMetaData[_queries.size()]);
             }
         } else {
-            return (QueryMetaData[]) _queries.values().toArray(new QueryMetaData[_queries.size()]);
+            return _queries.values().toArray(new QueryMetaData[_queries.size()]);
         }
     }
     
@@ -2072,10 +2072,22 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
+    public QueryMetaData addQueryMetaData(QueryMetaData meta) {
+        if (_locking) {
+            synchronized (this) {
+                final QueryMetaData queryMetaData = _queries.get(meta.getName());
+                return queryMetaData != null ? queryMetaData : _queries.put(meta.getName(), meta);
+            }
+        } else {
+            final QueryMetaData queryMetaData = _queries.get(meta.getName());
+            return queryMetaData != null ? queryMetaData : _queries.put(meta.getName(), meta);
+        }
+    }
+
     /**
      * Create a new query metadata instance.
      */
-    protected QueryMetaData newQueryMetaData(Class<?> cls, String name) {
+    public QueryMetaData newQueryMetaData(Class<?> cls, String name) {
         QueryMetaData meta =
             new QueryMetaData(name, _conf.getCompatibilityInstance().getConvertPositionalParametersToNamed());
         meta.setDefiningType(cls);
@@ -2118,7 +2130,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Searches all cached query metadata by name.
      */
     public QueryMetaData searchQueryMetaDataByName(String name) {        
-        return (QueryMetaData) _queries.get(name);
+        return _queries.get(name);
     }
     
     /**

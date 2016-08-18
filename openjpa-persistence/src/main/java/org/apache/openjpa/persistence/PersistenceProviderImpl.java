@@ -220,6 +220,16 @@ public class PersistenceProviderImpl
         }
     }
 
+    @Override
+    public void generateSchema(PersistenceUnitInfo info, Map map) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
+    @Override
+    public boolean generateSchema(String persistenceUnitName, Map map) {
+        throw new UnsupportedOperationException("JPA 2.1");
+    }
+
     public void setPersistenceEnvironmentInfo(OpenJPAConfiguration conf, PersistenceUnitInfo pui) {
         // OPENJPA-1460 Fix scope visibility of orm.xml when it is packaged in both ear file and war file
         if (conf instanceof OpenJPAConfigurationImpl) {

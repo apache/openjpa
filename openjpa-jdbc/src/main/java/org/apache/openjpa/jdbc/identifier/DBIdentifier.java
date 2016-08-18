@@ -46,6 +46,7 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
         INDEX,
         FOREIGN_KEY,
         CONSTANT,
+        PROCEDURE,
         NULL
     }
     
@@ -601,6 +602,10 @@ public class DBIdentifier extends IdentifierImpl implements Cloneable, Identifie
      */
     protected static DBIdentifier newIdentifier(String name, DBIdentifierType id, boolean toUpper, boolean delimit) {
         return newIdentifier(name,id, toUpper, delimit, false);
+    }
+
+    public static DBIdentifier newProcedure(String name) {
+        return newIdentifier(name, DBIdentifierType.PROCEDURE);
     }
 
     /**
