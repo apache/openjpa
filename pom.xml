@@ -115,7 +115,7 @@
 
     <ciManagement>
         <system>Jenkins</system>
-        <url>https://builds.apache.org/job/OpenJPA-trunk-deploy/</url>
+        <url>https://builds.apache.org/job/OpenJPA-2.4.x-deploy/</url>
     </ciManagement>
 
     <inceptionYear>2006</inceptionYear>
@@ -152,9 +152,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/2.4.x</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/2.4.x</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/2.4.x</url>
     </scm>
 
     <modules>
