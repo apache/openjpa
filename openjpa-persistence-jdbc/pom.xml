@@ -920,7 +920,6 @@
                         <!-- exclude classes that include a $; inner classes
                              are not test cases per OpenJPA standards -->
                         <exclude>org/apache/openjpa/**/*$*.class</exclude>
-                        <exclude>org/apache/openjpa/**/*.*.class</exclude>
 
                         <!-- exclude "no xsd" test until a workaround is figured out (OPENJPA-513)  -->
                         <exclude>org/apache/openjpa/persistence/xml/TestPersistenceUnitWithoutXSD.java</exclude>
