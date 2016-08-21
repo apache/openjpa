@@ -56,7 +56,7 @@ import static javax.persistence.ParameterMode.OUT;
                 name = "EntityWithStoredProcedure.inout",
                 procedureName = "XINOUT",
                 parameters = {
-                        @StoredProcedureParameter(name = "P ", type = Integer.class, mode = INOUT)
+                        @StoredProcedureParameter(name = "P", type = Integer.class, mode = INOUT)
                 }
         ),
         @NamedStoredProcedureQuery(

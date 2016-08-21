@@ -33,34 +33,35 @@ import javax.persistence.StoredProcedureQuery;
 public class TestStoredProcedure extends SingleEMFTestCase {
     @Override
     public void setUp() {
-        setUp(
-                "openjpa.RuntimeUnenhancedClasses", "unsupported",
-                "openjpa.DynamicEnhancementAgent", "false",
-                EntityWithStoredProcedure.class, EntityWithStoredProcedure.Mapping2.class);
+        setUp("openjpa.RuntimeUnenhancedClasses", "unsupported",
+              "openjpa.DynamicEnhancementAgent", "false",
+              EntityWithStoredProcedure.class, EntityWithStoredProcedure.Mapping2.class);
         setSupportedDatabases(DerbyDictionary.class);
     }
 
-    public void testSimple() {
+    public void testSimple() throws Exception  {
         Procedures.simpleCalled = false;
 
         EntityManager em = emf.createEntityManager();
+        exec(em, "DROP PROCEDURE TESTSIMPLE", true);
         exec(em, "CREATE PROCEDURE TESTSIMPLE() " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
-                "'" + Procedures.class.getName() + ".simple'");
+                "'" + Procedures.class.getName() + ".simple'", false);
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.simple");
         assertFalse(procedure.execute());
         em.close();
         assertTrue(Procedures.simpleCalled);
     }
 
-    public void testInParams() {
+    public void testInParams() throws Exception  {
         Procedures.inParamsInteger = -1;
         Procedures.inParamsString = null;
 
         EntityManager em = emf.createEntityManager();
-        exec(em, "CREATE PROCEDURE TESTINS(some_number INTEGER,some_string VARCHAR(255)) " +
+        exec(em, "DROP PROCEDURE TESTINS", true);
+        exec(em, "CREATE PROCEDURE TESTINS(SOME_NUMBER INTEGER,SOME_STRING VARCHAR(255)) " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
-                "'" + Procedures.class.getName() + ".inParams'");
+                "'" + Procedures.class.getName() + ".inParams'", false);
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.inParams");
         procedure.setParameter("SOME_NUMBER", 2015);
         procedure.setParameter("SOME_STRING", "openjpa");
@@ -79,11 +80,12 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         assertNull(Procedures.inParamsString);
     }
 
-    public void testOut() {
+    public void testOut() throws Exception  {
         EntityManager em = emf.createEntityManager();
-        exec(em, "CREATE PROCEDURE XTWO(IN some_number INTEGER,OUT x2 INTEGER) " +
+        exec(em, "DROP PROCEDURE XTWO", true);
+        exec(em, "CREATE PROCEDURE XTWO(IN SOME_NUMBER INTEGER,OUT x2 INTEGER) " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
-                "'" + Procedures.class.getName() + ".x2'");
+                "'" + Procedures.class.getName() + ".x2'", false);
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.x2");
         procedure.setParameter("SOME_NUMBER", 5);
         assertFalse(procedure.execute());
@@ -92,11 +94,12 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testInOut() {
+    public void testInOut() throws Exception  {
         EntityManager em = emf.createEntityManager();
+        exec(em, "DROP PROCEDURE XINOUT", true);
         exec(em, "CREATE PROCEDURE XINOUT(INOUT P INTEGER) " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA EXTERNAL NAME " +
-                "'" + Procedures.class.getName() + ".inout'");
+                "'" + Procedures.class.getName() + ".inout'", false);
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.inout");
         procedure.setParameter("P", 5);
         assertFalse(procedure.execute());
@@ -105,7 +108,7 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         em.close();
     }
 
-    public void testMapping() {
+    public void testMapping() throws Exception {
         EntityManager em = emf.createEntityManager();
         {
             em.getTransaction().begin();
@@ -119,9 +122,10 @@ public class TestStoredProcedure extends SingleEMFTestCase {
             em.clear();
         }
 
+        exec(em, "DROP PROCEDURE MAPPING", true);
         exec(em, "CREATE PROCEDURE MAPPING() " +
                 "PARAMETER STYLE JAVA LANGUAGE JAVA DYNAMIC RESULT SETS 2 EXTERNAL NAME " +
-                "'" + Procedures.class.getName() + ".mapping'");
+                "'" + Procedures.class.getName() + ".mapping'", false);
         StoredProcedureQuery procedure = em.createNamedStoredProcedureQuery("EntityWithStoredProcedure.mapping");
         assertTrue(procedure.execute());
         final Iterator r1 = procedure.getResultList().iterator();
@@ -153,18 +157,21 @@ public class TestStoredProcedure extends SingleEMFTestCase {
         em.close();
     }
 
-    private void exec(final EntityManager em, final String proc) {
+    private void exec(final EntityManager em, final String proc, boolean ignoreExceptions) throws Exception {
         final EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
             em.createNativeQuery(proc).executeUpdate();
             tx.commit();
-        } catch (final Exception e) { // already exists or another error
-            e.printStackTrace();
+        } catch (final Exception sqe) { // already exists or another error
             try {
                 tx.rollback();
             } catch (final Exception ignored) {
                 // no-op
+            }
+            if (!ignoreExceptions) {
+                // fail(sqe.toString());
+                throw sqe;
             }
         }
     }
