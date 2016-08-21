@@ -905,6 +905,7 @@ public class TestQueryTimeout extends SQLListenerTestCase {
             getLog().trace("setupCreateDBFunction()");
             // remove existing function if it exists and recreate
             try {
+                exec(true, 0, "DROP TRIGGER t1");
                 exec(true, 0, "DROP FUNCTION DELAY");
                 exec(false, 0, "CREATE FUNCTION DELAY(SECONDS INTEGER, " + 
                     "VALUE INTEGER) RETURNS INTEGER PARAMETER STYLE JAVA " +
@@ -1134,6 +1135,4 @@ public class TestQueryTimeout extends SQLListenerTestCase {
         return value;
     }
 
-    public static void main(String[] args) {
-    }
 }
