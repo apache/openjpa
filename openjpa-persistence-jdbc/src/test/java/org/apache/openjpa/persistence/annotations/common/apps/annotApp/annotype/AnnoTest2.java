@@ -19,6 +19,7 @@
 package
     org.apache.openjpa.persistence.annotations.common.apps.annotApp.annotype;
 
+import java.io.Serializable;
 import java.util.*;
 
 import javax.persistence.*;
@@ -119,7 +120,7 @@ public class AnnoTest2 {
         return manyMany;
     }
 
-    public static class Oid {
+    public static class Oid implements Serializable {
 
         public long pk1;
         public String pk2;
