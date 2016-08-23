@@ -32,7 +32,7 @@
     <fileSets>
         <fileSet>
             <directory>..</directory>
-            <outputDirectory>${artifactId}-${version}-source</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}-source</outputDirectory>
             <excludes>
                 <exclude>**/target/**</exclude>
                 <exclude>**/*.log</exclude>
@@ -50,7 +50,7 @@
                 http://www.apache.org/legal/src-headers.html#notice
         -->
         <fileSet>
-            <outputDirectory>${artifactId}-${version}-source</outputDirectory>
+            <outputDirectory>${project.artifactId}-${project.version}-source</outputDirectory>
             <includes>
                 <include>README</include>
                 <include>DISCLAIMER</include>

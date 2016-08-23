@@ -54,7 +54,7 @@
         </openjpa.release.keyAlias>
 
         <openjpa.assembly.finalName>
-            ${artifactId}-${version}</openjpa.assembly.finalName>
+            ${project.artifactId}-${project.version}</openjpa.assembly.finalName>
         <openjpa.assembly.outputDirectory>
         ${project.basedir}/target/site/downloads
         </openjpa.assembly.outputDirectory>
