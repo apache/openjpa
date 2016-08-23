@@ -683,7 +683,7 @@
                     <version>${maven.surefire.version}</version>
                     <configuration>
                         <argLine>${surefire.jvm.args}</argLine>
-                        <useFile>false</useFile>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <trimStackTrace>false</trimStackTrace>
                         <useSystemClassLoader>true</useSystemClassLoader>
                         <excludes>
