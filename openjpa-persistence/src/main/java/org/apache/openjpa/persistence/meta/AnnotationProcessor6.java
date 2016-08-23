@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.persistence.meta;
 
-import static javax.lang.model.SourceVersion.RELEASE_6;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -38,7 +36,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
@@ -103,7 +101,6 @@ import org.apache.openjpa.persistence.util.SourceCode;
                     "openjpa.header",
                     "openjpa.metamodel"
                   })
-@SupportedSourceVersion(RELEASE_6)
 
 public class AnnotationProcessor6 extends AbstractProcessor {
     private SourceAnnotationHandler handler;
@@ -113,6 +110,7 @@ public class AnnotationProcessor6 extends AbstractProcessor {
     private List<String> header = new ArrayList<String>();
     private boolean active;
     private static Localizer _loc =  Localizer.forPackage(AnnotationProcessor6.class);
+    private SourceVersion supportedSourceVersion;
 
     /**
      * Category of members as per JPA 2.0 type system.
@@ -183,7 +181,15 @@ public class AnnotationProcessor6 extends AbstractProcessor {
             return TypeCategory.MAP;
         return TypeCategory.ATTRIBUTE;
     }
-    
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        if (supportedSourceVersion != null) {
+            return supportedSourceVersion;
+        }
+        return SourceVersion.latestSupported();
+    }
+
     /**
      * Initialization.
      */
@@ -193,6 +199,14 @@ public class AnnotationProcessor6 extends AbstractProcessor {
         active = "true".equalsIgnoreCase(getOptionValue("openjpa.metamodel"));
         if (!active)
             return;
+
+        final String supported = getOptionValue("openjpa.processor.supportedversion");
+        if (supported != null) {
+            supportedSourceVersion = SourceVersion.valueOf(supported);
+        } else { // default to ensure we don't log a false warning for every compilation, see OPENJPA-2300
+            supportedSourceVersion = SourceVersion.latestSupported();
+        }
+
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, _loc.get("mmg-tool-banner").toString());
         logger = new CompileTimeLogger(processingEnv, getOptionValue("openjpa.log"));
         setSourceVersion();
