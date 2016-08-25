@@ -29,9 +29,11 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
+@Table(name="qcacheentity_1")
 @Inheritance(strategy = InheritanceType.JOINED)
 @SqlResultSetMapping(name = "NativeTestResult",
     entities = @EntityResult(entityClass = Entity1.class))

@@ -37,11 +37,11 @@ import javax.persistence.Version;
 
 
 @Entity
-@Table(name="entity_1")
+@Table(name="mapappentity_1")
 @Inheritance(strategy=InheritanceType.JOINED)
 @SqlResultSetMapping(name="NativeTestResult", 
     entities=@EntityResult(entityClass=Entity1.class))
-@NamedNativeQuery(name="SQLWithHints", query="SELECT * FROM ENTITY_1",
+@NamedNativeQuery(name="SQLWithHints", query="SELECT * FROM mapappentity_1",
     hints={@QueryHint(name="XYZ", value="abc")})
 public class Entity1 implements Serializable
 {
