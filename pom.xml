@@ -34,17 +34,13 @@
     <artifactId>openjpa-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenJPA Parent POM</name>
-    <description>Apache OpenJPA implementation of JSR-317 JPA 2.0</description>
+    <description>Apache OpenJPA implementation of JSR-338 JPA 2.1</description>
 
-    <!--
-        Changing this version needs to also be done in all children poms
-        See: http://jira.codehaus.org/browse/MNG-624
-    -->
     <version>3.0.0-SNAPSHOT</version>
 
     <properties>
-        <java.class.version>1.6</java.class.version>
-        <java.testclass.version>1.6</java.testclass.version>
+        <java.class.version>1.7</java.class.version>
+        <java.testclass.version>1.7</java.testclass.version>
 
         <openjpa.version>${project.version}</openjpa.version>
         <openjpa.Log>DefaultLevel=INFO</openjpa.Log>
