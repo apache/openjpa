@@ -27,7 +27,7 @@ import org.apache.openjpa.persistence.test.SQLListenerTestCase;
  */
 public class TestTableGeneratorUseSchemaNameProp extends SQLListenerTestCase {
 
-    public void setup() {
+    public void setUp() {
         setUp(Dog.class, "openjpa.jdbc.SchemaFactory",
             "native(ForeignKeys=true)", "openjpa.jdbc.DBDictionary",
             "useSchemaName=false", DROP_TABLES);
