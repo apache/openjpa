@@ -18,7 +18,6 @@
  */
 package org.apache.openjpa.jdbc.sql;
 
-import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
@@ -37,7 +36,6 @@ import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.StoreException;
@@ -66,19 +64,8 @@ public class SybaseDictionary
     private static Localizer _loc = Localizer.forPackage
         (SybaseDictionary.class);
 
-    private static Constructor<SybaseConnection> sybaseConnectionImpl;
-    
     public static String RIGHT_TRUNCATION_ON_SQL = "set string_rtruncation on";
     public static String NUMERIC_TRUNCATION_OFF_SQL = "set arithabort numeric_truncation off";
-    
-    static {
-        try {
-            sybaseConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(SybaseConnection.class, 
-                    Connection.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     /**
      * If true, then whenever the <code>schematool</code> creates a
@@ -342,7 +329,7 @@ public class SybaseDictionary
         }
         
         
-        return ConcreteClassGenerator.newInstance(sybaseConnectionImpl, savedConn);
+        return new SybaseConnection(savedConn);
     }
     
     /**
@@ -424,7 +411,7 @@ public class SybaseDictionary
      * which takes a very long time with the Sybase Connection (and
      * which we frequently invoke).
      */
-    protected abstract static class SybaseConnection
+    protected static class SybaseConnection
         extends DelegatingConnection {
 
         private String _catalog = null;

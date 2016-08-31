@@ -21,7 +21,6 @@ package org.apache.openjpa.jdbc.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -52,7 +51,6 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.jdbc.DelegatingConnection;
 import org.apache.openjpa.lib.jdbc.DelegatingPreparedStatement;
 import org.apache.openjpa.lib.jdbc.ReportingSQLException;
-import org.apache.openjpa.lib.util.ConcreteClassGenerator;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.JavaTypes;
@@ -71,29 +69,12 @@ public class PostgresDictionary
     private static final Localizer _loc = Localizer.forPackage
         (PostgresDictionary.class);
 
-    private static Constructor<PostgresConnection> postgresConnectionImpl;
-    private static Constructor<PostgresPreparedStatement> postgresPreparedStatementImpl;
 
     private Method dbcpGetDelegate;
     private Method connectionUnwrap;
     
     protected Set<String> _timestampTypes = new HashSet<String>(); 
 
-    static {
-        try {
-            postgresConnectionImpl = ConcreteClassGenerator.getConcreteConstructor(
-                    PostgresConnection.class,
-                    Connection.class, 
-                    PostgresDictionary.class);
-            postgresPreparedStatementImpl = ConcreteClassGenerator.getConcreteConstructor(
-                    PostgresPreparedStatement.class,
-                    PreparedStatement.class, 
-                    Connection.class, 
-                    PostgresDictionary.class);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     /**
      * SQL statement to load all sequence schema,name pairs from all schemas.
@@ -396,7 +377,7 @@ public class PostgresDictionary
      * a sequence is owned by the database.  Column types such as bigserial use a 
      * system assigned sequence generator of the format: table_column_seq
      * 
-     * @see http://www.postgresql.org/docs/current/static/functions-info.html
+     * @link http://www.postgresql.org/docs/current/static/functions-info.html
      */
     public boolean isOwnedSequence(DBIdentifier name, DBIdentifier schema, Connection conn) {
         
@@ -582,7 +563,7 @@ public class PostgresDictionary
 
     public Connection decorate(Connection conn)
         throws SQLException {
-        return ConcreteClassGenerator.newInstance(postgresConnectionImpl, super.decorate(conn), this);
+        return new PostgresConnection(super.decorate(conn), this);
     }
 
     public InputStream getLOBStream(JDBCStore store, ResultSet rs,
@@ -963,7 +944,7 @@ public class PostgresDictionary
     /**
      * Connection wrapper to work around the postgres empty result set bug.
      */
-    protected abstract static class PostgresConnection
+    protected static class PostgresConnection
         extends DelegatingConnection {
 
         private final PostgresDictionary _dict;
@@ -975,16 +956,13 @@ public class PostgresDictionary
 
         protected PreparedStatement prepareStatement(String sql, boolean wrap)
             throws SQLException {
-           return ConcreteClassGenerator.newInstance(postgresPreparedStatementImpl, 
-                   super.prepareStatement(sql, false), PostgresConnection.this, _dict);
+           return new PostgresPreparedStatement(super.prepareStatement(sql, false), PostgresConnection.this, _dict);
         }
 
         protected PreparedStatement prepareStatement(String sql, int rsType,
             int rsConcur, boolean wrap)
             throws SQLException {
-            return ConcreteClassGenerator.
-                newInstance(postgresPreparedStatementImpl,
-                    super.prepareStatement(sql, rsType, rsConcur, false),
+            return new PostgresPreparedStatement(super.prepareStatement(sql, rsType, rsConcur, false),
                     PostgresConnection.this,
                     _dict);
         }
@@ -993,7 +971,7 @@ public class PostgresDictionary
     /**
      * Statement wrapper to work around the postgres empty result set bug.
      */
-    protected abstract static class PostgresPreparedStatement
+    protected static class PostgresPreparedStatement
         extends DelegatingPreparedStatement {
 
         private final PostgresDictionary _dict;
