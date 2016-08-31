@@ -38,7 +38,7 @@ public class ConcreteClassGenerator {
     /**
      * Get the constructor of the concrete, dynamic wrapper class of the given abstract class 
      * with matching argument types.
-     * @param the argTypes of the constructor to look for. null signify default constructor.
+     * @param argTypes of the constructor to look for. null signify default constructor.
      */
     public static <T> Constructor<T> getConcreteConstructor(Class<T> abstractClass, Class<?>... argTypes)
     throws ClassNotFoundException {
@@ -131,69 +131,6 @@ public class ConcreteClassGenerator {
             throw new ExceptionInInitializerError(e);
         }
     }
-    
-    /** 
-     *  Utility method for safely invoking a constructor that we do
-     *  not expect to throw exceptions. 
-     *  
-     *  @param  c          the class to construct
-     *  @param  paramTypes the types of the parameters
-     *  @param  params     the parameter values
-     *  @return            the new instance
-     */
-    public static <T> T newInstance(Class<T> c, Class<?>[] paramTypes, Object[] params) {
-        try {
-            return c.getConstructor(paramTypes).newInstance(params);
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
-    /** 
-     *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
-     */
-    public static <T> T newInstance(Class<T> c) {
-        return newInstance(c, new Class[] { }, new Object[] { });
-    }
-
-    /** 
-     *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
-     */
-    public static <T,P> T newInstance(Class<T> c, Class<? extends P> paramType, P param) {
-        return newInstance(c,
-            new Class[] { paramType },
-            new Object[] { param });
-    }
-
-    /** 
-     *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
-     */
-    public static <T,P1,P2> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
-        Class<? extends P2> paramType2, P2 param2) {
-        return newInstance(c,
-            new Class[] { paramType1, paramType2 },
-            new Object[] { param1, param2 });
-    }
-
-    /** 
-     *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
-     */
-    public static <T,P1,P2,P3> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
-        Class<? extends P2> paramType2, P2 param2, Class<? extends P3> paramType3, P3 param3) {
-        return newInstance(c,
-            new Class[] { paramType1, paramType2, paramType3 },
-            new Object[] { param1, param2, param3 });
-    }
-
-    /** 
-     *  @see #newInstance(java.lang.Class,java.lang.Class[],java.lang.Object[])
-     */
-    public static <T,P1,P2,P3,P4> T newInstance(Class<T> c, Class<? extends P1> paramType1, P1 param1,
-        Class<? extends P2> paramType2, P2 param2, Class<? extends P3> paramType3, P3 param3,
-        Class<? extends P4> paramType4, P4 param4) {
-        return newInstance(c,
-            new Class[] { paramType1, paramType2, paramType3, paramType4 },
-            new Object[] { param1, param2, param3, param4 });
-    }
 }
 
