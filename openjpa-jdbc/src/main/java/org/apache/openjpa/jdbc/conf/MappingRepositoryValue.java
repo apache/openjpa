@@ -24,9 +24,8 @@ import java.security.AccessController;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.PluginValue;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
-
-import serp.util.Strings;
 
 /**
  * Handles the complex logic of creating a {@link MappingRepository} for
@@ -46,7 +45,7 @@ public class MappingRepositoryValue
         // since the MappingRepository takes a JDBConfiguration constructor,
         // we need to manually perform the instantiation
         try {
-            Class cls = Strings.toClass(clsName,
+            Class cls = ClassUtil.toClass(clsName,
                 AccessController.doPrivileged(
                     J2DoPrivHelper.getClassLoaderAction(type)));        
             return cls.getConstructor(new Class[]{ JDBCConfiguration.class }).

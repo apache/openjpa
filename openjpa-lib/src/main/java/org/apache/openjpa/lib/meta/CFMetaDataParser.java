@@ -21,11 +21,11 @@ package org.apache.openjpa.lib.meta;
 import java.security.AccessController;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import serp.util.Strings;
 
 /**
  * Custom SAX parser used by the system to quickly parse metadata files
@@ -341,15 +341,15 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         boolean noPackage = StringUtils.isEmpty(pkg);
         try {
             if (fullName || noPackage)
-                return Strings.toClass(name, resolve, loader);
-            return Strings.toClass(pkg + "." + name, resolve, loader);
+                return ClassUtil.toClass(name, resolve, loader);
+            return ClassUtil.toClass(pkg + "." + name, resolve, loader);
         } catch (RuntimeException re) {
         }
 
         // if not a full name, now try the name without a package
         if (!fullName && !noPackage) {
             try {
-                return Strings.toClass(name, resolve, loader);
+                return ClassUtil.toClass(name, resolve, loader);
             } catch (RuntimeException re) {
             }
         }
@@ -358,7 +358,7 @@ public class CFMetaDataParser extends XMLMetaDataParser {
         if (!fullName) {
             for (int i = 0; i < PACKAGES.length; i++) {
                 try {
-                    return Strings.toClass(PACKAGES[i] + name, resolve, loader);
+                    return ClassUtil.toClass(PACKAGES[i] + name, resolve, loader);
                 } catch (RuntimeException re) {
                 }
             }

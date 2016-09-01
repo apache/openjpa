@@ -18,8 +18,6 @@
  */
 package org.apache.openjpa.jdbc.kernel.exps;
 
-import java.util.List;
-
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.jdbc.sql.SQLBuffer;

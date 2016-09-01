@@ -79,6 +79,7 @@ import org.apache.openjpa.jdbc.schema.XMLSchemaParser;
 import org.apache.openjpa.jdbc.sql.SQLExceptions;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -1675,7 +1676,7 @@ public class ReverseMappingTool
                     propNames[propNames.length - 1]));
 
             if (typeSpec != null)
-                type = Strings.toClass(typeSpec, _conf.
+                type = ClassUtil.toClass(typeSpec, _conf.
                     getClassResolverInstance().getClassLoader
                     (ReverseMappingTool.class, null));
         }

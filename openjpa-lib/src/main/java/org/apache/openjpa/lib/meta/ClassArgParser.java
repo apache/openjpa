@@ -37,11 +37,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import serp.bytecode.lowlevel.ConstantPoolTable;
-import serp.util.Strings;
 
 /**
  * Parser used to resolve arguments into java classes.
@@ -159,7 +159,7 @@ public class ClassArgParser {
         String[] names = parseTypeNames(arg);
         Class<?>[] objs = new Class[names.length];
         for (int i = 0; i < names.length; i++)
-            objs[i] = Strings.toClass(names[i], _loader);
+            objs[i] = ClassUtil.toClass(names[i], _loader);
         return objs;
     }
 
@@ -171,7 +171,7 @@ public class ClassArgParser {
         String[] names = parseTypeNames(itr);
         Class<?>[] objs = new Class[names.length];
         for (int i = 0; i < names.length; i++)
-            objs[i] = Strings.toClass(names[i], _loader);
+            objs[i] = ClassUtil.toClass(names[i], _loader);
         return objs;
     }
 
@@ -191,7 +191,7 @@ public class ClassArgParser {
             names = entry.getValue();
             objs = new Class[names.length];
             for (int j = 0; j < names.length; j++) {
-                objs[j] = Strings.toClass(names[j], _loader);
+                objs[j] = ClassUtil.toClass(names[j], _loader);
             }
             rval.put(entry.getKey(), objs);
         }

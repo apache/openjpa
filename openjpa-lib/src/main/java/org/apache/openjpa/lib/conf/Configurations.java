@@ -37,6 +37,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
@@ -203,10 +204,10 @@ public class Configurations {
         }
         if (cls == null) {
             try {
-                cls = Strings.toClass(clsName, loader);
+                cls = ClassUtil.toClass(clsName, loader);
                 loaderCache.put(clsName, cls);
             } catch (RuntimeException re) {
-            	
+                // TODO, empty block is never good
             }
         }
         return cls;

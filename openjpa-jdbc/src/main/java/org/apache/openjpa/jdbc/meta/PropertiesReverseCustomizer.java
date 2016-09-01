@@ -26,8 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Localizer;
-import serp.util.Strings;
 
 /**
  * Simple {@link ReverseCustomizer} that uses a properties file to
@@ -162,7 +162,7 @@ public class PropertiesReverseCustomizer
     public void customize(FieldMapping field) {
         String type = getProperty(field.getFullName(false) + ".type");
         if (type != null)
-            field.setDeclaredType(Strings.toClass(type, null));
+            field.setDeclaredType(ClassUtil.toClass(type, null));
     }
 
     public String getFieldName(ClassMapping dec, Column[] cols, ForeignKey fk,

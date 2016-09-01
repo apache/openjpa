@@ -52,6 +52,7 @@ import org.apache.openjpa.lib.rop.MergedResultObjectProvider;
 import org.apache.openjpa.lib.rop.RangeResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultList;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.OrderedMap;
@@ -994,7 +995,7 @@ public class QueryImpl
     /**
      * Execute the query using the given compilation, executor, and parameter
      * values. All other execute methods delegate to this one or to
-     * {@link #execute(StoreQuery.Executor,Map)} after validation and locking.
+     * {@link #execute(int, Map)} after validation and locking.
      */
     private Object execute(StoreQuery q, StoreQuery.Executor ex, 
         Object[] params)
@@ -1022,7 +1023,7 @@ public class QueryImpl
     /**
      * Delete the query using the given executor, and parameter
      * values. All other execute methods delegate to this one or to
-     * {@link #delete(StoreQuery.Executor,Map)} after validation and locking.
+     * {@link #delete(StoreQuery, StoreQuery.Executor, Object[])} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances deleted.
      */
@@ -1053,7 +1054,7 @@ public class QueryImpl
     /**
      * Update the query using the given compilation, executor, and parameter
      * values. All other execute methods delegate to this one or to
-     * {@link #update(StoreQuery.Executor,Map)} after validation and locking.
+     * {@link #update(StoreQuery, StoreQuery.Executor, Object[])} after validation and locking.
      * The return value will be a Number indicating the number of
      * instances updated.
      */
@@ -1698,7 +1699,7 @@ public class QueryImpl
             _loader = _broker.getConfiguration().getClassResolverInstance().
                 getClassLoader(_class, _broker.getClassLoader());
         try {
-            return Strings.toClass(name, _loader);
+            return ClassUtil.toClass(name, _loader);
         } catch (RuntimeException re) {
         } catch (NoClassDefFoundError ncdfe) {
         }
