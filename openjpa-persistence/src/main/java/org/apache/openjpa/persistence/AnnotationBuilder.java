@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.EnumSet;
 import java.lang.annotation.Annotation;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Helper class to stringify annotation declarations.

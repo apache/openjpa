@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * An int {@link Value}.

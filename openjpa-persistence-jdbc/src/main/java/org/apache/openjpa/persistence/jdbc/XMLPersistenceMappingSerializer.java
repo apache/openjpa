@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;

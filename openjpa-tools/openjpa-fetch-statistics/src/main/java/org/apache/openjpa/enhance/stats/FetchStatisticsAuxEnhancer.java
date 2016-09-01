@@ -20,7 +20,7 @@ package org.apache.openjpa.enhance.stats;
 
 import java.util.Locale;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PCEnhancer.AuxiliaryEnhancer;
 import org.apache.openjpa.lib.log.Log;
@@ -92,7 +92,7 @@ public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {
             fieldName = methName.substring(5);
         } else if (methName.toLowerCase(Locale.ENGLISH).startsWith("get")) {
             // property access
-            fieldName = WordUtils.uncapitalize(methName.substring(3));
+            fieldName = StringUtils.uncapitalize(methName.substring(3));
         } else if (methName.startsWith("pcis")) {
             fieldName = methName.substring(4).toLowerCase(Locale.ENGLISH);
         }

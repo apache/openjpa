@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;

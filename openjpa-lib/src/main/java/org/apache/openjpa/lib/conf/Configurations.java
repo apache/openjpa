@@ -30,14 +30,12 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -246,7 +244,7 @@ public class Configurations {
             if (e instanceof PrivilegedActionException) {
                 e = ((PrivilegedActionException) e).getException();   
             }
-            RuntimeException re = new NestableRuntimeException(_loc.get("obj-create", cls).getMessage(), e);
+            RuntimeException re = new RuntimeException(_loc.get("obj-create", cls).getMessage(), e);
             if (fatal)
                 throw re;
             Log log = (conf == null) ? null : conf.getConfigurationLog();
@@ -651,7 +649,7 @@ public class Configurations {
             	log.warn(_loc.get("jndi-lookup-failed", userKey, name));
             return result;
         } catch (NamingException ne) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 _loc.get("naming-err", name).getMessage(), ne);
         } finally {
             if (ctx != null) {

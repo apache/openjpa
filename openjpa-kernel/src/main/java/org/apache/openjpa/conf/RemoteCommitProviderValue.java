@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.event.RemoteCommitEventManager;
 import org.apache.openjpa.event.RemoteCommitProvider;
 import org.apache.openjpa.lib.conf.Configuration;

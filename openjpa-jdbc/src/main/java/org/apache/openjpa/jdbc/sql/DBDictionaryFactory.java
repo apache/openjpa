@@ -25,7 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;

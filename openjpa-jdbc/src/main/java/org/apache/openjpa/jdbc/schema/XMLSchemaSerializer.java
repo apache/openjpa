@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.lib.meta.XMLMetaDataSerializer;
 import org.apache.openjpa.lib.util.Localizer;

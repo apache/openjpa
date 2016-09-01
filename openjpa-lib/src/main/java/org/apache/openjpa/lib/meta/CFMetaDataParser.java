@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.meta;
 
 import java.security.AccessController;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.xml.sax.Attributes;

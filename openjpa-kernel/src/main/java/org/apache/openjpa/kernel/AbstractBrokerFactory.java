@@ -39,7 +39,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;

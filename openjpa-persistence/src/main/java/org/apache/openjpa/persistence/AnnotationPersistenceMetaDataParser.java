@@ -140,7 +140,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Version;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
 import org.apache.openjpa.event.LifecycleCallbacks;

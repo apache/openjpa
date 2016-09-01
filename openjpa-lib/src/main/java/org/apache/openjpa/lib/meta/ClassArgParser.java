@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -222,7 +221,7 @@ public class ClassArgParser {
                 return col.toArray(new String[col.size()]);
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 _loc.get("class-arg", arg).getMessage(), e);
         }
 
@@ -245,7 +244,7 @@ public class ClassArgParser {
                 appendTypeNames(source, itr.getInputStream(), names);
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 _loc.get("class-arg", source).getMessage(), e);
         }
         return names.toArray(new String[names.size()]);
@@ -290,7 +289,7 @@ public class ClassArgParser {
                 names.clear();
             }
         } catch (Exception e) {
-            throw new NestableRuntimeException(
+            throw new RuntimeException(
                 _loc.get("class-arg", source).getMessage(), e);
         }
         return map;

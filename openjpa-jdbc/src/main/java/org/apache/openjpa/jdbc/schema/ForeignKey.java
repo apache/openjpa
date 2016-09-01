@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;

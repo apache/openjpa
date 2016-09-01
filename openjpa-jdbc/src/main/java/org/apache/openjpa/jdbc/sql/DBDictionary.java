@@ -64,7 +64,7 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;

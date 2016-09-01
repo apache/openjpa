@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.SeqValue;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.lib.conf.Configurations;

@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.conf;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 

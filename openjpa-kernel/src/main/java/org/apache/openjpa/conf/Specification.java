@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 

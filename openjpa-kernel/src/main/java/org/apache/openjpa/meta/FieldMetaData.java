@@ -46,7 +46,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;

@@ -42,7 +42,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ApplicationIdTool;
 import org.apache.openjpa.enhance.CodeGenerator;
@@ -1508,7 +1508,7 @@ public class ReverseMappingTool
                 name = name.toLowerCase();
             subs = Strings.split(name, "_", 0);
             for (int i = 0; i < subs.length; i++)
-                buf.append(StringUtils.capitalise(subs[i]));
+                buf.append(StringUtils.capitalize(subs[i]));
         }
 
         name = replaceInvalidCharacters(table.getName());
@@ -1520,7 +1520,7 @@ public class ReverseMappingTool
             // if the name would end in 'Id', make it end in 'Ident'
             if (i == subs.length - 1 && subs[i].equalsIgnoreCase("id"))
                 subs[i] = "ident";
-            buf.append(StringUtils.capitalise(subs[i]));
+            buf.append(StringUtils.capitalize(subs[i]));
         }
 
         return buf.toString();
@@ -1541,7 +1541,7 @@ public class ReverseMappingTool
         String[] subs = Strings.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             if (i > 0)
-                subs[i] = StringUtils.capitalise(subs[i]);
+                subs[i] = StringUtils.capitalize(subs[i]);
             buf.append(subs[i]);
         }
         return getUniqueName(buf.toString(), dec);

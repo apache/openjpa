@@ -20,7 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;

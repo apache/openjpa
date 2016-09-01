@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.conf;
 import java.io.File;
 import java.security.AccessController;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**

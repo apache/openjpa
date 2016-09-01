@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.identifier;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The standard identifier rule.  Rules are used for specific configuration

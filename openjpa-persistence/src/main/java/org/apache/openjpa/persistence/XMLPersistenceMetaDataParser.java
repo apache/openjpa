@@ -41,7 +41,7 @@ import javax.persistence.LockModeType;
 
 import static javax.persistence.CascadeType.*;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;

@@ -49,7 +49,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Queue;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Files;

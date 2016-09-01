@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.meta;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Contains metadata about an xml element or attribute

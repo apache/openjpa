@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.meta.JavaTypes;

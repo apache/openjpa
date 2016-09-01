@@ -22,7 +22,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager;

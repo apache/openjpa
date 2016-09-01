@@ -24,7 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -80,16 +79,16 @@ public class XMLFactory {
             sp = _saxFactories[factoryIndex(validating, namespaceAware)].
                 newSAXParser();
         } catch (ParserConfigurationException pce) {
-            throw new NestableRuntimeException(pce);
+            throw new RuntimeException(pce);
         } catch (SAXException se) {
-            throw new NestableRuntimeException(se);
+            throw new RuntimeException(se);
         }
 
         if (validating) {
             try {
                 sp.getXMLReader().setErrorHandler(_validating);
             } catch (SAXException se) {
-                throw new NestableRuntimeException(se);
+                throw new RuntimeException(se);
             }
         }
 
@@ -106,7 +105,7 @@ public class XMLFactory {
             db = _domFactories[factoryIndex(validating, namespaceAware)].
                 newDocumentBuilder();
         } catch (ParserConfigurationException pce) {
-            throw new NestableRuntimeException(pce);
+            throw new RuntimeException(pce);
         }
 
         if (validating)

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.lib.util.Localizer;

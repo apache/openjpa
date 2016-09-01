@@ -24,7 +24,6 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 
 /**
  * UUID value generator.  Type 1 generator is based on the time-based generator
@@ -112,7 +111,7 @@ public class UUIDGenerator {
         try {
             ip = InetAddress.getLocalHost().getAddress();
         } catch (IOException ioe) {
-            throw new NestableRuntimeException(ioe);
+            throw new RuntimeException(ioe);
         }
 
         IP = new byte[6];

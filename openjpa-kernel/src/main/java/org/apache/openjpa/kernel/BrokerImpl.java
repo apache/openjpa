@@ -47,7 +47,7 @@ import javax.transaction.Synchronization;
 import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.collections.set.MapBackedSet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;

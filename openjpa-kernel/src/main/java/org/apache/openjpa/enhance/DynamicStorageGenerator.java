@@ -21,7 +21,7 @@ package org.apache.openjpa.enhance;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
