@@ -32,12 +32,12 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.lib.meta.SourceTracker;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.meta.MetaDataModes;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Strings;
 
 /**
  * Mapping of a query result set to scalar and/or persistence-capable
@@ -409,7 +409,7 @@ public class QueryResultMapping
          */
         private void resolveMapping(String path, Object id) {
             // build up path to second-to-last token
-            String[] tokens = Strings.split(path, ".", 0);
+            String[] tokens = StringUtil.split(path, ".", 0);
             List<MetaDataContext> rpath = new ArrayList<MetaDataContext>(tokens.length);
             ClassMapping candidate = getCandidateTypeMapping();
             FieldMapping fm = null;

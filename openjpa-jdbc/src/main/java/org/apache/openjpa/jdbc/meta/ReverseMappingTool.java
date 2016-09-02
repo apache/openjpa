@@ -85,6 +85,7 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -98,7 +99,6 @@ import org.apache.openjpa.util.MetaDataException;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.Project;
-import serp.util.Strings;
 
 /**
  * Reverse-maps a schema into class mappings and the associated java
@@ -162,7 +162,7 @@ public class ReverseMappingTool
         InputStream in = ReverseMappingTool.class.getResourceAsStream
             ("java-keywords.rsrc");
         try {
-            String[] keywords = Strings.split(new BufferedReader
+            String[] keywords = StringUtil.split(new BufferedReader
                 (new InputStreamReader(in)).readLine(), ",", 0);
 
             for (int i = 0; i < keywords.length; i += 2)
@@ -1507,7 +1507,7 @@ public class ReverseMappingTool
         if (_useSchema && name != null) {
             if (allUpperCase(name))
                 name = name.toLowerCase();
-            subs = Strings.split(name, "_", 0);
+            subs = StringUtil.split(name, "_", 0);
             for (int i = 0; i < subs.length; i++)
                 buf.append(StringUtils.capitalize(subs[i]));
         }
@@ -1515,7 +1515,7 @@ public class ReverseMappingTool
         name = replaceInvalidCharacters(table.getName());
         if (allUpperCase(name))
             name = name.toLowerCase();
-        subs = Strings.split(name, "_", 0);
+        subs = StringUtil.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             // make sure the name can't conflict with generated id class names;
             // if the name would end in 'Id', make it end in 'Ident'
@@ -1539,7 +1539,7 @@ public class ReverseMappingTool
             name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 
         StringBuilder buf = new StringBuilder();
-        String[] subs = Strings.split(name, "_", 0);
+        String[] subs = StringUtil.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             if (i > 0)
                 subs[i] = StringUtils.capitalize(subs[i]);

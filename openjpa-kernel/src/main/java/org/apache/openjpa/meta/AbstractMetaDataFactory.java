@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Abstract {@link MetaDataFactory} that provides default implementations
@@ -61,7 +61,7 @@ public abstract class AbstractMetaDataFactory
      */
     public void setTypes(String types) {
         this.types = (StringUtils.isEmpty(types)) ? null
-            : new HashSet(Arrays.asList(Strings.split(types, ";", 0)));
+            : new HashSet(Arrays.asList(StringUtil.split(types, ";", 0)));
     }
 
     public void setRepository(MetaDataRepository repos) {

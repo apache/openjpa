@@ -60,6 +60,7 @@ import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.UserException;
 import serp.util.Strings;
@@ -102,8 +103,8 @@ public abstract class AbstractCFMetaDataFactory
         if (StringUtils.isEmpty(files))
             this.files = null;
         else {
-            String[] strs = Strings.split(files, ";", 0);
-            this.files = new HashSet<File>((int) (strs.length * 1.33 + 1));
+            String[] strs = StringUtil.split(files, ";", 0);
+            this.files = new HashSet<>((int) (strs.length * 1.33 + 1));
 
             File file;
             for (int i = 0; i < strs.length; i++) {
@@ -130,7 +131,7 @@ public abstract class AbstractCFMetaDataFactory
         if (StringUtils.isEmpty(urls))
             this.urls = null;
         else {
-            String[] strs = Strings.split(urls, ";", 0);
+            String[] strs = StringUtil.split(urls, ";", 0);
             this.urls = new HashSet<URL>((int) (strs.length * 1.33 + 1));
             try {
                 for (int i = 0; i < strs.length; i++)
@@ -155,7 +156,7 @@ public abstract class AbstractCFMetaDataFactory
     public void setResources(String rsrcs) {
         // keep list mutable so subclasses can add implicit locations
         this.rsrcs = (StringUtils.isEmpty(rsrcs)) ? null
-          : new ArrayList<String>(Arrays.asList(Strings.split(rsrcs, ";", 0)));
+          : new ArrayList<String>(Arrays.asList(StringUtil.split(rsrcs, ";", 0)));
     }
 
     /**
@@ -173,7 +174,7 @@ public abstract class AbstractCFMetaDataFactory
     public void setClasspathScan(String cpath) {
         // keep list mutable so subclasses can add implicit locations
         this.cpath = (StringUtils.isEmpty(cpath)) ? null
-          : new ArrayList<String>(Arrays.asList(Strings.split(cpath, ";", 0)));
+          : new ArrayList<String>(Arrays.asList(StringUtil.split(cpath, ";", 0)));
     }
 
     public boolean store(ClassMetaData[] metas, QueryMetaData[] queries,
@@ -942,7 +943,7 @@ public abstract class AbstractCFMetaDataFactory
      * Decodes a URL-encoded path string.  For example, an encoded
      * space (%20) is decoded into a normal space (' ') character.
      * Added via OPENJPA-2102.
-     * @param String encoded - the encoded URL string
+     * @param s - the encoded URL string
      * @return String decoded - the decoded string.
      */
     public static String decode(String s) {

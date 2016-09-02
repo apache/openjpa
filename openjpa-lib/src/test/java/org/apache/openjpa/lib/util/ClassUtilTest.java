@@ -19,9 +19,6 @@ package org.apache.openjpa.lib.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * TODO remove again. Just to test serp.ClassUtil.toClass
- */
 public class ClassUtilTest {
 
     @Test

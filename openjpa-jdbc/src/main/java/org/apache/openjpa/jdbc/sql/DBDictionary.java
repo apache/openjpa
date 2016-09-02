@@ -109,6 +109,7 @@ import org.apache.openjpa.lib.jdbc.LoggingConnectionDecorator;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.ValueStrategies;
@@ -129,7 +130,6 @@ import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Class which allows the creation of SQL dynamically, in a
@@ -894,7 +894,7 @@ public class DBDictionary
         if (StringUtils.isEmpty(str))
             return null;
 
-        String[] params = Strings.split(str, "_", 3);
+        String[] params = StringUtil.split(str, "_", 3);
         if (params.length < 3)
             return null;
         return new Locale(params[0], params[1], params[2]);
@@ -4053,7 +4053,7 @@ public class DBDictionary
             schemaName = getSchemaNameForMetadata(sqlSchemaName);
         }
 
-        String[] types = Strings.split(tableTypes, ",", 0);
+        String[] types = StringUtil.split(tableTypes, ",", 0);
         for (int i = 0; i < types.length; i++)
             types[i] = types[i].trim();
 
@@ -4788,7 +4788,7 @@ public class DBDictionary
         try {
             String keywords = new BufferedReader(new InputStreamReader(in)).
                 readLine();
-            reservedWordSet.addAll(Arrays.asList(Strings.split
+            reservedWordSet.addAll(Arrays.asList(StringUtil.split
                 (keywords, ",", 0)));
         } catch (IOException ioe) {
             throw new GeneralException(ioe);
@@ -4798,31 +4798,26 @@ public class DBDictionary
 
         // add additional reserved words set by user
         if (reservedWords != null)
-            reservedWordSet.addAll(Arrays.asList(Strings.split
-                (reservedWords.toUpperCase(), ",", 0)));
+            reservedWordSet.addAll(Arrays.asList(StringUtil.split(reservedWords.toUpperCase(), ",", 0)));
 
         // add system schemas set by user
         if (systemSchemas != null)
-            systemSchemaSet.addAll(Arrays.asList(Strings.split
-                (systemSchemas.toUpperCase(), ",", 0)));
+            systemSchemaSet.addAll(Arrays.asList(StringUtil.split(systemSchemas.toUpperCase(), ",", 0)));
 
         // add system tables set by user
         if (systemTables != null)
-            systemTableSet.addAll(Arrays.asList(Strings.split
-                (systemTables.toUpperCase(), ",", 0)));
+            systemTableSet.addAll(Arrays.asList(StringUtil.split(systemTables.toUpperCase(), ",", 0)));
 
         // add fixed size type names set by the user
         if (fixedSizeTypeNames != null)
-            fixedSizeTypeNameSet.addAll(Arrays.asList(Strings.split
-                (fixedSizeTypeNames.toUpperCase(), ",", 0)));
+            fixedSizeTypeNameSet.addAll(Arrays.asList(StringUtil.split(fixedSizeTypeNames.toUpperCase(), ",", 0)));
         
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
         nextSequenceQuery = StringUtils.trimToNull(nextSequenceQuery);
         
         if (selectWords != null)
-            selectWordSet.addAll(Arrays.asList(Strings.split(selectWords
-                    .toUpperCase(), ",", 0)));
+            selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(), ",", 0)));
         
         // initialize the error codes
         SQLErrorCodeReader codeReader = new SQLErrorCodeReader();

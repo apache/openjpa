@@ -56,6 +56,7 @@ import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.xml.Commentable;
 import org.apache.openjpa.util.Exceptions;
 import org.apache.openjpa.util.InternalException;
@@ -1167,7 +1168,7 @@ public class FieldMetaData
             if (_orderDec == null)
                 _orders = getRepository().EMPTY_ORDERS;
             else {
-                String[] decs = Strings.split(_orderDec, ",", 0);
+                String[] decs = StringUtil.split(_orderDec, ",", 0);
                 Order[] orders = getRepository().newOrderArray(decs.length);
                 int spc;
                 boolean asc;

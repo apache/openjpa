@@ -222,7 +222,7 @@ public class Options extends TypedProperties {
             else if (values.length == 1)
                 strValues = new String[]{ entry.getValue().toString() };
             else
-                strValues = Strings.split(entry.getValue().toString(), ",", 0);
+                strValues = StringUtil.split(entry.getValue().toString(), ",", 0);
 
             // convert the string values into parameter values, if not
             // enough string values repeat last one for rest
@@ -303,7 +303,7 @@ public class Options extends TypedProperties {
         // unfortunately we can't use bean properties for setters; any
         // setter with more than 1 argument is ignored; calculate setter and getter
         // name to look for
-        String[] find = Strings.split(key, ".", 2);
+        String[] find = StringUtil.split(key, ".", 2);
         String base = StringUtils.capitalize(find[0]);
         String set = "set" + base;
         String get = "get" + base;

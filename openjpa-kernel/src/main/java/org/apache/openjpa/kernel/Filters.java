@@ -37,6 +37,7 @@ import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.FilterListener;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
@@ -839,7 +840,7 @@ public class Filters {
 
         Exception cause = null;
         if (hint instanceof String) {
-            String[] clss = Strings.split((String) hint, ",", 0);
+            String[] clss = StringUtil.split((String) hint, ",", 0);
             AggregateListener[] aggs = new AggregateListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
@@ -902,7 +903,7 @@ public class Filters {
 
         Exception cause = null;
         if (hint instanceof String) {
-            String[] clss = Strings.split((String) hint, ",", 0);
+            String[] clss = StringUtil.split((String) hint, ",", 0);
             FilterListener[] filts = new FilterListener[clss.length];
             try {
                 for (int i = 0; i < clss.length; i++)
@@ -955,7 +956,7 @@ public class Filters {
             }
         }
         Reflection.set(target, setter, value);
-	}
+    }
     
     /**
      * Parses the given string assuming it is a JDBC key expression. Extracts the 

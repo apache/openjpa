@@ -31,7 +31,8 @@ import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.StringUtil;
+
 
 /**
  * Vendor extensions. This class is thread safe for reads, but not for
@@ -328,7 +329,7 @@ public abstract class Extensions
         String prefixes = _loc.get("extension-datastore-prefix").getMessage();
         String[] allowedPrefixes = null;
         if (prefixes != null)
-            allowedPrefixes = Strings.split(prefixes, ",", 0);
+            allowedPrefixes = StringUtil.split(prefixes, ",", 0);
 
         Object next;
         String key;

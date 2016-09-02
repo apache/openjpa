@@ -23,9 +23,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 
-import serp.util.Strings;
 
 /**
  * A cache distribution policy based on the type of the managed objects.
@@ -78,7 +78,7 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
     private Set<String> parseNames(String types) {
         if (StringUtils.isEmpty(types))
             return Collections.emptySet();
-        String[] names = Strings.split(types, ";", 0);
+        String[] names = StringUtil.split(types, ";", 0);
         Set<String> set = new HashSet<String>();
         set.addAll(Arrays.asList(names));
         

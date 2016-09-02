@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * A comma-separated list of string values.
@@ -120,11 +120,11 @@ public class StringListValue extends Value {
     }
 
     protected String getInternalString() {
-        return Strings.join(_values, ", ");
+        return StringUtils.join(_values, ", ");
     }
 
     protected void setInternalString(String val) {
-        String[] vals = Strings.split(val, ",", 0);
+        String[] vals = StringUtil.split(val, ",", 0);
         if (vals != null) {
             for (int i = 0; i < vals.length; i++)
                 vals[i] = vals[i].trim();

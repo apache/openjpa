@@ -29,6 +29,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Tests the {@link XMLWriter} by comparing the results of passing the
@@ -70,7 +72,7 @@ public class TestXMLWriter extends TestCase {
     }
 
     private String fixNewline(String str) {
-        return serp.util.Strings.join(serp.util.Strings.split
+        return StringUtils.join(StringUtil.split
             (str, "\r\n", -1), "\n");
     }
 

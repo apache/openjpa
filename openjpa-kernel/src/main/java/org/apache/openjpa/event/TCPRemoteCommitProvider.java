@@ -50,12 +50,12 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.Serialization;
 import java.util.concurrent.locks.ReentrantLock;
 
-import serp.util.Strings;
 
 /**
  * TCP-based implementation of {@link RemoteCommitProvider} that
@@ -220,7 +220,7 @@ public class TCPRemoteCommitProvider
             for (Iterator iter = _addresses.iterator(); iter.hasNext();) {
                 ((HostAddress) iter.next()).close();
             }
-            String[] toks = Strings.split(names, ";", 0);
+            String[] toks = StringUtil.split(names, ";", 0);
             _addresses = new ArrayList(toks.length);
 
             InetAddress localhost = InetAddress.getLocalHost();

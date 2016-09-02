@@ -26,8 +26,8 @@ import org.apache.openjpa.jdbc.sql.SQLBuffer;
 import org.apache.openjpa.jdbc.sql.Select;
 import org.apache.openjpa.kernel.exps.ExpressionVisitor;
 import org.apache.openjpa.kernel.exps.Parameter;
+import org.apache.openjpa.lib.util.StringUtil;
 
-import serp.util.Strings;
 
 /**
  * Test if a string matches a regexp.
@@ -128,17 +128,19 @@ class MatchesExpression
      * @param  escape   the string to use to escape replacement
      * @return          the replaced string
      */
-    private static String replaceEscape(String str, String from, String to,
-        String escape) {
-        String[] parts = Strings.split(str, from, Integer.MAX_VALUE);
+    private static String replaceEscape(String str, String from, String to, String escape) {
+        String[] parts = StringUtil.split(str, from, Integer.MAX_VALUE);
         StringBuilder repbuf = new StringBuilder();
+
+        boolean same = from.equals(to);
+
         for (int i = 0; i < parts.length; i++) {
             if (i > 0) {
                 // if the previous part ended with an escape character, then
                 // escape the character and remove the previous escape;
                 // this doesn't support any double-escaping or other more
                 // sophisticated features
-                if (!from.equals(to) && parts[i - 1].endsWith(escape)) {
+                if (!same && parts[i - 1].endsWith(escape)) {
                     repbuf.setLength(repbuf.length() - 1);
                     repbuf.append(from);
                 } else

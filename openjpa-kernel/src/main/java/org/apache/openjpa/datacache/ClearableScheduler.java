@@ -34,10 +34,10 @@ import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Clearable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.InvalidStateException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Cron-style clearable eviction. Understands schedules based on cron format:
@@ -223,7 +223,7 @@ public class ClearableScheduler implements Runnable {
         private int[] parse(String token, int min, int max) {
             if ("*".equals(token.trim()))
                 return WILDCARD;
-            String[] tokens = Strings.split(token, ",", 0);
+            String[] tokens = StringUtil.split(token, ",", 0);
             int [] times = new int[tokens.length];
             for (int i = 0; i < tokens.length; i++) {
                 try {

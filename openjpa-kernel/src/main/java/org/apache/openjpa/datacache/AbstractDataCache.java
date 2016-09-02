@@ -39,10 +39,10 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.concurrent.AbstractConcurrentEventManager;
 import org.apache.openjpa.util.GeneralException;
 
-import serp.util.Strings;
 
 /**
  * Abstract {@link DataCache} implementation that provides various
@@ -55,7 +55,7 @@ import serp.util.Strings;
 @SuppressWarnings("serial")
 public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     implements DataCache, Configurable {
-	
+
     protected CacheStatisticsSPI _stats = new CacheStatisticsImpl();
 
     private static final BitSet EMPTY_BITSET = new BitSet(0);
@@ -522,31 +522,27 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
     public void setTypes(Set<String> types) {
         _includedTypes = types;
         if (log.isWarnEnabled())
-            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", 
-            		DataCacheMode.ENABLE_SELECTIVE.toString()}));
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", DataCacheMode.ENABLE_SELECTIVE.toString()}));
     }
 
     public void setTypes(String types) {
         _includedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+            StringUtils.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
         if (log.isWarnEnabled())
-            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", 
-            		DataCacheMode.ENABLE_SELECTIVE.toString()}));
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", DataCacheMode.ENABLE_SELECTIVE.toString()}));
     }
 
     public void setExcludedTypes(Set<String> types) {
         _excludedTypes = types;
         if (log.isWarnEnabled())
-            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", 
-            		DataCacheMode.DISABLE_SELECTIVE.toString()}));
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", DataCacheMode.DISABLE_SELECTIVE.toString()}));
     }
 
     public void setExcludedTypes(String types) {
         _excludedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<String>(Arrays.asList(Strings.split(types, ";", 0)));
+            StringUtils.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
         if (log.isWarnEnabled())
-            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", 
-            		DataCacheMode.DISABLE_SELECTIVE.toString()}));
+            log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", DataCacheMode.DISABLE_SELECTIVE.toString()}));
     }
 
     public DataCache selectCache(OpenJPAStateManager sm) {

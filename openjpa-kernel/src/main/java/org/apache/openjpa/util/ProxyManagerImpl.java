@@ -59,6 +59,7 @@ import org.apache.openjpa.lib.util.Options;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.openjpa.lib.util.StringUtil;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -172,7 +173,7 @@ public class ProxyManagerImpl
      */
     public void setUnproxyable(String clsNames) {
         if (clsNames != null)
-            _unproxyable.addAll(Arrays.asList(Strings.split(clsNames, ";", 0)));
+            _unproxyable.addAll(Arrays.asList(StringUtil.split(clsNames, ";", 0)));
     }
 
     public Object copyArray(Object orig) {

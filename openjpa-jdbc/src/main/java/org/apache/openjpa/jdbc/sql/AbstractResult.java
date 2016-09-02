@@ -49,10 +49,9 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.kernel.exps.Context;
 import org.apache.openjpa.lib.util.Closeable;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.UnsupportedException;
-
-import serp.util.Strings;
 
 /**
  * A {@link Result} implementation designed to be subclassed easily by
@@ -640,7 +639,7 @@ public abstract class AbstractResult
             return null;
         if (val instanceof Locale)
             return (Locale) val;
-        String[] vals = Strings.split(val.toString(), "_", 0);
+        String[] vals = StringUtil.split(val.toString(), "_", 0);
         if (vals.length < 2)
             throw new SQLException(val.toString());
         if (vals.length == 2)

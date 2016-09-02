@@ -27,7 +27,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Iterator over directories in the classpath.
@@ -53,7 +53,7 @@ public class ClasspathMetaDataIterator extends MetaDataIteratorChain {
         Properties props = AccessController.doPrivileged(
             J2DoPrivHelper.getPropertiesAction()); 
         String path = props.getProperty("java.class.path");
-        String[] tokens = Strings.split(path,
+        String[] tokens = StringUtil.split(path,
             props.getProperty("path.separator"), 0);
 
         for (int i = 0; i < tokens.length; i++) {

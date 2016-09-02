@@ -67,6 +67,7 @@ import org.apache.openjpa.lib.util.MultiClassLoader;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.lib.util.StringUtil;
 import serp.util.Strings;
 
 /**
@@ -535,7 +536,7 @@ public class ConfigurationImpl
             for (int i = 0; i < aliases.size(); i += 2)
                 allowed.add(aliases.get(i));
         }
-        String[] vals = Strings.split(findLocalized(prop
+        String[] vals = StringUtil.split(findLocalized(prop
             + "-values", false, val.getScope()), ",", 0);
         for (int i = 0; i < vals.length; i++)
             if (!aliases.contains(vals[i]))

@@ -43,9 +43,9 @@ import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.StringDistance;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
-import serp.util.Strings;
 
 /**
  * Utility methods dealing with configuration.
@@ -581,7 +581,7 @@ public class Configurations {
             return opts;
 
         try {
-            String[] props = Strings.split(properties, ",", 0);
+            String[] props = StringUtil.split(properties, ",", 0);
             int idx;
             char quote;
             String prop;
