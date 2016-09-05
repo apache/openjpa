@@ -34,8 +34,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 
-import serp.util.Strings;
-
 /**
  * A specialization of the {@link Properties} map type with the added
  * abilities to read application options from the command line and to

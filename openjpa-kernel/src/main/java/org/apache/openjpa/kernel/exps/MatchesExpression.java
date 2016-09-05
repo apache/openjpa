@@ -20,7 +20,7 @@ package org.apache.openjpa.kernel.exps;
 
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.SimpleRegex;
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Expression that compares two others.
@@ -69,8 +69,8 @@ class MatchesExpression
 
         // now translate from the single and multi character escape
         // sequences into an escape that conforms to the regexp syntax
-        str = Strings.replace(str, _multi, ".*");
-        str = Strings.replace(str, _single, ".");
+        str = StringUtil.replace(str, _multi, ".*");
+        str = StringUtil.replace(str, _single, ".");
 
         SimpleRegex re = new SimpleRegex(str, uncase);
         boolean matches = re.matches(o1.toString());

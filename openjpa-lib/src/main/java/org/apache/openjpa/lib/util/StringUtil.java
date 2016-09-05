@@ -16,6 +16,8 @@
  */
 package org.apache.openjpa.lib.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +83,23 @@ public final class StringUtil {
             ret.add(sb.toString());
         }
         return ret.toArray(new String[ret.size()]);
+    }
+
+    /**
+     * Replace all instances of <code>from</code> in <code>str</code>
+     * with <code>to</code>.
+     *
+     * @param str the candidate string to replace
+     * @param from the token to replace
+     * @param to the new token
+     * @return the string with all the replacements made
+     */
+    public static String replace(String str, String from, String to) {
+        if (from.equals(to)) {
+            return str;
+        }
+        String[] split = split(str, from, Integer.MAX_VALUE);
+        return StringUtils.join(split, to);
     }
 
 }

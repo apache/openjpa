@@ -51,13 +51,13 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.MixedLockLevels;
 import org.apache.openjpa.kernel.exps.Literal;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.StoreException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Dictionary for IBM DB2 database.
@@ -759,9 +759,9 @@ public class DB2Dictionary
     private String addCastAsString(String func, String target, 
             String asString) {
         String fstring = func;
-        if (func.indexOf(target) != -1)
-            fstring = Strings.replace(
-                func, target, "CAST(" + target + asString + ")");
+        if (func.indexOf(target) != -1) {
+            fstring = StringUtil.replace(func, target, "CAST(" + target + asString + ")");
+        }
         return fstring;
     }
 

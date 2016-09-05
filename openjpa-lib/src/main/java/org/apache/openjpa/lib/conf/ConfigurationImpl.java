@@ -68,7 +68,6 @@ import org.apache.openjpa.lib.util.ParseException;
 import org.apache.openjpa.lib.util.Services;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.StringUtil;
-import serp.util.Strings;
 
 /**
  * Default implementation of the {@link Configuration} interface.

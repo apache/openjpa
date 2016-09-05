@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import serp.util.Strings;
 
 public class StringUtilTest {
 
@@ -67,6 +68,22 @@ public class StringUtilTest {
             StringUtil.split(val, "sd", 0);
             //X val.split("sd");
             //X serp.util.Strings.split(val, "sd", 0);
+        }
+
+        long stop = System.nanoTime();
+        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+    }
+
+    @Test
+    @Ignore("only needed for manual performance tests")
+    public void testStringsReplacePerformance() {
+        String val = "This is my fnx test suite for fnx replacement to fnx=fnx";
+
+        long start = System.nanoTime();
+        for (int i = 1; i < 10000000; i++) {
+            //X Strings.replace(val, "fnx", "weirdo function");
+            //X val.replace("fnx", "weirdo function");
+            StringUtil.replace(val, "fnx", "weirdo function");
         }
 
         long stop = System.nanoTime();

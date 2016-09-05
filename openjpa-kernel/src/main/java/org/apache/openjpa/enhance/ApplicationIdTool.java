@@ -48,6 +48,7 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.DelegatingMetaDataFactory;
@@ -436,9 +437,10 @@ public class ApplicationIdTool {
         if (isInnerClass()) {
             // indent the entire code block one level to make it
             // a propertly indented innder class
-            _code = code.getTab() + Strings.replace(_code,
-                J2DoPrivHelper.getLineSeparator(),
-                J2DoPrivHelper.getLineSeparator() + code.getTab());
+            _code = code.getTab() +
+                    StringUtil.replace(_code,
+                                       J2DoPrivHelper.getLineSeparator(),
+                                       J2DoPrivHelper.getLineSeparator() + code.getTab());
         }
 
         return true;
