@@ -72,6 +72,7 @@ import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
@@ -87,7 +88,6 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 
-import serp.util.Strings;
 
 //@todo: javadocs
 
@@ -733,7 +733,7 @@ public class AnnotationPersistenceMetaDataSerializer
         AnnotationBuilder abEntity = addAnnotation(
             getEntityAnnotationType(meta), meta);
         if (isMetaDataMode()
-            && !meta.getTypeAlias().equals(Strings.getClassName(meta.
+            && !meta.getTypeAlias().equals(ClassUtil.getClassName(meta.
             getDescribedType())))
             abEntity.add("name", meta.getTypeAlias());
         
@@ -1172,8 +1172,7 @@ public class AnnotationPersistenceMetaDataSerializer
      * Serialize field mapping content; this will be called before
      * {@link #serializeValueMappingContent}. Does nothing by default.
      */
-    protected void serializeFieldMappingContent(FieldMetaData fmd,
-        PersistenceStrategy strategy, AnnotationBuilder ab) {
+    protected void serializeFieldMappingContent(FieldMetaData fmd, PersistenceStrategy strategy, AnnotationBuilder ab) {
     }
 
     /**

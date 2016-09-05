@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
 import serp.util.Strings;
@@ -129,7 +130,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
                     _locs.add(path + pkgName + suffix); // legacy
                     _locs.add(upPath + pkgName + suffix); // legacy
                     if (idx == -1)
-                        _locs.add(path + Strings.getClassName(cls) + suffix);
+                        _locs.add(path + ClassUtil.getClassName(cls) + suffix);
 
                     start = idx + 1;
                     upPath = path;

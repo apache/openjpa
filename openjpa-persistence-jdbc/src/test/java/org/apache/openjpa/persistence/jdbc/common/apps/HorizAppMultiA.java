@@ -30,7 +30,7 @@ public class HorizAppMultiA
     // initialize PK values to random values
 	//FIXME 
 	/*
-    private String pk1 = "PK-" + Strings.getClassName(getClass().getName());
+    private String pk1 = "PK-" + ClassUtil.getClassName(getClass().getName());
     private int pk2 = com.solarmetric.test.AbstractTestCase.
         randomInt().intValue();
     */

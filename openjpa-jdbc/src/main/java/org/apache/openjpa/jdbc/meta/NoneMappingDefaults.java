@@ -26,6 +26,7 @@ import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 
+import org.apache.openjpa.lib.util.ClassUtil;
 import serp.util.Strings;
 
 /**
@@ -72,7 +73,7 @@ public class NoneMappingDefaults
     }
 
     public String getTableName(ClassMapping cls, Schema schema) {
-        return Strings.getClassName(cls.getDescribedType()).replace('$', '_');
+        return ClassUtil.getClassName(cls.getDescribedType()).replace('$', '_');
     }
 
     public String getTableName(FieldMapping fm, Schema schema) {

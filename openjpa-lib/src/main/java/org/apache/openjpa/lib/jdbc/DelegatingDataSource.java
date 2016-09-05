@@ -159,6 +159,6 @@ public class DelegatingDataSource implements DataSource, Closeable {
     // Java 7 methods follow
     
     public Logger getParentLogger() throws SQLFeatureNotSupportedException{
-    	throw new SQLFeatureNotSupportedException();
+        return _ds.getParentLogger();
     }
 }

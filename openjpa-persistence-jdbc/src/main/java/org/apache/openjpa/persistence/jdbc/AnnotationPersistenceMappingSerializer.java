@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence.jdbc;
 
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.persistence.AnnotationPersistenceMetaDataSerializer;
 import org.apache.openjpa.persistence.PersistenceStrategy;
 import org.apache.openjpa.persistence.AnnotationBuilder;
@@ -80,7 +81,6 @@ import javax.persistence.EntityResult;
 import javax.persistence.FieldResult;
 import javax.persistence.ColumnResult;
 
-//@todo: javadocs
 
 /**
  * Serializes persistence mappings as annotations.
@@ -220,8 +220,7 @@ public class AnnotationPersistenceMappingSerializer
         ClassMapping cls = (ClassMapping) mapping;
         ClassMappingInfo info = cls.getMappingInfo();
         AnnotationBuilder abTable = addAnnotation(Table.class, mapping);
-        serializeTable(info.getTableName(), Strings
-            .getClassName(mapping.getDescribedType()), null,
+        serializeTable(info.getTableName(), ClassUtil.getClassName(mapping.getDescribedType()), null,
             info.getUniques(info.getTableName()), abTable);
         serializeColumns(info, ColType.PK_JOIN, null, abTable, cls);
         for (String second : info.getSecondaryTableNames()) {
@@ -241,7 +240,7 @@ public class AnnotationPersistenceMappingSerializer
         String strat = info.getHierarchyStrategy();
         if (null == strat)
             return;
-        String itypecls = Strings.getClassName(InheritanceType.class);
+        String itypecls = ClassUtil.getClassName(InheritanceType.class);
         AnnotationBuilder abInheritance =
             addAnnotation(Inheritance.class, mapping);
         if (FlatClassStrategy.ALIAS.equals(strat))

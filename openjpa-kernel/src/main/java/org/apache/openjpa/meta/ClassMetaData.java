@@ -47,6 +47,7 @@ import org.apache.openjpa.lib.conf.Value;
 import org.apache.openjpa.lib.conf.ValueListener;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.xml.Commentable;
@@ -70,7 +71,6 @@ import org.apache.openjpa.util.ShortId;
 import org.apache.openjpa.util.StringId;
 import org.apache.openjpa.util.UnsupportedException;
 
-import serp.util.Strings;
 
 /**
  * Contains metadata about a persistent type.
@@ -686,7 +686,7 @@ public class ClassMetaData
      */
     public String getTypeAlias() {
         if (_alias == null)
-            _alias = Strings.getClassName(_type);
+            _alias = ClassUtil.getClassName(_type);
         return _alias;
     }
 
@@ -1523,7 +1523,7 @@ public class ClassMetaData
     /**
      * Set the cache name for this class. 
      * 
-     * @param can be null to disable cache.
+     * @param name can be {@code null} to disable cache.
      */
     public void setDataCacheName(String name) {
         _cacheName = name;

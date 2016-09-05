@@ -40,6 +40,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.CFMetaDataSerializer;
 import org.apache.openjpa.lib.meta.SourceTracker;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -694,7 +695,7 @@ public class XMLPersistenceMetaDataSerializer
             getName()));
 
         if (isMetaDataMode()
-            && !meta.getTypeAlias().equals(Strings.getClassName(meta.
+            && !meta.getTypeAlias().equals(ClassUtil.getClassName(meta.
             getDescribedType())))
             addAttribute("name", meta.getTypeAlias());
 

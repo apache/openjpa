@@ -125,7 +125,7 @@ public class Files {
      * Return the file for the class resource with the given extension.
      */
     private static File getClassFile(Class cls, String ext) {
-        String name = Strings.getClassName(cls);
+        String name = ClassUtil.getClassName(cls);
 
         // if it's an inner class, use the parent class name
         int innerIdx = name.indexOf('$');

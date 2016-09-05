@@ -1509,7 +1509,7 @@ public class QueryImpl
         try {
             String alias = compileForExecutor().getAlias(_storeQuery);
             if (alias == null)
-                alias = Strings.getClassName(_class);
+                alias = ClassUtil.getClassName(_class);
             return alias;
         } finally {
             unlock();

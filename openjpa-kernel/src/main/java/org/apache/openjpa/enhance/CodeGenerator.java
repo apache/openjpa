@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.ParameterTemplate;
@@ -126,7 +127,7 @@ public class CodeGenerator {
      */
     public void generateCode() {
         // setup parameters
-        String className = Strings.getClassName(_type);
+        String className = ClassUtil.getClassName(_type);
         String packageName = Strings.getPackageName(_type);
         String packageDec = "";
         if (packageName.length() > 0)
@@ -135,7 +136,7 @@ public class CodeGenerator {
         String extendsDec = "";
         String extendsName = "";
         if (!_type.getSuperclass().getName().equals(Object.class.getName())) {
-            extendsName = Strings.getClassName(_type.getSuperclass());
+            extendsName = ClassUtil.getClassName(_type.getSuperclass());
             extendsDec = "extends " + extendsName;
         }
 
@@ -235,7 +236,7 @@ public class CodeGenerator {
         CodeFormat body = newCodeFormat();
 
         // public <class> (
-        cons.tab().append("public ").append(Strings.getClassName(_type));
+        cons.tab().append("public ").append(ClassUtil.getClassName(_type));
         cons.openParen(true);
 
         // append args to constructor, and build up body at same time
@@ -245,7 +246,7 @@ public class CodeGenerator {
             propertyName = fields[i].getName();
             if (propertyName.startsWith("_"))
                 propertyName = propertyName.substring(1);
-            fieldType = Strings.getClassName(fields[i].getDeclaredType());
+            fieldType = ClassUtil.getClassName(fields[i].getDeclaredType());
 
             if (i > 0)
                 cons.append(", ");
@@ -305,7 +306,7 @@ public class CodeGenerator {
         String propertyName = fieldName;
         if (propertyName.startsWith("_"))
             propertyName = propertyName.substring(1);
-        String fieldType = Strings.getClassName(fmd.getDeclaredType());
+        String fieldType = ClassUtil.getClassName(fmd.getDeclaredType());
 
         String keyType = null;
         String elementType = null;
@@ -313,14 +314,14 @@ public class CodeGenerator {
         if (useGenericCollections()) {
             if (fmd.getDeclaredTypeCode() == JavaTypes.COLLECTION) {
                 Class elmCls = fmd.getElement().getDeclaredType();
-                elementType = Strings.getClassName(elmCls);
+                elementType = ClassUtil.getClassName(elmCls);
                 paramType = decs.getParametrizedType(
                     new String[] {elementType});
             } else if (fmd.getDeclaredTypeCode() == JavaTypes.MAP) {
                 Class keyCls = fmd.getKey().getDeclaredType();
                 Class elmCls = fmd.getElement().getDeclaredType();
-                keyType = Strings.getClassName(keyCls);
-                elementType = Strings.getClassName(elmCls);
+                keyType = ClassUtil.getClassName(keyCls);
+                elementType = ClassUtil.getClassName(elmCls);
                 paramType = decs.getParametrizedType(
                     new String[] {keyType, elementType});
             }
@@ -504,7 +505,7 @@ public class CodeGenerator {
      */
     public File getFile() {
         String packageName = Strings.getPackageName(_type);
-        String fileName = Strings.getClassName(_type) + ".java";
+        String fileName = ClassUtil.getClassName(_type) + ".java";
 
         File dir = Files.getPackageFile(_dir, packageName, true);
         return new File(dir, fileName);

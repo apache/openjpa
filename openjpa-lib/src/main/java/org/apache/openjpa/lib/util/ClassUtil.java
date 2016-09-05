@@ -22,6 +22,7 @@ package org.apache.openjpa.lib.util;
  */
 public final class ClassUtil {
 
+
     private static final Object[][] _codes = new Object[][]{
             {byte.class, "byte", "B"},
             {char.class, "char", "C"},
@@ -105,9 +106,68 @@ public final class ClassUtil {
 
         try {
             return Class.forName(str, resolve, loader);
-        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+        }
+        catch (ClassNotFoundException | NoClassDefFoundError e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
-}
 
+    /**
+     * Return only the class name, without package.
+     */
+    public static String getClassName(Class cls) {
+        if (cls == null) {
+            return null;
+        }
+        return getClassName(cls.getName());
+    }
+
+    /**
+     * Return only the class name.
+     */
+    public static String getClassName(String fullName) {
+        if (fullName == null) {
+            return null;
+        }
+        if (fullName.isEmpty()) {
+            return fullName;
+        }
+
+        int dims = 0;
+        while (fullName.charAt(dims) == '[') {
+            dims++;
+        }
+        if (dims > 0) {
+            if (fullName.length() == dims + 1) {
+                String classCode = fullName.substring(dims);
+                for (int i = 0; i < _codes.length; i++) {
+                    if (_codes[i][2].equals(classCode)) {
+                        fullName = (String)_codes[i][1];
+                        break;
+                    }
+                }
+            }
+            else {
+                if (fullName.charAt(fullName.length()-1) == ';') {
+                    fullName = fullName.substring(dims + 1, fullName.length() - 1);
+                }
+                else {
+                    fullName = fullName.substring(dims + 1);
+                }
+            }
+        }
+
+        int lastDot = fullName.lastIndexOf('.');
+        String simpleName = lastDot > -1 ? fullName.substring(lastDot + 1) : fullName;
+
+        if (dims > 0) {
+            StringBuilder sb = new StringBuilder(simpleName.length() + dims * 2);
+            sb.append(simpleName);
+            for (int i = 0; i < dims; i++) {
+                sb.append("[]");
+            }
+            simpleName = sb.toString();
+        }
+        return simpleName;
+    }
+}

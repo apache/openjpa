@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
-import serp.util.Strings;
+import org.apache.openjpa.lib.util.ClassUtil;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -117,7 +117,7 @@ public class AnnotationBuilder {
 
     static String enumToString(Enum e) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Strings.getClassName(e.getClass())).
+        sb.append(ClassUtil.getClassName(e.getClass())).
             append(".").append(e);
         return sb.toString();
     }
@@ -126,7 +126,7 @@ public class AnnotationBuilder {
         StringBuilder sb = new StringBuilder();
         for (Iterator i = set.iterator(); i.hasNext();) {
             Object e =  i.next();
-            sb.append(Strings.getClassName(e.getClass())).
+            sb.append(ClassUtil.getClassName(e.getClass())).
                 append(".").append(e);
             if (i.hasNext())
                 sb.append(", ");
@@ -135,7 +135,7 @@ public class AnnotationBuilder {
     }
 
     protected void toString(StringBuilder sb) {
-        sb.append("@").append(Strings.getClassName(type));
+        sb.append("@").append(ClassUtil.getClassName(type));
         if (components.size() == 0)
             return;
         sb.append("(");

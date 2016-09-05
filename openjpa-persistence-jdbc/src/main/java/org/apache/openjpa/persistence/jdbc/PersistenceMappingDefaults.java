@@ -39,6 +39,7 @@ import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schema;
 import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Strings;
@@ -127,7 +128,7 @@ public class PersistenceMappingDefaults
     public String getTableName(ClassMapping cls, Schema schema) {
         if (cls.getTypeAlias() != null)
             return cls.getTypeAlias();
-        return Strings.getClassName(cls.getDescribedType()).replace('$', '_');
+        return ClassUtil.getClassName(cls.getDescribedType()).replace('$', '_');
     }
 
     @Override

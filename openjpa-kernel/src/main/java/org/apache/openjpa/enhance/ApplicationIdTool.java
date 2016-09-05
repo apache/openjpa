@@ -43,6 +43,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -264,7 +265,7 @@ public class ApplicationIdTool {
             return null;
 
         // convert from SomeClass$ID to ID
-        String className = Strings.getClassName(_meta.getObjectIdType());
+        String className = ClassUtil.getClassName(_meta.getObjectIdType());
         if (isInnerClass())
             className = className.substring(className.lastIndexOf('$') + 1);
         return className;
@@ -358,7 +359,7 @@ public class ApplicationIdTool {
             code.endl().tab();
 
         if (superOidClass != null) {
-            code.append("extends " + Strings.getClassName(superOidClass));
+            code.append("extends " + ClassUtil.getClassName(superOidClass));
             if (code.getBraceOnSameLine())
                 code.append(" ");
             else
@@ -541,7 +542,7 @@ public class ApplicationIdTool {
             return "char[]";
         if (type.getName().startsWith("java.sql."))
             return type.getName();
-        return Strings.getClassName(type);
+        return ClassUtil.getClassName(type);
     }
 
     /**
@@ -712,7 +713,7 @@ public class ApplicationIdTool {
         else if (type == char[].class)
             parse.append(var).append(".toCharArray").parens();
         else if (!type.isPrimitive()) {
-            parse.append("new ").append(Strings.getClassName(type)).
+            parse.append("new ").append(ClassUtil.getClassName(type)).
                 openParen(true).append(var).closeParen();
         } else // primitive
         {
@@ -1214,7 +1215,7 @@ public class ApplicationIdTool {
             return null;
 
         String packageName = Strings.getPackageName(_meta.getObjectIdType());
-        String fileName = Strings.getClassName(_meta.getObjectIdType())
+        String fileName = ClassUtil.getClassName(_meta.getObjectIdType())
             + ".java";
 
         // if pc class in same package as oid class, try to find pc .java file

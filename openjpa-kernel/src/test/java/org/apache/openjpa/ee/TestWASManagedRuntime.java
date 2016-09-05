@@ -20,6 +20,7 @@ package org.apache.openjpa.ee;
 
 import junit.framework.TestCase;
 
+import org.apache.openjpa.lib.util.ClassUtil;
 import serp.util.Strings;
 
 /**
@@ -47,8 +48,7 @@ public class TestWASManagedRuntime extends TestCase {
         } catch (NoClassDefFoundError e) {
             msg = e.getMessage();
         }
-        String interfaceName = Strings.
-            getClassName(WASManagedRuntime.INTERFACE);
+        String interfaceName = ClassUtil.getClassName(WASManagedRuntime.INTERFACE);
         assertTrue("message should have contained "
             + interfaceName + ", but was '" + msg + "'",
             msg.indexOf(interfaceName) != -1);

@@ -29,6 +29,7 @@ import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -56,7 +57,6 @@ import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.persistence.PersistenceStrategy;
 import org.apache.openjpa.persistence.XMLPersistenceMetaDataSerializer;
-import serp.util.Strings;
 
 /**
  * Serializes persistence mapping to XML.
@@ -184,8 +184,7 @@ public class XMLPersistenceMappingSerializer
         throws SAXException {
         ClassMapping cls = (ClassMapping) mapping;
         ClassMappingInfo info = cls.getMappingInfo();
-        serializeTable(info.getTableName(), "table", Strings
-            .getClassName(mapping.getDescribedType()), null, 
+        serializeTable(info.getTableName(), "table", ClassUtil.getClassName(mapping.getDescribedType()), null,
             info.getUniques(info.getTableName()));
         for (String second : info.getSecondaryTableNames())
             serializeTable(second, "secondary-table", null, info,

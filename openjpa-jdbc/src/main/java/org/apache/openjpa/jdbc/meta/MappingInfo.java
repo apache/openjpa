@@ -41,6 +41,7 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.JavaTypes;
@@ -1600,7 +1601,7 @@ public abstract class MappingInfo
         if (cls == null)
             return false;
         if (name.equals(cls.getDescribedType().getName())
-            || name.equals(Strings.getClassName(cls.getDescribedType())))
+            || name.equals(ClassUtil.getClassName(cls.getDescribedType())))
             return true;
         return isClassMappingName(name, cls.getPCSuperclassMapping());
     }

@@ -52,6 +52,7 @@ import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.JavaVersions;
 import org.apache.openjpa.lib.util.Localizer;
@@ -1626,7 +1627,7 @@ public class FieldMetaData
 
         // get class name and get package name divide on the last '.', so the
         // names don't apply in this case, but the methods do what we want
-        String methodName = Strings.getClassName(method);
+        String methodName = ClassUtil.getClassName(method);
         String clsName = Strings.getPackageName(method);
 
         Class<?> cls = null;
@@ -1635,7 +1636,7 @@ public class FieldMetaData
         if (clsName.length() == 0)
             cls = getDeclaredType();
         else if (clsName.equals(owner.getName())
-            || clsName.equals(Strings.getClassName(owner)))
+            || clsName.equals(ClassUtil.getClassName(owner)))
             cls = owner;
         else
             cls = JavaTypes.classForName(clsName, this);

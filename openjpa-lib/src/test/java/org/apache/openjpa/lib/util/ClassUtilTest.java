@@ -16,8 +16,12 @@
  */
 package org.apache.openjpa.lib.util;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import serp.util.Strings;
 
 public class ClassUtilTest {
 
@@ -52,5 +56,55 @@ public class ClassUtilTest {
     private Class toClass(String clazz) {
         return ClassUtil.toClass(clazz, false, this.getClass().getClassLoader());
     }
+
+    @Test
+    public void testGetClassName() {
+        Assert.assertEquals("ClassUtilTest", ClassUtil.getClassName(ClassUtilTest.class));
+        Assert.assertEquals("ClassUtilTest$MyInnerClass", ClassUtil.getClassName(MyInnerClass.class));
+
+        // anonymous class
+        Assert.assertEquals("ClassUtilTest$1", ClassUtil.getClassName(INSTANCE.getClass()));
+
+        // primitives
+        Assert.assertEquals("byte", ClassUtil.getClassName(byte.class));
+        Assert.assertEquals("char", ClassUtil.getClassName(char.class));
+        Assert.assertEquals("double", ClassUtil.getClassName(double.class));
+        Assert.assertEquals("float", ClassUtil.getClassName(float.class));
+        Assert.assertEquals("int", ClassUtil.getClassName(int.class));
+        Assert.assertEquals("long", ClassUtil.getClassName(long.class));
+        Assert.assertEquals("short", ClassUtil.getClassName(short.class));
+        Assert.assertEquals("boolean", ClassUtil.getClassName(boolean.class));
+        Assert.assertEquals("void", ClassUtil.getClassName(void.class));
+
+        // arrays
+        Assert.assertEquals("long[]", ClassUtil.getClassName(long[].class));
+        Assert.assertEquals("long[][]", ClassUtil.getClassName(long[][].class));
+        Assert.assertEquals("float[][][]", ClassUtil.getClassName(float[][][].class));
+
+        Assert.assertEquals("ClassUtilTest[]", ClassUtil.getClassName(ClassUtilTest[].class));
+        Assert.assertEquals("ClassUtilTest$MyInnerClass[]", ClassUtil.getClassName(MyInnerClass[].class));
+        Assert.assertEquals("ClassUtilTest$MyInnerClass[][]", ClassUtil.getClassName(MyInnerClass[][].class));
+    }
+
+    @Test
+    @Ignore("only needed for manual performance tests")
+    public void testGetClassNamePerformance() {
+
+        long start = System.nanoTime();
+        for (int i = 1; i < 10000000; i++) {
+            //X String className = Strings.getClassName(MyInnerClass.class);
+            ClassUtil.getClassName(MyInnerClass.class);
+        }
+
+        long stop = System.nanoTime();
+        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+    }
+
+    private static abstract class MyInnerClass {
+        // not needed
+    }
+
+    private static final MyInnerClass INSTANCE = new MyInnerClass() {
+    };
 
 }

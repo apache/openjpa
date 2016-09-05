@@ -39,6 +39,8 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
+import org.apache.openjpa.lib.util.ClassUtil;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import serp.util.Strings;
 
@@ -547,8 +549,7 @@ public class MappingDefaultsImpl
         // WARNING: CHANGING THIS WILL INVALIDATE EXISTING DATA IF DEFAULTING
         // MISSING MAPPING INFO
         
-        String alias = Strings.getClassName(disc.getClassMapping()
-                .getTypeAlias());
+        String alias = ClassUtil.getClassName(disc.getClassMapping().getTypeAlias());
         
         switch (disc.getJavaType()) {
             case JavaTypes.INT:
@@ -562,7 +563,7 @@ public class MappingDefaultsImpl
     }
 
     public String getTableName(ClassMapping cls, Schema schema) {
-        String name = Strings.getClassName(cls.getDescribedType()).
+        String name = ClassUtil.getClassName(cls.getDescribedType()).
             replace(IdentifierUtil.DOLLAR_CHAR, IdentifierUtil.UNDERSCORE_CHAR);
         if (!_defMissing)
             name = dict.getValidTableName(name, schema);
