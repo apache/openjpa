@@ -42,7 +42,6 @@ import org.apache.openjpa.jdbc.sql.JoinSyntaxes;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Strings;
 
 /**
  * Supplies default mapping information in accordance with JPA spec.

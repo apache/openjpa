@@ -56,6 +56,7 @@ import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
 import org.apache.openjpa.lib.util.BytecodeWriter;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -106,7 +107,6 @@ import serp.bytecode.Project;
 import serp.bytecode.PutFieldInstruction;
 import serp.bytecode.TableSwitchInstruction;
 import serp.bytecode.ClassInstruction;
-import serp.util.Strings;
 
 /**
  * Bytecode enhancer used to enhance persistent classes from metadata. The
@@ -319,7 +319,7 @@ public class PCEnhancer {
     }
 
     static String toPCSubclassName(Class cls) {
-        return Strings.getPackageName(PCEnhancer.class) + "."
+        return ClassUtil.getPackageName(PCEnhancer.class) + "."
             + cls.getName().replace('.', '$') + "$pcsubclass";
     }
 
@@ -330,7 +330,7 @@ public class PCEnhancer {
      * @since 1.1.0
      */
     public static boolean isPCSubclassName(String className) {
-        return className.startsWith(Strings.getPackageName(PCEnhancer.class))
+        return className.startsWith(ClassUtil.getPackageName(PCEnhancer.class))
             && className.endsWith("$pcsubclass");
     }
 
@@ -344,7 +344,7 @@ public class PCEnhancer {
     public static String toManagedTypeName(String className) {
         if (isPCSubclassName(className)) {
             className = className.substring(
-                Strings.getPackageName(PCEnhancer.class).length() + 1);
+                ClassUtil.getPackageName(PCEnhancer.class).length() + 1);
             className = className.substring(0, className.lastIndexOf("$"));
             // this is not correct for nested PCs
             className = className.replace('$', '.');

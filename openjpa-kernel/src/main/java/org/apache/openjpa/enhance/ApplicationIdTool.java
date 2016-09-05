@@ -62,7 +62,6 @@ import org.apache.openjpa.util.UserException;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCClassLoader;
 import serp.bytecode.Project;
-import serp.util.Strings;
 
 /**
  * Generates a class appropriate for use as an application identity class.
@@ -319,7 +318,7 @@ public class ApplicationIdTool {
 
         // collect info on id type
         String className = getClassName();
-        String packageName = Strings.getPackageName(oidClass);
+        String packageName = ClassUtil.getPackageName(oidClass);
         String packageDec = "";
         if (packageName.length() > 0)
             packageDec = "package " + packageName + ";";
@@ -477,7 +476,7 @@ public class ApplicationIdTool {
         Set pkgs = getImportPackages();
 
         CodeFormat imports = newCodeFormat();
-        String base = Strings.getPackageName(_meta.getObjectIdType());
+        String base = ClassUtil.getPackageName(_meta.getObjectIdType());
         String pkg;
         for (Iterator itr = pkgs.iterator(); itr.hasNext();) {
             pkg = (String) itr.next();
@@ -496,13 +495,13 @@ public class ApplicationIdTool {
      */
     public Set getImportPackages() {
         Set pkgs = new TreeSet();
-        pkgs.add(Strings.getPackageName(_type));
+        pkgs.add(ClassUtil.getPackageName(_type));
 
         Class superOidClass = null;
         if (_meta != null && _meta.getPCSuperclassMetaData() != null)
             superOidClass = _meta.getPCSuperclassMetaData().getObjectIdType();
         if (superOidClass != null)
-            pkgs.add(Strings.getPackageName(superOidClass));
+            pkgs.add(ClassUtil.getPackageName(superOidClass));
 
         pkgs.add("java.io");
         pkgs.add("java.util");
@@ -511,7 +510,7 @@ public class ApplicationIdTool {
             type = _fields[i].getObjectIdFieldType();
             if (type != byte[].class && type != char[].class
                 && !type.getName().startsWith("java.sql.")) {
-                pkgs.add(Strings.getPackageName(type));
+                pkgs.add(ClassUtil.getPackageName(type));
             }
         }
         return pkgs;
@@ -1214,13 +1213,13 @@ public class ApplicationIdTool {
         if (_meta == null)
             return null;
 
-        String packageName = Strings.getPackageName(_meta.getObjectIdType());
+        String packageName = ClassUtil.getPackageName(_meta.getObjectIdType());
         String fileName = ClassUtil.getClassName(_meta.getObjectIdType())
             + ".java";
 
         // if pc class in same package as oid class, try to find pc .java file
         File dir = null;
-        if (_dir == null && Strings.getPackageName(_type).equals(packageName)) {
+        if (_dir == null && ClassUtil.getPackageName(_type).equals(packageName)) {
             dir = Files.getSourceFile(_type);
             if (dir != null)
                 dir = dir.getParentFile();
@@ -1424,7 +1423,7 @@ public class ApplicationIdTool {
         BCClassLoader bc)
         throws ClassNotFoundException {
         if (name.indexOf('.') == -1 && context.getName().indexOf('.') != -1)
-            name = Strings.getPackageName(context) + "." + name;
+            name = ClassUtil.getPackageName(context) + "." + name;
 
         // first try with regular class loader
         ClassLoader loader = AccessController.doPrivileged(

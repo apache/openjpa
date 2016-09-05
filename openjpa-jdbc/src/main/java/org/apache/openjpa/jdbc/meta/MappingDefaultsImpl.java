@@ -40,9 +40,7 @@ import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
 import org.apache.openjpa.lib.util.ClassUtil;
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Strings;
 
 /**
  * Default implementation of {@link MappingDefaults}.

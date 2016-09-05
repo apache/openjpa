@@ -34,7 +34,6 @@ import java.util.NoSuchElementException;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.MultiClassLoader;
-import serp.util.Strings;
 
 /**
  * Iterator over all metadata resources that might contain the
@@ -112,7 +111,7 @@ public class ClassMetaDataIterator implements MetaDataIterator {
             // <path>/<package-name><suffix> (legacy support)
             // <path>/../<package-name><suffix> (legacy support)
             // 2. <path>/<class-name><suffix>
-            String pkg = Strings.getPackageName(cls).replace('.', '/');
+            String pkg = ClassUtil.getPackageName(cls).replace('.', '/');
             if (pkg.length() > 0) {
                 int idx, start = 0;
                 String pkgName, path, upPath = "";

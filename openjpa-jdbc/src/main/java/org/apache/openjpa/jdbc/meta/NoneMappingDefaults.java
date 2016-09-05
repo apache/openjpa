@@ -27,7 +27,6 @@ import org.apache.openjpa.jdbc.schema.Table;
 import org.apache.openjpa.jdbc.schema.Unique;
 
 import org.apache.openjpa.lib.util.ClassUtil;
-import serp.util.Strings;
 
 /**
  * No-op mapping defaults.

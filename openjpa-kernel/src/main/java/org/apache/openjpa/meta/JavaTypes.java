@@ -38,9 +38,9 @@ import java.util.Properties;
 
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.lib.meta.CFMetaDataParser;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Strings;
 
 /**
  * Type constants for managed fields.
@@ -261,11 +261,11 @@ public class JavaTypes {
                 getClassLoader(dec, meta.getEnvClassLoader());
 
         // try the owner's package
-        String pkg = Strings.getPackageName(dec);
+        String pkg = ClassUtil.getPackageName(dec);
         Class<?> cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
         if (cls == null && vmd != null) {
             // try against this value type's package too
-            pkg = Strings.getPackageName(vmd.getDeclaredType());
+            pkg = ClassUtil.getPackageName(vmd.getDeclaredType());
             cls = CFMetaDataParser.classForName(name, pkg, runtime, loader);
         }
 

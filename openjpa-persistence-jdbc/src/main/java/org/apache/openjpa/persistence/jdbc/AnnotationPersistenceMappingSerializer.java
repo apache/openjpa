@@ -56,8 +56,6 @@ import java.util.HashMap;
 import java.sql.Types;
 import java.lang.annotation.Annotation;
 
-import serp.util.Strings;
-
 import javax.persistence.TemporalType;
 import javax.persistence.EnumType;
 import javax.persistence.InheritanceType;

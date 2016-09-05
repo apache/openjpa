@@ -57,7 +57,6 @@ import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueMetaData;
 import org.apache.openjpa.util.InternalException;
 import org.xml.sax.SAXException;
-import serp.util.Strings;
 
 /**
  * Serializes persistence metadata back to XML.
@@ -531,7 +530,7 @@ public class XMLPersistenceMetaDataSerializer
         int type = type(obj);
         switch (type) {
             case TYPE_META:
-                return Strings.getPackageName(((ClassMetaData) obj).
+                return ClassUtil.getPackageName(((ClassMetaData) obj).
                     getDescribedType());
             case TYPE_QUERY:
             case TYPE_SEQ:
@@ -539,7 +538,7 @@ public class XMLPersistenceMetaDataSerializer
             case TYPE_CLASS_SEQS:
                 SourceTracker st = (SourceTracker) obj;
                 if (st.getSourceScope() instanceof Class)
-                    return Strings.getPackageName((Class) st.getSourceScope());
+                    return ClassUtil.getPackageName((Class) st.getSourceScope());
                 return null;
             default:
                 return null;

@@ -133,10 +133,7 @@ public final class ClassUtil {
             return fullName;
         }
 
-        int dims = 0;
-        while (fullName.charAt(dims) == '[') {
-            dims++;
-        }
+        int dims = getArrayDimensions(fullName);
         if (dims > 0) {
             if (fullName.length() == dims + 1) {
                 String classCode = fullName.substring(dims);
@@ -169,5 +166,47 @@ public final class ClassUtil {
             simpleName = sb.toString();
         }
         return simpleName;
+    }
+
+    private static int getArrayDimensions(String fullClassName) {
+        int dims = 0;
+        while (fullClassName.charAt(dims) == '[') {
+            dims++;
+        }
+
+        return dims;
+    }
+
+    /**
+     * Return only the package, or empty string if none.
+     */
+    public static String getPackageName(Class cls) {
+        return (cls == null) ? null : getPackageName(cls.getName());
+    }
+
+    /**
+     * Return only the package, or empty string if none.
+     */
+    public static String getPackageName(String fullName) {
+        if (fullName == null) {
+            return null;
+        }
+        if (fullName.isEmpty()) {
+            return fullName;
+        }
+
+        int dims = getArrayDimensions(fullName);
+        if (dims > 0) {
+            if (fullName.length() == dims + 1) {
+                // don't care, it's a primitive
+                return "";
+            }
+            else {
+                fullName = fullName.substring(dims + 1);
+            }
+        }
+
+        int lastDot = fullName.lastIndexOf('.');
+        return lastDot > -1 ? fullName.substring(0, lastDot) : "";
     }
 }

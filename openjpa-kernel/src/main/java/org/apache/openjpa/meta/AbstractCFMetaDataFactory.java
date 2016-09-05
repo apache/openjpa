@@ -57,13 +57,13 @@ import org.apache.openjpa.lib.meta.ResourceMetaDataIterator;
 import org.apache.openjpa.lib.meta.URLMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipFileMetaDataIterator;
 import org.apache.openjpa.lib.meta.ZipStreamMetaDataIterator;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.GeneralException;
 import org.apache.openjpa.util.UserException;
-import serp.util.Strings;
 
 /**
  * Base class for factory implementations built around XML metadata files
@@ -600,15 +600,14 @@ public abstract class AbstractCFMetaDataFactory
         String pkg;
         for (Iterator itr = clsNames.entrySet().iterator(); itr.hasNext();) {
             entry = (Map.Entry) itr.next();
-            pkg = Strings.getPackageName((String) entry.getKey());
+            pkg = ClassUtil.getPackageName((String) entry.getKey());
             if (pkg.length() == 0)
                 return (ClassMetaData) entry.getValue();
         }
         return null;
     }
 
-    public Set<String> getPersistentTypeNames(boolean devpath, 
-    	ClassLoader envLoader) {
+    public Set<String> getPersistentTypeNames(boolean devpath, ClassLoader envLoader) {
         // some configured locations might be implicit in spec, so return
         // null if we don't find any classes, rather than if we don't have
         // any locations

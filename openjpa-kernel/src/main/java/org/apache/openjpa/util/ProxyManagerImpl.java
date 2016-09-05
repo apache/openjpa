@@ -52,6 +52,7 @@ import java.util.Queue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -66,7 +67,6 @@ import serp.bytecode.BCMethod;
 import serp.bytecode.Code;
 import serp.bytecode.JumpInstruction;
 import serp.bytecode.Project;
-import serp.util.Strings;
 
 /**
  * Default implementation of the {@link ProxyManager} interface.
@@ -590,7 +590,7 @@ public class ProxyManagerImpl
      */
     private static String getProxyClassName(Class type, boolean runtime) {
         String id = (runtime) ? "$" + nextProxyId() : "";
-        return Strings.getPackageName(ProxyManagerImpl.class) + "." 
+        return ClassUtil.getPackageName(ProxyManagerImpl.class) + "."
             + type.getName().replace('.', '$') + id + PROXY_SUFFIX;
     }
 

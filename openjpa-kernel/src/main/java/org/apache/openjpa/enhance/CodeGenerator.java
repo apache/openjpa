@@ -35,7 +35,6 @@ import org.apache.openjpa.lib.util.ParameterTemplate;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
-import serp.util.Strings;
 
 /**
  * Generates Java class code from metadata.
@@ -128,7 +127,7 @@ public class CodeGenerator {
     public void generateCode() {
         // setup parameters
         String className = ClassUtil.getClassName(_type);
-        String packageName = Strings.getPackageName(_type);
+        String packageName = ClassUtil.getPackageName(_type);
         String packageDec = "";
         if (packageName.length() > 0)
             packageDec = "package " + packageName + ";";
@@ -192,7 +191,7 @@ public class CodeGenerator {
         Set pkgs = getImportPackages();
 
         CodeFormat imports = newCodeFormat();
-        String base = Strings.getPackageName(_type);
+        String base = ClassUtil.getPackageName(_type);
         String pkg;
         for (Iterator itr = pkgs.iterator(); itr.hasNext();) {
             pkg = (String) itr.next();
@@ -211,15 +210,15 @@ public class CodeGenerator {
      */
     public Set getImportPackages() {
         Set pkgs = new TreeSet();
-        pkgs.add(Strings.getPackageName(_type.getSuperclass()));
+        pkgs.add(ClassUtil.getPackageName(_type.getSuperclass()));
 
         FieldMetaData[] fields = _meta.getDeclaredFields();
         for (int i = 0; i < fields.length; i++)
-            pkgs.add(Strings.getPackageName(fields[i].getDeclaredType()));
+            pkgs.add(ClassUtil.getPackageName(fields[i].getDeclaredType()));
 
         fields = _meta.getPrimaryKeyFields();
         for (int i = 0; i < fields.length; i++)
-            pkgs.add(Strings.getPackageName(fields[i].getDeclaredType()));
+            pkgs.add(ClassUtil.getPackageName(fields[i].getDeclaredType()));
 
         return pkgs;
     }
@@ -504,7 +503,7 @@ public class CodeGenerator {
      * Return Java file to write to.
      */
     public File getFile() {
-        String packageName = Strings.getPackageName(_type);
+        String packageName = ClassUtil.getPackageName(_type);
         String fileName = ClassUtil.getClassName(_type) + ".java";
 
         File dir = Files.getPackageFile(_dir, packageName, true);

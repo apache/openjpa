@@ -37,7 +37,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.apache.commons.lang3.StringUtils;
-import serp.util.Strings;
 
 /**
  * Utility operations on files.

@@ -47,7 +47,6 @@ import org.apache.openjpa.lib.util.Localizer.Message;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.MetaDataContext;
 import org.apache.openjpa.util.MetaDataException;
-import serp.util.Strings;
 
 /**
  * Base class storing raw mapping information; defines utility methods for

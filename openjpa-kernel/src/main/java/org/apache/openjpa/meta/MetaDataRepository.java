@@ -46,6 +46,7 @@ import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -58,7 +59,6 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.OpenJPAId;
 
-import serp.util.Strings;
 
 /**
  * Repository of and factory for persistent metadata.
@@ -2197,7 +2197,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
 
         // try with qualified name
-        name = Strings.getPackageName(context.getDescribedType()) + "." + name;
+        name = ClassUtil.getPackageName(context.getDescribedType()) + "." + name;
         try {
             return getSequenceMetaData(name, context.getEnvClassLoader(), mustExist);
         } catch (MetaDataException mde) {

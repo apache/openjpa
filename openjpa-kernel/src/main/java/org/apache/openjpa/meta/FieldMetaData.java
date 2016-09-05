@@ -68,7 +68,6 @@ import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Metadata for a managed class field.
@@ -1628,7 +1627,7 @@ public class FieldMetaData
         // get class name and get package name divide on the last '.', so the
         // names don't apply in this case, but the methods do what we want
         String methodName = ClassUtil.getClassName(method);
-        String clsName = Strings.getPackageName(method);
+        String clsName = ClassUtil.getPackageName(method);
 
         Class<?> cls = null;
         Class<?> owner = _owner.getDescribedType();

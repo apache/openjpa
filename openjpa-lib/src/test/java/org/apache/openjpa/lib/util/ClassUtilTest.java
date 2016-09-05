@@ -100,6 +100,16 @@ public class ClassUtilTest {
         System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
     }
 
+    @Test
+    public void testGetPackageName() {
+        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(ClassUtilTest.class));
+        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass.class));
+        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(MyInnerClass[].class));
+        Assert.assertEquals("org.apache.openjpa.lib.util", ClassUtil.getPackageName(INSTANCE.getClass()));
+        Assert.assertEquals("", ClassUtil.getPackageName(long.class));
+        Assert.assertEquals("", ClassUtil.getPackageName(long[].class));
+    }
+
     private static abstract class MyInnerClass {
         // not needed
     }
