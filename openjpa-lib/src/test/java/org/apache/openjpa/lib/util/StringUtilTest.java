@@ -58,6 +58,87 @@ public class StringUtilTest {
     }
 
     @Test
+    public void testStringParse() {
+
+        try {
+            StringUtil.parse(null, null);
+            Assert.fail("NullPointerException expected");
+        }
+        catch (NullPointerException npe) {
+            // all fine
+        }
+
+
+        // test null representation for primitives
+        Assert.assertEquals(0, (int) StringUtil.parse(null, byte.class));
+        Assert.assertEquals(0, (char) StringUtil.parse(null, char.class));
+        Assert.assertEquals(0, (double) StringUtil.parse(null, double.class), 0);
+        Assert.assertEquals(0f, (float) StringUtil.parse(null, float.class), 0);
+        Assert.assertEquals(0, (int) StringUtil.parse(null, int.class));
+        Assert.assertEquals(0L, (long) StringUtil.parse(null, long.class));
+        Assert.assertEquals(0, (short) StringUtil.parse(null, short.class));
+        Assert.assertEquals(false, StringUtil.parse(null, boolean.class));
+
+        // special fun:
+        try {
+            StringUtil.parse(null, void.class);
+            Assert.fail("IllegalStateException expected");
+        }
+        catch (IllegalStateException ise) {
+            // all fine
+        }
+
+        Assert.assertNull(StringUtil.parse(null, Character.class));
+        Assert.assertNull(StringUtil.parse(null, Double.class));
+        Assert.assertNull(StringUtil.parse(null, Float.class));
+        Assert.assertNull(StringUtil.parse(null, Integer.class));
+        Assert.assertNull(StringUtil.parse(null, Long.class));
+        Assert.assertNull(StringUtil.parse(null, Short.class));
+        Assert.assertNull(StringUtil.parse(null, Boolean.class));
+
+        try {
+            StringUtil.parse(null, char[].class);
+            Assert.fail("IllegalArgumentException expected");
+        }
+        catch (IllegalArgumentException iae) {
+            // all fine
+        }
+
+        Assert.assertEquals('C', (char) StringUtil.parse("C", char.class));
+        Assert.assertEquals(35.2345, (double) StringUtil.parse("35.2345", double.class), 0.000001);
+        Assert.assertEquals(35.2345, (float) StringUtil.parse("35.2345", float.class), 0.000001);
+        Assert.assertEquals(42, (int) StringUtil.parse("42", int.class));
+        Assert.assertEquals(42L, (long) StringUtil.parse("42", long.class));
+        Assert.assertEquals(42, (short) StringUtil.parse("42", short.class));
+        Assert.assertEquals(true, StringUtil.parse("true", boolean.class));
+        Assert.assertEquals(true, StringUtil.parse("TRUE", boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("false", boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("FALSE", boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("bla", boolean.class));
+
+        Assert.assertEquals('C', (char) StringUtil.parse("C", Character.class));
+        Assert.assertEquals(35.2345, (double) StringUtil.parse("35.2345", Double.class), 0.000001);
+        Assert.assertEquals(35.2345, (float) StringUtil.parse("35.2345", Float.class), 0.000001);
+        Assert.assertEquals(42, (int) StringUtil.parse("42", Integer.class));
+        Assert.assertEquals(42L, (long) StringUtil.parse("42", Long.class));
+        Assert.assertEquals(42, (short) StringUtil.parse("42", Short.class));
+        Assert.assertEquals(true, StringUtil.parse("true", Boolean.class));
+        Assert.assertEquals(true, StringUtil.parse("TRUE", Boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("false", Boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("FALSE", Boolean.class));
+        Assert.assertEquals(false, StringUtil.parse("bla", Boolean.class));
+
+        try {
+            StringUtil.parse(null, StringUtilTest.class);
+            Assert.fail("IllegalArgumentException expected");
+        }
+        catch (IllegalArgumentException iae) {
+            // all fine
+        }
+
+    }
+
+    @Test
     @Ignore("only needed for manual performance tests")
     public void stringSplitPerformanceTest() {
         String val = "  asdfsfsfsfafasdf  basdfasf cs d efdfdfdfdfdfdfdf ghai asdf " +

@@ -42,7 +42,6 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.UserException;
-import serp.util.Strings;
 
 /**
  * Helper methods for dealing with query filters.
@@ -935,8 +934,7 @@ public class Filters {
     /**
      * Set the value of the property named by the hint key.
      */
-    public static void hintToSetter(Object target, String hintKey,
-        Object value) {
+    public static void hintToSetter(Object target, String hintKey, Object value) {
         if (target == null || hintKey == null)
             return;
 
@@ -946,7 +944,7 @@ public class Filters {
                 value = null;
             else {
                 try {
-                    value = Strings.parse((String) value, setter.getParameterTypes()[0]);
+                    value = StringUtil.parse((String) value, setter.getParameterTypes()[0]);
                 } catch (Exception e) {
                     throw new UserException(_loc.get("bad-setter-hint-arg",
                         hintKey, value, setter.getParameterTypes()[0])).

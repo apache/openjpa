@@ -29,6 +29,7 @@ import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;
 import org.apache.openjpa.lib.util.Localizer.Message;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
@@ -37,7 +38,6 @@ import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.util.OpenJPAException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
-import serp.util.Strings;
 
 /**
  * Abstract base class to help build expressions. Provides
@@ -515,13 +515,13 @@ public abstract class AbstractExpressionBuilder {
         if (t1 == TYPE_STRING && val1 instanceof Literal
             && ((Literal) val1).getParseType() == Literal.TYPE_STRING) {
             String s = (String) ((Literal) val1).getValue();
-            ((Literal) val1).setValue(Strings.parse(s, Filters.wrap(t2)));
+            ((Literal) val1).setValue(StringUtil.parse(s, Filters.wrap(t2)));
             val1.setImplicitType(t2);
         }
         if (t2 == TYPE_STRING && val2 instanceof Literal
             && ((Literal) val2).getParseType() == Literal.TYPE_STRING) {
             String s = (String) ((Literal) val2).getValue();
-            ((Literal) val2).setValue(Strings.parse(s, Filters.wrap(t1)));
+            ((Literal) val2).setValue(StringUtil.parse(s, Filters.wrap(t1)));
             val2.setImplicitType(t1);
         }
     }

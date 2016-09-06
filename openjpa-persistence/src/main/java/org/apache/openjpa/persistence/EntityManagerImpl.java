@@ -82,6 +82,7 @@ import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -99,7 +100,6 @@ import org.apache.openjpa.util.ImplHelper;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Implementation of {@link EntityManager} interface.
@@ -1980,7 +1980,7 @@ public class EntityManagerImpl
                 if (!String.class.equals(targetType) && (parenIndex > 0)) {
                     val = val.substring(0, parenIndex);
                 }
-                return Strings.parse(val, targetType);
+                return StringUtil.parse(val, targetType);
             } 
         } else if (value instanceof AutoDetachType) {
         	EnumSet<AutoDetachType> autoDetachFlags = EnumSet.noneOf(AutoDetachType.class);

@@ -175,7 +175,6 @@ import org.apache.openjpa.util.MetaDataException;
 import org.apache.openjpa.util.UnsupportedException;
 import org.apache.openjpa.util.UserException;
 
-import serp.util.Strings;
 
 /**
  * Persistence annotation metadata parser. Currently does not parse
