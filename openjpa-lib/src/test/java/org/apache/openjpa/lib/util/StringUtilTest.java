@@ -18,6 +18,7 @@ package org.apache.openjpa.lib.util;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -83,6 +84,20 @@ public class StringUtilTest {
             //X Strings.replace(val, "fnx", "weirdo function");
             //X val.replace("fnx", "weirdo function");
             StringUtil.replace(val, "fnx", "weirdo function");
+        }
+
+        long stop = System.nanoTime();
+        System.out.println("took: " + TimeUnit.NANOSECONDS.toMillis(stop - start));
+    }
+
+    @Test
+    @Ignore("only needed for manual performance tests")
+    public void testStringJoinPerformance() {
+        String[] vals = {"A", "BDS", "DSD", "XYZ"};
+        long start = System.nanoTime();
+        for (int i = 1; i < 10000000; i++) {
+            //X Strings.join(vals, ",");
+            StringUtils.join(vals, ",");
         }
 
         long stop = System.nanoTime();

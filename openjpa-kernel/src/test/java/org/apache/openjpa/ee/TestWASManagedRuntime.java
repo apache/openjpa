@@ -21,7 +21,6 @@ package org.apache.openjpa.ee;
 import junit.framework.TestCase;
 
 import org.apache.openjpa.lib.util.ClassUtil;
-import serp.util.Strings;
 
 /**
  * Test class for build transformation performed by WASManagedRuntime.

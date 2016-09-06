@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import serp.util.Strings;
 
 public class ClassUtilTest {
 

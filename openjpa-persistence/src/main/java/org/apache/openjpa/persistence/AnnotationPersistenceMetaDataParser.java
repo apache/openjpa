@@ -1290,8 +1290,7 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case EXTERNAL_VALS:
                     if (isMetaDataMode())
-                        fmd.setExternalValues(Strings.join(((ExternalValues)
-                            anno).value(), ","));
+                        fmd.setExternalValues(StringUtils.join(((ExternalValues) anno).value(), ","));
                     break;
                 case EXTERNALIZER:
                     if (isMetaDataMode())

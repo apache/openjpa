@@ -946,8 +946,7 @@ public class Filters {
                 value = null;
             else {
                 try {
-                    value = Strings.parse((String) value,
-                        setter.getParameterTypes()[0]);
+                    value = Strings.parse((String) value, setter.getParameterTypes()[0]);
                 } catch (Exception e) {
                     throw new UserException(_loc.get("bad-setter-hint-arg",
                         hintKey, value, setter.getParameterTypes()[0])).
