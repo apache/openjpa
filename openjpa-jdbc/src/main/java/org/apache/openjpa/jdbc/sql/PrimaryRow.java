@@ -20,7 +20,7 @@ package org.apache.openjpa.jdbc.sql;
 
 import java.sql.SQLException;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.RelationId;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -380,7 +380,7 @@ public class PrimaryRow
      * Return true if the two values should be considered equal.
      */
     private static boolean rowValueEquals(Object o1, Object o2) {
-        if (ObjectUtils.equals(o1, o2))
+        if (Objects.equals(o1, o2))
             return true;
 
         // check for numeric equality (bug #1151)

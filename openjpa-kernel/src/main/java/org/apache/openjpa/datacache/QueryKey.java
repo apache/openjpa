@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Query;
@@ -408,8 +408,8 @@ public class QueryKey
             && _ignoreChanges == other._ignoreChanges
             && _rangeStart == other._rangeStart
             && _rangeEnd == other._rangeEnd
-            && ObjectUtils.equals(_query, other._query)
-            && ObjectUtils.equals(_params, other._params);
+            && Objects.equals(_query, other._query)
+            && Objects.equals(_params, other._params);
     }
 
     /**

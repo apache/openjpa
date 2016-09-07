@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 
 /**
  * Set type that recognizes that inner joins should take precedence
@@ -382,8 +382,8 @@ class JoinSet {
             if (!(other instanceof Node))
                 return false;
             Node node = (Node) other;
-            return ObjectUtils.equals(join, node.join)
-                && ObjectUtils.equals(next, node.next);
+            return Objects.equals(join, node.join)
+                && Objects.equals(next, node.next);
         }
 
         public Object clone() {

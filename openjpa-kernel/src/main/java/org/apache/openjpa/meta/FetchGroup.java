@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.MetaDataException;
 
@@ -375,7 +375,7 @@ public class FetchGroup
             return false;
         FetchGroup that = (FetchGroup) other;
         return _name.equals(that._name)
-            && ObjectUtils.equals(_meta, that._meta);
+            && Objects.equals(_meta, that._meta);
     }
 
     public int hashCode() {

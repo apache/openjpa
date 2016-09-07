@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
 /**
@@ -85,7 +85,7 @@ public class DelegatingDataCache
             return true;
         if (other instanceof DelegatingDataCache)
             other = ((DelegatingDataCache) other).getInnermostDelegate();
-        return ObjectUtils.equals(getInnermostDelegate(), other);
+        return Objects.equals(getInnermostDelegate(), other);
     }
 
     /**

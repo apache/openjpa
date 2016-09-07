@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.kernel.Broker;
 import org.apache.openjpa.kernel.Filters;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
@@ -161,7 +161,7 @@ public class CandidatePath
             return true;
         if (!(other instanceof CandidatePath))
             return false;
-        return ObjectUtils.equals(_actions, ((CandidatePath) other)._actions);
+        return Objects.equals(_actions, ((CandidatePath) other)._actions);
     }
 
     /**

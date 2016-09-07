@@ -23,8 +23,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.JDBCStoreQuery;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -61,10 +61,8 @@ import org.apache.openjpa.util.UserException;
  *
  * @author Abe White
  */
-public class PCPath
-    extends CandidatePath
-    implements JDBCPath {
-	
+public class PCPath extends CandidatePath implements JDBCPath {
+
     protected static final String TRUE = "1 = 1";
     protected static final String FALSE = "1 <> 1";
 
@@ -1112,8 +1110,8 @@ public class PCPath
         if (!(other instanceof PCPath))
             return false;
         PCPath path = (PCPath) other;
-        return ObjectUtils.equals(_candidate, path._candidate)
-            && ObjectUtils.equals(_actions, path._actions);
+        return Objects.equals(_candidate, path._candidate)
+            && Objects.equals(_actions, path._actions);
     }
     
     public int getId() {
@@ -1158,7 +1156,7 @@ public class PCPath
                 return true;
             Action a = (Action) other;
             return op == a.op
-                && ObjectUtils.equals(data, a.data);
+                && Objects.equals(data, a.data);
         }
     }
 }

@@ -20,8 +20,8 @@ package org.apache.openjpa.lib.conf;
 
 import java.io.File;
 import java.security.AccessController;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 
 /**
@@ -48,7 +48,7 @@ public class FileValue extends Value {
         assertChangeable();
         File oldValue = this.value;
         this.value = value;
-        if (!ObjectUtils.equals(oldValue, value))
+        if (!Objects.equals(oldValue, value))
             valueChanged();
     }
 

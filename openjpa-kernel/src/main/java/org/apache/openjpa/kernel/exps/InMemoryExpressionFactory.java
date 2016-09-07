@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.kernel.Extent;
 import org.apache.openjpa.kernel.StoreContext;
 import org.apache.openjpa.lib.util.Localizer;
@@ -140,7 +140,7 @@ public class InMemoryExpressionFactory
             for (int i = 0; i < exps.grouping.length; i++) {
                 curs[i] = ((Val) exps.grouping[i]).evaluate(pc, pc, ctx,
                     params);
-                eq = eq && ObjectUtils.equals(prevs[i], curs[i]);
+                eq = eq && Objects.equals(prevs[i], curs[i]);
             }
 
             // if this object's grouping values differ from the prev,
@@ -695,7 +695,7 @@ public class InMemoryExpressionFactory
             if (_arr.length != arr.length)
                 return false;
             for (int i = 0; i < _arr.length; i++)
-                if (!ObjectUtils.equals(_arr[i], arr[i]))
+                if (!Objects.equals(_arr[i], arr[i]))
                     return false;
             return true;
         }

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Abstract base class for sequential result lists. Unlike the
@@ -43,7 +43,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
     public boolean contains(Object o) {
         assertOpen();
         for (Iterator itr = itr(0); itr.hasNext();)
-            if (ObjectUtils.equals(o, itr.next()))
+            if (Objects.equals(o, itr.next()))
                 return true;
         return false;
     }
@@ -65,7 +65,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         assertOpen();
         int index = 0;
         for (Iterator itr = itr(0); itr.hasNext(); index++)
-            if (ObjectUtils.equals(o, itr.next()))
+            if (Objects.equals(o, itr.next()))
                 return index;
         return -1;
     }
@@ -75,7 +75,7 @@ public abstract class AbstractSequentialResultList extends AbstractResultList {
         int index = -1;
         int i = 0;
         for (Iterator itr = itr(0); itr.hasNext(); i++)
-            if (ObjectUtils.equals(o, itr.next()))
+            if (Objects.equals(o, itr.next()))
                 index = i;
         return index;
     }

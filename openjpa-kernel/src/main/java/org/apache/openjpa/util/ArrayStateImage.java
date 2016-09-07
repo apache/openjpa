@@ -19,8 +19,9 @@
 package org.apache.openjpa.util;
 
 import java.util.BitSet;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 
 /**
  * Utilities for dealing with a simple state image consisting of an
@@ -98,7 +99,7 @@ public class ArrayStateImage {
         BitSet loaded2 = getLoaded(state2);
         for (int i = 0, max = loaded1.length(); i < max; i++) {
             if (loaded1.get(i) && loaded2.get(i)
-                && !ObjectUtils.equals(state1[i], state2[i]))
+                && !Objects.equals(state1[i], state2[i]))
                 return false;
         }
         return true;

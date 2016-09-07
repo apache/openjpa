@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Abstract base class for random-access result lists. Unlike the
@@ -53,7 +53,7 @@ public abstract class AbstractNonSequentialResultList
             obj = getInternal(i);
             if (obj == PAST_END)
                 break;
-            if (ObjectUtils.equals(o, obj))
+            if (Objects.equals(o, obj))
                 return true;
         }
         return false;
@@ -82,7 +82,7 @@ public abstract class AbstractNonSequentialResultList
             obj = getInternal(i);
             if (obj == PAST_END)
                 break;
-            if (ObjectUtils.equals(o, obj))
+            if (Objects.equals(o, obj))
                 return i;
         }
         return -1;
@@ -96,7 +96,7 @@ public abstract class AbstractNonSequentialResultList
             obj = getInternal(i);
             if (obj == PAST_END)
                 break;
-            if (ObjectUtils.equals(o, obj))
+            if (Objects.equals(o, obj))
                 index = i;
         }
         return index;

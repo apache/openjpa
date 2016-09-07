@@ -19,8 +19,8 @@
 package org.apache.openjpa.lib.conf;
 
 import java.security.AccessController;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
@@ -69,7 +69,7 @@ public class ObjectValue extends Value {
         if (!derived) assertChangeable();
         Object oldValue = _value;
         _value = obj;
-        if (!derived && !ObjectUtils.equals(obj, oldValue)) {
+        if (!derived && !Objects.equals(obj, oldValue)) {
             objectChanged();
             valueChanged();
         }

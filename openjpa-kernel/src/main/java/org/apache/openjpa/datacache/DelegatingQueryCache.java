@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.datacache;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.kernel.QueryStatistics;
 import org.apache.openjpa.util.RuntimeExceptionTranslator;
 
@@ -77,7 +77,7 @@ public class DelegatingQueryCache
             return true;
         if (other instanceof DelegatingQueryCache)
             other = ((DelegatingQueryCache) other).getInnermostDelegate();
-        return ObjectUtils.equals(getInnermostDelegate(), other);
+        return Objects.equals(getInnermostDelegate(), other);
     }
 
     /**

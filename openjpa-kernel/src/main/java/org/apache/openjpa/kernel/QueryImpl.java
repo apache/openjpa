@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -1848,7 +1848,7 @@ public class QueryImpl
                 return false;
             if (key.subclasses != subclasses)
                 return false;
-            if (!ObjectUtils.equals(key.storeKey, storeKey))
+            if (!Objects.equals(key.storeKey, storeKey))
                 return false;
 
             // allow either candidate type to be null because it might be

@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
@@ -558,7 +558,7 @@ public class ForeignKey
      * Join a local column to a primary key column of another table.
      */
     public void join(Column local, Column toPK) {
-        if (!ObjectUtils.equals(local.getTable(), getTable()))
+        if (!Objects.equals(local.getTable(), getTable()))
             throw new InvalidStateException(_loc.get("table-mismatch",
                 local.getTable(), getTable()));
 
@@ -776,7 +776,7 @@ public class ForeignKey
         if (vals.length != fkVals.length)
             return false;
         for (int i = 0; i < vals.length; i++)
-            if (!ObjectUtils.equals(vals[i], fkVals[i]))
+            if (!Objects.equals(vals[i], fkVals[i]))
                 return false;
         return true;
     }

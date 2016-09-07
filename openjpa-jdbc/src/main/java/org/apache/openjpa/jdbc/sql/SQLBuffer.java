@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.kernel.exps.CollectionParam;
@@ -630,7 +630,7 @@ public final class SQLBuffer
 
         SQLBuffer buf = (SQLBuffer) other;
         return _sql.equals(buf._sql)
-            && ObjectUtils.equals(_params, buf._params);
+            && Objects.equals(_params, buf._params);
     }
 
     /**

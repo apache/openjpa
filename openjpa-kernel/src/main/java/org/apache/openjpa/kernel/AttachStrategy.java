@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
 import org.apache.openjpa.lib.util.Localizer;
@@ -225,7 +225,7 @@ abstract class AttachStrategy
                     else {
                         PersistenceCapable intopc = topc;
                         if (!fmd.isEmbeddedPC() && frmpc != null && topc != null
-                            && !ObjectUtils.equals(topc.pcFetchObjectId(),
+                            && !Objects.equals(topc.pcFetchObjectId(),
                             manager.getDetachedObjectId(frmpc))) {
                             intopc = null;
                         }
