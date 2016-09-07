@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.EnumSet;
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Helper class to stringify annotation declarations.
@@ -109,7 +110,7 @@ public class AnnotationBuilder {
     private AnnotationEntry find(String key) {
         for(AnnotationEntry ae: components) {
             // null key references considered equal
-            if (StringUtils.equals(ae.key, key))
+            if (Objects.equals(ae.key, key))
                 return ae;
         }
         return null;

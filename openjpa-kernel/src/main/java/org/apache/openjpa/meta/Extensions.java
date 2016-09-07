@@ -23,10 +23,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.Localizer;
@@ -442,8 +442,8 @@ public abstract class Extensions
             if (other == this)
                 return true;
             HashKey hk = (HashKey) other;
-            return StringUtils.equals(vendor, hk.vendor)
-                && StringUtils.equals(key, hk.key);
+            return Objects.equals(vendor, hk.vendor)
+                && Objects.equals(key, hk.key);
         }
     }
 

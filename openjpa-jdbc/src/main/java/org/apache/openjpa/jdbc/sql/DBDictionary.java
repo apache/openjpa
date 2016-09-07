@@ -64,7 +64,6 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.ColumnDefIdentifierRule;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -775,7 +774,7 @@ public class DBDictionary
             return (char) getInt(rs, column);
 
         String str = getString(rs, column);
-        return (StringUtils.isEmpty(str)) ? 0 : str.charAt(0);
+        return (StringUtil.isEmpty(str)) ? 0 : str.charAt(0);
     }
 
     /**
@@ -891,7 +890,7 @@ public class DBDictionary
     public Locale getLocale(ResultSet rs, int column)
         throws SQLException {
         String str = getString(rs, column);
-        if (StringUtils.isEmpty(str))
+        if (StringUtil.isEmpty(str))
             return null;
 
         String[] params = StringUtil.split(str, "_", 3);
@@ -1868,7 +1867,7 @@ public class DBDictionary
      *                  size clause will be inserted appropriately.   
      */
     protected String insertSize(String typeName, String size) {
-        if (StringUtils.isEmpty(size)) {
+        if (StringUtil.isEmpty(size)) {
             int idx = typeName.indexOf("{0}");
             if (idx != -1) {
                 return typeName.substring(0, idx);
@@ -1923,7 +1922,7 @@ public class DBDictionary
             joinSyntax = SYNTAX_TRADITIONAL;
         else if ("database".equals(syntax))
             joinSyntax = SYNTAX_DATABASE;
-        else if (!StringUtils.isEmpty(syntax))
+        else if (!StringUtil.isEmpty(syntax))
             throw new IllegalArgumentException(syntax);
     }
     
@@ -2721,8 +2720,7 @@ public class DBDictionary
         buf.append(" ").append(selects).append(" FROM ").append(from);
 
         if (checkTableForUpdate
-                && (StringUtils.isEmpty(forUpdateClause) && !StringUtils
-                        .isEmpty(tableForUpdateClause))) {
+                && (StringUtil.isEmpty(forUpdateClause) && !StringUtil.isEmpty(tableForUpdateClause))) {
             buf.append(" ").append(tableForUpdateClause);
         }
 
@@ -4137,9 +4135,9 @@ public class DBDictionary
     protected Sequence newSequence(ResultSet sequenceMeta)
         throws SQLException {
         Sequence seq = new Sequence();
-        seq.setSchemaIdentifier(fromDBName(StringUtils.stripEnd(sequenceMeta.getString("SEQUENCE_SCHEMA"), null),
+        seq.setSchemaIdentifier(fromDBName(StringUtil.stripEnd(sequenceMeta.getString("SEQUENCE_SCHEMA"), null),
             DBIdentifierType.SCHEMA));
-        seq.setIdentifier(fromDBName(StringUtils.stripEnd(sequenceMeta.getString("SEQUENCE_NAME"), null),
+        seq.setIdentifier(fromDBName(StringUtil.stripEnd(sequenceMeta.getString("SEQUENCE_NAME"), null),
             DBIdentifierType.SEQUENCE));
         return seq;
     }
@@ -4228,7 +4226,7 @@ public class DBDictionary
             == DatabaseMetaData.columnNoNulls);
 
         String def = colMeta.getString("COLUMN_DEF");
-        if (!StringUtils.isEmpty(def) && !"null".equalsIgnoreCase(def))
+        if (!StringUtil.isEmpty(def) && !"null".equalsIgnoreCase(def))
             c.setDefaultString(def);
         return c;
     }
@@ -4814,7 +4812,7 @@ public class DBDictionary
         
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
-        nextSequenceQuery = StringUtils.trimToNull(nextSequenceQuery);
+        nextSequenceQuery = StringUtil.trimToNull(nextSequenceQuery);
         
         if (selectWords != null)
             selectWordSet.addAll(Arrays.asList(StringUtil.split(selectWords.toUpperCase(), ",", 0)));
@@ -4953,7 +4951,7 @@ public class DBDictionary
         throws SQLException {
         if (!connected)
             connectedConfiguration(conn);
-        if (!StringUtils.isEmpty(initializationSQL)) {
+        if (!StringUtil.isEmpty(initializationSQL)) {
             PreparedStatement stmnt = null;
             try {
                 stmnt = conn.prepareStatement(initializationSQL);

@@ -20,7 +20,6 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.io.File;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCSeqValue;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
@@ -29,6 +28,7 @@ import org.apache.openjpa.jdbc.kernel.TableJDBCSeq;
 import org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq;
 import org.apache.openjpa.lib.conf.PluginValue;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.SequenceMetaData;
 
 /**
@@ -237,15 +237,13 @@ public class SequenceMapping
         // Array of unique column names are passed to configuration
         // as a single string "x|y|z". The configurable (TableJDBCSeq) must
         // parse it back.
-        if (!DBIdentifier.isNull(_uniqueConstraintName) && 
-                _uniqueConstraintName.getName().length() > 0) {
-            appendProperty(props, PROP_UNIQUE_CONSTRAINT, 
-                addQuotes(_uniqueConstraintName.getName()));
+        if (!DBIdentifier.isNull(_uniqueConstraintName) && _uniqueConstraintName.getName().length() > 0) {
+            appendProperty(props, PROP_UNIQUE_CONSTRAINT, addQuotes(_uniqueConstraintName.getName()));
         }
             
-        if (_uniqueColumns != null && _uniqueColumns.length > 0)
-        	appendProperty(props, PROP_UNIQUE, 
-        			StringUtils.join(_uniqueColumns,'|'));
+        if (_uniqueColumns != null && _uniqueColumns.length > 0) {
+            appendProperty(props, PROP_UNIQUE, StringUtil.join(_uniqueColumns, "|"));
+        }
     }
     
     private String addQuotes(String name) {

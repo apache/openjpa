@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.meta;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Contains metadata about an xml element or attribute
@@ -82,7 +84,7 @@ public class XMLFieldMetaData implements XMLMetaData {
     
     public void setXmlnamespace(String name) {
         // avoid JAXB XML bind default name
-        if (!StringUtils.equals(defaultName, name))
+        if (!Objects.equals(defaultName, name))
             _xmlnamespace = name;
     }
     

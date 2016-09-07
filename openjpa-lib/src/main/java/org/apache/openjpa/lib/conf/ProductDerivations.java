@@ -32,7 +32,7 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.MultiClassLoader;
@@ -260,7 +260,7 @@ public class ProductDerivations {
      */
     public static ConfigurationProvider load(String resource, String anchor, 
         ClassLoader loader) {
-        if (StringUtils.isEmpty(resource))
+        if (StringUtil.isEmpty(resource))
             return null;
         if (loader == null)
             loader = AccessController.doPrivileged(

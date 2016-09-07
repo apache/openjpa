@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
@@ -184,7 +184,7 @@ public class PCSubclassValidator {
     private Method setterForField(FieldMetaData fmd) {
         try {
             return fmd.getDeclaringType().getDeclaredMethod(
-                "set" + StringUtils.capitalize(fmd.getName()),
+                "set" + StringUtil.capitalize(fmd.getName()),
                 new Class[]{ fmd.getDeclaredType() });
         }
         catch (NoSuchMethodException e) {

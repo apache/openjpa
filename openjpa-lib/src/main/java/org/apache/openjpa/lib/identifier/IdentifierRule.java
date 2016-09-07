@@ -21,7 +21,7 @@ package org.apache.openjpa.lib.identifier;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * The standard identifier rule.  Rules are used for specific configuration
@@ -188,7 +188,7 @@ public class IdentifierRule {
                 }
             }
             // Look for special characters
-            if (StringUtils.contains(getSpecialCharacters(), ch)) {
+            if (StringUtil.contains(getSpecialCharacters(), ch)) {
                 return true;
             }
         }

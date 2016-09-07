@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -1745,7 +1745,7 @@ public class PCEnhancer {
     private void translateFromStateManagerMethod(Method m,
         boolean isDirtyCheckMethod) {
         // form the name of the method by prepending 'pc' to the sm method
-        String name = PRE + StringUtils.capitalize(m.getName());
+        String name = PRE + StringUtil.capitalize(m.getName());
         Class[] params = m.getParameterTypes();
         Class returnType = m.getReturnType();
 
@@ -2682,7 +2682,7 @@ public class PCEnhancer {
         throws NoSuchMethodException {
         String name = "get";
         if (type.isPrimitive())
-            name += StringUtils.capitalize(type.getName());
+            name += StringUtil.capitalize(type.getName());
         return Reflection.class.getMethod(name, new Class[] { Object.class, 
             argType }); 
     }
@@ -3771,9 +3771,9 @@ public class PCEnhancer {
      * performs any necessary field tracking.
      */
     private void addSubclassGetMethod(FieldMetaData fmd) {
-        String methName = "get" + StringUtils.capitalize(fmd.getName());
+        String methName = "get" + StringUtil.capitalize(fmd.getName());
         if (_managedType.getMethods(methName, new Class[0]).length == 0)
-            methName = "is" + StringUtils.capitalize(fmd.getName());
+            methName = "is" + StringUtil.capitalize(fmd.getName());
         BCMethod getter = _pc.declareMethod(methName, fmd.getDeclaredType(),
             null);
         setVisibilityToSuperMethod(getter);

@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -66,7 +67,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -1362,7 +1363,7 @@ public class AnnotationPersistenceMetaDataSerializer
          */
         public int compare(QueryMetaData o1, QueryMetaData o2) {
             // normal queries before native
-            if (!StringUtils.equals(o1.getLanguage(), o2.getLanguage())) {
+            if (!Objects.equals(o1.getLanguage(), o2.getLanguage())) {
                 if (QueryLanguages.LANG_SQL.equals(o1.getLanguage()))
                     return 1;
                 else
@@ -1486,7 +1487,7 @@ public class AnnotationPersistenceMetaDataSerializer
          */
         private int compare(QueryMetaData o1, QueryMetaData o2) {
             // normal queries before native
-            if (!StringUtils.equals(o1.getLanguage(), o2.getLanguage())) {
+            if (!Objects.equals(o1.getLanguage(), o2.getLanguage())) {
                 if (QueryLanguages.LANG_SQL.equals(o1.getLanguage()))
                     return 1;
                 else

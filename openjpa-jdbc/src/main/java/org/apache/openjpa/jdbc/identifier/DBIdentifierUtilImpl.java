@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -451,7 +451,7 @@ public class DBIdentifierUtilImpl extends IdentifierUtilImpl implements DBIdenti
 
     private DBIdentifier makeName(String rule, DBIdentifier name, String prefix) {
         DBIdentifier sName = DBIdentifier.removeLeading(name, IdentifierUtil.UNDERSCORE);
-        if (!StringUtils.isEmpty(prefix)) {
+        if (!StringUtil.isEmpty(prefix)) {
             sName = DBIdentifier.preCombine(sName, prefix);
         }
         return sName;

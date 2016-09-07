@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.lib.util.Localizer;
@@ -74,7 +74,7 @@ public class NameSet
      * @param validate if true, null or empty names will not be accepted
      */
     protected void addName(DBIdentifier name, boolean validate) {
-        if (DBIdentifier.isNull(name) || StringUtils.isEmpty(name.getName())) {
+        if (DBIdentifier.isNull(name) || StringUtil.isEmpty(name.getName())) {
             if (validate)
                 throw new IllegalArgumentException(_loc.get("bad-name", name)
                     .getMessage());

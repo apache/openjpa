@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.conf;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
 
@@ -91,8 +92,8 @@ public class Specification {
         if (other == null || !this.getClass().isInstance(other))
             return false;
         Specification that = (Specification)other;
-        return StringUtils.equals(_name, this._name) && _major == that._major 
-            && StringUtils.equals(_minor, this._minor);
+        return Objects.equals(_name, this._name) && _major == that._major
+            && Objects.equals(_minor, this._minor);
     }    
     
     /**

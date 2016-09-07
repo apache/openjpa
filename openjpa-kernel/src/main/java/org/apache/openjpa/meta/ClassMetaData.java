@@ -33,10 +33,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
 import org.apache.openjpa.datacache.DataCache;
@@ -1511,7 +1512,7 @@ public class ClassMetaData
      */
     public String getDataCacheName() {
         if (DEFAULT_STRING.equals(_cacheName)) {
-            if (_super != null && StringUtils.isNotEmpty(getPCSuperclassMetaData().getDataCacheName())) {
+            if (_super != null && StringUtil.isNotEmpty(getPCSuperclassMetaData().getDataCacheName())) {
                 _cacheName = getPCSuperclassMetaData().getDataCacheName();
             } else {
                 _cacheName = DataCache.NAME_DEFAULT;
@@ -2000,8 +2001,8 @@ public class ClassMetaData
 
         String superCache = getPCSuperclassMetaData().getDataCacheName();
         
-        if (!StringUtils.isEmpty(superCache)) {  
-            if (!StringUtils.equals(cache, superCache)) {
+        if (!StringUtil.isEmpty(superCache)) {
+            if (!Objects.equals(cache, superCache)) {
                 throw new MetaDataException(_loc.get("cache-names", new Object[] { _type, cache, _super, superCache }));
             }
         }
@@ -2371,7 +2372,7 @@ public class ClassMetaData
      * the same name.
      */
     public FetchGroup addDeclaredFetchGroup(String name) {
-    	if (StringUtils.isEmpty(name))
+    	if (StringUtil.isEmpty(name))
     		throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (_fgMap == null)
             _fgMap = new HashMap<String,FetchGroup>();

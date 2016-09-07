@@ -35,7 +35,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -86,7 +85,7 @@ public class Configurations {
     private static String getPluginComponent(String plugin, boolean clsName) {
         if (plugin != null)
             plugin = plugin.trim();
-        if (StringUtils.isEmpty(plugin))
+        if (StringUtil.isEmpty(plugin))
             return null;
 
         int openParen = -1;
@@ -111,9 +110,9 @@ public class Configurations {
      * Combine the given class name and properties into a plugin string.
      */
     public static String getPlugin(String clsName, String props) {
-        if (StringUtils.isEmpty(clsName))
+        if (StringUtil.isEmpty(clsName))
             return props;
-        if (StringUtils.isEmpty(props))
+        if (StringUtil.isEmpty(props))
             return clsName;
         return clsName + "(" + props + ")";
     }
@@ -124,17 +123,17 @@ public class Configurations {
      * same properties of <code>orig</code>.
      */
     public static String combinePlugins(String orig, String override) {
-        if (StringUtils.isEmpty(orig))
+        if (StringUtil.isEmpty(orig))
             return override;
-        if (StringUtils.isEmpty(override))
+        if (StringUtil.isEmpty(override))
             return orig;
 
         String origCls = getClassName(orig);
         String overrideCls = getClassName(override);
         String cls;
-        if (StringUtils.isEmpty(origCls))
+        if (StringUtil.isEmpty(origCls))
             cls = overrideCls;
-        else if (StringUtils.isEmpty(overrideCls))
+        else if (StringUtil.isEmpty(overrideCls))
             cls = origCls;
         else if (!origCls.equals(overrideCls))
             return override; // completely different plugin
@@ -143,9 +142,9 @@ public class Configurations {
 
         String origProps = getProperties(orig);
         String overrideProps = getProperties(override);
-        if (StringUtils.isEmpty(origProps))
+        if (StringUtil.isEmpty(origProps))
             return getPlugin(cls, overrideProps);
-        if (StringUtils.isEmpty(overrideProps))
+        if (StringUtil.isEmpty(overrideProps))
             return getPlugin(cls, origProps);
 
         Properties props = parseProperties(origProps);
@@ -219,7 +218,7 @@ public class Configurations {
      */
     static Object newInstance(String clsName, Value val, Configuration conf,
         ClassLoader loader, boolean fatal) {
-        if (StringUtils.isEmpty(clsName))
+        if (StringUtil.isEmpty(clsName))
             return null;
 
         Class<?> cls = loadClass(clsName, findDerivedLoader(conf, loader));
@@ -337,7 +336,7 @@ public class Configurations {
     public static void populateConfiguration(Configuration conf, Options opts) {
         String props = opts.removeProperty("properties", "p", null);
         ConfigurationProvider provider;
-        if (!StringUtils.isEmpty(props)) {
+        if (!StringUtil.isEmpty(props)) {
             Map<String, String> result = parseConfigResource(props);
             String path = result.get(CONFIG_RESOURCE_PATH);
             String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
@@ -454,7 +453,7 @@ public class Configurations {
             return;
 
         Properties props = null;
-        if (!StringUtils.isEmpty(properties))
+        if (!StringUtil.isEmpty(properties))
             props = parseProperties(properties);
         configureInstance(obj, conf, props, configurationName);
     }
@@ -576,7 +575,7 @@ public class Configurations {
      */
     public static Options parseProperties(String properties) {
         Options opts = new Options();
-        properties = StringUtils.trimToNull(properties);
+        properties = StringUtil.trimToNull(properties);
         if (properties == null)
             return opts;
 
@@ -639,7 +638,7 @@ public class Configurations {
      * Looks up the given name in JNDI. If the name is null, null is returned.
      */
     public static Object lookup(String name, String userKey, Log log) {
-        if (StringUtils.isEmpty(name))
+        if (StringUtil.isEmpty(name))
             return null;
 
         Context ctx = null;

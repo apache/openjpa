@@ -140,7 +140,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Version;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
 import org.apache.openjpa.event.LifecycleCallbacks;
@@ -573,7 +573,7 @@ public class AnnotationPersistenceMetaDataParser
                 meta.setEmbeddedOnly(true);
             else {
                 meta.setEmbeddedOnly(false);
-                if (!StringUtils.isEmpty(entity.name()))
+                if (!StringUtil.isEmpty(entity.name()))
                     meta.setTypeAlias(entity.name());
             }
         }
@@ -814,7 +814,7 @@ public class AnnotationPersistenceMetaDataParser
         while (cls.getEnclosingClass() != null)
             cls = cls.getEnclosingClass();
 
-        String rsrc = StringUtils.replace(cls.getName(), ".", "/");
+        String rsrc = StringUtil.replace(cls.getName(), ".", "/");
         ClassLoader loader = AccessController.doPrivileged(
             J2DoPrivHelper.getClassLoaderAction(cls));
         if (loader == null)
@@ -861,7 +861,7 @@ public class AnnotationPersistenceMetaDataParser
                     // technically we should have separate system table and
                     // sequence generators, but it's easier to just rely on
                     // the system org.apache.openjpa.Sequence setting for both
-                    if (StringUtils.isEmpty(generator))
+                    if (StringUtil.isEmpty(generator))
                         meta.setIdentitySequenceName(
                             SequenceMetaData.NAME_SYSTEM);
                     else
@@ -903,7 +903,7 @@ public class AnnotationPersistenceMetaDataParser
             meta.setDataCacheTimeout(timeout);
         }
         String cacheName = name;
-        if (StringUtils.isEmpty(cacheName)) {
+        if (StringUtil.isEmpty(cacheName)) {
             cacheName = org.apache.openjpa.datacache.DataCache.NAME_DEFAULT;
         }
         meta.setDataCacheName(enabled ? cacheName : null);
@@ -922,7 +922,7 @@ public class AnnotationPersistenceMetaDataParser
         if (detached != null) {
             if (!detached.enabled())
                 meta.setDetachedState(null);
-            else if (StringUtils.isEmpty(detached.fieldName()))
+            else if (StringUtil.isEmpty(detached.fieldName()))
                 meta.setDetachedState(ClassMetaData.SYNTHETIC);
             else
                 meta.setDetachedState(detached.fieldName());
@@ -1106,7 +1106,7 @@ public class AnnotationPersistenceMetaDataParser
    static void parseFetchGroups(ClassMetaData meta, FetchGroupImpl... groups) {
        org.apache.openjpa.meta.FetchGroup fg;
        for (FetchGroupImpl group : groups) {
-           if (StringUtils.isEmpty(group.name()))
+           if (StringUtil.isEmpty(group.name()))
                throw new MetaDataException(_loc.get("unnamed-fg", meta));
 
            fg = meta.addDeclaredFetchGroup(group.name());
@@ -1289,7 +1289,7 @@ public class AnnotationPersistenceMetaDataParser
                     break;
                 case EXTERNAL_VALS:
                     if (isMetaDataMode())
-                        fmd.setExternalValues(StringUtils.join(((ExternalValues) anno).value(), ","));
+                        fmd.setExternalValues(StringUtil.join(((ExternalValues) anno).value(), ","));
                     break;
                 case EXTERNALIZER:
                     if (isMetaDataMode())
@@ -1402,7 +1402,7 @@ public class AnnotationPersistenceMetaDataParser
                     // technically we should have separate system table and
                     // sequence generators, but it's easier to just rely on
                     // the system org.apache.openjpa.Sequence setting for both
-                    if (StringUtils.isEmpty(generator))
+                    if (StringUtil.isEmpty(generator))
                         fmd.setValueSequenceName(SequenceMetaData.NAME_SYSTEM);
                     else
                         fmd.setValueSequenceName(generator);
@@ -1426,7 +1426,7 @@ public class AnnotationPersistenceMetaDataParser
      */
     private static int getGeneratedValueStrategy(Object context,
         GenerationType strategy, String generator) {
-        if (strategy != AUTO || StringUtils.isEmpty(generator))
+        if (strategy != AUTO || StringUtil.isEmpty(generator))
             return -1;
 
         if (Generator.UUID_HEX.equals(generator))
@@ -1524,7 +1524,7 @@ public class AnnotationPersistenceMetaDataParser
         if (!anno.optional())
             fmd.setNullValue(FieldMetaData.NULL_EXCEPTION);
 
-        if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
+        if (isMappingOverrideMode() && !StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.setTypeOverride(anno.targetEntity());
@@ -1565,7 +1565,7 @@ public class AnnotationPersistenceMetaDataParser
         }
 
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
-        if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
+        if (isMappingOverrideMode() && !StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
@@ -1591,7 +1591,7 @@ public class AnnotationPersistenceMetaDataParser
         }
 
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
-        if (isMappingOverrideMode() && !StringUtils.isEmpty(anno.mappedBy()))
+        if (isMappingOverrideMode() && !StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         if (anno.targetEntity() != void.class)
             fmd.getElement().setDeclaredType(anno.targetEntity());
@@ -1604,7 +1604,7 @@ public class AnnotationPersistenceMetaDataParser
      */
     private void parseMapKey(FieldMetaData fmd, MapKey anno) {
         String name = anno.name();
-        if (StringUtils.isEmpty(name))
+        if (StringUtil.isEmpty(name))
             fmd.getKey().setValueMappedBy(ValueMetaData.MAPPED_BY_PK);
         else
             fmd.getKey().setValueMappedBy(name);
@@ -1676,7 +1676,7 @@ public class AnnotationPersistenceMetaDataParser
                     "Persistent"));
         }
 
-        if (!StringUtils.isEmpty(anno.mappedBy()))
+        if (!StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         if (!anno.optional())
@@ -1705,7 +1705,7 @@ public class AnnotationPersistenceMetaDataParser
 
         fmd.setPersistentCollection(true); 
         
-        if (!StringUtils.isEmpty(anno.mappedBy()))
+        if (!StringUtil.isEmpty(anno.mappedBy()))
             fmd.setMappedBy(anno.mappedBy());
         fmd.setInDefaultFetchGroup(anno.fetch() == FetchType.EAGER);
         if (anno.elementType() != void.class)
@@ -1813,7 +1813,7 @@ public class AnnotationPersistenceMetaDataParser
     private void parseSequenceGenerator(AnnotatedElement el,
         SequenceGenerator gen) {
         String name = gen.name();
-        if (StringUtils.isEmpty(name))
+        if (StringUtil.isEmpty(name))
             throw new MetaDataException(_loc.get("no-seq-name", el));
 
         if (_log.isTraceEnabled())
@@ -1844,7 +1844,7 @@ public class AnnotationPersistenceMetaDataParser
 
         // create plugin string from info
         String clsName, props;
-        if (StringUtils.isEmpty(seq)) {
+        if (StringUtil.isEmpty(seq)) {
             clsName = SequenceMetaData.IMPL_NATIVE;
             props = null;
         } else if (seq.indexOf('(') != -1) // plugin
@@ -1873,9 +1873,9 @@ public class AnnotationPersistenceMetaDataParser
     private void parseNamedQueries(AnnotatedElement el, NamedQuery... queries) {
         QueryMetaData meta;
         for (NamedQuery query : queries) {
-            if (StringUtils.isEmpty(query.name()))
+            if (StringUtil.isEmpty(query.name()))
                 throw new MetaDataException(_loc.get("no-query-name", el));
-            if (StringUtils.isEmpty(query.query()))
+            if (StringUtil.isEmpty(query.query()))
                 throw new MetaDataException(_loc.get("no-query-string",
                     query.name(), el));
 
@@ -1946,10 +1946,10 @@ public class AnnotationPersistenceMetaDataParser
         NamedNativeQuery... queries) {
         QueryMetaData meta;
         for (NamedNativeQuery query : queries) {
-            if (StringUtils.isEmpty(query.name()))
+            if (StringUtil.isEmpty(query.name()))
                 throw new MetaDataException(_loc.get("no-native-query-name",
                     el));
-            if (StringUtils.isEmpty(query.query()))
+            if (StringUtil.isEmpty(query.query()))
                 throw new MetaDataException(_loc.get("no-native-query-string",
                     query.name(), el));
 
@@ -1974,7 +1974,7 @@ public class AnnotationPersistenceMetaDataParser
             else if (!void.class.equals(res))
                 meta.setResultType(res);
 
-            if (!StringUtils.isEmpty(query.resultSetMapping()))
+            if (!StringUtil.isEmpty(query.resultSetMapping()))
                 meta.setResultSetMappingName(query.resultSetMapping());
             for (QueryHint hint : query.hints())
                 meta.addHint(hint.name(), hint.value());
@@ -2182,9 +2182,9 @@ public class AnnotationPersistenceMetaDataParser
 
     private void parseNamedStoredProcedureQueries(AnnotatedElement el, NamedStoredProcedureQuery... procs) {
         for (NamedStoredProcedureQuery proc : procs) {
-            if (StringUtils.isEmpty(proc.name()))
+            if (StringUtil.isEmpty(proc.name()))
                 throw new MetaDataException(_loc.get("stored-proc-no-name", el));
-            if (StringUtils.isEmpty(proc.procedureName()))
+            if (StringUtil.isEmpty(proc.procedureName()))
                 throw new MetaDataException(_loc.get("stored-proc-no-dbname", el));
 
             // Query metadata name

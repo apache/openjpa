@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Table;
@@ -223,7 +223,7 @@ public class PropertiesReverseCustomizer
      * Return the property value for the given key, or null if none.
      */
     protected String getProperty(String key) {
-        String val = StringUtils.trimToNull(_props.getProperty(key));
+        String val = StringUtil.trimToNull(_props.getProperty(key));
         _unaccessed.remove(key);
         return val;
     }

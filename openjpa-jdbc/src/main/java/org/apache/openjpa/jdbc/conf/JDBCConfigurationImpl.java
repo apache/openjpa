@@ -22,7 +22,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifierUtil;
 import org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager;
@@ -575,7 +575,7 @@ public class JDBCConfigurationImpl
         if (dbdictionary == null) {
             String clsName = dbdictionaryPlugin.getClassName();
             String props = dbdictionaryPlugin.getProperties();
-            if (!StringUtils.isEmpty(clsName)) {
+            if (!StringUtil.isEmpty(clsName)) {
                 dbdictionary = DBDictionaryFactory.newDBDictionary
                     (this, clsName, props);
             } else {
@@ -798,7 +798,7 @@ public class JDBCConfigurationImpl
                 // the driver name is always required, so if not specified,
                 // then no connection factory 2
                 String driver = getConnection2DriverName();
-                if (!StringUtils.isEmpty(driver))
+                if (!StringUtil.isEmpty(driver))
                     ds = DataSourceFactory.newDataSource(this, true);
             }
             if (ds != null) {
@@ -859,7 +859,7 @@ public class JDBCConfigurationImpl
         Log log = getLog(LOG_RUNTIME);
         DataSource ds = null;
         
-        if(ctx != null && StringUtils.isNotEmpty(ctx.getConnectionFactoryName())) {
+        if(ctx != null && StringUtil.isNotEmpty(ctx.getConnectionFactoryName())) {
             ds =  getDataSource(ctx, (DataSource) ctx.getConnectionFactory()); 
             // fail fast if a cfName has been provided, but was not available in JNDI
             if (ds == null) {
@@ -888,7 +888,7 @@ public class JDBCConfigurationImpl
         DataSource ds = null;
 
         // Try to obtain from the StoreContext first.
-        if (ctx != null && StringUtils.isNotEmpty(ctx.getConnectionFactory2Name())) {
+        if (ctx != null && StringUtil.isNotEmpty(ctx.getConnectionFactory2Name())) {
             ds = (DataSource) ctx.getConnectionFactory2();
             if (ds == null) {
                 // fail fast. If the non-jta-data-source is configured on the context we want an immediate error. 

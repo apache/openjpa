@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -144,7 +144,7 @@ class InterfaceImplGenerator {
         field.setAccessFlags(Constants.ACCESS_PRIVATE);
 
         // getter
-        name = StringUtils.capitalize(name);
+        name = StringUtil.capitalize(name);
         String prefix = isGetter(iface, fmd) ? "get" : "is";
         BCMethod meth = bc.declareMethod(prefix + name, type, null);
         meth.makePublic();
@@ -223,7 +223,7 @@ class InterfaceImplGenerator {
         try {
             Method meth = AccessController.doPrivileged(
                 J2DoPrivHelper.getDeclaredMethodAction(iface, "is" +
-                    StringUtils.capitalize(fmd.getName()), (Class[]) null));
+                    StringUtil.capitalize(fmd.getName()), (Class[]) null));
             return meth == null;
         } catch (PrivilegedActionException pae) {}
         return true;

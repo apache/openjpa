@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configuration;
@@ -559,7 +558,7 @@ public class ApplicationIdTool {
             if (i > 0)
                 code.afterSection();
             typeName = getTypeName(_fields[i]);
-            propName = StringUtils.capitalize(_fields[i].getName());
+            propName = StringUtil.capitalize(_fields[i].getName());
 
             code.tab().append("public ").append(typeName).append(" ");
             if (_fields[i].getDeclaredTypeCode() == JavaTypes.BOOLEAN

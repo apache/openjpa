@@ -45,7 +45,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.MetaDataModes;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.sql.Types;
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 
 import javax.persistence.TemporalType;
 import javax.persistence.EnumType;
@@ -336,9 +337,9 @@ public class AnnotationPersistenceMappingSerializer
         for (int i = 0; i < cols.size(); i++) {
             col = cols.get(i);
             col2 = cols2.get(i);
-            if (!StringUtils.equals(col.getName(), col2.getName()))
+            if (!Objects.equals(col.getName(), col2.getName()))
                 return true;
-            if (!StringUtils.equals(col.getTypeName(), col2.getTypeName()))
+            if (!Objects.equals(col.getTypeName(), col2.getTypeName()))
                 return true;
             if (col.getSize() != col2.getSize())
                 return true;
@@ -606,7 +607,7 @@ public class AnnotationPersistenceMappingSerializer
         if (columns.length > 1)
             sb.insert(0, "{").append("}");
         ab.add("columnNames", sb.toString());
-        if (StringUtils.isNotEmpty(unique.getName())) {
+        if (StringUtil.isNotEmpty(unique.getName())) {
             ab.add("name", unique.getName());
         }
     }
@@ -718,11 +719,11 @@ public class AnnotationPersistenceMappingSerializer
                 abTblGen.add("schema", table.substring(0, dotIdx));
             }
         }
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyColumn()))
+        if (!StringUtil.isEmpty(seq.getPrimaryKeyColumn()))
             abTblGen.add("pkColumnName", seq.getPrimaryKeyColumn());
-        if (!StringUtils.isEmpty(seq.getSequenceColumn()))
+        if (!StringUtil.isEmpty(seq.getSequenceColumn()))
             abTblGen.add("valueColumnName", seq.getSequenceColumn());
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyValue()))
+        if (!StringUtil.isEmpty(seq.getPrimaryKeyValue()))
             abTblGen.add("pkColumnValue", seq.getPrimaryKeyValue());
         if (seq.getAllocate() != 50 && seq.getAllocate() != -1)
             abTblGen.add("allocationSize", seq.getAllocate() + "");

@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.meta.ClassArgParser;
@@ -60,7 +60,7 @@ public abstract class AbstractMetaDataFactory
      * auto-configuration.
      */
     public void setTypes(String types) {
-        this.types = (StringUtils.isEmpty(types)) ? null
+        this.types = (StringUtil.isEmpty(types)) ? null
             : new HashSet(Arrays.asList(StringUtil.split(types, ";", 0)));
     }
 

@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.identifier;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.conf.Configurable;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.util.Localizer;
@@ -221,7 +221,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
      *         ex. schema.table --> { schema, table }
      */    
     public String[] splitName(IdentifierRule nrule, String name, String nameDelim) {
-        if (!canSplit(nrule, name, nameDelim) || StringUtils.isEmpty(name)) {
+        if (!canSplit(nrule, name, nameDelim) || StringUtil.isEmpty(name)) {
             return new String[] {name};
         }
         // "schema"."table"
@@ -234,7 +234,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
 
         // for each name
         int ndLen = nameDelim.length();
-        while (!StringUtils.isEmpty(name)) {
+        while (!StringUtil.isEmpty(name)) {
             pname = splitNameCharDelimiters(name, nameDelim);
             names.add(pname);
             if ((pname.length() + ndLen) >= name.length()) {
@@ -305,7 +305,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
     }
     
     public String delimit(IdentifierConfiguration config, IdentifierRule rule, String name, boolean force) {
-        if (!rule.getCanDelimit() || StringUtils.isEmpty(name)) {
+        if (!rule.getCanDelimit() || StringUtil.isEmpty(name)) {
             return name;
         }
 

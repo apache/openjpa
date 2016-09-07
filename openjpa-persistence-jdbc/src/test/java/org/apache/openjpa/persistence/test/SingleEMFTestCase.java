@@ -220,5 +220,14 @@ public abstract class SingleEMFTestCase
     protected DBDictionary getDBDictionary() { 
         return  ((JDBCConfiguration) emf.getConfiguration()).getDBDictionaryInstance();
     }
+
+    protected String repeatString(String val, int nr) {
+        StringBuilder sb = new StringBuilder(val.length() * nr);
+        for (int i = 0; i < nr; i++) {
+            sb.append(val);
+        }
+
+        return sb.toString();
+    }
 }
 

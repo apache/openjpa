@@ -42,7 +42,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.ApplicationIdTool;
 import org.apache.openjpa.enhance.CodeGenerator;
@@ -260,7 +259,7 @@ public class ReverseMappingTool
      * indicate no package.
      */
     public void setPackageName(String packageName) {
-        _package = StringUtils.trimToNull(packageName);
+        _package = StringUtil.trimToNull(packageName);
     }
 
     /**
@@ -1509,7 +1508,7 @@ public class ReverseMappingTool
                 name = name.toLowerCase();
             subs = StringUtil.split(name, "_", 0);
             for (int i = 0; i < subs.length; i++)
-                buf.append(StringUtils.capitalize(subs[i]));
+                buf.append(StringUtil.capitalize(subs[i]));
         }
 
         name = replaceInvalidCharacters(table.getName());
@@ -1521,7 +1520,7 @@ public class ReverseMappingTool
             // if the name would end in 'Id', make it end in 'Ident'
             if (i == subs.length - 1 && subs[i].equalsIgnoreCase("id"))
                 subs[i] = "ident";
-            buf.append(StringUtils.capitalize(subs[i]));
+            buf.append(StringUtil.capitalize(subs[i]));
         }
 
         return buf.toString();
@@ -1542,7 +1541,7 @@ public class ReverseMappingTool
         String[] subs = StringUtil.split(name, "_", 0);
         for (int i = 0; i < subs.length; i++) {
             if (i > 0)
-                subs[i] = StringUtils.capitalize(subs[i]);
+                subs[i] = StringUtil.capitalize(subs[i]);
             buf.append(subs[i]);
         }
         return getUniqueName(buf.toString(), dec);
@@ -1592,7 +1591,7 @@ public class ReverseMappingTool
      * package-private for testing.
      */
     static String replaceInvalidCharacters(String str) {
-        if (StringUtils.isEmpty(str))
+        if (StringUtil.isEmpty(str))
             return str;
 
         StringBuilder buf = new StringBuilder(str);
@@ -1664,7 +1663,7 @@ public class ReverseMappingTool
                 if (propNames[nameIdx] == null)
                     continue;
 
-                typeSpec = StringUtils.trimToNull(_typeMap.getProperty
+                typeSpec = StringUtil.trimToNull(_typeMap.getProperty
                     (propNames[nameIdx]));
                 if (typeSpec != null) 
                     typeName = propNames[nameIdx];

@@ -27,7 +27,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCachePCData;
 import org.apache.openjpa.jdbc.sql.DB2Dictionary;
@@ -267,11 +266,11 @@ public abstract class AbstractLobTest extends SingleEMFTestCase {
     }
 
     protected String createLobData() {
-        return StringUtils.repeat("ooOOOOoo, ", 3000);
+        return repeatString("ooOOOOoo, ", 3000);
     }
 
     protected String createLobData2() {
-        return StringUtils.repeat("iiIIIIii, ", 1000);
+        return repeatString("iiIIIIii, ", 1000);
     }
 
     protected abstract Class getLobEntityClass();

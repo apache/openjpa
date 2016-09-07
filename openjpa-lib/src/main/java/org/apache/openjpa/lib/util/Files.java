@@ -36,7 +36,7 @@ import java.net.URLDecoder;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * Utility operations on files.
@@ -149,7 +149,7 @@ public class Files {
         if (base == null)
             base = new File(AccessController.doPrivileged(
                 J2DoPrivHelper.getPropertyAction("user.dir")));
-        if (StringUtils.isEmpty(pkg)) {
+        if (StringUtil.isEmpty(pkg)) {
             if (mkdirs && !(AccessController.doPrivileged(
                 J2DoPrivHelper.existsAction(base))).booleanValue())
                 AccessController.doPrivileged(

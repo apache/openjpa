@@ -57,7 +57,6 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.metamodel.Metamodel;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.ee.ManagedRuntime;
@@ -1174,7 +1173,7 @@ public class EntityManagerImpl
      * Validate that the user provided SQL.
      */
     protected void validateSQL(String query) {
-        if (StringUtils.trimToNull(query) == null)
+        if (StringUtil.trimToNull(query) == null)
             throw new ArgumentException(_loc.get("no-sql"), null, null, false);
     }
     

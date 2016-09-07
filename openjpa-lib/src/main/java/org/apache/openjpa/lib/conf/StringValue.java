@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+
 
 /**
  * A string {@link Value}.
@@ -51,7 +52,7 @@ public class StringValue extends Value {
         assertChangeable();
         String oldValue = this.value;
         this.value = value;
-        if (!StringUtils.equals(value, oldValue))
+        if (!Objects.equals(value, oldValue))
             valueChanged();
     }
 

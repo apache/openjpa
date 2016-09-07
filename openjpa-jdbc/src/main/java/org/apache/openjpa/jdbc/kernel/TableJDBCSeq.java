@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.transaction.NotSupportedException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -212,7 +212,7 @@ public class TableJDBCSeq extends AbstractJDBCSeq implements Configurable {
      * a '|' character. This method parses it back to array of Strings. 
      */
     public void setUniqueColumns(String columnNames) {
-    	_uniqueColumnNames = (StringUtils.isEmpty(columnNames)) 
+    	_uniqueColumnNames = (StringUtil.isEmpty(columnNames))
     		? null : DBIdentifier.split(columnNames, DBIdentifierType.COLUMN, IdentifierUtil.BAR);
     }
     

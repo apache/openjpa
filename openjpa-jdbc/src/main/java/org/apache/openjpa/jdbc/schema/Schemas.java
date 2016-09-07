@@ -21,7 +21,7 @@ package org.apache.openjpa.jdbc.schema;
 import java.sql.Types;
 import java.util.Date;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -56,7 +56,7 @@ public class Schemas {
         if (schemas.length == 0)
             return DBIdentifier.NULL;
         String[] names = Normalizer.splitName(schemas[0]);
-        if (names.length == 0 || StringUtils.isEmpty(names[0])) {
+        if (names.length == 0 || StringUtil.isEmpty(names[0])) {
             return DBIdentifier.NULL;
         }
         return DBIdentifier.newSchema(names[0]);

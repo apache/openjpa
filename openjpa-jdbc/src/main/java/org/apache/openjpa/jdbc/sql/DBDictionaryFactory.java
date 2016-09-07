@@ -23,9 +23,11 @@ import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
+
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -123,7 +125,7 @@ public class DBDictionaryFactory {
      */
     static String getProtocol(String url) {
         String protocol = null;
-        if (!StringUtils.isEmpty(url)) {
+        if (!StringUtil.isEmpty(url)) {
             if (url.startsWith("jdbc:")) {
                 int colonCount = 1;
                 int next = "jdbc:".length();
@@ -215,7 +217,7 @@ public class DBDictionaryFactory {
      * Guess the dictionary class name to use based on the product string.
      */
     private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
-        if (StringUtils.isEmpty(prod))
+        if (StringUtil.isEmpty(prod))
             return null;
         prod = prod.toLowerCase();
 
@@ -290,7 +292,7 @@ public class DBDictionaryFactory {
             return DBDictionary.class.getName();
 
         String prodClassName = dbdictionaryPlugin.unalias(prod);
-        if (!StringUtils.equals(prod, prodClassName))
+        if (!Objects.equals(prod, prodClassName))
             return prodClassName;
         
         // give up

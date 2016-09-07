@@ -29,7 +29,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.StringUtil;
 
 /**
@@ -72,8 +71,7 @@ public class TestXMLWriter extends TestCase {
     }
 
     private String fixNewline(String str) {
-        return StringUtils.join(StringUtil.split
-            (str, "\r\n", -1), "\n");
+        return StringUtil.join(StringUtil.split(str, "\r\n", -1), "\n");
     }
 
     public static Test suite() {

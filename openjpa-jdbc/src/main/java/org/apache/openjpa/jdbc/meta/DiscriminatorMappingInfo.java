@@ -20,7 +20,7 @@ package org.apache.openjpa.jdbc.meta;
 
 import java.lang.reflect.Modifier;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.strats.NoneDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.SuperclassDiscriminatorStrategy;
 import org.apache.openjpa.jdbc.meta.strats.ValueMapDiscriminatorStrategy;
@@ -64,7 +64,7 @@ public class DiscriminatorMappingInfo
     public Object getValue(Discriminator discrim, boolean adapt) {
         if (discrim.getValue() != null)
             return discrim.getValue();
-        if (StringUtils.isEmpty(_value)) {
+        if (StringUtil.isEmpty(_value)) {
             return discrim.getMappingRepository().getMappingDefaults().
                 getDiscriminatorValue(discrim, adapt);
         }

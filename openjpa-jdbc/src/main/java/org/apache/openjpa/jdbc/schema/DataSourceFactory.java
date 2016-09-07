@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -67,7 +67,7 @@ public class DataSourceFactory {
         boolean factory2) {
         String driver = (factory2) ? conf.getConnection2DriverName()
             : conf.getConnectionDriverName();
-        if (StringUtils.isEmpty(driver))
+        if (StringUtil.isEmpty(driver))
             throw new UserException(_loc.get("no-driver", conf)).
                 setFatal(true);
 

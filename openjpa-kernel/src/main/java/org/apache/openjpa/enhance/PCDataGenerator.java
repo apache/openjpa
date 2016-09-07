@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AbstractPCData;
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -689,7 +689,7 @@ public class PCDataGenerator
             code.aload().setThis();
             code.getfield().setField(getFieldName(index), type);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "store" + StringUtils.capitalize(type.getName()),
+                "store" + StringUtil.capitalize(type.getName()),
                 void.class, new Class[]{ int.class, type });
         } else {
             // fmd = sm.getMetaData().getField(i);
@@ -862,7 +862,7 @@ public class PCDataGenerator
             code.aload().setParam(0);
             code.constant().setValue(index);
             code.invokeinterface().setMethod(OpenJPAStateManager.class,
-                "fetch" + StringUtils.capitalize(type.getName()), type,
+                "fetch" + StringUtil.capitalize(type.getName()), type,
                 new Class[]{ int.class });
             code.putfield().setField(getFieldName(index), type);
             code.aload().setThis();

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.exps.FilterValue;
 import org.apache.openjpa.jdbc.kernel.exps.Lit;
@@ -161,7 +161,7 @@ public class SolidDBDictionary
         String pkStr;
         if (pk != null) {
             pkStr = getPrimaryKeyConstraintSQL(pk);
-            if (!StringUtils.isEmpty(pkStr))
+            if (!StringUtil.isEmpty(pkStr))
                 buf.append(", ").append(pkStr);
         }
 

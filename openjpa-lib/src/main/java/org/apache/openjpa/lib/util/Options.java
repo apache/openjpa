@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * A specialization of the {@link Properties} map type with the added
@@ -109,7 +108,7 @@ public class Options extends TypedProperties {
             if (i == args.length || args[i].startsWith("-")) {
                 key = trimQuote(key);
                 if (key != null) {
-                    if (!StringUtils.isEmpty(value))
+                    if (!StringUtil.isEmpty(value))
                         setProperty(key, trimQuote(value));
                     else
                         setProperty(key, "true");
@@ -267,7 +266,7 @@ public class Options extends TypedProperties {
                 if (params[0].isArray())
                     continue;
 
-                names.add(StringUtils.capitalize(
+                names.add(StringUtil.capitalize(
                     meths[i].getName().substring(3)));
             }
         }
@@ -275,7 +274,7 @@ public class Options extends TypedProperties {
         // check for public fields
         Field[] fields = type.getFields();
         for (int i = 0; i < fields.length; i++)
-            names.add(StringUtils.capitalize(fields[i].getName()));
+            names.add(StringUtil.capitalize(fields[i].getName()));
 
         return names;
     }
@@ -295,14 +294,14 @@ public class Options extends TypedProperties {
      */
     private static boolean matchOptionToMember(String key, Object[] match)
         throws Exception {
-        if (StringUtils.isEmpty(key))
+        if (StringUtil.isEmpty(key))
             return false;
 
         // unfortunately we can't use bean properties for setters; any
         // setter with more than 1 argument is ignored; calculate setter and getter
         // name to look for
         String[] find = StringUtil.split(key, ".", 2);
-        String base = StringUtils.capitalize(find[0]);
+        String base = StringUtil.capitalize(find[0]);
         String set = "set" + base;
         String get = "get" + base;
 
@@ -339,7 +338,7 @@ public class Options extends TypedProperties {
         Member getter = getMeth;
         if (setter == null) {
             Field[] fields = type.getFields();
-            String uncapBase = StringUtils.uncapitalize(find[0]);
+            String uncapBase = StringUtil.uncapitalize(find[0]);
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].getName().equals(base)
                     || fields[i].getName().equals(uncapBase)) {
@@ -613,7 +612,7 @@ public class Options extends TypedProperties {
     }
 
     /**
-     * Specialization of {@link Properties#removeProperty} to allow
+     * Specialization of {@link Properties#remove(Object)} to allow
      * a value to appear under either of two keys; useful for short and
      * long versions of command-line flags.
      */

@@ -34,7 +34,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.collections.map.LinkedMap;
 import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
+
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.exps.AggregateListener;
@@ -575,7 +576,7 @@ public class QueryImpl
         try {
             assertOpen();
             assertNotReadOnly();
-            _params = StringUtils.trimToNull(params);
+            _params = StringUtil.trimToNull(params);
             invalidateCompilation();
         } finally {
             unlock();
@@ -1205,7 +1206,7 @@ public class QueryImpl
      */
     private void logExecution(int op, Map<Object, Object> params) {
         String s = _query;
-        if (StringUtils.isEmpty(s))
+        if (StringUtil.isEmpty(s))
             s = toString();
 
         String msg = "executing-query";
@@ -1843,8 +1844,8 @@ public class QueryImpl
 
             CompilationKey key = (CompilationKey) other;
             if (key.queryType != queryType
-                || !StringUtils.equals(key.query, query)
-                || !StringUtils.equals(key.language, language))
+                || !Objects.equals(key.query, query)
+                || !Objects.equals(key.language, language))
                 return false;
             if (key.subclasses != subclasses)
                 return false;

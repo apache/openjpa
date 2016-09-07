@@ -23,11 +23,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.FetchConfiguration;
 import org.apache.openjpa.kernel.PreparedQuery;
@@ -214,7 +215,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
 	public void setExcludes(String excludes) {
 		lock(false);
 		try {
-			if (StringUtils.isEmpty(excludes))
+			if (StringUtil.isEmpty(excludes))
 				return;
 			String[] patterns = excludes.split(PATTERN_SEPARATOR);
 			for (String pattern : patterns)
@@ -424,7 +425,7 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
                 return false;
             Exclusion that = (Exclusion)other;
             return this._strong == that.isStrong() 
-                && StringUtils.equals(this._pattern, that.getPattern());
+                && Objects.equals(this._pattern, that.getPattern());
         }
         
         @Override

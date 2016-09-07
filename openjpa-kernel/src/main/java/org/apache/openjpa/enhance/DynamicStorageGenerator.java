@@ -21,8 +21,8 @@ package org.apache.openjpa.enhance;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.util.InternalException;
 import serp.bytecode.BCClass;
@@ -281,8 +281,7 @@ public class DynamicStorageGenerator {
             return;
         Class type = forType(typeCode);
         // public void set<Type> (int field, <type> val)
-        String name = Object.class.equals(type) ? "Object" :
-            StringUtils.capitalize(type.getName());
+        String name = Object.class.equals(type) ? "Object" : StringUtil.capitalize(type.getName());
         name = "set" + name;
         BCMethod method = bc.declareMethod(name, void.class,
             new Class[]{ int.class, type });
@@ -294,11 +293,12 @@ public class DynamicStorageGenerator {
         tabins.setLow(0);
         tabins.setHigh(types.length - 1);
         Instruction defaultIns;
-        if (handle == POLICY_SILENT)
+        if (handle == POLICY_SILENT) {
             defaultIns = code.vreturn();
-        else
-            defaultIns = throwException
-                (code, IllegalArgumentException.class);
+        }
+        else {
+            defaultIns = throwException(code, IllegalArgumentException.class);
+        }
         tabins.setDefaultTarget(defaultIns);
         int objectCount = 0;
         for (int i = 0; i < types.length; i++) {
@@ -359,7 +359,7 @@ public class DynamicStorageGenerator {
         Class type = forType(typeCode);
         // public <type> get<Type>Field (int field)
         String name = Object.class.equals(type) ? "Object" :
-            StringUtils.capitalize(type.getName());
+            StringUtil.capitalize(type.getName());
         name = "get" + name;
         BCMethod method = bc.declareMethod(name, type,
             new Class[]{ int.class });
@@ -443,7 +443,7 @@ public class DynamicStorageGenerator {
         // private <type> <name>
         BCField field = bc.declareField(name, type);
         field.setAccessFlags(getFieldAccess());
-        name = StringUtils.capitalize(name);
+        name = StringUtil.capitalize(name);
 
         // getter
         String prefix = (type == boolean.class) ? "is" : "get";

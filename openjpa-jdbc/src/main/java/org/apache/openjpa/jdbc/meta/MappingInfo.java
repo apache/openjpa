@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -1404,7 +1404,7 @@ public abstract class MappingInfo
             String[] names = Normalizer.splitName(fieldName);
             fullTarget = names.length > 1;
 
-            if (names.length > 1 && StringUtils.isEmpty(names[0])) {
+            if (names.length > 1 && StringUtil.isEmpty(names[0])) {
                 // allow use of '.' without prefix to mean "use expected local
                 // cls"; but if we already inversed no need to switch again
                 if (!inverse)

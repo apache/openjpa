@@ -50,12 +50,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.log.LogFactoryImpl;
@@ -256,7 +256,7 @@ public class ConfigurationImpl
     /**
      * Gets the registered Value for the given propertyName.
      * 
-     * @param propertyName can be either fully-qualified name or the simple name
+     * @param property can be either fully-qualified name or the simple name
      * with which the value has been registered. A value may have multiple
      * equivalent names and this method searches with all equivalent names.
      */
@@ -370,8 +370,12 @@ public class ConfigurationImpl
         ObjectValue val;
         for(Value v : _vals) { 
             if (v instanceof Closeable) {
-                try { ((Closeable)v).close(); }
-                catch (Exception e) {} 
+                try {
+                    ((Closeable)v).close();
+                }
+                catch (Exception e) {
+                    // noop
+                }
                 continue;
             }
 
@@ -502,9 +506,9 @@ public class ConfigurationImpl
 
         try {
             pd.setReadMethod(getClass().getMethod("get"
-                + StringUtils.capitalize(prop), (Class[]) null));
+                + StringUtil.capitalize(prop), (Class[]) null));
             pd.setWriteMethod(getClass().getMethod("set"
-                + StringUtils.capitalize(prop), new Class[]
+                + StringUtil.capitalize(prop), new Class[]
                 { pd.getReadMethod().getReturnType() }));
         } catch (Throwable t) {
             // if an error occurs, it might be because the value is a
@@ -665,8 +669,8 @@ public class ConfigurationImpl
                 continue;
             if (o instanceof String) {
                 // OPENJPA-1830 Do not overwrite existing string values with "******"
-                if ((!StringUtils.equals((String) o, val.getString())) &&
-                        (!StringUtils.equals((String) o, Value.INVISIBLE)))
+                if ((!Objects.equals((String) o, val.getString())) &&
+                        (!Objects.equals((String) o, Value.INVISIBLE)))
                     val.setString((String) o);
             } else {
                 ser &= o instanceof Serializable;

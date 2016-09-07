@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
 import org.apache.openjpa.jdbc.meta.QueryResultMapping;
@@ -120,7 +120,7 @@ public class SQLStoreQuery
             }
             _meta = candidate;
 
-            String sql = StringUtils.trimToNull(ctx.getQueryString());
+            String sql = StringUtil.trimToNull(ctx.getQueryString());
             if (sql == null)
                 throw new UserException(_loc.get("no-sql"));
             _select = q.getStore().getDBDictionary().isSelect(sql);

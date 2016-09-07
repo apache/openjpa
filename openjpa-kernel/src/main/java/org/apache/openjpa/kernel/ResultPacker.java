@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.OpenJPAException;
@@ -305,7 +305,7 @@ public class ResultPacker {
      */
     private static Member findSet(String alias, Class<?> type, Field[] fields,
         Method[] methods) {
-        if (StringUtils.isEmpty(alias))
+        if (StringUtil.isEmpty(alias))
             return null;
         if (type == Object.class)
             type = null;
@@ -332,7 +332,7 @@ public class ResultPacker {
         }
 
         // check setter methods
-        String setName = "set" + StringUtils.capitalize(alias);
+        String setName = "set" + StringUtil.capitalize(alias);
         Method method = null;
         boolean eqName = false;
         Class<?>[] params;

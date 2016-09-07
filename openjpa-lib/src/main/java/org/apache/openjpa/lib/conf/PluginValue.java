@@ -18,7 +18,8 @@
  */
 package org.apache.openjpa.lib.conf;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.log.LogFactory;
 import org.apache.openjpa.lib.util.Localizer;
@@ -71,7 +72,7 @@ public class PluginValue extends ObjectValue {
         assertChangeable();
         String oldName = _name;
         _name = name;
-        if (!StringUtils.equals(oldName, name)) {
+        if (!Objects.equals(oldName, name)) {
             if (_singleton)
                 set(null, true);
             valueChanged();
@@ -91,7 +92,7 @@ public class PluginValue extends ObjectValue {
     public void setProperties(String props) {
         String oldProps = _props;
         _props = props;
-        if (!StringUtils.equals(oldProps, props)) {
+        if (!Objects.equals(oldProps, props)) {
             if (_singleton)
                 set(null, true);
             valueChanged();

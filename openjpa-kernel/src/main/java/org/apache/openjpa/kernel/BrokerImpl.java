@@ -47,7 +47,7 @@ import javax.transaction.Synchronization;
 import org.apache.commons.collections.iterators.IteratorChain;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.collections.set.MapBackedSet;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.datacache.DataCache;
@@ -5167,7 +5167,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * Set the 'JTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
      */
     public void setConnectionFactoryName(String connectionFactoryName) {
-        this._connectionFactoryName = StringUtils.trimToNull(connectionFactoryName);
+        this._connectionFactoryName = StringUtil.trimToNull(connectionFactoryName);
     }
 
     /**
@@ -5181,7 +5181,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * Set the 'NonJTA' ConnectionFactoryName. Input will be trimmed to null before being stored. 
      */
     public void setConnectionFactory2Name(String connectionFactory2Name) {
-        this._connectionFactory2Name = StringUtils.trimToNull(connectionFactory2Name);
+        this._connectionFactory2Name = StringUtil.trimToNull(connectionFactory2Name);
     }
     
     /**
@@ -5190,7 +5190,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * @return the JTA connection factory or null if connectionFactoryName is blank.
      */
     public Object getConnectionFactory() {
-        if(StringUtils.isNotBlank(_connectionFactoryName)) { 
+        if(StringUtil.isNotBlank(_connectionFactoryName)) {
             return Configurations.lookup(_connectionFactoryName, "openjpa.ConnectionFactory", _log );
         }
         else {
@@ -5204,7 +5204,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
      * @return the NonJTA connection factory or null if connectionFactoryName is blank.
      */
     public Object getConnectionFactory2() { 
-        if(StringUtils.isNotBlank(_connectionFactory2Name)) { 
+        if(StringUtil.isNotBlank(_connectionFactory2Name)) {
             return  Configurations.lookup(_connectionFactory2Name, "openjpa.ConnectionFactory2", _log);
         }
         else {

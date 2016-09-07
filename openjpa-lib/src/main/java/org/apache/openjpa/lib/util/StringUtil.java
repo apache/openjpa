@@ -16,10 +16,9 @@
  */
 package org.apache.openjpa.lib.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
 
 
 public final class StringUtil {
@@ -36,6 +35,88 @@ public final class StringUtil {
     private static final Short     SHORT_ZERO   = Short.valueOf((short) 0);
 
     private StringUtil() {
+    }
+
+    /**
+     * @return {@code true} if the given string is null or empty.
+     */
+    public static boolean isEmpty(String val) {
+        return val == null || val.isEmpty();
+    }
+
+    public static boolean isNotEmpty(String val) {
+        return !isEmpty(val);
+    }
+
+    /**
+     * <p>Checks if a CharSequence is whitespace, empty ("") or null.</p>
+     *
+     * <pre>
+     * StringUtils.isBlank(null)      = true
+     * StringUtils.isBlank("")        = true
+     * StringUtils.isBlank(" ")       = true
+     * StringUtils.isBlank("bob")     = false
+     * StringUtils.isBlank("  bob  ") = false
+     * </pre>
+     *
+     * Ported over from Apache commons-lang3
+     *
+     * @param cs  the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is null, empty or whitespace
+     */
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (Character.isWhitespace(cs.charAt(i)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * <p>Checks if a CharSequence is not empty (""), not null and not whitespace only.</p>
+     *
+     * <pre>
+     * StringUtils.isNotBlank(null)      = false
+     * StringUtils.isNotBlank("")        = false
+     * StringUtils.isNotBlank(" ")       = false
+     * StringUtils.isNotBlank("bob")     = true
+     * StringUtils.isNotBlank("  bob  ") = true
+     * </pre>
+     *
+     * Ported over from Apache commons-lang3
+     *
+     * @param cs  the CharSequence to check, may be null
+     * @return {@code true} if the CharSequence is not empty and not null and not whitespace
+     */
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
+    }
+
+
+    /**
+     * @param val the string to search in
+     * @param charToSearchFor the character to search for
+     * @return {@code true} if the charToSearchFor is contained in the String val
+     */
+    public static boolean contains(String val, char charToSearchFor) {
+        return val != null && val.indexOf(charToSearchFor) > -1;
+    }
+
+
+    public static boolean equalsIgnoreCase(String str1, String str2) {
+        if (str1 == null || str2 == null) {
+            return str1 == str2;
+        }
+        else if (str1 == str2) {
+            return true;
+        }
+
+        return str1.equalsIgnoreCase(str2);
     }
 
     /**
@@ -111,8 +192,54 @@ public final class StringUtil {
             return str;
         }
         String[] split = split(str, from, Integer.MAX_VALUE);
-        return StringUtils.join(split, to);
+        return join(split, to);
     }
+
+
+    /**
+     * Null-safe {@link String#trim()}
+     */
+    public static String trim(final String str) {
+        return str == null ? null : str.trim();
+    }
+
+    /**
+     * @return the trimmed string str or {@code null} if the trimmed string would be empty.
+     */
+    public static String trimToNull(String str) {
+        if (str == null || str.isEmpty()) {
+            return null;
+        }
+        str = str.trim();
+        if (str.isEmpty()) {
+            return null;
+        }
+        return str;
+    }
+
+    public static String join(Object[] values, String joinToken) {
+        if (values == null) {
+            return null;
+        }
+        if (values.length == 0) {
+            return "";
+        }
+        if (values.length == 1) {
+            return values[0].toString();
+        }
+        if (joinToken == null) {
+            joinToken = "null"; // backward compat with commons-lang StringUtils...
+        }
+
+        StringBuilder sb = new StringBuilder(values.length * (16 + joinToken.length()));
+        sb.append(values[0]);
+        for (int i = 1; i < values.length; i++) {
+            sb.append(joinToken).append(values[i]);
+        }
+        return sb.toString();
+    }
+
+
 
     /**
      * Parse the given
@@ -184,6 +311,139 @@ public final class StringUtil {
         throw new IllegalArgumentException("Unsupported type: " + type.getCanonicalName());
     }
 
+    /**
+     * <p>Capitalizes a String changing the first letter to title case as
+     * per {@link Character#toTitleCase(char)}. No other letters are changed.</p>
+     *
+     *
+     * <pre>
+     * StringUtil.capitalize(null)  = null
+     * StringUtil.capitalize("")    = ""
+     * StringUtil.capitalize("cat") = "Cat"
+     * StringUtil.capitalize("cAt") = "CAt"
+     * </pre>
+     *
+     * Ported over from Apache commons-lang3
+     *
+     * @param str the String to capitalize, may be null
+     * @return the capitalized String, {@code null} if null String input
+     * @see #uncapitalize(String)
+     */
+    public static String capitalize(final String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+
+        final char firstChar = str.charAt(0);
+        if (Character.isTitleCase(firstChar)) {
+            // already capitalized
+            return str;
+        }
+
+        return new StringBuilder(strLen)
+                .append(Character.toTitleCase(firstChar))
+                .append(str.substring(1))
+                .toString();
+    }
+
+    /**
+     * <p>Uncapitalizes a String changing the first letter to title case as
+     * per {@link Character#toLowerCase(char)}. No other letters are changed.</p>
+     *
+     * <pre>
+     * StringUtil.uncapitalize(null)  = null
+     * StringUtil.uncapitalize("")    = ""
+     * StringUtil.uncapitalize("Cat") = "cat"
+     * StringUtil.uncapitalize("CAT") = "cAT"
+     * </pre>
+     *
+     * Ported over from Apache commons-lang3
+     *
+     * @param str the String to uncapitalize, may be null
+     * @return the uncapitalized String, {@code null} if null String input
+     * @see #capitalize(String)
+     */
+    public static String uncapitalize(final String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+
+        final char firstChar = str.charAt(0);
+        if (Character.isLowerCase(firstChar)) {
+            // already uncapitalized
+            return str;
+        }
+
+        return new StringBuilder(strLen)
+                .append(Character.toLowerCase(firstChar))
+                .append(str.substring(1))
+                .toString();
+    }
+
+    public static boolean endsWithIgnoreCase(String str, String suffix) {
+        if (str == null || suffix == null) {
+            return str == null && suffix == null;
+        }
+        int strlen = str.length();
+        if (suffix.length() > strlen) {
+            return false;
+        }
+
+        return str.substring(str.length() - suffix.length(), strlen).equalsIgnoreCase(suffix);
+    }
+
+
+    /**
+     * <p>Strips any of a set of characters from the end of a String.</p>
+     *
+     * <p>A {@code null} input String returns {@code null}.
+     * An empty string ("") input returns the empty string.</p>
+     *
+     * <p>If the stripChars String is {@code null}, whitespace is
+     * stripped as defined by {@link Character#isWhitespace(char)}.</p>
+     *
+     * <pre>
+     * StringUtils.stripEnd(null, *)          = null
+     * StringUtils.stripEnd("", *)            = ""
+     * StringUtils.stripEnd("abc", "")        = "abc"
+     * StringUtils.stripEnd("abc", null)      = "abc"
+     * StringUtils.stripEnd("  abc", null)    = "  abc"
+     * StringUtils.stripEnd("abc  ", null)    = "abc"
+     * StringUtils.stripEnd(" abc ", null)    = " abc"
+     * StringUtils.stripEnd("  abcyx", "xyz") = "  abc"
+     * StringUtils.stripEnd("120.00", ".0")   = "12"
+     * </pre>
+     *
+     * Ported over from Apache commons-lang3
+     *
+     * @param str  the String to remove characters from, may be null
+     * @param stripChars  the set of characters to remove, null treated as whitespace
+     * @return the stripped String, {@code null} if null String input
+     */
+    public static String stripEnd(final String str, final String stripChars) {
+        int end;
+        if (str == null || (end = str.length()) == 0) {
+            return str;
+        }
+
+        if (stripChars == null) {
+            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != -1) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
+    }
+
+
+
     private static Character parseCharString(String val) {
         if (val.length() ==  0) {
             return Character.valueOf((char) 0);
@@ -193,4 +453,5 @@ public final class StringUtil {
         }
         throw new IllegalArgumentException("'" + val + "' is longer than one character.");
     }
+
 }

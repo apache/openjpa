@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
 import org.apache.openjpa.jdbc.sql.Result;
 import org.apache.openjpa.jdbc.sql.SelectExecutor;
@@ -339,7 +339,7 @@ public class FinderCacheImpl
     public void setExcludes(String excludes) {
         lock();
         try {
-            if (StringUtils.isEmpty(excludes))
+            if (StringUtil.isEmpty(excludes))
                 return;
             if (_exclusionPatterns == null)
                 _exclusionPatterns = new ArrayList<String>();

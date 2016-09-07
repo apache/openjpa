@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 
@@ -41,7 +42,7 @@ import javax.persistence.LockModeType;
 
 import static javax.persistence.CascadeType.*;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.BeanLifecycleCallbacks;
@@ -1066,7 +1067,7 @@ public class XMLPersistenceMetaDataParser
             }
             meta.setListingIndex(_clsPos);
             String name = attrs.getValue("name");
-            if (!StringUtils.isEmpty(name))
+            if (!StringUtil.isEmpty(name))
                 meta.setTypeAlias(name);
             meta.setAbstract(mappedSuper);
             meta.setEmbeddedOnly(mappedSuper || embeddable);
@@ -1136,7 +1137,7 @@ public class XMLPersistenceMetaDataParser
      * default if string is empty.
      */
     private int toAccessType(String str) {
-        if (StringUtils.isEmpty(str))
+        if (StringUtil.isEmpty(str))
             return AccessCode.UNKNOWN;
         if ("PROPERTY".equals(str))
             return AccessCode.EXPLICIT | AccessCode.PROPERTY;
@@ -1309,7 +1310,7 @@ public class XMLPersistenceMetaDataParser
 
         String strategy = attrs.getValue("strategy");
         String generator = attrs.getValue("generator");
-        GenerationType type = StringUtils.isEmpty(strategy)
+        GenerationType type = StringUtil.isEmpty(strategy)
             ? GenerationType.AUTO : GenerationType.valueOf(strategy);
 
         FieldMetaData fmd = (FieldMetaData) currentElement();
@@ -1821,7 +1822,7 @@ public class XMLPersistenceMetaDataParser
                 throw new MetaDataException(_loc.get(
                     "invalid-orderBy", fmd));
         }
-        if (StringUtils.isEmpty(dec) || dec.equals("ASC"))
+        if (StringUtil.isEmpty(dec) || dec.equals("ASC"))
             dec = Order.ELEMENT + " asc";
         else if (dec.equals("DESC"))
             dec = Order.ELEMENT + " desc";
@@ -2364,7 +2365,7 @@ public class XMLPersistenceMetaDataParser
      * @return true if the source was has already been resolved from a different location. Otherwise return false
      */
     protected boolean isDuplicateClass(ClassMetaData meta) {
-        if (!StringUtils.equals(getSourceName(), meta.getSourceName())) {
+        if (!Objects.equals(getSourceName(), meta.getSourceName())) {
             return true;
         }
 
@@ -2380,7 +2381,7 @@ public class XMLPersistenceMetaDataParser
      * @return true if the QueryMetaData was defined in a different place - e.g. another line in orm.xml.
      */
     protected boolean isDuplicateQuery(QueryMetaData meta) { 
-        if(! StringUtils.equals(getSourceName(), meta.getSourceName())) {
+        if(! Objects.equals(getSourceName(), meta.getSourceName())) {
             return true;
         }
         if(getLineNum() != meta.getLineNumber()) { 
@@ -2406,7 +2407,7 @@ public class XMLPersistenceMetaDataParser
         
         //Set default value if not specified
         String strategy = attrs.getValue("strategy");
-        if (StringUtils.isEmpty(strategy)) {
+        if (StringUtil.isEmpty(strategy)) {
             strategy ="AUTO"    ;
         }
         GenerationType stratType = GenerationType.valueOf(strategy);
@@ -2420,15 +2421,15 @@ public class XMLPersistenceMetaDataParser
     private boolean startDataCache(Attributes attrs) 
             throws SAXException {
         String enabledStr = attrs.getValue("enabled");
-        boolean enabled = (Boolean) (StringUtils.isEmpty(enabledStr) ? true : 
+        boolean enabled = (Boolean) (StringUtil.isEmpty(enabledStr) ? true :
             Boolean.parseBoolean(enabledStr));
         
         String timeoutStr = attrs.getValue("timeout");
-        int timeout = (Integer) (StringUtils.isEmpty(timeoutStr) ? Integer.MIN_VALUE : 
+        int timeout = (Integer) (StringUtil.isEmpty(timeoutStr) ? Integer.MIN_VALUE :
             Integer.parseInt(timeoutStr));
         
         String name = attrs.getValue("name");
-        name = StringUtils.isEmpty(name) ? "" : name;
+        name = StringUtil.isEmpty(name) ? "" : name;
         
         AnnotationPersistenceMetaDataParser.parseDataCache(getRepository().getCachedMetaData(_cls), 
             enabled, name, timeout);
@@ -2589,17 +2590,17 @@ public class XMLPersistenceMetaDataParser
     
     private void parseCommonExtendedAttributes(FieldMetaData fmd, Attributes attrs) {
         String loadFetchGroup = attrs.getValue("load-fetch-group");
-        if (!StringUtils.isEmpty(loadFetchGroup)) {
+        if (!StringUtil.isEmpty(loadFetchGroup)) {
             fmd.setLoadFetchGroup(loadFetchGroup);
         }
         
         String externalizer = attrs.getValue("externalizer");
-        if (!StringUtils.isEmpty(externalizer)) {
+        if (!StringUtil.isEmpty(externalizer)) {
             fmd.setExternalizer(externalizer);
         }
         
         String factory = attrs.getValue("factory");
-        if (!StringUtils.isEmpty(factory)) {
+        if (!StringUtil.isEmpty(factory)) {
             fmd.setFactory(factory);
         }
         
@@ -2631,7 +2632,7 @@ public class XMLPersistenceMetaDataParser
     private void parseDependentAttr(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String dependentStr = attrs.getValue("dependent");
-        if (!StringUtils.isEmpty(dependentStr)) {
+        if (!StringUtil.isEmpty(dependentStr)) {
             boolean dependent = Boolean.parseBoolean(dependentStr);
             if (dependent) {
                 fmd.setCascadeDelete(ValueMetaData.CASCADE_AUTO);
@@ -2646,7 +2647,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         
         String elementDependentStr = attrs.getValue("element-dependent");
-        if (!StringUtils.isEmpty(elementDependentStr)) {
+        if (!StringUtil.isEmpty(elementDependentStr)) {
             boolean elementDependent = Boolean.parseBoolean(elementDependentStr);
             if (elementDependent) {
                 fmd.getElement().setCascadeDelete(ValueMetaData.CASCADE_AUTO);
@@ -2661,7 +2662,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         
         String keyDependentStr = attrs.getValue("key-dependent");
-        if (!StringUtils.isEmpty(keyDependentStr)) {
+        if (!StringUtil.isEmpty(keyDependentStr)) {
             boolean keyDependent = Boolean.parseBoolean(keyDependentStr);
             if (keyDependent) {
                 fmd.getKey().setCascadeDelete(ValueMetaData.CASCADE_AUTO);
@@ -2676,7 +2677,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         
 //        String elementClassCriteriaString = attrs.getValue("element-class-criteria");
-//        if (!StringUtils.isEmpty(elementClassCriteriaString)) {
+//        if (!StringUtil.isEmpty(elementClassCriteriaString)) {
 //            FieldMapping fm = (FieldMapping) fmd;
 //            boolean elementClassCriteria = Boolean.parseBoolean(elementClassCriteriaString);
 //            fm.getElementMapping().getValueInfo().setUseClassCriteria(elementClassCriteria);
@@ -2687,10 +2688,9 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
 
         String typeStr = attrs.getValue("type");
-        if (!StringUtils.isEmpty(typeStr)) {
-            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
-                typeStr =
-                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+        if (!StringUtil.isEmpty(typeStr)) {
+            if (StringUtil.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr = typeStr.substring(0, typeStr.lastIndexOf('.'));
             }
             Class<?> typeCls = parseTypeStr(typeStr);
 
@@ -2701,7 +2701,7 @@ public class XMLPersistenceMetaDataParser
     private void parseLRSAttr(FieldMetaData fmd, Attributes attrs)
         throws SAXException {
         String lrsStr = attrs.getValue("lrs");
-        if (!StringUtils.isEmpty(lrsStr)) {
+        if (!StringUtil.isEmpty(lrsStr)) {
             boolean lrs = Boolean.parseBoolean(lrsStr);
             fmd.setLRS(lrs);
         }
@@ -2711,10 +2711,9 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
 
         String typeStr = attrs.getValue("element-type");
-        if (!StringUtils.isEmpty(typeStr)) {
-            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
-                typeStr =
-                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+        if (!StringUtil.isEmpty(typeStr)) {
+            if (StringUtil.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr = typeStr.substring(0, typeStr.lastIndexOf('.'));
             }
             Class<?> typeCls = parseTypeStr(typeStr);
 
@@ -2726,10 +2725,9 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
 
         String typeStr = attrs.getValue("key-type");
-        if (!StringUtils.isEmpty(typeStr)) {
-            if (StringUtils.endsWithIgnoreCase(typeStr, ".class")) {
-                typeStr =
-                    typeStr.substring(0, StringUtils.lastIndexOf(typeStr, '.'));
+        if (!StringUtil.isEmpty(typeStr)) {
+            if (StringUtil.endsWithIgnoreCase(typeStr, ".class")) {
+                typeStr = typeStr.substring(0, typeStr.lastIndexOf('.'));
             }
             Class<?> typeCls = parseTypeStr(typeStr);
 
@@ -2779,7 +2777,7 @@ public class XMLPersistenceMetaDataParser
         throws SAXException {
         
         String inverseLogical = attrs.getValue("inverse-logical");
-        if (!StringUtils.isEmpty(inverseLogical)) {
+        if (!StringUtil.isEmpty(inverseLogical)) {
             fmd.setInverse(inverseLogical);
         }
     }

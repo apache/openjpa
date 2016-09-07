@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -39,7 +40,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.set.MapBackedSet;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
@@ -189,7 +190,7 @@ public abstract class AbstractBrokerFactory
         try {
             assertOpen();
             
-            if(StringUtils.isNotEmpty(cf1Name)) {
+            if(StringUtil.isNotEmpty(cf1Name)) {
                 // If the cfName has been set on the broker try looking up now.
                 try { 
                     _conf.getConnectionFactory();
@@ -575,8 +576,8 @@ public abstract class AbstractBrokerFactory
             // we don't need to synchronize on brokers since one JTA transaction
             // can never be active on multiple concurrent threads.
             for (Broker broker : brokers) {
-                if (StringUtils.equals(broker.getConnectionUserName(), user) 
-                 && StringUtils.equals(broker.getConnectionPassword(), pass))
+                if (Objects.equals(broker.getConnectionUserName(), user)
+                 && Objects.equals(broker.getConnectionPassword(), pass))
                     return broker;
             }
         }

@@ -18,7 +18,9 @@
  */
 package org.apache.openjpa.jdbc.identifier;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Objects;
+
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.identifier.IdentifierConfiguration;
 import org.apache.openjpa.lib.identifier.IdentifierRule;
 import org.apache.openjpa.lib.identifier.IdentifierUtil;
@@ -46,7 +48,7 @@ public class Normalizer {
      * @param name
      */
     public static String normalizeMulti(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             return name;
         }
         String[] names = normalizer.splitName(defaultRule, name);
@@ -58,7 +60,7 @@ public class Normalizer {
      * @param name
      */
     public static String normalizeString(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             return name;
         }
         if (!normalizer.isDelimited(defaultRule, name)) {
@@ -73,7 +75,7 @@ public class Normalizer {
      * @param name
      */
     public static boolean isDelimited(String name) {
-        if (StringUtils.isEmpty(name)) {
+        if (StringUtil.isEmpty(name)) {
             return false;
         }
         return normalizer.isDelimited(defaultRule, name);
@@ -86,7 +88,7 @@ public class Normalizer {
      * @param name2
      */
     public static boolean fullNamesEqual(String name1, String name2) {
-        if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
+        if (StringUtil.isEmpty(name1) && StringUtil.isEmpty(name2)) {
             return true;
         }
         // Split multi-part names into individual components and compare
@@ -98,11 +100,11 @@ public class Normalizer {
         }
         for (int i = 0; i < names1.length; i++) {
             if (normalizer.isDelimited(defaultRule, names1[i])) {
-                if (!StringUtils.equals(names1[i],names2[i])) {
+                if (!Objects.equals(names1[i],names2[i])) {
                     return false;
                 }
             } else {
-                if (!StringUtils.equalsIgnoreCase(names1[i],names2[i])) {
+                if (!StringUtil.equalsIgnoreCase(names1[i],names2[i])) {
                     return false;
                 }
             }
@@ -118,15 +120,15 @@ public class Normalizer {
      * @param name2
      */
     public static boolean namesEqual(String name1, String name2) {
-        if (StringUtils.isEmpty(name1) && StringUtils.isEmpty(name2)) {
+        if (StringUtil.isEmpty(name1) && StringUtil.isEmpty(name2)) {
             return true;
         }
         if (normalizer.isDelimited(defaultRule, name1)) {
-            if (!StringUtils.equals(name1, name2)) {
+            if (!Objects.equals(name1, name2)) {
                 return false;
             }
         } else {
-            if (!StringUtils.equalsIgnoreCase(name1, name2)) {
+            if (!StringUtil.equalsIgnoreCase(name1, name2)) {
                 return false;
             }
         }

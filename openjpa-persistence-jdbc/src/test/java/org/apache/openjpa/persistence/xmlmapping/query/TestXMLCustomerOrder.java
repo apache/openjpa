@@ -26,7 +26,6 @@ import javax.persistence.Query;
 
 import junit.textui.TestRunner;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerFactorySPI;
@@ -353,7 +352,7 @@ public class TestXMLCustomerOrder
         USAAddress address = new ObjectFactory().createUSAAddress();
         address.setName(name);
         // Use a 4000-byte value so the entire XML string is longer than 4000 bytes - ensure Oracle handles this.
-        address.getStreet().add(StringUtils.repeat("12500 Mont", 400));
+        address.getStreet().add(repeatString("12500 Mont", 400));
         address.setCity("San Jose");
         address.setState("CA");
         address.setZIP(95141);

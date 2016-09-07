@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 
@@ -241,7 +241,7 @@ public abstract class Value implements Cloneable {
 
         boolean empty = str != null && str.length() == 0;
         for (int i = 1; i < aliases.length; i += 2)
-            if (StringUtils.equals(str, aliases[i])
+            if (Objects.equals(str, aliases[i])
                 || (empty && aliases[i] == null))
                 return aliases[i - 1];
         return (nullNotFound) ? null : str;
@@ -267,8 +267,8 @@ public abstract class Value implements Cloneable {
             str = def;
         if (aliases != null)
             for (int i = 0; i < aliases.length; i += 2)
-                if (StringUtils.equals(str, aliases[i])
-                    || StringUtils.equals(str, aliases[i + 1])
+                if (Objects.equals(str, aliases[i])
+                    || Objects.equals(str, aliases[i + 1])
                     || (empty && aliases[i] == null))
                     return aliases[i + 1];
 
@@ -542,8 +542,8 @@ public abstract class Value implements Cloneable {
         String thisStr = (isDynamic()) ? getOriginalValue() : getString();
         String thatStr = (isDynamic()) ? o.getOriginalValue() : o.getString();
         return (isDynamic() == o.isDynamic())
-            && StringUtils.equals(prop, o.getProperty())
-            && StringUtils.equals(thisStr, thatStr);
+            && Objects.equals(prop, o.getProperty())
+            && Objects.equals(thisStr, thatStr);
     }
 
     public Object clone() {

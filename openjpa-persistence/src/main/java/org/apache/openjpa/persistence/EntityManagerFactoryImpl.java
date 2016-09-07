@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.persistence.*;
 import javax.persistence.spi.LoadState;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.AutoDetach;
 import org.apache.openjpa.kernel.Broker;
@@ -213,10 +213,10 @@ public class EntityManagerFactoryImpl
         }
         
         if (log != null && log.isTraceEnabled()) {
-            if(StringUtils.isNotEmpty(cfName)) {
+            if(StringUtil.isNotEmpty(cfName)) {
                 log.trace("Found ConnectionFactoryName from props: " + cfName);
             }
-            if(StringUtils.isNotEmpty(cf2Name)) { 
+            if(StringUtil.isNotEmpty(cf2Name)) {
                 log.trace("Found ConnectionFactory2Name from props: " + cf2Name);
             }
         }
@@ -406,7 +406,7 @@ public class EntityManagerFactoryImpl
     }
     
     private void validateCfNameProps(OpenJPAConfiguration conf, String cfName, String cf2Name) {
-        if (StringUtils.isNotEmpty(cfName) || StringUtils.isNotEmpty(cf2Name)) {
+        if (StringUtil.isNotEmpty(cfName) || StringUtil.isNotEmpty(cf2Name)) {
             if (conf.getDataCache() != "false" && conf.getDataCache() != null) {
                 throw new ArgumentException(_loc.get("invalid-cfname-prop", new Object[] {
                     "openjpa.DataCache (L2 Cache)",

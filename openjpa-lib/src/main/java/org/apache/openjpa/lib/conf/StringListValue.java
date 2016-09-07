@@ -20,8 +20,9 @@ package org.apache.openjpa.lib.conf;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ParseException;
 
@@ -99,8 +100,8 @@ public class StringListValue extends Value {
                 retv.append(',');
             
             for (int x = 0; x < aliases.length; x += 2)
-                if (StringUtils.equals(iString, aliases[x])
-                    || StringUtils.equals(iString, aliases[x + 1])) {
+                if (Objects.equals(iString, aliases[x])
+                    || Objects.equals(iString, aliases[x + 1])) {
                     retv.append(aliases[x + 1]);
                     found = true;
                     break;
@@ -120,7 +121,7 @@ public class StringListValue extends Value {
     }
 
     protected String getInternalString() {
-        return StringUtils.join(_values, ", ");
+        return StringUtil.join(_values, ", ");
     }
 
     protected void setInternalString(String val) {

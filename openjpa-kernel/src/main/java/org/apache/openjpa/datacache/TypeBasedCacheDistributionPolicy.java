@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -76,7 +76,7 @@ public class TypeBasedCacheDistributionPolicy extends DefaultCacheDistributionPo
     }
     
     private Set<String> parseNames(String types) {
-        if (StringUtils.isEmpty(types))
+        if (StringUtil.isEmpty(types))
             return Collections.emptySet();
         String[] names = StringUtil.split(types, ";", 0);
         Set<String> set = new HashSet<String>();

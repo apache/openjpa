@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.util;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 
 /**
  * {@link OpenJPAId} subclass appropriate for String fields.
@@ -31,12 +31,12 @@ public final class StringId extends OpenJPAId {
 
     public StringId(Class<?> cls, String key) {
         super(cls);
-        this.key = (key == null) ? "" : StringUtils.stripEnd(key, null);
+        this.key = (key == null) ? "" : StringUtil.stripEnd(key, null);
     }
 
     public StringId(Class<?> cls, String key, boolean subs) {
         super(cls, subs);
-        this.key = (key == null) ? "" : StringUtils.stripEnd(key, null);
+        this.key = (key == null) ? "" : StringUtil.stripEnd(key, null);
     }
 
     public String getId() {

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.sql.Joins;
 import org.apache.openjpa.lib.meta.SourceTracker;
@@ -311,7 +311,7 @@ public class QueryResultMapping
          * Map the given path to the given result id.
          */
         public void addMapping(String path, Object id) {
-            if (StringUtils.isEmpty(path))
+            if (StringUtil.isEmpty(path))
                 throw new MetaDataException(_loc.get("null-path",
                     QueryResultMapping.this, _candidate));
 

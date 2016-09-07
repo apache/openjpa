@@ -24,8 +24,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -217,7 +218,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
             populateFromReflection(superclass, meta);
 
         try {
-            if (StringUtils.equals(xmlAccessorValue.invoke(cls.getAnnotation(
+            if (Objects.equals(xmlAccessorValue.invoke(cls.getAnnotation(
                 xmlAccessorTypeClass), new Object[]{}).toString(), "FIELD"))
                 members = cls.getDeclaredFields();
             else
@@ -231,7 +232,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     String xmlname = (String) xmlElementName.invoke(el
                         .getAnnotation(xmlElementClass), new Object[]{});
                     // avoid JAXB XML bind default name
-                    if (StringUtils.equals(XMLMetaData.defaultName, xmlname))
+                    if (Objects.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
                     if ((AccessController.doPrivileged(J2DoPrivHelper
                         .isAnnotationPresentAction(((Field) member).getType(),
@@ -260,7 +261,7 @@ public class AnnotationPersistenceXMLMetaDataParser {
                     String xmlname = (String) xmlAttributeName.invoke(
                         el.getAnnotation(xmlAttributeClass), new Object[]{});
                     // avoid JAXB XML bind default name
-                    if (StringUtils.equals(XMLMetaData.defaultName, xmlname))
+                    if (Objects.equals(XMLMetaData.defaultName, xmlname))
                         xmlname = member.getName();
                     field.setXmlname("@"+xmlname);
                     field.setXmlnamespace((String) xmlAttributeNamespace.invoke(

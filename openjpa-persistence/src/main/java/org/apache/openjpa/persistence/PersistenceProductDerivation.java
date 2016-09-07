@@ -41,7 +41,7 @@ import javax.persistence.ValidationMode;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
@@ -330,7 +330,7 @@ public class PersistenceProductDerivation
      */
     public ConfigurationProvider load(String rsrc, String name, Map m)
         throws IOException {
-        boolean explicit = !StringUtils.isEmpty(rsrc);
+        boolean explicit = !StringUtil.isEmpty(rsrc);
         if (!explicit)
             rsrc = RSRC_DEFAULT;
         
@@ -435,10 +435,10 @@ public class PersistenceProductDerivation
         throws IOException {
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         String rsrc = null;
-        for (int i = 0; i < prefixes.length && StringUtils.isEmpty(rsrc); i++)
+        for (int i = 0; i < prefixes.length && StringUtil.isEmpty(rsrc); i++)
            rsrc = AccessController.doPrivileged(J2DoPrivHelper
                 .getPropertyAction(prefixes[i] + ".properties")); 
-        boolean explicit = !StringUtils.isEmpty(rsrc);
+        boolean explicit = !StringUtil.isEmpty(rsrc);
         String anchor = null;
         int idx = (!explicit) ? -1 : rsrc.lastIndexOf('#');
         if (idx != -1) {
@@ -447,7 +447,7 @@ public class PersistenceProductDerivation
                 anchor = rsrc.substring(idx + 1);
             rsrc = rsrc.substring(0, idx);
         }
-        if (StringUtils.isEmpty(rsrc))
+        if (StringUtil.isEmpty(rsrc))
             rsrc = RSRC_GLOBAL;
         else if (!rsrc.endsWith(".xml"))
             return null;
@@ -606,7 +606,7 @@ public class PersistenceProductDerivation
             if (isOpenJPAPersistenceProvider(pinfo, loader)) {
                 // if no name given and found unnamed unit, return it.  
                 // otherwise record as default unit unless we find a better match later
-                if (StringUtils.isEmpty(pinfo.getPersistenceUnitName()))
+                if (StringUtil.isEmpty(pinfo.getPersistenceUnitName()))
                     return pinfo;
                 if (ojpa == null)
                     ojpa = pinfo;
@@ -623,7 +623,7 @@ public class PersistenceProductDerivation
      */
     private static boolean isOpenJPAPersistenceProvider(PersistenceUnitInfo pinfo, ClassLoader loader) {
         String provider = pinfo.getPersistenceProviderClassName();
-        if (StringUtils.isEmpty(provider) || PersistenceProviderImpl.class.getName().equals(provider))
+        if (StringUtil.isEmpty(provider) || PersistenceProviderImpl.class.getName().equals(provider))
             return true;
 
         if (loader == null)
@@ -706,7 +706,7 @@ public class PersistenceProductDerivation
                 // get overwritten by our implicit setting.  so instead, combine
                 // the global value with our settings
                 String orig = oconf.getMetaDataFactory();
-                if (!StringUtils.isEmpty(orig)) {
+                if (!StringUtil.isEmpty(orig)) {
                     String key = ProductDerivations.getConfigurationKey("MetaDataFactory", getProperties());
                     Object override = getProperties().get(key);
                     if (override instanceof String)

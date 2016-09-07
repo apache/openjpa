@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.SeqValue;
 import org.apache.openjpa.kernel.Seq;
 import org.apache.openjpa.lib.conf.Configurations;
@@ -384,7 +384,7 @@ public class SequenceMetaData
      * is null or empty string.
      */
     protected void appendProperty(StringBuilder props, String name, String val) {
-        if (StringUtils.isEmpty(val))
+        if (StringUtil.isEmpty(val))
             return;
         if (props.length() > 0)
             props.append(",");

@@ -49,7 +49,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Queue;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.enhance.AsmAdaptor;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.ClassUtil;
@@ -57,10 +56,10 @@ import org.apache.openjpa.lib.util.Files;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
+import org.apache.openjpa.lib.util.StringUtil;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import serp.bytecode.BCClass;
 import serp.bytecode.BCField;
 import serp.bytecode.BCMethod;
@@ -1352,7 +1351,7 @@ public class ProxyManagerImpl
             match = null;
             try {
                 match = helper.getMethod("before" 
-                    + StringUtils.capitalize(meths[i].getName()), params);
+                    + StringUtil.capitalize(meths[i].getName()), params);
             } catch (NoSuchMethodException nsme) {
             } catch (Exception e) {
                 throw new GeneralException(e);
@@ -1364,7 +1363,7 @@ public class ProxyManagerImpl
                     meths[i].getReturnType(), (match == null) 
                     ? void.class : match.getReturnType());
                 after = helper.getMethod("after" 
-                    + StringUtils.capitalize(meths[i].getName()), afterParams);
+                    + StringUtil.capitalize(meths[i].getName()), afterParams);
             } catch (NoSuchMethodException nsme) {
             } catch (Exception e) {
                 throw new GeneralException(e);

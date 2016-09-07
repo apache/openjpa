@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.jpql.JPQLParser;
 import org.apache.openjpa.lib.meta.SourceTracker;
@@ -210,7 +210,7 @@ public class QueryMetaData
     public void setInto(Query query) {
         if (_candidate != null)
             query.setCandidateType(_candidate, true);
-        if (!StringUtils.isEmpty(_query))
+        if (!StringUtil.isEmpty(_query))
             query.setQuery(_query);
         if (_res != null)
             query.setResultType(_res);

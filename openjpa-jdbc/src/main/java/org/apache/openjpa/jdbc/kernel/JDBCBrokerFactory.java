@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
 import org.apache.openjpa.jdbc.meta.MappingRepository;
@@ -134,7 +134,7 @@ public class JDBCBrokerFactory
     protected void synchronizeMappings(ClassLoader loader, 
         JDBCConfiguration conf) {
         String action = conf.getSynchronizeMappings();
-        if (StringUtils.isEmpty(action))
+        if (StringUtil.isEmpty(action))
             return;
 
         MappingRepository repo = conf.getMappingRepositoryInstance();

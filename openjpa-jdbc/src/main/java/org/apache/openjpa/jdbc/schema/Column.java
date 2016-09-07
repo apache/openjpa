@@ -28,7 +28,7 @@ import java.sql.Types;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
 import org.apache.openjpa.jdbc.meta.JavaSQLTypes;
@@ -587,7 +587,7 @@ public class Column
      * @deprecated use setTargetIdentifier(DBIdentifier target)
      */
     public void setTarget(String target) {
-        setTargetIdentifier(DBIdentifier.newColumn(StringUtils.trimToNull(target)));
+        setTargetIdentifier(DBIdentifier.newColumn(StringUtil.trimToNull(target)));
     }
 
     public void setTargetIdentifier(DBIdentifier target) {

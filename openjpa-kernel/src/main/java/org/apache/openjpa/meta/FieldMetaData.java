@@ -46,7 +46,6 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.comparators.ComparatorChain;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.StoreContext;
@@ -771,7 +770,7 @@ public class FieldMetaData
      * class that declared this field or any of its persistent superclasses.
      */
     public void setInFetchGroup(String fg, boolean in) {
-        if (StringUtils.isEmpty(fg))
+        if (StringUtil.isEmpty(fg))
             throw new MetaDataException(_loc.get("empty-fg-name", this));
         if (fg.equals(FetchGroup.NAME_ALL))
             return;
@@ -1235,7 +1234,7 @@ public class FieldMetaData
      * the field's elements.
      */
     public void setOrderDeclaration(String dec) {
-        _orderDec = StringUtils.trimToNull(dec);
+        _orderDec = StringUtil.trimToNull(dec);
         _orders = null;
     }
 
@@ -1621,7 +1620,7 @@ public class FieldMetaData
      * @return the method for invocation
      */
     private Method findMethodByNameAndType(String method, Class<?> type) {
-        if (StringUtils.isEmpty(method))
+        if (StringUtil.isEmpty(method))
             return null;
 
         // get class name and get package name divide on the last '.', so the
@@ -2455,7 +2454,7 @@ public class FieldMetaData
     }
 
     public String getSetterName() {
-        String setterName = "set" + StringUtils.capitalize(_name);
+        String setterName = "set" + StringUtil.capitalize(_name);
         if (_name.length() > 1 && Character.isLowerCase(_name.charAt(0)) && Character.isUpperCase(_name.charAt(1))) {
             // We have the special case where the first char is lower, and the
             // following char is capital. We need to support using the
@@ -2467,7 +2466,7 @@ public class FieldMetaData
                 return setterName;
             } catch (Exception e) {
             }
-            setterName = "set" + StringUtils.capitalize(_name);
+            setterName = "set" + StringUtil.capitalize(_name);
             try {
                 type.getDeclaredMethod(setterName, getType());
             } catch (Exception e) {

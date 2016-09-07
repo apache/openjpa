@@ -27,7 +27,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.sql.DBDictionary;
 import org.apache.openjpa.lib.log.Log;
@@ -141,7 +141,7 @@ public class SQLErrorCodeReader {
 				Node textNode = child.getFirstChild();
                 if (storeErrorTypes.containsKey(errorType) && textNode != null){
                     String errorCodes = textNode.getNodeValue();
-                    if (!StringUtils.isEmpty(errorCodes)) {
+                    if (!StringUtil.isEmpty(errorCodes)) {
                         String[] codes = errorCodes.split(ERROR_CODE_DELIMITER);
                         for (String code : codes) {
                             dict.addErrorCode(storeErrorTypes.get(errorType),

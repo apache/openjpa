@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.conf.Configuration;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.conf.ConfigurationProvider;
@@ -167,7 +167,7 @@ public abstract class AbstractTask extends MatchingTask {
         String propertiesResource = _conf.getPropertiesResource();
         if ( propertiesResource == null) {            
             cp = ProductDerivations.loadDefaults(getConfigPropertiesResourceLoader());           
-        } else if (_conf.isDeferResourceLoading() && !StringUtils.isEmpty(propertiesResource)) {
+        } else if (_conf.isDeferResourceLoading() && !StringUtil.isEmpty(propertiesResource)) {
             Map<String, String> result = Configurations.parseConfigResource(propertiesResource);
             String path = result.get(Configurations.CONFIG_RESOURCE_PATH);
             String anchor = result.get(Configurations.CONFIG_RESOURCE_ANCHOR);

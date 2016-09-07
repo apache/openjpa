@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
@@ -107,7 +107,7 @@ public class Reflection {
         if (m != null) {
             return m;
         }
-        String capProp = StringUtils.capitalize(prop);
+        String capProp = StringUtil.capitalize(prop);
         try {
             // this algorithm searches for a get<prop> or is<prop> method in
             // a breadth-first manner.
@@ -168,7 +168,7 @@ public class Reflection {
         if (m != null) {
             return m;
         }
-        String name = "set" + StringUtils.capitalize(prop);
+        String name = "set" + StringUtil.capitalize(prop);
         try {
             for (Class c = cls; c != null && c != Object.class;
                 c = c.getSuperclass()) {
@@ -863,7 +863,7 @@ public class Reflection {
             if (m.getName().startsWith("get")) {
                 if (!canReflect(m))
                     continue;
-                String prop = StringUtils.capitalize(m.getName()
+                String prop = StringUtil.capitalize(m.getName()
                     .substring("get".length()));
                 Class<?> rtype = m.getReturnType();
                 try {

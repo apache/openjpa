@@ -25,10 +25,12 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import javax.persistence.EnumType;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.xml.sax.SAXException;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -293,9 +295,9 @@ public class XMLPersistenceMappingSerializer
         for (int i = 0; i < cols.size(); i++) {
             col = cols.get(i);
             col2 = cols2.get(i);
-            if (!StringUtils.equals(col.getName(), col2.getName()))
+            if (!Objects.equals(col.getName(), col2.getName()))
                 return true;
-            if (!StringUtils.equals(col.getTypeName(), col2.getTypeName()))
+            if (!Objects.equals(col.getTypeName(), col2.getTypeName()))
                 return true;
             if (col.getSize() != col2.getSize())
                 return true;
@@ -573,7 +575,7 @@ public class XMLPersistenceMappingSerializer
     }
 
     private void serializeUniqueConstraint(Unique unique) throws SAXException {
-        if (StringUtils.isNotEmpty(unique.getName())) {
+        if (StringUtil.isNotEmpty(unique.getName())) {
             addAttribute("name", unique.getName());
         }
         startElement("unique-constraint");
@@ -698,11 +700,11 @@ public class XMLPersistenceMappingSerializer
                 addAttribute("schema", table.substring(0, dotIdx));
             }
         }
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyColumn()))
+        if (!StringUtil.isEmpty(seq.getPrimaryKeyColumn()))
             addAttribute("pk-column-name", seq.getPrimaryKeyColumn());
-        if (!StringUtils.isEmpty(seq.getSequenceColumn()))
+        if (!StringUtil.isEmpty(seq.getSequenceColumn()))
             addAttribute("value-column-name", seq.getSequenceColumn());
-        if (!StringUtils.isEmpty(seq.getPrimaryKeyValue()))
+        if (!StringUtil.isEmpty(seq.getPrimaryKeyValue()))
             addAttribute("pk-column-value", seq.getPrimaryKeyValue());
         if (seq.getAllocate() != 50 && seq.getAllocate() != -1)
             addAttribute("allocation-size", seq.getAllocate() + "");

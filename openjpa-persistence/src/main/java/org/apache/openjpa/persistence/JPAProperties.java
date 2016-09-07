@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.CacheStoreMode;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.kernel.DataCacheRetrieveMode;
 import org.apache.openjpa.kernel.DataCacheStoreMode;
 
@@ -113,7 +113,7 @@ public class JPAProperties {
         String[] parts = key.split(REGEX_DOT);
         StringBuilder buf = new StringBuilder();
         for (int i = 2; i < parts.length; i++) {
-            buf.append(StringUtils.capitalize(parts[i]));
+            buf.append(StringUtil.capitalize(parts[i]));
         }
         return buf.toString();
     }

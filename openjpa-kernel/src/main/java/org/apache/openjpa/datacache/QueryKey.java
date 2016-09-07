@@ -37,7 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryContext;
@@ -402,7 +402,7 @@ public class QueryKey
             return false;
 
         QueryKey other = (QueryKey) ob;
-        return StringUtils.equals(_candidateClassName,
+        return Objects.equals(_candidateClassName,
             other._candidateClassName)
             && _subclasses == other._subclasses
             && _ignoreChanges == other._ignoreChanges

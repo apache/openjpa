@@ -35,10 +35,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.FieldManager;
@@ -2161,7 +2162,7 @@ public class StateManagerImpl implements OpenJPAStateManager, Serializable {
     public void settingStringField(PersistenceCapable pc, int field,
         String curVal, String newVal, int set) {
         if (set != SET_REMOTE) {
-            if (StringUtils.equals(newVal, curVal) && _loaded.get(field))
+            if (Objects.equals(newVal, curVal) && _loaded.get(field))
                 return;
             assertNoPrimaryKeyChange(field);
         }

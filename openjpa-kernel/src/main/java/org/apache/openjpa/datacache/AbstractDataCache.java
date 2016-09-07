@@ -28,9 +28,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -463,7 +463,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
      * 
      */
     public DataCache getPartition(String name, boolean create) {
-        if (StringUtils.equals(_name, name))
+        if (Objects.equals(_name, name))
             return this;
         return null;
     }
@@ -527,7 +527,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setTypes(String types) {
         _includedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
+            StringUtil.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
         if (log.isWarnEnabled())
             log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"Types", DataCacheMode.ENABLE_SELECTIVE.toString()}));
     }
@@ -540,7 +540,7 @@ public abstract class AbstractDataCache extends AbstractConcurrentEventManager
 
     public void setExcludedTypes(String types) {
         _excludedTypes =
-            StringUtils.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
+            StringUtil.isEmpty(types) ? null : new HashSet<>(Arrays.asList(StringUtil.split(types, ";", 0)));
         if (log.isWarnEnabled())
             log.warn(s_loc.get("recommend_jpa2_caching", new Object[]{"ExcludeTypes", DataCacheMode.DISABLE_SELECTIVE.toString()}));
     }

@@ -29,9 +29,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.rop.EagerResultList;
 import org.apache.openjpa.lib.rop.ListResultObjectProvider;
@@ -350,7 +351,7 @@ public class FetchConfigurationImpl
     }
      
     private FetchConfiguration addFetchGroup(String name, boolean recomputeIsDefault) {
-        if (StringUtils.isEmpty(name))
+        if (StringUtil.isEmpty(name))
             throw new UserException(_loc.get("null-fg"));
 
         lock();
@@ -505,7 +506,7 @@ public class FetchConfigurationImpl
     }
 
     public FetchConfiguration addField(String field) {
-        if (StringUtils.isEmpty(field))
+        if (StringUtil.isEmpty(field))
             throw new UserException(_loc.get("null-field"));
 
         lock();
@@ -920,7 +921,7 @@ public class FetchConfigurationImpl
         if (rdepth != FetchGroup.DEPTH_INFINITE && rdepth <= 0)
             return FETCH_NONE;
 
-        if (StringUtils.equals(_directRelationOwner, fieldName))
+        if (Objects.equals(_directRelationOwner, fieldName))
             return FETCH_REF;
         return FETCH_LOAD;
     }
@@ -940,7 +941,7 @@ public class FetchConfigurationImpl
         clone._fromField = fm.getFullName(false);
         clone._fromType = type;
         clone._availableRecursion = getAvailableRecursionDepth(fm, type, fm.getFullName(false), true);
-        if (StringUtils.equals(_directRelationOwner, fm.getFullName(false)))
+        if (Objects.equals(_directRelationOwner, fm.getFullName(false)))
             clone._load = false;
         else
             clone._load = _load;
@@ -986,7 +987,7 @@ public class FetchConfigurationImpl
         // see if there's a previous limit
         int avail = Integer.MIN_VALUE;
         for (FetchConfigurationImpl f = this; f != null; f = f._parent) {
-            if (StringUtils.equals(f._fromField, fromField) 
+            if (Objects.equals(f._fromField, fromField)
                 && ImplHelper.isAssignable(f._fromType, type)) {
                 avail = f._availableRecursion;
                 if (traverse)

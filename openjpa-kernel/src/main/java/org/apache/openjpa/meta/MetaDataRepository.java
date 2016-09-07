@@ -30,11 +30,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.PCEnhancer;
@@ -2409,7 +2409,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
                 return false;
 
             QueryKey qk = (QueryKey) obj;
-            return StringUtils.equals(clsName, qk.clsName) && StringUtils.equals(name, qk.name);
+            return Objects.equals(clsName, qk.clsName) && Objects.equals(name, qk.name);
         }
     }
 
@@ -2449,8 +2449,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
      * Create a new metadata, populate it with default information, add it to the repository, and
      * return it.
      * 
-     * @param access
-     *            the access type to use in populating metadata
+     * @param type the access type to use in populating metadata
      */
     public XMLClassMetaData addXMLClassMetaData(Class<?> type) {
         XMLClassMetaData meta = newXMLClassMetaData(type);

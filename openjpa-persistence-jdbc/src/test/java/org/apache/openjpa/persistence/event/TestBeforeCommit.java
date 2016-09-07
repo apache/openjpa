@@ -22,7 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.event.TransactionEvent;
 import org.apache.openjpa.event.TransactionListener;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -143,7 +143,7 @@ public class TestBeforeCommit extends AbstractPersistenceTestCase implements Tra
     }
 
     public void beforeCommit(TransactionEvent event) {
-        if(StringUtils.isBlank(ae.getName())) { 
+        if(StringUtil.isBlank(ae.getName())) {
             ae.setName("Ava");
         }
         else {

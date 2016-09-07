@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.jdbc.meta.strats;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.Schemas;
 import org.apache.openjpa.meta.JavaTypes;
@@ -81,7 +81,7 @@ public class MultiColumnVersionStrategy extends NumberVersionStrategy {
     	}
     	if (_javaTypes[i] == null) {
     		Column col = (Column)vers.getMappingInfo().getColumns().get(i);
-    		if (!StringUtils.isEmpty(col.getTypeName())) {
+    		if (!StringUtil.isEmpty(col.getTypeName())) {
     			Class javaType = Schemas.getJavaType(col.getType(), 
     					col.getSize(), col.getDecimalDigits());
     			_javaTypes[i] = JavaTypes.getTypeCode(javaType);

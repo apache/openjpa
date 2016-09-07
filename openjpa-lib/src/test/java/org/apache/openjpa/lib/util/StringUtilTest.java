@@ -18,7 +18,6 @@ package org.apache.openjpa.lib.util;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,6 +55,42 @@ public class StringUtilTest {
         Assert.assertEquals(4, ssplit.length);
         Assert.assertArrayEquals(ssplit, new String[]{"a", "B", "C", ""});
     }
+
+    @Test
+    public void testTrimToNull() {
+        Assert.assertNull(StringUtil.trimToNull(null));
+        Assert.assertNull(StringUtil.trimToNull(" "));
+        Assert.assertNull(StringUtil.trimToNull("   "));
+        Assert.assertNull(StringUtil.trimToNull("   \n  "));
+        Assert.assertEquals("A", StringUtil.trimToNull("  A"));
+        Assert.assertEquals("A", StringUtil.trimToNull("A  "));
+        Assert.assertEquals("A", StringUtil.trimToNull("  A  "));
+        Assert.assertEquals("A", StringUtil.trimToNull("  A  \n  "));
+    }
+
+    @Test
+    public void testStringCapitalize() {
+        Assert.assertNull(StringUtil.capitalize(null));
+        Assert.assertEquals("", StringUtil.capitalize(""));
+        Assert.assertEquals(" ", StringUtil.capitalize(" "));
+        Assert.assertEquals("Ahoi", StringUtil.capitalize("ahoi"));
+        Assert.assertEquals("Ahoi", StringUtil.capitalize("Ahoi"));
+        Assert.assertEquals(" ahoi", StringUtil.capitalize(" ahoi")); // no trim
+        Assert.assertEquals("\u00d6hoi", StringUtil.capitalize("\u00f6hoi"));
+        Assert.assertEquals("\u00dfhoi", StringUtil.capitalize("\u00dfhoi"));
+    }
+
+    @Test
+    public void testStringEndsWith() {
+        Assert.assertFalse(StringUtil.endsWithIgnoreCase(null, "bla"));
+        Assert.assertFalse(StringUtil.endsWithIgnoreCase("bla", null));
+        Assert.assertTrue(StringUtil.endsWithIgnoreCase(null, null));
+        Assert.assertTrue(StringUtil.endsWithIgnoreCase(null, null));
+        Assert.assertTrue(StringUtil.endsWithIgnoreCase("I have a cAt", "Cat"));
+        Assert.assertFalse(StringUtil.endsWithIgnoreCase("at", "Cat"));
+        Assert.assertTrue(StringUtil.endsWithIgnoreCase("at", ""));
+    }
+
 
     @Test
     public void testStringParse() {
@@ -139,6 +174,17 @@ public class StringUtilTest {
     }
 
     @Test
+    public void testStringJoin() {
+        Assert.assertEquals("AAA,BBB,CCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, ","));
+        Assert.assertEquals("AAA", StringUtil.join(new String[]{"AAA"}, ","));
+        Assert.assertEquals("AAAnullBBBnullCCC", StringUtil.join(new String[]{"AAA", "BBB", "CCC"}, null));
+        Assert.assertEquals("", StringUtil.join(new String[]{}, ","));
+        Assert.assertNull(StringUtil.join(null, null));
+        Assert.assertNull(StringUtil.join(null, ","));
+
+    }
+
+    @Test
     @Ignore("only needed for manual performance tests")
     public void stringSplitPerformanceTest() {
         String val = "  asdfsfsfsfafasdf  basdfasf cs d efdfdfdfdfdfdfdf ghai asdf " +
@@ -174,11 +220,11 @@ public class StringUtilTest {
     @Test
     @Ignore("only needed for manual performance tests")
     public void testStringJoinPerformance() {
-        String[] vals = {"A", "BDS", "DSD", "XYZ"};
+        String[] vals = {"A", "BDS", "DSD", "XYZ", "HOHOHO", "AND", "SOMETHING", "ELSE"};
         long start = System.nanoTime();
         for (int i = 1; i < 10000000; i++) {
-            //X Strings.join(vals, ",");
-            StringUtils.join(vals, ",");
+            //X Strings.join(vals, "-.-");
+            StringUtil.join(vals, "-.-");
         }
 
         long stop = System.nanoTime();

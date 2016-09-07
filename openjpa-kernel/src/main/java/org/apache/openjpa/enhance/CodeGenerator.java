@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.CodeFormat;
@@ -301,7 +301,7 @@ public class CodeGenerator {
     private void appendFieldCode(FieldMetaData fmd, CodeFormat decs,
         CodeFormat code) {
         String fieldName = fmd.getName();
-        String capFieldName = StringUtils.capitalize(fieldName);
+        String capFieldName = StringUtil.capitalize(fieldName);
         String propertyName = fieldName;
         if (propertyName.startsWith("_"))
             propertyName = propertyName.substring(1);

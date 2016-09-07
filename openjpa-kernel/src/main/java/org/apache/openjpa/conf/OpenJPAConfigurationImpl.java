@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.datacache.CacheDistributionPolicy;
@@ -1067,7 +1067,7 @@ public class OpenJPAConfigurationImpl
      * Lookup the connection factory at the given name.
      */
     private Object lookupConnectionFactory(String name, String userKey) {
-        name = StringUtils.trimToNull(name);
+        name = StringUtil.trimToNull(name);
         if (name == null)
             return null;
         try {
