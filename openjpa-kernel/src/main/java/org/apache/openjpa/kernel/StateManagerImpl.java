@@ -39,7 +39,6 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
 import org.apache.openjpa.enhance.FieldManager;

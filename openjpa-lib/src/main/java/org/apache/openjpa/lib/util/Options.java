@@ -306,7 +306,7 @@ public class Options extends TypedProperties {
         String get = "get" + base;
 
         // look for a setter/getter matching the key; look for methods first
-        Class<? extends Object> type = match[0].getClass();
+        Class<?> type = match[0].getClass();
         Method[] meths = type.getMethods();
         Method setMeth = null;
         Method getMeth = null;

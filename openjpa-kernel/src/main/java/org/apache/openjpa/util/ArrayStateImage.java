@@ -19,7 +19,6 @@
 package org.apache.openjpa.util;
 
 import java.util.BitSet;
-import java.util.Objects;
 
 import java.util.Objects;
 

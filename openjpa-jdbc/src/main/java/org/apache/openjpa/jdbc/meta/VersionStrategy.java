@@ -90,5 +90,5 @@ public interface VersionStrategy
      *
      * @since 1.0.0
      */
-    public Map<Column,? extends Object> getBulkUpdateValues();
+    public Map<Column,?> getBulkUpdateValues();
 }

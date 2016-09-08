@@ -37,7 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import java.util.Objects;
-import org.apache.openjpa.lib.util.StringUtil;
+
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.kernel.Query;
 import org.apache.openjpa.kernel.QueryContext;

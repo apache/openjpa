@@ -734,7 +734,7 @@ public class AnnotationPersistenceMappingSerializer
     /**
      * Column types serialized under different names.
      */
-    private static enum ColType {
+    private enum ColType {
 
         COL,
         JOIN,

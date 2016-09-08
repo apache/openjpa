@@ -137,11 +137,11 @@ public class JDBCStoreManager implements StoreManager, JDBCStore {
             ctx.setOrderDirtyObjects(true);
     }
         
-    private final boolean useConnectionFactory2(StoreContext ctx) { 
+    private boolean useConnectionFactory2(StoreContext ctx) {
         return (!ctx.isManaged() && _conf.isConnectionFactoryModeManaged());  
     }
         
-    private final DataSource getDataSource(StoreContext ctx) {
+    private DataSource getDataSource(StoreContext ctx) {
         DataSource ds;
 
         if(useConnectionFactory2(ctx)) { 

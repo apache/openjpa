@@ -121,7 +121,7 @@ public abstract class InValueDiscriminatorStrategy
         return getClass(cls, store);
     }
     
-    private final boolean useDiscrimColumn(ClassMapping base, Result res) throws SQLException {
+    private boolean useDiscrimColumn(ClassMapping base, Result res) throws SQLException {
         if (res.getBaseMapping() != null && base != null) {
             // check whether the result type is assignable to the base mapping.
             // if not assignable the discriminator value will not be correct.

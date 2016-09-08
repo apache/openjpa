@@ -521,7 +521,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
         }
     }
 
-    private final Collection<String> getAliasNamesInternal() {
+    private Collection<String> getAliasNamesInternal() {
         Collection<String> aliases = new HashSet<String>();
         for(Map.Entry<String, List<Class<?>>> e : _aliases.entrySet()){
             if (e.getValue() != null) {

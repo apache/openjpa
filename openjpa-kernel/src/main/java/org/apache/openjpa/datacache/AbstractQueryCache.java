@@ -64,7 +64,8 @@ public abstract class AbstractQueryCache
         Localizer.forPackage(AbstractQueryCache.class);
 
     private static final String TIMESTAMP = "timestamp";
-    public enum EvictPolicy {DEFAULT, TIMESTAMP};
+    public enum EvictPolicy {DEFAULT, TIMESTAMP}
+
     /**
      * The configuration set by the system.
      */

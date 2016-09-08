@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.util.Objects;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;

@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.kernel.QueryLanguages;
 import org.apache.openjpa.lib.conf.Configurations;

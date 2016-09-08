@@ -27,8 +27,6 @@ import java.util.EnumSet;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
-import org.apache.openjpa.lib.util.StringUtil;
-
 /**
  * Helper class to stringify annotation declarations.
  *

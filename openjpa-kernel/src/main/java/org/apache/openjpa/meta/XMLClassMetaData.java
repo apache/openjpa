@@ -21,8 +21,6 @@ package org.apache.openjpa.meta;
 import java.util.HashMap;
 import java.util.Objects;
 
-import org.apache.openjpa.lib.util.StringUtil;
-
 public class XMLClassMetaData implements XMLMetaData     
 {
     private Class _type;

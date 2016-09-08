@@ -5225,7 +5225,7 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             return true;
         }
         return _store.isCached(oids, loaded);
-    };
+    }
     
     public boolean getAllowReferenceToSiblingContext() {
         return _allowReferenceToSiblingContext;
