@@ -66,7 +66,7 @@ public class Randomizer {
      * Generates a random alphanumeric String with each segment separated by a dash. 
      */
     public static String randomString(int...segments) {
-        StringBuffer tmp = new StringBuffer();
+        StringBuilder tmp = new StringBuilder();
         for (int s : segments) {
             tmp.append(tmp.length() == 0 ? (char)random(MIN_ALPHA, MAX_ALPHA) : '-');
             for (int j = 0; j < s; j++)

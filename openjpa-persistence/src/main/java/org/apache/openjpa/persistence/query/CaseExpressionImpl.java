@@ -173,7 +173,7 @@ public class CaseExpressionImpl implements CaseExpression, Visitable {
 	}
 	
 	public String asExpression(AliasContext ctx) {
-		StringBuffer tmp = new StringBuffer("CASE ");
+		StringBuilder tmp = new StringBuilder("CASE ");
 		if (_caseOperand != null) {
 			tmp.append(toJPQL(ctx, _caseOperand));
 		}

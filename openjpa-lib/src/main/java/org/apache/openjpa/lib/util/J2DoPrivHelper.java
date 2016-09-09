@@ -171,7 +171,7 @@ public abstract class J2DoPrivHelper {
      * Requires security policy: 
      *   'permission java.util.PropertyPermission "read";'
      */
-    public static final String getLineSeparator() {
+    public static String getLineSeparator() {
         if (lineSeparator == null) {
             lineSeparator =
                 AccessController.doPrivileged(new PrivilegedAction<String>() {
@@ -189,7 +189,7 @@ public abstract class J2DoPrivHelper {
      * Requires security policy:
      *   'permission java.util.PropertyPermission "read";'
      */
-    public static final String getPathSeparator() {
+    public static String getPathSeparator() {
         if (pathSeparator == null) {
             pathSeparator =
                 AccessController.doPrivileged(new PrivilegedAction<String>() {
@@ -207,7 +207,7 @@ public abstract class J2DoPrivHelper {
      * Requires security policy: 'permission java.lang.reflect.ReflectPermission
      * "suppressAccessChecks";'
      */
-    public static final PrivilegedAction<Object> setAccessibleAction(
+    public static PrivilegedAction<Object> setAccessibleAction(
         final AccessibleObject aObj, final boolean flag) {
         return new PrivilegedAction<Object>() {
             public Object run() {
@@ -230,7 +230,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return Class
      */
-    public static final PrivilegedExceptionAction<Class<?>> getForNameAction(
+    public static PrivilegedExceptionAction<Class<?>> getForNameAction(
         final String className, final boolean initializeBoolean,
         final ClassLoader classLoader) {
         return new PrivilegedExceptionAction<Class<?>>() {
@@ -255,7 +255,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Classloader
      */
-    public static final PrivilegedAction<ClassLoader> getClassLoaderAction(
+    public static PrivilegedAction<ClassLoader> getClassLoaderAction(
         final Class<?> clazz) {
         return new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
@@ -273,7 +273,7 @@ public abstract class J2DoPrivHelper {
      * @return Field
      * @exception NoSuchFieldException
      */
-    public static final PrivilegedExceptionAction<Field> getDeclaredFieldAction(
+    public static PrivilegedExceptionAction<Field> getDeclaredFieldAction(
         final Class<?> clazz, final String name) {
         return new PrivilegedExceptionAction<Field>() {
             public Field run() throws NoSuchFieldException {
@@ -290,7 +290,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Field[]
      */
-    public static final PrivilegedAction<Field []> getDeclaredFieldsAction(
+    public static PrivilegedAction<Field []> getDeclaredFieldsAction(
         final Class<?> clazz) {
         return new PrivilegedAction<Field []>() {
             public Field[] run() {
@@ -308,7 +308,7 @@ public abstract class J2DoPrivHelper {
      * @return Method
      * @exception NoSuchMethodException
      */
-    public static final PrivilegedExceptionAction<Method> 
+    public static PrivilegedExceptionAction<Method>
         getDeclaredMethodAction(
             final Class<?> clazz, final String name, 
             final Class<?>[] parameterTypes) {
@@ -327,7 +327,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Method[]
      */
-    public static final PrivilegedAction<Method []> getDeclaredMethodsAction(
+    public static PrivilegedAction<Method []> getDeclaredMethodsAction(
         final Class<?> clazz) {
         return new PrivilegedAction<Method []>() {
             public Method[] run() {
@@ -344,7 +344,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return URL
      */
-    public static final PrivilegedAction<URL> getResourceAction(
+    public static PrivilegedAction<URL> getResourceAction(
         final Class<?> clazz, final String resource) {
         return new PrivilegedAction<URL>() {
             public URL run() {
@@ -363,7 +363,7 @@ public abstract class J2DoPrivHelper {
      * @exception IllegalAccessException 
      * @exception InstantiationException
      */
-    public static final <T> PrivilegedExceptionAction<T> newInstanceAction(
+    public static <T> PrivilegedExceptionAction<T> newInstanceAction(
         final Class<T> clazz) throws IllegalAccessException,
         InstantiationException {
         return new PrivilegedExceptionAction<T>() {
@@ -391,7 +391,7 @@ public abstract class J2DoPrivHelper {
      *
      * @return ProtectionDomain
      */
-    public static final PrivilegedAction<ProtectionDomain> getProtectionDomainAction(
+    public static PrivilegedAction<ProtectionDomain> getProtectionDomainAction(
         final Class<?> clazz) {
         return new PrivilegedAction<ProtectionDomain>() {
             public ProtectionDomain run() {
@@ -408,7 +408,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return ClassLoader
      */
-    public static final PrivilegedAction<ClassLoader> getParentAction(
+    public static PrivilegedAction<ClassLoader> getParentAction(
         final ClassLoader loader) {
         return new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
@@ -425,7 +425,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return URL
      */
-    public static final PrivilegedAction<URL> getResourceAction(
+    public static PrivilegedAction<URL> getResourceAction(
         final ClassLoader loader, final String resource) {
         return new PrivilegedAction<URL>() {
             public URL run() {
@@ -443,7 +443,7 @@ public abstract class J2DoPrivHelper {
      * @return Enumeration
      * @exception IOException
      */
-    public static final PrivilegedExceptionAction<Enumeration<URL>> 
+    public static PrivilegedExceptionAction<Enumeration<URL>>
         getResourcesAction(
         final ClassLoader loader, final String resource) throws IOException {
         return new PrivilegedExceptionAction<Enumeration<URL>>() {
@@ -461,7 +461,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return ClassLoader
      */
-    public static final PrivilegedAction<ClassLoader> 
+    public static PrivilegedAction<ClassLoader>
         getSystemClassLoaderAction() {
         return new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
@@ -478,7 +478,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> deleteAction(final File f) {
+    public static PrivilegedAction<Boolean> deleteAction(final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
                 return f.delete() ? Boolean.TRUE : Boolean.FALSE;
@@ -494,7 +494,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> existsAction(final File f) {
+    public static PrivilegedAction<Boolean> existsAction(final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
                 try {
@@ -512,7 +512,7 @@ public abstract class J2DoPrivHelper {
      * Requires security policy:
      *   'permission java.io.FilePermission "delete";'
      */
-    public static final PrivilegedAction<Boolean> deleteOnExitAction(
+    public static PrivilegedAction<Boolean> deleteOnExitAction(
         final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
@@ -530,7 +530,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return File
      */
-    public static final PrivilegedAction<File> getAbsoluteFileAction(
+    public static PrivilegedAction<File> getAbsoluteFileAction(
             final File f) {
         return new PrivilegedAction<File>() {
             public File run() {
@@ -547,7 +547,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return String
      */
-    public static final PrivilegedAction<String> 
+    public static PrivilegedAction<String>
         getAbsolutePathAction(final File f) {
         return new PrivilegedAction<String>() {
             public String run() {
@@ -565,7 +565,7 @@ public abstract class J2DoPrivHelper {
      * @return String
      * @exception IOException
      */
-    public static final PrivilegedExceptionAction<String> 
+    public static PrivilegedExceptionAction<String>
         getCanonicalPathAction(
         final File f) throws IOException {
         return new PrivilegedExceptionAction<String>() {
@@ -583,7 +583,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> 
+    public static PrivilegedAction<Boolean>
         isDirectoryAction(final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
@@ -600,7 +600,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> isFileAction(final File f) {
+    public static PrivilegedAction<Boolean> isFileAction(final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
                 return f.isFile() ? Boolean.TRUE : Boolean.FALSE;
@@ -616,7 +616,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Long
      */
-    public static final PrivilegedAction<Long> lengthAction(final File f) {
+    public static PrivilegedAction<Long> lengthAction(final File f) {
         return new PrivilegedAction<Long>() {
             public Long run() {
                 return Long.valueOf(f.length());
@@ -632,7 +632,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return File[]
      */
-    public static final PrivilegedAction<File []> 
+    public static PrivilegedAction<File []>
         listFilesAction(final File f) {
         return new PrivilegedAction<File []>() {
             public File [] run() {
@@ -649,7 +649,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> mkdirsAction(final File f) {
+    public static PrivilegedAction<Boolean> mkdirsAction(final File f) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
                 return f.mkdirs() ? Boolean.TRUE : Boolean.FALSE;
@@ -665,7 +665,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> renameToAction(
+    public static PrivilegedAction<Boolean> renameToAction(
         final File from, final File to) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
@@ -683,7 +683,7 @@ public abstract class J2DoPrivHelper {
      * @return URL
      * @throws MalformedURLException
      */
-    public static final PrivilegedExceptionAction<URL> toURLAction(
+    public static PrivilegedExceptionAction<URL> toURLAction(
         final File file)
         throws MalformedURLException {
         return new PrivilegedExceptionAction<URL>() {
@@ -702,7 +702,7 @@ public abstract class J2DoPrivHelper {
      * @return FileInputStream
      * @throws FileNotFoundException
      */
-    public static final PrivilegedExceptionAction<FileInputStream> 
+    public static PrivilegedExceptionAction<FileInputStream>
         newFileInputStreamAction(
         final File f) throws FileNotFoundException {
         return new PrivilegedExceptionAction<FileInputStream>() {
@@ -721,7 +721,7 @@ public abstract class J2DoPrivHelper {
      * @return FileOutputStream
      * @throws FileNotFoundException
      */
-    public static final PrivilegedExceptionAction<FileOutputStream> 
+    public static PrivilegedExceptionAction<FileOutputStream>
         newFileOutputStreamAction(
         final File f) throws FileNotFoundException {
         return new PrivilegedExceptionAction<FileOutputStream>() {
@@ -740,7 +740,7 @@ public abstract class J2DoPrivHelper {
      * @return FileOutputStream
      * @throws FileNotFoundException
      */
-    public static final PrivilegedExceptionAction<FileOutputStream> 
+    public static PrivilegedExceptionAction<FileOutputStream>
         newFileOutputStreamAction(
         final String f, final boolean append) throws FileNotFoundException {
         return new PrivilegedExceptionAction<FileOutputStream>() {
@@ -759,7 +759,7 @@ public abstract class J2DoPrivHelper {
      * @return InetAddress
      * @throws UnknownHostException
      */
-    public static final PrivilegedExceptionAction<InetAddress> getByNameAction(
+    public static PrivilegedExceptionAction<InetAddress> getByNameAction(
         final String hostname) throws UnknownHostException {
         return new PrivilegedExceptionAction<InetAddress>() {
             public InetAddress run() throws UnknownHostException {
@@ -777,7 +777,7 @@ public abstract class J2DoPrivHelper {
      * @return Socket
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<Socket> newSocketAction(
+    public static PrivilegedExceptionAction<Socket> newSocketAction(
         final InetAddress host, final int port) throws IOException {
         return new PrivilegedExceptionAction<Socket>() {
             public Socket run() throws IOException {
@@ -795,7 +795,7 @@ public abstract class J2DoPrivHelper {
      * @return ServerSocket
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<ServerSocket>
+    public static PrivilegedExceptionAction<ServerSocket>
             newServerSocketAction(
         final int port) throws IOException {
         return new PrivilegedExceptionAction<ServerSocket>() {
@@ -814,7 +814,7 @@ public abstract class J2DoPrivHelper {
      * @return Socket
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<Socket> acceptAction(
+    public static PrivilegedExceptionAction<Socket> acceptAction(
         final ServerSocket ss) throws IOException {
         return new PrivilegedExceptionAction<Socket>() {
             public Socket run() throws IOException {
@@ -831,7 +831,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return Properties
      */
-    public static final PrivilegedAction<Properties> getPropertiesAction() {
+    public static PrivilegedAction<Properties> getPropertiesAction() {
         return new PrivilegedAction<Properties>() {
             public Properties run() {
                 return System.getProperties();
@@ -847,7 +847,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return String
      */
-    public static final PrivilegedAction<String> getPropertyAction(
+    public static PrivilegedAction<String> getPropertyAction(
         final String name) {
         return new PrivilegedAction<String>() {
             public String run() {
@@ -864,7 +864,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return String
      */
-    public static final PrivilegedAction<String> getPropertyAction(
+    public static PrivilegedAction<String> getPropertyAction(
         final String name, final String def) {
         return new PrivilegedAction<String>() {
             public String run() {
@@ -882,7 +882,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return ClassLoader
      */
-    public static final PrivilegedAction<ClassLoader> 
+    public static PrivilegedAction<ClassLoader>
             getContextClassLoaderAction() {
         return new PrivilegedAction<ClassLoader>() {
             public ClassLoader run() {
@@ -900,7 +900,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return ClassLoader
      */
-    public static final PrivilegedAction<Boolean> 
+    public static PrivilegedAction<Boolean>
             setContextClassLoaderAction(final ClassLoader loader) {
         return new PrivilegedAction<Boolean>() {
             public Boolean run() {
@@ -919,7 +919,7 @@ public abstract class J2DoPrivHelper {
      * 
      * @return Thread
      */
-    public static final PrivilegedAction<Thread> newDaemonThreadAction(
+    public static PrivilegedAction<Thread> newDaemonThreadAction(
         final Runnable target, final String name) {
         return new PrivilegedAction<Thread>() {
             public Thread run() {
@@ -939,7 +939,7 @@ public abstract class J2DoPrivHelper {
      * @return InputStream
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<InputStream> openStreamAction(
+    public static PrivilegedExceptionAction<InputStream> openStreamAction(
         final URL url) throws IOException {
         return new PrivilegedExceptionAction<InputStream>() {
             public InputStream run() throws IOException {
@@ -957,7 +957,7 @@ public abstract class J2DoPrivHelper {
      * @return Object
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<Object> getContentAction(
+    public static PrivilegedExceptionAction<Object> getContentAction(
         final URLConnection con) throws IOException {
         return new PrivilegedExceptionAction<Object>() {
             public Object run() throws IOException {
@@ -975,7 +975,7 @@ public abstract class J2DoPrivHelper {
      * @return ZipFile
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<ZipFile> newZipFileAction(
+    public static PrivilegedExceptionAction<ZipFile> newZipFileAction(
         final File f)
         throws IOException {
         return new PrivilegedExceptionAction<ZipFile>() {
@@ -994,7 +994,7 @@ public abstract class J2DoPrivHelper {
      * @return JarFile
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<JarFile> getJarFileAction(final JarURLConnection con)
+    public static PrivilegedExceptionAction<JarFile> getJarFileAction(final JarURLConnection con)
         throws IOException {
         return new PrivilegedExceptionAction<JarFile>() {
             public JarFile run() throws IOException {
@@ -1012,7 +1012,7 @@ public abstract class J2DoPrivHelper {
      * @return JarEntry
      * @throws IOException
      */
-    public static final PrivilegedExceptionAction<JarEntry> getJarEntryAction(final JarURLConnection con)
+    public static PrivilegedExceptionAction<JarEntry> getJarEntryAction(final JarURLConnection con)
         throws IOException {
         return new PrivilegedExceptionAction<JarEntry>() {
             public JarEntry run() throws IOException {
@@ -1029,7 +1029,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return serp.bytecode.Code
      */
-    public static final PrivilegedAction<Code> newCodeAction() {
+    public static PrivilegedAction<Code> newCodeAction() {
         return new PrivilegedAction<Code>() {
             public Code run() {
                 return new Code();
@@ -1045,7 +1045,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return TemporaryClassLoader
      */
-    public static final PrivilegedAction<TemporaryClassLoader>
+    public static PrivilegedAction<TemporaryClassLoader>
         newTemporaryClassLoaderAction(
         final ClassLoader parent) {
         return new PrivilegedAction<TemporaryClassLoader>() {
@@ -1063,7 +1063,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return MultiClassLoader
      */
-    public static final PrivilegedAction<MultiClassLoader> newMultiClassLoaderAction() {
+    public static PrivilegedAction<MultiClassLoader> newMultiClassLoaderAction() {
         return new PrivilegedAction() {
             public MultiClassLoader run() {
                 return new MultiClassLoader();
@@ -1079,7 +1079,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCClassLoader
      */
-    public static final PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
+    public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
         final Project project, final ClassLoader parent) {
         return new PrivilegedAction<BCClassLoader>() {
             public BCClassLoader run() {
@@ -1088,7 +1088,7 @@ public abstract class J2DoPrivHelper {
         };
     }
 
-    public static final PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
+    public static PrivilegedAction<BCClassLoader> newBCClassLoaderAction(
         final Project project) {
         return new PrivilegedAction<BCClassLoader>() {
             public BCClassLoader run() {
@@ -1105,7 +1105,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCField
      */
-    public static final PrivilegedAction<BCField []> getBCClassFieldsAction(
+    public static PrivilegedAction<BCField []> getBCClassFieldsAction(
         final BCClass bcClass, final String fieldName) {
         return new PrivilegedAction<BCField []>() {
             public BCField [] run() {
@@ -1122,7 +1122,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCField
      */
-    public static final PrivilegedAction<BCField> getFieldInstructionFieldAction
+    public static PrivilegedAction<BCField> getFieldInstructionFieldAction
     (
         final FieldInstruction instruction) {
         return new PrivilegedAction<BCField>() {
@@ -1140,7 +1140,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCClass
      */
-    public static final PrivilegedAction<BCClass> loadProjectClassAction(
+    public static PrivilegedAction<BCClass> loadProjectClassAction(
         final Project project, final Class<?> clazz) {
         return new PrivilegedAction<BCClass>() {
             public BCClass run() {
@@ -1157,7 +1157,7 @@ public abstract class J2DoPrivHelper {
      *   
      * @return BCClass
      */
-    public static final PrivilegedAction<BCClass> loadProjectClassAction(
+    public static PrivilegedAction<BCClass> loadProjectClassAction(
         final Project project, final String clazzName) {
         return new PrivilegedAction<BCClass>() {
             public BCClass run() {
@@ -1174,7 +1174,7 @@ public abstract class J2DoPrivHelper {
      *
      * @return Annotation[]
      */
-    public static final PrivilegedAction<Annotation []> getAnnotationsAction(
+    public static PrivilegedAction<Annotation []> getAnnotationsAction(
         final AnnotatedElement element) {
         return new PrivilegedAction<Annotation []>() {
             public Annotation [] run() {
@@ -1192,7 +1192,7 @@ public abstract class J2DoPrivHelper {
      *
      * @return Annotation[]
      */
-    public static final PrivilegedAction<Annotation []> 
+    public static PrivilegedAction<Annotation []>
         getDeclaredAnnotationsAction(
         final AnnotatedElement element) {
         return new PrivilegedAction<Annotation[]>() {
@@ -1211,7 +1211,7 @@ public abstract class J2DoPrivHelper {
      *
      * @return Boolean
      */
-    public static final PrivilegedAction<Boolean> isAnnotationPresentAction(
+    public static PrivilegedAction<Boolean> isAnnotationPresentAction(
         final AnnotatedElement element,
         final Class<? extends Annotation> annotationClazz) {
         return new PrivilegedAction<Boolean>() {
@@ -1231,7 +1231,7 @@ public abstract class J2DoPrivHelper {
      *
      * @return Annotation
      */
-    public static final <T extends Annotation> PrivilegedAction<T> 
+    public static <T extends Annotation> PrivilegedAction<T>
         getAnnotationAction(
         final AnnotatedElement element, 
         final Class<T> annotationClazz) {
@@ -1247,7 +1247,7 @@ public abstract class J2DoPrivHelper {
      * 
      * Requires security policy: 'permission java.lang.RuntimePermission "accessDeclaredMemeber";'
      */
-    public static final <T> PrivilegedAction<Set<ConstraintViolation<T>>> validateAction(
+    public static <T> PrivilegedAction<Set<ConstraintViolation<T>>> validateAction(
         final Validator validator, final T arg0, final Class<?>[] groups) {
         return new PrivilegedAction<Set<ConstraintViolation<T>>>() {
             public Set<ConstraintViolation<T>> run() {
@@ -1261,7 +1261,7 @@ public abstract class J2DoPrivHelper {
      * 
      * Requires security policy: 'permission java.lang.RuntimePermission "createClassLoader";'
      */
-    public static final <T> PrivilegedAction<ValidatorFactory> buildDefaultValidatorFactoryAction() {
+    public static <T> PrivilegedAction<ValidatorFactory> buildDefaultValidatorFactoryAction() {
         return new PrivilegedAction<ValidatorFactory>() {
             public ValidatorFactory run() {
                 return Validation.buildDefaultValidatorFactory();
@@ -1269,7 +1269,7 @@ public abstract class J2DoPrivHelper {
         };
     }
 
-    public static final PrivilegedExceptionAction<URL> createURL(final String url) throws MalformedURLException {
+    public static PrivilegedExceptionAction<URL> createURL(final String url) throws MalformedURLException {
         return new PrivilegedExceptionAction<URL>() {
             public URL run() throws MalformedURLException {
                 return new URL(url);
