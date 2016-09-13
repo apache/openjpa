@@ -148,9 +148,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/fb-3.0-asm</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/branches/fb-3.0-asm</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/branches/fb-3.0-asm</url>
     </scm>
 
     <modules>
