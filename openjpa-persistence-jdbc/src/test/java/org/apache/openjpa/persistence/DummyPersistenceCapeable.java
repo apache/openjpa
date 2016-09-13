@@ -20,7 +20,7 @@ package org.apache.openjpa.persistence;
 
 import org.apache.openjpa.enhance.FieldConsumer;
 import org.apache.openjpa.enhance.FieldSupplier;
-import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCEnhancerSerp;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.enhance.StateManager;
@@ -47,7 +47,7 @@ public class DummyPersistenceCapeable implements PersistenceCapable {
     }
 
     public int pcGetEnhancementContractVersion() {
-        return PCEnhancer.ENHANCER_VERSION - 1;
+        return PCEnhancerSerp.ENHANCER_VERSION - 1;
     }
 
     public PersistenceCapable pcNewInstance(StateManager sm, boolean clear) {

@@ -277,7 +277,7 @@ public abstract class AbstractUnenhancedClassTest
     public void testPCSubclassName() {
         assertEquals("org.apache.openjpa.enhance."
             + getUnenhancedClass().getName().replace('.', '$') + "$pcsubclass",
-            PCEnhancer.toPCSubclassName(getUnenhancedClass()));
+            PCEnhancerSerp.toPCSubclassName(getUnenhancedClass()));
     }
 
     public void testEvictionInUserCreatedInstance()

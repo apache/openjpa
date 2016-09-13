@@ -22,9 +22,9 @@ package org.apache.openjpa.tools.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.openjpa.enhance.PCEnhancer;
 import org.codehaus.plexus.util.FileUtils;
 
-import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.util.Options;
 
 import java.io.File;
@@ -128,7 +128,7 @@ public abstract class AbstractOpenJpaEnhancerMojo extends AbstractOpenJpaMojo {
             extendRealmClasspath();
         }
 
-        ok = PCEnhancer.run(args, opts);
+        ok = PCEnhancer.run(args, opts, null);
 
         if (!ok) {
             throw new MojoExecutionException("The OpenJPA Enhancer tool detected an error!");

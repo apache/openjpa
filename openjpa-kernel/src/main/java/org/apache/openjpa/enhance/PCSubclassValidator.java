@@ -199,7 +199,7 @@ public class PCSubclassValidator {
      */
     private BCField checkGetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
-        BCField field = PCEnhancer.getReturnedField(getBCMethod(meth));
+        BCField field = PCEnhancerSerp.getReturnedField(getBCMethod(meth));
         if (field == null) {
             addContractViolation(loc.get("subclasser-invalid-getter",
                 fmd.getName()), fmd);
@@ -216,7 +216,7 @@ public class PCSubclassValidator {
      */
     private BCField checkSetterIsSubclassable(Method meth, FieldMetaData fmd) {
         checkMethodIsSubclassable(meth, fmd);
-        BCField field = PCEnhancer.getAssignedField(getBCMethod(meth));
+        BCField field = PCEnhancerSerp.getAssignedField(getBCMethod(meth));
         if (field == null) {
             addContractViolation(loc.get("subclasser-invalid-setter",
                 fmd.getName()), fmd);

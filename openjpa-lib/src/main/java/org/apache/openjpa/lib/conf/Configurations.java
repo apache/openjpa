@@ -342,13 +342,11 @@ public class Configurations {
             String anchor = result.get(CONFIG_RESOURCE_ANCHOR);
 
             File file = new File(path);
-            if ((AccessController.doPrivileged(J2DoPrivHelper
-                .isFileAction(file))).booleanValue())
+            if ((AccessController.doPrivileged(J2DoPrivHelper.isFileAction(file))).booleanValue())
                 provider = ProductDerivations.load(file, anchor, null);
             else {
                 file = new File("META-INF" + File.separatorChar + path);
-                if ((AccessController.doPrivileged(J2DoPrivHelper
-                    .isFileAction(file))).booleanValue())
+                if ((AccessController.doPrivileged(J2DoPrivHelper.isFileAction(file))).booleanValue())
                     provider = ProductDerivations.load(file, anchor, null);
                 else
                     provider = ProductDerivations.load(path, anchor, null);
@@ -728,8 +726,7 @@ public class Configurations {
      *
      * @since 1.1.0
      */
-    public static boolean runAgainstAllAnchors(Options opts,
-        Configurations.Runnable runnable) {
+    public static boolean runAgainstAllAnchors(Options opts, Configurations.Runnable runnable) {
         if (opts.containsKey("help") || opts.containsKey("-help")) {
             return false;
         }
@@ -770,6 +767,6 @@ public class Configurations {
     }
 
     public interface Runnable {
-        public boolean run(Options opts) throws Exception;
+        boolean run(Options opts) throws Exception;
     }
 }

@@ -34,17 +34,17 @@ public class TestPCEnhancerEnhancementContractVersion extends AbstractPersistenc
         new DummyPersistenceCapeable();
     }
     public void testCurrentLevel() {
-        assertFalse(PCEnhancer.checkEnhancementLevel(Country.class, log));
+        assertFalse(PCEnhancerSerp.checkEnhancementLevel(Country.class, log));
     }
     
     public void testDownLevel(){
-        assertTrue(PCEnhancer.checkEnhancementLevel(DummyPersistenceCapeable.class, log));
+        assertTrue(PCEnhancerSerp.checkEnhancementLevel(DummyPersistenceCapeable.class, log));
     }
     public void testContact() {
-        assertFalse(PCEnhancer.checkEnhancementLevel(null, log));
-        assertFalse(PCEnhancer.checkEnhancementLevel(Country.class, null));
+        assertFalse(PCEnhancerSerp.checkEnhancementLevel(null, log));
+        assertFalse(PCEnhancerSerp.checkEnhancementLevel(Country.class, null));
         try {
-            PCEnhancer.checkEnhancementLevel(Object.class, log);
+            PCEnhancerSerp.checkEnhancementLevel(Object.class, log);
             fail("Should have got an IllegalArgumentException exception from " +
             		"org.apache.openjpa.enhance.PCEnhancer.checkEnhancementLevel");
         } catch (java.lang.IllegalStateException ile) {

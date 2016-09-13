@@ -25,7 +25,8 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 
-
+import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachA;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachB;
 import org.apache.openjpa.persistence.kernel.common.apps.AttachD;
@@ -34,7 +35,6 @@ import org.apache.openjpa.persistence.kernel.common.apps.DetachSMPC;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.conf.OpenJPAConfigurationImpl;
-import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.kernel.DetachedStateManager;
 import org.apache.openjpa.lib.util.Options;
@@ -491,9 +491,9 @@ public class TestDetachedStateManager extends BaseKernelTest {
             .getIntField());
         assertEquals(new Integer(100), pc.getStringIntMap().get("b"));
 
-        pm = (OpenJPAEntityManager) factory.createEntityManager();
+        pm = factory.createEntityManager();
         startTx(pm);
-        pc = (DetachSMPC) pm.merge(pc);
+        pc = pm.merge(pc);
         assertEquals(3, pc.getIntField());
         assertSize(1, pc.getRelSet());
         assertEquals(4, ((DetachSMPC) pc.getRelSet().iterator().next())
@@ -503,8 +503,8 @@ public class TestDetachedStateManager extends BaseKernelTest {
         endTx(pm);
         endEm(pm);
 
-        pm = (OpenJPAEntityManager) factory.createEntityManager();
-        pc = (DetachSMPC) pm.find(DetachSMPC.class, pcoid);
+        pm = factory.createEntityManager();
+        pc = pm.find(DetachSMPC.class, pcoid);
         assertEquals(3, pc.getIntField());
         assertSize(1, pc.getRelSet());
         assertEquals(4, ((DetachSMPC) pc.getRelSet().iterator().next())
@@ -528,9 +528,10 @@ public class TestDetachedStateManager extends BaseKernelTest {
 
         Options opts = new Options();
         opts.put("jdo", "true");
-        PCEnhancer.run(conf, new String[]{
-            "org.apache.openjpa.persistence.kernel.noenhance.DetachSMPC" },
-            opts);
+        Configurations.populateConfiguration(conf, opts);
+
+        conf.getPCEnhancerInstance().enhanceFiles(new String[]{"org.apache.openjpa.persistence.kernel.noenhance.DetachSMPC" },
+                       new PCEnhancer.Flags(), null);
     }
 
     private void assertDetachedSM(Object obj) {

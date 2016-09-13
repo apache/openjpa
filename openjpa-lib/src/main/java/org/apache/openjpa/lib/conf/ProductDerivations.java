@@ -390,10 +390,13 @@ public class ProductDerivations {
      * product derivations or if no product derivations could find anchors,
      * this returns an empty list.
      *
+     * An 'anchor' is the name of a persistence unit, e.g. 'MYPU'
+     * A 'fully qualified anchor' is the resource it got found in + # + the name of the persistence unit,
+     * e.g. 'META-INF/persistence.xml#MYPU'
+     *
      * @since 1.1.0
      */
-    public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(
-        final String propertiesLocation) {
+    public static List<String> getFullyQualifiedAnchorsInPropertiesLocation(final String propertiesLocation) {
         List<String> fqAnchors = new ArrayList<String>();
         StringBuilder errs = null;
         Throwable err = null;

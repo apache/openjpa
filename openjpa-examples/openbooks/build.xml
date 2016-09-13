@@ -173,7 +173,7 @@
 	
 	<target name="enhance" depends="check-env"
 		description="Enhance persistent domain classes.">
-		<java classname="org.apache.openjpa.enhance.PCEnhancer" fork="true">
+		<java classname="org.apache.openjpa.enhance.PCEnhancerSerp" fork="true">
 			<arg value="-properties" />
 			<arg value="${jpa.properties}" />
 			<classpath refid="compile.classpath" />

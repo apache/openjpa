@@ -228,7 +228,7 @@ The enhancer task allows you to invoke the OpenJPA enhancer directly from within
 the Ant build process. The task's parameters correspond exactly to the long
 versions of the command-line arguments to the 
 <link linkend="ref_guide_pc_enhance"><classname>
-org.apache.openjpa.enhance.PCEnhancer</classname></link>.
+    org.apache.openjpa.enhance.PCEnhancerSerp</classname></link>.
             </para>
             <para>
 The enhancer task accepts a nested <literal>fileset</literal> tag to specify the

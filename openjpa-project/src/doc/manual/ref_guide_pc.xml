@@ -163,7 +163,7 @@ are loaded into the JVM. The following sections describe each option.
             <para>
 The enhancer can be invoked at build time 
 via its Java class, <classname>
-org.apache.openjpa.enhance.PCEnhancer</classname>.
+                org.apache.openjpa.enhance.PCEnhancerSerp</classname>.
             </para>
             <note>
                 <para>
@@ -176,7 +176,7 @@ You can also enhance via Ant; see
                     Using the OpenJPA Enhancer
                 </title>
 <programlisting>
-java org.apache.openjpa.enhance.PCEnhancer Magazine.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Magazine.java
 </programlisting>
             </example>
             <para>

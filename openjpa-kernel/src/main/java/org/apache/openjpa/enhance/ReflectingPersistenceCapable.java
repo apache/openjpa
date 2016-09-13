@@ -68,7 +68,7 @@ public class ReflectingPersistenceCapable
     }
 
     public int pcGetEnhancementContractVersion() {
-        return PCEnhancer.ENHANCER_VERSION;
+        return PCEnhancerSerp.ENHANCER_VERSION;
     }
 
     public Object pcGetGenericContext() {

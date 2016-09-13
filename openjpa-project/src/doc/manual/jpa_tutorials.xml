@@ -187,10 +187,10 @@ files listed above.
                         <para>
                         <indexterm>
                             <primary>
-                                org.apache.openjpa.enhance.PCEnhancer
+                                org.apache.openjpa.enhance.PCEnhancerSerp
                             </primary>
                         </indexterm>
-<command>org.apache.openjpa.enhance.PCEnhancer</command>:
+<command>org.apache.openjpa.enhance.PCEnhancerSerp</command>:
 Runs the OpenJPA enhancer against the specified
 classes. More information is available in <xref linkend="ref_guide_pc_enhance"/>
  of the Reference Guide.
@@ -390,7 +390,7 @@ You can use any Java compiler instead of <command>javac</command>.
 Enhance the persistent classes. (Optional)
                     </para>
 <programlisting>
-java org.apache.openjpa.enhance.PCEnhancer Animal.java Dog.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Animal.java Dog.java
 </programlisting>
                     <para>
 This step runs the OpenJPA enhancer on the <filename>Animal.java</filename> and
@@ -822,7 +822,7 @@ javac Rabbit.java
 Enhance the <classname>Rabbit</classname> class. (Optional)
                     </para>
 <programlisting>
-java org.apache.openjpa.enhance.PCEnhancer Rabbit.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Rabbit.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -910,7 +910,7 @@ javac Snake.java
 Enhance the class. (Optional)
                     </para>
 <programlisting>
-java org.apache.openjpa.enhance.PCEnhancer Snake.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Snake.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -1121,8 +1121,8 @@ Compile <filename>Snake.java</filename> and <filename>Rabbit.java</filename> and
 optionally enhance the classes.
                     </para>
 <programlisting>
-javac Snake.java Rabbit.java
-java org.apache.openjpa.enhance.PCEnhancer Snake.java Rabbit.java
+    javac Snake.java Rabbit.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Snake.java Rabbit.java
 </programlisting>
                 </listitem>
                 <listitem>
@@ -1323,7 +1323,7 @@ javac *.java  ejb/*.java jsp/*.java
 Enhance the Car class. (Optional)
                 </para>
 <programlisting>
-java org.apache.openjpa.enhance.PCEnhancer Car.java
+    java org.apache.openjpa.enhance.PCEnhancerSerp Car.java
 </programlisting>
                 <para>
 Run the mapping tool; make sure that your <filename> META-INF/persistence.xml

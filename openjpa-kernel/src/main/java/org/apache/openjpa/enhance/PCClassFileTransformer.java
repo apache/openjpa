@@ -94,7 +94,7 @@ public class PCClassFileTransformer
      * if none are configured
      */
     public PCClassFileTransformer(MetaDataRepository repos,
-        PCEnhancer.Flags flags, ClassLoader tmpLoader, boolean devscan) {
+                                  PCEnhancer.Flags flags, ClassLoader tmpLoader, boolean devscan) {
         _repos = repos;
         _tmpLoader = tmpLoader;
 
@@ -148,9 +148,9 @@ public class PCClassFileTransformer
             ClassLoader oldLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
             AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(_tmpLoader));
             try {
-                PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(),
-                        new Project().loadClass(new ByteArrayInputStream(bytes),
-                                _tmpLoader), _repos);
+                PCEnhancerSerp enhancer = new PCEnhancerSerp(_repos.getConfiguration(),
+                        new Project().loadClass(new ByteArrayInputStream(bytes), _tmpLoader),
+                        _repos);
                 enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
                 enhancer.setEnforcePropertyRestrictions
                         (_flags.enforcePropertyRestrictions);

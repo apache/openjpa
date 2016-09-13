@@ -27,8 +27,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.openjpa.enhance.PCEnhancerSerp;
 import org.apache.openjpa.util.InternalException;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
@@ -114,7 +115,7 @@ class InterfaceImplGenerator {
         // copy the BCClass<?> into the enhancer project.
         bc = _enhProject.loadClass(new ByteArrayInputStream(bc.toByteArray()), 
             loader);
-        PCEnhancer enhancer = new PCEnhancer(_repos, bc, meta);
+        PCEnhancerSerp enhancer = new PCEnhancerSerp(_repos, bc, meta);
 
         int result = enhancer.run();
         if (result != PCEnhancer.ENHANCE_PC)

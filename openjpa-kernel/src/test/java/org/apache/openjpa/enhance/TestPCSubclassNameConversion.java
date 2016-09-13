@@ -24,9 +24,9 @@ public class TestPCSubclassNameConversion
     extends TestCase {
 
     public void testPCSubclassNameConversion() {
-        String name = PCEnhancer.toPCSubclassName(Object.class);
-        assertTrue(PCEnhancer.isPCSubclassName(name));
+        String name = PCEnhancerSerp.toPCSubclassName(Object.class);
+        assertTrue(PCEnhancerSerp.isPCSubclassName(name));
         assertEquals(Object.class.getName(),
-            PCEnhancer.toManagedTypeName(name));
+            PCEnhancerSerp.toManagedTypeName(name));
     }
 }

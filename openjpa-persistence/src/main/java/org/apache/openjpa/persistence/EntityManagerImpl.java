@@ -1665,8 +1665,9 @@ public class EntityManagerImpl
             try {
                 return Class.forName(className);
             } catch (ClassNotFoundException e) {
-                if (PCEnhancer.isPCSubclassName(className)) {
-                    String superName = PCEnhancer.toManagedTypeName(className);
+                PCEnhancer pcEnhancer = conf.getPCEnhancerInstance();
+                if (pcEnhancer.isPCSubclassName(className)) {
+                    String superName = pcEnhancer.toManagedTypeName(className);
                     ClassMetaData[] metas = conf.getMetaDataRepositoryInstance()
                         .getMetaDatas();
                     for (int i = 0; i < metas.length; i++) {

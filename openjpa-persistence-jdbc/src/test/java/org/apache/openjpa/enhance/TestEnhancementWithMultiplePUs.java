@@ -52,7 +52,7 @@ public class TestEnhancementWithMultiplePUs
             "org.apache.openjpa.enhance.UnenhancedBootstrapInstance";
         BCClass bc = assertNotPC(loader, project, className);
 
-        PCEnhancer enhancer = new PCEnhancer(conf, bc, repos, loader);
+        PCEnhancerSerp enhancer = new PCEnhancerSerp(conf, bc, repos, loader);
 
         assertEquals(PCEnhancer.ENHANCE_PC, enhancer.run());
         assertTrue(Arrays.asList(bc.getInterfaceNames()).contains(
@@ -98,8 +98,8 @@ public class TestEnhancementWithMultiplePUs
             }
         };
 
-        PCEnhancer.run(conf, null, new PCEnhancer.Flags(), repos, writer,
-            loader);
+        PCEnhancerSerp.run(conf, null, new PCEnhancer.Flags(), repos, writer,
+                           loader);
 
         // ensure that we don't attempt to process classes listed in other PUs
         assertEquals(1, written.size());
@@ -148,7 +148,7 @@ public class TestEnhancementWithMultiplePUs
             "org.apache.openjpa.enhance.RestrictedMetaDataRepository(excludedTypes=" +
             "org.apache.openjpa.persistence.jdbc.annotations.UnenhancedMixedAccess)");
         opts.put(PCEnhancer.class.getName() + "#bytecodeWriter", writer);
-        PCEnhancer.run(null, opts);
+        PCEnhancer.run(null, opts, null);
 
         // ensure that we do process the classes listed in the PUs
         assertTrue(written.contains(

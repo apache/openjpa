@@ -20,12 +20,12 @@ package org.apache.openjpa.enhance;
 
 /**
  * Instances of this interface can convert a positional index for a
- * {@link FieldMetaData} that uses property access into the underlying
+ * {@link org.apache.openjpa.meta.FieldMetaData} that uses property access into the underlying
  * field name. Instances of {@link DynamicPersistenceCapable} for types
  * that use property access will implement this interface.
  *
  * @since 1.0.0
  */
 public interface AttributeTranslator {
-    public String pcAttributeIndexToFieldName(int i);
+    String pcAttributeIndexToFieldName(int i);
 }

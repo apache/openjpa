@@ -26,7 +26,6 @@ import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.lib.ant.AbstractTask;
 import org.apache.openjpa.lib.conf.ConfigurationImpl;
 import org.apache.openjpa.lib.util.Files;
-import org.apache.openjpa.meta.MetaDataRepository;
 
 /**
  * Executes the enhancer on the specified files. This task can take
@@ -80,12 +79,14 @@ public class PCEnhancerTask
         return new OpenJPAConfigurationImpl();
     }
 
-    protected void executeOn(String[] files)
-        throws IOException {
-        flags.directory = (dirName == null) ? null
-            : Files.getFile(dirName, getClassLoader());
+    protected void executeOn(String[] files) throws IOException {
+        flags.directory = (dirName == null) ? null : Files.getFile(dirName, getClassLoader());
         OpenJPAConfiguration conf = (OpenJPAConfiguration) getConfiguration();
-        MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
-        PCEnhancer.run(conf, files, flags, repos, null, getClassLoader ());
-	}
+
+        //X MetaDataRepository repos = conf.newMetaDataRepositoryInstance();
+        //X PCEnhancerSerp.run(conf, files, flags, repos, null, getClassLoader ());
+        //X TODO what about repos?
+
+        conf.getPCEnhancerInstance().enhanceFiles(files, flags, getClassLoader());
+    }
 }

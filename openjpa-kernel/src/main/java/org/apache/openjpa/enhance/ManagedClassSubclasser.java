@@ -130,7 +130,7 @@ public class ManagedClassSubclasser {
         Set<Class<?>> unspecified = null;
         for (Class<?> cls : classes) {
             final Class<?> c = cls;
-            final PCEnhancer enhancer = new PCEnhancer(conf, cls); 
+            final PCEnhancerSerp enhancer = new PCEnhancerSerp(conf, cls);
 
             enhancer.setBytecodeWriter(new BytecodeWriter() {
                 public void write(BCClass bc) throws IOException {
@@ -264,7 +264,7 @@ public class ManagedClassSubclasser {
         }
     }
 
-    private static void write(BCClass bc, PCEnhancer enhancer,
+    private static void write(BCClass bc, PCEnhancerSerp enhancer,
         Map<Class<?>, byte[]> map, Class<?> cls, List<Class<?>> subs, List<Class<?>> ints)
         throws IOException {
 

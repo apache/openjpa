@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCEnhancerImplSerp;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.AuditLogger;
 import org.apache.openjpa.audit.Auditor;
@@ -189,6 +191,10 @@ public class OpenJPAConfigurationImpl
     private BrokerFactoryEventManager _brokerFactoryEventManager = new BrokerFactoryEventManager(this);
     private Map<String, Object> _peMap; //contains persistence environment-specific info    
     private boolean _allowSetLifeCycleEventManager = true;
+
+    //X TODO we later have to think about making it a PluginValue probably?
+    private PCEnhancer pcEnhancerInstance = new PCEnhancerImplSerp(this);
+
     /**
      * Default constructor. Attempts to load global properties.
      */
@@ -683,6 +689,21 @@ public class OpenJPAConfigurationImpl
         if (classResolverPlugin.get() == null)
             classResolverPlugin.instantiate(ClassResolver.class, this);
         return (ClassResolver) classResolverPlugin.get();
+    }
+
+    @Override
+    public String getPCEnhancer() {
+        return null;
+    }
+
+    @Override
+    public void setPCEnhancer(String pcEnhancer) {
+
+    }
+
+    @Override
+    public PCEnhancer getPCEnhancerInstance() {
+        return pcEnhancerInstance;
     }
 
     public void setBrokerFactory(String factory) {

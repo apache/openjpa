@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.enhance.DynamicPersistenceCapable;
-import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCEnhancerSerp;
 import org.apache.openjpa.enhance.PCRegistry;
 import org.apache.openjpa.enhance.PCRegistry.RegisterClassListener;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -2507,7 +2507,7 @@ public class MetaDataRepository implements PCRegistry.RegisterClassListener, Con
             return;
         }
         Log log = _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
-        boolean res = PCEnhancer.checkEnhancementLevel(cls, _conf.getLog(OpenJPAConfiguration.LOG_RUNTIME));
+        boolean res = _conf.getPCEnhancerInstance().checkEnhancementLevel(cls);
         if (log.isTraceEnabled() == false && res == true) {
             // Since trace isn't enabled flip the flag so we only log this once.
             _logEnhancementLevel = false;

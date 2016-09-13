@@ -77,6 +77,7 @@ public interface ProductDerivation {
      * Load the given given resource into the returned ConfigurationProvider, 
      * or return null if it is not a resource this receiver understands. 
      * The given class loader may be null.
+     * An anchor is e.g. a specific Persistence Unit name
      *
      * @param anchor optional named anchor within a multiple-configuration
      * resource

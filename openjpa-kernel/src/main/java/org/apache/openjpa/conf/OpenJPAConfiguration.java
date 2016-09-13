@@ -27,6 +27,7 @@ import org.apache.openjpa.datacache.DataCache;
 import org.apache.openjpa.datacache.DataCacheManager;
 import org.apache.openjpa.datacache.DataCacheMode;
 import org.apache.openjpa.ee.ManagedRuntime;
+import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.enhance.RuntimeUnenhancedClassesModes;
 import org.apache.openjpa.event.BrokerFactoryEventManager;
 import org.apache.openjpa.event.LifecycleEventManager;
@@ -294,6 +295,23 @@ public interface OpenJPAConfiguration
      * The {@link ClassResolver} to use.
      */
     public ClassResolver getClassResolverInstance();
+
+    /**
+     * The plugin string for the {@link PCEnhancer} to use for custom
+     * class loading.
+     */
+    public String getPCEnhancer();
+
+    /**
+     * The plugin string for the {@link PCEnhancer} to use for custom
+     * class loading.
+     */
+    public void setPCEnhancer(String pcEnhancer);
+
+    /**
+     * The {@link PCEnhancer} to use.
+     */
+    public PCEnhancer getPCEnhancerInstance();
 
     /**
      * The {@link ClassResolver} to use.
@@ -1846,7 +1864,7 @@ public interface OpenJPAConfiguration
      * Sets the plug-in string that describes the policy to distribute cached instances
      * across named partitions of L2 data cache.
      * 
-     * @param a plug-in string for {@link CacheDistributionPolicy}.
+     * @param policyPlugin a plug-in string for {@link CacheDistributionPolicy}.
      * @since 2.0.0
      */
     public void setCacheDistributionPolicy(String policyPlugin);

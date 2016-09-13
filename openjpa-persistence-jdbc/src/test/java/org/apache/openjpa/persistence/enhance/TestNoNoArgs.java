@@ -20,9 +20,10 @@ package org.apache.openjpa.persistence.enhance;
 
 import java.io.IOException;
 
+import org.apache.openjpa.enhance.PCEnhancer;
 import org.apache.openjpa.persistence.common.utils.AbstractTestCase;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PCEnhancer;
+import org.apache.openjpa.enhance.PCEnhancerSerp;
 import org.apache.openjpa.meta.MetaDataRepository;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAEntityManagerSPI;
@@ -51,7 +52,7 @@ public class TestNoNoArgs
 
     public void testNoNoArgs()
         throws IOException {
-        PCEnhancer.run((OpenJPAConfiguration) conf,
+        PCEnhancerSerp.run((OpenJPAConfiguration) conf,
             new String[]{ },
             flags, repos, null, loader);
     }
@@ -61,7 +62,7 @@ public class TestNoNoArgs
         flags.addDefaultConstructor = false;
         boolean caughtException = false;
         try {
-            PCEnhancer.run((OpenJPAConfiguration) conf, new String[]{ },
+            PCEnhancerSerp.run((OpenJPAConfiguration) conf, new String[]{ },
                 flags, repos, null, loader);
         } catch (OpenJPAException e) {
             caughtException = true;
@@ -71,7 +72,7 @@ public class TestNoNoArgs
 
     public void testNo3NoArgs()
         throws IOException {
-        PCEnhancer.run((OpenJPAConfiguration) conf,
+        PCEnhancerSerp.run((OpenJPAConfiguration) conf,
             new String[]{ "persistence.enhance.common.apps.Entity1" },
             flags, repos, null, loader);
     }

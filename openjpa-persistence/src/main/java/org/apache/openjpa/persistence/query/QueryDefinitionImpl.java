@@ -48,7 +48,7 @@ public class QueryDefinitionImpl extends ExpressionImpl
 	private Predicate _where;
 	private Predicate _having;
 	
-	private static enum Visit {PROJECTION, EXPRESSION, JOINABLE};
+	private enum Visit {PROJECTION, EXPRESSION, JOINABLE}
 	
 	protected static Localizer _loc = 
 		Localizer.forPackage(QueryDefinitionImpl.class);

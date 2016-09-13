@@ -105,8 +105,8 @@ You should then proceed to pass in the configuration file you are using to the
 enhancer: (Optional)
                 </para>
                 <para>
-<userinput>java org.apache.openjpa.enhance.PCEnhancer -p persistence.xml Machine.java Crane.java Bulldozer.java
-Operator.java</userinput>
+<userinput>java org.apache.openjpa.enhance.PCEnhancerSerp -p persistence.xml Machine.java Crane.java Bulldozer.java
+    Operator.java</userinput>
                 </para>
             </listitem>
             <listitem>

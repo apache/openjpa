@@ -22,7 +22,7 @@ import java.util.Locale;
 
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
-import org.apache.openjpa.enhance.PCEnhancer.AuxiliaryEnhancer;
+import org.apache.openjpa.enhance.PCEnhancerSerp.AuxiliarySerpEnhancer;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.meta.AccessCode;
 import org.apache.openjpa.meta.ClassMetaData;
@@ -36,7 +36,7 @@ import serp.bytecode.Code;
  * FetchStatisticsAuxEnhancer adds the call back function to each persistent fields in the persistent entity which 
  * will invoke the hit method from FetchStatsCollector whenever the field is fetched at runtime.
  */
-public class FetchStatisticsAuxEnhancer implements AuxiliaryEnhancer {
+public class FetchStatisticsAuxEnhancer implements AuxiliarySerpEnhancer {
 
     private final String IGNORE_METHODS_REGEX = "(pc(.)*GenericContext)?(pc(.)*StateManager)?"
         + "(pc(.)*DetachedState)?(pc(.)*EnhancementContractVersion)?(pc(.)*ManagedFieldCount)?(pc(.)*GetVersion)?";
