@@ -53,13 +53,15 @@ public class TemporaryClassLoader extends ClassLoader {
         // "sun." is required for JDK 1.4, which has an access check for
         // sun.reflect.GeneratedSerializationConstructorAccessor1
         if (name.startsWith("java.") || name.startsWith("javax.")
-            || name.startsWith("sun."))
+            || name.startsWith("sun.") || name.startsWith("jdk.")) {
             return Class.forName(name, resolve, getClass().getClassLoader());
+        }
 
         String resourceName = name.replace('.', '/') + ".class";
         InputStream resource = getResourceAsStream(resourceName);
-        if (resource == null)
+        if (resource == null) {
             throw new ClassNotFoundException(name);
+        }
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         byte[] b = new byte[1024];
