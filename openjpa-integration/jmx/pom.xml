@@ -42,7 +42,7 @@
     <test.jvm.jmxprovider>com.sun.management.jmxremote</test.jvm.jmxprovider>
     <!-- Disable JMX platform MBean authentication  -->
     <test.jvm.jmxauth>com.sun.management.jmxremote.authenticate=false</test.jvm.jmxauth>
-    <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -XX:MaxPermSize=${test.jvm.maxpermsize} -D${test.jvm.jmxprovider} -D${test.jvm.jmxauth}</test.jvm.arguments>
+    <test.jvm.arguments>-Xmx${test.jvm.maxheapsize} -D${test.jvm.jmxprovider} -D${test.jvm.jmxauth}</test.jvm.arguments>
     <surefire.jvm.args>${test.jvm.arguments}</surefire.jvm.args>
   </properties>
 
