@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <artifactId>geronimo-validation_1.1_spec</artifactId>
             <scope>provided</scope>
         </dependency>        
         <!-- for osgi bundle activator code, use same level as Apache Aries -->

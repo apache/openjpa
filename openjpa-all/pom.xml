@@ -140,12 +140,19 @@
         <!-- bean validation includes -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-validation_1.0_spec</artifactId>
+            <artifactId>geronimo-validation_1.1_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.bval</groupId>
             <artifactId>org.apache.bval.bundle</artifactId>
         </dependency>
+        <dependency>
+            <!-- TODO This is actually a transitive dependency from bval and should get removed once bval gets rid of it-->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
