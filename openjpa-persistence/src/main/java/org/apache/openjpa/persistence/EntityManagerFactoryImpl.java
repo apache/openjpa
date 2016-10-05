@@ -152,6 +152,17 @@ public class EntityManagerFactoryImpl
         return createEntityManager((Map) null);
     }
 
+    @Override
+    public OpenJPAEntityManagerSPI createEntityManager(SynchronizationType synchronizationType) {
+        return createEntityManager(synchronizationType, null);
+    }
+
+    @Override
+    public OpenJPAEntityManagerSPI createEntityManager(Map props) {
+        return createEntityManager(SynchronizationType.SYNCHRONIZED, props);
+    }
+
+
     /**
      * Creates and configures a entity manager with the given properties.
      *  
@@ -159,11 +170,21 @@ public class EntityManagerFactoryImpl
      * 
      * @return list of exceptions raised or empty list.
      */
-    public OpenJPAEntityManagerSPI createEntityManager(Map props) {
-        if (props == null)
+    public OpenJPAEntityManagerSPI createEntityManager(SynchronizationType synchronizationType, Map props) {
+        if (synchronizationType == null) {
+            throw new NullPointerException("SynchronizationType must not be null");
+        }
+        if (SynchronizationType.UNSYNCHRONIZED.equals(synchronizationType)) {
+            throw new UnsupportedOperationException("TODO - implement JPA 2.1 feature");
+        }
+
+        if (props == null) {
             props = Collections.EMPTY_MAP;
-        else if (!props.isEmpty())
+        }
+        else if (!props.isEmpty()) {
             props = new HashMap(props);
+        }
+
 
         OpenJPAConfiguration conf = getConfiguration();
         Log log = conf.getLog(OpenJPAConfiguration.LOG_RUNTIME);
@@ -240,16 +261,6 @@ public class EntityManagerFactoryImpl
             log.trace(this + " created EntityManager " + em + ".");
         }
         return em;
-    }
-
-    @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        throw new UnsupportedOperationException("JPA 2.1");
-    }
-
-    @Override
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        throw new UnsupportedOperationException("JPA 2.1");
     }
 
     /**
