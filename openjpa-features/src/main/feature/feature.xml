@@ -20,6 +20,7 @@
 
     <feature name="openjpa" description="Apache OpenJPA 3 persistence engine support" version="${project.version}">
         <details>Apache OpenJPA persistence engine</details>
+	<feature>jndi</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/1.1.1</bundle>
