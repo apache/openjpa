@@ -843,6 +843,20 @@ class.
                 <para>
                 <indexterm>
                     <primary>
+                        MariaDB
+                    </primary>
+                </indexterm>
+<literal>mariadb</literal>: Dictionary for the MariaDB database. This is an alias
+for the
+<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/MariaDBDictionary.html">
+<classname>org.apache.openjpa.jdbc.sql.MariaDBDictionary</classname></ulink>
+class.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
+                <indexterm>
+                    <primary>
                         MySQL
                     </primary>
                 </indexterm>
