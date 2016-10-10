@@ -188,10 +188,12 @@ public class ConfigurationImpl
         try {
         	Properties systemProperties = AccessController.doPrivileged(
                     J2DoPrivHelper.getPropertiesAction());
+        	HashMap sysPropHM = null;
         	synchronized(systemProperties) {
         		// Prevent concurrent modification of systemProperties until HashMap ctor is completed.
-        		fromProperties(new HashMap(systemProperties));
+        		sysPropHM = new HashMap(systemProperties);
         	}
+        	fromProperties(sysPropHM);
         } catch (SecurityException se) {
             // security manager might disallow
         }
