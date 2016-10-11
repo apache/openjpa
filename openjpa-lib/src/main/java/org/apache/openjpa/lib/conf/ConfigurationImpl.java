@@ -187,9 +187,14 @@ public class ConfigurationImpl
 
         // let system properties override other globals
         try {
-            fromProperties(new HashMap(
-                AccessController.doPrivileged(
-                    J2DoPrivHelper.getPropertiesAction())));
+            Properties systemProperties = AccessController.doPrivileged(
+                    J2DoPrivHelper.getPropertiesAction());
+            HashMap sysPropHM = null;
+            synchronized(systemProperties) {
+                // Prevent concurrent modification of systemProperties until HashMap ctor is completed.
+                sysPropHM = new HashMap(systemProperties);
+            }
+            fromProperties(sysPropHM);
         } catch (SecurityException se) {
             // security manager might disallow
         }
