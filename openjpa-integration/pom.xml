@@ -43,6 +43,8 @@
         <module>tck</module>
         <module>validation</module>
         <module>jmx</module>
+        <module>karaf</module>
+        <module>tasklist-model</module>
     </modules>
 
     <profiles>
