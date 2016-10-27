@@ -6,7 +6,6 @@ This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
 The OpenJPA binary assembly and openjpa-all includes software developed by the:
-    Apache Commons Beanutils project
     Apache Commons Collections project
     Apache Commons DBCP project
     Apache Commons Lang project

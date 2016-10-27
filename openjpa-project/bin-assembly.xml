@@ -83,7 +83,6 @@
                 <include>org.apache.geronimo.specs:geronimo-jms_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-validation_1.0_spec</include>
                 <include>org.apache.bval:org.apache.bval.bundle</include>
-                <include>commons-beanutils:commons-beanutils</include>
                 <include>org.apache.xbean:xbean-asm5-shaded</include>
             </includes>
         </dependencySet>

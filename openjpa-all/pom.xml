@@ -137,6 +137,7 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
         </dependency>
+
         <!-- bean validation includes -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -145,17 +146,6 @@
         <dependency>
             <groupId>org.apache.bval</groupId>
             <artifactId>org.apache.bval.bundle</artifactId>
-        </dependency>
-        <dependency>
-            <!-- TODO This is actually a transitive dependency from bval and should get removed once bval gets rid of it-->
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
         </dependency>
     </dependencies>
 </project>
