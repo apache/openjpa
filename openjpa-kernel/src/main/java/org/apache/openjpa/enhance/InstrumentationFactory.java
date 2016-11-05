@@ -369,10 +369,8 @@ public class InstrumentationFactory {
      * @return True if the provided agentClassName is defined as the Agent-Class
      *         in the manifest from the provided agentJarFile. False otherwise.
      */
-    private static boolean validateAgentJarManifest(File agentJarFile, Log log,
-        String agentClassName) {
-        try {
-            JarFile jar = new JarFile(agentJarFile);
+    private static boolean validateAgentJarManifest(File agentJarFile, Log log, String agentClassName) {
+        try (JarFile jar = new JarFile(agentJarFile)) {
             Manifest manifest = jar.getManifest();
             if (manifest == null) {
                 return false;
