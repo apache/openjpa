@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -369,10 +370,10 @@ public class InstrumentationFactory {
      * @return True if the provided agentClassName is defined as the Agent-Class
      *         in the manifest from the provided agentJarFile. False otherwise.
      */
-    private static boolean validateAgentJarManifest(File agentJarFile, Log log,
-        String agentClassName) {
+    private static boolean validateAgentJarManifest(File agentJarFile, Log log, String agentClassName) {
+        JarFile jar = null;
         try {
-            JarFile jar = new JarFile(agentJarFile);
+            jar = new JarFile(agentJarFile);
             Manifest manifest = jar.getManifest();
             if (manifest == null) {
                 return false;
@@ -387,6 +388,15 @@ public class InstrumentationFactory {
                 log.trace(_name
                     + ".validateAgentJarManifest() caught unexpected "
                     + "exception " + e.getMessage());
+            }
+        }
+        finally {
+            if (jar != null) {
+                try {
+                    jar.close();
+                } catch (IOException e) {
+                    // don't care. It's just for properly closing the resource
+                }
             }
         }
         return false;
