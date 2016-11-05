@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
 import org.apache.openjpa.jdbc.schema.Column;
@@ -101,7 +102,7 @@ public class EmpressDictionary
     }
 
     public boolean isSystemIndex(String name, Table table) {
-        return name.toUpperCase().startsWith("SYS_");
+        return name.toUpperCase(Locale.ENGLISH).startsWith("SYS_");
     }
 
     public SQLBuffer toSelect(SQLBuffer selects, JDBCFetchConfiguration fetch,

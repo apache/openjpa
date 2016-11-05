@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -330,7 +331,7 @@ public class OracleDictionary
         if (_driverBehavior != -1)
             return;
 
-        driverVendor = driverVendor.toLowerCase();
+        driverVendor = driverVendor.toLowerCase(Locale.ENGLISH);
         if (driverVendor.startsWith(VENDOR_ORACLE))
             _driverBehavior = BEHAVE_ORACLE;
         else if (driverVendor.equals(VENDOR_DATADIRECT + "30")
@@ -566,9 +567,9 @@ public class OracleDictionary
         // sqlj_jdbc/files/9i_jdbc/NCHARsupport4UnicodeSample/Readme.html
         String typeName = (col == null) ? null : col.getTypeIdentifier().getName();
         if (useSetFormOfUseForUnicode && typeName != null &&
-            (typeName.toLowerCase().startsWith("nvarchar") ||
-                typeName.toLowerCase().startsWith("nchar") ||
-                typeName.toLowerCase().startsWith("nclob"))) {
+            (typeName.toLowerCase(Locale.ENGLISH).startsWith("nvarchar") ||
+                typeName.toLowerCase(Locale.ENGLISH).startsWith("nchar") ||
+                typeName.toLowerCase(Locale.ENGLISH).startsWith("nclob"))) {
             Statement inner = stmnt;
             if (inner instanceof DelegatingPreparedStatement)
                 inner = ((DelegatingPreparedStatement) inner).
@@ -791,7 +792,7 @@ public class OracleDictionary
             String typeName = cols[i].getTypeIdentifier().getName();
             if (typeName == null)
                 continue;
-            if (typeName.toUpperCase().startsWith("TIMESTAMP"))
+            if (typeName.toUpperCase(Locale.ENGLISH).startsWith("TIMESTAMP"))
                 cols[i].setType(Types.TIMESTAMP);
             else if ("BLOB".equalsIgnoreCase(typeName))
                 cols[i].setType(Types.BLOB);
@@ -1117,7 +1118,7 @@ public class OracleDictionary
         return (autoAssignSequenceName != null
             && strName.equalsIgnoreCase(autoAssignSequenceName))
             || (autoAssignSequenceName == null
-            && strName.toUpperCase().startsWith("ST_"));
+            && strName.toUpperCase(Locale.ENGLISH).startsWith("ST_"));
     }
 
     @Override

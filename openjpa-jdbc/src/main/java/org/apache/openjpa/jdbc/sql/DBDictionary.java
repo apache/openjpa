@@ -1838,7 +1838,7 @@ public class DBDictionary
      * subclasses. 
      */
     protected String appendSize(Column col, String typeName) {
-        if (fixedSizeTypeNameSet.contains(typeName.toUpperCase()))
+        if (fixedSizeTypeNameSet.contains(typeName.toUpperCase(Locale.ENGLISH)))
             return typeName;
         if (typeName.indexOf('(') != -1)
             return typeName;
@@ -1891,8 +1891,8 @@ public class DBDictionary
             int curIdx = -1;
             for (Iterator<String> i = typeModifierSet.iterator(); i.hasNext();) {
                 s = i.next();
-                if (typeName.toUpperCase().indexOf(s) != -1) {
-                    curIdx = typeName.toUpperCase().indexOf(s);
+                if (typeName.toUpperCase(Locale.ENGLISH).indexOf(s) != -1) {
+                    curIdx = typeName.toUpperCase(Locale.ENGLISH).indexOf(s);
                     if (curIdx != -1 && curIdx < idx) {
                         idx = curIdx;
                     }
@@ -3336,7 +3336,7 @@ public class DBDictionary
 
         char[] vowels = { 'A', 'E', 'I', 'O', 'U', };
         for (int i = 0; i < vowels.length; i++) {
-            int index = name.toString().toUpperCase().indexOf(vowels[i]);
+            int index = name.toString().toUpperCase(Locale.ENGLISH).indexOf(vowels[i]);
             if (index != -1) {
                 name.replace(index, index + 1, "");
                 return true;
@@ -3716,7 +3716,7 @@ public class DBDictionary
             return null;
 
         String name = toDBName(pk.getIdentifier());
-        if (name != null && reservedWordSet.contains(name.toUpperCase()))
+        if (name != null && reservedWordSet.contains(name.toUpperCase(Locale.ENGLISH)))
             name = null;
 
         StringBuilder buf = new StringBuilder();
@@ -4757,22 +4757,22 @@ public class DBDictionary
         // add additional reserved words set by user
         if (reservedWords != null)
             reservedWordSet.addAll(Arrays.asList(Strings.split
-                (reservedWords.toUpperCase(), ",", 0)));
+                (reservedWords.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         // add system schemas set by user
         if (systemSchemas != null)
             systemSchemaSet.addAll(Arrays.asList(Strings.split
-                (systemSchemas.toUpperCase(), ",", 0)));
+                (systemSchemas.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         // add system tables set by user
         if (systemTables != null)
             systemTableSet.addAll(Arrays.asList(Strings.split
-                (systemTables.toUpperCase(), ",", 0)));
+                (systemTables.toUpperCase(Locale.ENGLISH), ",", 0)));
 
         // add fixed size type names set by the user
         if (fixedSizeTypeNames != null)
             fixedSizeTypeNameSet.addAll(Arrays.asList(Strings.split
-                (fixedSizeTypeNames.toUpperCase(), ",", 0)));
+                (fixedSizeTypeNames.toUpperCase(Locale.ENGLISH), ",", 0)));
         
         // if user has unset sequence sql, null it out so we know sequences
         // aren't supported
@@ -4780,7 +4780,7 @@ public class DBDictionary
         
         if (selectWords != null)
             selectWordSet.addAll(Arrays.asList(Strings.split(selectWords
-                    .toUpperCase(), ",", 0)));
+                    .toUpperCase(Locale.ENGLISH), ",", 0)));
         
         // initialize the error codes
         SQLErrorCodeReader codeReader = new SQLErrorCodeReader();
@@ -5668,7 +5668,7 @@ public class DBDictionary
     public void setDateMillisecondBehavior(String str) {
         if (str != null) {
             // Tolerate different case
-            str = str.toUpperCase();
+            str = str.toUpperCase(Locale.ENGLISH);
             dateMillisecondBehavior = DateMillisecondBehaviors.valueOf(str);
         } else {
             dateMillisecondBehavior = null;

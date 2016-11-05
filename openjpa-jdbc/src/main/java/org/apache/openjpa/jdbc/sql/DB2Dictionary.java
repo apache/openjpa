@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
@@ -498,7 +499,7 @@ public class DB2Dictionary
             int index = databaseProductVersion.indexOf('V');
             if (index != -1) {
                 String s = databaseProductVersion.substring(index);
-                s = s.toUpperCase();
+                s = s.toUpperCase(Locale.ENGLISH);
 
                 StringTokenizer stringtokenizer = new StringTokenizer(s, "VRM"
                     , false);
@@ -512,7 +513,7 @@ public class DB2Dictionary
                 index = databaseProductVersion.indexOf('0');
                 if (index != -1) {
                     String s = databaseProductVersion.substring(index);
-                    s = s.toUpperCase();
+                    s = s.toUpperCase(Locale.ENGLISH);
 
                     StringTokenizer stringtokenizer = new StringTokenizer(s, "0"
                         , false);                    

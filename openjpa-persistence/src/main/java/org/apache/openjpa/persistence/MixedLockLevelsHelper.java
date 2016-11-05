@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.persistence;
 
+import java.util.Locale;
 import javax.persistence.LockModeType;
 
 import org.apache.openjpa.kernel.FetchConfiguration;
@@ -107,7 +108,7 @@ public class MixedLockLevelsHelper implements HintValueConverter {
                     return MixedLockLevels.LOCK_NONE;
                 }
                 return MixedLockLevelsHelper.toLockLevel(
-                        LockModeType.valueOf(original.toString().toUpperCase().replace('-', '_')));
+                        LockModeType.valueOf(original.toString().toUpperCase(Locale.ENGLISH).replace('-', '_')));
             }
         }
         if (original instanceof Integer) {

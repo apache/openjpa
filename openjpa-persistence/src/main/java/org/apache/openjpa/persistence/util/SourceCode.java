@@ -348,7 +348,7 @@ public class SourceCode {
 				a.write(out, tab);
 			tab(out, tab);
 			if (access != null) 
-			    out.append(access.toString().toLowerCase() + SPACE);
+			    out.append(access.toString().toLowerCase(Locale.ENGLISH) + SPACE);
 			if (isStatic) 
 			    out.append("static" + SPACE);
 			if (isFinal) 

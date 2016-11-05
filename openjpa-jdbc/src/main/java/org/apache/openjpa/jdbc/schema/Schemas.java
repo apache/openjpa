@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.schema;
 
 import java.sql.Types;
 import java.util.Date;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -188,7 +189,7 @@ public class Schemas {
             return Types.VARBINARY;
         if ("varchar".equalsIgnoreCase(name))
             return Types.VARCHAR;
-        if (name == null || name.toLowerCase().startsWith("unknown"))
+        if (name == null || name.toLowerCase(Locale.ENGLISH).startsWith("unknown"))
             return Types.OTHER;
         throw new IllegalArgumentException("name = " + name);
     }

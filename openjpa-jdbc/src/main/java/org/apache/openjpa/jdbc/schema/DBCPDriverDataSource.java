@@ -21,6 +21,7 @@ package org.apache.openjpa.jdbc.schema;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -110,7 +111,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
      */
     protected boolean isDBCPDataSource() {
         return (getConnectionDriverName() != null &&
-            getConnectionDriverName().toLowerCase().indexOf(DBCPPACKAGENAME) >= 0);
+            getConnectionDriverName().toLowerCase(Locale.ENGLISH).indexOf(DBCPPACKAGENAME) >= 0);
     }
     
     /**

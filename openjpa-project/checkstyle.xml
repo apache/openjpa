@@ -22,7 +22,7 @@
 	<module name="TreeWalker">
 		<module name="FileContentsHolder" />
 		<module name="LineLength">
-			<property name="max" value="120" />
+			<property name="max" value="150" />
 		</module>
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="System\.(out|err)\.print(ln)?\(" />

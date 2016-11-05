@@ -30,6 +30,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -106,7 +107,7 @@ public class TestEmbeddable extends SQLListenerTestCase {
             EntityA_Embed_Complex.class, A.class, CLEAR_TABLES);
             sql.clear();
             DBDictionary dict = ((JDBCConfiguration)emf.getConfiguration()).getDBDictionaryInstance();
-            if (dict.getClass().getName().toLowerCase().indexOf("oracle") != -1) {
+            if (dict.getClass().getName().toLowerCase(Locale.ENGLISH).indexOf("oracle") != -1) {
                 ((OracleDictionary)dict).useTriggersForAutoAssign = true;
             }
     }

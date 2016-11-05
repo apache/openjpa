@@ -2,6 +2,7 @@ package org.apache.openjpa.persistence.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /*
@@ -62,7 +63,7 @@ public class ReservedWords {
      * Affirms if the given string matches any of the JPA reserved words in a case-insensitive manner.
      */
     public static boolean isKeyword(String name) {
-        return name != null && KEYWORDS.contains(name.toUpperCase());
+        return name != null && KEYWORDS.contains(name.toUpperCase(Locale.ENGLISH));
     }
     
     /**

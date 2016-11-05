@@ -23,6 +23,8 @@ import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Locale;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
@@ -217,7 +219,7 @@ public class DBDictionaryFactory {
     private static String dictionaryClassForString(String prod, JDBCConfiguration conf) {
         if (StringUtils.isEmpty(prod))
             return null;
-        prod = prod.toLowerCase();
+        prod = prod.toLowerCase(Locale.ENGLISH);
 
         PluginValue dbdictionaryPlugin = ((JDBCConfigurationImpl) conf)
             .dbdictionaryPlugin;

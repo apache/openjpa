@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -238,9 +239,9 @@ public class PersistenceMetaDataDefaults
      * with ACCESS_UNKNOWN
      */
     public void setDefaultAccessType(String type) {
-        if ("PROPERTY".equals(type.toUpperCase()))
+        if ("PROPERTY".equals(type.toUpperCase(Locale.ENGLISH)))
             setDefaultAccessType(AccessCode.PROPERTY);
-        else if ("FIELD".equals(type.toUpperCase()))
+        else if ("FIELD".equals(type.toUpperCase(Locale.ENGLISH)))
             setDefaultAccessType(AccessCode.FIELD);
         else
         	throw new IllegalArgumentException(_loc.get("access-invalid", 
