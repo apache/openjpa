@@ -31,6 +31,7 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
+import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -200,7 +201,7 @@ public class InstrumentationFactory {
                             toolsJarFile.getAbsolutePath());
                     }
                 }
-            } else if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0) {
+            } else if (System.getProperty("os.name").toLowerCase(Locale.ENGLISH).indexOf("mac") >= 0) {
                 // If we're on a Mac, then change the search path to use ../Classes/classes.jar.
                 if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home") == true) {
                     javaHomeFile = javaHomeFile.getParentFile();

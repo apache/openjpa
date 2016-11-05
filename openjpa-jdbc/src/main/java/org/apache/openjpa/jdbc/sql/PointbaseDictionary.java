@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
@@ -95,7 +96,7 @@ public class PointbaseDictionary
 
         // pointbase reports the type for a CLOB field as VARCHAR: override it
         for (int i = 0; cols != null && i < cols.length; i++)
-            if (cols[i].getTypeIdentifier().getName().toUpperCase().startsWith("CLOB"))
+            if (cols[i].getTypeIdentifier().getName().toUpperCase(Locale.ENGLISH).startsWith("CLOB"))
                 cols[i].setType(Types.CLOB);
         return cols;
     }

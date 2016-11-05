@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
@@ -848,7 +849,7 @@ public class ConfigurationImpl
         // specific implementation of OpenJPA
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         for (String prefix : prefixes) {
-            if (propName.toLowerCase().startsWith(prefix)
+            if (propName.toLowerCase(Locale.ENGLISH).startsWith(prefix)
                 && propName.length() > prefix.length() + 1
                 && propName.indexOf('.', prefix.length()) == prefix.length()
                 && propName.indexOf('.', prefix.length() + 1) == -1

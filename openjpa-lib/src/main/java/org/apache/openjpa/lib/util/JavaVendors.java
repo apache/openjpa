@@ -19,6 +19,7 @@
 package org.apache.openjpa.lib.util;
 
 import java.security.AccessController;
+import java.util.Locale;
 
 /**
  * Utilities for dealing with different Java vendors.
@@ -30,7 +31,7 @@ public enum JavaVendors {
 
     static {
         String vendor =
-            AccessController.doPrivileged(J2DoPrivHelper.getPropertyAction("java.vendor", "")).toUpperCase();
+            AccessController.doPrivileged(J2DoPrivHelper.getPropertyAction("java.vendor", "")).toUpperCase(Locale.ENGLISH);
         if (vendor.contains("SUN MICROSYSTEMS")) {
             _vendor = SUN;
         } else if (vendor.contains("IBM")) {

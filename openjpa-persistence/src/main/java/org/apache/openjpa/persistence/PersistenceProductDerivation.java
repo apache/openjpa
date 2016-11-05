@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Set;
@@ -242,11 +243,11 @@ public class PersistenceProductDerivation
         conf.validationMode.setDynamic(true);
         String[] aliases = new String[] {
                 String.valueOf(ValidationMode.AUTO),
-                String.valueOf(ValidationMode.AUTO).toLowerCase(),
+                String.valueOf(ValidationMode.AUTO).toLowerCase(Locale.ENGLISH),
                 String.valueOf(ValidationMode.CALLBACK),
-                String.valueOf(ValidationMode.CALLBACK).toLowerCase(),
+                String.valueOf(ValidationMode.CALLBACK).toLowerCase(Locale.ENGLISH),
                 String.valueOf(ValidationMode.NONE),
-                String.valueOf(ValidationMode.NONE).toLowerCase()
+                String.valueOf(ValidationMode.NONE).toLowerCase(Locale.ENGLISH)
         };
         conf.validationMode.setAliases(aliases);
         conf.validationMode.setAliasListComprehensive(true);

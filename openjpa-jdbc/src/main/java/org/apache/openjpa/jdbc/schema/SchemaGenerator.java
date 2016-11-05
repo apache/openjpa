@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -572,8 +573,8 @@ public class SchemaGenerator {
             
             // ignore special tables
             if (!_openjpaTables &&
-                (tableName.getName().toUpperCase().startsWith("OPENJPA_")
-                    || tableName.getName().toUpperCase().startsWith("JDO_"))) // legacy
+                (tableName.getName().toUpperCase(Locale.ENGLISH).startsWith("OPENJPA_")
+                    || tableName.getName().toUpperCase(Locale.ENGLISH).startsWith("JDO_"))) // legacy
                 continue;
             if (_dict.isSystemTable(tableName, tableSchema, !DBIdentifier.isNull(schemaName)))
                 continue;

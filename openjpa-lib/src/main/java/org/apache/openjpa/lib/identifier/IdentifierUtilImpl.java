@@ -19,6 +19,7 @@
 package org.apache.openjpa.lib.identifier;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.lib.conf.Configurable;
@@ -368,7 +369,7 @@ public class IdentifierUtilImpl implements IdentifierUtil, Configurable {
             return false;
         }
         if (!isDelimited(rule, name)) {
-            name = name.toUpperCase();
+            name = name.toUpperCase(Locale.ENGLISH);
         }
         return rule.getReservedWords().contains(name);
     }

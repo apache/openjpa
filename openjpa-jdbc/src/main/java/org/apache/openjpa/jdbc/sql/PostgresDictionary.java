@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -204,7 +205,7 @@ public class PostgresDictionary
         
         _timestampTypes.add("ABSTIME");
         _timestampTypes.add("TIMESTAMP");
-        _timestampTypes.add(timestampTypeName.toUpperCase()); // handle user configured timestamp types.
+        _timestampTypes.add(timestampTypeName.toUpperCase(Locale.ENGLISH)); // handle user configured timestamp types.
     }
 
     @Override
@@ -383,7 +384,7 @@ public class PostgresDictionary
         
         String strName = DBIdentifier.isNull(name) ? "" : name.getName();
         // basic check for SEQ suffix.  not SEQ, not an owned sequence
-        if (strName == null || !strName.toUpperCase().endsWith("_SEQ"))
+        if (strName == null || !strName.toUpperCase(Locale.ENGLISH).endsWith("_SEQ"))
             return false;
 
         // If no connection, use secondary method to determine ownership
@@ -534,7 +535,7 @@ public class PostgresDictionary
         // of the form <table>_<col>_seq
         int idx = (strName == null) ? -1 : strName.indexOf('_');
         return idx != -1 && idx != strName.length() - 4
-            && strName.toUpperCase().endsWith("_SEQ");
+            && strName.toUpperCase(Locale.ENGLISH).endsWith("_SEQ");
     }
 
     public boolean isSystemTable(String name, String schema,
@@ -547,7 +548,7 @@ public class PostgresDictionary
         // names starting with "pg_" are reserved for Postgresql internal use
         String strName = DBIdentifier.isNull(name) ? null : name.getName();
         return super.isSystemTable(name, schema, targetSchema)
-            || (strName != null && strName.toLowerCase().startsWith("pg_"));
+            || (strName != null && strName.toLowerCase(Locale.ENGLISH).startsWith("pg_"));
     }
 
     public boolean isSystemIndex(String name, Table table) {
@@ -558,7 +559,7 @@ public class PostgresDictionary
         // names starting with "pg_" are reserved for Postgresql internal use
         String strName = DBIdentifier.isNull(name) ? null : name.getName();
         return super.isSystemIndex(name, table)
-            || (strName != null && strName.toLowerCase().startsWith("pg_"));
+            || (strName != null && strName.toLowerCase(Locale.ENGLISH).startsWith("pg_"));
     }
 
     public Connection decorate(Connection conn)
@@ -779,7 +780,7 @@ public class PostgresDictionary
             try {
                 Method m = obj.getClass().getMethod("getType", (Class[]) null);
                 Object type = m.invoke(obj, (Object[]) null);
-                if(_timestampTypes.contains(((String) type).toUpperCase())) { 
+                if(_timestampTypes.contains(((String) type).toUpperCase(Locale.ENGLISH))) {
                     return rs.getTimestamp(column);
                 }
             } catch (Throwable t) {

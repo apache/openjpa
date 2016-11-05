@@ -19,6 +19,7 @@
 package org.apache.openjpa.persistence;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.persistence.CacheRetrieveMode;
@@ -129,9 +130,9 @@ public class JPAProperties {
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
             if (value instanceof CacheRetrieveMode || (value instanceof String && CACHE_RETRIEVE_MODE.equals(key))) {
-                return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
+                return (T)DataCacheRetrieveMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
             } else if (value instanceof CacheStoreMode || (value instanceof String && CACHE_STORE_MODE.equals(key))) {
-                return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase());
+                return (T)DataCacheStoreMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
             }
         }
         return (T)value;
@@ -148,9 +149,9 @@ public class JPAProperties {
         if (JPAProperties.isValidKey(key)) {
             // works because enum values are identical String
             if (value instanceof DataCacheRetrieveMode) {
-                return CacheRetrieveMode.valueOf(value.toString().trim().toUpperCase());
+                return CacheRetrieveMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
             } else if (value instanceof DataCacheStoreMode) {
-                return CacheStoreMode.valueOf(value.toString().trim().toUpperCase());
+                return CacheStoreMode.valueOf(value.toString().trim().toUpperCase(Locale.ENGLISH));
             }
         }
         return value;
@@ -202,7 +203,7 @@ public class JPAProperties {
         if (type.isInstance(val))
             return (E)val;
         if (val instanceof String) {
-            return Enum.valueOf(type, val.toString().trim().toUpperCase());
+            return Enum.valueOf(type, val.toString().trim().toUpperCase(Locale.ENGLISH));
         }
         if (values != null && values.length > 0 && val instanceof Number) {
             return values[((Number)val).intValue()];

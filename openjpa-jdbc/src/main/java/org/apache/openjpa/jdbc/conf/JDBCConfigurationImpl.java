@@ -20,6 +20,7 @@ package org.apache.openjpa.jdbc.conf;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Locale;
 import javax.sql.DataSource;
 
 import org.apache.openjpa.lib.util.StringUtil;
@@ -984,7 +985,7 @@ public class JDBCConfigurationImpl
         // openjpa.someotherimplementation.SomeProperty
         String[] prefixes = ProductDerivations.getConfigurationPrefixes();
         for (int i = 0; i < prefixes.length; i++)
-            if (propName.toLowerCase().startsWith(prefixes[i] + ".jdbc"))
+            if (propName.toLowerCase(Locale.ENGLISH).startsWith(prefixes[i] + ".jdbc"))
                 return true; 
         return false;
     }

@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Locale;
 
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
@@ -250,7 +251,7 @@ public class HSQLDictionary extends DBDictionary {
     }
 
     public boolean isSystemIndex(String name, Table table) {
-        return name.toUpperCase().startsWith("SYS_");
+        return name.toUpperCase(Locale.ENGLISH).startsWith("SYS_");
     }
 
     @Override
@@ -258,7 +259,7 @@ public class HSQLDictionary extends DBDictionary {
         if (DBIdentifier.isNull(name)) {
             return false;
         }
-        return name.getName().toUpperCase().startsWith("SYS_");
+        return name.getName().toUpperCase(Locale.ENGLISH).startsWith("SYS_");
     }
 
     @Override

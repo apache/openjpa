@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Locale;
 
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.kernel.JDBCStore;
@@ -132,7 +133,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         if (((VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor) &&
             requiresWarnings) || 
             VENDOR_DATADIRECT.equalsIgnoreCase(driverVendor)) &&
-            (url.toLowerCase().indexOf("selectmethod=cursor") == -1))
+            (url.toLowerCase(Locale.ENGLISH).indexOf("selectmethod=cursor") == -1))
             log.warn(_loc.get("sqlserver-cursor", url));
 
         // warn about prepared statement caching if using pre-2.0 MS drivers
@@ -141,7 +142,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         if ((props != null) &&
             VENDOR_MICROSOFT.equalsIgnoreCase(driverVendor) &&
             requiresWarnings &&
-            (props.toLowerCase().indexOf("maxcachedstatements=0") == -1))
+            (props.toLowerCase(Locale.ENGLISH).indexOf("maxcachedstatements=0") == -1))
             log.warn(_loc.get("sqlserver-cachedstmnts"));
     }
 
@@ -168,7 +169,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             if (typeName == null)
                 continue;
 
-            typeName = typeName.toUpperCase();
+            typeName = typeName.toUpperCase(Locale.ENGLISH);
             if ("NVARCHAR".equals(typeName))
                 cols[i].setType(Types.VARCHAR);
             else if ("UNIQUEIDENTIFIER".equals(typeName)) {

@@ -18,6 +18,7 @@
  */
 package org.apache.openjpa.conf;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.openjpa.lib.util.Localizer;
@@ -126,7 +127,7 @@ public class Specification {
     }
     
     public String toString() {
-        return _name.toUpperCase() + " " + _major + "." + _minor;
+        return _name.toUpperCase(Locale.ENGLISH) + " " + _major + "." + _minor;
     }
     
     private Object[] parse(String str) {
