@@ -33,7 +33,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name = "entity_1")
+@Table(name = "enhanceentity_1")
 @Inheritance(strategy = InheritanceType.JOINED)
 @SqlResultSetMapping(name = "NativeTestResult",
     entities = @EntityResult(entityClass = Entity1.class))

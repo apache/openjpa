@@ -22,8 +22,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="detachentity_1")
 public class Entity1 {
     @Id
     private long id;
