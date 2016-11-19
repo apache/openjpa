@@ -90,6 +90,9 @@ public class MappingTool
     public static final String ACTION_VALIDATE = "validate";
     public static final String ACTION_EXPORT = "export";
     public static final String ACTION_IMPORT = "import";
+    public static final String ACTION_SCRIPT_CREATE = "scriptCreate";
+    public static final String ACTION_SCRIPT_DROP = "scriptDrop";
+    public static final String ACTION_SCRIPT_LOAD = "scriptLoad";
 
     public static final String[] ACTIONS = new String[]{
         ACTION_ADD,
@@ -100,6 +103,9 @@ public class MappingTool
         ACTION_VALIDATE,
         ACTION_EXPORT,
         ACTION_IMPORT,
+        ACTION_SCRIPT_CREATE,
+        ACTION_SCRIPT_DROP,
+        ACTION_SCRIPT_LOAD,
     };
 
     private static final Localizer _loc = Localizer.forPackage(MappingTool.class);
@@ -502,7 +508,26 @@ public class MappingTool
                     if (!SCHEMA_ACTION_NONE.equals(schemaActions[i])
                         && (_schemaWriter == null || (_schemaTool != null
                             && _schemaTool.getWriter() != null))) {
-                        SchemaTool tool = newSchemaTool(schemaActions[i]);
+
+                        SchemaTool tool;
+                        if (schemaActions[i].equals(ACTION_SCRIPT_CREATE) ||
+                            schemaActions[i].equals(ACTION_SCRIPT_DROP) ||
+                            schemaActions[i].equals(ACTION_SCRIPT_LOAD)) {
+                            tool = newSchemaTool(SchemaTool.ACTION_EXECUTE_SCRIPT);
+                        } else {
+                            tool = newSchemaTool(schemaActions[i]);
+                        }
+
+                        if (schemaActions[i].equals(ACTION_ADD) && _conf.getCreateScriptTarget() != null) {
+                            tool.setWriter(new PrintWriter(_conf.getCreateScriptTarget()));
+                            tool.setIndexes(true);
+                            tool.setForeignKeys(true);
+                            tool.setSequences(true);
+                        }
+
+                        if (schemaActions[i].equals(ACTION_DROP) && _conf.getDropScriptTarget() != null) {
+                            tool.setWriter(new PrintWriter(_conf.getDropScriptTarget()));
+                        }
 
                         // configure the tool with additional settings
                         if (flags != null) {
@@ -511,6 +536,18 @@ public class MappingTool
                             tool.setWriter(flags.sqlWriter);
                             tool.setOpenJPATables(flags.openjpaTables);
                             tool.setSQLTerminator(flags.sqlTerminator);
+                        }
+
+                        switch (schemaActions[i]) {
+                            case ACTION_SCRIPT_CREATE:
+                                tool.setScriptToExecute(_conf.getCreateScriptSource());
+                                break;
+                            case ACTION_SCRIPT_DROP:
+                                tool.setScriptToExecute(_conf.getDropScriptSource());
+                                break;
+                            case ACTION_SCRIPT_LOAD:
+                                tool.setScriptToExecute(_conf.getLoadScriptSource());
+                                break;
                         }
 
                         tool.setSchemaGroup(getSchemaGroup());
