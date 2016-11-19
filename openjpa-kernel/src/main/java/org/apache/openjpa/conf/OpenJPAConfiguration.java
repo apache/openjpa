@@ -1788,7 +1788,7 @@ public interface OpenJPAConfiguration
     
     /**
      * Sets the {@link EncryptionProvider}.
-     * 
+     *
      */
     public void setEncryptionProvider(String className);
     
@@ -1983,5 +1983,31 @@ public interface OpenJPAConfiguration
        * @since 2.4.2
        */
       public void setUseTCCLinSelectNew(Boolean useTcclForSelectNew);
+
+    public String getDatabaseAction();
+
+    public int getDatabaseActionConstant();
+
+    String getScriptsAction();
+
+    int getScriptsActionConstant();
+
+    String getCreateSource();
+
+    int getCreateSourceConstant();
+
+    String getDropSource();
+
+    int getDropSourceConstant();
+
+    String getCreateScriptSource();
+
+    String getDropScriptSource();
+
+    String getCreateScriptTarget();
+
+    String getDropScriptTarget();
+
+    String getLoadScriptSource();
 }
 

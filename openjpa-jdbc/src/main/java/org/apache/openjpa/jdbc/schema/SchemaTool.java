@@ -18,23 +18,30 @@
  */
 package org.apache.openjpa.jdbc.schema;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URL;
+import java.security.AccessController;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import javax.sql.DataSource;
 
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
@@ -74,6 +81,7 @@ public class SchemaTool {
     public static final String ACTION_IMPORT = "import";
     public static final String ACTION_EXPORT = "export";
     public static final String ACTION_DELETE_TABLE_CONTENTS = "deleteTableContents";
+    public static final String ACTION_EXECUTE_SCRIPT = "executeScript";
 
     public static final String[] ACTIONS = new String[]{
         ACTION_ADD,
@@ -88,6 +96,7 @@ public class SchemaTool {
         ACTION_IMPORT,
         ACTION_EXPORT,
         ACTION_DELETE_TABLE_CONTENTS,
+        ACTION_EXECUTE_SCRIPT
     };
 
     protected static final Localizer _loc = Localizer.forPackage(SchemaTool.class);
@@ -110,7 +119,8 @@ public class SchemaTool {
     private SchemaGroup _db = null;
     protected boolean _fullDB = false;
     protected String _sqlTerminator = ";";
-    
+    protected String _scriptToExecute = null;
+
     /**
      * Default constructor. Tools constructed this way will not have an
      * action, so the {@link #run()} method will be a no-op.
@@ -313,6 +323,10 @@ public class SchemaTool {
     	_sqlTerminator = t;
     }
 
+    public void setScriptToExecute(String scriptToExecute) {
+        _scriptToExecute = scriptToExecute;
+    }
+
     /**
      * Return the schema group the tool will act on.
      */
@@ -357,6 +371,9 @@ public class SchemaTool {
             dropDB();
         else if (ACTION_DELETE_TABLE_CONTENTS.equals(_action))
             deleteTableContents();
+        else if (ACTION_EXECUTE_SCRIPT.equals(_action)) {
+            executeScript();
+        }
     }
 
     /**
@@ -463,6 +480,54 @@ public class SchemaTool {
         }
     }
 
+    protected void executeScript() throws SQLException {
+        if (_scriptToExecute == null) {
+            _log.warn(_loc.get("generating-execute-script-not-defined"));
+            return;
+        }
+
+        URL url = AccessController.doPrivileged(
+                J2DoPrivHelper.getResourceAction(_conf.getClassResolverInstance().
+                        getClassLoader(SchemaTool.class, null), _scriptToExecute));
+
+        if (url == null) {
+            _log.error(_loc.get("generating-execute-script-not-found", _scriptToExecute));
+            return;
+        }
+
+        _log.info(_loc.get("generating-execute-script", _scriptToExecute));
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            String sql;
+            List<String> script = new ArrayList<String>();
+            while ((sql = reader.readLine()) != null) {
+                sql = sql.trim();
+                if (sql.startsWith("--") || sql.startsWith("/*") || sql.startsWith("//")) {
+                    continue;
+                }
+
+                int semiColonPosition = sql.indexOf(";");
+                if (semiColonPosition != -1) {
+                    sql = sql.substring(0, semiColonPosition);
+                }
+                script.add(sql);
+            }
+
+            executeSQL(script.toArray(new String[script.size()]));
+        } catch (IOException e) {
+            _log.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                _log.error(e.getMessage(), e);
+            }
+        }
+    }
+
     /**
      * Record the changes made to the DB in the current {@link SchemaFactory}.
      */
@@ -490,9 +555,11 @@ public class SchemaTool {
             for (int i = 0; i < schemas.length; i++) {
                 seqs = schemas[i].getSequences();
                 for (int j = 0; j < seqs.length; j++) {
-                    if (considerDatabaseState && db.findSequence(schemas[i], seqs[j].getQualifiedPath()) !=
-                            null)
-                        continue;
+                    if (considerDatabaseState && db.findSequence(schemas[i], seqs[j].getQualifiedPath()) != null) {
+                        if (_writer == null) {
+                            continue;
+                        }
+                    }
 
                     if (createSequence(seqs[j])) {
                         schema = db.getSchema(seqs[j].getSchemaIdentifier());
@@ -567,8 +634,11 @@ public class SchemaTool {
         for (int i = 0; i < schemas.length; i++) {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
-                if (considerDatabaseState && db.findTable(schemas[i], tabs[j].getQualifiedPath()) != null)
-                    continue;
+                if (considerDatabaseState && db.findTable(schemas[i], tabs[j].getQualifiedPath()) != null) {
+                    if (_writer == null) {
+                        continue;
+                    }
+                }
 
                 if (createTable(tabs[j])) {
                     newTables.add(tabs[j]);
@@ -618,8 +688,11 @@ public class SchemaTool {
             tabs = schemas[i].getTables();
             for (int j = 0; j < tabs.length; j++) {
                 // create unique constraints only on new tables
-                if (!newTables.contains(tabs[j]))
-                    continue;
+                if (!newTables.contains(tabs[j])) {
+                    if (_writer == null) {
+                        continue;
+                    }
+                }
 
                 uniques = tabs[j].getUniques();
                 if (uniques == null || uniques.length == 0)
@@ -643,8 +716,11 @@ public class SchemaTool {
             for (int j = 0; j < tabs.length; j++) {
                 // create foreign keys on new tables even if fks
                 // have been turned off
-                if (!_fks && !newTables.contains(tabs[j]))
-                    continue;
+                if (!_fks && !newTables.contains(tabs[j])) {
+                    if (_writer == null) {
+                        continue;
+                    }
+                }
 
                 fks = tabs[j].getForeignKeys();
                 if (considerDatabaseState) {
@@ -822,6 +898,10 @@ public class SchemaTool {
                         else
                             _log.warn(_loc.get("drop-seq", seqs[j]));
                     }
+
+                    if (_writer != null) {
+                        dropSequence(seqs[j]);
+                    }
                 }
             }
         }
@@ -846,8 +926,12 @@ public class SchemaTool {
                 }
 
                 dbTable = db.findTable(tabs[j]);
-                if (dbTable == null)
+                if (dbTable == null) {
+                    if (_writer != null) {
+                        drops.add(tabs[j]);
+                    }
                     continue;
+                }
 
                 dbCols = dbTable.getColumns();
                 for (int k = 0; k < dbCols.length; k++) {

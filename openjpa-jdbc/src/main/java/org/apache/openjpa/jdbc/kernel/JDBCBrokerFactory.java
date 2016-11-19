@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.openjpa.conf.SchemaGenerationSource;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.conf.JDBCConfigurationImpl;
@@ -35,6 +36,19 @@ import org.apache.openjpa.lib.conf.ConfigurationProvider;
 import org.apache.openjpa.lib.conf.Configurations;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.util.UserException;
+
+import static org.apache.openjpa.conf.SchemaGenerationAction.CREATE;
+import static org.apache.openjpa.conf.SchemaGenerationAction.DROP;
+import static org.apache.openjpa.conf.SchemaGenerationAction.DROP_AND_CREATE;
+import static org.apache.openjpa.conf.SchemaGenerationSource.METADATA;
+import static org.apache.openjpa.conf.SchemaGenerationSource.METADATA_THEN_SCRIPT;
+import static org.apache.openjpa.conf.SchemaGenerationSource.SCRIPT;
+import static org.apache.openjpa.conf.SchemaGenerationSource.SCRIPT_THEN_METADATA;
+import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_ADD;
+import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_DROP;
+import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_CREATE;
+import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_DROP;
+import static org.apache.openjpa.jdbc.meta.MappingTool.ACTION_SCRIPT_LOAD;
 
 /**
  * BrokerFactory type for use with the JDBC runtime.
@@ -133,6 +147,7 @@ public class JDBCBrokerFactory
      */
     protected void synchronizeMappings(ClassLoader loader, 
         JDBCConfiguration conf) {
+        mapSchemaGenerationToSynchronizeMappings(conf);
         String action = conf.getSynchronizeMappings();
         if (StringUtil.isEmpty(action))
             return;
@@ -162,5 +177,81 @@ public class JDBCBrokerFactory
     
     protected void synchronizeMappings(ClassLoader loader) {
         synchronizeMappings(loader, (JDBCConfiguration) getConfiguration());
+    }
+
+    private void mapSchemaGenerationToSynchronizeMappings(JDBCConfiguration conf) {
+        String actions = "";
+        if (conf.getDatabaseAction() != null) {
+            int databaseAction = conf.getDatabaseActionConstant();
+            if (databaseAction == CREATE) {
+                actions = generateSchemaCreation(conf);
+            } else if (databaseAction == DROP) {
+                actions = generateSchemaDrop(conf);
+            } else if (databaseAction == DROP_AND_CREATE) {
+                actions = generateSchemaDropCreate(conf);
+            }
+        }
+
+        String loadFile = conf.getLoadScriptSource();
+        if (loadFile != null) {
+            actions += "," + ACTION_SCRIPT_LOAD;
+        }
+
+        if (actions.length() > 0) {
+            conf.setSynchronizeMappings("buildSchema(ForeignKeys=true,SchemaAction='" + actions + "')");
+        }
+    }
+
+    private String generateSchemaCreation(JDBCConfiguration conf) {
+        if (conf.getCreateScriptTarget() != null) {
+            return MappingTool.ACTION_ADD;
+        } else {
+            int createSource = conf.getCreateSourceConstant();
+            if (createSource == SchemaGenerationSource.NONE && conf.getCreateScriptSource() != null) {
+                createSource = SCRIPT;
+            } else {
+                createSource = METADATA;
+            }
+            return mapGenerationStrategyActions(createSource, ACTION_ADD, ACTION_SCRIPT_CREATE);
+        }
+    }
+
+    private String generateSchemaDrop(JDBCConfiguration conf) {
+        if (conf.getDropScriptTarget() != null) {
+            return MappingTool.ACTION_DROP;
+        } else {
+            int dropSource = conf.getDropSourceConstant();
+            if (dropSource == SchemaGenerationSource.NONE && conf.getDropScriptSource() != null) {
+                dropSource = SCRIPT;
+            } else {
+                dropSource = METADATA;
+            }
+            return mapGenerationStrategyActions(dropSource, ACTION_DROP, ACTION_SCRIPT_DROP);
+        }
+    }
+
+    private String generateSchemaDropCreate(JDBCConfiguration conf) {
+        if (conf.getCreateScriptTarget() != null && conf.getDropScriptTarget() != null) {
+            return MappingTool.ACTION_ADD + "," + MappingTool.ACTION_DROP;
+        } else {
+            return mapGenerationStrategyActions(conf.getDropSourceConstant(), ACTION_DROP, ACTION_SCRIPT_DROP) + "," +
+                   mapGenerationStrategyActions(conf.getCreateSourceConstant(), ACTION_ADD, ACTION_SCRIPT_CREATE);
+        }
+    }
+
+    private String mapGenerationStrategyActions(int source, String metadataAction, String scriptAction) {
+        String actions = "";
+        if (source == METADATA) {
+            actions += metadataAction;
+        } else if (source == SCRIPT) {
+            actions += scriptAction;
+        } else if (source == METADATA_THEN_SCRIPT) {
+            actions += metadataAction + "," + scriptAction;
+        } else if (source == SCRIPT_THEN_METADATA) {
+            actions += scriptAction + "," + metadataAction;
+        } else {
+            actions += metadataAction;
+        }
+        return actions;
     }
 }

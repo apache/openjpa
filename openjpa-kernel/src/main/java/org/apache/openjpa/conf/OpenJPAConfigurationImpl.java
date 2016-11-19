@@ -178,6 +178,17 @@ public class OpenJPAConfigurationImpl
     public BooleanValue postLoadOnMerge;
     public BooleanValue optimizeIdCopy;
     public BooleanValue useTcclForSelectNew;
+
+    // JPA Properties
+    public IntValue databaseAction;
+    public IntValue scriptsAction;
+    public IntValue createSource;
+    public IntValue dropSource;
+    public StringValue createScriptSource;
+    public StringValue dropScriptSource;
+    public StringValue createScriptTarget;
+    public StringValue dropScriptTarget;
+    public StringValue loadScriptSource;
     
     // custom values
     public BrokerFactoryValue brokerFactoryPlugin;
@@ -406,7 +417,58 @@ public class OpenJPAConfigurationImpl
         optimizeIdCopy = addBoolean("OptimizeIdCopy");
         optimizeIdCopy.setDefault("false");
         optimizeIdCopy.set(false);
-        
+
+        databaseAction = addInt("javax.persistence.schema-generation.database.action");
+        aliases = new String[] {
+                "none", String.valueOf(SchemaGenerationAction.NONE),
+                "create", String.valueOf(SchemaGenerationAction.CREATE),
+                "drop-and-create", String.valueOf(SchemaGenerationAction.DROP_AND_CREATE),
+                "drop", String.valueOf(SchemaGenerationAction.DROP)
+        };
+        databaseAction.setAliases(aliases);
+        databaseAction.setDefault(aliases[0]);
+        databaseAction.setAliasListComprehensive(true);
+
+        scriptsAction = addInt("javax.persistence.schema-generation.scripts.action");
+        aliases = new String[] {
+                "none", String.valueOf(SchemaGenerationAction.NONE),
+                "create", String.valueOf(SchemaGenerationAction.CREATE),
+                "drop-and-create", String.valueOf(SchemaGenerationAction.DROP_AND_CREATE),
+                "drop", String.valueOf(SchemaGenerationAction.DROP)
+        };
+        scriptsAction.setAliases(aliases);
+        scriptsAction.setDefault(aliases[0]);
+        scriptsAction.setAliasListComprehensive(true);
+
+        createSource = addInt("javax.persistence.schema-generation.create-source");
+        aliases = new String[] {
+                "none", String.valueOf(SchemaGenerationSource.NONE),
+                "metadata", String.valueOf(SchemaGenerationSource.METADATA),
+                "script", String.valueOf(SchemaGenerationSource.SCRIPT),
+                "metadata-then-script", String.valueOf(SchemaGenerationSource.METADATA_THEN_SCRIPT),
+                "script-then-metadata", String.valueOf(SchemaGenerationSource.SCRIPT_THEN_METADATA)
+        };
+        createSource.setAliases(aliases);
+        createSource.setDefault(aliases[0]);
+        createSource.setAliasListComprehensive(true);
+
+        dropSource = addInt("javax.persistence.schema-generation.drop-source");
+        aliases = new String[] {
+                "metadata", String.valueOf(SchemaGenerationSource.METADATA),
+                "script", String.valueOf(SchemaGenerationSource.SCRIPT),
+                "metadata-then-script", String.valueOf(SchemaGenerationSource.METADATA_THEN_SCRIPT),
+                "script-then-metadata", String.valueOf(SchemaGenerationSource.SCRIPT_THEN_METADATA)
+        };
+        dropSource.setAliases(aliases);
+        dropSource.setDefault(aliases[0]);
+        dropSource.setAliasListComprehensive(true);
+
+        createScriptSource = addString("javax.persistence.schema-generation.create-script-source");
+        dropScriptSource = addString("javax.persistence.schema-generation.drop-script-source");
+        createScriptTarget = addString("javax.persistence.schema-generation.scripts.create-target");
+        dropScriptTarget = addString("javax.persistence.schema-generation.scripts.drop-target");
+        loadScriptSource = addString("javax.persistence.sql-load-script-source");
+
         autoClear = addInt("AutoClear");
         aliases =
             new String[] { "datastore",
@@ -1878,6 +1940,58 @@ public class OpenJPAConfigurationImpl
         if (optimizeId != null) {
             setOptimizeIdCopy(optimizeId.booleanValue());
         }
+    }
+
+    public String getDatabaseAction() {
+        return databaseAction.getString();
+    }
+
+    public int getDatabaseActionConstant() {
+        return databaseAction.get();
+    }
+
+    public String getScriptsAction() {
+        return scriptsAction.getString();
+    }
+
+    public int getScriptsActionConstant() {
+        return scriptsAction.get();
+    }
+
+    public String getCreateSource() {
+        return createSource.getString();
+    }
+
+    public int getCreateSourceConstant() {
+        return createSource.get();
+    }
+
+    public String getDropSource() {
+        return dropSource.getString();
+    }
+
+    public int getDropSourceConstant() {
+        return dropSource.get();
+    }
+
+    public String getCreateScriptSource() {
+        return createScriptSource.getString();
+    }
+
+    public String getDropScriptSource() {
+        return dropScriptSource.getString();
+    }
+
+    public String getCreateScriptTarget() {
+        return createScriptTarget.getString();
+    }
+
+    public String getDropScriptTarget() {
+        return dropScriptTarget.getString();
+    }
+
+    public String getLoadScriptSource() {
+        return loadScriptSource.getString();
     }
 
     @Override
