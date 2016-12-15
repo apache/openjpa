@@ -66,7 +66,7 @@ import org.apache.openjpa.util.UserException;
 
 /**
  * Base class for factory implementations built around XML metadata files
- * in the common fomat.
+ * in the common format.
  *
  * @author Abe White
  * @since 0.4.0
@@ -712,25 +712,52 @@ public abstract class AbstractCFMetaDataFactory
                         log.trace(_loc.get("scanning-vfs-url", url));
                     }
 
-                    final URLConnection conn = url.openConnection();
-                    final Object vfsContent = conn.getContent();
                     final URL finalUrl = url;
-                    File file = AccessController.doPrivileged(new PrivilegedAction<File>() {
-                        @SuppressWarnings({ "rawtypes", "unchecked" })
-                        public File run() {
-                            try {
-                                Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
-                                Method getPhysicalFile = virtualFileClass.getDeclaredMethod("getPhysicalFile");
-                                return (File) getPhysicalFile.invoke(vfsContent);
-                            } catch (Exception e) {
-                                log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
-                            }
-                            return null;
-                        }
-                    });
-                    if (file != null)
-                        scan(new FileMetaDataIterator(file, newMetaDataFilter()), cparser, names, true, file);
+                    if (url.toString().endsWith(".jar")) {
+                        ZipInputStream zis = AccessController.doPrivileged(new PrivilegedAction<ZipInputStream>() {
 
+                            @SuppressWarnings({ "rawtypes", "unchecked" })
+                            @Override
+                            public ZipInputStream run() {
+                                try {
+                                    Class vfs = Class.forName("org.jboss.vfs.VFS");
+                                    Method getChild = vfs.getDeclaredMethod("getChild", URL.class);
+                                    Object jarFile = getChild.invoke(null, finalUrl);
+
+                                    Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
+                                    Method openStream = virtualFileClass.getDeclaredMethod("openStream");
+                                    return (ZipInputStream) openStream.invoke(jarFile);
+                                } catch (Exception e) {
+                                    log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
+                                }
+                                return null;
+                            }
+                        });
+                        if (zis != null) {
+                            scan(new ZipStreamMetaDataIterator(zis, newMetaDataFilter()), cparser, names, true, url);
+                        }
+                    } else {
+                        final URLConnection conn = url.openConnection();
+                        final Object vfsContent = conn.getContent();
+                        File file = AccessController.doPrivileged(new PrivilegedAction<File>() {
+
+                            @SuppressWarnings({ "rawtypes", "unchecked" })
+                            @Override
+                            public File run() {
+                                try {
+                                    Class virtualFileClass = Class.forName("org.jboss.vfs.VirtualFile");
+                                    Method getPhysicalFile = virtualFileClass.getDeclaredMethod("getPhysicalFile");
+                                    return (File) getPhysicalFile.invoke(vfsContent);
+                                } catch (Exception e) {
+                                    log.error(_loc.get("while-scanning-vfs-url", finalUrl), e);
+                                }
+                                return null;
+                            }
+                        });
+                        if (file != null) {
+                            scan(new FileMetaDataIterator(file, newMetaDataFilter()), cparser, names, true, file);
+                        }
+                    }
                     continue;
                 }
                 if ("jar".equals(url.getProtocol())) {
