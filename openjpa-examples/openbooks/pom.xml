@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.apache.openjpa</groupId>
         <artifactId>openjpa-examples</artifactId>
-        <version>2.4.2</version>
+        <version>2.4.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.openjpa.openjpa-examples</groupId>
