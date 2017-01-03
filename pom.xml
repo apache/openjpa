@@ -52,7 +52,6 @@
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
         
-        <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
         <test.jvm.maxheapsize>1024m</test.jvm.maxheapsize>
@@ -143,13 +142,6 @@
             <archive>http://mail-archives.apache.org/mod_mbox/openjpa-commits/</archive>
         </mailingList>
     </mailingLists>
-
-    <distributionManagement>
-      <site>
-        <id>people.apache.org</id>
-            <url>${site.deploy.url}</url>
-      </site>
-    </distributionManagement>
 
     <scm>
         <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/branches/2.4.x</connection>
