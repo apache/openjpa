@@ -17,9 +17,9 @@ specific language governing permissions and limitations
 under the License. 
 --> 
 <html>
-<title>Release Notes for Apache OpenJPA 2.4.1</title>
+<title>Release Notes for Apache OpenJPA 2.4.2</title>
 <body>
-<h1>Release Notes for Apache OpenJPA 2.4.1</h1>
+<h1>Release Notes for Apache OpenJPA 2.4.2</h1>
 <p>
 <ul>
   <li><a href="#Overview">Overview</a></li>
@@ -38,7 +38,7 @@ under the License.
 
 <P>
    The Apache OpenJPA community is proud to release a distribution of
-   OpenJPA 2.4.1. This distribution is based on the final JSR 317 Java
+   OpenJPA 2.4.2. This distribution is based on the final JSR 317 Java
    Persistence API, Version 2.0 specification and passes the JPA 2.0 TCK,
    while remaining backwards compatible with prior releases based on the
    Java Persistence API (JPA 1.0) part of Java Community Process JSR-220
@@ -111,7 +111,7 @@ under the License.</p>
 in each release of OpenJPA.</P>
 
 <h2><a name="Notice"></a>Notice</h2>
-<p>Copyright 2006,2012 The Apache Software Foundation
+<p>Copyright 2006,2017 The Apache Software Foundation
 <BR>This product includes software developed at The Apache Software Foundation (http://www.apache.org/).</p>
 <P>Apache OpenJPA includes the persistence and orm schemas from the JPA specifications.
 <BR>Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
@@ -127,72 +127,54 @@ in each release of OpenJPA.</P>
 <h2><a name="ReleaseNotes">Release Notes</h2>
 
 <hr>
-<h3><a name="241">OpenJPA 2.4.1</h3>
+<h3><a name="241">OpenJPA 2.4.2</h3>
 
 
 
-Release Notes - OpenJPA - Version 2.4.1
+Release Notes - OpenJPA - Version 2.4.2
 
 <h2>        Bug
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2341'>OPENJPA-2341</a>] -         OpenJPA ignores custom field strategies globally defined in persistence.xml
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2517'>OPENJPA-2517</a>] -         Incorrect the time unit of query timeout value.
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2539'>OPENJPA-2539</a>] -         JPQL interpret wrongly for inner join table (without mapped relation)
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2582'>OPENJPA-2582</a>] -         openjpa bundle module leaks jest dependencies
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2586'>OPENJPA-2586</a>] -         Incorrect relationship data returned when QueryCache and FetchPlans are used.
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2596'>OPENJPA-2596</a>] -         schema-delta generation (sqlAction=refresh) drops columns if they have an alternative typeName
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2597'>OPENJPA-2597</a>] -         HsqlDictionary considers NUMERIC/DECIMAL as a fixedSizeTypeNameSet
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2600'>OPENJPA-2600</a>] -         finally remove NullSafeConcurrentHashMap and SizedConcurrentHashMap
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2601'>OPENJPA-2601</a>] -         &#39;hint&#39; element in orm:xml is ignored
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2603'>OPENJPA-2603</a>] -         Merging an unmanaged entity multiple (3) times leads to an exception.
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2605'>OPENJPA-2605</a>] -         DelegatingConnection.unwrap() doesn&#39;t adhere to java.sql.Wrapper.unwrap() contract
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2609'>OPENJPA-2609</a>] -         Sporadic ClassCastException occurs under heavy load when QuerySQLCache is enabled.
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2616'>OPENJPA-2616</a>] -         Update Commons Collections to 3.2.2
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2617'>OPENJPA-2617</a>] -         blacklist org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan in our custom ObjectInputStreams
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2626'>OPENJPA-2626</a>] -         isEnhanced doesn&#39;t support java 8 bytecode
-    </li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2245'>OPENJPA-2245</a>] -         NotSerializableException when using a remote QueryCache and the Criteria API
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2631'>OPENJPA-2631</a>] -         ClassCastException occurs when an equals comparison query is executed on an entity with an @EmbeddedId that contains more than one field.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2632'>OPENJPA-2632</a>] -         select new not working if result class is not in same classloader
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2636'>OPENJPA-2636</a>] -         Custom plugins (e.g. JDBCListener, DBDictionary) can cause Classloader leaks.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2640'>OPENJPA-2640</a>] -         Cannot use custom DBDictionary with Maven plugin
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2650'>OPENJPA-2650</a>] -         When SchemaFactory and useSchemaName=false is set, a schema name is incorrectly used.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2651'>OPENJPA-2651</a>] -         IDs of entities are incorrectly assigned when @SqlResultSetMapping is used with inheritance and a ManyToOne relationship.
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2672'>OPENJPA-2672</a>] -         ConfigurationImpl.loadGlobals() has java.util.ConcurrentModificationException vulnerability
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2674'>OPENJPA-2674</a>] -         JarFile is not closed
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2675'>OPENJPA-2675</a>] -         Missing check for null parameter in equals()
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2676'>OPENJPA-2676</a>] -         openjpa relies on default locale
+</li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2684'>OPENJPA-2684</a>] -         Persistence entities not recognized in Wildfly 10 if in a JAR
+</li>
 </ul>
-
+                        
 <h2>        Improvement
 </h2>
 <ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2602'>OPENJPA-2602</a>] -         OracleDictionary uses reflection way too often
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2607'>OPENJPA-2607</a>] -         Import range for javax.transaction is to small
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2623'>OPENJPA-2623</a>] -         Switch to Java5 mojo annotations
-    </li>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2627'>OPENJPA-2627</a>] -         Create an option to disable column type checking errors during schema validation.
-    </li>
+<li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2660'>OPENJPA-2660</a>] -         Resolve Maven warnings
+</li>
 </ul>
 
-<h2>        Test
-</h2>
-<ul>
-    <li>[<a href='https://issues.apache.org/jira/browse/OPENJPA-2595'>OPENJPA-2595</a>] -         upgrade test framework from junit-3 to junit 4
-    </li>
-</ul>
-
-<BR>
+<br>
 <hr>
 <h2><a name="Previous"></a>Previous Releases</h2>
 <p>Release notes for earlier releases of OpenJPA may be found in SVN at the following locations. 
 <ul>
+  <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.4.1/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.4.1 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.4.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.4.0 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.3.0/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.3.0 RELEASE-NOTES.html</a></li>
   <li><a href='http://svn.apache.org/viewvc/openjpa/tags/2.2.2/openjpa-project/RELEASE-NOTES.html?view=co'>OpenJPA 2.2.2 RELEASE-NOTES.html</a></li>
@@ -216,7 +198,7 @@ Release Notes - OpenJPA - Version 2.4.1
 </ul></p>
  
 <hr>
-<p>Copyright (C) 2006,2015 Apache Software Foundation. Licensed under Apache License 2.0.<br>
+<p>Copyright (C) 2006,2017 Apache Software Foundation. Licensed under Apache License 2.0.<br>
 Apache, the Apache feather logo and OpenJPA are trademarks of Apache Software Foundation.<br>
 </body>
 </html>
