@@ -602,9 +602,13 @@ public class OracleDictionary
                     getInnermostDelegate();
             if (isOraclePreparedStatement(inner)) {
                 try {
-                    inner.getClass().getMethod("setFixedCHAR",
-                        new Class[]{ int.class, String.class }).
-                        invoke(inner, new Object[]{ new Integer(idx), val });
+                    Method setFixedCharMethod = inner.getClass().getMethod("setFixedCHAR",
+                                                         new Class[]{int.class, String.class});
+                    if (!setFixedCharMethod.isAccessible()) {
+                        setFixedCharMethod.setAccessible(true);
+                    }
+
+                    setFixedCharMethod.invoke(inner, new Object[]{ new Integer(idx), val });
                     return;
                 } catch (Exception e) {
                     log.warn(e);
