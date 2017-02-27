@@ -18,7 +18,9 @@
 	we can remove this file and remove the reference from the pom.xml -->
 
 <module name="Checker">
-	<module name="NewlineAtEndOfFile" />
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf"/>
+    </module>
 	<module name="TreeWalker">
 		<module name="FileContentsHolder" />
 		<module name="LineLength">
