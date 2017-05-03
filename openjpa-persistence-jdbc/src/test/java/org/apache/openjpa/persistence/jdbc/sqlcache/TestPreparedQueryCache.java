@@ -20,7 +20,10 @@ package org.apache.openjpa.persistence.jdbc.sqlcache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -84,6 +87,12 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
     public static final int[]    START_YEARS      = {1900, 2000, 2010 };
 	public static final String[] DEPARTMENT_NAMES = {"Marketing", "Sales", "Engineering" };
     public static final String[] EMPLOYEE_NAMES   = {"Tom", "Dick", "Harray" };
+    public static final Date[] EMPLOYEE_START_DATES = {new GregorianCalendar(2017, Calendar.FEBRUARY, 12).getTime(), 
+    		new GregorianCalendar(2014, Calendar.JANUARY, 1).getTime(), 
+    		new GregorianCalendar(2014, Calendar.JANUARY, 1).getTime()};
+    public static final Date[] EMPLOYEE_END_DATES = {new GregorianCalendar(2999, Calendar.JANUARY, 1).getTime(), 
+    		new GregorianCalendar(2999, Calendar.JANUARY, 1).getTime(), 
+    		new GregorianCalendar(2016, Calendar.DECEMBER, 31).getTime()};
 	public static final String[] CITY_NAMES       = {"Tulsa", "Durban", "Harlem"};
 	
     public static final String EXCLUDED_QUERY_1 = "select count(p) from Company p";
@@ -145,6 +154,9 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
 	            for (int k = 0; k < EMPLOYEE_NAMES.length; k++) {
 	                Employee emp = new Employee();
 	                emp.setName(EMPLOYEE_NAMES[k]);
+	                emp.setStartDate(EMPLOYEE_START_DATES[k]);
+	                emp.setEndDate(EMPLOYEE_END_DATES[k]);
+
 	                Address addr = new Address();
 	                addr.setCity(CITY_NAMES[k]);
                     em.persist(emp);
@@ -1323,6 +1335,26 @@ public class TestPreparedQueryCache extends AbstractPersistenceTestCase {
         return stats.get(N/2);
     }   
     
+    public void testRepeatedQueryInBetweenParameters() {
+    	OpenJPAEntityManager em = emf.createEntityManager();
+    	em.clear();
+
+    	String jpql1 = "SELECT e FROM Employee e";
+    	int employeeSize = em.createQuery(jpql1, Employee.class).getResultList().size();
+
+    	String jpql2 = "SELECT e FROM Employee e WHERE :baseDate between e.startDate AND e.endDate";
+    	TypedQuery<Employee> q1 = em.createQuery(jpql2, Employee.class);
+    	q1.setParameter("baseDate", new GregorianCalendar(2016, Calendar.JUNE, 1).getTime());
+    	int count2016 = (int)(employeeSize * ((double)2/3));
+
+		assertEquals(count2016, q1.getResultList().size());
+
+		TypedQuery<Employee> q2 = em.createQuery(jpql2, Employee.class);
+    	q2.setParameter("baseDate", new GregorianCalendar(2017, Calendar.JUNE, 1).getTime());
+    	int count2017 = (int)(employeeSize * ((double)2/3));
+
+		assertEquals(count2017, q2.getResultList().size());
+    }
     
     void parameterize(Query q, Object[] params) {
         if (params == null)
