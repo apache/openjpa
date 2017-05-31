@@ -1,0 +1,13 @@
+language: java
+# specifying other dists doesn't make sense because `trusty` doesn't have `oraclejdk8` (fails due to `Sorry, but JDK '[oraclejdk8]' is not known.`) which is the only supported JDK currently. Testing on Mac OSX doesn't make too much sense since it will run the same `maven` based build routine.
+
+jdk:
+- oraclejdk8
+- openjdk8
+    # Java 7 isn't supported in 3.x
+
+install: /bin/true
+
+script:
+- mvn --batch-mode install
+    # separating build and tests into separate commands causes `Failed to execute goal org.apache.rat:apache-rat-plugin:0.11:check (default) on project openjpa-lib: Cannot read header: src/main/java/org/apache/openjpa/lib/ant/AbstractTask.java (No such file or directory)`
