@@ -1137,14 +1137,13 @@ public class JPQLExpressionBuilder
                 return factory.divide(val1, val2);
 
             case JJTBETWEEN: // x.field [NOT] BETWEEN 5 AND 10
-                Value val_min = getValue(child(node, 0, 3));
-                Value val_max = getValue(child(node, 0, 3));
+                val1 = getValue(child(node, 0, 3));
                 val2 = getValue(child(node, 1, 3));
                 val3 = getValue(child(node, 2, 3));
-                setImplicitTypes(val_min, val2, null);
-                setImplicitTypes(val_max, val3, null);
-                return evalNot(not, and(factory.greaterThanEqual(val_min, val2),
-                    factory.lessThanEqual(val_max, val3)));
+                setImplicitTypes(val1, val2, null);
+                setImplicitTypes(val1, val3, null);
+                return evalNot(not, and(factory.greaterThanEqual(val1, val2),
+                    factory.lessThanEqual(val1, val3)));
 
             case JJTIN: // x.field [NOT] IN ('a', 'b', 'c')
                         // TYPE(x...) [NOT] IN (entityTypeLiteral1,...)
