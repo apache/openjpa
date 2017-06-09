@@ -18,6 +18,8 @@
  */
 package org.apache.openjpa.persistence.jdbc.sqlcache;
 
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Entity
@@ -44,6 +46,10 @@ public class Employee {
 	
 	@Enumerated(EnumType.ORDINAL)
 	private Category hireStatus;
+
+	private Date startDate;
+
+	private Date endDate;
 
 	public boolean isManager() {
         return isManager;
@@ -97,4 +103,19 @@ public class Employee {
         return status;
     }
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 }
