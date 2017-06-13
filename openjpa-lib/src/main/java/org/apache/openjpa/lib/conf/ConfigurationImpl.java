@@ -484,7 +484,9 @@ public class ConfigurationImpl
     private PropertyDescriptor getPropertyDescriptor(Value val)
         throws IntrospectionException {
         String prop = val.getProperty();
-        prop = prop.substring(prop.lastIndexOf('.') + 1);
+        if(!prop.contains("javax.persistence.")) {
+        	prop = prop.substring(prop.lastIndexOf('.') + 1);
+        }
 
         // set up property descriptor
         PropertyDescriptor pd;
