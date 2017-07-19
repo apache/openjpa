@@ -19,10 +19,12 @@
 package org.apache.openjpa.persistence.embed.compositepk;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -111,7 +113,7 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
      * 
      * ArgumentException: An error occurred while parsing the query filter 'select distinct g from Topic g where
      * t.subject.key = :subjectKey'. Error message: JPQL query does not support conditional expression over embeddable
-     * class. JPQL string: "key".
+     * class. JPQL string: "key". See section 4.6.3 of the JPA 2.0 specification.
      * 
      * The message in the exception tells it all. Per the spec, you can not do a compare on embeddables.
      */
@@ -185,6 +187,23 @@ public class TestCompositePrimaryKeys extends SingleEMFTestCase {
         Topic topic = query.getSingleResult();
 
         verifyResults(topic, s);
+    }
+
+    /*
+     * Due to the fix #1 (see notes above), this fails on OJ with:
+     * 
+     * java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+     * at org.apache.openjpa.jdbc.meta.ClassMapping.toDataStoreValue(ClassMapping.java:272)
+     * 
+     */
+    public void testFindUsingJPQLSubjectKeyIn() { 
+        Query query = em.createQuery("select distinct s from Subject s where s.key in :subjectKeyList");
+        query.setParameter("subjectKeyList", 
+                Arrays.asList(
+                    new SubjectKey(1, "Type"), 
+                    new SubjectKey(2, "Type2"), 
+                    new SubjectKey(3, "Type3")));
+        query.getResultList();
     }
 
     /*
