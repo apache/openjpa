@@ -466,10 +466,18 @@
         <mapping-file>META-INF/pudefaults-orm.xml</mapping-file>
         <mapping-file>META-INF/pudefaults2-orm.xml</mapping-file>
     <properties>
-    
                     <property name="openjpa.jdbc.SynchronizeMappings"
                 value="buildSchema(ForeignKeys=true)"/>
-                
+    </properties>
+  </persistence-unit>
+
+      <persistence-unit name="overrideMappingSchema" transaction-type="RESOURCE_LOCAL">
+        <mapping-file>META-INF/pudefaults-orm.xml</mapping-file>
+        <mapping-file>META-INF/pudefaults2-orm.xml</mapping-file>
+    <properties>
+                    <property name="openjpa.jdbc.Schema" value="PUSCHEMA" />
+                    <property name="openjpa.jdbc.SynchronizeMappings"
+                value="buildSchema(ForeignKeys=true)"/>
     </properties>
   </persistence-unit>
 

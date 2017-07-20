@@ -29,6 +29,7 @@ import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.identifier.Normalizer;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.QualifiedDBIdentifier;
+import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.schema.Column;
 import org.apache.openjpa.jdbc.schema.ColumnIO;
 import org.apache.openjpa.jdbc.schema.ForeignKey;
@@ -499,9 +500,18 @@ public abstract class MappingInfo
             && !repos.getMappingDefaults().defaultMissingInfo())))
             throw new MetaDataException(_loc.get("no-table", context));
 
-        if (DBIdentifier.isNull(schemaName))
+        if (DBIdentifier.isNull(schemaName)) {
+            //Check the configuration first for a set Schema to use
             schemaName = Schemas.getNewTableSchemaIdentifier((JDBCConfiguration)
                 repos.getConfiguration());
+
+            // If the schemaName is still NULL type then check for a system default schema name
+            // and if available use it.
+            if (schemaName != null && (schemaName.getType() == DBIdentifierType.NULL)) {
+                String name = repos.getMetaDataFactory().getDefaults().getDefaultSchema();
+                schemaName = (name != null ? DBIdentifier.newSchema(name) : schemaName);
+            }
+        }
 
         // if no given and adapting or defaulting missing info, use template
         SchemaGroup group = repos.getSchemaGroup();
