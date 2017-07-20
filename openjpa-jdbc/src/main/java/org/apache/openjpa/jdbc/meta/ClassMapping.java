@@ -269,7 +269,7 @@ public class ClassMapping
                 // If on the other hand we are dealing with an embeddable that is an @IdClass, fms.size will be the 
                 // number columns in the @IdClass.  Furthermore, when dealing with @IdClass, 'ret' will already  
                 // properly contain the column values, therefore no further processing is needed.
-                if (fmsPK[0].isEmbedded() && cols.length > 1 && fms.size() == 1) {
+                if (fmsPK.length > 0 && fmsPK[0].isEmbedded() && cols.length > 1 && fms.size() == 1) {
                     // OK, we know this PK is an embeddable. So get the individual field values.
                     Object[] tmpRet = new Object[cols.length];
                     for (int i = 0; i < cols.length; i++) {
