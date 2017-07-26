@@ -231,7 +231,7 @@ class CriteriaQueryImpl<T> implements OpenJPACriteriaQuery<T>, AliasContext {
     
     public Set<ParameterExpression<?>> getParameters() {
         collectParameters(new CriteriaExpressionVisitor.ParameterVisitor(this));
-        return _params == null ? Collections.EMPTY_SET : _params.keySet();
+        return _params == null ? Collections.EMPTY_SET : (Set) _params.keySet();
     }
 
     /**
