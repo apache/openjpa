@@ -515,6 +515,12 @@
                 <groupId>net.sourceforge.serp</groupId>
                 <artifactId>serp</artifactId>
                 <version>1.15.1</version>
+                <exclusions>
+                  <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                  </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
