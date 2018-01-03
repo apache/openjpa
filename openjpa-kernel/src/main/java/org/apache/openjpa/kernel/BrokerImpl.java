@@ -2149,8 +2149,14 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
             // dependents
             _flags |= FLAG_DEREFDELETING;
             if (flush && _derefCache != null && !_derefCache.isEmpty()) {
-                for (Iterator<StateManagerImpl> itr = _derefCache.iterator(); itr.hasNext();)
-                    deleteDeref(itr.next());
+                Set<StateManagerImpl> statesMarkedForDelete = new HashSet<>();
+                // mark for delete all elements in deref, otherwise in some situations it
+                // throws ConcurrentModificationException
+                statesMarkedForDelete.addAll(_derefCache);
+                for (StateManagerImpl state: statesMarkedForDelete) {
+                    deleteDeref(state);
+                }
+                
                 flushAdditions(transactional, reason);
             }
 
