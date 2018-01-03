@@ -2153,12 +2153,10 @@ public class BrokerImpl implements Broker, FindCallbacks, Cloneable, Serializabl
                 // mark for delete all elements in deref, otherwise in some situations it
                 // throws ConcurrentModificationException
                 statesMarkedForDelete.addAll(_derefCache);
-                if(statesMarkedForDelete.size()>0) {
-                    for (StateManagerImpl state: statesMarkedForDelete) {
-                        deleteDeref(state);
-                    }
+                for (StateManagerImpl state: statesMarkedForDelete) {
+                    deleteDeref(state);
                 }
-
+                
                 flushAdditions(transactional, reason);
             }
 
