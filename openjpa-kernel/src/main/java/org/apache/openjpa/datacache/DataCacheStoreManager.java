@@ -423,6 +423,14 @@ public class DataCacheStoreManager
                 data = newPCData(sm, cache);
             }
             data.store(sm);
+            
+            // Check if data has no id, if it does not, do not enter it into the cache, as we do
+            // not want to introduce any null-key entries into the cache map (some cache
+            // implementations cannot handle that)
+            if (data.getId() == null) {
+                return;
+            }
+            
             if (isNew) { 
                 cache.put(data);
             } else {
@@ -487,6 +495,9 @@ public class DataCacheStoreManager
 
         DataCachePCData data = cache.get(sm.getObjectId());
         boolean alreadyCached = data != null;
+        if (alreadyCached == false && sm.isEmbedded()) {
+            return;
+        }
 
         if ((fetch.getCacheStoreMode() == DataCacheStoreMode.USE && !alreadyCached) ||
              fetch.getCacheStoreMode() == DataCacheStoreMode.REFRESH) {
