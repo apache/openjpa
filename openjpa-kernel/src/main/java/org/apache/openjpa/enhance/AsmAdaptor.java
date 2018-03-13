@@ -28,10 +28,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import org.apache.xbean.asm5.ClassReader;
-import org.apache.xbean.asm5.ClassVisitor;
-import org.apache.xbean.asm5.ClassWriter;
-import org.apache.xbean.asm5.Opcodes;
+import org.apache.xbean.asm6.ClassReader;
+import org.apache.xbean.asm6.ClassVisitor;
+import org.apache.xbean.asm6.ClassWriter;
+import org.apache.xbean.asm6.Opcodes;
 import serp.bytecode.BCClass;
 
 import static java.util.Arrays.asList;
