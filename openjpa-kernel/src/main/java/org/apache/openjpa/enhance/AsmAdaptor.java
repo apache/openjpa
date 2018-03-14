@@ -116,7 +116,7 @@ public final class AsmAdaptor {
         final ClassReader cr = new ClassReader(b);
         try
         {
-            cr.accept(new ClassVisitor(Opcodes.ASM5)
+            cr.accept(new ClassVisitor(Opcodes.ASM6)
             {
                 @Override
                 public void visit(final int i, final int i1,
