@@ -72,7 +72,7 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
         String driverName = meta.getDriverName();
         String url = meta.getURL();
         if (driverVendor == null) {
-            // serverMajorVersion of 8==2000, 9==2005, 10==2008
+            // serverMajorVersion of 8==2000, 9==2005, 10==2008,  11==2012
             if (meta.getDatabaseMajorVersion() >= 9)
                 setSupportsXMLColumn(true);
             if (meta.getDatabaseMajorVersion() >= 10) {
@@ -82,6 +82,12 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
                 timeTypeName = "DATETIME2";
                 timestampTypeName = "DATETIME2";
                 datePrecision = MICRO / 10;
+            }
+            if (meta.getDatabaseMajorVersion() >= 11) {
+                //SQLServer 2012 supports range select
+                rangePosition = RANGE_POST_SELECT;      
+                supportsSelectStartIndex = true;
+                supportsSelectEndIndex = true;
             }
             if (driverName != null) {
                 if (driverName.startsWith("Microsoft SQL Server")) {
@@ -341,5 +347,20 @@ public class SQLServerDictionary extends AbstractSQLServerDictionary {
             start.appendTo(buf);
         }
         buf.append(")");
+    }
+
+    @Override
+    protected void appendSelectRange(SQLBuffer buf, long start, long end, boolean subselect) {
+        //SQL Server 2012 supports range select
+        if (this.getMajorVersion() >= 11) {
+            //we need an order by clause....
+            if (!buf.getSQL().contains(" ORDER BY ")) {
+                buf.append(" ORDER BY 1 ");
+            }
+            buf.append(" OFFSET ").append(Long.toString(start)).append(" ROWS ").
+                    append(" FETCH NEXT ").append(Long.toString(end - start)).append(" ROWS ONLY ");
+        } else {
+            super.appendSelectRange(buf, start, end, subselect);
+        }
     }
 }
