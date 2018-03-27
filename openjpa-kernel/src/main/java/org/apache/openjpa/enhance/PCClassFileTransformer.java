@@ -21,11 +21,13 @@ package org.apache.openjpa.enhance;
 import java.io.ByteArrayInputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.security.AccessController;
 import java.security.ProtectionDomain;
 import java.util.Set;
 
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.log.Log;
+import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.Options;
 import org.apache.openjpa.meta.MetaDataRepository;
@@ -143,18 +145,24 @@ public class PCClassFileTransformer
             if (enhance != Boolean.TRUE)
                 return null;
 
-            PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(),
-                new Project().loadClass(new ByteArrayInputStream(bytes),
-                    _tmpLoader), _repos);
-            enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
-            enhancer.setEnforcePropertyRestrictions
-                (_flags.enforcePropertyRestrictions);
+            ClassLoader oldLoader = AccessController.doPrivileged(J2DoPrivHelper.getContextClassLoaderAction());
+            AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(_tmpLoader));
+            try {
+                PCEnhancer enhancer = new PCEnhancer(_repos.getConfiguration(),
+                        new Project().loadClass(new ByteArrayInputStream(bytes),
+                                _tmpLoader), _repos);
+                enhancer.setAddDefaultConstructor(_flags.addDefaultConstructor);
+                enhancer.setEnforcePropertyRestrictions
+                        (_flags.enforcePropertyRestrictions);
 
-            if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
-                return null;
-            BCClass pcb = enhancer.getPCBytecode();
-            returnBytes = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
-            return returnBytes;
+                if (enhancer.run() == PCEnhancer.ENHANCE_NONE)
+                    return null;
+                BCClass pcb = enhancer.getPCBytecode();
+                returnBytes = AsmAdaptor.toByteArray(pcb, pcb.toByteArray());
+                return returnBytes;
+            } finally {
+                AccessController.doPrivileged(J2DoPrivHelper.setContextClassLoaderAction(oldLoader));
+            }
         } catch (Throwable t) {
             _log.warn(_loc.get("cft-exception-thrown", className), t);
             if (t instanceof RuntimeException)
