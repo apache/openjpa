@@ -303,13 +303,8 @@ public class PostgresDictionary
         }
     }
 
-    @Override
-    public void setBoolean(PreparedStatement stmnt, int idx, boolean val,
-        Column col)
-        throws SQLException {
-        // postgres actually requires that a boolean be set: it cannot
-        // handle a numeric argument.
-        stmnt.setBoolean(idx, val);
+    public BooleanRepresentation getDictionaryDefaultBooleanRepresentation() {
+        return  BooleanRepresentationFactory.BOOLEAN;
     }
 
     /**

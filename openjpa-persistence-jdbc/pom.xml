@@ -129,7 +129,7 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>postgresql</groupId>
+                    <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <version>${postgresql.version}</version>
                     <scope>test</scope>
@@ -631,14 +631,14 @@
         <profile>
             <!--
                 Example Informix profile. You can use this profile if you:
-                1) have the Informix JDBC artifacts installed in a local repo and 
+                1) have the Informix JDBC artifacts installed in a local repo and
                 supply the URL:
                   -Dids.maven.repo=http://my.local.repo
                 2) have a copy of the Informix driver and run the following
                 commands :
                     mvn install:install-file -Dfile=${path to ifxjdbc.jar} \
                                              -DgroupId=com.informix \
-                                             -DartifactId=informix-driver \ 
+                                             -DartifactId=informix-driver \
                                              -Dversion=3.70 \
                                              -Dpackaging=jar
 
@@ -695,7 +695,7 @@
                 </repository>
             </repositories>
         </profile>
-        
+
         <!-- Profile for testing with Oracle DB -->
         <profile>
             <!--
