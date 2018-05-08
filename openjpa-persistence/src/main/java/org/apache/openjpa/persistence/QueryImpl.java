@@ -539,7 +539,7 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
             }
             return false;
         }
-        
+
         // Determine if the query has NULL parameters.  If so, then do not use a PreparedQuery from the cache
         for (Object val : params.values()) {
             if (val == null) {
@@ -547,12 +547,13 @@ public class QueryImpl<X> extends AbstractQuery<X> implements Serializable {
                 return false;
             }
         }
-        
+
         Boolean registered = cache.register(_id, _query, fetch);
         boolean alreadyCached = (registered == null);
         String lang = _query.getLanguage();
         QueryStatistics<String> stats = cache.getStatistics();
         if (alreadyCached && LANG_PREPARED_SQL.equals(lang)) {
+            //This value is expected to be non-null as it was just registered
             PreparedQuery pq = _em.getPreparedQuery(_id);
             if (pq.isInitialized()) {
                 try {
