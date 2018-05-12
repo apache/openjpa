@@ -88,20 +88,6 @@
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <tck2.level>20110815</tck2.level>
     </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <!-- Don't publish these artifacts to central -->
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
       <profile>
         <!-- vvvvvvvvvvvvvvvvvvv -->
