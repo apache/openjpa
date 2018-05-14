@@ -186,7 +186,7 @@ public class CacheMap
      * Acquire read lock.
      */
     public void readLock() {
-        _readLock.unlock();
+        _readLock.lock();
     }
 
     /**
