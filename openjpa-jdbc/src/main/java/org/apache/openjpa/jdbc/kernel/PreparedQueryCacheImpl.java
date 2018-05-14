@@ -361,7 +361,15 @@ public class PreparedQueryCacheImpl implements PreparedQueryCache {
     public boolean getEnableStatistics(){
         return _statsEnabled;
     }
-        
+
+    public void setMaxCacheSize(int size) {
+        ((CacheMap)_delegate).setCacheSize(size);
+    }
+
+    public int getCacheSize() {
+        return _delegate.size();
+    }
+
 	//-------------------------------------------------------
 	// Configurable contract
 	//-------------------------------------------------------

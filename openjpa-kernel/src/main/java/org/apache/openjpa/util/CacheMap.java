@@ -35,7 +35,8 @@ import org.apache.openjpa.lib.util.SizedMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentHashMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Fixed-size map that has ability to pin/unpin entries and move overflow to
@@ -65,8 +66,9 @@ public class CacheMap
     // number of pinned values (not including keys not mapped to values)
     private int _pinnedSize = 0;
 
-    private final ReentrantLock _writeLock = new ReentrantLock();
-    private final ReentrantLock _readLock;
+    private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock(true);
+    private final Lock _readLock = rwl.readLock();
+    private final Lock _writeLock = rwl.writeLock();
 
     /**
      * Create a non-LRU (and therefore highly concurrent) cache map with a
@@ -128,14 +130,12 @@ public class CacheMap
                     cacheMapOverflowRemoved(key, value);
                 }
             };
-            _readLock = null;
         } else {
             cacheMap = new LRUMap(size, load) {
                 public void overflowRemoved(Object key, Object value) {
                     cacheMapOverflowRemoved(key, value);
                 }
             };
-            _readLock = _writeLock;
         }
         if (max < 0)
             max = Integer.MAX_VALUE;
@@ -186,16 +186,14 @@ public class CacheMap
      * Acquire read lock.
      */
     public void readLock() {
-        if (_readLock != null)
-            _readLock.lock();
+        _readLock.unlock();
     }
 
     /**
      * Release read lock.
      */
     public void readUnlock() {
-        if (_readLock != null)
-            _readLock.unlock();
+        _readLock.unlock();
     }
 
     /**
@@ -216,7 +214,7 @@ public class CacheMap
      * Whether this cache map uses LRU eviction.
      */
     public boolean isLRU() {
-        return _readLock != null;
+        return cacheMap instanceof LRUMap;
     }
 
     /**
@@ -348,24 +346,26 @@ public class CacheMap
     }
 
     public Object get(Object key) {
+        boolean putcache = false;
+        Object val = null;
         readLock();
         try {
-            // Check the main map first
-            Object  val = cacheMap.get(key);
+            val = softMap.get(key);
             if (val == null) {
-                // if we find the key in the soft map, move it back into
-                // the primary map
-                val = softMap.get(key);
-                if (val != null){
-                    put(key, val);
-                }else{
+                val = cacheMap.get(key);
+                if (val == null) {
                     val = pinnedMap.get(key);
+                } else {
+                    putcache = true;
                 }
             }
-           
             return val;
         } finally {
             readUnlock();
+            //cannot obtain a write lock while holding a read lock
+            //doing it this way prevents a deadlock
+            if (putcache)
+                put(key, val);
         }
     }
 
