@@ -89,12 +89,17 @@ public class TestMultithreadedReparametrization extends TestCase {
         for (Thread thread : threads) {
             thread.join();
         }
-        QueryStatistics<String> stats = emf.getConfiguration().getQuerySQLCacheInstance().getStatistics();
-        for(Throwable t : exceptions) {
-            fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
+        try {
+            QueryStatistics<String> stats = emf.getConfiguration().getQuerySQLCacheInstance().getStatistics();
+            for(Throwable t : exceptions) {
+                fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
+            }
+            assertEquals(nThreads*nRepeats,stats.getExecutionCount(), stats.getExecutionCount(jpql));
+            assertEquals(nThreads*nRepeats-1,stats.getExecutionCount(), stats.getHitCount(jpql));
+        } finally {
+            //clear statistics for other tests
+            emf.getConfiguration().getQuerySQLCacheInstance().clear();
         }
-        assertEquals(nThreads*nRepeats,stats.getExecutionCount(), stats.getExecutionCount(jpql));
-        assertEquals(nThreads*nRepeats-1,stats.getExecutionCount(), stats.getHitCount(jpql));
     }
 
     /**
@@ -157,8 +162,12 @@ public class TestMultithreadedReparametrization extends TestCase {
                 }
             }
 
-            for(Throwable t : exceptions) {
-                fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
+            try {
+                for(Throwable t : exceptions) {
+                    fail((t.getCause() != null ? t.getCause().toString() : t.toString()));
+                }
+            } finally {
+                emf.getConfiguration().getQuerySQLCacheInstance().clear();
             }
         }
     }
