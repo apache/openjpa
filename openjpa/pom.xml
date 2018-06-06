@@ -121,6 +121,9 @@
                         <Private-Package />
                         <Export-Package>org.apache.openjpa.*;version=${project.version}</Export-Package>
                         <Import-Package>
+				oracle.jdbc.pool;resolution:=optional,
+				oracle.jdbc;resolution:=optional,
+				oracle.sql;resolution:=optional,
                         	com.ibm.*;resolution:=optional,
                         	org.postgresql.*;resolution:=optional,
                         	org.apache.tools.ant.*;resolution:=optional,
