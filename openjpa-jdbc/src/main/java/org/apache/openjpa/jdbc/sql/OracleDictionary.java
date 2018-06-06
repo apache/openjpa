@@ -241,8 +241,8 @@ public class OracleDictionary
             // all fine
         }
 
-        oracleClob_empty_lob_Method = getMethodByReflection("oracle.sql.CLOB", "empty_lob");
-        oracleBlob_empty_lob_Method = getMethodByReflection("oracle.sql.BLOB", "empty_lob");
+        oracleClob_empty_lob_Method = getMethodByReflection("oracle.sql.CLOB", "getEmptyCLOB");
+        oracleBlob_empty_lob_Method = getMethodByReflection("oracle.sql.BLOB", "getEmptyBLOB");
         oracleClob_isEmptyLob_Method = getMethodByReflection("oracle.sql.CLOB", "isEmptyLob");
 
     }
@@ -1267,6 +1267,10 @@ public class OracleDictionary
         throws SQLException {
         if (EMPTY_CLOB != null)
             return EMPTY_CLOB;
+
+        if (oracleClob_empty_lob_Method == null)
+            return null;       
+
         try {
             return EMPTY_CLOB = (Clob) oracleClob_empty_lob_Method.invoke(null, new Object[0]);
         } catch (Exception e) {
@@ -1278,6 +1282,10 @@ public class OracleDictionary
         throws SQLException {
         if (EMPTY_BLOB != null)
             return EMPTY_BLOB;
+
+	if (oracleBlob_empty_lob_Method == null)
+            return null;
+
         try {
             return EMPTY_BLOB = (Blob) oracleBlob_empty_lob_Method.invoke(null, new Object[0]);
         } catch (Exception e) {
