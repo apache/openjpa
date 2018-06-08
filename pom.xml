@@ -36,7 +36,7 @@
     <name>OpenJPA Parent POM</name>
     <description>Apache OpenJPA implementation of JSR-338 JPA 2.1</description>
 
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
 
     <properties>
         <java.class.version>1.8</java.class.version>
@@ -151,9 +151,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/tags/openjpa-parent-3.0.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/tags/openjpa-parent-3.0.0</developerConnection>
-        <url>http://svn.apache.org/repos/asf/openjpa/tags/openjpa-parent-3.0.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/openjpa/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/openjpa/trunk</developerConnection>
+        <url>http://svn.apache.org/repos/asf/openjpa/trunk</url>
     </scm>
 
     <modules>
