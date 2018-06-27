@@ -786,6 +786,7 @@
                     <version>2.5.3</version>
                     <configuration>
                         <useReleaseProfile>false</useReleaseProfile>
+                        <tagNameFormat>@{project.version}</tagNameFormat>
 
                         <!--
                             The openbooks example contains a build.xml which tries to add ~/.m2/repository/../openjpa-all-nnn.jar
