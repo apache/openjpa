@@ -66,7 +66,7 @@ their corresponding database schema from your object model. OpenJPA supports
 forward mapping through the <emphasis>mapping tool</emphasis>. The next section
 presents several common mapping tool use cases. You can invoke the tool through
 its Java class,
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/MappingTool"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/MappingTool"><classname>
 org.apache.openjpa.jdbc.meta.MappingTool</classname></ulink>.
         </para>
         <note>
@@ -502,7 +502,7 @@ proper relations between the persistent classes it creates.
 Run the reverse mapping tool on the finished schema file. If you do not supply
 the schema file to reverse map, the tool will run directly against the schema in
 the database. The tool can be run via its Java class,
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ReverseMappingTool">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/ReverseMappingTool">
 <classname>org.apache.openjpa.jdbc.meta.ReverseMappingTool</classname></ulink>.
                 </para>
                 <example id="ref_guide_pc_reverse_reversemappingtool">
@@ -689,11 +689,11 @@ OpenJPA is examining.
                         <para>
 <literal>-customizerClass/-cc &lt;class name&gt;</literal>: The full class name
 of a
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html">
 <classname>org.apache.openjpa.jdbc.meta.ReverseCustomizer</classname></ulink>
 customization plugin. If you do not specify a reverse customizer of your own,
 the system defaults to a
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html">
 <classname>PropertiesReverseCustomizer</classname></ulink>. This customizer
 allows you to specify simple customization options in the properties file given
 with the <literal>-customizerProperties</literal> flag below. We present the
@@ -753,7 +753,7 @@ Your persistent classes are now ready to access your existing schema.
             <para>
 The <classname>org.apache.openjpa.jdbc.meta.ReverseCustomizer</classname> plugin
 interface allows you to customize the reverse mapping process. See the class
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/ReverseCustomizer.html">
 Javadoc</ulink> for details on the hooks that this interface provides. Specify
 the concrete plugin implementation to use with the <literal>
 -customizerClass/-cc</literal> command-line flag, described in the preceding
@@ -761,7 +761,7 @@ section.
             </para>
             <para>
 By default, the reverse mapping tool uses a
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/PropertiesReverseCustomizer.html">
 <classname>org.apache.openjpa.jdbc.meta.PropertiesReverseCustomizer</classname>
 </ulink>. This customizer allows you to perform relatively simple
 customizations through the properties file named with the <literal>
@@ -996,7 +996,7 @@ database's tools to bring the schema up-to-date.
 The previous sections showed how to use the mapping tool to generate default
 mappings. But how does the mapping tool know what mappings to generate? The
 answer lies in the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/MappingDefaults.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaults.html">
 <classname>org.apache.openjpa.jdbc.meta.MappingDefaults</classname></ulink>
 interface. OpenJPA uses an instance of this interface to decide how to name
 tables and columns, where to put foreign keys, and generally how to create a
@@ -1025,7 +1025,7 @@ OpenJPA includes the following standard implementations:
                 <para>
 <literal>jpa</literal>: Provides defaults in compliance with the JPA standard.
 This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/PersistenceMappingDefaults.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/PersistenceMappingDefaults.html">
 <classname>org.apache.openjpa.persistence.jdbc.PersistenceMappingDefaults
 </classname></ulink> class. This class extends the <classname>
 MappingDefaultsImpl</classname> class described below, so it has all the same
@@ -1045,7 +1045,7 @@ compatibility with older OpenJPA versions which did not prepend the field name.
             <listitem>
                 <para>
 <literal>default</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/MappingDefaultsImpl.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/MappingDefaultsImpl.html">
 <classname>org.apache.openjpa.jdbc.meta.MappingDefaultsImpl</classname></ulink>
 class. This default implementation is highly configurable. It has the following
 properties:
@@ -1079,7 +1079,7 @@ classes. You can specify a built-in strategy alias or the full class name of a
 You can also use OpenJPA's plugin format (see
 <xref linkend="ref_guide_conf_plugins"/>) to pass arguments to the
 strategy instance. See the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
 <literal>org.apache.openjpa.jdbc.meta.strats</literal></ulink> package for
 available strategies.
                         </para>
@@ -1093,7 +1093,7 @@ You can also use OpenJPA's plugin format (see
 <xref linkend="ref_guide_conf_plugins"/>) to pass arguments to the
 strategy instance. Common strategies are <literal>vertical</literal> and
 <literal>flat</literal>, the default. See the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
 <literal>org.apache.openjpa.jdbc.meta.strats</literal></ulink> package for all
 available strategies.
                         </para>
@@ -1108,7 +1108,7 @@ version strategy</link>. You can also use OpenJPA's plugin format (see
 strategy instance. Common strategies are <literal>none</literal>, <literal>
 state-comparison</literal>, <literal> timestamp</literal>, and <literal>
 version-number</literal>, the default. See the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
 <literal>org.apache.openjpa.jdbc.meta.strats</literal></ulink> package for all
 available strategies.
                         </para>
@@ -1125,7 +1125,7 @@ strategy instance. Common strategies are <literal>final</literal> for a base
 class without subclasses, <literal>none</literal> to use joins to subclass
 tables rather than a discriminator column, and <literal> class-name</literal>,
 the default. See the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/strats/package-summary.html">
 <literal>org.apache.openjpa.jdbc.meta.strats</literal></ulink> package for all
 available strategies.
                         </para>
@@ -1379,7 +1379,7 @@ In a non-primary key join, at least one of the target columns is not a primary
 key. Once again, OpenJPA supports this join type with the same syntax as a
 primary key join. There is one restriction, however: each non-primary key column
 you are joining to must be controlled by a field mapping that implements the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/Joinable.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/Joinable.html"><classname>
 org.apache.openjpa.jdbc.meta.Joinable</classname></ulink> interface. All built
 in basic mappings implement this interface, including basic fields of embedded
 objects. OpenJPA will also respect any custom mappings that implement this
@@ -1540,7 +1540,7 @@ to map entities using these strategies to the database.
 <xref linkend="ref_guide_pc_oid"/> describes how to use datastore identity
 in JPA. OpenJPA requires a single numeric primary key column to hold datastore
 identity values. The
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/DataStoreIdColumn.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/DataStoreIdColumn.html">
 <classname>org.apache.openjpa.persistence.jdbc.DataStoreIdColumn</classname>
 </ulink> annotation customizes the datastore identity column. This annotation
 has the following properties:
@@ -1633,10 +1633,10 @@ public class LogEntry {
 OpenJPA supports version fields as defined by the JPA specification, but allows
 you to use a surrogate version column in place of a version field if you like.
 You map the surrogate version column with the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/VersionColumn.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumn.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionColumn</classname></ulink>
 annotation. You can also use the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/VersionColumns.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/VersionColumns.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionColumns</classname>
 </ulink> annotation to declare an array of <classname>VersionColumn</classname>
 values. Each <classname>VersionColumn</classname> has the following properties:
@@ -1774,7 +1774,7 @@ OpenJPA makes it easy to create multi-column
 specification includes a <classname>Column</classname> annotation, but is
 missing a way to declare multiple columns for a single field. OpenJPA remedies
 this with the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Columns.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Columns.html">
 <classname>org.apache.openjpa.persistence.jdbc.Columns</classname></ulink>
 annotation, which contains an array of <classname>Column</classname> values.
             </para>
@@ -1803,7 +1803,7 @@ OpenJPA rectifies this by allowing you to declare which <emphasis>attribute
 </emphasis> in the related type each join column links to, rather than which
 column. If the attribute is mapped differently in various subclass tables,
 OpenJPA automatically forms the proper join for the subclass record at hand. The
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/XJoinColumn.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/XJoinColumn.html">
 <classname>org.apache.openjpa.persistence.jdbc.XJoinColumn</classname></ulink>
 annotation has all the same properties as the standard <classname>JoinColumn
 </classname> annotation, but adds an additional <literal>
@@ -1813,7 +1813,7 @@ referencedAttributeName</literal> property for this purpose. Simply use a
             </para>
             <para>
 For compound keys, use the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/XJoinColumns.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/XJoinColumns.html">
 <classname>org.apache.openjpa.persistence.jdbc.XJoinColumns</classname></ulink>
 annotation. The value of this annotation is an array of individual <classname>
 XJoinColumn</classname>s.
@@ -1833,7 +1833,7 @@ a null embedded object and one with default values for all of its fields.
             </para>
             <para>
 OpenJPA overcomes these shortcomings with the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/EmbeddedMapping.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/EmbeddedMapping.html">
 <classname>org.apache.openjpa.persistence.jdbc.EmbeddedMapping</classname>
 </ulink> annotation. This annotation has the following properties:
             </para>
@@ -1885,7 +1885,7 @@ allows you to override multiple mapped superclass mappings.
             </para>
             <para>
 Each
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/MappingOverride.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/MappingOverride.html">
 <classname>org.apache.openjpa.persistence.jdbc.MappingOverride</classname>
 </ulink> annotation has the following properties:
             </para>
@@ -2004,7 +2004,7 @@ We explore the annotations below.
                 </indexterm>
                 <para>
 The
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ContainerTable.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ContainerTable.html">
 <classname>org.apache.openjpa.persistence.jdbc.ContainerTable</classname>
 </ulink> annotation describes a database table that holds collection (or map)
 elements. This annotation has the following properties:
@@ -2075,11 +2075,11 @@ of the next sections.
 Element join columns are equivalent to standard JPA join columns, except that
 they represent a join to a collection or map element entity rather than a direct
 relation. You represent an element join column with OpenJPA's
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementJoinColumn.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumn.html">
 <classname>org.apache.openjpa.persistence.jdbc.ElementJoinColumn</classname>
 </ulink> annotation. To declare a compound join, enclose an array of <classname>
 ElementJoinColumn</classname>s in the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementJoinColumns.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementJoinColumns.html">
 <classname>org.apache.openjpa.persistence.jdbc.ElementJoinColumns</classname>
 </ulink> annotation.
                 </para>
@@ -2112,13 +2112,13 @@ Relational databases do not guarantee that records are returned in insertion
 order. If you want to make sure that your collection elements are loaded in the
 same order they were in when last stored, you must declare an order column. An
 order column can be declared using OpenJPA's 
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/OrderColumn">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/OrderColumn">
 <classname>org.apache.openjpa.persistence.jdbc.OrderColumn</classname></ulink>
 annotation or the JPA 2.0 <classname>javax.persistence.OrderColumn</classname>
 annotation or <literal>order-column</literal> orm element as defined in
 <xref linkend="jpa_overview_meta_xml"/>.
 OpenJPA's
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/OrderColumn">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/OrderColumn">
 <classname>org.apache.openjpa.persistence.jdbc.OrderColumn</classname></ulink>
 annotation has the following properties:
                 </para>
@@ -2274,11 +2274,11 @@ also use this annotation to represent a map table.
         join columns described in
         <xref linkend="ref_guide_mapping_jpa_coll_joincols"/> serve for
         collection elements.  OpenJPA's
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
+        <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumn.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyColumn</classname>
         </ulink> annotation represents a map key.  To map custom
         multi-column keys, use the
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyColumns.html">
+        <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/KeyColumns.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyColumns</classname>
         </ulink> annotation, whose value is an array of <classname>KeyColumn</classname>s.
         </para>
@@ -2302,10 +2302,10 @@ also use this annotation to represent a map table.
         Key join columns are equivalent to standard JPA
         join columns, except that they represent a join to a map key entity rather than a direct relation.  You represent
         a key join column with OpenJPA's
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html">
+        <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumn.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumn</classname></ulink> annotation.  To declare a compound join, enclose an
         array of <classname>KeyJoinColumn</classname>s in the
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html">
+        <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/KeyJoinColumns.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyJoinColumns</classname>
         </ulink> annotation.
         </para>
@@ -2328,7 +2328,7 @@ also use this annotation to represent a map table.
         </indexterm>
         <para>
         The
-        <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html">
+        <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/KeyEmbeddedMapping.html">
         <classname>org.apache.openjpa.persistence.jdbc.KeyEmbeddedMapping</classname>
         </ulink> annotation allows you to map your map field's embedded
         key type to your container table.  This annotation has exactly
@@ -2420,13 +2420,13 @@ presented in the following sections.
                     </primary>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Index.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Index.html">
 <classname>org.apache.openjpa.persistence.jdbc.Index</classname></ulink>
 annotation represents an index on the columns of a field. It is also used within
 the <link linkend="ref_guide_mapping_jpa_coll_table"><classname>ContainerTable
 </classname></link> annotation to index join columns.
 To index the columns of a collection element, use the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementIndex.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementIndex.html">
 <classname> org.apache.openjpa.persistence.jdbc.ElementIndex</classname></ulink>
 annotation. These annotations have the following properties:
                 </para>
@@ -2470,14 +2470,14 @@ to false.
                     </primary>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ForeignKey.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKey.html">
 <classname>org.apache.openjpa.persistence.jdbc.ForeignKey</classname></ulink>
 annotation represents a foreign key on the columns of a field. It is also used
 within the <link linkend="ref_guide_mapping_jpa_coll_table"><classname>
 ContainerTable</classname></link> annotation to set a database foreign key on
 join columns.  To set a constraint to the columns of a collection element, use
 the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementForeignKey.html">
 <classname> org.apache.openjpa.persistence.jdbc.ElementForeignKey</classname>
 </ulink> annotation. These annotations have the following properties:
                 </para>
@@ -2517,7 +2517,7 @@ does not manifest as a database foreign key constraint.
                     <listitem>
                         <para>
 <literal>ForeignKeyAction deleteAction</literal>: Value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html">
 <classname>org.apache.openjpa.persistence.jdbc.ForeignKeyAction</classname>
 </ulink> enum identifying the desired delete action. Defaults to <literal>
 RESTRICT</literal>.
@@ -2526,7 +2526,7 @@ RESTRICT</literal>.
                     <listitem>
                         <para>
 <literal>ForeignKeyAction updateAction</literal>: Value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ForeignKeyAction.html">
 <classname>org.apache.openjpa.persistence.jdbc.ForeignKeyAction</classname>
 </ulink> enum identifying the desired update action. Defaults to <literal>
 RESTRICT</literal>.
@@ -2561,7 +2561,7 @@ to discover existing foreign keys (see
                     </primary>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Unique.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Unique.html">
 <classname>org.apache.openjpa.persistence.jdbc.Unique</classname></ulink>
 annotation represents a unique constraint on the columns of a field. It is more
 convenient than using the <literal>uniqueConstraints</literal> property of
@@ -2986,7 +2986,7 @@ restrictions.
             </para>
             <para>
 To persist a stream, apply the 
-<ulink url="../javadoc/org/apache/openjpa/persistence/Persistent.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Persistent.html">
 <classname>org.apache.openjpa.persistence.Persistent</classname></ulink> 
 annotation to either <classname>java.io.InputStream</classname> or
 <classname>java.io.Reader</classname> field.
@@ -3119,10 +3119,10 @@ OpenJPA recognizes the following class extensions.
 This extension specifies how to eagerly fetch subclass state. It overrides the
 global <link linkend="openjpa.jdbc.SubclassFetchMode"><literal>
 openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/SubclassFetchMode.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/SubclassFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.SubclassFetchMode</classname>
 </ulink> annotation to a value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/FetchMode.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/FetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.FetchMode</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
 <literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
@@ -3148,7 +3148,7 @@ openjpa.jdbc.SubclassFetchMode</literal></link> property. Set the OpenJPA
                     </seealso>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Strategy.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 class annotation allows you to specify a custom mapping strategy for your class.
 See <xref linkend="ref_guide_mapping_custom"/> for information on custom
@@ -3175,7 +3175,7 @@ mappings.
                 </indexterm>
                 <para>
 The
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/DiscriminatorStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/DiscriminatorStrategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.DiscriminatorStrategy</classname>
 </ulink> class annotation allows you to specify a custom discriminator strategy.
 See <xref linkend="ref_guide_mapping_custom"/> for information on custom
@@ -3202,7 +3202,7 @@ mappings.
                 </indexterm>
                 <para>
 The
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/VersionStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/VersionStrategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionStrategy</classname>
 </ulink> class annotation allows you to specify a custom version strategy. See
 <xref linkend="ref_guide_mapping_custom"/> for information on custom
@@ -3239,10 +3239,10 @@ OpenJPA recognizes the following field extensions.
 This extension specifies how to eagerly fetch related objects. It overrides the
 global <link linkend="openjpa.jdbc.EagerFetchMode"><literal>
 openjpa.jdbc.EagerFetchMode</literal></link> property. Set the OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/EagerFetchMode.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/EagerFetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.EagerFetchMode</classname>
 </ulink> annotation to a value from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/FetchMode.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/FetchMode.html">
 <classname>org.apache.openjpa.persistence.jdbc.FetchMode</classname>
 </ulink> enum: <literal>JOIN</literal>, <literal>PARALLEL</literal>, or
 <literal>NONE</literal>. See <xref linkend="ref_guide_perfpack_eager"/>
@@ -3285,14 +3285,14 @@ OpenJPA defines the following extensions for nonpolymorphic values:
                 <itemizedlist>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Nonpolymorphic.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Nonpolymorphic.html">
 <classname>org.apache.openjpa.persistence.jdbc.Nonpolymorphic</classname>
 </ulink>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementNonpolymorphic.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementNonpolymorphic.html">
 <classname>org.apache.openjpa.persistence.jdbc.ElementNonpolymorphic</classname>
 </ulink>
                         </para>
@@ -3300,7 +3300,7 @@ OpenJPA defines the following extensions for nonpolymorphic values:
                 </itemizedlist>
                 <para>
 The value of these extensions is a constant from the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/NonpolymorphicType.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/NonpolymorphicType.html">
 <classname>org.apache.openjpa.persistence.jdbc.NonpolymorphicType</classname>
 </ulink> enumeration. The default value, <literal>EXACT</literal>, indicates
 that the relation will always be of the exact declared type. A value of
@@ -3353,13 +3353,13 @@ array or collection element relations, respectively:
                 <itemizedlist>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ClassCriteria.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ClassCriteria.html">
 <classname>org.apache.openjpa.persistence.jdbc.ClassCriteria</classname></ulink>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/ElementClassCriteria.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/ElementClassCriteria.html">
 <classname>org.apache.openjpa.persistence.jdbc.ElementClassCriteria</classname>
 </ulink>
                         </para>
@@ -3386,7 +3386,7 @@ array or collection element relations, respectively:
                 </indexterm>
                 <para>
 OpenJPA's
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Strategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 extension allows you to specify a custom mapping
 strategy or value handler for a field. See
@@ -3428,14 +3428,14 @@ strategies.
             </title>
             <para>
 To create a custom class mapping, write an implementation of the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ClassStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/ClassStrategy.html">
 <classname>org.apache.openjpa.jdbc.meta.ClassStrategy</classname></ulink>
 interface. You will probably want to extend one of the existing abstract or
 concrete strategies in the <literal>org.apache.openjpa.jdbc.meta.strats
 </literal> package.
             </para>
             <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Strategy.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 annotation allows you to declare a custom class mapping strategy in JPA mapping
 metadata. Set the value of the annotation to the full class name of your custom
@@ -3449,10 +3449,10 @@ OpenJPA's plugin syntax, detailed in <xref linkend="ref_guide_conf_plugins"/>.
             </title>
             <para>
 To define a custom discriminator or version strategy, implement the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/DiscriminatorStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/DiscriminatorStrategy.html">
 <classname>org.apache.openjpa.jdbc.meta.DiscriminatorStrategy</classname>
 </ulink> or
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/VersionStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/VersionStrategy.html">
 <classname>org.apache.openjpa.jdbc.meta.VersionStrategy</classname></ulink>
 interface, respectively. You might extend one of the existing abstract or
 concrete strategies in the <literal>org.apache.openjpa.jdbc.meta.strats
@@ -3460,10 +3460,10 @@ concrete strategies in the <literal>org.apache.openjpa.jdbc.meta.strats
             </para>
             <para>
 OpenJPA includes the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/DiscriminatorStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/DiscriminatorStrategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.DiscriminatorStrategy</classname>
 </ulink> and
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/VersionStrategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/VersionStrategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.VersionStrategy</classname>
 </ulink> class annotations for declaring a custom discriminator or version
 strategy in JPA mapping metadata. Set the string value of these annotations to
@@ -3513,7 +3513,7 @@ sections examine each.
 Value handlers make it trivial to map any type that you can break down into one
 or more simple values. All value handlers implement the <classname>
 org.apache.openjpa.jdbc.meta.ValueHandler</classname> interface; see its
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/ValueHandler.html"> Javadoc
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/ValueHandler.html"> Javadoc
 </ulink> for details.  Also, examine the built-in handlers in the <filename>
 src/openjpa/jdbc/meta/strats</filename> directory of your OpenJPA source
 distribution.  Use these functional implementations as examples when you
@@ -3537,7 +3537,7 @@ create your own value handlers.
                 </indexterm>
                 <para>
 OpenJPA interacts with persistent fields through the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/meta/FieldStrategy"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/meta/FieldStrategy"><classname>
 org.apache.openjpa.jdbc.meta.FieldStrategy</classname></ulink> interface. You
 can implement this interface yourself to create a custom field strategy, or
 extend one of the existing abstract or concrete strategies in the <literal>
@@ -3576,7 +3576,7 @@ defaults in detail.
 Your other option is to explicitly install a custom value handler or strategy on
 a particular field. To do so, specify the full name of your implementation class
 in the proper mapping metadata extension. OpenJPA includes the
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/Strategy.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/Strategy.html">
 <classname>org.apache.openjpa.persistence.jdbc.Strategy</classname></ulink>
 annotation. You can configure the named strategy or handler's bean
 properties in these extensions using OpenJPA's plugin format (see
@@ -3610,7 +3610,7 @@ openjpa.OrphanedKeyAction</literal></link> configuration property controls what
 action to take when OpenJPA encounters an orphaned key. You can set this plugin
 string (see <xref linkend="ref_guide_conf_plugins"/>) to a custom
 implementation of the
-<ulink url="../javadoc/org/apache/openjpa/event/OrphanedKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/OrphanedKeyAction.html">
 <classname> org.apache.openjpa.event.OrphanedKeyAction</classname></ulink>
 interface, or use one of the built-in options:
         </para>
@@ -3619,7 +3619,7 @@ interface, or use one of the built-in options:
                 <para>
 <literal>log</literal>: This is the default setting. This option logs a message
 for each orphaned key. It is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/event/LogOrphanedKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/LogOrphanedKeyAction.html">
 <classname>org.apache.openjpa.event.LogOrphanedKeyAction</classname></ulink>
 class, which has the following additional properties:
                 </para>
@@ -3643,7 +3643,7 @@ openjpa.Runtime</literal>.
 <literal>exception</literal>: Throw an <classname>
 EntityNotFoundException</classname> when OpenJPA discovers an
 orphaned key. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/event/ExceptionOrphanedKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/ExceptionOrphanedKeyAction.html">
 <classname>org.apache.openjpa.event.ExceptionOrphanedKeyAction</classname>
 </ulink> class.
                 </para>
@@ -3651,7 +3651,7 @@ orphaned key. This is an alias for the
             <listitem>
                 <para>
 <literal>none</literal>: Ignore orphaned keys. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/event/NoneOrphanedKeyAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/NoneOrphanedKeyAction.html">
 <classname>org.apache.openjpa.event.NoneOrphanedKeyAction</classname></ulink>
 class.
                 </para>

@@ -98,7 +98,7 @@ environment.
 All OpenJPA tasks accept a nested <literal>config</literal> element, which
 defines the configuration environment in which the specified task will run. The
 attributes for the <literal>config</literal> tag are defined by the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/conf/JDBCConfiguration.html">
 <classname>JDBCConfiguration</classname></ulink> bean methods. Note that
 excluding the <literal>config</literal> element will cause the Ant task to use
 the default system configuration mechanism, such as the configuration defined in

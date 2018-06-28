@@ -502,7 +502,7 @@ the JDBC connection URL of a slice.
          This <emphasis>mandatory</emphasis> plug-in property determines how newly
          persistent instances are distributed across individual slices. 
          The value of this property is a fully-qualified class name that implements
-         <ulink url="../javadoc/org/apache/openjpa/slice/DistributionPolicy.html">
+         <ulink url="../../apidocs/org/apache/openjpa/slice/DistributionPolicy.html">
          <classname>org.apache.openjpa.slice.DistributionPolicy</classname>
          </ulink> interface.
         </para>

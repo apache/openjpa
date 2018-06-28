@@ -282,7 +282,7 @@ public class Employee {
                 </para>
             </example>
             <para>
-See the <ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
+See the <ulink url="../../apidocs/org/apache/openjpa/persistence/DataCache.html">
 <classname>org.apache.openjpa.persistence.DataCache</classname></ulink> Javadoc
 for more information on the <classname>DataCache</classname> annotation.
             </para>
@@ -472,7 +472,7 @@ is defaulted to <literal>concurrent</literal> though explicitly mentioned in thi
             <para>
 The <literal>org.apache.openjpa.datacache</literal> package defines OpenJPA's
 data caching framework. While you may use this framework directly (see its
-<ulink url="../javadoc/org/apache/openjpa/datacache/package-summary.html">
+<ulink url="../../apidocs/org/apache/openjpa/datacache/package-summary.html">
 Javadoc</ulink> for details), its APIs are meant primarily for service
 providers. In fact, <xref linkend="ref_guide_cache_extension"/> below has
 tips on how to use this package to extend OpenJPA's caching service yourself.
@@ -482,7 +482,7 @@ Rather than use the low-level <literal>org.apache.openjpa.datacache</literal>
 package APIs, JPA users should typically access the data cache through the JPA
 standard <classname>javax.persistence.Cache</classname> interface, or OpenJPA's
 high-level 
-<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink> facade. 
             </para>
             <para>
@@ -605,7 +605,7 @@ cache.evict(Magazine.class, changedMag.getId());
             </example>
             <para>
 See the <classname>StoreCache</classname>
-<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 Javadoc</ulink> for information on additional functionality it provides. Also,
 <xref linkend="ref_guide_runtime"/> discusses OpenJPA's other extensions
 to the standard set of JPA runtime interfaces.
@@ -652,7 +652,7 @@ oem.evict(changedMag);  // will evict from data cache also
         	<para>
         	Number of requests to read and write requests and hit ratio of the 
 data cache is available via 
-<ulink url="../javadoc/org/apache/openjpa/datacache/CacheStatistics.html">
+<ulink url="../../apidocs/org/apache/openjpa/datacache/CacheStatistics.html">
 <classname>org.apache.openjpa.datacache.CacheStatistics</classname></ulink> 
 interface. The collection of cache statistics is disabled by default and needs to be enabled on a per cache basis. By default
 all counts returned from the CacheStatistics interface will return 0.
@@ -750,7 +750,7 @@ execution time is fully traversed.
             </para>
             <para>
 OpenJPA exposes a high-level interface to the query cache through the
-<ulink url="../javadoc/org/apache/openjpa/persistence/QueryResultCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
 <classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
 class. You can access this class through the <classname>
 OpenJPAEntityManagerFactory</classname>.
@@ -1187,7 +1187,7 @@ their parsed form.  This property accepts the following aliases:
 						</entry>
 						<entry colname="notes">
 The default option.  Uses a 
-<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html"> 
+<ulink url="../../apidocs/org/apache/openjpa/util/CacheMap.html"> 
 <literal>CacheMap</literal></ulink> to store compilation data.  
 <literal>CacheMap</literal> maintains a fixed number of cache entries, and an 
 optional soft reference map for entries that are moved out of the LRU space. 
@@ -1251,7 +1251,7 @@ optionally collected as
 <programlisting>
   &lt;property name="openjpa.jdbc.QuerySQLCache" value="true(EnableStatistics=true)"&gt;
 </programlisting>
-The <ulink url="../javadoc/org/apache/openjpa/kernel/QueryStatistics.html">
+The <ulink url="../../apidocs/org/apache/openjpa/kernel/QueryStatistics.html">
 <code>QueryStatistics</code></ulink> can be accessed via <code>PreparedQueryCache.getStatistics()</code>.
 
 </para>
@@ -1280,7 +1280,7 @@ The <ulink url="../javadoc/org/apache/openjpa/kernel/QueryStatistics.html">
                         </entry>
                         <entry colname="notes">
 The default option.  Uses a
-<ulink url="../javadoc/org/apache/openjpa/util/CacheMap.html">
+<ulink url="../../apidocs/org/apache/openjpa/util/CacheMap.html">
 <literal>CacheMap</literal></ulink> to store SQL string.
 <literal>CacheMap</literal> maintains a fixed number of cache entries, and an
 optional soft reference map for entries that are moved out of the LRU space.

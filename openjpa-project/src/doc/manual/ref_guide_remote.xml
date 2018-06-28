@@ -108,7 +108,7 @@ the following javax.persistence.EntityManager method:
 public void detach(Object)
 </programlisting>
 			<para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>, however, provides
 additional detach methods.
             </para>
@@ -400,7 +400,7 @@ all <literal>Large Result Sets</literal> will be removed.
                 <para>
 You can also alter the set of fields that will be included in the detached graph
 at runtime.
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink>s expose the following APIs
 for controlling detached state:
                 </para>
@@ -521,7 +521,7 @@ To enable remote events, you must configure the <classname> EntityManagerFactory
         <para>
 When a <literal>RemoteCommitProvider</literal> is properly configured, you can
 register
-<ulink url="../javadoc/org/apache/openjpa/event/RemoteCommitListener.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/RemoteCommitListener.html">
 <classname>RemoteCommitListener</classname></ulink>s that will be alerted with
 a list of modified object ids whenever a transaction on a remote machine
 successfully commits.
@@ -784,10 +784,10 @@ provider, we modify the previous example as follows:
             <para>
 You can develop additional mechanisms for remote event notification be by
 creating an implementation of the
-<ulink url="../javadoc/org/apache/openjpa/event/RemoteCommitProvider.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/RemoteCommitProvider.html">
 <classname> RemoteCommitProvider</classname></ulink> interface, possibly by
 extending the
-<ulink url="../javadoc/org/apache/openjpa/event/AbstractRemoteCommitProvider.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/AbstractRemoteCommitProvider.html">
 <classname>AbstractRemoteCommitProvider</classname></ulink> abstract class..
             </para>
         </section>

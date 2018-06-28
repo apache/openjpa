@@ -45,7 +45,7 @@ The <link linkend="openjpa.MetaDataFactory"><literal>openjpa.MetaDataFactory
 </literal></link> configuration property controls metadata loading and storing.
 This property takes a plugin string (see 
 <xref linkend="ref_guide_conf_plugins"/>) describing a concrete
-<ulink url="../javadoc/org/apache/openjpa/meta/MetaDataFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/meta/MetaDataFactory.html">
 <classname>org.apache.openjpa.meta.MetaDataFactory</classname></ulink>
 implementation. A metadata factory can load mapping information as well as
 persistence metadata, or it can leave mapping information to a separate
@@ -57,7 +57,7 @@ following built-in metadata factories:
             <listitem>
                 <para>
 <literal>jpa</literal>: Standard JPA metadata. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/persistence/PersistenceMetaDataFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/PersistenceMetaDataFactory.html">
 <classname> 
 org.apache.openjpa.persistence.PersistenceMetaDataFactory</classname></ulink>.
                 </para>
@@ -220,7 +220,7 @@ JPA defines <literal>Basic</literal>, <literal>Lob</literal>, <literal>Embedded
 </literal>, <literal>ManyToOne</literal>, and <literal>OneToOne</literal>
 persistence strategies for direct field values. OpenJPA supports all of these
 standard strategies, but adds one of its own: <literal>Persistent</literal>.
-The <ulink url="../javadoc/org/apache/openjpa/persistence/Persistent.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/Persistent.html">
 <classname>org.apache.openjpa.persistence.Persistent</classname></ulink>
 metadata annotation can represent any direct field value, including custom
 types. It has the following properties:
@@ -286,7 +286,7 @@ JPA standardizes support for collections of entities with the <literal>
 OneToMany</literal> and <literal>ManyToMany</literal> persistence strategies.  
 OpenJPA supports these strategies, and may be extended for other strategies as 
 well.  For extended strategies, use the 
-<ulink url="../javadoc/org/apache/openjpa/persistence/PersistentCollection.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/PersistentCollection.html">
 <classname>org.apache.openjpa.persistence.PersistentCollection</classname></ulink> metadata 
 annotation to represents any persistent collection field.  It has the following
 properties:
@@ -342,7 +342,7 @@ ManyToMany</classname></link>. Defaults to empty array.
 			<para>
 JPA has limited support for maps.  If you extend JPA's standard map support to 
 encompass new mappings, use the 
-<ulink url="../javadoc/org/apache/openjpa/persistence/PersistentMap.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/PersistentMap.html">
 <classname>org.apache.openjpa.persistence.PersistentMap</classname></ulink> metadata 
 annotation to represent your custom persistent map fields.  It has the 
 following properties:
@@ -448,9 +448,9 @@ OpenJPA recognizes the following class extensions:
                     </seealso>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/FetchGroups.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/FetchGroups.html">
 <classname>org.apache.openjpa.persistence.FetchGroups</classname></ulink> and
-<ulink url="../javadoc/org/apache/openjpa/persistence/FetchGroup.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/FetchGroup.html">
 <classname>org.apache.openjpa.persistence.FetchGroup</classname></ulink>
 annotations allow you to define fetch groups in your JPA entities.
 <xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch
@@ -482,7 +482,7 @@ extensions allow individual classes to override system caching defaults.
                 </para>
                 <para>
 OpenJPA defines the
-<ulink url="../javadoc/org/apache/openjpa/persistence/DataCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/DataCache.html">
 <classname>org.apache.openjpa.persistence.DataCache</classname></ulink>
 annotation for caching information. This annotation has the following
 properties:
@@ -536,7 +536,7 @@ modifications.
                 </para>
                 <para>
 OpenJPA defines the
-<ulink url="../javadoc/org/apache/openjpa/persistence/DetachedState.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/DetachedState.html">
 <classname>org.apache.openjpa.persistence.DetachedState</classname></ulink>
 annotation for controlling detached state. When used to annotate a class,
 <classname>DetachedState</classname> recognizes the following properties:
@@ -611,21 +611,21 @@ JPA entities:
                 <itemizedlist>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/Dependent.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Dependent.html">
 <classname> org.apache.openjpa.persistence.Dependent</classname></ulink>: Marks
 a direct relation as dependent.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/ElementDependent.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/ElementDependent.html">
 <classname> org.apache.openjpa.persistence.ElementDependent</classname></ulink>
 : Marks the entity elements of a collection, array, or map field as dependent.
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/KeyDependent.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/KeyDependent.html">
 <classname> org.apache.openjpa.persistence.KeyDependent</classname></ulink>:
 Marks the key entities in a map field as dependent.
                         </para>
@@ -656,7 +656,7 @@ Marks the key entities in a map field as dependent.
                     </secondary>
                 </indexterm>
                 <para>
-The <ulink url="../javadoc/org/apache/openjpa/persistence/LoadFetchGroup.html">
+The <ulink url="../../apidocs/org/apache/openjpa/persistence/LoadFetchGroup.html">
 <classname>org.apache.openjpa.persistence.LoadFetchGroup</classname></ulink>
 annotation specifies a field's load fetch group.
 <xref linkend="ref_guide_fetch"/> discusses OpenJPA's support for fetch groups
@@ -684,7 +684,7 @@ annotation in particular.
                 </indexterm>
                 <para>
 This boolean extension, denoted by the OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/LRS.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/persistence/LRS.html"><classname>
 org.apache.openjpa.persistence.LRS</classname></ulink> annotation,
 indicates that a field should use OpenJPA's special large result set collection
 or map proxies. A complete description of large result set proxies is available
@@ -712,7 +712,7 @@ in <xref linkend="ref_guide_pc_scos_proxy_lrs"/>.
                 <para>
 This extension names the inverse field in a logical bidirectional relation.
 To create a logical bidirectional relation in OpenJPA, use the
-<ulink url="../javadoc/org/apache/openjpa/persistence/InverseLogical.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/InverseLogical.html">
 <classname>org.apache.openjpa.persistence.InverseLogical</classname></ulink>
 annotation. We discuss logical bidirectional relations and this
 extension in detail in <xref linkend="ref_guide_inverses"/>.
@@ -750,10 +750,10 @@ existing persistent objects; new object fields are always writeable.
                 </para>
                 <para>
 To mark a field read-only in JPA metadata, set the
-<ulink url="../javadoc/org/apache/openjpa/persistence/ReadOnly.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/ReadOnly.html">
 <classname>org.apache.openjpa.persistence.ReadOnly</classname></ulink>
 annotation to an
-<ulink url="../javadoc/org/apache/openjpa/persistence/UpdateAction.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/UpdateAction.html">
 <classname>org.apache.openjpa.persistence.UpdateAction</classname></ulink> enum
 value. The <classname>UpdateAction</classname> enum includes:
                 </para>
@@ -851,19 +851,19 @@ array, and map elements, and map keys, respectively:
                 <itemizedlist>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/Type.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Type.html"><classname>
 org.apache.openjpa.persistence.Type</classname></ulink>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/ElementType.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/ElementType.html">
 <classname>org.apache.openjpa.persistence.ElementType</classname></ulink>
                         </para>
                     </listitem>
                     <listitem>
                         <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/KeyType.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/persistence/KeyType.html"><classname>
 org.apache.openjpa.persistence.KeyType</classname></ulink>
                         </para>
                     </listitem>
@@ -889,7 +889,7 @@ org.apache.openjpa.persistence.KeyType</classname></ulink>
                 </indexterm>
                 <para>
 The OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/Externalizer.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Externalizer.html">
 <classname>org.apache.openjpa.persistence.Externalizer</classname></ulink>
 annotation names a method to transform a field value into a value of
 another type. See <xref linkend="ref_guide_pc_extern"/> for details.
@@ -915,7 +915,7 @@ another type. See <xref linkend="ref_guide_pc_extern"/> for details.
                 </indexterm>
                 <para>
 The OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/Factory.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Factory.html"><classname>
 org.apache.openjpa.persistence.Factory</classname></ulink> annotation
 names a method to re-create a field value from its externalized form. See
 <xref linkend="ref_guide_pc_extern"/> for details.
@@ -941,7 +941,7 @@ names a method to re-create a field value from its externalized form. See
                 </indexterm>
                 <para>
 The OpenJPA
-<ulink url="../javadoc/org/apache/openjpa/persistence/ExternalValues.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/ExternalValues.html">
 <classname>org.apache.openjpa.persistence.ExternalValues</classname></ulink>
 annotation declares values for transformation of simple fields to
 different constant values in the datastore. See

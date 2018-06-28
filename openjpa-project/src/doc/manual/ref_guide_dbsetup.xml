@@ -694,7 +694,7 @@ configuration properties.
         <para>
 If OpenJPA cannot detect what type of database you are using, or if you are
 using an unsupported database, you will have to tell OpenJPA what
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DBDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DBDictionary</classname></ulink> to use.
 The <classname>DBDictionary</classname> abstracts away the differences between
 databases. You can plug a dictionary into OpenJPA using the
@@ -713,7 +713,7 @@ below. If you are using an unsupported database, you may have to write your own
                 </indexterm>
 <literal>access</literal>: Dictionary for Microsoft Access. This is an alias
 for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/AccessDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/AccessDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.AccessDictionary</classname></ulink>
 class.
                 </para>
@@ -726,7 +726,7 @@ class.
                     </primary>
                 </indexterm>
 <literal>db2</literal>: Dictionary for IBM's DB2 database. This is an alias for
-the <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DB2Dictionary.html">
+the <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DB2Dictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DB2Dictionary</classname></ulink> class.
                 </para>
             </listitem>
@@ -739,7 +739,7 @@ the <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DB2Dictionary.html">
                 </indexterm>
 <literal>derby</literal>: Dictionary for the Apache Derby database. This is an
 alias for the 
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DerbyDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DerbyDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.DerbyDictionary</classname> class.
 </ulink>
                 </para>
@@ -753,7 +753,7 @@ alias for the
                 </indexterm>
 <literal>empress</literal>: Dictionary for Empress database This is an alias
 for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/EmpressDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/EmpressDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.EmpressDictionary</classname></ulink>
 class.
                 </para>
@@ -767,7 +767,7 @@ class.
                 </indexterm>
 <literal>foxpro</literal>: Dictionary for Microsoft Visual FoxPro. This is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/FoxProDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/FoxProDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.FoxProDictionary</classname></ulink>
 class.
                 </para>
@@ -781,7 +781,7 @@ class.
                 </indexterm>
 <literal>h2</literal>: Dictionary for the H2 Database Engine. This is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/H2Dictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/H2Dictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.H2Dictionary</classname></ulink> class.
                 </para>
             </listitem>
@@ -794,7 +794,7 @@ alias for the
                 </indexterm>
 <literal>hsql</literal>: Dictionary for the Hypersonic SQL database. This is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/HSQLDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/HSQLDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.HSQLDictionary</classname></ulink> class.
                 </para>
             </listitem>
@@ -807,7 +807,7 @@ alias for the
                 </indexterm>
 <literal>informix</literal>: Dictionary for the Informix database. This is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/InformixDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/InformixDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.InformixDictionary</classname></ulink>
 class.
                 </para>
@@ -820,7 +820,7 @@ class.
                     </primary>
                 </indexterm>
 <literal>ingres</literal>: Dictionary for Ingres. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/IngresDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/IngresDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.IngresDictionary</classname></ulink>
 class.
                 </para>
@@ -834,7 +834,7 @@ class.
                 </indexterm>
 <literal>jdatastore</literal>: Dictionary for Borland JDataStore. This is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/JDataStoreDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/JDataStoreDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.JDataStoreDictionary</classname></ulink>
 class.
                 </para>
@@ -848,7 +848,7 @@ class.
                 </indexterm>
 <literal>mariadb</literal>: Dictionary for the MariaDB database. This is an alias
 for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/MariaDBDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/MariaDBDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.MariaDBDictionary</classname></ulink>
 class.
                 </para>
@@ -862,7 +862,7 @@ class.
                 </indexterm>
 <literal>mysql</literal>: Dictionary for the MySQL database. This is an alias
 for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/MySQLDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/MySQLDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.MySQLDictionary</classname></ulink>
 class.
                 </para>
@@ -875,7 +875,7 @@ class.
                     </primary>
                 </indexterm>
 <literal>oracle</literal>: Dictionary for Oracle. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/OracleDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/OracleDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.OracleDictionary</classname></ulink>
 class.
                 </para>
@@ -889,7 +889,7 @@ class.
                 </indexterm>
 <literal>pointbase</literal>: Dictionary for Pointbase Embedded database. This
 is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/PointbaseDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/PointbaseDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.PointbaseDictionary</classname></ulink>
 class.
                 </para>
@@ -902,7 +902,7 @@ class.
                     </primary>
                 </indexterm>
 <literal>postgres</literal>: Dictionary for PostgreSQL. This is an alias for
-the <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/PostgresDictionary.html">
+the <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/PostgresDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.PostgresDictionary</classname></ulink>
 class.
                 </para>
@@ -916,7 +916,7 @@ class.
                 </indexterm>
 <literal>soliddb</literal>: Dictionary for IBM's SolidDB database.
 This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SolidDBDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/SolidDBDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.SolidDBDictionary</classname></ulink>
 class.
                 </para>
@@ -930,7 +930,7 @@ class.
                 </indexterm>
 <literal>sqlserver</literal>: Dictionary for Microsoft's SQL Server database.
 This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SQLServerDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/SQLServerDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.SQLServerDictionary</classname></ulink>
 class.
                 </para>
@@ -943,7 +943,7 @@ class.
                     </primary>
                 </indexterm>
 <literal>sybase</literal>: Dictionary for Sybase. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/SybaseDictionary.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/SybaseDictionary.html">
 <classname>org.apache.openjpa.jdbc.sql.SybaseDictionary</classname></ulink>
 class.
                 </para>
@@ -1169,7 +1169,7 @@ generated by the <literal>mappingtool</literal>.
 <literal>BooleanRepresentation</literal>:
 The overridden default representation for <literal>java.lang.Boolean</literal> or
 <literal>boolean</literal> fields in JPA Entities. A
-<ulink url="../javadoc/org/apache/openjpa/jdbc/sql/BooleanRepresentation.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/BooleanRepresentation.html">
 <classname>org.apache.openjpa.jdbc.sql.BooleanRepresentation</classname></ulink>
 describes how Boolean values in entities get mapped into the database by default.
 Note that you additionally might need to define the <literal>BooleanTypeName</literal>
@@ -5230,7 +5230,7 @@ Oracle, for example, requires names in all upper case.
             </indexterm>
             <para>
 OpenJPA relies on the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/SchemaFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/SchemaFactory.html">
 <classname>openjpa.jdbc.SchemaFactory</classname></ulink> interface for runtime
 schema information. You can control the schema factory OpenJPA uses through the
 <literal>openjpa.jdbc.SchemaFactory</literal> property. There are several
@@ -5240,7 +5240,7 @@ built-in options to choose from:
                 <listitem>
                     <para>
 <literal>dynamic</literal>: This is the default setting. It is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/DynamicSchemaFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/DynamicSchemaFactory.html">
 <classname>
 org.apache.openjpa.jdbc.schema.DynamicSchemaFactory</classname></ulink>. The 
 <classname>DynamicSchemaFactory</classname> is the most performant
@@ -5255,7 +5255,7 @@ that OpenJPA can order its SQL statements to meet them.
                 <listitem>
                     <para>
 <literal>native</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/LazySchemaFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/LazySchemaFactory.html">
 <classname>org.apache.openjpa.jdbc.schema.LazySchemaFactory</classname></ulink>
 . As persistent classes are loaded by the application, OpenJPA reads their
 metadata and object-relational mapping information. This factory uses the
@@ -5277,7 +5277,7 @@ read foreign key information during schema validation.
                 <listitem>
                     <para>
 <literal>table</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/TableSchemaFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/TableSchemaFactory.html">
 <classname>org.apache.openjpa.jdbc.schema.TableSchemaFactory</classname></ulink>
 . This schema factory stores schema information as an XML document in a database
 table it creates for this purpose. If your JDBC driver doesn't support the
@@ -5312,7 +5312,7 @@ holding the schema definition as an XML string. Defaults to <literal>SCHEMA_DEF
                 <listitem>
                     <para>
 <literal>file</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/FileSchemaFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/FileSchemaFactory.html">
 <classname>org.apache.openjpa.jdbc.schema.FileSchemaFactory</classname></ulink>
 . This factory is a lot like the <classname>TableSchemaFactory</classname>, and
 has the same advantages and disadvantages. Instead of storing its XML schema
@@ -5410,7 +5410,7 @@ schemas.
         </para>
         <para>
 You can invoke the schema tool through its Java class, 
-<ulink url="../javadoc/org/apache/openjpa/jdbc/schema/SchemaTool.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/schema/SchemaTool.html">
 <classname>org.apache.openjpa.jdbc.schema.SchemaTool</classname></ulink>. In
 addition to the universal flags of the <link linkend="ref_guide_conf">
 configuration framework</link>, the schema tool accepts the following command

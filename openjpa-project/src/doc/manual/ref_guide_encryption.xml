@@ -25,7 +25,7 @@
 	OpenJPA provides an interface for a provider to implement 
 	connection password encryption. Whenever a connection password 
 	is needed, the <methodname>decrypt(String)</methodname> method will be invoked. See 
-	<ulink url="../javadoc/org/apache/openjpa/lib/encryption/EncryptionProvider.html">
+	<ulink url="../../apidocs/org/apache/openjpa/lib/encryption/EncryptionProvider.html">
 	<classname>org.apache.openjpa.lib.encryption.EncryptionProvider</classname>
 	</ulink> for the detailed Javadoc. 
     </para>

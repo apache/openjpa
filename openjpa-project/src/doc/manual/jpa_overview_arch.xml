@@ -305,7 +305,7 @@ additional details on JPA exceptions.
         <note>
             <para>
 All exceptions thrown by OpenJPA implement
-<ulink url="../javadoc/org/apache/openjpa/util/ExceptionInfo.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/util/ExceptionInfo.html"><classname>
 org.apache.openjpa.util.ExceptionInfo</classname></ulink> to provide you with
 additional error information.
             </para>

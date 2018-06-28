@@ -58,7 +58,7 @@ The JPA Overview describes the <classname>javax.persistence.Persistence
 <classname>Persistence</classname> to add additional <classname>
 EntityManagerFactory</classname> creation methods. The <classname>
 org.apache.openjpa.persistence.OpenJPAPersistence</classname> class
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
 Javadoc</ulink> details these extensions.
             </para>
             <para>
@@ -164,7 +164,7 @@ manager for an unrecognized or non-standard application server setup.  This is
 accomplished through the <link linkend="openjpa.ManagedRuntime"><literal>
 openjpa.ManagedRuntime</literal></link> configuration property.  This
 property describes an 
-<ulink url="../javadoc/org/apache/openjpa/ee/ManagedRuntime.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/ee/ManagedRuntime.html"><classname>
 org.apache.openjpa.ee.ManagedRuntime</classname></ulink> implementation to use
 for transaction manager discovery.  You can specify your own implementation, 
 or use one of the built-ins:
@@ -173,7 +173,7 @@ or use one of the built-ins:
 			<listitem>
 				<para>
 <literal>auto</literal>: This is the default.  It is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/ee/AutomaticManagedRuntime.html">
+<ulink url="../../apidocs/org/apache/openjpa/ee/AutomaticManagedRuntime.html">
 <classname>org.apache.openjpa.ee.AutomaticManagedRuntime</classname></ulink>
 class.  This managed runtime is able to automatically integrate with several 
 common application servers.
@@ -182,7 +182,7 @@ common application servers.
 			<listitem>
 				<para>
 <literal>invocation</literal>: An alias for the 
-<ulink url="../javadoc/org/apache/openjpa/ee/InvocationManagedRuntime.html">
+<ulink url="../../apidocs/org/apache/openjpa/ee/InvocationManagedRuntime.html">
 <classname>org.apache.openjpa.ee.InvocationManagedRuntime</classname></ulink>
 class.  You can configure this runtime to invoke any static
 method in order to obtain the appserver's transaction manager.
@@ -191,7 +191,7 @@ method in order to obtain the appserver's transaction manager.
 			<listitem>
 				<para>
 <literal>jndi</literal>: An alias for the 
-<ulink url="../javadoc/org/apache/openjpa/ee/JNDIManagedRuntime.html">
+<ulink url="../../apidocs/org/apache/openjpa/ee/JNDIManagedRuntime.html">
 <classname>org.apache.openjpa.ee.JNDIManagedRuntime</classname></ulink>
 class.  You can configure this runtime to look up the transaction manager at 
 any JNDI location.

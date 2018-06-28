@@ -45,7 +45,7 @@ an ellipsis (...) are overloaded to take multiple parameter types.
         <para>
 OpenJPA extends the standard <classname>EntityManager</classname> interface with
 the 
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface to provide additional functionality.
         </para>

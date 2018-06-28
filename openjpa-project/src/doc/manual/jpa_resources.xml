@@ -41,7 +41,7 @@ javax.persistence Javadoc</ulink>
         </listitem>
         <listitem>
             <para>
-<ulink url="../javadoc/index.html">OpenJPA Javadoc</ulink>
+<ulink url="../../apidocs/index.html">OpenJPA Javadoc</ulink>
             </para>
         </listitem>
     </itemizedlist>

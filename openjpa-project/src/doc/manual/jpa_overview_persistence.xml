@@ -59,7 +59,7 @@
     <note>
         <para>
 OpenJPA also includes the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
 <classname>OpenJPAPersistence</classname></ulink> helper class to provide
 additional utility methods.
         </para>

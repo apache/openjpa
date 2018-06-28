@@ -114,9 +114,9 @@
         <para>
         OpenJPA includes built-in support for a JMX Platform MBean provider, but a custom instrumentation
         providers can be created by implementing the 
-        <ulink url="../javadoc/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html">
+        <ulink url="../../apidocs/org/apache/openjpa/lib/instrumentation/InstrumentationProvider.html">
         <classname>InstrumentationProvider</classname></ulink> interface or more simply by extending
-        <ulink url="../javadoc/org/apache/openjpa/lib/instrumentation/AbstractInstrumentationProvider.html">
+        <ulink url="../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrumentationProvider.html">
         <classname>AbstractInstrumentationProvider</classname></ulink>.  To use the custom instrumentation provider,
         include the class in your classpath and specify the class name as the base value on the 
         <link linkend="openjpa.Instrumentation"><literal>openjpa.Instrumentation</literal></link> configuration property.
@@ -124,12 +124,12 @@
         <para>
         OpenJPA includes instruments for various caches, but you can also create your own instruments.  To
         create a custom instrument you need to implement the
-        <ulink url="../javadoc/org/apache/openjpa/lib/instrumentation/Instrument.html">
+        <ulink url="../../apidocs/org/apache/openjpa/lib/instrumentation/Instrument.html">
         <classname>Instrument</classname></ulink> interface or more simply extend
-        <ulink url="../javadoc/org/apache/openjpa/lib/instrumentation/AbstractInstrument.html">
+        <ulink url="../../apidocs/org/apache/openjpa/lib/instrumentation/AbstractInstrument.html">
         <classname>AbstractInstrument</classname></ulink>.  If you are building a Platform MBean JMX-based
         instrument this effort can be simplified by extending
-        <ulink url="../javadoc/org/apache/openjpa/instrumentation/jmx/JMXInstrument.html">
+        <ulink url="../../apidocs/org/apache/openjpa/instrumentation/jmx/JMXInstrument.html">
         <classname>JMXInstrument</classname></ulink>.  If you create your own custom
         provider, class name aliases can be registered within the provider to simplify configuration.  For example,
         the instrument <classname>com.my.app.MySQLInstrument</classname> could be aliased as 

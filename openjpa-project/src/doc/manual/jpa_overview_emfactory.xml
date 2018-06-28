@@ -41,7 +41,7 @@ EntityManager</classname> instances for application use.
         <para>
 OpenJPA extends the standard <classname>EntityManagerFactory</classname>
 interface with the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 <classname>OpenJPAEntityManagerFactory</classname></ulink> to provide additional
 functionality.
         </para>
@@ -162,7 +162,7 @@ createEntityManager</methodname>:
                     <para>
 <literal>openjpa.&lt;property&gt;</literal>, where <emphasis>&lt;property&gt;
 </emphasis> is any JavaBean property of the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>
 org.apache.openjpa.persistence.OpenJPAEntityManager</classname></ulink>.
                     </para>

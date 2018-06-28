@@ -549,7 +549,7 @@ logging to a graphical component for GUI applications.
         </para>
         <para>
 A custom logging framework must include an implementation of the
-<ulink url="../javadoc/org/apache/openjpa/lib/log/LogFactory.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/lib/log/LogFactory.html"><classname>
 org.apache.openjpa.lib.log.LogFactory</classname></ulink> interface. We present
 a custom <classname>LogFactory</classname> below.
         </para>
