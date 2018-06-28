@@ -47,7 +47,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <checkstyle.config.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}checkstyle.xml</checkstyle.config.location>
         <checkstyle.suppressions.location>${project.basedir}${file.separator}..${file.separator}openjpa-project${file.separator}suppressions.xml</checkstyle.suppressions.location>
-        
+
         <site.deploy.url>scp://people.apache.org/home/${site.deploy.user.name}/public_html/openjpa/${project.version}/staging-site</site.deploy.url>
         <!-- the test settings can be overridden my specific profiles -->
         <test.jvm.maxpermsize>512m</test.jvm.maxpermsize>
@@ -894,6 +894,16 @@
                         </instructions>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>4.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
 
                 <plugin>
                     <groupId>org.apache.openjpa</groupId>
@@ -907,7 +917,7 @@
                     <artifactId>docbkx-maven-plugin</artifactId>
                     <version>2.0.17</version>
                 </plugin>
-                
+
                 <!-- Ignore/Execute plugin execution -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
