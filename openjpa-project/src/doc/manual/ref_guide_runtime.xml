@@ -1432,7 +1432,7 @@ import org.apache.openjpa.persistence.*;
 For datastore queries, the method must have the following signature:
             </para>
 <programlisting>
-public static <ulink url="../../apidocs/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider</ulink> xxx(<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../javadoc/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration </ulink> fetch)
+public static <ulink url="../../apidocs/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider</ulink> xxx(<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration </ulink> fetch)
 </programlisting>
             <para>
 The returned result object provider should produce objects of the candidate
@@ -1446,7 +1446,7 @@ In-memory execution is slightly different, taking in one object at a time and
 returning a boolean on whether the object matches the query:
             </para>
 <programlisting>
-public static boolean xxx(<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Object obj, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration</ulink> fetch)
+public static boolean xxx(<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../../apidocs/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Object obj, Map params, <ulink url="../../apidocs/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration</ulink> fetch)
 </programlisting>
             <para>
 In both method versions, the given <literal>params</literal> map contains the
