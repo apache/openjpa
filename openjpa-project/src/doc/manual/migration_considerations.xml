@@ -110,7 +110,7 @@
                 </para>
                 <para>
                     In addition, a new method has been provided on the
-                    <ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+                    <ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
                     <classname>OpenJPAEntityManager</classname></ulink>
                     interface to return a copy of the entity:
                     <programlisting>
@@ -399,7 +399,7 @@
                             <para>
                                 Additionally, if the <literal>CACHE</literal> clause has to be emitted in sequence definition,
                                 this can be accomplished by overriding the
-                                <ulink url="../javadoc/org/apache/openjpa/jdbc/sql/DBDictionary.html#getCreateSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence)">
+                                <ulink url="../../apidocs/org/apache/openjpa/jdbc/sql/DBDictionary.html#getCreateSequenceSQL(org.apache.openjpa.jdbc.schema.Sequence)">
                                 <methodname>DBDictionary.getCreateSequenceSQL</methodname></ulink> method.
                             </para>
                         </listitem>

@@ -171,7 +171,7 @@ Defaults to <literal>false</literal>.
             </example>
             <para>
 Additionally, some advanced users may want to add capabilities to OpenJPA's
-internal <ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html">
+internal <ulink url="../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html">
 <classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink>. You can 
 configure OpenJPA to use a custom subclass of <classname>BrokerImpl</classname> 
 with the <link linkend="openjpa.BrokerImpl"><literal>openjpa.BrokerImpl
@@ -180,9 +180,9 @@ name of your custom subclass. When implementing your subclass, consider the
 finalization issues mentioned in 
 <xref linkend="ref_guide_runtime_broker_finalization"/>. It may be appropriate
 to create a subtype of both 
-<ulink url="../javadoc/org/apache/openjpa/kernel/BrokerImpl.html">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/BrokerImpl.html">
 <classname>org.apache.openjpa.kernel.BrokerImpl</classname></ulink> and
-<ulink url="../javadoc/org/apache/openjpa/kernel/FinalizingBrokerImpl.html">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/FinalizingBrokerImpl.html">
 <classname>org.apache.openjpa.kernel.FinalizingBrokerImpl</classname></ulink>.
             </para>
         </section>
@@ -244,7 +244,7 @@ javax.persistence.EntityManagerFactory</classname> with OpenJPA-specific
 features. The <classname>OpenJPAEntityManagerFactory</classname> offers APIs to
 access the OpenJPA data and query caches and to perform other OpenJPA-specific 
 operations. See the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManagerFactory.html">
 interface Javadoc</ulink> for details.
             </para>
         </section>
@@ -270,7 +270,7 @@ interface Javadoc</ulink> for details.
             </indexterm>
             <para>
 All OpenJPA <classname>EntityManager</classname>s implement the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityManager</classname>
 </ulink> interface. This interface extends the standard <classname>
 javax.persistence.EntityManager</classname>. Just as the standard <classname>
@@ -303,7 +303,7 @@ extensions this interface contains.
             <para>
 OpenJPA extends JPA's standard query functionality with the <classname>
 org.apache.openjpa.persistence.OpenJPAQuery</classname> interface. See its
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAQuery.html">Javadoc
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">Javadoc
 </ulink> for details on the convenience methods it provides.
             </para>
         </section>
@@ -330,7 +330,7 @@ org.apache.openjpa.persistence.OpenJPAQuery</classname> interface. See its
             <para>
 An <classname>Extent</classname> is a logical view of all persistent instances
 of a given entity class, possibly including subclasses. OpenJPA adds the
-<ulink url="../javadoc/org/apache/openjpa/persistence/Extent.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Extent.html"><classname>
 org.apache.openjpa.persistence.Extent</classname></ulink> class to the set of
 Java Persistence APIs. The following code illustrates iterating over all
 instances of the <classname>Magazine</classname> entity, without subclasses:
@@ -365,7 +365,7 @@ In addition to the <classname>EntityManager</classname> object cache the JPA
 specification provides access to a second level cache via the 
 javax.persistence.Cache interface. OpenJPA provides further extensions via 
 the org.apache.openjpa.persistence.StoreCache interface documented at 
-<ulink url="../javadoc/org/apache/openjpa/persistence/StoreCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/StoreCache.html">
 <classname>org.apache.openjpa.persistence.StoreCache</classname></ulink>.
 <xref linkend="ref_guide_cache"/> has detailed information on OpenJPA's
 data caching system, including the <classname>StoreCache</classname> facade.
@@ -382,7 +382,7 @@ data caching system, including the <classname>StoreCache</classname> facade.
             </indexterm>
             <para>
 OpenJPA can cache query results as well as persistent object data. The
-<ulink url="../javadoc/org/apache/openjpa/persistence/QueryResultCache.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/QueryResultCache.html">
 <classname>org.apache.openjpa.persistence.QueryResultCache</classname></ulink> 
 is an JPA-flavored facade to OpenJPA's internal query cache. See
 <xref linkend="ref_guide_cache_query"/> for details on query caching in
@@ -416,7 +416,7 @@ groups</link>, and <link linkend="ref_guide_locking">lock levels</link>.
             </para>
             <para>
 OpenJPA goes one step further, extending <classname>FetchPlan</classname> with
-<ulink url="../javadoc/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/jdbc/JDBCFetchPlan.html">
 <classname>org.apache.openjpa.persistence.jdbc.JDBCFetchPlan</classname></ulink>
 to add additional JDBC-specific tuning methods. Unless you have customized 
 OpenJPA to use a non-relational back-end (see
@@ -452,7 +452,7 @@ FetchPlan</classname>s.
                 </primary>
             </indexterm>
             <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityTransaction.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityTransaction.html">
 <classname>org.apache.openjpa.persistence.OpenJPAEntityTransaction</classname></ulink>
 extends <classname>javax.persistence.EntityTransaction</classname> to provide
 additional transaction-debugging capabilities and some concurrency-related
@@ -469,7 +469,7 @@ commit and rollback features.
                 </primary>
             </indexterm>
             <para>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAPersistence.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAPersistence.html">
 <classname>org.apache.openjpa.persistence.OpenJPAPersistence</classname></ulink>
 is a static helper class that adds OpenJPA-specific utility methods to 
 <classname>javax.persistence.Persistence</classname>.
@@ -661,7 +661,7 @@ In addition to the standard
 <ulink url="http://download.oracle.com/javaee/6/api/javax/persistence/EntityManager.html">
 <methodname>EntityManager.lock(Object, LockModeType)</methodname></ulink>
 method, the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink> exposes the following
 methods to lock objects explicitly:
             </para>
@@ -722,7 +722,7 @@ oem.getTransaction().commit();
                 </primary>
             </indexterm>
 OpenJPA delegates the actual work of locking objects to the system's
-<ulink url="../javadoc/org/apache/openjpa/kernel/LockManager.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/kernel/LockManager.html"><classname>
 org.apache.openjpa.kernel.LockManager</classname></ulink>. This plugin is
 controlled by the <link linkend="openjpa.LockManager"><literal>
 openjpa.LockManager</literal></link> configuration property. You can write your
@@ -732,7 +732,7 @@ own lock manager, or use one of the bundled options:
                 <listitem>
                     <para>
 <literal>mixed</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/MixedLockManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/MixedLockManager.html">
 <classname>org.apache.openjpa.jdbc.kernel.MixedLockManager</classname>
 </ulink>, which implements the JPA 2.0 specification entity locking behaviors.
 It combines both the optimistic and pessimistic semantics controlled by
@@ -753,7 +753,7 @@ This is the default <literal>openjpa.LockManager</literal> setting in OpenJPA.
                     <para>
 <literal>pessimistic</literal>: This is an alias for the
 <ulink
-url="../javadoc/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html">
+url="../../apidocs/org/apache/openjpa/jdbc/kernel/PessimisticLockManager.html">
 <classname>org.apache.openjpa.jdbc.kernel.PessimisticLockManager</classname>
 </ulink>, which
 uses SELECT FOR UPDATE statements (or the database's equivalent) to lock the
@@ -775,7 +775,7 @@ properties:
                 <listitem>
                     <para>
 <literal>version</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/kernel/VersionLockManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/VersionLockManager.html">
 <classname>org.apache.openjpa.kernel.VersionLockManager</classname></ulink>.
 This lock manager does not perform any exclusive locking, but instead ensures
 read consistency by verifying that the version of all read-locked instances is
@@ -788,7 +788,7 @@ behavior.
                 <listitem>
                     <para>
 <literal>none</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/kernel/NoneLockManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/NoneLockManager.html">
 <classname>org.apache.openjpa.kernel.NoneLockManager</classname></ulink>, which
 does not perform any locking at all.
                     </para>
@@ -983,7 +983,7 @@ changes. This chapter describes how to use and configure OpenJPA savepoints.
             </title>
             <para>
 OpenJPA's 
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 <classname>OpenJPAEntityManager</classname></ulink> have the following
 methods to control savepoint behavior. Note that the savepoints work in tandem
 with the current transaction. This means that savepoints require an open
@@ -1063,7 +1063,7 @@ oem.getTransaction().commit();
             </title>
             <para>
 OpenJPA uses the 
-<ulink url="../javadoc/org/apache/openjpa/kernel/SavepointManager">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/SavepointManager">
 <classname>org.apache.openjpa.kernel.SavepointManager</classname></ulink>
 <link linkend="ref_guide_conf_plugins">plugin</link> to handle preserving the
 savepoint state. OpenJPA includes the following <classname>SavepointManager
@@ -1073,7 +1073,7 @@ savepoint state. OpenJPA includes the following <classname>SavepointManager
                 <listitem>
                     <para>
 <literal>in-mem</literal>: The default. This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/kernel/InMemorySavepointManager.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/kernel/InMemorySavepointManager.html"><classname>
 org.apache.openjpa.kernel.InMemorySavepointManager</classname></ulink>. This
 plugin stores all state, including field values, in memory. Due to this
 behavior, each set savepoint is designed for small to medium transactional
@@ -1083,7 +1083,7 @@ object counts.
                 <listitem>
                     <para>
 <literal>jdbc</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/JDBC3SavepointManager.html"><classname>
 org.apache.openjpa.jdbc.kernel.JDBC3SavepointManager</classname></ulink>. This
 plugin requires <literal>JDBC 3</literal> and <classname> java.sql.Savepoint
 </classname> support to operate. Note that this plugin implements savepoints by
@@ -1244,7 +1244,7 @@ select p from Product p where p.price &lt; ext:sql ('(SELECT AVG(PRICE) FROM PRO
                 </indexterm>
                 <para>
 You can write your own extensions by implementing the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/exps/JDBCFilterListener.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/exps/JDBCFilterListener.html">
 <classname>org.apache.openjpa.jdbc.kernel.exps.JDBCFilterListener</classname>
 </ulink> interface. View the Javadoc documentation for details. Additionally,
 the source for all of OpenJPA's built-in query extensions is included in your
@@ -1293,7 +1293,7 @@ registration for very specific extensions that do not apply globally.
                         </para>
                         <para>
 See the <classname>OpenJPAQuery</classname>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAQuery.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">
 Javadoc</ulink> for details.
                         </para>
                     </listitem>
@@ -1315,7 +1315,7 @@ Javadoc</ulink> for details.
             <para>
 Just as you can write your own filter methods, you can write your own query
 aggregates by implementing the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/exps/JDBCAggregateListener.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/exps/JDBCAggregateListener.html">
 <classname>org.apache.openjpa.jdbc.kernel.exps.JDBCAggregateListener</classname>
 </ulink> interface. View the Javadoc documentation for details. When using your
 custom aggregates in result or having query clauses, you can optionally prefix
@@ -1361,7 +1361,7 @@ registration for very specific aggregates that do not apply globally.
                         </para>
                         <para>
 See the <classname>OpenJPAQuery</classname>
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAQuery.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAQuery.html">
 Javadoc</ulink> for details.
                         </para>
                     </listitem>
@@ -1432,7 +1432,7 @@ import org.apache.openjpa.persistence.*;
 For datastore queries, the method must have the following signature:
             </para>
 <programlisting>
-public static <ulink url="../javadoc/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider</ulink> xxx(<ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../javadoc/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration </ulink> fetch)
+public static <ulink url="../../apidocs/org/apache/openjpa/lib/rop/ResultObjectProvider.html">ResultObjectProvider</ulink> xxx(<ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../javadoc/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration </ulink> fetch)
 </programlisting>
             <para>
 The returned result object provider should produce objects of the candidate
@@ -1446,7 +1446,7 @@ In-memory execution is slightly different, taking in one object at a time and
 returning a boolean on whether the object matches the query:
             </para>
 <programlisting>
-public static boolean xxx(<ulink url="../javadoc/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../javadoc/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Object obj, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration</ulink> fetch)
+public static boolean xxx(<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreContext.html">StoreContext</ulink> ctx, <ulink url="../javadoc/org/apache/openjpa/meta/ClassMetaData.html">ClassMetaData</ulink> meta, boolean subclasses, Object obj, Map params, <ulink url="../javadoc/org/apache/openjpa/kernel/FetchConfiguration.html">FetchConfiguration</ulink> fetch)
 </programlisting>
             <para>
 In both method versions, the given <literal>params</literal> map contains the
@@ -1474,12 +1474,12 @@ generators to automatically populate identity fields in JPA.
         </para>
         <para>
 OpenJPA represents all generators internally with the
-<ulink url="../javadoc/org/apache/openjpa/kernel/Seq.html"><classname>
+<ulink url="../../apidocs/org/apache/openjpa/kernel/Seq.html"><classname>
 org.apache.openjpa.kernel.Seq</classname></ulink> interface. This interface
 supplies all the context you need to create your own custom generators,
 including the current persistence environment, the JDBC <classname>DataSource
 </classname>, and other essentials. The
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/AbstractJDBCSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/AbstractJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.AbstractJDBCSeq</classname></ulink>
 helps you create custom JDBC-based sequences. OpenJPA also supplies the
 following built-in <classname>Seq</classname>s:
@@ -1497,7 +1497,7 @@ following built-in <classname>Seq</classname>s:
                 </indexterm>
 <literal>table</literal>: This is OpenJPA's default implementation. It is an
 alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/TableJDBCSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/TableJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.TableJDBCSeq</classname></ulink>
 class. The <classname>TableJDBCSeq</classname> uses a special single-row table
 to store a global sequence number. If the table does not already exist, it is
@@ -1554,7 +1554,7 @@ requests.
                     </secondary>
                 </indexterm>
 <literal>class-table</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/ClassTableJDBCSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/ClassTableJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.ClassTableJDBCSeq</classname></ulink>
 . This <classname>Seq</classname> is like the <classname>TableJDBCSeq
 </classname> above, but maintains a separate table row, and therefore a separate
@@ -1597,7 +1597,7 @@ tool runs. However, you can manually manipulate the table through the class'
                     </secondary>
                 </indexterm>
 <literal>value-table</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/ValueTableJDBCSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/ValueTableJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.ValueTableJDBCSeq</classname></ulink>
 . This <classname>Seq</classname> is like the <classname>ClassTableJDBCSeq
 </classname> above, but has an arbitrary number of rows for sequence values,
@@ -1631,7 +1631,7 @@ tool runs. However, you can manually manipulate the table through the class'
                     </secondary>
                 </indexterm>
 <literal>native</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/jdbc/kernel/NativeJDBCSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/jdbc/kernel/NativeJDBCSeq.html">
 <classname>org.apache.openjpa.jdbc.kernel.NativeJDBCSeq</classname></ulink>.
 Many databases have a concept of "native sequences" - a built-in mechanism for
 obtaining incrementing numbers. For example, in Oracle database, you can create a
@@ -1681,7 +1681,7 @@ requests.
                     </secondary>
                 </indexterm>
 <literal>time</literal>: This is an alias for the
-<ulink url="../javadoc/org/apache/openjpa/kernel/TimeSeededSeq.html">
+<ulink url="../../apidocs/org/apache/openjpa/kernel/TimeSeededSeq.html">
 <classname>org.apache.openjpa.kernel.TimeSeededSeq</classname></ulink>. This
 type uses an in-memory static counter, initialized to the current time in
 milliseconds and monotonically incremented for each value requested. It is only
@@ -1789,7 +1789,7 @@ public Generator getNamedGenerator(String name);
 </programlisting>
             <para>
 The returned 
-<ulink url="../javadoc/org/apache/openjpa/persistence/Generator.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink> is a
 facade over an internal OpenJPA <classname>Seq</classname>.
             </para>
@@ -1799,7 +1799,7 @@ retrieve the identity generator of any class, or the generator of any field.
 With these APIs, you do not have to know the generator name. Additionally, they
 allow you to access the implicit generator used by default for datastore
 identity classes. See the
-<ulink url="../javadoc/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/OpenJPAEntityManager.html">
 Javadoc</ulink> for the <methodname> OpenJPAEntityManager.getIdentityGenerator
 </methodname> and <methodname>OpenJPAEntityManager.getFieldGenerator
 </methodname> methods for API details.
@@ -1821,7 +1821,7 @@ Javadoc</ulink> for the <methodname> OpenJPAEntityManager.getIdentityGenerator
         <para>
 The OpenJPA runtime supports broadcasting transaction-related events. By
 registering one or more
-<ulink url="../javadoc/org/apache/openjpa/event/TransactionListener.html">
+<ulink url="../../apidocs/org/apache/openjpa/event/TransactionListener.html">
 <classname>org.apache.openjpa.event.TransactionListener</classname></ulink> s,
 you can receive notifications when transactions begin, flush, rollback, commit,
 and more. Where appropriate, event notifications include the set of
@@ -1838,7 +1838,7 @@ and remove listeners. These methods are outside the bounds of the published Open
         <para>
 For details on the transaction framework, see the <literal>
 org.apache.openjpa.event</literal> package
-<ulink url="../javadoc/org/apache/openjpa/event/package-summary.html">Javadoc</ulink>.
+<ulink url="../../apidocs/org/apache/openjpa/event/package-summary.html">Javadoc</ulink>.
 Also see <xref linkend="ref_guide_event"/> for a description of OpenJPA's
 remote event support.
         </para>
@@ -1850,11 +1850,11 @@ remote event support.
         <para>
 It is possible to adapt OpenJPA to access a non-relational datastore by creating
 an implementation of the
-<ulink url="../javadoc/org/apache/openjpa/kernel/StoreManager.html"><literal>
+<ulink url="../../apidocs/org/apache/openjpa/kernel/StoreManager.html"><literal>
 org.apache.openjpa.kernel.StoreManager</literal></ulink> interface. OpenJPA
 provides an abstract <literal>StoreManager</literal> implementation to
 facilitate this process. See the <literal>org.apache.openjpa.abstractstore
-</literal> package <ulink url="../javadoc/org/apache/openjpa/abstractstore/package-summary.html">
+</literal> package <ulink url="../../apidocs/org/apache/openjpa/abstractstore/package-summary.html">
 Javadoc</ulink> for details.
         </para>
     </section>

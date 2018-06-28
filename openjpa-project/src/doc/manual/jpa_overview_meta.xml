@@ -1037,7 +1037,7 @@ http://www.ics.uci.edu/~ejw/authoring/uuid-guid/</ulink>
                 </itemizedlist>
                 <para>
 These string constants are defined in
-<ulink url="../javadoc/org/apache/openjpa/persistence/Generator.html">
+<ulink url="../../apidocs/org/apache/openjpa/persistence/Generator.html">
 <classname>org.apache.openjpa.persistence.Generator</classname></ulink>.
                 </para>
                  <para>
