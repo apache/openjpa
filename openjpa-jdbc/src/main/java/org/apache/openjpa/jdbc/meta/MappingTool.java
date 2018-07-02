@@ -129,6 +129,7 @@ public class MappingTool
     private boolean _seqs = true;
     private boolean _dropUnused = true;
     private boolean _ignoreErrors = false;
+    private boolean _rollbackBeforeDDL = false;
     private File _file = null;
     private Writer _mappingWriter = null;
     private Writer _schemaWriter = null;
@@ -320,6 +321,20 @@ public class MappingTool
     public boolean getIgnoreErrors() {
         return _ignoreErrors;
     }
+    
+    /**
+     * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
+     */
+    public boolean getRollbackBeforeDDL() {
+        return _rollbackBeforeDDL;
+    }
+
+    /**
+     * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
+     */
+    public void setRollbackBeforeDDL(boolean rollbackBeforeDDL) {
+        _rollbackBeforeDDL = rollbackBeforeDDL;
+    }
 
     /**
      * Return the schema tool to use for schema modification.
@@ -333,6 +348,7 @@ public class MappingTool
         tool.setForeignKeys(getForeignKeys());
         tool.setIndexes(getIndexes());
         tool.setSequences(getSequences());
+        tool.setRollbackBeforeDDL(getRollbackBeforeDDL());
         return tool;
     }
 
@@ -532,6 +548,7 @@ public class MappingTool
                         // configure the tool with additional settings
                         if (flags != null) {
                             tool.setDropTables(flags.dropTables);
+                            tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
                             tool.setDropSequences(flags.dropSequences);
                             tool.setWriter(flags.sqlWriter);
                             tool.setOpenJPATables(flags.openjpaTables);
@@ -1011,6 +1028,8 @@ public class MappingTool
             flags.schemaAction);
         flags.dropTables = opts.removeBooleanProperty
             ("dropTables", "dt", flags.dropTables);
+        flags.rollbackBeforeDDL = opts.removeBooleanProperty
+            ("rollbackBeforeDDL", "rbddl", flags.rollbackBeforeDDL);
         flags.openjpaTables = opts.removeBooleanProperty
             ("openjpaTables", "ot", flags.openjpaTables);
         flags.dropSequences = opts.removeBooleanProperty
@@ -1128,6 +1147,7 @@ public class MappingTool
         tool.setForeignKeys(flags.foreignKeys);
         tool.setIndexes(flags.indexes);
         tool.setSequences(flags.sequences || flags.dropSequences);
+        tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
 
         // and run the action
         for (int i = 0; i < act.length; i++) {
@@ -1178,6 +1198,7 @@ public class MappingTool
         public boolean ignoreErrors = false;
         public boolean readSchema = false;
         public boolean dropTables = false;
+        public boolean rollbackBeforeDDL = false;
         public boolean openjpaTables = false;
         public boolean dropSequences = false;
         public boolean sequences = true;

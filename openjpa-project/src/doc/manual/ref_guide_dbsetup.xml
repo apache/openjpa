@@ -5448,6 +5448,12 @@ dropped. Defaults to <literal>false</literal>.
             </listitem>
             <listitem>
                 <para>
+<literal>-rollbackBeforeDDL/-rbddl &lt;true/t | false/f&gt;</literal>: Set this option to
+<literal>true</literal> to send an initail rollback on the connection before any DDL statement is sent.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
 <literal>-dropTables/-dt &lt;true/t | false/f&gt;</literal>: Set this option to
 <literal>true</literal> to drop tables that appear to be unused during <literal>
 retain</literal> and <literal>refresh</literal> actions. Defaults to <literal>

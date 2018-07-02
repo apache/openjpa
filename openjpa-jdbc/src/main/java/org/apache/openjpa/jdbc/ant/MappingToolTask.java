@@ -40,6 +40,7 @@ import org.apache.openjpa.util.MultiLoaderClassResolver;
  * <li><code>action</code></li>
  * <li><code>meta</code></li>
  * <li><code>schemaAction</code></li>
+ * <li><code>rollbackBeforeDDL</code></li>
  * <li><code>dropTables</code></li>
  * <li><code>ignoreErrors</code></li>
  * <li><code>readSchema</code></li>
@@ -99,6 +100,13 @@ public class MappingToolTask
      */
     public void setDropTables(boolean dropTables) {
         flags.dropTables = dropTables;
+    }
+
+    /**
+     * Set whether the MappingTool should rollback will be performed before each DDL statement is executed.
+     */
+    public void setRollbackBeforeDDL(boolean rollbackBeforeDDL) {
+        flags.rollbackBeforeDDL = rollbackBeforeDDL;
     }
 
     /**

@@ -114,6 +114,7 @@ public class SchemaTool {
     private boolean _fks = true;
     private boolean _indexes = true;
     private boolean _seqs = true;
+    private boolean _rollbackBeforeDDL = true;
     private PrintWriter _writer = null;
     private SchemaGroup _group = null;
     private SchemaGroup _db = null;
@@ -232,6 +233,20 @@ public class SchemaTool {
         _dropSeqs = dropSeqs;
         if (dropSeqs)
             setSequences(true);
+    }
+
+    /**
+     * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
+     */
+    public boolean getRollbackBeforeDDL() {
+        return _rollbackBeforeDDL;
+    }
+    
+    /**
+     * If true, rollback will be performed before each DDL statement is executed. Defaults to true.
+     */
+    public void setRollbackBeforeDDL(boolean rollbackBeforeDDL) {
+        _rollbackBeforeDDL = rollbackBeforeDDL;
     }
 
     /**
@@ -1335,23 +1350,28 @@ public class SchemaTool {
             Statement statement = null;
             boolean wasAuto = true;
             try {
-                wasAuto = conn.getAutoCommit();
-                if (!wasAuto)
-                    conn.setAutoCommit(true);
+                if (_rollbackBeforeDDL) {
+                    wasAuto = conn.getAutoCommit();
+                    if (!wasAuto) {
+                        conn.setAutoCommit(true);
+                    }
+                }
                 for (int i = 0; i < sql.length; i++) {
                     try {
-                        // some connections require that rollback be
-                        // called on the connection before any DDL statements
-                        // can be run on it, even when autocommit is on.
-                        // This is sometimes because the connection does not
-                        // allow DDL statements when there are multiple
-                        // commands issued on the connection, and the
-                        // connection pool may have issued some validation SQL.
-                        try {
-                            conn.rollback();
-                        } catch (Exception e) {
+                        if (_rollbackBeforeDDL) {
+                            // some connections require that rollback be
+                            // called on the connection before any DDL statements
+                            // can be run on it, even when autocommit is on.
+                            // This is sometimes because the connection does not
+                            // allow DDL statements when there are multiple
+                            // commands issued on the connection, and the
+                            // connection pool may have issued some validation SQL.
+                            try {
+                                conn.rollback();
+                            } catch (Exception e) {
+                            }
                         }
-
+                
                         statement = conn.createStatement();
                         statement.executeUpdate(sql[i]);
 
@@ -1377,7 +1397,7 @@ public class SchemaTool {
                 }
             }
             finally {
-                if (!wasAuto) {
+                if (_rollbackBeforeDDL && !wasAuto) {
                     conn.setAutoCommit(false);
                 }
 
@@ -1445,6 +1465,9 @@ public class SchemaTool {
      * to true to drop sequences that appear to be unused during
      * <code>retain</code>	and <code>refresh</code> actions. Defaults to
      * <code>true</code>.</li>
+     * <li><i>-rollbackBeforeDDL/-rbddl &lt;true/t | false/f&gt;</i>: Set this option
+     * to true to send an initail rollback on the connection before any DDL statement
+     * is sent</li>
      * <li><i>-primaryKeys/-pk &lt;true/t | false/f&gt;</i>: Whether primary
      * keys on existing tables are manipulated. Defaults to true.</li>
      * <li><i>-foreignKeys/-fk &lt;true/t | false/f&gt;</i>: Whether foreign
@@ -1539,6 +1562,8 @@ public class SchemaTool {
             ("dropTables", "dt", flags.dropTables);
         flags.dropSequences = opts.removeBooleanProperty
             ("dropSequences", "dsq", flags.dropSequences);
+        flags.rollbackBeforeDDL = opts.removeBooleanProperty
+            ("rollbackBeforeDDL", "rbddl", flags.rollbackBeforeDDL);
         flags.ignoreErrors = opts.removeBooleanProperty
             ("ignoreErrors", "i", flags.ignoreErrors);
         flags.openjpaTables = opts.removeBooleanProperty
@@ -1654,6 +1679,7 @@ public class SchemaTool {
         tool.setDropTables(flags.dropTables);
         tool.setSequences(flags.sequences); // set before dropseqs
         tool.setDropSequences(flags.dropSequences);
+        tool.setRollbackBeforeDDL(flags.rollbackBeforeDDL);
         tool.setPrimaryKeys(flags.primaryKeys);
         tool.setForeignKeys(flags.foreignKeys);
         tool.setIndexes(flags.indexes);
@@ -1692,6 +1718,7 @@ public class SchemaTool {
         public String action = ACTION_ADD;
         public Writer writer = null;
         public boolean dropTables = true;
+        public boolean rollbackBeforeDDL = true;
         public boolean dropSequences = true;
         public boolean ignoreErrors = false;
         public boolean openjpaTables = false;
