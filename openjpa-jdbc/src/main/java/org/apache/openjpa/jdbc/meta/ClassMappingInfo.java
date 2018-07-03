@@ -306,14 +306,8 @@ public class ClassMappingInfo
      * Return the named table for the given class.
      */
     public Table getTable(final ClassMapping cls, DBIdentifier tableName, 
-    		boolean adapt) {
-        // If the schemaName is NULL type then check for a system default schema name
-        // and if available use it.
-        if (_schemaName != null && _schemaName.getType() == DBIdentifierType.NULL){            
-            String name = cls.getMappingRepository().getMetaDataFactory().getDefaults().getDefaultSchema();
-            _schemaName = (name != null ? DBIdentifier.newSchema(name) : _schemaName);
-        }        
-        
+            boolean adapt) {
+
         Table t = createTable(cls, new TableDefaults() {
             public String get(Schema schema) {
                 // delay this so that we don't do schema reflection for unique
