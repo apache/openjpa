@@ -138,6 +138,12 @@ same-named option on the schema tool.
             </listitem>
             <listitem>
                 <para>
+<literal>-rollbackBeforeDDL/-rbddl &lt;true/t | false/f&gt;</literal>: Corresponds to the
+same-named option on the schema tool.
+                </para>
+            </listitem>
+            <listitem>
+                <para>
 <literal>-dropSequences/-dsq &lt;true/t | false/f&gt;</literal>: Corresponds to
 the same-named option on the schema tool.
                 </para>
