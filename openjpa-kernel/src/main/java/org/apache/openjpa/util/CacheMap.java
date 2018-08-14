@@ -355,9 +355,9 @@ public class CacheMap
                 val = cacheMap.get(key);
                 if (val == null) {
                     val = pinnedMap.get(key);
-                } else {
-                    putcache = true;
                 }
+            } else {
+                putcache = true;
             }
             return val;
         } finally {
