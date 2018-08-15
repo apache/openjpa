@@ -111,7 +111,7 @@ public abstract class XMLMetaDataParser extends DefaultHandler
 
     private boolean _parsing = false;
     
-    private boolean _overrideContextClassloader = false;
+    private boolean _overrideContextClassloader = true;
     
     public boolean getOverrideContextClassloader() {
         return _overrideContextClassloader;
