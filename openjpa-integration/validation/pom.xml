@@ -95,11 +95,6 @@
                     <version>4.0.2.GA</version>
                     <scope>test</scope>
                     <exclusions>
-                        <!-- force usage of the geronimo-jpa_2.1_spec -->
-                        <exclusion>
-                            <groupId>org.hibernate.java-persistence</groupId>
-                            <artifactId>jpa-api</artifactId>
-                        </exclusion>
                         <!-- force usage of the RI API level above -->
                         <exclusion>
                             <groupId>javax.validation</groupId>

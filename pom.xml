@@ -524,9 +524,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-jpa_2.1_spec</artifactId>
-                <version>1.0-alpha-1</version>
+                <groupId>javax.persistence</groupId>
+                <artifactId>javax.persistence-api</artifactId>
+                <version>2.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.geronimo.specs</groupId>
