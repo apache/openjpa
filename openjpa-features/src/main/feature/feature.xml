@@ -24,7 +24,7 @@
         <bundle dependency="true">mvn:org.eclipse.persistence/javax.persistence/2.1.0</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/1.1.1</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-el_1.0_spec/1.0.1</bundle>
-		<bundle dependency="true">mvn:commons-pool/commons-pool/1.6</bundle>
+		<bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.6.0</bundle>
 		<bundle dependency="true">mvn:commons-dbcp/commons-dbcp/1.4</bundle>
 		<bundle dependency="true">mvn:commons-collections/commons-collections/3.2.2</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.14.1_1</bundle>

@@ -135,7 +135,7 @@
 
                 <include>commons-lang:commons-lang</include>
                 <include>commons-collections:commons-collections</include>
-                <include>commons-pool:commons-pool</include>
+                <include>org.apache.commons:commons-pool2</include>
                 <include>commons-logging:commons-logging</include>
                 <include>commons-dbcp:commons-dbcp</include>
 
