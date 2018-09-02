@@ -973,6 +973,6 @@ public class TCPRemoteCommitProvider
                         _address.getHostAddress() + ":" + _port), e);
                 }
             }
-		}
-	}
+        }
+    }
 }

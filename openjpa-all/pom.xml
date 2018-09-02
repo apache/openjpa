@@ -31,6 +31,7 @@
         <version>3.0.1-SNAPSHOT</version>
     </parent>
 
+    <groupId>org.apache.openjpa</groupId>
     <artifactId>openjpa-all</artifactId>
     <packaging>jar</packaging>
     <name>OpenJPA Aggregate Jar with Dependencies</name>
