@@ -14,7 +14,7 @@
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
- * under the License.    
+ * under the License.
  */
 package org.apache.openjpa.jdbc.sql;
 
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier;
 import org.apache.openjpa.jdbc.identifier.DBIdentifier.DBIdentifierType;
 import org.apache.openjpa.jdbc.kernel.JDBCFetchConfiguration;
@@ -41,17 +40,18 @@ import org.apache.openjpa.jdbc.schema.ForeignKey;
 import org.apache.openjpa.jdbc.schema.Index;
 import org.apache.openjpa.jdbc.schema.PrimaryKey;
 import org.apache.openjpa.jdbc.schema.Table;
+import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.util.StoreException;
 
 /*
  * Dictionary for MariaDB, based off the MySQLDictionary.
- * 
+ *
  */
 public class MariaDBDictionary extends DBDictionary {
     public static final String SELECT_HINT = "openjpa.hint.MariaDBSelectHint";
 
     public static final String DELIMITER_BACK_TICK = "`";
-    
+
     /**
      * The MySQL table type to use when creating tables; defaults to innodb.
      */
@@ -69,8 +69,8 @@ public class MariaDBDictionary extends DBDictionary {
     public boolean driverDeserializesBlobs = false;
 
     /**
-     * Whether to inline multi-table bulk-delete operations into MySQL's 
-     * combined <code>DELETE FROM foo, bar, baz</code> syntax. 
+     * Whether to inline multi-table bulk-delete operations into MySQL's
+     * combined <code>DELETE FROM foo, bar, baz</code> syntax.
      * Defaults to false, since this may fail in the presence of InnoDB tables
      * with foreign keys.
      * @see http://dev.mysql.com/doc/refman/5.0/en/delete.html
@@ -80,6 +80,9 @@ public class MariaDBDictionary extends DBDictionary {
     public static final String tinyBlobTypeName = "TINYBLOB";
     public static final String mediumBlobTypeName = "MEDIUMBLOB";
     public static final String longBlobTypeName = "LONGBLOB";
+    public static final String tinyTextTypeName = "TINYTEXT";
+    public static final String mediumTextTypeName = "MEDIUMTEXT";
+    public static final String longTextTypeName = "LONGTEXT";
 
     public MariaDBDictionary() {
         platform = "MariaDB";
@@ -120,15 +123,15 @@ public class MariaDBDictionary extends DBDictionary {
         reservedWordSet.addAll(Arrays.asList(new String[]{
             "AUTO_INCREMENT", "BINARY", "BLOB", "CHANGE", "ENUM", "INFILE",
             "INT1", "INT2", "INT4", "FLOAT1", "FLOAT2", "FLOAT4", "LOAD",
-            "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED", 
-            "ZEROFILL", "INDEX", 
+            "MEDIUMINT", "OUTFILE", "REPLACE", "STARTING", "TEXT", "UNSIGNED",
+            "ZEROFILL", "INDEX",
         }));
 
         // reservedWordSet subset that CANNOT be used as valid column names
         // (i.e., without surrounding them with double-quotes)
         invalidColumnWordSet.addAll(Arrays.asList(new String[]{
             "ADD", "ALL", "ALTER", "AND", "AS", "ASC", "BETWEEN", "BINARY",
-            "BLOB", "BOTH", "BY", "CASCADE", "CASE", "CHANGE", "CHAR", 
+            "BLOB", "BOTH", "BY", "CASCADE", "CASE", "CHANGE", "CHAR",
             "CHARACTER", "CHECK", "COLLATE", "COLUMN", "CONSTRAINT", "CONTINUE",
             "CONVERT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME",
             "CURRENT_TIMESTAMP", "CURRENT_USER", "CURSOR", "DEC", "DECIMAL",
@@ -145,7 +148,7 @@ public class MariaDBDictionary extends DBDictionary {
             "STARTING", "TABLE", "THEN", "TO", "TRAILING", "TRUE", "UNION",
             "UNIQUE", "UNSIGNED", "UPDATE", "USAGE", "USING", "VALUES",
             "VARCHAR", "VARYING", "WHEN", "WHERE", "WITH", "WRITE", "ZEROFILL",
-            "INDEX", 
+            "INDEX",
         }));
 
         requiresSearchStringEscapeForLike = true;
@@ -157,7 +160,7 @@ public class MariaDBDictionary extends DBDictionary {
 
         setLeadingDelimiter(DELIMITER_BACK_TICK);
         setTrailingDelimiter(DELIMITER_BACK_TICK);
-        
+
         fixedSizeTypeNameSet.remove("NUMERIC");
     }
 
@@ -180,10 +183,11 @@ public class MariaDBDictionary extends DBDictionary {
             if (log.isWarnEnabled())
                 log.warn(e.toString(), e);
         }
-        
+
         supportsXMLColumn = true;
     }
-    
+
+    @Override
     protected void setDelimitedCase(DatabaseMetaData metaData) {
         // Determination of case sensitivity is not accurate; MariaDB JIRA CONJ-55
         delimitedCase = SCHEMA_CASE_PRESERVE;
@@ -194,7 +198,7 @@ public class MariaDBDictionary extends DBDictionary {
         conn = super.decorate(conn);
         return conn;
     }
-    
+
     private static int[] getMajorMinorVersions(String versionStr)
         throws IllegalArgumentException {
         int beginIndex = 0;
@@ -263,7 +267,7 @@ public class MariaDBDictionary extends DBDictionary {
                 new String[]{ "ALTER TABLE "
                 + getFullName(fk.getTable(), false)
                 + " DROP FOREIGN KEY " + toDBName(fkName) };
-            return retVal;   
+            return retVal;
         }
         return new String[]{ "ALTER TABLE "
             + getFullName(fk.getTable(), false)
@@ -288,7 +292,7 @@ public class MariaDBDictionary extends DBDictionary {
         System.arraycopy(sql, 0, ret, cols.length, sql.length);
         return ret;
     }
-    
+
     @Override
     public String[] getDeleteTableContentsSQL(Table[] tables,Connection conn) {
         // mysql >= 4 supports more-optimal delete syntax
@@ -343,10 +347,10 @@ public class MariaDBDictionary extends DBDictionary {
             return Types.LONGVARCHAR;
         return super.getPreferredType(type);
     }
-    
+
     /**
      * Append XML comparison.
-     * 
+     *
      * @param buf the SQL buffer to write the comparison
      * @param op the comparison operation to perform
      * @param lhs the left hand side of the comparison
@@ -368,10 +372,10 @@ public class MariaDBDictionary extends DBDictionary {
         else
             rhs.appendTo(buf);
     }
-    
+
     /**
      * Append XML column value so that it can be used in comparisons.
-     * 
+     *
      * @param buf the SQL buffer to write the value
      * @param val the value to be written
      */
@@ -382,7 +386,7 @@ public class MariaDBDictionary extends DBDictionary {
         val.appendTo(buf);
         buf.append("')");
     }
-    
+
     @Override
     public int getBatchFetchSize(int batchFetchSize) {
         return Integer.MIN_VALUE;
@@ -401,10 +405,10 @@ public class MariaDBDictionary extends DBDictionary {
             select += " " + hint;
         return select;
     }
-    
+
     @Override
     protected Collection<String> getSelectTableAliases(Select sel) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         List<String> selects = sel.getIdentifierAliases();
         for (String s : selects) {
             String tableAlias = s.substring(0, s.indexOf('.'));
@@ -412,12 +416,12 @@ public class MariaDBDictionary extends DBDictionary {
         }
         return result;
     }
-    
+
     @Override
     protected int matchErrorState(Map<Integer,Set<String>> errorStates, SQLException ex) {
         int state = super.matchErrorState(errorStates, ex);
-        
-        if (state == StoreException.GENERAL && 
+
+        if (state == StoreException.GENERAL &&
                 ex.getNextException() != null &&
                 "JZ0002".equalsIgnoreCase(ex.getNextException().getSQLState())) {
             if (conf != null && conf.getLockTimeout() != -1) {
@@ -449,7 +453,7 @@ public class MariaDBDictionary extends DBDictionary {
      */
     @Override
     public String getTypeName(Column col) {
-        // handle blobs differently, if the DBItentifierType is NULL (e.g. no column definition is set). 
+        // handle blobs differently, if the DBItentifierType is NULL (e.g. no column definition is set).
         if (col.getType() == Types.BLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
             if (col.getSize() <= 0)   // unknown size
                 return blobTypeName;  // return old default of 64KB
@@ -461,6 +465,17 @@ public class MariaDBDictionary extends DBDictionary {
                 return mediumBlobTypeName;
             else
                 return longBlobTypeName;
+        } else if (col.getType() == Types.CLOB && col.getTypeIdentifier().getType() == DBIdentifierType.NULL) {
+            if (col.getSize() <= 0)   // unknown size
+                return clobTypeName;  // return old default of 64KB
+            else if (col.getSize() <= 255)
+                return tinyTextTypeName;
+            else if (col.getSize() <= 65535)
+                return clobTypeName;  // old default of 64KB
+            else if (col.getSize() <= 16777215)
+                return mediumTextTypeName;
+            else
+                return longTextTypeName;
         } else {
             return super.getTypeName(col);
         }
