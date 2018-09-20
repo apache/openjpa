@@ -24,7 +24,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections.set.MapBackedSet;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.set.MapBackedSet;
 
 /**
  * A concurrent set whose values may be stored as weak or soft references. If
@@ -36,22 +37,6 @@ import org.apache.commons.collections.set.MapBackedSet;
  */
 @SuppressWarnings("serial")
 public class ConcurrentReferenceHashSet<E> implements Set<E>, Serializable {
-
-    /**
-     * Hard reference marker.
-     */
-    public static final int HARD = 0;
-
-    /**
-     * Soft reference marker.
-     */
-    public static final int SOFT = 1;
-
-    /**
-     * Weak reference marker.
-     */
-    public static final int WEAK = 2;
-
     private static final Object DUMMY_VAL = new Object();
 
     private final Set<E> _set;
@@ -59,14 +44,12 @@ public class ConcurrentReferenceHashSet<E> implements Set<E>, Serializable {
     /**
      * Construct a set with the given reference type.
      */
-    public ConcurrentReferenceHashSet(int refType) {
-        if (refType == HARD)
-            _set = MapBackedSet.decorate(new ConcurrentHashMap(), DUMMY_VAL);
+    public ConcurrentReferenceHashSet(ReferenceStrength refType) {
+        if (refType == ReferenceStrength.HARD)
+            _set = MapBackedSet.mapBackedSet(new ConcurrentHashMap(), DUMMY_VAL);
         else {
-            int mapRefType = (refType == WEAK) ? ConcurrentReferenceHashMap.WEAK
-                : ConcurrentReferenceHashMap.SOFT;
-            _set = MapBackedSet.decorate(new ConcurrentReferenceHashMap
-                (mapRefType, ConcurrentReferenceHashMap.HARD), DUMMY_VAL);
+            _set = MapBackedSet.mapBackedSet(new ConcurrentReferenceHashMap
+                (refType, ReferenceStrength.HARD), DUMMY_VAL);
         }
     }
 

@@ -32,7 +32,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.map.LinkedMap;
 import java.util.Objects;
 
 import org.apache.openjpa.lib.util.StringUtil;
@@ -129,7 +130,7 @@ public class QueryImpl
     // remember the list of all the results we have returned so we
     // can free their resources when close or closeAll is called
     private transient final Collection<RemoveOnCloseResultList> _resultLists = 
-        new ReferenceHashSet(ReferenceHashSet.WEAK);
+        new ReferenceHashSet(ReferenceStrength.WEAK);
 
     private boolean _printParameters = false;
     /**

@@ -23,9 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.collections.iterators.IteratorChain;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.iterators.FilterIterator;
+import org.apache.commons.collections4.iterators.IteratorChain;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.rop.ResultObjectProvider;
 import org.apache.openjpa.lib.rop.ResultObjectProviderIterator;
 import org.apache.openjpa.lib.util.Closeable;
@@ -156,7 +157,7 @@ public class ExtentImpl<T>
         lock();
         try {
             if (_openItrs == null)
-                _openItrs = new ReferenceHashSet(ReferenceHashSet.WEAK);
+                _openItrs = new ReferenceHashSet(ReferenceStrength.WEAK);
             _openItrs.add(citr);
         } finally {
             unlock();
@@ -263,7 +264,7 @@ public class ExtentImpl<T>
             }
 
             _closed = true;
-            for (Iterator itr = getIterators().iterator(); itr.hasNext();)
+            for (Iterator itr = this; itr.hasNext();)
                 ((Closeable) itr.next()).close();
         }
     }

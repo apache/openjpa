@@ -24,7 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.commons.collections.set.MapBackedSet;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.set.MapBackedSet;
 
 /**
  * A set whose values may be stored as weak or soft references.
@@ -32,22 +33,6 @@ import org.apache.commons.collections.set.MapBackedSet;
  * @author Abe White
  */
 public class ReferenceHashSet implements Set, Serializable {
-
-    /**
-     * Hard reference marker.
-     */
-    public static final int HARD = 0;
-
-    /**
-     * Soft reference marker.
-     */
-    public static final int SOFT = 1;
-
-    /**
-     * Weak reference marker.
-     */
-    public static final int WEAK = 2;
-
     private static final Object DUMMY_VAL = new Serializable() {
         public String toString() {
             return ReferenceHashSet.class.getName() + ".DUMMY_VAL";
@@ -59,17 +44,12 @@ public class ReferenceHashSet implements Set, Serializable {
     /**
      * Construct a set with the given reference type.
      */
-    public ReferenceHashSet(int refType) {
-        if (refType == HARD)
+    public ReferenceHashSet(ReferenceStrength refType) {
+        if (refType == ReferenceStrength.HARD)
             _set = new HashSet();
         else {
-            int mapRefType = (refType == WEAK) ? org.apache.commons.
-                collections.map.ReferenceMap.WEAK : org.apache.
-                commons.collections.map.ReferenceMap.SOFT;
-            _set = MapBackedSet.decorate(new org.apache.commons.
-                collections.map.ReferenceMap(mapRefType,
-                org.apache.commons.collections.map.
-                    ReferenceMap.HARD), DUMMY_VAL);
+            _set = MapBackedSet.mapBackedSet(new org.apache.commons.
+                collections4.map.ReferenceMap(refType, ReferenceStrength.HARD), DUMMY_VAL);
         }
     }
 

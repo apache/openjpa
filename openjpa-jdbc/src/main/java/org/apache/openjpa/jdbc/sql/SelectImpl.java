@@ -38,7 +38,7 @@ import java.util.SortedMap;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import org.apache.commons.collections.iterators.EmptyIterator;
+import org.apache.commons.collections4.iterators.EmptyIterator;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.kernel.EagerFetchModes;

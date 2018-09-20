@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.event.RemoteCommitEvent;
 import org.apache.openjpa.event.RemoteCommitListener;
@@ -397,7 +398,7 @@ public abstract class AbstractQueryCache
      * the only reference is held by the list of expiration listeners.
      */
     protected Collection newListenerCollection() {
-        return new ConcurrentReferenceHashSet (ConcurrentReferenceHashSet.WEAK);
+        return new ConcurrentReferenceHashSet(ReferenceStrength.WEAK);
 	}
 
     /**
@@ -493,12 +494,12 @@ public abstract class AbstractQueryCache
 
         private void initializeMaps() {
             ConcurrentReferenceHashMap statsMap =
-                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+                new ConcurrentReferenceHashMap(ReferenceStrength.HARD, ReferenceStrength.HARD, CONCURRENCY, LOAD_FACTOR);
             statsMap.setMaxSize(FIXED_SIZE);
             stats = statsMap;
 
             ConcurrentReferenceHashMap aStatsMap =
-                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+                new ConcurrentReferenceHashMap(ReferenceStrength.HARD, ReferenceStrength.HARD, CONCURRENCY, LOAD_FACTOR);
             aStatsMap.setMaxSize(FIXED_SIZE);
             astats = aStatsMap;
         }

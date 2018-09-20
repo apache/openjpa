@@ -22,7 +22,7 @@ public class BlacklistClassResolver {
     public static final BlacklistClassResolver DEFAULT = new BlacklistClassResolver(
         toArray(System.getProperty(
             "openjpa.serialization.class.blacklist",
-            "org.codehaus.groovy.runtime.,org.apache.commons.collections.functors.,org.apache.xalan")),
+            "org.codehaus.groovy.runtime.,org.apache.commons.collections4.functors.,org.apache.xalan")),
         toArray(System.getProperty("openjpa.serialization.class.whitelist")));
 
     private final String[] blacklist;
@@ -59,6 +59,3 @@ public class BlacklistClassResolver {
         return false;
     }
 }
-
-
-

@@ -18,7 +18,7 @@
  */
 package org.apache.openjpa.meta;
 
-import org.apache.commons.collections.bidimap.TreeBidiMap;
+import org.apache.commons.collections4.bidimap.TreeBidiMap;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.StringDistance;

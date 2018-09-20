@@ -20,6 +20,7 @@ package org.apache.openjpa.util;
 
 import java.io.Serializable;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -35,7 +36,7 @@ public abstract class OpenJPAId
     
     // cache the types' generated hash codes
     private static ConcurrentReferenceHashMap _typeCache =
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
 
     protected Class type;
     protected boolean subs = true;

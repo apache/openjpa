@@ -40,7 +40,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.apache.openjpa.persistence.jdbc.KeyColumn;
-import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections4.comparators.ComparableComparator;
 import org.apache.openjpa.persistence.PersistentCollection;
 import org.apache.openjpa.persistence.PersistentMap;
 

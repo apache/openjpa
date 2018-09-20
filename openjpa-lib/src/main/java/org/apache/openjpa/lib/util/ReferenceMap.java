@@ -27,11 +27,6 @@ import java.util.Map;
  * @author Abe White
  */
 public interface ReferenceMap extends Map {
-
-    public static final int HARD = 0;
-    public static final int WEAK = 1;
-    public static final int SOFT = 2;
-
     /**
      * Purge stale entries.
      */

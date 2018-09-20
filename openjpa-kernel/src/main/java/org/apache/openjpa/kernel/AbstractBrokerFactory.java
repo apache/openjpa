@@ -39,7 +39,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.collections.set.MapBackedSet;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+import org.apache.commons.collections4.set.MapBackedSet;
 import org.apache.openjpa.lib.util.StringUtil;
 import org.apache.openjpa.audit.Auditor;
 import org.apache.openjpa.conf.BrokerValue;
@@ -489,9 +490,9 @@ public abstract class AbstractBrokerFactory
             bv = (BrokerValue) _conf.getValue(BrokerValue.KEY);
 
         if (FinalizingBrokerImpl.class.isAssignableFrom(bv.getTemplateBrokerType(_conf))) {
-            return MapBackedSet.decorate(new ConcurrentHashMap(), new Object() { });
+            return MapBackedSet.mapBackedSet(new ConcurrentHashMap(), new Object() { });
         } else {
-            return new ConcurrentReferenceHashSet<Broker>(ConcurrentReferenceHashSet.WEAK);
+            return new ConcurrentReferenceHashSet<Broker>(ReferenceStrength.WEAK);
         }
     }
 
@@ -829,7 +830,7 @@ public abstract class AbstractBrokerFactory
      */
     private Collection<ClassLoader> getPcClassLoaders() {
        if (_pcClassLoaders == null)
-         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ConcurrentReferenceHashSet.WEAK);
+         _pcClassLoaders = new ConcurrentReferenceHashSet<ClassLoader>(ReferenceStrength.WEAK);
           
        return _pcClassLoaders;
     }

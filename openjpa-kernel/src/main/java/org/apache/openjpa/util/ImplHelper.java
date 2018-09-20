@@ -46,6 +46,7 @@ import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.meta.JavaTypes;
 import org.apache.openjpa.meta.SequenceMetaData;
 import org.apache.openjpa.meta.ValueStrategies;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.conf.OpenJPAConfiguration;
 
 /**
@@ -58,11 +59,11 @@ public class ImplHelper {
 
     // Cache for from/to type assignments
     private static final Map _assignableTypes =
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
 
     // map of all new unenhanced instances active in this classloader
     public static final Map _unenhancedInstanceMap =
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD) {
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD) {
 
             protected boolean eq(Object x, Object y) {
                 // the Entries in ConcurrentReferenceHashMap delegate back to
@@ -252,8 +253,8 @@ public class ImplHelper {
         Boolean isAssignable = null;
         Map assignableTo = (Map) _assignableTypes.get(from);
         if (assignableTo == null) { // "to" cache doesn't exist, so create it...
-            assignableTo = new ConcurrentReferenceHashMap(ReferenceMap.WEAK,
-                    ReferenceMap.HARD);
+            assignableTo = new ConcurrentReferenceHashMap(ReferenceStrength.WEAK,
+                ReferenceStrength.HARD);
             _assignableTypes.put(from, assignableTo);
         } else { // "to" cache exists...
             isAssignable = (Boolean) assignableTo.get(to);

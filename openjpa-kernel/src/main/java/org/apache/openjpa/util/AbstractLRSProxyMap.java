@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.collections.iterators.IteratorChain;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.iterators.FilterIterator;
+import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.lib.util.Closeable;
 import org.apache.openjpa.lib.util.Localizer;
@@ -507,10 +507,8 @@ public abstract class AbstractLRSProxyMap<K,V>
             if (_state != OPEN)
                 return;
 
-            List itrs = _itr.getIterators();
-            Iterator itr;
-            for (int i = 0; i < itrs.size(); i++) {
-                itr = (Iterator) itrs.get(i);
+            for (Iterator itr = _itr; itr.hasNext();) {
+                itr.next();
                 if (itr instanceof FilterIterator)
                     itr = ((FilterIterator) itr).getIterator();
                 ImplHelper.close(itr);

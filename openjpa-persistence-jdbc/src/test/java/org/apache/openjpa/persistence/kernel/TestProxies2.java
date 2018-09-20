@@ -29,7 +29,7 @@ import java.util.TreeSet;
 
 
 import org.apache.openjpa.persistence.kernel.common.apps.ProxiesPC;
-import org.apache.commons.collections.comparators.ComparableComparator;
+import org.apache.commons.collections4.comparators.ComparableComparator;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.util.Proxy;
 

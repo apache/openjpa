@@ -18,12 +18,16 @@
  */
 package org.apache.openjpa.persistence.jdbc.common.apps;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.persistence.Entity;
 
-import org.apache.commons.collections.*;
+import org.apache.commons.collections4.map.LinkedMap;
 
 /**
  * Normal class that has relations to and from various horizontal
@@ -107,7 +111,7 @@ public class HorizRelation
     private ArrayList cHorizInterVerticalD = new ArrayList();
 
     public Map getCollections() {
-        Map map = new SequencedHashMap();
+        Map map = new LinkedMap();
         map.put("HorizA", cHorizA);
         map.put("HorizB", cHorizB);
         map.put("HorizC", cHorizC);

@@ -21,6 +21,7 @@ package org.apache.openjpa.event;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 
 /**
@@ -37,8 +38,7 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashSet;
 public class SingleJVMRemoteCommitProvider
     extends AbstractRemoteCommitProvider {
 
-    private static Set s_providers = new ConcurrentReferenceHashSet(
-        ConcurrentReferenceHashSet.HARD);
+    private static Set s_providers = new ConcurrentReferenceHashSet(ReferenceStrength.HARD);
 
     public SingleJVMRemoteCommitProvider() {
         s_providers.add(this);

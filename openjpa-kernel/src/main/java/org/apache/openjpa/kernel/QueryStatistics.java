@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
 
@@ -165,12 +166,12 @@ public interface QueryStatistics<T> extends Serializable {
 
         private void initializeMaps() {
             ConcurrentReferenceHashMap statsMap =
-                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+                new ConcurrentReferenceHashMap(ReferenceStrength.HARD, ReferenceStrength.HARD, CONCURRENCY, LOAD_FACTOR);
             statsMap.setMaxSize(FIXED_SIZE);
             stats = statsMap;
 
             ConcurrentReferenceHashMap aStatsMap =
-                new ConcurrentReferenceHashMap(ReferenceMap.HARD, ReferenceMap.HARD, CONCURRENCY, LOAD_FACTOR);
+                new ConcurrentReferenceHashMap(ReferenceStrength.HARD, ReferenceStrength.HARD, CONCURRENCY, LOAD_FACTOR);
             aStatsMap.setMaxSize(FIXED_SIZE);
             astats = aStatsMap;
         }
