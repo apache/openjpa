@@ -49,7 +49,7 @@ public class TestBadJdbcUrl extends TestCase {
     public static final String GOOD_DRIVER =
         "org.apache.derby.jdbc.EmbeddedDriver";
     public static final String GOOD_DATASOURCE =
-        "org.apache.commons.dbcp.BasicDataSource";
+        "org.apache.commons.dbcp2.BasicDataSource";
 
 	public static final String BAD_DRIVER = "bad.driver";
 	public static final String BAD_URL_PROTOCOL = "bad.url.protocol";

@@ -534,7 +534,7 @@
                         mvn test -Dtest=<testcase> -Ptest-derbynet
                 -->
                 <openjpa.derbyjcc.url>jdbc:db2://localhost:1527/openjpa20</openjpa.derbyjcc.url>
-                <!-- Note: commons-dbcp requires dummy values for uid/pwd -->
+                <!-- Note: commons-dbcp2 requires dummy values for uid/pwd -->
                 <openjpa.derbyjcc.username>uid</openjpa.derbyjcc.username>
                 <openjpa.derbyjcc.password>pwd</openjpa.derbyjcc.password>
                 <connection.driver.name>com.ibm.db2.jcc.DB2Driver</connection.driver.name>

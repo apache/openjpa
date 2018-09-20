@@ -137,7 +137,7 @@
                 <include>commons-collections:commons-collections</include>
                 <include>org.apache.commons:commons-pool2</include>
                 <include>commons-logging:commons-logging</include>
-                <include>commons-dbcp:commons-dbcp</include>
+                <include>org.apache.commons:commons-dbcp2</include>
 
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jpa_2.1_spec</include>
