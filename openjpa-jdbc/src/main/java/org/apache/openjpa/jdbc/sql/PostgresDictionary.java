@@ -876,7 +876,7 @@ public class PostgresDictionary
         if (innerConn instanceof PGConnection) {
             return (PGConnection) innerConn;
         }
-        if (innerConn.getClass().getName().startsWith("org.apache.commons.dbcp")) {
+        if (innerConn.getClass().getName().startsWith("org.apache.commons.dbcp2")) {
             return (PGConnection) getDbcpDelegate(innerConn);
         }
         return (PGConnection) unwrapConnection(conn, PGConnection.class);
@@ -893,10 +893,10 @@ public class PostgresDictionary
         try {
             if (dbcpGetDelegate == null) {
                 Class<?> dbcpConnectionClass =
-                    Class.forName("org.apache.commons.dbcp.DelegatingConnection", true, AccessController
+                    Class.forName("org.apache.commons.dbcp2.DelegatingConnection", true, AccessController
                         .doPrivileged(J2DoPrivHelper.getContextClassLoaderAction()));
                 Class<?> poolingDataSource = Class.forName(
-                        "org.apache.commons.dbcp.PoolingDataSource", true,
+                        "org.apache.commons.dbcp2.PoolingDataSource", true,
                         AccessController.doPrivileged(J2DoPrivHelper
                                 .getContextClassLoaderAction()));
                 Method setAccessToUnderlyingConnectionAllowed = poolingDataSource

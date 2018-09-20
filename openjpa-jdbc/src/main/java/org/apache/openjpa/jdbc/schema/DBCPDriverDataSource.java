@@ -41,8 +41,8 @@ import org.apache.openjpa.lib.util.Closeable;
 public class DBCPDriverDataSource
 extends SimpleDriverDataSource implements Configurable, Closeable {
 
-    private static String DBCPPACKAGENAME = "org.apache.commons.dbcp";
-    private static String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp.BasicDataSource";
+    private static String DBCPPACKAGENAME = "org.apache.commons.dbcp2";
+    private static String DBCPBASICDATASOURCENAME = "org.apache.commons.dbcp2.BasicDataSource";
     private static Class<?> _dbcpClass;
     private static Boolean _dbcpAvail;
     private static RuntimeException _dbcpEx;
@@ -59,7 +59,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
         try {
             if (_ds != null) {
                 if (isDBCPLoaded(getClassLoader())) {
-                    ((org.apache.commons.dbcp.BasicDataSource)_dbcpClass.cast(_ds)).close();
+                    ((org.apache.commons.dbcp2.BasicDataSource)_dbcpClass.cast(_ds)).close();
                 }
             }
         } catch (Exception e) {
@@ -106,7 +106,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
      * This method should not throw an exception, as it is called by
      * AutoDriverDataSource to determine if user already specified
      * to use Commons DBCP.
-     * @return true if ConnectionDriverName contains org.apache.commons.dbcp,
+     * @return true if ConnectionDriverName contains org.apache.commons.dbcp2,
      *         otherwise false
      */
     protected boolean isDBCPDataSource() {
@@ -117,7 +117,7 @@ extends SimpleDriverDataSource implements Configurable, Closeable {
     /**
      * This method should not throw an exception, as it is called by
      * AutoDriverDataSource to determine if it should use DBCP or not
-     * based on if org.apache.commons.dbcp.BasicDataSource can be loaded.
+     * based on if org.apache.commons.dbcp2.BasicDataSource can be loaded.
      * @return true if Commons DBCP was found on the classpath, otherwise false
      */
     static protected boolean isDBCPLoaded(ClassLoader cl) {
