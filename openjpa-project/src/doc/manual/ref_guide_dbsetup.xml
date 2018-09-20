@@ -86,7 +86,7 @@ select between the old <classname>SimpleDriverDataSource</classname> and a new
 has been provided on the classpath and OpenJPA is not running in a container
 managed mode or with managed transactions.  Note, that only the
 <literal>openjpa-all.jar</literal> includes Commons DBCP, so you will need to
-include the <literal>commons-dbcp.jar</literal> from the OpenJPA binary
+include the <literal>commons-dbcp2.jar</literal> from the OpenJPA binary
 distribution if you are using the normal <literal>openjpa.jar</literal>.
             </para>
             <para>
