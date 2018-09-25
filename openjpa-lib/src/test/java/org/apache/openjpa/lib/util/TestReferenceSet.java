@@ -21,6 +21,8 @@ package org.apache.openjpa.lib.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
+
 import junit.framework.TestCase;
 
 /**
@@ -30,8 +32,7 @@ import junit.framework.TestCase;
  */
 public class TestReferenceSet extends TestCase {
 
-    private ReferenceHashSet _coll = new ReferenceHashSet
-        (ReferenceHashSet.WEAK);
+    private ReferenceHashSet _coll = new ReferenceHashSet(ReferenceStrength.WEAK);
 
     private Object _heldValue = new Integer(2);
 
@@ -48,7 +49,7 @@ public class TestReferenceSet extends TestCase {
      * Tests basic add/contains/remove functionality.
      */
     public void testBasics() {
-        Collection coll = new ReferenceHashSet(ReferenceHashSet.WEAK);
+        Collection coll = new ReferenceHashSet(ReferenceStrength.WEAK);
         assertEquals(0, coll.size());
         assertTrue(!coll.contains("foo"));
 

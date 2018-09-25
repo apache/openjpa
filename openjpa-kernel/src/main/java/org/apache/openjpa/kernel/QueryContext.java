@@ -21,7 +21,7 @@ package org.apache.openjpa.kernel;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.openjpa.kernel.exps.AggregateListener;
 import org.apache.openjpa.kernel.exps.Constant;
 import org.apache.openjpa.kernel.exps.FilterListener;

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
@@ -40,14 +41,14 @@ public class PCRegistry {
     private static final Localizer _loc = Localizer.forPackage(PCRegistry.class);
 
     // map of persistent classes to meta structures; weak so the VM can GC classes
-    private static final Map<Class<?>,Meta> _metas = new ConcurrentReferenceHashMap(ReferenceMap.WEAK, 
-            ReferenceMap.HARD);
+    private static final Map<Class<?>,Meta> _metas = new ConcurrentReferenceHashMap(ReferenceStrength.WEAK,
+        ReferenceStrength.HARD);
     
     // register class listeners
     // Weak reference prevents OutOfMemeoryError as described in OPENJPA-2042
     private static final Collection<RegisterClassListener> _listeners =
         new ConcurrentReferenceHashSet<RegisterClassListener>(
-            ConcurrentReferenceHashSet.WEAK);
+                ReferenceStrength.WEAK);
 
     /**
      * Register a {@link RegisterClassListener}.

@@ -26,9 +26,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.iterators.FilterIterator;
-import org.apache.commons.collections.iterators.IteratorChain;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.iterators.FilterIterator;
+import org.apache.commons.collections4.iterators.IteratorChain;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.LRUMap;
 import org.apache.openjpa.lib.util.ReferenceMap;
 import org.apache.openjpa.lib.util.SizedMap;
@@ -112,8 +113,8 @@ public class CacheMap
         if (size < 0)
             size = 500;
 
-        softMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
-            ReferenceMap.SOFT, size, load) {
+        softMap = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
+            ReferenceStrength.SOFT, size, load) {
             public void overflowRemoved(Object key, Object value) {
                 softMapOverflowRemoved(key, value);
             }

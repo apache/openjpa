@@ -30,33 +30,18 @@ import java.lang.ref.Reference;
  * @since 0.4.0
  */
 public class ReferenceHashMap
-    extends org.apache.commons.collections.map.ReferenceMap
+    extends org.apache.commons.collections4.map.ReferenceMap
     implements ReferenceMap, SizedMap {
 
     private int _maxSize = Integer.MAX_VALUE;
 
-    public ReferenceHashMap(int keyType, int valueType) {
-        super(toReferenceConstant(keyType), toReferenceConstant(valueType));
+    public ReferenceHashMap(ReferenceStrength keyType, ReferenceStrength valueType) {
+        super(keyType, valueType);
     }
 
-    public ReferenceHashMap(int keyType, int valueType, int capacity,
+    public ReferenceHashMap(ReferenceStrength keyType, ReferenceStrength valueType, int capacity,
         float loadFactor) {
-        super(toReferenceConstant(keyType), toReferenceConstant(valueType),
-            capacity, loadFactor);
-    }
-
-    /**
-     * Concver our reference constants to Apache's.
-     */
-    private static int toReferenceConstant(int type) {
-        switch (type) {
-            case ReferenceMap.HARD:
-                return org.apache.commons.collections.map.ReferenceMap. HARD;
-            case ReferenceMap.SOFT:
-                return org.apache.commons.collections.map.ReferenceMap. SOFT;
-            default:
-                return org.apache.commons.collections.map.ReferenceMap. WEAK;
-        }
+        super(keyType, valueType, capacity, loadFactor);
     }
 
     public int getMaxSize() {
@@ -104,61 +89,9 @@ public class ReferenceHashMap
         super.addMapping(hashIndex, hashCode, key, value);
     }
 
-    protected HashEntry createEntry(HashEntry next, int hashCode, Object key,
+    protected ReferenceEntry createEntry(HashEntry next, int hashCode, Object key,
         Object value) {
         return new AccessibleEntry(this, next, hashCode, key, value);
-    }
-
-    protected void purge(Reference ref) {
-        // the logic for this method is taken from the original purge method
-        // we're overriding, with added logic to track the expired key/value
-        int index = hashIndex(ref.hashCode(), data.length);
-        AccessibleEntry entry = (AccessibleEntry) data[index];
-        AccessibleEntry prev = null;
-        Object key = null, value = null;
-        while (entry != null) {
-            if (purge(entry, ref)) {
-                if (isHard(keyType))
-                    key = entry.key();
-                else if (isHard(valueType))
-                    value = entry.value();
-
-                if (prev == null)
-                    data[index] = entry.nextEntry();
-                else
-                    prev.setNextEntry(entry.nextEntry());
-                size--;
-                break;
-            }
-            prev = entry;
-            entry = entry.nextEntry();
-        }
-
-        if (key != null)
-            valueExpired(key);
-        else if (value != null)
-            keyExpired(value);
-    }
-
-    /**
-     * See the code for <code>ReferenceMap.ReferenceEntry.purge</code>.
-     */
-    private boolean purge(AccessibleEntry entry, Reference ref) {
-        boolean match = (!isHard(keyType) && entry.key() == ref)
-            || (!isHard(valueType) && entry.value() == ref);
-        if (match) {
-            if (!isHard(keyType))
-                ((Reference) entry.key()).clear();
-            if (!isHard(valueType))
-                ((Reference) entry.value()).clear();
-            else if (purgeValues)
-                entry.nullValue();
-        }
-        return match;
-    }
-
-    private static boolean isHard(int type) {
-        return type == org.apache.commons.collections.map. ReferenceMap.HARD;
     }
 
     protected void doWriteObject(ObjectOutputStream out) throws IOException {
@@ -177,11 +110,13 @@ public class ReferenceHashMap
      * protected state.
      */
     private static class AccessibleEntry extends ReferenceEntry {
+        private final ReferenceHashMap parent;
 
-        public AccessibleEntry(org.apache.commons.collections.map.
+        public AccessibleEntry(org.apache.commons.collections4.map.
             AbstractReferenceMap map, HashEntry next,
             int hashCode, Object key, Object value) {
             super(map, next, hashCode, key, value);
+            parent = (ReferenceHashMap)map;
         }
 
         public Object key() {
@@ -192,16 +127,21 @@ public class ReferenceHashMap
             return value;
         }
 
-        public void nullValue() {
-            value = null;
-        }
-
         public AccessibleEntry nextEntry() {
             return (AccessibleEntry) next;
         }
 
         public void setNextEntry(AccessibleEntry next) {
             this.next = next;
+        }
+
+        @Override
+        protected void onPurge() {
+            if (parent.isKeyType(ReferenceStrength.HARD)) {
+                parent.valueExpired(key);
+            } else if (parent.isValueType(ReferenceStrength.HARD)) {
+                parent.keyExpired(value);
+            }
         }
     }
 }

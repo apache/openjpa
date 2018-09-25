@@ -33,7 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.IdentityMap;
+import java.util.IdentityHashMap;
 import org.apache.openjpa.conf.Compatibility;
 import org.apache.openjpa.conf.DetachOptions;
 import org.apache.openjpa.enhance.PersistenceCapable;
@@ -75,7 +75,7 @@ public class DetachManager
     // if we're not detaching full, we need to track all detached objects;
     // if we are, then we use a special field manager for more efficient
     // detachment than the standard one
-    private final IdentityMap _detached;
+    private final IdentityHashMap _detached;
     private final DetachFieldManager _fullFM;
 
     /**
@@ -279,7 +279,7 @@ public class DetachManager
             _detached = null;
             _fullFM = new DetachFieldManager();
         } else {
-            _detached = new IdentityMap();
+            _detached = new IdentityHashMap();
             _fullFM = null;
         }
         Compatibility compatibility = 

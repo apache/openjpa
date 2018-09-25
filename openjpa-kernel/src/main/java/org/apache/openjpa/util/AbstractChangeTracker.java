@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import org.apache.commons.collections.set.MapBackedSet;
+import org.apache.commons.collections4.set.MapBackedSet;
 
 /**
  * Base class that provides utilities to change trackers.
@@ -186,7 +186,7 @@ public abstract class AbstractChangeTracker
      */
     protected Set newSet() {
         if (_identity == Boolean.TRUE)
-            return MapBackedSet.decorate(new IdentityHashMap());
+            return MapBackedSet.mapBackedSet(new IdentityHashMap());
         return new HashSet();
     }
 
@@ -220,7 +220,7 @@ public abstract class AbstractChangeTracker
         if (identity && cur instanceof HashSet) {
             if (cur.isEmpty())
                 return null;
-            Set replace = MapBackedSet.decorate(new IdentityHashMap());
+            Set replace = MapBackedSet.mapBackedSet(new IdentityHashMap());
             replace.addAll(cur);
             return replace;
         }

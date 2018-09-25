@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.openjpa.lib.util.StringUtil;
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
 import org.apache.openjpa.lib.util.Localizer;
 import org.apache.openjpa.lib.util.ReferenceMap;
@@ -52,11 +53,11 @@ public class Reflection {
 
     // Weak HashMap caches of getter/setter/beanProperty methods
     private static Map<Class<?>, Map<String, Method>> getterMethodCache = 
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
     private static Map<Class<?>, Map<String, Method>> setterMethodCache = 
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
     private static Map<Class<?>, Set<String>> beanPropertiesNameCache = 
-        new ConcurrentReferenceHashMap(ReferenceMap.WEAK, ReferenceMap.HARD);
+        new ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
     
     private static Method getGetterMethod(Class<?> cls, String prop) {
         Method rtnMethod = null;
@@ -71,8 +72,8 @@ public class Reflection {
         Method method) {
         Map<String, Method> clsMap = getterMethodCache.get(cls);
         if (clsMap == null) {
-            clsMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
-                ReferenceMap.WEAK);
+            clsMap = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
+                ReferenceStrength.WEAK);
             getterMethodCache.put(cls, clsMap);
         }
         clsMap.put(prop, method);
@@ -91,8 +92,8 @@ public class Reflection {
         Method method) {
         Map<String, Method> clsMap = setterMethodCache.get(cls);
         if (clsMap == null) {
-            clsMap = new ConcurrentReferenceHashMap(ReferenceMap.HARD,
-                ReferenceMap.WEAK);
+            clsMap = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
+                ReferenceStrength.WEAK);
             setterMethodCache.put(cls, clsMap);
         }
         clsMap.put(prop, method);

@@ -5,3 +5,5 @@ target
 velocity.log
 derby.log
 *.iml
+dependency-reduced-pom.xml
+

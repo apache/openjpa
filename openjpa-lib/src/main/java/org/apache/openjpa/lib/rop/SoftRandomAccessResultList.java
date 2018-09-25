@@ -20,7 +20,7 @@ package org.apache.openjpa.lib.rop;
 
 import java.util.Map;
 
-import org.apache.commons.collections.ReferenceMap;
+import org.apache.commons.collections4.map.ReferenceMap;
 
 /**
  * Specialization of the {@link RandomAccessResultList} that only maintains

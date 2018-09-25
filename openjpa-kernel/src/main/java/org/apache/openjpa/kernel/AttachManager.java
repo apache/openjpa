@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.map.IdentityMap;
+import java.util.IdentityHashMap;
 import org.apache.openjpa.enhance.PersistenceCapable;
 import org.apache.openjpa.event.CallbackModes;
 import org.apache.openjpa.event.LifecycleEvent;
@@ -59,7 +59,7 @@ public class AttachManager {
     private final OpCallbacks _call;
     private final boolean _copyNew;
     private final boolean _failFast;
-    private final IdentityMap _attached = new IdentityMap();
+    private final IdentityHashMap _attached = new IdentityHashMap();
     private final Collection<StateManagerImpl> _visitedNodes = new ArrayList();
 
     // reusable strategies

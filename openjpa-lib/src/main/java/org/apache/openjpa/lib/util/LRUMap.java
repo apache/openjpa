@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Abe White
  */
-public class LRUMap extends org.apache.commons.collections.map.LRUMap
+public class LRUMap extends org.apache.commons.collections4.map.LRUMap
     implements SizedMap {
 
     private int _max = -1;

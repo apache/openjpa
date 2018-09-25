@@ -35,6 +35,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
 import org.apache.openjpa.lib.log.Log;
 import org.apache.openjpa.lib.util.ClassUtil;
 import org.apache.openjpa.lib.util.J2DoPrivHelper;
@@ -53,12 +54,10 @@ import org.apache.openjpa.lib.util.concurrent.ConcurrentReferenceHashMap;
  */
 public class Configurations {
 
-    private static final Localizer _loc = Localizer.forPackage
-        (Configurations.class);
-    
+    private static final Localizer _loc = Localizer.forPackage(Configurations.class);
+
     private static final ConcurrentReferenceHashMap _loaders = new
-        ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.WEAK, 
-                ConcurrentReferenceHashMap.HARD);
+        ConcurrentReferenceHashMap(ReferenceStrength.WEAK, ReferenceStrength.HARD);
 
     private static final Object NULL_LOADER = "null-loader";
 
@@ -195,8 +194,8 @@ public class Configurations {
         Map<String,Class<?>> loaderCache = (Map<String,Class<?>>) _loaders.get(key);
         if (loaderCache == null) { // We don't have a cache for this loader.
             //OPENJPA-2636: Changed to HARD/WEAK to avoid Classloader leak:
-            loaderCache = new ConcurrentReferenceHashMap(ConcurrentReferenceHashMap.HARD,
-                    ConcurrentReferenceHashMap.WEAK);            
+            loaderCache = new ConcurrentReferenceHashMap(ReferenceStrength.HARD,
+                ReferenceStrength.WEAK);
             _loaders.put(key, loaderCache);
         } else {  // We have a cache for this loader.
             cls = (Class<?>) loaderCache.get(clsName);
